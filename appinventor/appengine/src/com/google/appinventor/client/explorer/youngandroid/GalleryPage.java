@@ -63,6 +63,7 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.youngandroid.RemixedYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
 
 /**
  * The gallery page shows a single app from the gallery 
@@ -553,14 +554,8 @@ panel
     final Label authorName = new Label();
     if (editStatus == NEWAPP) {
       // App doesn't have author info yet, grab current user info
-      OdeAsyncCallback<User> userCallback = new OdeAsyncCallback<User>(
-          MESSAGES.serverUnavailable()) {
-            @Override
-            public void onSuccess(final User currentUser) {
-              authorName.setText(currentUser.getUserName());
-            }
-          };
-        ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userCallback);
+      final User currentUser = Ode.getInstance().getUser();
+      authorName.setText(currentUser.getUserName());
     } else {
       authorName.setText(app.getDeveloperName());
       authorName.addClickHandler(new ClickHandler() {
@@ -1019,25 +1014,19 @@ panel
    * Only seen by app owner.
    */
   private void initEdititButton() {
-    final OdeAsyncCallback<User> currentUserInfomationCallBack = new OdeAsyncCallback<User>(
-      // failure message
-      MESSAGES.galleryError()) {
-        @Override
-        public void onSuccess(User user) {
-          if(app.getDeveloperId().equals(user.getUserId())){
-            editButton = new Button(EDITBUTTONTEXT);
-            editButton.addClickHandler(new ClickHandler() {
-              // Open up source file if clicked the action button
-              public void onClick(ClickEvent event) {
-                Ode.getInstance().switchToGalleryAppView(app, GalleryPage.UPDATEAPP);
-              }
-            });
-            editButton.addStyleName("app-action-button");
-            appAction.add(editButton);
-          }
+    final User currentUser = Ode.getInstance().getUser();
+    if(app.getDeveloperId().equals(currentUser.getUserId())){
+      editButton = new Button(EDITBUTTONTEXT);
+      editButton.addClickHandler(new ClickHandler() {
+        // Open up source file if clicked the action button
+        public void onClick(ClickEvent event) {
+          editButton.setEnabled(false);
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.UPDATEAPP);
         }
-      };
-    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), currentUserInfomationCallBack);
+      });
+      editButton.addStyleName("app-action-button");
+      appAction.add(editButton);
+    }
   }
 
   /**

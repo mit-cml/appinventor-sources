@@ -169,19 +169,19 @@ public class ReportList extends Composite  {
 
   private void initializeReports() {
     final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(List<GalleryAppReport> reportList) {
-                reports=reportList;
-                ReportWidgets.clear();
-                for (GalleryAppReport report : reports) {
-                  ReportWidgets.put(report, new ReportWidgets(report));
-                }
-                refreshTable();
-              }
-          };
-        Ode.getInstance().getGalleryService().getRecentReports(0,10,callback);
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(List<GalleryAppReport> reportList) {
+          reports=reportList;
+          ReportWidgets.clear();
+          for (GalleryAppReport report : reports) {
+            ReportWidgets.put(report, new ReportWidgets(report));
+          }
+          refreshTable();
+        }
+    };
+    Ode.getInstance().getGalleryService().getRecentReports(0,10,callback);
   }
 
   private void initializeAllReports() {
@@ -198,7 +198,7 @@ public class ReportList extends Composite  {
           refreshTable();
         }
       };
-      Ode.getInstance().getGalleryService().getAllAppReports(0,10,callback);
+    Ode.getInstance().getGalleryService().getAllAppReports(0,10,callback);
   }
 
   private class ReportWidgets {
@@ -487,32 +487,24 @@ public class ReportList extends Composite  {
       // Center and show the popup
       popup.center();
 
-      OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-          @Override
-          public void onSuccess(final User currentUser) {
-            sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
-            sendMsg.addClickHandler(new ClickHandler() {
-              public void onClick(ClickEvent event) {
-                final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
-                  MESSAGES.galleryError()) {
-                    @Override
-                    public void onSuccess(final Long msgId) {
-                      popup.hide();
-                      storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                          GalleryModerationAction.SENDMESSAGE, getMessagePreview(msgText.getText()));
-                    }
-                  };
-                  Ode.getInstance().getGalleryService().sendMessageFromSystem(
-                      currentUser.getUserId(), report.getOffender().getUserId(), 
-                      msgText.getText(), messagesCallback);
+      final User currentUser = Ode.getInstance().getUser();
+      sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
+      sendMsg.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(final Long msgId) {
+                popup.hide();
+                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                    GalleryModerationAction.SENDMESSAGE, getMessagePreview(msgText.getText()));
               }
-            });
-          }
-        };
-      Ode ode = Ode.getInstance();
-      ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
+            };
+            Ode.getInstance().getGalleryService().sendMessageFromSystem(
+                currentUser.getUserId(), report.getOffender().getUserId(),
+                msgText.getText(), messagesCallback);
+        }
+      });
   }
   private void deactiveAppPopup(final GalleryAppReport report, final ReportWidgets rw){
       // Create a PopUpPanel with a button to close it
@@ -575,52 +567,44 @@ public class ReportList extends Composite  {
           }
       });
 
-      OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-          @Override
-          public void onSuccess(final User currentUser) {
-            sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
-            sendMsgAndDRApp.addClickHandler(new ClickHandler() {
-              public void onClick(ClickEvent event) {
-                final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
+      final User currentUser = Ode.getInstance().getUser();
+      sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
+      sendMsgAndDRApp.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(final Long msgId) {
+                popup.hide();
+
+                final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+                  // failure message
                   MESSAGES.galleryError()) {
                     @Override
-                    public void onSuccess(final Long msgId) {
-                      popup.hide();
-
-                      final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
-                        // failure message
-                        MESSAGES.galleryError()) {
-                          @Override
-                            public void onSuccess(Boolean success) {
-                              if(!success)
-                                return;
-                              popup.hide();
-                              if(rw.appActive == true){                                     //app was active, now is deactive
-                                rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
-                                rw.appActive = false;
-                                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                                    GalleryModerationAction.DEACTIVATEAPP, getMessagePreview(msgText.getText()));
-                              }else{                                                        //app was deactive, now is active
-                                /*This should not be reached, just in case*/
-                                rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
-                                rw.appActive = true;
-                                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                                    GalleryModerationAction.REACTIVATEAPP, getMessagePreview(msgText.getText()));
-                              }
-                            }
-                         };
-                      Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
-                    }
-                  };
-                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+                      public void onSuccess(Boolean success) {
+                        if(!success)
+                          return;
+                        popup.hide();
+                        if(rw.appActive == true){                                     //app was active, now is deactive
+                          rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
+                          rw.appActive = false;
+                          storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                              GalleryModerationAction.DEACTIVATEAPP, getMessagePreview(msgText.getText()));
+                        }else{                                                        //app was deactive, now is active
+                          /*This should not be reached, just in case*/
+                          rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
+                          rw.appActive = true;
+                          storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                              GalleryModerationAction.REACTIVATEAPP, getMessagePreview(msgText.getText()));
+                        }
+                      }
+                   };
+                Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
               }
-            });
-          }
-        };
-      Ode ode = Ode.getInstance();
-      ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
+            };
+            Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+        }
+      });
     }
 
   /**
@@ -732,33 +716,25 @@ public class ReportList extends Composite  {
     final Button button = new Button("Update Database Field");
     button.setVisible(false);
 
-    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
-	// failure message
-    MESSAGES.serverUnavailable()) {
+    final User currentUser = Ode.getInstance().getUser();
+    if(currentUser.getType() != 10){
+      return;
+    }
+    button.setVisible(true);
+    button.addClickHandler(new ClickHandler() {
       @Override
-      public void onSuccess(final User currentUser) {
-        if(currentUser.getType() != 10){
-          return;
-        }
-        button.setVisible(true);
-        button.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
+        // failure message
+        MESSAGES.serverUnavailable()) {
           @Override
-          public void onClick(ClickEvent event) {
-            OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.serverUnavailable()) {
-              @Override
-              public void onSuccess(final Void callBack) {
-                button.setVisible(true);
-              }
-            };
-            Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
+          public void onSuccess(final Void callBack) {
+            button.setVisible(true);
           }
-        });
+        };
+        Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
       }
-    };
-    Ode ode = Ode.getInstance();
-    ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
+    });
     panel.add(button);
   }
   private class TemplateAction implements Command {
@@ -787,24 +763,17 @@ public class ReportList extends Composite  {
   }
 
   void storeModerationAction(final long reportId, final long galleryId, final long messageId, final int actionType, final String messagePreview){
-    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-          @Override
-          public void onSuccess(final User currentUser) {
-            final OdeAsyncCallback<Void> moderationActionCallback = new OdeAsyncCallback<Void>(
-                // failure message
-                MESSAGES.galleryError()) {
-                  @Override
-                  public void onSuccess(Void result) {
+    final User currentUser = Ode.getInstance().getUser();
+    final OdeAsyncCallback<Void> moderationActionCallback = new OdeAsyncCallback<Void>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(Void result) {
 
-                  }
-              };
-            Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, messageId, currentUser.getUserId(),
-                actionType, currentUser.getUserName(), messagePreview, moderationActionCallback);
-          }
-        };
-    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(Ode.getInstance().getSessionId(), callback);
+        }
+    };
+    Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, messageId, currentUser.getUserId(),
+        actionType, currentUser.getUserName(), messagePreview, moderationActionCallback);
   }
 
   void createMessageCollapse(final FlowPanel parent, final long msgId, final String preview){

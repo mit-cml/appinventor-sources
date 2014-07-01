@@ -148,15 +148,9 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     if (incomingUserId.equalsIgnoreCase("-1")) {
       // this is user checking out own profile, thus we grab current user info
       // Get current user id
-      OdeAsyncCallback<User> userCallback = new OdeAsyncCallback<User>(
-          MESSAGES.serverUnavailable()) {
-            @Override
-            public void onSuccess(final User currentUser) {
-              userId = currentUser.getUserId();
-              initImageComponents(userId);
-            }
-          };
-        Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userCallback);
+      final User currentUser = Ode.getInstance().getUser();
+      userId = currentUser.getUserId();
+      initImageComponents(userId);
     } else {
       // this is checking out an already existing user's profile...
       userId = incomingUserId;
@@ -199,13 +193,14 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       profileSummit.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-
+          profileSummit.setEnabled(false);
           // Store the name value of user, modify database
           final OdeAsyncCallback<Void> userNameUpdateCallback = new OdeAsyncCallback<Void>(
               // failure message
               MESSAGES.galleryError()) {
                 @Override
                 public void onSuccess(Void arg0) {
+                  profileSummit.setEnabled(true);
                 }
             };
            ode.getUserInfoService().storeUserName(userNameBox.getText(), userNameUpdateCallback);
@@ -294,30 +289,28 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     initWidget(profileGUI);
 
 
-    // Retrieve user info right after GUI is initialized
+    // Retrieve other user info right after GUI is initialized
     final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
         // failure message
         MESSAGES.galleryError()) {
           @Override
           public void onSuccess(User user) {
-            // Set associate GUI components
-            if (editStatus == PRIVATE) {
-              // In this case it'll return the current user
-              userId = user.getUserId();
-              userNameBox.setText(user.getUserName());
-              userLinkBox.setText(user.getUserLink());
-            } else if (editStatus == PUBLIC) {
-              // In this case it'll return the user of [userId]
-              userContentHeader.setText(user.getUserName());
-              makeValidLink(userLinkDisplay, user.getUserLink());
-            }
+            // Set associate GUI components of public states
+            // In this case it'll return the user of [userId]
+            userContentHeader.setText(user.getUserName());
+            makeValidLink(userLinkDisplay, user.getUserLink());
+
             // once we get the user info and id we can show the right image
 //            updateUserImage(GalleryApp.getUserImageURL(userId), imageUploadBoxInner);
 
          }
     };
     if (editStatus == PRIVATE) {
-      Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userInformationCallback);
+      User currentUser = Ode.getInstance().getUser();
+      // In this case it'll return the current user
+      userId = currentUser.getUserId();
+      userNameBox.setText(currentUser.getUserName());
+      userLinkBox.setText(currentUser.getUserLink());
     } else {
       // Public state
       Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
@@ -336,26 +329,19 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     }
 
     //TODO this callback should combine with previous ones. Leave it out for now
-    final OdeAsyncCallback<User> currentUserInfomationCallBack = new OdeAsyncCallback<User>(
-    // failure message
-      MESSAGES.galleryError()) {
+    final User user = Ode.getInstance().getUser();
+    if(incomingUserId.equals(user.getUserId())){
+      editProfile.setVisible(true);
+      editProfile.addClickHandler(new ClickHandler() {
         @Override
-        public void onSuccess(User user) {
-          if(incomingUserId.equals(user.getUserId())){
-            editProfile.setVisible(true);
-            editProfile.addClickHandler(new ClickHandler() {
-              @Override
-              public void onClick(ClickEvent clickEvent) {
-                ode.switchToProjectsView();
-                ProjectListBox.getProjectListBox().selectTab(1);
-              }
-            });
-          }else{
-            editProfile.setVisible(false);
-          }
+        public void onClick(ClickEvent clickEvent) {
+          ode.switchToProjectsView();
+          ProjectListBox.getProjectListBox().selectTab(1);
         }
-    };
-    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), currentUserInfomationCallBack);
+      });
+    }else{
+      editProfile.setVisible(false);
+    }
 
   }
 
