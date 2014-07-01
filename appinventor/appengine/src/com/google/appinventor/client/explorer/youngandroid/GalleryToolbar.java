@@ -70,34 +70,42 @@ public class GalleryToolbar extends Composite {
     searchButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0);
+        GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
         searchText.setFocus(true);
         Ode.getInstance().switchToGalleryView();
         GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(2);
         for(GalleryToolbar toolbar : allSearchToolbars){
           toolbar.getSearchText().setText(searchText.getText());
         }
+        //TODO in gallerylist.java --> findapps: create a way to grab keyword from this toolbar
+        //this is just a temp solution.
+        GalleryListBox.getGalleryListBox().getGalleryList().getSearchText().setText(searchText.getText());
       }
     });
     searchText.addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent e) {
         if(e.getNativeKeyCode() == KeyCodes.KEY_ENTER){
-          GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0);
+          GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
           searchText.setFocus(true);
           Ode.getInstance().switchToGalleryView();
           GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(2);
           for(GalleryToolbar toolbar : allSearchToolbars){
             toolbar.getSearchText().setText(searchText.getText());
           }
+          //TODO in gallerylist.java --> findapps: create a way to grab keyword from this toolbar
+          //this is just a temp solution.
+          GalleryListBox.getGalleryListBox().getGalleryList().getSearchText().setText(searchText.getText());
         }
       }
     });
     initWidget(toolbar);
   }
+
   public TextBox getSearchText(){
     return searchText;
   }
+
   public Button getSearchButton(){
     return searchButton;
   }

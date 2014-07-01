@@ -1170,10 +1170,10 @@ panel
    * @param apps: list of returned gallery apps from callback.
    * @param requestId: determines the specific type of app data.
    */
-  private void refreshApps(GalleryAppListResult appResults, int requestId) {
+  private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), false, true);
+        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), refreshable, true);
         break;
 //      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
 //        String tagTitle = "Tagged with " + tagSelected;
@@ -1188,9 +1188,9 @@ panel
    * gallery page to listen to
    */
   @Override
-  public void onAppListRequestCompleted(GalleryAppListResult appResults, int requestId)   {
+  public void onAppListRequestCompleted(GalleryAppListResult appResults, int requestId, boolean refreshable)   {
    if (appResults != null && appResults.getApps() != null)
-      refreshApps(appResults, requestId);
+      refreshApps(appResults, requestId, refreshable);
     else
       Window.alert("apps was null");
   }

@@ -85,7 +85,7 @@ public class GalleryClient {
   * @param count number of results
   * @param sortOrder currently unused, 
   */
-  public void FindApps(String keywords, int start, int count, int sortOrder) {
+  public void FindApps(String keywords, int start, int count, int sortOrder, final boolean refreshable) {
      // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
@@ -95,10 +95,10 @@ public class GalleryClient {
     public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH, refreshable);
       }
     }
-    };
+  };
       
     //this is below the call back, but of course it is done first
     ode.getGalleryService().findApps(keywords, start,count,callback);
@@ -119,7 +119,7 @@ public class GalleryClient {
     public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false);
       }
     }
     };
@@ -140,7 +140,7 @@ public class GalleryClient {
   * @param start staring index
   * @param count number of results
   */
-  public void GetMostRecent(int start, int count) { 
+  public void GetMostRecent(int start, int count, final boolean refreshable) {
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
@@ -150,7 +150,7 @@ public class GalleryClient {
     public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable);
       } 
     }
     };
@@ -163,7 +163,7 @@ public class GalleryClient {
   * @param start staring index
   * @param count number of results
   */
-  public void GetMostDownloaded(int start, int count) {
+  public void GetMostDownloaded(int start, int count, final boolean refreshable) {
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
@@ -173,7 +173,7 @@ public class GalleryClient {
     public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable);
       } 
     }
     };
@@ -187,7 +187,7 @@ public class GalleryClient {
    */
   public void GetRemixedToList(GalleryAppListResult appsResult) {
     for (GalleryRequestListener listener:listeners) {
-      listener.onAppListRequestCompleted(appsResult, REQUEST_REMIXED_TO);
+      listener.onAppListRequestCompleted(appsResult, REQUEST_REMIXED_TO, true);
     }
   }
 
@@ -274,8 +274,8 @@ public class GalleryClient {
   */
   public void appWasChanged() {
     // for now, let's update the recent list and the popular list (in case one was deleted)
-    GetMostRecent(0,GalleryList.NUMAPPSTOSHOW);
-    GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW);
+    GetMostRecent(0,GalleryList.NUMAPPSTOSHOW, true);
+    GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW, true);
   }
 
 

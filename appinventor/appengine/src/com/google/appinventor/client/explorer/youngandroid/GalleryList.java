@@ -103,6 +103,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final FlowPanel appFeaturedContent;
   private final FlowPanel appPopularContent;
   private final FlowPanel appSearchContent;
+  private final TextBox searchText;
 
   private GalleryAppTab appRecentTab;
   private GalleryAppTab appFeaturedTab;
@@ -139,9 +140,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    */
   public GalleryList() {
 	
-	gallery = GalleryClient.getInstance();
+	  gallery = GalleryClient.getInstance();
     gallery.addListener(this);
-	galleryGF = new GalleryGuiFactory();
+	  galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
     
@@ -157,6 +158,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appFeaturedContent = new FlowPanel();
     appPopularContent = new FlowPanel();
     appSearchContent = new FlowPanel();
+
+    searchText = new TextBox();
 
     // HTML segment for gallery typeface
     HTML headerExtra = new HTML(
@@ -237,8 +240,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
      * @param request: type of app request, for pagination.
      */
     private void addGalleryAppTab(FlowPanel container, FlowPanel content, final int request) {
-
-      final TextBox searchText = new TextBox();
       // Search specific
       if (request == REQUEST_SEARCH) {
         FlowPanel searchPanel = new FlowPanel();
@@ -259,7 +260,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         sb.addClickHandler(new ClickHandler() {
           //  @Override
           public void onClick(ClickEvent event) {
-            gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
+            gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0, true);
             searchText.setFocus(true);
           }
         });
@@ -267,7 +268,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           //  @Override
           public void onKeyDown(KeyDownEvent e) {
             if(e.getNativeKeyCode() == KeyCodes.KEY_ENTER){
-              gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
+              gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0, true);
               searchText.setFocus(true);
             }
           }
@@ -275,11 +276,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       } else if (request == REQUEST_RECENT) {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
-        gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
+        gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW, false);
       } else if (request == REQUEST_MOSTDOWNLOADED) {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
-        gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
+        gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW, false);
       }
       container.add(content);
 
@@ -317,27 +318,31 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               if (!appRecentExhausted) {
                 // If the next page still has apps to retrieve, do it
                 appRecentCounter += NUMAPPSTOSHOW;
-                gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
+                gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW, false);
               }
               break;
             case REQUEST_SEARCH:
               if (!appSearchExhausted) {
                 // If the next page still has apps to retrieve, do it
                 appSearchCounter += NUMAPPSTOSHOW;
-                gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
+                gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0, false);
               }
               break;
             case REQUEST_MOSTDOWNLOADED:
               if (!appPopularExhausted) {
                 // If the next page still has apps to retrieve, do it
                 appPopularCounter += NUMAPPSTOSHOW;
-                gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
+                gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW, false);
               }
               break;
           }
         }
       });
     }
+  }
+
+  public TextBox getSearchText(){
+    return searchText;
   }
 
   /**
@@ -362,7 +367,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     sb.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
-        gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
+        gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0, true);
       }
     });    
   }
@@ -375,7 +380,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * 
    * @param requestId: determines the specific type of app data.
    */
-  private void refreshApps(GalleryAppListResult appsResult, int requestId) {
+  private void refreshApps(GalleryAppListResult appsResult, int requestId, boolean refreshable) {
     switch (requestId) {
       case REQUEST_FEATURED:
         if (appsResult.getApps().size() < NUMAPPSTOSHOW) {
@@ -384,7 +389,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appFeaturedExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(appsResult.getApps(), appFeaturedContent, false);
+        galleryGF.generateHorizontalAppList(appsResult.getApps(), appFeaturedContent, refreshable);
         break;
       case REQUEST_RECENT:
         appRecentTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
@@ -400,7 +405,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appRecentExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(appsResult.getApps(), appRecentContent, false);
+        galleryGF.generateHorizontalAppList(appsResult.getApps(), appRecentContent, refreshable);
         break;
       case REQUEST_SEARCH:
         appSearchTab.setKeywordTotalResultsLabel(appsResult.getKeyword(), appsResult.getTotalCount());
@@ -420,7 +425,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appSearchExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(appsResult.getApps(), appSearchContent, true);
+        galleryGF.generateHorizontalAppList(appsResult.getApps(), appSearchContent, refreshable);
         break;
       case REQUEST_MOSTDOWNLOADED:
         appPopularTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
@@ -435,7 +440,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appPopularExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(appsResult.getApps(), appPopularContent, false);
+        galleryGF.generateHorizontalAppList(appsResult.getApps(), appPopularContent, refreshable);
         break;
     }
   }
@@ -471,11 +476,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appTabs.selectTab(index);
   }
 
-  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId)
+  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
   {
     List<GalleryApp> apps = appsResult.getApps();
     if (apps != null)
-      refreshApps(appsResult, requestId);
+      refreshApps(appsResult, requestId, refreshable);
     else
       Window.alert("apps was null");
   }

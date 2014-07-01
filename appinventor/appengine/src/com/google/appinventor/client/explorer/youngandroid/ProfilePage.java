@@ -516,10 +516,10 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 
 
   @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId) {
+  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId, boolean refreshable) {
     if (apps != null) {
       OdeLog.log("###### PROFILEPAGE GOT IN onAppListRequestCompleted");
-      refreshApps(apps, requestId);
+      refreshApps(apps, requestId, refreshable);
     } else {
       Window.alert("app list returned null");
     }

@@ -328,7 +328,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
   }
 
   @Override
-  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID) {
+  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
     // TODO Auto-generated method stub
     
   }

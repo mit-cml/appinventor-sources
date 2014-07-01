@@ -89,11 +89,12 @@ public class GallerySearchIndex {
    */
   public GalleryAppListResult find (String searchWords, int start, int count) {
     //TODO page sliced has not implemented yet
-    List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    final Result<Integer> size = new Result<Integer>();
     try {
       Query query = Query.newBuilder()
-          .setOptions(QueryOptions.newBuilder()
-              .setLimit(10).
+          .setOptions(QueryOptions.newBuilder().
+              //setLimit(10).
               // for deployed apps, uncomment the line below to demo snippeting.
               // This will not work on the dev_appserver.
               // setFieldsToSnippet("content").
@@ -108,7 +109,11 @@ public class GallerySearchIndex {
       }
 
       // Iterate over the documents in the results
+      int index = 0;
       for (ScoredDocument document : results) {
+        if((index++) < start) continue;
+        if(count == 0) break;
+        count--;
         try{
           GalleryApp app = galleryStorageIo.getGalleryApp(Long.parseLong(document.getId()));
           apps.add(app);
@@ -117,20 +122,24 @@ public class GallerySearchIndex {
           unIndexApp(Long.parseLong(document.getId()));
         }
       }
+      size.t = (int) results.getNumberFound();
     } catch (SearchException e) {
       if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
         // retry
       }
 
     }
-    return new GalleryAppListResult(apps, apps.size(), searchWords);
+    return new GalleryAppListResult(apps, size.t, searchWords);
   }
 
   private Index getIndex() {
     IndexSpec indexSpec = IndexSpec.newBuilder().setName(GALLERYINDEX).build(); 
     Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
     return index;
-  } 
-  
-
+  }
+  // Create a final object of this class to hold a modifiable result value that
+  // can be used in a method of an inner class.
+  private class Result<T> {
+    T t;
+  }
 }

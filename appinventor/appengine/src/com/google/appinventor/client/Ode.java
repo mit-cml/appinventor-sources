@@ -19,7 +19,6 @@ import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ModerationPageBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
-import com.google.appinventor.client.boxes.GalleryInheritanceListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
@@ -174,8 +173,7 @@ public class Ode implements EntryPoint {
   private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
-  private static final int GALLERYINHERITANCE = 5;
-  private static final int MODERATIONPAGE = 6;
+  private static final int MODERATIONPAGE = 5;
   private static int currentView = DESIGNER;
 
   /*
@@ -391,15 +389,7 @@ public class Ode implements EntryPoint {
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
-  /**
-   * Switch to the Gallery Inheritance tab
-   */
-  public void switchToGalleryInheritanceView(GalleryAppListResult appsResult) {
-    currentView = GALLERYINHERITANCE;
-    //GalleryInheritanceListBox.getGalleryInheritanceListBox().setAppAttributionList(apps);
-    GalleryInheritanceListBox.getGalleryInheritanceListBox().getGalleryInheritanceList().showRemixedToList(appsResult);
-    deckPanel.showWidget(galleryInheritanceTabIndex);
-  }
+
   /**
    * Switch to the Moderation Page tab
    */
@@ -813,19 +803,6 @@ public class Ode implements EntryPoint {
     userProfileTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(uVertPanel);
     // KM: DEBUGGING END
-
-    // Gallery Inheritance tab
-    VerticalPanel gIVertPanel = new VerticalPanel();
-    gIVertPanel.setWidth("100%");
-    gIVertPanel.setSpacing(0);
-    HorizontalPanel appInheritanceListPanel = new HorizontalPanel();
-    appInheritanceListPanel.setWidth("100%");
-
-    appInheritanceListPanel.add(GalleryInheritanceListBox.getGalleryInheritanceListBox());
-
-    gIVertPanel.add(appInheritanceListPanel);
-    galleryInheritanceTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(gIVertPanel);
 
     // Moderation Page tab
     VerticalPanel mPVertPanel = new VerticalPanel();

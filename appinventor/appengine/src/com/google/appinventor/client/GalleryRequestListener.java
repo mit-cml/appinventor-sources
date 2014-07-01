@@ -22,7 +22,7 @@ public interface GalleryRequestListener {
    *
    */
    
-   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID);
+   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable);
    public void onCommentsRequestCompleted(List<GalleryComment> comments);
    public void onSourceLoadCompleted(UserProject projectInfo);
 }
