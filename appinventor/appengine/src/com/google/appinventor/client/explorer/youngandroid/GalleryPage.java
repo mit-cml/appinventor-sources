@@ -84,8 +84,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
-  private final String RED_HEART_ICON_URL = "http://i.imgur.com/N6Lpeo2.png";
-  private final String HOLLOW_HEART_ICON_URL = "http://i.imgur.com/HjRfYkk.png";
+  private final String HOLLOW_HEART_ICON_URL = "http://i.imgur.com/N6Lpeo2.png";
+  private final String RED_HEART_ICON_URL = "http://i.imgur.com/HjRfYkk.png";
   private final String DOWNLOAD_ICON_URL = "http://i.imgur.com/j6IPJX0.png";
   private boolean imageUploaded = false;
 
@@ -719,6 +719,9 @@ panel
           app.setDescription(desc.getText());
         }
       });
+      if(editStatus==UPDATEAPP){
+        desc.setText(app.getDescription());
+      }
       desc.addStyleName("app-desc-textarea");
       c1.add(desc);
     } else {
@@ -948,7 +951,7 @@ panel
                   likePrompt.setText(MESSAGES.galleryAppsLike());
                   // Old code
                   likeCount.setText(String.valueOf(Integer.valueOf(likeCount.getText()) - 1));
-                  likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png"); // Unliked
+                  likeButton.setUrl(HOLLOW_HEART_ICON_URL); // Unliked
                 } else {
                   // If the app is not yet liked, and user clicks like, that means add a like
                   Ode.getInstance().getGalleryService().increaseLikes(app.getGalleryAppId(),
@@ -956,7 +959,7 @@ panel
                   likePrompt.setText(MESSAGES.galleryAppsAlreadyLike());
                   // Old code
                   likeCount.setText(String.valueOf(Integer.valueOf(likeCount.getText()) + 1));
-                  likeButton.setUrl("http://i.imgur.com/HjRfYkk.png"); // Liked
+                  likeButton.setUrl(RED_HEART_ICON_URL); // Liked
                 }
               }
           };
@@ -1071,11 +1074,23 @@ panel
                   Ode.getInstance().getGalleryService().saveAttribution(gApp.getGalleryAppId(), app.getProjectAttributionId(),
                           attributionCallback);
                 }//end of projectCallback#onSuccess
+                @Override
+                public void onFailure(Throwable caught) {
+                  super.onFailure(caught);
+                  actionButton.setEnabled(true);
+                  actionButton.setText(MESSAGES.galleryPublishText());
+                }
               };//end of projectCallback
               Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(),
                   gApp.getGalleryAppId(), projectCallback);
               // we need to update the app object for this gallery page
               gallery.appWasChanged();
+            }//end of callback#onSuccess
+            @Override
+            public void onFailure(Throwable caught) {
+              super.onFailure(caught);
+              actionButton.setEnabled(true);
+              actionButton.setText(MESSAGES.galleryPublishText());
             }
           };
           // call publish with the default app data...
@@ -1093,14 +1108,21 @@ panel
   private void initUpdateButton() {
     actionButton = new Button(MESSAGES.galleryUpdateText());
     actionButton.addClickHandler(new ClickHandler() {
-
       public void onClick(ClickEvent event) {
+         actionButton.setEnabled(false);
+         actionButton.setText(MESSAGES.galleryAppUpdating());
          final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
             MESSAGES.galleryError()) {
             @Override
             public void onSuccess(Void result) {
               gallery.appWasChanged();  // to update the gallery list and page
               Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+            }
+            @Override
+            public void onFailure(Throwable caught) {
+              super.onFailure(caught);
+              actionButton.setEnabled(true);
+              actionButton.setText(MESSAGES.galleryUpdateText());
             }
           };
           Ode.getInstance().getGalleryService().updateApp(app,imageUploaded,updateSourceCallback);
@@ -1116,9 +1138,13 @@ panel
   private void initRemoveButton() {
     removeButton = new Button(MESSAGES.galleryRemoveText());
     removeButton.addClickHandler(new ClickHandler() {
-
       public void onClick(ClickEvent event) {
-         // need a are you sure dialog
+        //popup confrim dialog
+        if(!Window.confirm(MESSAGES.galleryRemoveConfirmText())) {
+          return;
+        }
+        removeButton.setEnabled(false);
+        removeButton.setText(MESSAGES.galleryAppRemoving());;
          final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
             MESSAGES.galleryDeleteError()) {
             @Override
@@ -1132,11 +1158,23 @@ panel
                   Ode.getInstance().getProjectManager().UnpublishProject(app.getProjectId());
                   Ode.getInstance().switchToProjectsView();
                 }
+                @Override
+                public void onFailure(Throwable caught) {
+                  super.onFailure(caught);
+                  removeButton.setEnabled(true);
+                  removeButton.setText(MESSAGES.galleryRemoveText());
+                }
               };
               GalleryClient client = GalleryClient.getInstance();
               client.appWasChanged();  // tell views to update
               Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(),
                   -1, projectCallback);
+            }
+            @Override
+            public void onFailure(Throwable caught) {
+              super.onFailure(caught);
+              removeButton.setEnabled(true);
+              removeButton.setText(MESSAGES.galleryRemoveText());
             }
           };
           Ode.getInstance().getGalleryService().deleteApp(app.getGalleryAppId(),callback);

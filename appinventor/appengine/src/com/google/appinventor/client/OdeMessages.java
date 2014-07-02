@@ -1420,6 +1420,10 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery page remove button")
   String galleryRemoveText();
 
+  @DefaultMessage("Are you really sure you want to remove this app from gallery?")
+  @Description("Text for remove confirm alert")
+  String galleryRemoveConfirmText();
+
   @DefaultMessage("Edit")
   @Description("Text for gallery page edit button")
   String galleryEditText();
@@ -1455,6 +1459,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Publishing ...")
   @Description("Text for gallery page publishing feedback.")
   String galleryAppPublishing();
+
+  @DefaultMessage("Updating ...")
+  @Description("Text for gallery page updating feedback")
+  String galleryAppUpdating();
+
+  @DefaultMessage("Removing ...")
+  @Description("Text for gallery page removing feedback")
+  String galleryAppRemoving();
 
   @DefaultMessage("Click to like this app!")
   @Description("Text for gallery page like button (not liked yet).")
