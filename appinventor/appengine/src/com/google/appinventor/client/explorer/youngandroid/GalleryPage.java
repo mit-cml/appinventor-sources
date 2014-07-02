@@ -84,11 +84,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
-  private static final String TRYITBUTTONTEXT="Open the App";
-  private static final String PUBLISHBUTTONTEXT="Publish";
-  private static final String UPDATEBUTTONTEXT="Update";
-  private static final String REMOVEBUTTONTEXT="Remove";
-  private static final String EDITBUTTONTEXT="Edit";
+  private final String RED_HEART_ICON_URL = "http://i.imgur.com/N6Lpeo2.png";
+  private final String HOLLOW_HEART_ICON_URL = "http://i.imgur.com/HjRfYkk.png";
+  private final String DOWNLOAD_ICON_URL = "http://i.imgur.com/j6IPJX0.png";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -167,10 +165,10 @@ panel
   divider
 */
 
-    
   /**
    * Creates a new GalleryPage, must take in parameters
-   *
+   * @param app GalleryApp
+   * @param editStatus edit status
    */
   public GalleryPage(final GalleryApp app, final int editStatus) {
     // Get a reference to the Gallery Client which handles the communication to
@@ -191,7 +189,6 @@ panel
     if (newOrUpdateApp()) {
       initImageComponents();
     } else  { // we are just viewing this page so setup the image
-      OdeLog.log("$$$$ This is public state...");
       initReadOnlyImage();
     }
 
@@ -384,7 +381,6 @@ panel
    * Helper method called by constructor to create the app image for display
    */
   private void initReadOnlyImage() {
-    OdeLog.log("$$$$ init read only image...");
     updateAppImage(gallery.getCloudImageURL(app.getGalleryAppId()), appHeader);
   }
 
@@ -459,7 +455,6 @@ panel
    * @param container  The container that image widget resides
    */
   private void updateAppImage(String url, Panel container) {
-    OdeLog.log("$$$$ update app image..." + url);
     image = new Image();
     image.setUrl(url);
     image.addStyleName("app-image");
@@ -525,7 +520,7 @@ panel
    */
   private void initAppAuthor(Panel container) {
     // Add author's prefix
-    Label authorPrefix = new Label("By ");
+    Label authorPrefix = new Label(MESSAGES.galleryByDeveloperPrefixedText());
     appInfo.add(authorPrefix);
     authorPrefix.addStyleName("app-subtitle");
 
@@ -568,10 +563,7 @@ panel
     authorName.addStyleName("app-username");
     authorName.addStyleName("app-subtitle");
     appInfo.add(authorName);
-
-
   }
-
 
   /**
    * Helper method called by constructor to initialize the app's meta fields
@@ -580,9 +572,9 @@ panel
   private void initAppMeta(Panel container) {
     // Images for meta data
     Image numDownloads = new Image();
-    numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+    numDownloads.setUrl(DOWNLOAD_ICON_URL);
     Image numLikes = new Image();
-    numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+    numLikes.setUrl(HOLLOW_HEART_ICON_URL);
 
     // Add meta data
     container.addStyleName("app-meta");
@@ -694,7 +686,6 @@ panel
 
   /**
    * Helper method to validify a hyperlink
-   * @param link    the GWT anchor object to validify
    * @param linktext    the actual http link that the anchor should point to
    * @return linktext a valid http link or null.
    */
@@ -736,7 +727,6 @@ panel
       c2.addStyleName("app-description");
     }
   }
-
 
   /**
    * Helper method called by constructor to initialize the app's comment area
@@ -780,7 +770,6 @@ panel
 
   }
 
-
   /**
    * Helper method called by constructor to initialize the app action tabs
    */
@@ -807,7 +796,6 @@ panel
     returnToGallery.addStyleName("primary-link");
     appSecondaryWrapper.add(returnToGallery); //
   }
-
 
   /**
    * Helper method called by constructor to initialize the remix button
@@ -863,7 +851,6 @@ panel
       MESSAGES.galleryError()) {
         @Override
         public void onSuccess(final List<GalleryApp> apps) {
-          OdeLog.log("#### in GalleryPage remixedTo onSuccess " + apps.size());
           if (apps.size() != 0) {
             // Display remixes at the sidebar on the same page
             galleryGF.generateSidebar(apps, sidebarTabs, appsRemixes, "Remixes",
@@ -875,7 +862,6 @@ panel
 
     return container;
   }
-
 
   /**
    * Helper method called by constructor to initialize the report section
@@ -927,18 +913,17 @@ panel
         isReportdByUserCallback);
   }
 
-
   /**
    * Helper method called by constructor to initialize the like section
    * @param container   The container that like label & image reside
    */
   private void initLikeSection(Panel container) { //TODO: Update the location of this button
     final Image likeButton = new Image();
-    likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");
+    likeButton.setUrl(HOLLOW_HEART_ICON_URL);
     container.add(likeButton);
-    likeCount = new Label("");
+    likeCount = new Label(MESSAGES.galleryEmptyText());
     container.add(likeCount);
-    final Label likePrompt = new Label("");
+    final Label likePrompt = new Label(MESSAGES.galleryEmptyText());
     likePrompt.addStyleName("primary-link");
     container.add(likePrompt);
     likePrompt.addClickHandler(new ClickHandler() {
@@ -998,10 +983,10 @@ panel
           public void onSuccess(Boolean bool) {
             if (!bool) {
               likePrompt.setText(MESSAGES.galleryAppsLike());
-              likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
+              likeButton.setUrl(HOLLOW_HEART_ICON_URL);//unliked
             } else {
               likePrompt.setText(MESSAGES.galleryAppsAlreadyLike());
-              likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
+              likeButton.setUrl(RED_HEART_ICON_URL);//liked
             }
           }
       };
@@ -1016,7 +1001,7 @@ panel
   private void initEdititButton() {
     final User currentUser = Ode.getInstance().getUser();
     if(app.getDeveloperId().equals(currentUser.getUserId())){
-      editButton = new Button(EDITBUTTONTEXT);
+      editButton = new Button(MESSAGES.galleryEditText());
       editButton.addClickHandler(new ClickHandler() {
         // Open up source file if clicked the action button
         public void onClick(ClickEvent event) {
@@ -1033,7 +1018,7 @@ panel
    * Helper method called by constructor to initialize the try it button
    */
   private void initTryitButton() {
-    actionButton = new Button(TRYITBUTTONTEXT);
+    actionButton = new Button(MESSAGES.galleryOpenText());
     actionButton.addClickHandler(new ClickHandler() {
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
@@ -1055,9 +1040,8 @@ panel
    * Helper method called by constructor to initialize the publish button
    */
   private void initPublishButton() {
-    actionButton = new Button(PUBLISHBUTTONTEXT);
+    actionButton = new Button(MESSAGES.galleryPublishText());
     actionButton.addClickHandler(new ClickHandler() {
-      
       public void onClick(ClickEvent event) {
          actionButton.setEnabled(false);
          actionButton.setText(MESSAGES.galleryAppPublishing());
@@ -1072,7 +1056,7 @@ panel
                   MESSAGES.galleryError()) {
                 @Override
                 public void onSuccess(Void result) {
-                  // this is called after published and after we've set the galleryid
+                  // this is called after published and after we've set the gallery id
                   // tell the project list to change project's button to "Update"
                   Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
                       gApp.getGalleryAppId());
@@ -1103,12 +1087,11 @@ panel
     appAction.add(actionButton);
   }
 
-
   /**
    * Helper method called by constructor to initialize the publish button
    */
   private void initUpdateButton() {
-    actionButton = new Button(UPDATEBUTTONTEXT);
+    actionButton = new Button(MESSAGES.galleryUpdateText());
     actionButton.addClickHandler(new ClickHandler() {
 
       public void onClick(ClickEvent event) {
@@ -1127,12 +1110,11 @@ panel
     appAction.add(actionButton);
   }
 
-
   /**
    * Helper method called by constructor to initialize the remove button
    */
   private void initRemoveButton() {
-    removeButton = new Button(REMOVEBUTTONTEXT);
+    removeButton = new Button(MESSAGES.galleryRemoveText());
     removeButton.addClickHandler(new ClickHandler() {
 
       public void onClick(ClickEvent event) {
@@ -1164,7 +1146,6 @@ panel
     appAction.add(removeButton);
   }
 
-
   /**
    * Loads the proper tab GUI with gallery's app data.
    * @param apps: list of returned gallery apps from callback.
@@ -1173,7 +1154,7 @@ panel
   private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), refreshable, true);
+        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, MESSAGES.galleryByAuthorText(), MESSAGES.galleryAppsByAuthorSidebar() + MESSAGES.gallerySingleSpaceText() + app.getDeveloperName(), refreshable, true);
         break;
 //      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
 //        String tagTitle = "Tagged with " + tagSelected;
@@ -1181,7 +1162,6 @@ panel
 //        break;
     } 
   }
-
 
   /**
    * When the gallery client gets some apps it fires this callback for
@@ -1195,7 +1175,6 @@ panel
       Window.alert("apps was null");
   }
 
-
   /**
    * When the gallery client gets some comments it fires this callback for
    * gallery page to listen to
@@ -1206,7 +1185,6 @@ panel
       if (comments == null)
         Window.alert("comment list was null");
   }
-
 
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
@@ -1221,7 +1199,6 @@ panel
     T t;
   }
 
-
   /**
    * Creates a new null GalleryPage.
    * This is only used for init in GalleryAppBox.java, do not use this normally
@@ -1230,6 +1207,4 @@ panel
   public GalleryPage() {
 
   }
-
-
 }

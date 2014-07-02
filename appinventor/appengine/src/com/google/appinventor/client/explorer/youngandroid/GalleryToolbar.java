@@ -41,11 +41,12 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.GalleryClient;
 
 /**
- * The project toolbar houses command buttons in the Young Android Project tab.
+ * The Gallery Toolbar
+ * @author Bin Lu blu2@dons.usfca.edu
  *
  */
 public class GalleryToolbar extends Composite {
-  public static List<GalleryToolbar> allSearchToolbars = new ArrayList<GalleryToolbar>();
+  public static List<GalleryToolbar> allSearchToolbars = new ArrayList<GalleryToolbar>();  //store the reference of all creating toolbar
   final TextBox searchText;
   final Button searchButton;
 
@@ -102,10 +103,18 @@ public class GalleryToolbar extends Composite {
     initWidget(toolbar);
   }
 
+  /**
+   * get searchText label
+   * @return Label searchText
+   */
   public TextBox getSearchText(){
     return searchText;
   }
 
+  /**
+   * get getSearchButton button
+   * @return Button searchButton
+   */
   public Button getSearchButton(){
     return searchButton;
   }

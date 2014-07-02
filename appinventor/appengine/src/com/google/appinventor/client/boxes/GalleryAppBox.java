@@ -56,23 +56,7 @@ public final class GalleryAppBox extends FlowPanel {
    * Creates new Gallery app box.
    */
   private GalleryAppBox() {
-//    super(MESSAGES.galleryAppBoxCaption(),
-//        300,    // height
-//        false,  // minimizable
-//        false); // removable
-//    gPage = new GalleryPage();
-//    pContainer.add(gPage);
     gContainer = new FlowPanel();
     this.add(gContainer);
   }
-
-
-//  /**
-//   * Returns Gallery page associated with Gallerys explorer box.
-//   *
-//   * @return  Gallery app page
-//   */
-//  public GalleryPage getGalleryPage() {
-//     return gPage;
-//  }
 }

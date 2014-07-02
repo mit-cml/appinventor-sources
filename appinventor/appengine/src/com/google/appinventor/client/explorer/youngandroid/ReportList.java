@@ -63,7 +63,7 @@ import java.util.Map;
  * <p> The report text, date created, user reported on and user reporting will be shown in the table.
  *
  * @author wolberd@gmail.com, based on ProjectList.java, lizlooney@google.com (Liz Looney),
- * @author blu2@dons.usfca.edu
+ * @author blu2@dons.usfca.edu (Bin Lu)
  */
 public class ReportList extends Composite  {
   public static final int MAX_MESSAGE_PREVIEW_LENGTH = 40;
@@ -167,6 +167,9 @@ public class ReportList extends Composite  {
 
   }
 
+  /**
+   * initialize reports, only including solved reports
+   */
   private void initializeReports() {
     final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
       // failure message
@@ -184,6 +187,9 @@ public class ReportList extends Composite  {
     Ode.getInstance().getGalleryService().getRecentReports(0,10,callback);
   }
 
+  /**
+   * initialize all reports, including both solved and unsolved reports
+   */
   private void initializeAllReports() {
     final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
       // failure message
@@ -200,7 +206,9 @@ public class ReportList extends Composite  {
       };
     Ode.getInstance().getGalleryService().getAllAppReports(0,10,callback);
   }
-
+  /**
+   * Helper wrapper Class of Report Widgets
+   */
   private class ReportWidgets {
     final Label reportTextLabel;
     final Label appLabel;
@@ -213,7 +221,10 @@ public class ReportList extends Composite  {
     final Button seeAllActions;
     boolean appActive;
     boolean appResolved;
-
+    /**
+     * Constructor of ReportWidgets
+     * @param report GalleryAppReport
+     */
     private ReportWidgets(final GalleryAppReport report) {
 
       reportTextLabel = new Label(report.getReportText());
@@ -232,16 +243,20 @@ public class ReportList extends Composite  {
       reporterLabel = new Label(report.getReporter().getUserName());
       reporterLabel.addStyleName("primary-link");
 
-      sendMessageButton = new Button("Send Message");
+      sendMessageButton = new Button(MESSAGES.buttonSendMessage());
 
-      deactiveAppButton = new Button("Deactive App");
+      deactiveAppButton = new Button(MESSAGES.labelDeactivateApp());
 
-      markAsResolvedButton = new Button("Mark As Resolved");
+      markAsResolvedButton = new Button(MESSAGES.labelmarkAsResolved());
 
       seeAllActions = new Button(MESSAGES.labelSeeAllActions());
     }
   }
 
+  /**
+   * refresh report list table
+   * Update the information of reports
+   */
   private void refreshTable() {
 
     // Refill the table.
@@ -266,7 +281,10 @@ public class ReportList extends Composite  {
   }
 
   /**
-   *
+   * Prepare gallery app report based on given GalleryAppReport
+   * Setup the functionality of UI components.
+   * @param r GalleryAppReport gallery app report
+   * @param rw ReportWidgets report widgets
    */
   private void prepareGalleryAppReport(final GalleryAppReport r, final ReportWidgets rw) {
     rw.reportTextLabel.addClickHandler(new ClickHandler() {
@@ -325,7 +343,7 @@ public class ReportList extends Composite  {
         @Override
         public void onClick(ClickEvent event) {
           if(rw.appActive == true){
-              deactiveAppPopup(r, rw);
+              deactivateAppPopup(r, rw);
           }else{
 
               final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
@@ -345,11 +363,11 @@ public class ReportList extends Composite  {
         }
     });
 
-    if(r.getResolved()){                                    //report was unresolved, now resolved
-      rw.markAsResolvedButton.setText("Mark As Unresolved");//revert button
+    if(r.getResolved()){                                                //report was unresolved, now resolved
+      rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsUnresolved());//revert button
       rw.appResolved = true;
-    }else{                                                  //report was resolved, now unresolved
-      rw.markAsResolvedButton.setText("Mark As Resolved");  //revert button
+    }else{                                                              //report was resolved, now unresolved
+      rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsResolved());  //revert button
       rw.appResolved = false;
     }
     rw.markAsResolvedButton.addClickHandler(new ClickHandler() {
@@ -363,13 +381,13 @@ public class ReportList extends Composite  {
               if(success){
                 if(r.getResolved()){//current status was resolved
                   r.setResolved(false);
-                  rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
+                  rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsResolved());//revert button
                   rw.appResolved = false;
                   storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
                       GalleryModerationAction.MARKASUNRESOLVED, null);
                 }else{//current status was unResolved
                   r.setResolved(true);
-                  rw.markAsResolvedButton.setText("Mark As UnResolved");//revert button
+                  rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsUnresolved());//revert button
                   rw.appResolved = true;
                   storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
                       GalleryModerationAction.MARKASRESOLVED, null);
@@ -419,22 +437,29 @@ public class ReportList extends Composite  {
   public List<GalleryAppReport> getSelectedGalleryAppReports() {
     return selectedGalleryAppReports;
   }
-
+  /**
+   * Method when added gallery app report
+   * @param report GalleryAppReport galleryapp report
+   */
   public void onReportAdded(GalleryAppReport report) {
     reports.add(report);
     ReportWidgets.put(report, new ReportWidgets(report));
     refreshTable();
   }
-
+  /**
+   * Method when removed gallery app report
+   * @param report GalleryAppReport galleryapp report
+   */
   public void onReportRemoved(GalleryAppReport report) {
     reports.remove(report);
     ReportWidgets.remove(report);
-
     refreshTable();
-
     selectedGalleryAppReports.remove(report);
   }
-
+  /**
+   * Helper method of creating a sending message popup
+   * @param report
+   */
   private void sendMessagePopup(final GalleryAppReport report){
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
@@ -445,8 +470,7 @@ public class ReportList extends Composite  {
       title.addStyleName("InboxTitle");
       content.add(title);
 
-      Button closeButton = new Button("x");
-//      closeButton.addStyleName("ActionButton");
+      Button closeButton = new Button(MESSAGES.symbolX());
       closeButton.addStyleName("CloseButton");
       closeButton.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
@@ -506,7 +530,12 @@ public class ReportList extends Composite  {
         }
       });
   }
-  private void deactiveAppPopup(final GalleryAppReport report, final ReportWidgets rw){
+  /**
+   * Helper method for deactivating App Popup
+   * @param report GalleryAppReport Gallery App Report
+   * @param rw ReportWidgets Report Widgets
+   */
+  private void deactivateAppPopup(final GalleryAppReport report, final ReportWidgets rw){
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
       popup.setStyleName("ode-InboxContainer");
@@ -516,8 +545,7 @@ public class ReportList extends Composite  {
       title.addStyleName("InboxTitle");
       content.add(title);
 
-      Button closeButton = new Button("x");
-//      closeButton.addStyleName("ActionButton");
+      Button closeButton = new Button(MESSAGES.symbolX());
       closeButton.addStyleName("CloseButton");
       closeButton.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
@@ -608,8 +636,8 @@ public class ReportList extends Composite  {
     }
 
   /**
-   * popup window to show all associated moderation actions.
-   * @param report
+   * Helper method of creating popup window to show all associated moderation actions.
+   * @param report GalleryAppReport gallery app report
    */
   private void seeAllActionsPopup(GalleryAppReport report){
     // Create a PopUpPanel with a button to close it
@@ -622,7 +650,6 @@ public class ReportList extends Composite  {
     content.add(title);
 
     Button closeButton = new Button(MESSAGES.symbolX());
-//    closeButton.addStyleName("ActionButton");
     closeButton.addStyleName("CloseButton");
     closeButton.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
@@ -641,6 +668,12 @@ public class ReportList extends Composite  {
           public void onSuccess(List<GalleryModerationAction> moderationActions) {
             for(final GalleryModerationAction moderationAction : moderationActions){
               FlowPanel record = new FlowPanel();
+              Label time = new Label();
+              Date createdDate = new Date(moderationAction.getDate());
+              DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
+              time.setText(dateFormat.format(createdDate));
+              time.addStyleName("time-label");
+              record.add(time);
               Label moderatorLabel = new Label();
               moderatorLabel.setText(moderationAction.getModeratorName());
               moderatorLabel.addStyleName("moderator-link");
@@ -688,59 +721,20 @@ public class ReportList extends Composite  {
     // Center and show the popup
     popup.center();
   }
-
   /**
-   *
-   * this is a template using for update database.
-   * update Database Field, should only be used by system admin
+   * Helper class for message template action
+   * Choose Message Template based on given type
    */
-  private void setUpdateDatabaseButton(){
-    /*
-    final Button button = new Button("Update Database Field");
-    button.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
-          // failure message
-          MESSAGES.serverUnavailable()) {
-            @Override
-            public void onSuccess(final Void callBack) {
-              button.setVisible(true);
-            }
-          };
-          Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
-      }
-    });
-    panel.add(button);
-    */
-    final Button button = new Button("Update Database Field");
-    button.setVisible(false);
-
-    final User currentUser = Ode.getInstance().getUser();
-    if(currentUser.getType() != 10){
-      return;
-    }
-    button.setVisible(true);
-    button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
-        // failure message
-        MESSAGES.serverUnavailable()) {
-          @Override
-          public void onSuccess(final Void callBack) {
-            button.setVisible(true);
-          }
-        };
-        Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
-      }
-    });
-    panel.add(button);
-  }
   private class TemplateAction implements Command {
     TextArea msgText;
     int type;
     String customText;
+    /**
+     *
+     * @param msgText message textarea UI
+     * @param type default message type
+     * @param customText moderator custom text
+     */
     TemplateAction(TextArea msgText, int type, String customText){
       this.msgText = msgText;
       this.type = type;
@@ -761,7 +755,14 @@ public class ReportList extends Composite  {
       
     }
   }
-
+  /**
+   * Store Moderation Action into database
+   * @param reportId report id
+   * @param galleryId gallery id
+   * @param messageId message id
+   * @param actionType action type
+   * @param messagePreview message preview
+   */
   void storeModerationAction(final long reportId, final long galleryId, final long messageId, final int actionType, final String messagePreview){
     final User currentUser = Ode.getInstance().getUser();
     final OdeAsyncCallback<Void> moderationActionCallback = new OdeAsyncCallback<Void>(
@@ -775,12 +776,14 @@ public class ReportList extends Composite  {
     Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, messageId, currentUser.getUserId(),
         actionType, currentUser.getUserName(), messagePreview, moderationActionCallback);
   }
-
+  /**
+   * Help method for Message Collapse Function
+   * When the button(see more) is clicked, it will retrieve the whole message from database.
+   * @param parent the parent container
+   * @param msgId message id
+   * @param preview message preview
+   */
   void createMessageCollapse(final FlowPanel parent, final long msgId, final String preview){
-    if(preview.length() <= MAX_MESSAGE_PREVIEW_LENGTH){
-      return;
-    }
-
     final Label messageContent = new Label();
     messageContent.setText(preview);
     messageContent.addStyleName("inline-label");
@@ -789,6 +792,9 @@ public class ReportList extends Composite  {
     actionButton.setText(MESSAGES.seeMoreLink());
     actionButton.addStyleName("seemore-link");
     parent.add(actionButton);
+    if(preview.length() <= MAX_MESSAGE_PREVIEW_LENGTH){
+      actionButton.setVisible(false);
+    }
     actionButton.addClickHandler(new ClickHandler() {
       boolean ifPreview = true;
       @Override
@@ -814,10 +820,16 @@ public class ReportList extends Composite  {
       }
     });
   }
-
+  /**
+   * prune the message based on MAX_MESSAGE_PREVIEW_LENGTH.
+   * If the message is longer than MAX_MESSAGE_PREVIEW_LENGTH,
+   * The rest of it will save as "..."
+   * @param message the origin message
+   * @return a message preview
+   */
   String getMessagePreview(String message){
     if(message != null && message.length() > MAX_MESSAGE_PREVIEW_LENGTH){
-      return message.substring(0, MAX_MESSAGE_PREVIEW_LENGTH) + "...";
+      return message.substring(0, MAX_MESSAGE_PREVIEW_LENGTH) + MESSAGES.moderationDotDotDot();
     }else{
       return message;
     }

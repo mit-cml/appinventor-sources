@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Wizard for creating new Young Android projects.
  *
- * @author markf@google.com (Mark Friedman)
+ * @author blu2@dons.usfca.edu (Bin Lu)
  */
 public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { //implements GalleryRequestListener
   GalleryClient gallery = null;

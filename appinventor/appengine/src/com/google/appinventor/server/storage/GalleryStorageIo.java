@@ -243,23 +243,63 @@ public interface GalleryStorageIo {
    */
   List<GalleryCommentReport> getCommentReports();
 
-
+  /**
+   * send message from sender to receiver
+   * @param senderId sender id
+   * @param receiverId receiver id
+   * @param message message body
+   * @return message id
+   */
   long sendMessage(String senderId, String receiverId, String message);
 
+  /**
+   * delete message based on given id
+   * @param id
+   */
   void deleteMessage(long id);
 
+  /**
+   * get list of message based on receiver id
+   * @param receiverId receiver id
+   * @return list of Message
+   */
   List<Message> getMessages(String receiverId);
 
+  /**
+   * get message based on msgId
+   * @param msgId message id
+   * @return Message message object
+   */
   Message getMessage(long msgId);
 
-  void readMessage(long timestamp);
+  /**
+   * mark message as read based on given msgId
+   * @param timestamp
+   */
+  void readMessage(long msgId);
 
+  /**
+   * mark app stats as read based on given appId
+   * @param appId
+   */
   void appStatsWasRead(long appId);
 
+  /**
+   * store moderation action
+   * @param reportId report id
+   * @param galleryId gallery id
+   * @param messageId message id
+   * @param moderatorId moderator id
+   * @param actionType action type
+   * @param moderatorName moderator name
+   * @param messagePreview message preview
+   */
   void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview);
 
+  /**
+   * get moderation actions
+   * @param reportId report id
+   * @return list of GalleryModerationAction
+   */
   List<GalleryModerationAction> getModerationActions(long reportId);
-
-  void updateDatabaseField();
-
 }

@@ -97,7 +97,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   @VisibleForTesting
   abstract class JobRetryHelper {
     public abstract void run(Objectify datastore) throws ObjectifyException;
-    /*
+    /**
      * Called before retrying the job. Note that the underlying datastore
      * still has the transaction active, so restrictions about operations
      * over multiple entity groups still apply.
@@ -1097,9 +1097,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppReportData> galleryReportKey = galleryReportKey(reportId);
-          for (GalleryModerationActionData moderationActionData : datastore.query(GalleryModerationActionData.class).ancestor(galleryReportKey).order("-date")) {
-            GalleryModerationAction moderationAction = new GalleryModerationAction(reportId, moderationActionData.galleryId, moderationActionData.messageId,
-                moderationActionData.moderatorId, moderationActionData.actionType, moderationActionData.moderatorName, moderationActionData.messagePreview);
+          for (GalleryModerationActionData moderationActionData : datastore.query(GalleryModerationActionData.class)
+              .ancestor(galleryReportKey).order("-date")) {
+            GalleryModerationAction moderationAction = new GalleryModerationAction(reportId, moderationActionData.galleryId,
+                moderationActionData.messageId, moderationActionData.moderatorId, moderationActionData.actionType,
+                moderationActionData.moderatorName, moderationActionData.messagePreview, moderationActionData.date);
             moderationActions.add(moderationAction);
           }
         }
@@ -1259,13 +1261,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
      // if i try to run this in runjobwithretries it tells me can't run
      // non-ancestor query as a transaction. ObjectifyStorageIo has some samples
      // of not using transactions (run with) so i grabbed
-//     LOG.warning("### readMessage in ObjectifyGalleryStorageIo");
      Objectify datastore = ObjectifyService.begin();
-//     LOG.warning("### readMessage, id: " + id);
      MessageData msgData = datastore.get(msgKey(id));
-//     LOG.warning("### readMessage, Msgdata: " + msgData.toString());
      if (msgData != null) {
-//       LOG.warning("### MSG READ GOT IN");
        msgData.status = "2"; // 2 means read already
        datastore.put(msgData);
      }
@@ -1318,8 +1316,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param appId   the id of GalleryApp
    */
   public void appStatsWasRead(final long appId) {
-    //TODO implement
-    LOG.warning("####### ENTERED OBJTFY-GLRY-STRG-IO appStatsWasRead");
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1332,32 +1328,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
-    }
-  }
-
-  /**
-   * update Database Field, should only be used by system admin
-   */
-  public void updateDatabaseField(){
-    final Result<Boolean> success = new Result<Boolean>();
-    success.t = false;
-    try {
-      // first job is on the gallery entity, creating the GalleryAppData object
-      // and the associated files.
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) throws ObjectifyException {
-          datastore = ObjectifyService.begin();
-          for (GalleryAppData appData:datastore.query(GalleryAppData.class)) {
-              appData.active = true;
-              datastore.put(appData);
-          }
-          success.t = true;
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "gallery error", e);
     }
   }
 }

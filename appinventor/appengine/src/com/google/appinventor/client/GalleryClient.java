@@ -51,10 +51,17 @@ public class GalleryClient {
   public static final int REQUEST_REMIXED_TO = 10;
 
   private static volatile GalleryClient  instance= null;
+
+  /**
+   * constructor
+   */
   private GalleryClient () {
     listeners = new ArrayList<GalleryRequestListener>();
-    //loadGallerySettings();
   }
+
+  /**
+   * @return the instance of GalleryClient
+   */
   public static GalleryClient getInstance () {
     if (instance == null) {
       synchronized (GalleryClient.class) {
@@ -64,6 +71,10 @@ public class GalleryClient {
     return instance;
   }
 
+  /**
+   * add listener to listners list
+   * @param listener gallery request listener
+   */
   public void addListener(GalleryRequestListener listener) {
     listeners.add(listener);
   }
@@ -268,9 +279,8 @@ public class GalleryClient {
     return true;
   } 
 
-
- /* appWasChanged called to tell galleryList (and possibly others) that app is modified
-  *
+ /**
+  * appWasChanged called to tell galleryList (and possibly others) that app is modified
   */
   public void appWasChanged() {
     // for now, let's update the recent list and the popular list (in case one was deleted)
@@ -278,9 +288,8 @@ public class GalleryClient {
     GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW, true);
   }
 
-
- /* appWasDownloaded called to tell backend that app is downloaded
-  *
+ /**
+  * appWasDownloaded called to tell backend that app is downloaded
   */
   public void appWasDownloaded(final long galleryId) {
     // Inform the GalleryService (which eventually goes to ObjectifyGalleryStorageIo)
@@ -307,26 +316,41 @@ public class GalleryClient {
 
 
   }
-  private String getStartCountString(int start, int count) {
-    return ":"+String.valueOf(start)+":"+String.valueOf(count);  
-  }
 
   public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
   public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
 
-   /* URL is in GCS, of form: /gs/<bucket>/gallery/apps/6046115656892416/aia
-  */
-
+  /**
+   * URL is in GCS, of form: /gs/<bucket>/gallery/apps/6046115656892416/aia
+   * @return gallery bucket
+   */
   public String getBucket() {
     return getGallerySettings().getBucket();
   }
 
+  /**
+   * get cloud image url
+   * @param galleryId gallery id
+   * @return url of cloud image
+   */
   public String getCloudImageURL(long galleryId) {
     return getGallerySettings().getCloudImageURL(galleryId);
   }
+
+  /**
+   * get project image url
+   * @param projectId project id
+   * @return url of project image
+   */
   public String getProjectImageURL(long projectId) {
     return getGallerySettings().getProjectImageURL(projectId);
   }
+
+  /**
+   * get user image url
+   * @param userId user id
+   * @return url of user image
+   */
   public String getUserImageURL(String userId) {
     return getGallerySettings().getUserImageURL(userId);
   }

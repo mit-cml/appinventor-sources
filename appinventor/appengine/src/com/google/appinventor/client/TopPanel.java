@@ -284,8 +284,7 @@ public class TopPanel extends Composite {
       title.addStyleName("InboxTitle");
       content.add(title);
 
-      Button closeButton = new Button("x");
-//      closeButton.addStyleName("ActionButton");
+      Button closeButton = new Button(MESSAGES.symbolX());
       closeButton.addStyleName("CloseButton");
       closeButton.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
@@ -321,7 +320,6 @@ public class TopPanel extends Composite {
       Ode.getInstance().getGalleryService().getDeveloperApps(
           Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
 
-
       // Retrieve list of messages of this user
       final OdeAsyncCallback<List<Message>> mCallback = new OdeAsyncCallback<List<Message>>(
           // failure message
@@ -329,7 +327,6 @@ public class TopPanel extends Composite {
             @Override
             public void onSuccess(List<Message> msgs) {
               msgCount[0] += msgs.size();
-//              List<Message> sortedMsgs = new ArrayList<Message>();
               Collections.sort(msgs, new Comparator<Message>() {
                 @Override
                 public int compare(Message o1, Message o2) {
@@ -349,8 +346,6 @@ public class TopPanel extends Composite {
             }
         };
       Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), mCallback);
-
-
 
       popup.setWidget(content);
       // Center and show the popup
@@ -391,7 +386,6 @@ public class TopPanel extends Composite {
     msgTime.addStyleName("MsgSender");
     Label msgSender = new Label("from App Inventor team ");
     msgSender.addStyleName("MsgSender");
-//    msgMeta.add(actionRead);
     msgMeta.add(actionDelete);
     msgMeta.add(msgTime);
     msgMeta.add(msgSender);
@@ -404,8 +398,7 @@ public class TopPanel extends Composite {
           MESSAGES.galleryError()) {
             @Override
             public void onSuccess(Void result) {
-              OdeLog.log("### Once the inbox is opened by user, mark this message as read...");
-//              msg.removeFromParent();
+
             }
         };
       Ode.getInstance().getGalleryService().readMessage(m.getId(), mCallback);
@@ -418,7 +411,6 @@ public class TopPanel extends Composite {
             MESSAGES.galleryError()) {
               @Override
               public void onSuccess(Void result) {
-                OdeLog.log("### mark this message as deleted...");
                 msg.removeFromParent();
               }
           };
@@ -443,14 +435,14 @@ public class TopPanel extends Composite {
     }
     final FlowPanel msg = new FlowPanel();
     msg.addStyleName("MsgEntry-highlighted");
-    Label msgBody = new Label("Your app \"" + app.getTitle() + "\" has been liked "
-        + likes + " times and downloaded " + dls + " times since the last time you check it. Keep up the good work!");
+    Label msgBody = new Label(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenLiked()
+        + likes + MESSAGES.messageTimesAndDownloaded() + dls + MESSAGES.messageAppStats1());
     if (hasDls && !hasLikes) {
-      msgBody.setText("Your app \"" + app.getTitle() + "\" has been downloaded "
-          + dls + " times" + " since the last time you check it. Keep up the good work!");
+      msgBody.setText(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenDownloaded()
+          + dls + MESSAGES.messageTimes() + MESSAGES.messageAppStats2());
     } else if (!hasDls && hasLikes) {
-      msgBody.setText("Your app \"" + app.getTitle() + "\" has been liked "
-          + likes + " times" + " since the last time you check it. Keep up the good work!");
+      msgBody.setText(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenLiked()
+          + likes + MESSAGES.messageTimes() + MESSAGES.messageAppStats2());
     }
     msgBody.setStyleName("MsgBody");
     msg.add(msgBody);
@@ -463,24 +455,18 @@ public class TopPanel extends Composite {
     actionDelete.addStyleName("primary-link");
     Label msgSender = new Label("Sent from System");
     msgSender.addStyleName("MsgSender");
-//    msgMeta.add(actionRead);
-//    msgMeta.add(actionDelete);
-//    msgMeta.add(msgSender);
     msg.add(msgMeta);
     container.add(msg);
-
 
     // Once the inbox is opened by user, mark this message as read
     final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
         MESSAGES.galleryError()) {
           @Override
           public void onSuccess(Void result) {
-//            msg.removeFromParent();
+
           }
       };
     Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), mCallback);
-
-
   }
 }
 

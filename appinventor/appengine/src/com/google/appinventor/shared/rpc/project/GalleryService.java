@@ -13,8 +13,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.io.InputStream;
 import java.util.List;
 
-
-
 /**
  * Interface for the service providing gallery information.
  *
@@ -220,11 +218,46 @@ public interface GalleryService extends RemoteService {
    * @param galleryId the id of the app
    */
   List<GalleryApp> remixedTo(long galleryId);
+
+  /**
+   * send a message from system
+   * @param senderId sender id
+   * @param receiverId receiver id
+   * @param message message body
+   * @return
+   */
   long sendMessageFromSystem(String senderId, String receiverId, String message);
+
+  /**
+   * get all messages associated with given receiver id
+   * @param receiverId
+   * @return list of Message
+   */
   List<Message> getMessages(String receiverId);
+
+  /**
+   * get message based on given message id
+   * @param msgId message id
+   * @return Message message
+   */
   Message getMessage(long msgId);
+
+  /**
+   * mark message as read based on given id
+   * @param msgId message id
+   */
   void readMessage(long msgId);
+
+  /**
+   * delete message based on given id
+   * @param msgId message id
+   */
   void deleteMessage(long msgId);
+
+  /**
+   * mark app stats as read based on given app id
+   * @param appId app id
+   */
   void appStatsWasRead(long appId);
 
   /**
@@ -261,10 +294,5 @@ public interface GalleryService extends RemoteService {
    * @return list of GalleryModerationAction
    */
   List<GalleryModerationAction> getModerationActions(long reportId);
-
-  /**
-   * update Database Field, should only be used by system admin
-   */
-  void updateDatabaseField();
 
 }

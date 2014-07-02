@@ -150,7 +150,35 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor when the it is already open")
   String blocksEditorIsOpenButton();
 
+  //Used in TopPanel.java
+  @DefaultMessage("\" has been liked ")
+  @Description("Label of has been liked")
+  String messageHasBeenLiked();
+
+  @DefaultMessage("\" has been downloaded ")
+  @Description("Label of has been downloaded")
+  String messageHasBeenDownloaded();
+
+  @DefaultMessage(" times ")
+  @Description("Label of times")
+  String messageTimes();
+
+  @DefaultMessage("  times since the last time you check it. Keep up the good work!")
+  @Description("Label of suffix of message app stats 1")
+  String messageAppStats1();
+
+  @DefaultMessage("  since the last time you check it. Keep up the good work!")
+  @Description("Label of suffix of message app stats 2")
+  String messageAppStats2();
+
+  @DefaultMessage(" times and downloaded ")
+  @Description("Label of times and downloaded")
+  String messageTimesAndDownloaded();
+
   //Used in ModerationPage.java
+  @DefaultMessage("...")
+  @Description("Label of ... ")
+  String moderationDotDotDot();
 
   @DefaultMessage("Report")
   @Description("Label of the report text field on moderation page")
@@ -270,7 +298,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the Text of hiding of reportlist")
   String hideLink();
 
-  @DefaultMessage("sends a message")
+  @DefaultMessage("sends a message: ")
   @Description("Label of the Text of sending a message of reportlist")
   String moderationActionSendAMessage();
 
@@ -1364,6 +1392,41 @@ public interface OdeMessages extends Messages {
   String gallerySearch();
 
   // Used in GalleryPage.java
+  @DefaultMessage("")
+  @Description("Text for gallery Empty Text")
+  String galleryEmptyText();
+
+  @DefaultMessage(" ")
+  @Description("Text for gallery Single Space Text")
+  String gallerySingleSpaceText();
+
+  @DefaultMessage("By Author")
+  @Description("Text for gallery By Author Text")
+  String galleryByAuthorText();
+
+  @DefaultMessage("Open the App")
+  @Description("Text for gallery page open the app button")
+  String galleryOpenText();
+
+  @DefaultMessage("Publish")
+  @Description("Text for gallery page publish button")
+  String galleryPublishText();
+
+  @DefaultMessage("Update")
+  @Description("Text for gallery page update button")
+  String galleryUpdateText();
+
+  @DefaultMessage("Remove")
+  @Description("Text for gallery page remove button")
+  String galleryRemoveText();
+
+  @DefaultMessage("Edit")
+  @Description("Text for gallery page edit button")
+  String galleryEditText();
+
+  @DefaultMessage("By ")
+  @Description("Text for gallery app developer prefix text label")
+  String galleryByDeveloperPrefixedText();
 
   @DefaultMessage("Tutorial/Video: ")
   @Description("Text for gallery page more info link label")
@@ -1493,6 +1556,25 @@ public interface OdeMessages extends Messages {
   String buttonEditProfile();
 
   // Used in GalleryList.java
+  @DefaultMessage("Search for Apps")
+  @Description("Search for Apps Text")
+  String gallerySearchForAppsButton();
+
+  @DefaultMessage("More Apps")
+  @Description("More Apps Text")
+  String galleryMoreApps();
+
+  @DefaultMessage("search for \"")
+  @Description("Search Results Prefix")
+  String gallerySearchResultsPrefix();
+
+  @DefaultMessage("\" returned ")
+  @Description("Search Results Infix")
+  String gallerySearchResultsInfix();
+
+  @DefaultMessage(" results")
+  @Description("Search Results Suffix")
+  String gallerySearchResultsSuffix();
 
   @DefaultMessage("Server error: gallery cannot be accessed")
   @Description("Error message reported when the gallery cannot be accessed.")

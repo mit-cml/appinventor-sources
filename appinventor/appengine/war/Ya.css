@@ -2148,8 +2148,13 @@ textarea::-webkit-input-placeholder {
   margin-right:5px;
 }
 
+.time-label{
+  display:inline;
+  margin-right:15px;
+  font-style:italic;
+}
 .seemore-link {
-  color: #b3c833;
+  color: #333399;
   border-bottom: 1px dotted #b3c833;
   font-weight: 300; font-size: 14px; line-height: 1.75;
   display:inline;

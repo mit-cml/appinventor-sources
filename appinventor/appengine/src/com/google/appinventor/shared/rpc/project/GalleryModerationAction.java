@@ -16,6 +16,7 @@ public class GalleryModerationAction implements IsSerializable {
   private long galleryId;
   private String moderatorId;
   private int actionType;
+  private long date;
 
   private String moderatorName;
   private String messagePreview;
@@ -33,7 +34,19 @@ public class GalleryModerationAction implements IsSerializable {
 
   }
 
-  public GalleryModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview) {
+  /**
+   * Constructor of GalleryModerationAction
+   * @param reportId report id
+   * @param galleryId gallery id
+   * @param messageId message id
+   * @param moderatorId moderator id
+   * @param actionType action type
+   * @param moderatorName modeator name
+   * @param messagePreview message preview
+   * @param date creation date
+   */
+  public GalleryModerationAction(long reportId, long galleryId, long messageId, String moderatorId,
+      int actionType, String moderatorName, String messagePreview, long date) {
     this.reportId = reportId;
     this.galleryId = galleryId;
     this.messageId = messageId;
@@ -41,60 +54,125 @@ public class GalleryModerationAction implements IsSerializable {
     this.actionType = actionType;
     this.moderatorName = moderatorName;
     this.messagePreview = messagePreview;
+    this.date = date;
   }
 
+  /**
+   * set the date as given date
+   * @param date creation date
+   */
+  public void setDate(long date){
+    this.date = date;
+  }
+
+  /**
+   * @return date creation date
+   */
+  public long getDate(){
+    return date;
+  }
+
+  /**
+   * set report id as given id
+   * @param reportId report id
+   */
   public void setReportId(long reportId){
     this.reportId = reportId;
   }
 
+  /**
+   * @return reportId report id
+   */
   public long getReportId(){
     return reportId;
   }
 
+  /**
+   * set gallery id as given id
+   * @param galleryId gallery id
+   */
   public void setGalleryId(long galleryId){
     this.galleryId = galleryId;
   }
 
+  /**
+   * @return galleryId gallery id
+   */
   public long getGalleryId(){
     return galleryId;
   }
 
+  /**
+   * set message id as given id
+   * @param messageId message id
+   */
   public void setMesaageId(long messageId){
     this.messageId = messageId;
   }
 
+  /**
+   * @return messageId message id
+   */
   public long getMesaageId(){
     return messageId;
   }
 
+  /**
+   * set moderator id as given id
+   * @param moderatorId moderator id
+   */
   public void setModeratorId(String moderatorId){
     this.moderatorId = moderatorId;
   }
 
+  /**
+   * @return get moderator id as given id
+   */
   public String getModeratorId(){
     return moderatorId;
   }
 
+  /**
+   * set action type as given type
+   * @param actionType action type
+   */
   public void setActionType(int actionType){
     this.actionType = actionType;
   }
 
+  /**
+   * @return actionType action type
+   */
   public int getActonType(){
     return actionType;
   }
 
+  /**
+   * set moderator name as given name
+   * @param moderatorName moderator name
+   */
   public void setModeratorName(String moderatorName){
     this.moderatorName = moderatorName;
   }
 
+  /**
+   * @return moderatorName moderator name
+   */
   public String getModeratorName(){
     return moderatorName;
   }
 
+  /**
+   * set message preview as given preview
+   * @param messagePreview message preview
+   */
   public void setMessagePreview(String messagePreview){
     this.messagePreview = messagePreview;
   }
 
+  /**
+   * @return messagePreview message preview
+   */
   public String getMessagePreview(){
     return messagePreview;
   }

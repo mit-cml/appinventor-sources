@@ -16,11 +16,20 @@ public class GalleryAppReport implements IsSerializable{
    */
   @SuppressWarnings("unused")
   private GalleryAppReport() {
+
   }
 
-
-
-  public GalleryAppReport(long reportId, String reportText, GalleryApp app, User offender, User reporter, long timeStamp, boolean resolved ) {
+  /**
+   * constructor of GalleryAppReport
+   * @param reportId report id
+   * @param reportText report text
+   * @param app gallery app
+   * @param offender offender of the report
+   * @param reporter reporter of the report
+   * @param timeStamp time
+   * @param resolved wheter or not this report is resolved
+   */
+  public GalleryAppReport(long reportId, String reportText, GalleryApp app, User offender, User reporter, long timeStamp, boolean resolved) {
     super();
     this.reportId=reportId;
     this.reportText = reportText;
@@ -29,59 +38,110 @@ public class GalleryAppReport implements IsSerializable{
     this.reporter=reporter;
     this.timeStamp = timeStamp;
     this.resolved = resolved;
-
   }
 
+  /**
+   * @return reportId report id
+   */
   public long getReportId() {
     return reportId;
   }
 
+  /**
+   * set report id based on given reportId
+   * @param reportId report id
+   */
   public void setReportID(long reportId) {
     this.reportId = reportId;
   }
 
+  /**
+   * @return app galleryapp
+   */
   public GalleryApp getApp() {
     return app;
   }
 
+  /**
+   * set app as given gallery app
+   * @param app
+   */
   public void setApp(GalleryApp app) {
     this.app = app;
   }
 
+  /**
+   * @return timeStamp time stamp
+   */
   public long getTimeStamp() {
     return timeStamp;
   }
 
+  /**
+   * set time stamp as given timestamp
+   * @param timeStamp
+   */
   public void setTimeStamp(long timeStamp) {
     this.timeStamp = timeStamp;
   }
 
+  /**
+   * @return reportText get report text
+   */
   public String getReportText() {
     return reportText;
   }
+
+  /**
+   * set report text as given report text
+   * @param reportText
+   */
   public void setReportText(String reportText) {
     this.reportText = reportText;
   }
 
+  /**
+   * @return offender of the report
+   */
   public User getOffender() {
     return offender;
   }
 
+  /**
+   * set offender as given offender
+   * @param offender
+   */
   public void setOffender(User offender) {
     this.offender = offender;
   }
+
+  /**
+   * @return reporter of the report
+   */
   public User getReporter() {
     return reporter;
   }
 
+  /**
+   * set reporter as given reporter
+   * @param reporter
+   */
   public void setReporter(User reporter) {
     this.reporter = reporter;
   }
 
+  /**
+   * check if report is resolved
+   * @return
+   */
   public boolean getResolved() {
     return resolved;
   }
 
+  /**
+   * set status of report as given boolean
+   * @param resolved
+   */
   public void setResolved(boolean resolved) {
     this.resolved = resolved;
   }

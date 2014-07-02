@@ -18,177 +18,178 @@ import java.util.List;
 public interface GalleryServiceAsync {
 
   /**
-   * @see GalleryService#loadGallerySettings()
+   * @see @link{@link GalleryService#loadGallerySettings()
    */
   void loadGallerySettings(AsyncCallback<GallerySettings> callback);
 
   /**
-   * @see GalleryService#publishApp(long, String, String, String)
+   * @see @link{@link GalleryService#publishApp(long, String, String, String, String, String)
    */
   void publishApp(long projectId, String title, String projectName, String description,
       String moreInfo, String credit, AsyncCallback<GalleryApp> callback);
    /**
-   * @see GalleryService#updateApp(GalleryApp)
+   * @see @link{@link GalleryService#updateApp(GalleryApp, boolean)
    */
   void updateApp(GalleryApp app, boolean newImage, AsyncCallback<Void> callback);
 
   /**
-   * @see GalleryService#updateAppMetadata(GalleryApp)
+   * @see @link{@link GalleryService#updateAppMetadata(GalleryApp)
    */
   void updateAppMetadata(GalleryApp app, AsyncCallback<Void> callback);
 
   /**
-   * @see GalleryService#updateAppSource(long, long, String, String, String)
+   * @see @link{@link GalleryService#updateAppSource(long, long, String)
    */
   void updateAppSource(long galleryId, long projectId, String projectName, 
       AsyncCallback<Void> callback);
 
    /**
-   * @see GalleryService#indexAll(int)
+   * @see @link{@link GalleryService#indexAll(int)
    */
   void indexAll(int count, 
       AsyncCallback<Void> callback);
 
   /**
-   * @see GalleryService#publishImage(String, String, NewProjectParameters)
-   */
-//  void publishImage(long projectId, String title, String description,
-//      AsyncCallback<Long> callback);
-
-  /**
-   * @see GalleryService#deleteApp(long galleryId)
+   * @see @link{@link GalleryService#deleteApp(long)
    */
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
   
   /**
-   * @see GalleryService#appWasDownloaded(long galleryId)
+   * @see @link{@link GalleryService#appWasDownloaded(long)
    */
   void appWasDownloaded(long galleryId, AsyncCallback<java.lang.Void> arg2);
 
   /**
-   * @see GalleryService#getNumApps()
+   * @see @link{@link GalleryService#getNumApps()
    */
-
   void getNumApps(AsyncCallback<Integer> callback);
   /**
-   * @see GalleryService#getRecentApps(int start, int count)
+   * @see @link{@link GalleryService#getRecentApps(int, int)
    */
   void getRecentApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
    /**
-   * @see GalleryService#getMostDownloadedApps(int start, int count)
+   * @see @link{@link GalleryService#getMostDownloadedApps(int, int)
    */
   void getMostDownloadedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
   /**
-   * @see GalleryService#getDeveloperApps(String userId, int start, int count)
+   * @see @link{@link GalleryService#getDeveloperApps(String, int, int)
    */
   void getDeveloperApps(String userId, int start, int count, AsyncCallback<GalleryAppListResult> callback);
   
   /**
-   * @see GalleryService#findApps(String keywords, int start, int count)
+   * @see @link{@link GalleryService#findApps(String, int, int)
    */
   void findApps(String keywords, int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
    /**
-   * @see GalleryService#getApp(int start, int count)
+   * @see @link{@link GalleryService#getApp(long)
    */
   void getApp(long galleryId, AsyncCallback<GalleryApp> callback);
 
   /**
-   * @see GalleryService#getComments(long galleryId)
+   * @see @link{@link GalleryService#getComments(long)
    */
   void getComments(long galleryId, AsyncCallback<List<GalleryComment>> callback);
   /**
-   * @see GalleryService#publishComment(long galleryId, String comment)
+   * @see @link{@link GalleryService#publishApp(long, String, String, String, String, String)
    */
   void publishComment(long galleryId, String comment, AsyncCallback<java.lang.Long> date);
 
   /**
-   * @see GalleryService#increaseLikes(long galleryId)
+   * @see @link{@link GalleryService#increaseLikes(long)
    */
   void increaseLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
 
   /**
-   * @see GalleryService#decreaseLikes(long galleryId)
+   * @see @link{@link GalleryService#decreaseLikes(long)
    */
   void decreaseLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
 
   /**
-   * @see GalleryService#getNumLikes(long galleryId)
+   * @see @link{@link GalleryService#getNumLikes(long)
    */
   void getNumLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
 
   /**
-   * @see GalleryService#isLikedByUser(long galleryId)
+   * @see @link{@link GalleryService#isLikedByUser(long)
    */
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
 
   /**
-  * @see GalleryService#addAppReport(GalleryApp app, String reportText)
-  */
+   * @see @link{@link GalleryService#addAppReport(GalleryApp, String)
+   */
   void addAppReport(GalleryApp app, String reportText, AsyncCallback<java.lang.Long> date);
 
   /**
-  * @see GalleryService#getRecentReports(int start, int count)
-  */
+   * @see @link{@link GalleryService#getRecentReports(int, int)
+   */
   void getRecentReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
   /**
-  * @see GalleryService#getAllAppReports(int start, int count)
-  */
+   * @see @link{@link GalleryService#getAllAppReports(int, int)
+   */
   void getAllAppReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
 
   /**
-  * @see GalleryService#isReportedByUser(long galleryId)
-  */
-
+   * @see @link{@link GalleryService#isReportedByUser(long)
+   */
   void isReportedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
   /**
-   * @see GalleryService#saveAttribution(long galleryId, long attributionId)
+   * @see @link{@link GalleryService#saveAttribution(long, long)
    */
-
   void saveAttribution(long galleryId, long attributionId, AsyncCallback<java.lang.Long> id);
 
   /**
-   * @see GalleryService#remixedFrom(long galleryId)
+   * @see @link{@link GalleryService#remixedFrom(long)
    */
   void remixedFrom(long galleryId, AsyncCallback<java.lang.Long> id);
 
   /**
-   * @see GalleryService#remixedTo(long galleryId);
+   * @see @link{@link GalleryService#remixedTo(long)
    */
   void remixedTo(long galleryId, AsyncCallback<List<GalleryApp>> apps);
   /**
-   * @see GalleryService#markReportAsResolved(long reportId);
+   * @see @link{@link GalleryService#markReportAsResolved(long, long)
    */
   void markReportAsResolved(long reportId, long galleryId, AsyncCallback<Boolean> callback);
   /**
-   * check if gallery app is activated
-   * @see GalleryService#isGalleryAppActivatd(long galleryId)
+   * @see @link{@link GalleryService#isGalleryAppActivated(long)
    */
   void isGalleryAppActivated(long galleryId, AsyncCallback<Boolean> callback);
 
   /**
-   * @see GalleryService#deactivateGalleryApp(long galleryId);
-   * @param appId the id of the app
+   * @see @link{@link GalleryService#deactivateGalleryApp(long)
    */
   void deactivateGalleryApp(long galleryId, AsyncCallback<Boolean> callback);
 
+  /**
+   * @see @link{@link GalleryService#sendMessageFromSystem(String, String, String)
+   */
   void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Long> callback);
+  /**
+   * @see @link{@link GalleryService#getMessages(String)
+   */
   void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
+  /**
+   * @see @link{@link GalleryService#getMessage(long)
+   */
   void getMessage(long msgId, AsyncCallback<Message> callback);
+  /**
+   * @see @link{@link GalleryService#deleteMessage(long)
+   */
   void deleteMessage(long msgId, AsyncCallback<Void> callback);
+  /**
+   * @see @link{@link GalleryService#readMessage(long)
+   */
   void readMessage(long msgId, AsyncCallback<Void> callback);
+  /**
+   * @see @link{@link GalleryService#appStatsWasRead(long)
+   */
   void appStatsWasRead(long appId, AsyncCallback<Void> callback);
 
   /**
    * see {@link GalleryService#storeModerationAction(long, long, long, String, int)}
-   * @param reportId
-   * @param galleryId
-   * @param messageId
-   * @param moderatorId
-   * @param actionType
-   * @param callback
    */
   void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview, AsyncCallback<Void> callback);
 
@@ -198,10 +199,4 @@ public interface GalleryServiceAsync {
    * @return
    */
   void getModerationActions(long reportId, AsyncCallback<List<GalleryModerationAction>> callback);
-
-  /**
-   * update Database Field, should only be used by system admin
-   */
-  void updateDatabaseField(AsyncCallback<Void> callback);
-
 }

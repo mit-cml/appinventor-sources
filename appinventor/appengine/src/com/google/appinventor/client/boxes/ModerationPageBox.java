@@ -11,14 +11,13 @@ import com.google.appinventor.client.explorer.youngandroid.ReportList;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
-
 /**
- * TabPanel implementation for project list.
- *
+ * TabPanel implementation for ModerationPageBox
+ * @author blu2@dons.usfca.edu (Bin Lu)
  */
 public final class ModerationPageBox extends TabPanel {
 
-  // Singleton project explorer box instance (only one project explorer allowed)
+  // Singleton project explorer box instance (only one ModerationPageBox allowed)
   private static final ModerationPageBox INSTANCE = new ModerationPageBox();
 
   // moderation list
@@ -32,7 +31,10 @@ public final class ModerationPageBox extends TabPanel {
   public static ModerationPageBox getModerationPageBox() {
     return INSTANCE;
   }
-
+  /**
+   * load the moderation page, and setect tab index 0
+   * For now, only one tab exists
+   */
   public static void loadModerationPage() {
 
     INSTANCE.reports = new ReportList();
@@ -47,14 +49,11 @@ public final class ModerationPageBox extends TabPanel {
     INSTANCE.addStyleName("gallery");
   }
 
-
   /**
    * Creates new moderation list box.
    */
   private ModerationPageBox() {
-
     reports = null;
-
   }
 
   /**

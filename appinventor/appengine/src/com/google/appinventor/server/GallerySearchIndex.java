@@ -32,13 +32,20 @@ public class GallerySearchIndex {
 
   private static final Logger LOG = Logger.getLogger(GallerySearchIndex.class.getName());
   private static String GALLERYINDEX="GalleryIndex";
-
   private final transient GalleryStorageIo galleryStorageIo = 
       GalleryStorageIoInstanceHolder.INSTANCE;
-
   private static volatile GallerySearchIndex  instance= null;
+
+  /**
+   * The default constructor of GallerySearchIndex
+   */
   private GallerySearchIndex () {
+
   }
+
+  /**
+   * @return instance of gallery app
+   */
   public static GallerySearchIndex getInstance () {
     if (instance == null) {
       synchronized (GallerySearchIndex.class) {
@@ -48,6 +55,10 @@ public class GallerySearchIndex {
     return instance;
   }
 
+  /**
+   * index gallery app into search index
+   * @param app galleryapp
+   */
   public void indexApp (GalleryApp app) {
     // take the title, description, and the user name and index it
     // need to build up a string with all meta data
@@ -61,15 +72,18 @@ public class GallerySearchIndex {
     Index index = getIndex();
     
     try {
-        index.put(doc);
+      index.put(doc);
     } catch (PutException e) {
-        if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
-            // retry putting the document
-        }
+      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+          // retry putting the document
+      }
     }
-
   }
 
+  /**
+   * unindex gallery app from search index
+   * @param galleryId gallery id
+   */
   public void unIndexApp(long galleryId) {
     Index index = getIndex();
     try {
@@ -79,13 +93,14 @@ public class GallerySearchIndex {
     }
 
   }
+
   /**
    * Return a wrapped class which contains a list of matched results based on
    * keywords and total number of results in database
-   * @param searchWords
-   * @param start
-   * @param count
-   * @return
+   * @param searchWords search words
+   * @param start start index
+   * @param count count number
+   * @return GalleryAppListResult gallery applist result
    */
   public GalleryAppListResult find (String searchWords, int start, int count) {
     //TODO page sliced has not implemented yet
@@ -127,11 +142,13 @@ public class GallerySearchIndex {
       if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
         // retry
       }
-
     }
     return new GalleryAppListResult(apps, size.t, searchWords);
   }
 
+  /**
+   * @return the search index
+   */
   private Index getIndex() {
     IndexSpec indexSpec = IndexSpec.newBuilder().setName(GALLERYINDEX).build(); 
     Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);

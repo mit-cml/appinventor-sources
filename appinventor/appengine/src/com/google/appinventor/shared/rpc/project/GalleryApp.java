@@ -72,8 +72,10 @@ public class GalleryApp implements IsSerializable {
     this.tags = tags;
   }
 
-  /* this constructor is called when we are creating a new gallery app but don't have
-     the stuff yet */
+  /**
+   *  this constructor is called when we are creating a new gallery app but don't have
+   *  the stuff yet 
+   */
   public GalleryApp(String title, long projectId, String projectName, long galleryAppId, long attributionId) {
   super();
     this.title = title;
@@ -122,151 +124,357 @@ public class GalleryApp implements IsSerializable {
   private String moreInfo;
   private String credit;
 
+  /**
+   * @return attributionId attribution id
+   */
   public long getProjectAttributionId() {
     return attributionId;
   }
+
+  /**
+   * set project attribution id as given attribution id
+   * @param attributionId attribution id
+   */
   public void setProjectAttributionId(long attributionId) {
     this.attributionId=attributionId;
   }
 
+  /**
+   * @return projectId project id
+   */
   public long getProjectId() {
     return projectId;
   }
+
+  /**
+   * set project id as given projectid
+   * @param projectId project id
+   */
   public void setProjectId(long projectId) {
     this.projectId=projectId;
   }
 
+  /**
+   * @return title gallery app title
+   */
   public String getTitle() {
     return title;
   }
+
+  /**
+   * set gallery app title as given title
+   * @param title gallery app title
+   */
   public void setTitle(String title) {
     this.title = title;
   }
+
+  /**
+   * @return developerId developer id
+   */
   public String getDeveloperId() {
     return developerId;
   }
+
+  /**
+   * set developer id as given developerId
+   * @param developerId developer id
+   */
   public void setDeveloperId(String developerId) {
     this.developerId = developerId;
   }
+
+  /**
+   * @return description the description of galleryapp
+   */
   public String getDescription() {
     return description;
   }
+
+  /**
+   * set description as given description
+   * @param description the description of galleryapp
+   */
   public void setDescription(String description) {
     this.description = description;
   }
+
+  /**
+   * @return createionDate the creation date
+   */
   public long getCreationDate() {
     return this.creationDate; 
   }
+
+  /**
+   * set the creation date as given creationDate
+   * @param creationDate the creation date
+   */
   public void setCreationDate(long creationDate) {
     this.creationDate = creationDate;
   }
+
+  /**
+   * @return updateDate the update date
+   */
   public long getUpdateDate() {
     return this.updateDate;
   }
+
+  /**
+   * set the update date as given updateDate
+   * @param updateDate the update date
+   */
   public void setUpdateDate(long updateDate) {
     this.updateDate = updateDate;
   }
+
+  /**
+   * @return imageURL the image url
+   */
   public String getImageURL() {
     return imageURL;
   }
+
+  /**
+   * set the image url as given image url
+   * @param imageURL image url
+   */
   public void setImageURL(String imageURL) {
     this.imageURL = imageURL;
   }
+
+  /**
+   * @return projectName project name
+   */
   public String getProjectName() {
     return projectName;
   }
+
+  /**
+   * set the project name as given projectName
+   * @param projectName project name
+   */
   public void setProjectName(String projectName) {
     this.projectName = projectName;
   }
+
+  /**
+   * @return downlads num of downloads
+   */
   public int getDownloads() {
     return downloads;
   }
+
+  /**
+   * set num of downloads as given number
+   * @param downloads
+   */
   public void setDownloads(int downloads) {
     this.downloads = downloads;
   }
+
+  /**
+   * increase the num of downloads by 1
+   */
   public void incrementDownloads() {
     this.downloads++;
   }
+
+  /**
+   * @return views num of views
+   */
   public int getViews() {
     return views;
   }
+
+  /**
+   * set num of views as given number
+   * @param views
+   */
   public void setViews(int views) {
     this.views = views;
   }
+
+  /**
+   * @return likes num of likes
+   */
   public int getLikes() {
     return likes;
   }
+
+  /**
+   * set num of likes as given number
+   * @param likes
+   */
   public void setLikes(int likes) {
     this.likes = likes;
   }
+
+  /**
+   * @return unreadLikes num of unread likes
+   */
   public int getUnreadLikes() {
     return unreadLikes;
   }
+
+  /**
+   * set num of unreadLikes as given number
+   * @param unreadLikes
+   */
   public void setUnreadLikes(int unreadLikes) {
     this.unreadLikes = unreadLikes;
   }
+
+  /**
+   * @return unreadDownloads number of unread downloads
+   */
   public int getUnreadDownloads() {
     return unreadDownloads;
   }
+
+  /**
+   * set num of unreadDownloads as given number
+   * @param unreadDownloads
+   */
   public void setUnreadDownloads(int unreadDownloads) {
     this.unreadDownloads = unreadDownloads;
   }
+
+  /**
+   * @return comments num of comments
+   */
   public int getComments() {
     return comments;
   }
+
+  /**
+   * set num of comments as given number
+   * @param comments
+   */
   public void setComments(int comments) {
     this.comments = comments;
   }
+
   // I believe we can eliminate the following until next comment
+  /**
+   * set image blob id as given id
+   * @param imageBlobId image blob id
+   */
   public void setImageBlobId(String imageBlobId) {
     this.imageBlobId = imageBlobId;
   }
+
+  /**
+   * @return imageBlobId image blob id
+   */
   public String getImageBlobId() {
     return this.imageBlobId;
   }
+
+  /**
+   * set source blob id as given id
+   * @param sourceBlobId source blob id
+   */
   public void setSourceBlobId(String sourceBlobId) {
     this.sourceBlobId = sourceBlobId;
   }
+
+  /**
+   * @return get source blob id as given id
+   */
   public String getSourceBlobId() {
     return this.sourceBlobId;
   }
   // end of eliminate stuff
 
+  /**
+   * set galery app id as given id
+   * @param galleryAppId
+   */
   public void setGalleryAppId(long galleryAppId) {
     this.galleryAppId = galleryAppId;
   }
+
+  /**
+   * @return galleryAppId  gallery app id
+   */
   public long getGalleryAppId() {
     return this.galleryAppId;
   }
+
+  /**
+   * @return developerName get developer name
+   */
   public String getDeveloperName() {
     return developerName;
   }
+
+  /**
+   * set developer name as given name
+   * @param name
+   */
   public void setDeveloperName(String name) {
     this.developerName = name;
   }
+
+  /**
+   * check if gallery app is active
+   * @return true is active, otherwise false
+   */
   public boolean getActive() {
     return active;
   }
+
+  /**
+   * set active status as given boolean
+   * @param active
+   */
   public void setActive(boolean active) {
     this.active = active;
   }
+
+  /**
+   * @return moreInfo more info (http link)
+   */
   public String getMoreInfo() {
     return moreInfo;
   }
+
+  /**
+   * set more info as given value
+   * @param moreInfo
+   */
   public void setMoreInfo(String moreInfo) {
     this.moreInfo = moreInfo;
   }
+
+  /**
+   * @return credit the gallery app credit info
+   */
   public String getCredit() {
     return credit;
   }
+
+  /**
+   * set the credit as given info
+   * @param credit
+   */
   public void setCredit(String credit) {
     this.credit = credit;
   }
 
+  /**
+   * @return list of app tags
+   */
   public ArrayList<String> getTags() {
     return this.tags;
   }
 
+  /**
+   * set tags as given list
+   * @param tags
+   */
   public void setTags(ArrayList<String> tags) {
     this.tags = tags;
   }

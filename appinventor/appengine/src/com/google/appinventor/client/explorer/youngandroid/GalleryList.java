@@ -77,14 +77,6 @@ import com.google.gwt.user.client.Window;
  * @author wolberd@google.com (Dave Wolber)
  */
 public class GalleryList extends Composite implements GalleryRequestListener {
-//  private enum SortField {
-//    NAME,
-//    DATE,
-//  }
-//  private enum SortOrder {
-//    ASCENDING,
-//    DESCENDING,
-//  }
 
   final Ode ode = Ode.getInstance();
   private  List<GalleryApp> apps;
@@ -110,16 +102,16 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private GalleryAppTab appPopularTab;
   private GalleryAppTab appSearchTab;
 
-  public static final int REQUEST_FEATURED=1;
-  public static final int REQUEST_RECENT=2;
-  public static final int REQUEST_SEARCH=3;
-  public static final int REQUEST_MOSTLIKED=4;
-  public static final int REQUEST_MOSTDOWNLOADED=5;
-  public static final int REQUEST_MOSTVIEWED=6;
-  public static final int REQUEST_BYDEVELOPER=7;
-  public static final int REQUEST_BYTAG=8;
-  public static final int REQUEST_ALL=9;
-  public static final int REQUEST_REMIXED_TO=10;
+  public static final int REQUEST_FEATURED = 1;
+  public static final int REQUEST_RECENT = 2;
+  public static final int REQUEST_SEARCH = 3;
+  public static final int REQUEST_MOSTLIKED = 4;
+  public static final int REQUEST_MOSTDOWNLOADED = 5;
+  public static final int REQUEST_MOSTVIEWED = 6;
+  public static final int REQUEST_BYDEVELOPER = 7;
+  public static final int REQUEST_BYTAG = 8;
+  public static final int REQUEST_ALL = 9;
+  public static final int REQUEST_REMIXED_TO = 10;
 
   private int appRecentCounter = 0;
   private int appFeaturedCounter = 0;
@@ -130,9 +122,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
   
-  private final String activeNext = "More Apps";
-//  private final String activePrev = "Previous Apps";
-
   public static final int NUMAPPSTOSHOW = 10;
 
   /**
@@ -145,7 +134,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 	  galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
-    
+
     // Initialize UI
     galleryGUI = new FlowPanel();
     galleryGUI.addStyleName("gallery");
@@ -197,46 +186,73 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 //    gallery.GetFeatured(0, offset, 0); // 2014/05/15: don't need now
   }
 
+  /**
+   * A wrapper class of tab, which provides help method to get/set UI components
+   */
   private class GalleryAppTab{
     Label buttonNext;
     Label noResultsFound;
     Label keywordTotalResultsLabel;
     Label generalTotalResultsLabel;
-
+    /**
+     * @param container: the FlowPanel that this app tab will reside.
+     * @param content: the sub-panel that contains the actual app content.
+     * @param request: type of app request, for pagination.
+     */
     GalleryAppTab(FlowPanel container, FlowPanel content, final int request){
       addGalleryAppTab(container, content, request);
     }
+
+    /**
+     * @return Label buttonNext
+     */
     public Label getButtonNext(){
       return buttonNext;
     }
+
+    /**
+     * @return Label noResultsFound
+     */
     public Label getNoResultsFound(){
       return noResultsFound;
     }
 
+    /**
+     * @return Label keywordTotalResultsLabel
+     */
     public Label getKeywordTotalResultsLabel(){
       return keywordTotalResultsLabel;
     }
 
+    /**
+     * Set keywordTotalResultsLabel's text to new text
+     * @param keyword the search keyword
+     * @param num number of results
+     */
     public void setKeywordTotalResultsLabel(String keyword, int num){
-       keywordTotalResultsLabel.setText("search for \"" + keyword + "\" returned " + num + " results");;
+       keywordTotalResultsLabel.setText(MESSAGES.gallerySearchResultsPrefix() + keyword + MESSAGES.gallerySearchResultsInfix() + num + MESSAGES.gallerySearchResultsSuffix());
     }
 
+    /**
+     * @return Label generalTotalResultsLabel
+     */
     public Label getGeneralTotalResultsLabel(){
       return generalTotalResultsLabel;
     }
 
+    /**
+     * set generalTotalResultsLabel to new text
+     * @param num number of results
+     */
     public void setGeneralTotalResultsLabel(int num){
-      generalTotalResultsLabel.setText(num + " results");;
+      generalTotalResultsLabel.setText(num + MESSAGES.gallerySearchResultsSuffix());
     }
 
     /**
      * Creates the GUI components for a regular app tab.
      * This method resides here because it needs access to global variables.
-     *
      * @param container: the FlowPanel that this app tab will reside.
-     *
      * @param content: the sub-panel that contains the actual app content.
-     *
      * @param request: type of app request, for pagination.
      */
     private void addGalleryAppTab(FlowPanel container, FlowPanel content, final int request) {
@@ -285,7 +301,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       container.add(content);
 
       buttonNext = new Label();
-      buttonNext.setText(activeNext);
+      buttonNext.setText(MESSAGES.galleryMoreApps());
       buttonNext.addStyleName("active");
       if(request == REQUEST_SEARCH){
         buttonNext.setVisible(false);
@@ -296,13 +312,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       next.addStyleName("gallery-nav-next");
       container.add(next);
  
-      final Label counter = new Label("Counting...");
-      counter.addStyleName("gallery-nav-counter");
-      if (request != REQUEST_FEATURED) {
-        container.add(counter);
-        counter.setText("");      
-      }
-
       buttonNext.addClickHandler(new ClickHandler() {
         //  @Override
         public void onClick(ClickEvent event) {
@@ -341,6 +350,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     }
   }
 
+  /**
+   * @return TextBox searchText
+   */
   public TextBox getSearchText(){
     return searchText;
   }
@@ -355,7 +367,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     FlowPanel searchPanel = new FlowPanel();
     final TextBox searchText = new TextBox();
     searchText.addStyleName("gallery-search-textarea");
-    Button sb = new Button("Search for apps");
+    Button sb = new Button(MESSAGES.gallerySearchForAppsButton());
     searchPanel.add(searchText);
     searchPanel.add(sb);
     searchPanel.addStyleName("gallery-search-panel");
@@ -371,7 +383,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       }
     });    
   }
-
 
   /**
    * Loads the proper tab GUI with gallery's app data.
@@ -471,11 +482,20 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public List<GalleryApp> getSelectedApps() {
     return selectedApps;
   }
-
+  /**
+   * select specific tab index based on given index
+   * @param index
+   */
   public void setSelectTabIndex(int index){
     appTabs.selectTab(index);
   }
-
+  /**
+   * Process the results after retrieving GalleryAppListResult
+   * @param appsResult GalleryAppList Result
+   * @param requestId request id
+   * @param refreshable whether or not clear container
+   * @see GalleryRequestListener
+   */
   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
   {
     List<GalleryApp> apps = appsResult.getApps();
@@ -484,14 +504,19 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     else
       Window.alert("apps was null");
   }
-
+  /**
+   * Process the results after retrieving list of GalleryComment
+   * @see GalleryRequestListener
+   */
   public void onCommentsRequestCompleted(List<GalleryComment> comments)
   {
       
   }
 
-  // the gallery page is the listener that should deal with this
-  //    really, projectlist should be a listener
+  /**
+   * Process the results after retrieving list of UserProject
+   * @see GalleryRequestListener
+   */
   public void onSourceLoadCompleted(UserProject projectInfo) {
     
   }

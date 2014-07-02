@@ -82,12 +82,9 @@ import com.google.appinventor.common.utils.StringUtils;
 public class GalleryServiceImpl extends OdeRemoteServiceServlet implements GalleryService {
 
   private static final Logger LOG = Logger.getLogger(GalleryServiceImpl.class.getName());
-
   private static final long serialVersionUID = -8316312003804169166L;
-
   private final transient GalleryStorageIo galleryStorageIo = 
       GalleryStorageIoInstanceHolder.INSTANCE;
-
   // fileExporter used to get the source code from project being published
   private final FileExporter fileExporter = new FileExporterImpl();
 
@@ -429,10 +426,12 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.isGalleryAppActivated(galleryId);
   }
 
-//  public void storeImage(InputStream is, long galleryId) {
-//    
-//  }
-  
+  /**
+   * store aia file on cloud server
+   * @param galleryId gallery id
+   * @param projectId project id
+   * @param projectName project name
+   */
   private void storeAIA(long galleryId, long projectId, String projectName) {
    
     final String userId = userInfoProvider.getUserId();
@@ -478,7 +477,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       e.printStackTrace();
     }
   }
-
+  /**
+   * delete aia file based on given gallery id
+   * @param galleryId gallery id
+   */
   private void deleteAIA(long galleryId) {
     try {
       //String galleryKey = GalleryApp.getSourceKey(galleryId);
@@ -512,9 +514,12 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       e.printStackTrace();
     }
   }
-  /* when an app is published/updated, we need to move the image
+
+  /**
+   * when an app is published/updated, we need to move the image
    * that was temporarily uploaded into projects/projectid/image
    * into the gallery image
+   * @param app gallery app
    */
   private void setGalleryAppImage(GalleryApp app) {
     // best thing would be if GCS has a mv op, we can just do that.
@@ -600,8 +605,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public List<Message> getMessages(String receiverId) {
-//    LOG.info("### GET MSGS");
-//    final String userId = userInfoProvider.getUserId(); // gets current userId
     return galleryStorageIo.getMessages(receiverId);
   }
 
@@ -612,8 +615,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public Message getMessage(long msgId) {
-//    LOG.info("### GET MSGS");
-//    final String userId = userInfoProvider.getUserId(); // gets current userId
     return galleryStorageIo.getMessage(msgId);
   }
 
@@ -641,8 +642,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public void appStatsWasRead(long appId) {
-//    LOG.info("### READ MSGS");
-//    final String userId = userInfoProvider.getUserId(); // gets current userId
     galleryStorageIo.appStatsWasRead(appId);
   }
 
@@ -665,14 +664,5 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public List<GalleryModerationAction> getModerationActions(long reportId){
     return galleryStorageIo.getModerationActions(reportId);
   }
-
-  /**
-   * update Database Field, should only be used by system admin
-   */
-  @Override
-  public void updateDatabaseField(){
-    galleryStorageIo.updateDatabaseField();
-  }
-
 
 }

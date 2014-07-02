@@ -26,7 +26,7 @@ import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 public class GalleryGuiFactory implements GalleryRequestListener {
   GalleryClient gallery = null;
 
-  /*
+  /**
    * Generates a new GalleryGuiFactory instance.
    */
   public GalleryGuiFactory() {
@@ -34,7 +34,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     gallery.addListener(this);
   }
 
-  /*
+  /**
    * Class representing the GUI of a single gallery app.
    */
   private class GalleryAppWidget {
@@ -344,6 +344,4 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     // TODO Auto-generated method stub
     
   }
-	
-	
 }
