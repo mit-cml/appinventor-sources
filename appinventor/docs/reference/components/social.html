@@ -479,11 +479,16 @@
 <h2 id="ContactPicker">ContactPicker</h2>
 
 <p>A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
-<li> <code>ContactName</code>: the contact's name </li>
+ <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>EmailAddress</code>: the contact's primary email address </li>
+ <li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>
+ <li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>
+ <li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>
  <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).
-</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+</p><p>The ContactPicker component might not work on all phones. For
+example, on Android systems before system 3.0, it cannot pick phone
+numbers, and the list of email addresses will contain only one email.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -644,7 +649,9 @@ none
  <li> <code>PhoneNumber</code>: the contact's phone number </li>
  <li> <code>EmailAddress</code>: the contact's email address </li> <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>
-<p>Picking is not supported on all phones.  If it fails, this component will show a notification.  This default error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+<p>The PhoneNumberPicker component may not work on all Android
+devices. For example, on Android systems before system 3.0, the
+returned lists of phone numbers and email addresses will be empty.</p>
 
 <h3>Properties</h3>
 <dl>

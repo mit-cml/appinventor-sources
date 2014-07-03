@@ -149,11 +149,11 @@ public class MediaUtil {
       return form.getAssets().open(mediaPath);
 
     } catch (IOException e) {
-        if (findCaseinsensitivePath(form, mediaPath) == null){
+        if (findCaseinsensitivePath(form, mediaPath) == null) {
           throw e;
         } else {
-        String path = findCaseinsensitivePath(form, mediaPath);
-        return form.getAssets().open(path);
+          String path = findCaseinsensitivePath(form, mediaPath);
+          return form.getAssets().open(path);
         }
     }
   }
@@ -179,8 +179,14 @@ public class MediaUtil {
 
       case CONTACT_URI:
         // Open the photo for the contact.
-        InputStream is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
-            Uri.parse(mediaPath));
+        InputStream is = null;
+        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+          is = HoneycombUtil.openContactPhotoInputStreamHelper(form.getContentResolver(),
+              Uri.parse(mediaPath));
+        } else {
+          is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
+              Uri.parse(mediaPath));
+        }
         if (is != null) {
           return is;
         }
