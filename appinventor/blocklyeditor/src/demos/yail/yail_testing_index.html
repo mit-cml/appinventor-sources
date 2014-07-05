@@ -92,6 +92,26 @@ function start() {
 
   // ----- End the Blockly Initialization
 
+  // These "localized" operations are used in the internationalization code
+  // They are provided by the browser in the actual system, but
+  // are not present in phantomJS.  So define mock versions to be used by the tests.
+
+  window.parent.BlocklyPanel_getLocalizedEventName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedPropertyName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedMethodName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedParameterName =
+    function (name) {return name} ;
+
+
+  // ----- End the Mock locale operations
+
+
   // ----- Emulate GWT Provided functions
   BlocklyPanel_getComponentsJSONString = function(type) {
     return JSON.stringify(componentTypeJson);
