@@ -84,6 +84,28 @@ public interface GalleryStorageIo {
   GalleryAppListResult getMostDownloadedApps(int start, int count);
 
   /**
+   *Returns a wrapped class which contains a list of featured gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  GalleryAppListResult getFeaturedApp(int start, int count);
+
+  /**
+   * check if app is featured already
+   * @param galleryId gallery id
+   * @return true if featured, otherwise false
+   */
+  boolean isFeatured(long galleryId);
+
+  /**
+   * mark an app as featured
+   * @param galleryId gallery id
+   * @return
+   */
+  boolean markAppAsFeatured(long galleryId);
+
+  /**
    * Returns a wrapped class which contains a list of galleryApps
    * by a particular developer and total number of results in database
    * @param userId id of developer

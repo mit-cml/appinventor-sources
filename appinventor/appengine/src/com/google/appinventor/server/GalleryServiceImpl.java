@@ -188,6 +188,34 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains list of featured gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getFeaturedApp(int start, int count){
+    return galleryStorageIo.getFeaturedApp(start, count);
+  }
+
+  /**
+   * check if app is featured already
+   * @param galleryId gallery id
+   * @return true if featured, otherwise false
+   */
+  public boolean isFeatured(long galleryId){
+    return galleryStorageIo.isFeatured(galleryId);
+  }
+
+  /**
+   * mark an app as featured
+   * @param galleryId gallery id
+   * @return true if successful
+   */
+  public boolean markAppAsFeatured(long galleryId){
+    return galleryStorageIo.markAppAsFeatured(galleryId);
+  }
+
+  /**
    * Returns a wrapped class which contains a list of galleryApps 
    * by a particular developer and total number of results in database
    * @param userId id of the developer

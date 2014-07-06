@@ -28,6 +28,7 @@ import com.google.appinventor.server.storage.GalleryCommentData;
 import com.google.appinventor.server.storage.GalleryAppLikeData;
 import com.google.appinventor.server.storage.GalleryAppReportData;
 import com.google.appinventor.server.storage.GalleryAppAttributionData;
+import com.google.appinventor.server.storage.GalleryAppFeatureData;
 import com.google.appinventor.server.GallerySearchIndex;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
@@ -121,6 +122,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryAppData.class);
     ObjectifyService.register(GalleryCommentData.class);
     ObjectifyService.register(GalleryAppLikeData.class);
+    ObjectifyService.register(GalleryAppFeatureData.class);
     ObjectifyService.register(GalleryAppAttributionData.class);
     ObjectifyService.register(GalleryAppReportData.class);
     ObjectifyService.register(MessageData.class);
@@ -263,6 +265,68 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new GalleryAppListResult(apps, totalCount);
   }
 
+  /**
+   * Returns a wrapped class which contains a list of featured gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getFeaturedApp(int start, int count){
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppFeatureData appFeatureData:datastore.query(GalleryAppFeatureData.class).offset(start).limit(count)) {
+      Long galleryId = appFeatureData.galleryKey.getId();
+      GalleryApp gApp = new GalleryApp();
+      GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+      makeGalleryApp(galleryAppData, gApp);
+      apps.add(gApp);
+    }
+
+    int totalCount = datastore.query(GalleryAppFeatureData.class).count();
+    return new GalleryAppListResult(apps, totalCount);
+  }
+
+  /**
+   * check if app is featured already
+   * @param galleryId gallery id
+   * @return true if featured, otherwise false
+   */
+  public boolean isFeatured(long galleryId){
+    final Result<Boolean> result = new Result<Boolean>();
+    Objectify datastore = ObjectifyService.begin();
+    result.t = false;
+    for (GalleryAppFeatureData appFeatureData:datastore.query(GalleryAppFeatureData.class).ancestor(galleryKey(galleryId))) {
+      result.t = true;
+      break;
+    }
+    return result.t;
+  }
+
+  /**
+   * mark an app as featured
+   * @param galleryId gallery id
+   * @return
+   */
+  public boolean markAppAsFeatured(long galleryId){
+    final Result<Boolean> result = new Result<Boolean>();
+    result.t = false;
+    boolean find = false;
+    Objectify datastore = ObjectifyService.begin();
+
+    for (GalleryAppFeatureData appFeatureData:datastore.query(GalleryAppFeatureData.class).ancestor(galleryKey(galleryId))) {
+      find = true;
+      datastore.delete(appFeatureData);
+      result.t = false;
+      break;
+    }
+    if(!find){
+      GalleryAppFeatureData appFeatureData = new GalleryAppFeatureData();
+      appFeatureData.galleryKey = galleryKey(galleryId);
+      datastore.put(appFeatureData);
+      result.t = true;
+    }
+    return result.t;
+  }
   /**
    * Returns a wrapped class which contains a list of galleryApps
    * by a particular developer and total number of results in database
@@ -1151,6 +1215,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new Key<GalleryAppData>(GalleryAppData.class, galleryId);
   }
 
+  private Key<GalleryAppFeatureData> galleryFeatureKey(long galleryId) {
+    return new Key<GalleryAppFeatureData>(GalleryAppFeatureData.class, galleryId);
+  }
 
   private Key<GalleryCommentData> galleryCommentKey(long commentId) {
     return new Key<GalleryCommentData>(GalleryCommentData.class, commentId);

@@ -1436,6 +1436,14 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery Empty Text")
   String galleryEmptyText();
 
+  @DefaultMessage("Feature")
+  @Description("Text for gallery Feature Text")
+  String galleryFeaturedText();
+
+  @DefaultMessage("Unfeature")
+  @Description("Text for gallery Unfeature Text")
+  String galleryUnfeaturedText();
+
   @DefaultMessage(" ")
   @Description("Text for gallery Single Space Text")
   String gallerySingleSpaceText();
@@ -1508,11 +1516,11 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery page removing feedback")
   String galleryAppRemoving();
 
-  @DefaultMessage("Click to like this app!")
+  @DefaultMessage("Like")
   @Description("Text for gallery page like button (not liked yet).")
   String galleryAppsLike();
 
-  @DefaultMessage("You already liked (click to unlike).")
+  @DefaultMessage("Unlike")
   @Description("Text for gallery page like button (already liked).")
   String galleryAppsAlreadyLike();
 

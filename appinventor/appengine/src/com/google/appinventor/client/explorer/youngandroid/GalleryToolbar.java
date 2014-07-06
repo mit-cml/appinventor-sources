@@ -74,7 +74,7 @@ public class GalleryToolbar extends Composite {
         GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
         searchText.setFocus(true);
         Ode.getInstance().switchToGalleryView();
-        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(2);
+        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(3); //TODO change this to constant
         for(GalleryToolbar toolbar : allSearchToolbars){
           toolbar.getSearchText().setText(searchText.getText());
         }
@@ -90,7 +90,7 @@ public class GalleryToolbar extends Composite {
           GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
           searchText.setFocus(true);
           Ode.getInstance().switchToGalleryView();
-          GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(2);
+          GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(3); //TODO change this to constant
           for(GalleryToolbar toolbar : allSearchToolbars){
             toolbar.getSearchText().setText(searchText.getText());
           }

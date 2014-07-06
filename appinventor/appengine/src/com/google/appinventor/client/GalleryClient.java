@@ -143,8 +143,22 @@ public class GalleryClient {
   * @param count number of results
   * @param sortOrder unused sort order
   */
-  public void GetFeatured(int start, int count, int sortOrder) {
-
+  public void GetFeatured(int start, int count, int sortOrder, final boolean refreshable) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
+    // failure message
+    MESSAGES.galleryRecentAppsError()) {
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_FEATURED, refreshable);
+        }
+      }
+    };
+    // This is below the call back, but of course it is done first
+    ode.getGalleryService().getFeaturedApp(start, count, callback);
   }
  /**
   * GetMostRecent gets most recently updated apps then tells listeners
@@ -162,7 +176,7 @@ public class GalleryClient {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
         listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable);
-      } 
+      }
     }
     };
     // This is below the call back, but of course it is done first
@@ -185,7 +199,7 @@ public class GalleryClient {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
         listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable);
-      } 
+      }
     }
     };
       

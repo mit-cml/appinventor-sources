@@ -3,6 +3,8 @@ import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.search.GetRequest;
+import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.SearchServiceFactory;

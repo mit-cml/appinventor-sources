@@ -586,6 +586,8 @@ panel
     container.add(new Label(Integer.toString(app.getDownloads())));
     // Adds dynamic like
     initLikeSection(container);
+    // Adds dynamic feature
+    initFeatureSection(container);
 
 
     // We are not using views and comments at initial launch
@@ -1020,6 +1022,55 @@ panel
       };
     Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
         isLikedCallback);
+  }
+
+  /**
+   * Helper method called by constructor to initialize the feature section
+   * @param container   The container that feature label reside
+   */
+  private void initFeatureSection(Panel container) { //TODO: Update the location of this button
+    final User currentUser = Ode.getInstance().getUser();
+    if(currentUser.getType() != 1){     //not admin
+      return;
+    }
+
+    final Label featurePrompt = new Label(MESSAGES.galleryEmptyText());
+    featurePrompt.addStyleName("primary-link");
+    container.add(featurePrompt);
+
+    final OdeAsyncCallback<Boolean> isFeaturedCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if (bool) { // If the app is already featured before, the prompt should show as unfeatured
+              featurePrompt.setText(MESSAGES.galleryUnfeaturedText());
+            } else {    // otherwise show as featured
+              featurePrompt.setText(MESSAGES.galleryFeaturedText());
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isFeatured(app.getGalleryAppId(),
+        isFeaturedCallback); // This happens when user click on like, we need to check if it's already liked
+
+    featurePrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Boolean> markFeaturedCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean bool) {
+                if (bool) { // If the app is already featured, the prompt should show as unfeatured
+                  featurePrompt.setText(MESSAGES.galleryUnfeaturedText());
+                } else {    // otherwise show as featured
+                  featurePrompt.setText(MESSAGES.galleryFeaturedText());
+                }
+              }
+          };
+        Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(),
+            markFeaturedCallback);
+      }
+    });
   }
 
   /**

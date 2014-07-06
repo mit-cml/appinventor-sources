@@ -157,7 +157,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     galleryGUI.add(headerExtra);
 
     // Add content to panels  
-//    appFeaturedTab = new GalleryAppTab(appFeatured, appFeaturedContent, REQUEST_FEATURED);
+    appFeaturedTab = new GalleryAppTab(appFeatured, appFeaturedContent, REQUEST_FEATURED);
     appRecentTab = new GalleryAppTab(appRecent, appRecentContent, REQUEST_RECENT);
     appSearchTab = new GalleryAppTab(appSearch, appSearchContent, REQUEST_SEARCH);
     appPopularTab = new GalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTDOWNLOADED);
@@ -167,7 +167,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
     // Add panels to main tabPanel
     appTabs.add(appRecent, "Recent");
-//    appTabs.add(appFeatured, "Featured"); // 2014/05/15: don't need now
+    appTabs.add(appFeatured, "Featured"); // 2014/05/15: don't need now
     appTabs.add(appPopular, "Popular");
     appTabs.add(appSearch, "Search");
     appTabs.selectTab(0);
@@ -180,10 +180,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     panel.add(galleryGUI);
     
     initWidget(panel);
-    
-    // Calls to gallery get methods will eventually trigger call back to methods
-    // at bottom of this file
-//    gallery.GetFeatured(0, offset, 0); // 2014/05/15: don't need now
   }
 
   /**
@@ -297,6 +293,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
         gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW, false);
+      } else if (request == REQUEST_FEATURED){
+        generalTotalResultsLabel = new Label();
+        container.add(generalTotalResultsLabel);
+        gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0, false);
       }
       container.add(content);
 
@@ -320,7 +320,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               if (!appFeaturedExhausted) {
                 // If the next page still has apps to retrieve, do it
                 appFeaturedCounter += NUMAPPSTOSHOW;
-                gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
+                gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0, false);
               }
               break;
             case REQUEST_RECENT:
@@ -394,17 +394,23 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private void refreshApps(GalleryAppListResult appsResult, int requestId, boolean refreshable) {
     switch (requestId) {
       case REQUEST_FEATURED:
-        if (appsResult.getApps().size() < NUMAPPSTOSHOW) {
+        appFeaturedTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
+        if (appsResult.getTotalCount() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appFeaturedExhausted = true;
         } else {
           appFeaturedExhausted = false;
         }
         galleryGF.generateHorizontalAppList(appsResult.getApps(), appFeaturedContent, refreshable);
+        if(appsResult.getTotalCount() < NUMAPPSTOSHOW || appFeaturedCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
+          appFeaturedTab.getButtonNext().setVisible(false);
+        }else{
+          appFeaturedTab.getButtonNext().setVisible(true);
+        }
         break;
       case REQUEST_RECENT:
         appRecentTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
-        if(appRecentCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
+        if(appsResult.getTotalCount() < NUMAPPSTOSHOW  || appRecentCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appRecentTab.getButtonNext().setVisible(false);
         }else{
           appRecentTab.getButtonNext().setVisible(true);
@@ -440,7 +446,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         break;
       case REQUEST_MOSTDOWNLOADED:
         appPopularTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
-        if(appPopularCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
+        if(appsResult.getTotalCount() < NUMAPPSTOSHOW || appPopularCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appPopularTab.getButtonNext().setVisible(false);
         }else{
           appPopularTab.getButtonNext().setVisible(true);
