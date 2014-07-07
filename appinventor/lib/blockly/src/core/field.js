@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +31,7 @@ goog.provide('Blockly.Field');
 // TODO(scr): Fix circular dependencies
 // goog.require('Blockly.Block');
 goog.require('Blockly.BlockSvg');
+goog.require('goog.asserts');
 
 
 /**
@@ -51,6 +53,18 @@ Blockly.Field = function(text) {
       {'class': 'blocklyText'}, this.fieldGroup_);
   this.size_ = {height: 25, width: 0};
   this.setText(text);
+  this.visible_ = true;
+};
+
+/**
+ * Clone this Field.  This must be implemented by all classes derived from
+ * Field.  Since this class should not be instantiated, calling this method
+ * throws an exception.
+ * @throws {goog.assert.AssertionError}
+ */
+Blockly.Field.prototype.clone = function() {
+  goog.asserts.fail('There should never be an instance of Field, ' +
+      'only its derived classes.');
 };
 
 /**
@@ -87,10 +101,10 @@ Blockly.Field.prototype.init = function(block) {
   // So it's even better to avoid adding titles to collapsed blocks in the first place!
   // E.g., I modified proc decl compose method to avoid calling updateParams_
   // if arg names haven't changed from before.
-  if (block.collapsed) {
-    // this.fieldGroup_.style.display = 'none';
-    this.getRootElement().style.display = 'none';
-  }
+//  if (block.collapsed) {
+//    // this.fieldGroup_.style.display = 'none';
+//    this.getRootElement().style.display = 'none';
+//  }
 
   block.getSvgRoot().appendChild(this.fieldGroup_);
 
@@ -138,10 +152,19 @@ Blockly.Field.prototype.updateEditable = function() {
 };
 
 /**
+ * Gets whether this editable field is visible or not.
+ * @return {boolean} True if visible.
+ */
+Blockly.Field.prototype.isVisible = function() {
+  return this.visible_;
+};
+
+/**
  * Sets whether this editable field is visible or not.
  * @param {boolean} visible True if visible.
  */
 Blockly.Field.prototype.setVisible = function(visible) {
+  this.visible_ = visible;
   this.getRootElement().style.display = visible ? 'block' : 'none';
 };
 
@@ -169,7 +192,7 @@ Blockly.Field.prototype.render_ = function() {
 };
 
 /**
- * Returns the height and width of the title.
+ * Returns the height and width of the field.
  * @return {!Object} Height and width.
  */
 Blockly.Field.prototype.getSize = function() {
@@ -197,10 +220,29 @@ Blockly.Field.prototype.setText = function(text) {
     return;
   }
   this.text_ = text;
+  this.updateTextNode_();
+
+  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+    this.sourceBlock_.render();
+    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.workspace.fireChangeEvent();
+  }
+};
+
+/**
+ * Update the text node of this field to display the current text.
+ * @private
+ */
+Blockly.Field.prototype.updateTextNode_ = function() {
+  var text = this.text_;
   // Empty the text element.
   goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
   // Replace whitespace with non-breaking spaces so the text doesn't collapse.
   text = text.replace(/\s/g, Blockly.Field.NBSP);
+  if (Blockly.RTL && text) {
+    // The SVG is LTR, force text to be RTL.
+    text += '\u200F';
+  }
   if (!text) {
     // Prevent the field from disappearing if empty.
     text = Blockly.Field.NBSP;
@@ -210,12 +252,6 @@ Blockly.Field.prototype.setText = function(text) {
 
   // Cached width is obsolete.  Clear it.
   this.size_.width = 0;
-
-  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-    this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
-    this.sourceBlock_.workspace.fireChangeEvent();
-  }
 };
 
 /**

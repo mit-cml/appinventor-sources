@@ -9,13 +9,16 @@ import android.app.DatePickerDialog;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * A button allowing a user to launch a DatePickerDialog. This component is
@@ -31,8 +34,11 @@ import java.util.Calendar;
 public class DatePicker extends ButtonBase {
 
   private DatePickerDialog date;
-  private int year, month, day;
+  //month is the property that AI devs see, and it's always javaMonth + 1; month is 0-based in Java
+  private int year, month, javaMonth, day;
   private String [] localizedMonths = new DateFormatSymbols().getMonths();
+  private boolean customDate = false;
+  private Form form;
 
   /**
    * Creates a new DatePicker component.
@@ -40,13 +46,15 @@ public class DatePicker extends ButtonBase {
    */
   public DatePicker(ComponentContainer container) {
     super(container);
-
+    form = container.$form();
     //Set the current date on creation
     final Calendar c = Calendar.getInstance();
     year = c.get(Calendar.YEAR);
-    month = c.get(Calendar.MONTH);
+    javaMonth = c.get(Calendar.MONTH);
+    month = javaMonth + 1;
     day = c.get(Calendar.DAY_OF_MONTH);
-    date = new DatePickerDialog(this.container.$context(), datePickerListener, year, month, day);
+    date = new DatePickerDialog(this.container.$context(), datePickerListener, year, javaMonth,
+        day);
   }
 
   /**
@@ -61,10 +69,10 @@ public class DatePicker extends ButtonBase {
 
   /**
    * Returns the number of the Month that was last picked using the DatePicker.
-   * @return the year in numeric format
+   * @return the month in numeric format
    */
   @SimpleProperty(description = "the number of the Month that was last picked using the " +
-      "DatePicker. Note that months start in 0 = January, 11 = December.",
+      "DatePicker. Note that months start in 1 = January, 12 = December.",
       category = PropertyCategory.APPEARANCE)
   public int Month() {
     return month;
@@ -78,7 +86,7 @@ public class DatePicker extends ButtonBase {
       "DatePicker, in textual format.",
       category = PropertyCategory.APPEARANCE)
   public String MonthInText() {
-    return localizedMonths[month];
+    return localizedMonths[javaMonth];
   }
 
   /**
@@ -91,11 +99,40 @@ public class DatePicker extends ButtonBase {
     return day;
   }
 
+  @SimpleFunction(description = "Allows the user to set the date to be displayed when the date picker opens.\n" +
+    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  public void SetDateToDisplay(int year, int month, int day) {
+    int jMonth = month - 1;
+    try {
+      GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
+      cal.setLenient(false);
+      cal.getTime();
+    } catch (java.lang.IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "SetDateToDisplay", ErrorMessages.ERROR_ILLEGAL_DATE);
+    }
+    date.updateDate(year, jMonth, day);
+    customDate = true;
+  }
+
+  @SimpleFunction(description="Launches the DatePicker popup.")
+  public void LaunchPicker() {
+    click();
+  }
+
   /**
    * Overriding method from superclass to show the date picker dialog when the button is clicked
    */
   @Override
   public void click() {
+    if (!customDate) {
+      Calendar c = Calendar.getInstance();
+      int year = c.get(Calendar.YEAR);
+      int jMonth = c.get(Calendar.MONTH);
+      int day = c.get(Calendar.DAY_OF_MONTH);
+      date.updateDate(year, jMonth, day);
+    } else {
+      customDate = false;
+    }
     date.show();
   }
 
@@ -108,9 +145,10 @@ public class DatePicker extends ButtonBase {
         public void onDateSet(android.widget.DatePicker datePicker, int selectedYear,
                               int selectedMonth, int selectedDay) {
           year = selectedYear;
-          month = selectedMonth;
+          javaMonth = selectedMonth;
+          month = javaMonth + 1;
           day = selectedDay;
-          date.updateDate(year, month, day);
+          date.updateDate(year, javaMonth, day);
           AfterDateSet();
         }
       };

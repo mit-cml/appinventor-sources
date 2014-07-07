@@ -30,6 +30,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashSet;
@@ -41,6 +42,10 @@ import java.util.Set;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class AddFormCommand extends ChainableCommand {
+
+
+  private static final int MAX_FORM_COUNT = 10;
+
   /**
    * Creates a new command for creating a new form
    */
@@ -83,6 +88,7 @@ public final class AddFormCommand extends ChainableCommand {
       int highIndex = 0;
       // Collect the existing form names so we can prevent duplicate form names.
       otherFormNames = new HashSet<String>();
+
       for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
         if (source instanceof YoungAndroidFormNode) {
           String formName = ((YoungAndroidFormNode) source).getFormName();
@@ -97,6 +103,7 @@ public final class AddFormCommand extends ChainableCommand {
           }
         }
       }
+
       String defaultFormName = prefix + (highIndex + 1);
 
       newNameTextBox = new LabeledTextBox(MESSAGES.formNameLabel());
@@ -115,7 +122,26 @@ public final class AddFormCommand extends ChainableCommand {
       });
       contentPanel.add(newNameTextBox);
 
-      Button cancelButton = new Button(MESSAGES.cancelButton());
+      String cancelText = MESSAGES.cancelButton();
+      String okText = MESSAGES.okButton();
+
+      // Keeps track of the total number of screens.
+      int formCount = otherFormNames.size() + 1;
+      if (formCount > MAX_FORM_COUNT) {
+        HorizontalPanel errorPanel = new HorizontalPanel();
+        HTML tooManyScreensLabel = new HTML(MESSAGES.formCountErrorLabel());
+        errorPanel.add(tooManyScreensLabel);
+        errorPanel.setSize("100%", "24px");
+        contentPanel.add(errorPanel);
+
+        okText = MESSAGES.addScreenButton();
+        cancelText = MESSAGES.cancelScreenButton();
+
+        // okText = "Add";
+        // cancelText = "Don't Add";
+      }
+
+      Button cancelButton = new Button(cancelText);
       cancelButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -123,7 +149,7 @@ public final class AddFormCommand extends ChainableCommand {
           executionFailedOrCanceled();
         }
       });
-      Button okButton = new Button(MESSAGES.okButton());
+      Button okButton = new Button(okText);
       okButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {

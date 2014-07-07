@@ -49,6 +49,8 @@ public class ReplForm extends Form {
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
+  private Object replResult = null; // Return result when closing screen in Repl
+  private String replResultFormName = null;
 
   public ReplForm() {
     super();
@@ -103,12 +105,26 @@ public class ReplForm extends Form {
 
   @Override
   protected void startNewForm(String nextFormName, Object startupValue) {
+    if (startupValue != null) {
+      this.startupValue = jsonEncodeForForm(startupValue, "open another screen with start value");
+    }
     RetValManager.pushScreen(nextFormName, startupValue);
+  }
+
+  public void setFormName(String formName) {
+    this.formName = formName;
+    Log.d("ReplForm", "formName is now " + formName);
   }
 
   @Override
   protected void closeForm(Intent resultIntent) {
     RetValManager.popScreen("Not Yet");
+  }
+
+  protected void setResult(Object result) {
+    Log.d("ReplForm", "setResult: " + result);
+    replResult = result;
+    replResultFormName = formName;
   }
 
   @Override
@@ -126,6 +142,15 @@ public class ReplForm extends Form {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     processExtras(intent, true);
+  }
+
+  void HandleReturnValues() {
+    Log.d("ReplForm", "HandleReturnValues() Called, replResult = " + replResult);
+    if (replResult != null) {   // Act as if it was returned
+      OtherScreenClosed(replResultFormName, replResult);
+      Log.d("ReplForm", "Called OtherScreenClosed");
+      replResult = null;
+    }
   }
 
   protected void processExtras(Intent intent, boolean restart) {

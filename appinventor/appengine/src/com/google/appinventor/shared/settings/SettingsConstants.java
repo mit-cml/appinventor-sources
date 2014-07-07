@@ -17,8 +17,8 @@ public class SettingsConstants {
    * General settings.
    */
   public static final String USER_GENERAL_SETTINGS = "GeneralSettings";
-
   public static final String GENERAL_SETTINGS_CURRENT_PROJECT_ID = "CurrentProjectId";
+  public static final String USER_TEMPLATE_URLS = "TemplateUrls";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 

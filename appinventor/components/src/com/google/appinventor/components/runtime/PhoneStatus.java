@@ -106,7 +106,6 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description = "Returns true if we are running in the emulator or USB Connection")
   public boolean isDirect() {
     Log.d(LOG_TAG, "android.os.Build.VERSION.RELEASE = " + android.os.Build.VERSION.RELEASE);
-    Log.d(LOG_TAG, "android.os.Build.VERSION.CODENAME = " + android.os.Build.VERSION.CODENAME);
     Log.d(LOG_TAG, "android.os.Build.PRODUCT = " + android.os.Build.PRODUCT);
     if (android.os.Build.PRODUCT.contains("google_sdk")) { // Emulator is always direct
       return true;

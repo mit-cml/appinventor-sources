@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 /**
  * Visual Blocks Editor
  *
@@ -18,9 +19,12 @@
  */
 
 /**
- * @fileoverview Object representing a warning.
+ * @license
+ * @fileoverview Object representing a warning for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author fraser@google.com (Neil Fraser)
  */
+
 'use strict';
 
 goog.provide('Blockly.ErrorIcon');

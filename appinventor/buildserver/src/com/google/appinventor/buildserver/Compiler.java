@@ -294,6 +294,13 @@ public final class Compiler {
     System.out.println("Component assets needed, n= " + assetsNeeded.size());
   }
 
+
+  // This patches around a bug in AAPT (and other placed in Android)
+  // where an ampersand in the name string breaks AAPT.
+  private String cleanVname(String vname) {
+    return vname.replace("&", "and");
+  }
+
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
@@ -304,7 +311,7 @@ public final class Compiler {
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
-    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
+    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanVname(project.getVName());
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
@@ -434,8 +441,8 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
-      // Add WebViewActivity to the manifest only if a WebViewer component is used in the app
-      if (componentTypes.contains("WebViewer")){
+      // Add WebViewActivity to the manifest only if a Twitter component is used in the app
+      if (componentTypes.contains("Twitter")){
         out.write("    <activity android:name=\"" + WEBVIEW_ACTIVITY_CLASS + "\" " +
             "android:configChanges=\"orientation|keyboardHidden\" " +
             "android:screenOrientation=\"behind\">\n");

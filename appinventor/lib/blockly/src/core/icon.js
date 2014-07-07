@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2013 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +89,7 @@ Blockly.Icon.prototype.dispose = function() {
  * Add or remove the UI indicating if this icon may be clicked or not.
  */
 Blockly.Icon.prototype.updateEditable = function() {
-  if (this.block_.isEditable() && !this.block_.isInFlyout) {
+  if (!this.block_.isInFlyout) {
     Blockly.addClass_(/** @type {!Element} */ (this.iconGroup_),
                       'blocklyIconGroup');
   } else {
@@ -111,7 +112,7 @@ Blockly.Icon.prototype.isVisible = function() {
  * @private
  */
 Blockly.Icon.prototype.iconClick_ = function(e) {
-  if (this.block_.isEditable() && !this.block_.isInFlyout) {
+  if (!this.block_.isInFlyout) {
     this.setVisible(!this.isVisible());
   }
 };
@@ -132,7 +133,7 @@ Blockly.Icon.prototype.updateColour = function() {
  * @return {number} Horizontal offset for next item to draw.
  */
 Blockly.Icon.prototype.renderIcon = function(cursorX) {
-  if (this.block_.collapsed) {
+  if (this.block_.isCollapsed()) {
     this.iconGroup_.setAttribute('display', 'none');
     return cursorX;
   }

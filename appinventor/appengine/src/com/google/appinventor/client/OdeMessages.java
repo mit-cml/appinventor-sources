@@ -420,6 +420,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Import Project menuitem")
   String importProjectButton();
 
+  @DefaultMessage("Import project (.aia) from a repository ...")
+  @Description("Name of Import Template menuitem")
+  String importTemplateButton();
+
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectButton();
@@ -974,6 +978,14 @@ public interface OdeMessages extends Messages {
 
   // Used in explorer/commands/AddFormCommand.java
 
+  @DefaultMessage("Add")
+  @Description("Text on 'Add' button to continue with screen creation.")
+  String addScreenButton();
+
+  @DefaultMessage("Do Not Add")
+  @Description("Text on 'Dont Add' button to dismiss screen creation.")
+  String cancelScreenButton();
+
   @DefaultMessage("New Screen")
   @Description("Title of new Screen dialog.")
   String newFormTitle();
@@ -981,6 +993,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Screen name:")
   @Description("Label in front of name in new screen dialog.")
   String formNameLabel();
+
+  @DefaultMessage("WARNING: The number of screens in this app might exceed the limits of App Inventor. " +
+                  "Click <a target=\"_blank\" href=\"/reference/other/manyscreens.html\">here</a> for advice about " +
+                  "creating apps with many screens. " +
+                  "<p>Do you really want to add another screen?</p>")
+  @Description("Label to indicate the application has too many screens.")
+  String formCountErrorLabel();
 
   @DefaultMessage("Screen names can contain only letters, numbers, and underscores and must " +
       "start with a letter")
@@ -1380,6 +1399,23 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the project couldn't be created on the server.")
   String createProjectError();
 
+  // Used in wizards/TemplateUploadWizard.java
+
+  @DefaultMessage("Create a Project from a Template")
+  @Description("Caption for template upload wizard.")
+  String templateUploadWizardCaption();
+
+  @DefaultMessage("Add a New Template Library Url")
+  @Description("Caption for template dialog menu item.")
+  String templateUploadNewUrlCaption();
+
+  @DefaultMessage("Input a Url...")
+  @Description("Caption for input template url wizard.")
+  String inputNewUrlCaption();
+
+  @DefaultMessage("Templates Url: ")
+  @Description("Label for template url wizard.")
+  String newUrlLabel();
   // Used in wizards/ProjectUploadWizard.java
 
   @DefaultMessage("Import Project...")

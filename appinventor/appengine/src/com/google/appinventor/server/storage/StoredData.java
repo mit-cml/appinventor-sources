@@ -50,6 +50,9 @@ public class StoredData {
     public int type;
     String sessionid;           // uuid of active session
 
+    // Path to template project passed as GET parameter
+    String templatePath;
+
   }
 
   // Project properties

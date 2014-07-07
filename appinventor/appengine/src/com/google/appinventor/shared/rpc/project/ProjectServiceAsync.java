@@ -26,6 +26,21 @@ public interface ProjectServiceAsync {
       AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#newProjectFromTemplate(String, String, NewProjectParameters, String)
+   */
+  void newProjectFromTemplate(String projectName, String pathToZip, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromExternalTemplate(String, String)
+   */
+  void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#retrieveTemplateData(String)
+   */
+  void retrieveTemplateData(String pathToTemplates, AsyncCallback<String> callback);
+
+  /**
    * @see ProjectService#copyProject(long, String)
    */
   void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
