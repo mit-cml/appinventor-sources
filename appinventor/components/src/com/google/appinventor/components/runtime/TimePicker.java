@@ -119,9 +119,11 @@ public class TimePicker extends ButtonBase {
       new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(android.widget.TimePicker view, int selectedHour,
             int selectedMinute) {
-              hour = selectedHour;
-              minute = selectedMinute;
-              AfterTimeSet();
+          if (view.isShown()) {
+            hour = selectedHour;
+            minute = selectedMinute;
+            AfterTimeSet();
+          }
         }
       };
 

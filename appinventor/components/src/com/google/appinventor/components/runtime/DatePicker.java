@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.DatePickerDialog;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -144,12 +145,14 @@ public class DatePicker extends ButtonBase {
         @Override
         public void onDateSet(android.widget.DatePicker datePicker, int selectedYear,
                               int selectedMonth, int selectedDay) {
-          year = selectedYear;
-          javaMonth = selectedMonth;
-          month = javaMonth + 1;
-          day = selectedDay;
-          date.updateDate(year, javaMonth, day);
-          AfterDateSet();
+          if (datePicker.isShown()) {
+            year = selectedYear;
+            javaMonth = selectedMonth;
+            month = javaMonth + 1;
+            day = selectedDay;
+            date.updateDate(year, javaMonth, day);
+            AfterDateSet();
+          }
         }
       };
 
