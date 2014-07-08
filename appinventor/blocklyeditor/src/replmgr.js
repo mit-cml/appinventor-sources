@@ -508,6 +508,21 @@ Blockly.ReplMgr.acceptableVersion = function(version) {
 
 Blockly.ReplMgr.processRetvals = function(responses) {
     var block;
+    var context = this;
+    var runtimeerr = function(message) {
+        if (!context.runtimeError) {
+            context.runtimeError = new goog.ui.Dialog(null, true);
+        }
+        if (context.runtimeError.isVisible()) {
+            context.runtimeError.setVisible(false);
+        }
+        context.runtimeError.setTitle("Runtime Error");
+        context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                                       addButton({caption:"Dismiss"}, false, true));
+        context.runtimeError.setContent(message);
+        context.runtimeError.setVisible(true);
+    };
+
     for (var i = 0; i < responses.length; i++) {
         var r = responses[i];
         console.log("processRetVals: " + JSON.stringify(r));
@@ -533,23 +548,14 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             var success = window.parent.BlocklyPanel_pushScreen(r.screen);
             if (!success) {
                 console.log("processRetVals: Invalid Screen: " + r.screen);
+                runtimeerr("Invalid Screen: " + r.screen);
             }
             break;
         case "popScreen":
             window.parent.BlocklyPanel_popScreen();
             break;
         case "error":
-            if (!this.runtimeError) {
-                this.runtimeError = new goog.ui.Dialog(null, true);
-            }
-            if (this.runtimeError.isVisible()) {
-                this.runtimeError.setVisible(false);
-            }
-            this.runtimeError.setTitle("Runtime Error");
-            this.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
-                                           addButton({caption:"Dismiss"}, false, true));
-            this.runtimeError.setContent(r.value + "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.");
-            this.runtimeError.setVisible(true);
+            runtimeerr(r.value + "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.");
         }
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
