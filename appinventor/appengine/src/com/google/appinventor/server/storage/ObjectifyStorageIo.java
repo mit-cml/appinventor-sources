@@ -95,9 +95,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final String DEFAULT_ENCODING = "UTF-8";
 
   private static final long MOTD_ID = 1;
-
-  public static final long NOTPUBLISHED = -1;
-  public static final long FROMSCRATCH = -1;
   
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
@@ -230,7 +227,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.settings = "";
     userData.email = email == null ? "" : email;
     userData.name = User.getDefaultName(email);
-    userData.type = 0;
+    userData.type = User.USER;
+    userData.link = "";
     datastore.put(userData);
     return userData;
   }
@@ -447,8 +445,8 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
           pd.type = project.getProjectType();
-          pd.galleryId = NOTPUBLISHED;
-          pd.attributionId = FROMSCRATCH;
+          pd.galleryId = UserProject.NOTPUBLISHED;
+          pd.attributionId = UserProject.FROMSCRATCH;
           datastore.put(pd); // put the project in the db so that it gets assigned an id
 
           assert pd.id != null;
@@ -928,7 +926,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             attributionId.t = pd.attributionId;
           } else {
-            attributionId.t = Long.valueOf(FROMSCRATCH);
+            attributionId.t = Long.valueOf(UserProject.FROMSCRATCH);
           }
         }
       });

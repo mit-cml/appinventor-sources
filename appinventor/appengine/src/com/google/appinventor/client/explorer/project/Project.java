@@ -143,7 +143,7 @@ public final class Project {
   }
 
   public boolean isPublished() {
-    if (projectInfo.getGalleryId()==-1) {
+    if (projectInfo.getGalleryId()== UserProject.NOTPUBLISHED) {
       return false;
     }
     return true;

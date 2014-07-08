@@ -820,7 +820,7 @@ panel
     MESSAGES.galleryError()) {
     @Override
       public void onSuccess(final Long attributionId) {
-        if (attributionId != -1) {
+        if (attributionId != UserProject.FROMSCRATCH) {
           remixedFrom.setVisible(true);
           parentApp.setVisible(true);
           final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(

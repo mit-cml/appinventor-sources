@@ -42,6 +42,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // properly generated, we don't have to worry about allocating specific prefixes and
   // ensuring that they are unique.
 
+  public static final int USER = 0;
+  public static final int MODERATOR = 1;
+
   /**
    * Creates a new user data transfer object.
    *
@@ -207,7 +210,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public boolean isModerator() {
-    if(type == 1){
+    if(type == MODERATOR){
       return true;
     }
     return false;

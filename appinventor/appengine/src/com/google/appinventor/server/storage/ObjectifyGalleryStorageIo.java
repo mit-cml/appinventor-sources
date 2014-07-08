@@ -37,6 +37,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
@@ -636,9 +637,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
             GalleryAppAttributionData attributionData = new GalleryAppAttributionData();
             attributionData.galleryKey = galleryKey(galleryId);
             attributionData.attributionId = attributionId;
-            if (attributionData.attributionId == 0) {
-              attributionData.attributionId = -1L;
-            }
             attributionData.galleryId = galleryId;
             datastore.put(attributionData);
 
@@ -669,13 +667,14 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
               boolean find = false;
               //this is a forloop but only one result, or none if app created before this.
               for (GalleryAppAttributionData attributionData : datastore.query(GalleryAppAttributionData.class).ancestor(galleryKey)) {
+                if(attributionData.attributionId == UserProject.FROMSCRATCH) continue;
                 GalleryAppData appData = datastore.find(galleryKey(attributionData.attributionId));
                 if(appData == null || appData.active == false) break;
                 id.t = attributionData.attributionId;
                 find = true;
               }
               if(!find){
-                id.t = Long.valueOf(-1);
+                id.t = UserProject.FROMSCRATCH;
               }
         }
       });

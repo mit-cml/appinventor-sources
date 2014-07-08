@@ -49,6 +49,9 @@ public class UserProject implements IsSerializable {
 
   private static final String DELIM = "#DELIM#";
 
+  public static final long NOTPUBLISHED = 0;
+  public static final long FROMSCRATCH = 0;
+
   /**
    * Default constructor. This constructor is required by GWT.
    */
@@ -190,7 +193,7 @@ public class UserProject implements IsSerializable {
     userProject.projectType = parts[2];
     userProject.creationDate = Long.parseLong(parts[3]);
     userProject.modificationDate = Long.parseLong(parts[4]);
-    userProject.galleryId= -1;  // should be a constant, there is one in ObjectifyStorage
+    userProject.galleryId= UserProject.NOTPUBLISHED;
     return userProject;
   }
 }
