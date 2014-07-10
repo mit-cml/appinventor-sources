@@ -109,6 +109,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private TabPanel sidebarTabs;
   private FlowPanel appDescPanel;
   private FlowPanel appReportPanel;
+  private FlowPanel appSharePanel;
   private FlowPanel appComments;
   private FlowPanel appCommentsList;
   private FlowPanel returnToGallery;
@@ -250,6 +251,8 @@ panel
       initActionTabs();
       // Initialize app action features
       initReportSection();
+      // Initialize app share
+      initAppShare();
 
       // We are not showing comments at initial launch, Such sadness :'[
       /*
@@ -303,6 +306,7 @@ panel
     appSecondaryWrapper = new FlowPanel();
     appDescPanel = new FlowPanel();
     appReportPanel = new FlowPanel();
+    appSharePanel = new FlowPanel();
     appActionTabs = new TabPanel();
     sidebarTabs = new TabPanel();
     appComments = new FlowPanel();
@@ -783,6 +787,7 @@ panel
     appActionTabs.addStyleName("app-actions");
     appActionTabs.add(appDescPanel, "Description");
     appActionTabs.add(appReportPanel, "Report");
+    appActionTabs.add(appSharePanel, "Share");
     appActionTabs.selectTab(0);
     appActionTabs.addStyleName("app-actions-tabs");
     appDetails.add(appSecondaryWrapper);
@@ -914,6 +919,26 @@ panel
       };
     Ode.getInstance().getGalleryService().isReportedByUser(app.getGalleryAppId(),
         isReportdByUserCallback);
+  }
+
+  /**
+   * Helper method called by constructor to initialize the report section
+   */
+  private void initAppShare() {
+    final HTML sharePrompt = new HTML();
+    sharePrompt.setHTML(MESSAGES.gallerySharePrompt());
+    sharePrompt.addStyleName("primary-prompt");
+    final TextBox urlText = new TextBox();
+    urlText.addStyleName("action-textbox");
+    urlText.setText(Window.Location.getHost() + MESSAGES.galleryGalleryIdAction() + app.getGalleryAppId());
+    urlText.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        urlText.selectAll();
+      }
+    });
+    appSharePanel.add(sharePrompt);
+    appSharePanel.add(urlText);
   }
 
   /**

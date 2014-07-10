@@ -34,6 +34,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
@@ -154,6 +155,10 @@ public class Ode implements EntryPoint {
   // Template path if set by /?repo=
   private String templatePath;
   private boolean templateLoadingFlag = false;
+
+  // Gallery id if set by /?galleryId=
+  private String galleryId;
+  private boolean galleryIdLoadingFlag = false;
 
   // Nonce Information
   private String nonce;
@@ -420,7 +425,7 @@ public class Ode implements EntryPoint {
       return;
     }
     OdeLog.log("Ode.openPreviousProject called");
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+    final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
 
     // Retrieve the userTemplates
@@ -438,6 +443,27 @@ public class Ode implements EntryPoint {
           }
         };
       TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
+    } else if(galleryIdLoadingFlag){
+      try {
+        long galleryId_Long = Long.valueOf(galleryId);
+        final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(GalleryApp app) {
+                if(app == null){
+                  openProject(value);
+                  Window.alert(MESSAGES.galleryIdNotExist());
+                }else{
+                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+                }
+              }
+            };
+        Ode.getInstance().getGalleryService().getApp(galleryId_Long, callback);
+      } catch (NumberFormatException e) {
+        openProject(value);
+        Window.alert(MESSAGES.galleryIdNotExist());
+      }
     } else {
       openProject(value);
     }
@@ -561,6 +587,13 @@ public class Ode implements EntryPoint {
     if (templatePath != null) {
       OdeLog.wlog("Got a template path of " + templatePath);
       templateLoadingFlag = true;
+    }
+
+    // Let's see if we were started with a galleryId= parameter which points to a template
+    galleryId = Window.Location.getParameter("galleryId");
+    if(galleryId != null){
+      OdeLog.wlog("Got a galleryId of " + galleryId);
+      galleryIdLoadingFlag = true;
     }
 
     // Get user information.

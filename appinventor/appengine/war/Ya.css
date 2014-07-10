@@ -2132,6 +2132,13 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+.app-actions .action-textbox {
+  width: 99%;
+  margin: 15px 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
 
 /* Moderation Page styles */
 .all-reports {

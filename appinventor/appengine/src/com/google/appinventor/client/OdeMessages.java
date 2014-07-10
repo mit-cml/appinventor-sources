@@ -354,6 +354,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message if the server becomes completely unavailable.")
   String serverUnavailable();
 
+  @DefaultMessage("There is no Gallery App with the given id.")
+  @Description("Error message if the gallery id does not exist")
+  String galleryIdNotExist();
+
   // Used in RpcStatusPopup.java
 
   @DefaultMessage("Loading ...")
@@ -1540,6 +1544,18 @@ public interface OdeMessages extends Messages {
       "")
   @Description("Prompt for the gallery app report section.")
   String galleryReportPrompt();
+
+  @DefaultMessage("Copy and share link: ")
+  @Description("Prompt for the gallery app share section.")
+  String gallerySharePrompt();
+
+  @DefaultMessage("Copy")
+  @Description("Button for copying share link to clipboard")
+  String galleryCopyButton();
+
+  @DefaultMessage("/?galleryId=")
+  @Description("redirect action of galleryId")
+  String galleryGalleryIdAction();
 
   @DefaultMessage("Submit report")
   @Description("Text for the gallery app report button.")

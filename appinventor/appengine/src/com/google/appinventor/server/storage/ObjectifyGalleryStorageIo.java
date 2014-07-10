@@ -49,6 +49,7 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
@@ -358,7 +359,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           makeGalleryApp(app,gApp);
         }
       });
-    } catch (ObjectifyException e) {
+    }catch (NotFoundException e){
+      //galleryId is not in our database
+      return null;
+    }
+    catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
     }
     return (gApp);
