@@ -351,8 +351,9 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 17.
   // For YOUNG_ANDROID_VERSION 137:
   // - FORM_COMPONENT_VERSION was incremented to 18.
+  // - MEDIASTORE_COMPONENT_VERSION was incremented to 1
 
-  public static final int YOUNG_ANDROID_VERSION = 137;
+  public static final int YOUNG_ANDROID_VERSION = 138;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -935,6 +936,9 @@ public class YaVersion {
   // - ClearCaches method was added
   public static final int WEBVIEWER_COMPONENT_VERSION = 6;
 
+  // For MEDIASTORE_COMPONENT_VERSION 1:
+  // - Initial Version.
+  public static final int MEDIASTORE_COMPONENT_VERSION = 1;
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.

@@ -472,6 +472,11 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/procedures.png")
   ImageResource procedures();
+  /**
+    * Designer palette item: MediaStore
+    */
+  @Source("com/google/appinventor/images/mediastore.png")
+  ImageResource mediastore();
 
   /**
    * Designer palette item: Sharing Component

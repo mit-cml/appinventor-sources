@@ -5561,4 +5561,12 @@ public interface OdeMessages extends Messages {
   @Description("")
   String extraKeyValueWarning();
 
+  @DefaultMessage("MediaStored")
+  @Description("")
+  String MediaStoredEvents();
+
+  @DefaultMessage("PostMedia")
+  @Description("")
+  String PostMediaMethods();
+
 }
