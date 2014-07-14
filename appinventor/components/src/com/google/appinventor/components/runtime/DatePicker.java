@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.DatePickerDialog;
+import android.os.Handler;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -40,6 +41,7 @@ public class DatePicker extends ButtonBase {
   private String [] localizedMonths = new DateFormatSymbols().getMonths();
   private boolean customDate = false;
   private Form form;
+  private Handler androidUIHandler;
 
   /**
    * Creates a new DatePicker component.
@@ -56,6 +58,9 @@ public class DatePicker extends ButtonBase {
     day = c.get(Calendar.DAY_OF_MONTH);
     date = new DatePickerDialog(this.container.$context(), datePickerListener, year, javaMonth,
         day);
+
+    androidUIHandler = new Handler();
+
   }
 
   /**
@@ -151,7 +156,15 @@ public class DatePicker extends ButtonBase {
             month = javaMonth + 1;
             day = selectedDay;
             date.updateDate(year, javaMonth, day);
-            AfterDateSet();
+            // We post an event to the Android handler to do the App Inventor
+            // event dispatch. This way it gets called outside of the context
+            // of the datepicker's event. This permits the App Inventor dispatch
+            // handler to re-launch this date picker
+            androidUIHandler.post(new Runnable() {
+                public void run() {
+                  AfterDateSet();
+                }
+              });
           }
         }
       };

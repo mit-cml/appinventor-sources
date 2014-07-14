@@ -17,6 +17,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.os.Handler;
+
 import java.util.Calendar;
 
 
@@ -40,6 +42,7 @@ public class TimePicker extends ButtonBase {
   private TimePickerDialog time;
   private boolean customTime = false;
   private Form form;
+  private Handler androidUIHandler;
 
   /**
    * Create a new TimePicker component.
@@ -54,6 +57,9 @@ public class TimePicker extends ButtonBase {
     minute = c.get(Calendar.MINUTE);
     time = new TimePickerDialog(this.container.$context(),
         timePickerListener, hour, minute, false);
+
+    androidUIHandler = new Handler();
+
   }
 
 
@@ -122,7 +128,15 @@ public class TimePicker extends ButtonBase {
           if (view.isShown()) {
             hour = selectedHour;
             minute = selectedMinute;
-            AfterTimeSet();
+            // We post an event to the Android handler to do the App Inventor
+            // event dispatch. This way it gets called outside of the context
+            // of the timepicker's event. This permits the App Inventor dispatch
+            // handler to re-launch this timepicker
+            androidUIHandler.post(new Runnable() {
+                public void run() {
+                  AfterTimeSet();
+                }
+              });
           }
         }
       };
