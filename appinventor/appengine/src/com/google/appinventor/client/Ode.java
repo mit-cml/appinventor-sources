@@ -1497,6 +1497,57 @@ public class Ode implements EntryPoint {
     dialogBox.show();
   }
 
+  /**
+   * Display a Dialog box that explains that you cannot connect a
+   * device or the emulator to App Inventor until you have a project
+   * selected.
+   */
+
+  private void wontConnectDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.noprojectDialogTitle());
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>" + MESSAGES.noprojectDuringConnect() + "</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    holder.add(okButton);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * Is it OK to connect a device/emulator. Returns true if so false
+   * otherwise.
+   *
+   * Determination is made based on whether or not a project is
+   * selected.
+   *
+   * @return boolean
+   */
+
+  public boolean okToConnect() {
+    if (getCurrentYoungAndroidProjectId() == 0) {
+      wontConnectDialog();
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   /**
    * recordCorruptProject -- Record that we received a corrupt read. This

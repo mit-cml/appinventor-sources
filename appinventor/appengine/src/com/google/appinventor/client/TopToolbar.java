@@ -300,37 +300,47 @@ public class TopToolbar extends Composite {
   private class WirelessAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, false); // false means we are
-      // *not* the emulator
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, false, false); // false means we are
+                                       // *not* the emulator
+      }
     }
   }
 
   private class EmulatorAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, true, false); // true means we are the
-      // emulator
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, true, false); // true means we are the
+                                      // emulator
+      }
     }
   }
 
   private class UsbAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, true);
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, false, true);
+      }
     }
   }
 
   private class ResetAction implements Command {
     @Override
     public void execute() {
-      startRepl(false, false, false); // We are really stopping the repl here
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(false, false, false); // We are really stopping the repl here
+      }
     }
   }
 
   private class HardResetAction implements Command {
     @Override
     public void execute() {
-      replHardReset();
+      if (Ode.getInstance().okToConnect()) {
+        replHardReset();
+      }
     }
   }
 

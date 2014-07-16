@@ -168,6 +168,14 @@ public interface OdeMessages extends Messages {
   @Description("Error message if the server becomes completely unavailable.")
   String serverUnavailable();
 
+  @DefaultMessage("No Project Chosen")
+  @Description("Title for Error Dialog when connection is attempted without a project.")
+  String noprojectDialogTitle();
+
+  @DefaultMessage("You must first create or select a project before connecting!")
+  @Description("Error message for connection attempt without a project selected.")
+  String noprojectDuringConnect();
+
   // Used in RpcStatusPopup.java
 
   @DefaultMessage("Loading ...")
