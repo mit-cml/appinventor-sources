@@ -47,6 +47,7 @@ public final class ProfileBox extends FlowPanel {
     OdeLog.log("######### I got in setApp edit " + editStatus);
     pContainer.clear();
     pPage = new ProfilePage(userId, editStatus);
+    pPage.loadImage();
     pContainer.add(pPage);
   }
   /**

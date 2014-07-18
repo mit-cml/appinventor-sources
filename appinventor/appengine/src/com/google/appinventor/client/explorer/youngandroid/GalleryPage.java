@@ -249,10 +249,11 @@ panel
       appDetails.add(dividerPrimary);
       // Initialize action tabs
       initActionTabs();
-      // Initialize app action features
-      initReportSection();
       // Initialize app share
       initAppShare();
+      // Initialize app action features
+      initReportSection();
+
 
       // We are not showing comments at initial launch, Such sadness :'[
       /*
@@ -788,8 +789,8 @@ panel
     appSecondaryWrapper.add(appActionTabs);
     appActionTabs.addStyleName("app-actions");
     appActionTabs.add(appDescPanel, "Description");
-    appActionTabs.add(appReportPanel, "Report");
     appActionTabs.add(appSharePanel, "Share");
+    appActionTabs.add(appReportPanel, "Report");
     appActionTabs.selectTab(0);
     appActionTabs.addStyleName("app-actions-tabs");
     appDetails.add(appSecondaryWrapper);

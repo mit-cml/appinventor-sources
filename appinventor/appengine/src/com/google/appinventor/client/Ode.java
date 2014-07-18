@@ -320,6 +320,7 @@ public class Ode implements EntryPoint {
             ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);
           }
+          ProjectListBox.loadProfileImage();
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);

@@ -79,6 +79,10 @@ public final class ProjectListBox extends TabPanel {
 //    this.addStyleName("ode-MyTabs");
   }
 
+  public static void loadProfileImage(){
+    profile.loadImage();
+  }
+
   /**
    * Returns project list associated with projects explorer box.
    *

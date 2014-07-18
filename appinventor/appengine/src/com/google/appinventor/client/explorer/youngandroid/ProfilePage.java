@@ -150,7 +150,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       // Get current user id
       final User currentUser = Ode.getInstance().getUser();
       userId = currentUser.getUserId();
-      initImageComponents(userId);
     } else {
       // this is checking out an already existing user's profile...
       userId = incomingUserId;
@@ -163,26 +162,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     } else  { // we are just viewing this page so setup the image
       initReadOnlyImage();
     }
-
-//      // setup upload stuff
-//      imageUploadPrompt.setText("Upload your profile image!");
-//      // Set the correct handler for servlet side capture
-//      imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-//      imageUpload.addChangeHandler(new ChangeHandler (){
-//        public void onChange(ChangeEvent event) {
-//          uploadImage();
-//        }
-//      });
-//      appCardWrapper.addClickHandler(new ClickHandler() {
-//        @Override
-//        public void onClick(ClickEvent event) {
-//          // The correct way to trigger click event on FileUpload
-//          imageUpload.getElement().<InputElement>cast().click();
-//        }
-//      });
-//      imageUploadBoxInner.add(imageUploadPrompt);
-//      imageUploadBoxInner.add(imageUpload);
-//      imageUploadBoxInner.add(userAvatar);
 
     if (editStatus == PRIVATE) {
       userContentHeader.setText("Edit your profile");
@@ -234,7 +213,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     } else {
       profileSingle.addStyleName("ode-Public");
       // USER PROFILE IN PUBLIC (NON-EDITABLE) STATE
-//      imageUploadBoxInner.clear();
       // Set up the user info stuff
       userLinkLabel.setText("More info:");
       profileInfo.add(userContentHeader);
@@ -299,10 +277,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
             // In this case it'll return the user of [userId]
             userContentHeader.setText(user.getUserName());
             makeValidLink(userLinkDisplay, user.getUserLink());
-
-            // once we get the user info and id we can show the right image
-//            updateUserImage(GalleryApp.getUserImageURL(userId), imageUploadBoxInner);
-
          }
     };
     if (editStatus == PRIVATE) {
@@ -375,27 +349,20 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    * Helper method called by constructor to initialize image upload components
    */
   private void initImageComponents(String userId) {
-//    imageUploadBox = new FlowPanel();
     imageUploadBox.addStyleName("app-image-uploadbox");
     imageUploadBox.addStyleName("gallery-editbox");
-//    imageUploadBoxInner = new FlowPanel();
     imageUploadPrompt = new Label("Upload your profile image!");
     imageUploadPrompt.addStyleName("gallery-editprompt");
 
-
-//    OdeLog.log("#### got in initImageComponents, GalleryApp.getUserImageUrl(userId) = " + GalleryApp.getUserImageUrl(userId));
     if(gallery.getGallerySettings() != null)
       updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
     imageUploadPrompt.addStyleName("app-image-uploadprompt");
     imageUploadBoxInner.add(imageUploadPrompt);
 
-//    final FileUpload upload = new FileUpload();
-//    upload.addStyleName("app-image-upload");
     // Set the correct handler for servlet side capture
     imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
     imageUpload.addChangeHandler(new ChangeHandler (){
       public void onChange(ChangeEvent event) {
-//        OdeLog.log("$$$$ you try to upload an image");
         uploadImage();
       }
     });
@@ -405,7 +372,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     profileHeaderWrapper.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-//        OdeLog.log("$$$$ you try to trigger click event on FileUpload");
         // The correct way to trigger click event on FileUpload
         imageUpload.getElement().<InputElement>cast().click();
       }
@@ -427,26 +393,22 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    */
   private void uploadImage() {
     String uploadFilename = imageUpload.getFilename();
-//    OdeLog.log("$$$$ filename = " + uploadFilename);
     if (!uploadFilename.isEmpty()) {
       String filename = makeValidFilename(uploadFilename);
       // Forge the request URL for gallery servlet
       String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
           "/user/" + userId + "/" + filename;
-//      OdeLog.log("$$$$ profile page image upload" + uploadUrl);
       Uploader.getInstance().upload(imageUpload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
         @Override
         public void onSuccess(UploadResponse uploadResponse) {
           switch (uploadResponse.getStatus()) {
             case SUCCESS:
-//              OdeLog.log("$$$$ profile page image upload success");
               ErrorReporter.hide();
               imageUploadBoxInner.clear();
               updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
               break;
             case FILE_TOO_LARGE:
-//              OdeLog.log("$$$$ profile page image upload too large");
               // The user can resolve the problem by uploading a smaller file.
               ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
               break;
@@ -480,11 +442,12 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    * @param url  The URL of the image to show
    * @param container  The container that image widget resides
    */
-  private void updateUserImage(String url, Panel container) {
-//    userAvatar = new Image();
-    userAvatar.setUrl(url);
+  private void updateUserImage(final String url, Panel container) {
+    userAvatar = new Image();
+    //setUrl if the new URL is the same one as it was before; an easy workaround is
+    //to make the URL unique so it forces the browser to reload
+    userAvatar.setUrl(url + "?" + System.currentTimeMillis());
     userAvatar.addStyleName("app-image");
-//    OdeLog.log("#### profileStatus == " + profileStatus + ", url = " + url);
     if (profileStatus == PRIVATE) {
       userAvatar.addStyleName("status-updating");
     }
@@ -492,51 +455,13 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     // the error will occur and we'll load default image
     userAvatar.addErrorHandler(new ErrorHandler() {
       public void onError(ErrorEvent event) {
-//        OdeLog.log("#### you triggered userAvatar error handler, get back to default img");
         userAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
       }
     });
     container.add(userAvatar);
   }
 
-
-  /**
-   * Loads the proper tab GUI with gallery's app data.
-   * @param apps: list of returned gallery apps from callback.
-   * @param requestId: determines the specific type of app data.
-   */
-  /*  private void refreshApps(List<GalleryApp> apps, int requestId) {
-    switch (requestId) {
-      case GalleryClient.REQUEST_BYDEVELOPER:
-        OdeLog.log("###### PROFILEPAGE GOT IN refreshapps");
-//        galleryGF.generateSidebar(apps, appsByAuthor, MESSAGES.galleryAppsByAuthorSidebar(), false);
-        break;
-    }
+  public void loadImage(){
+    initImageComponents(userId);
   }
-
-
-  @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId, boolean refreshable) {
-    if (apps != null) {
-      OdeLog.log("###### PROFILEPAGE GOT IN onAppListRequestCompleted");
-      refreshApps(apps, requestId, refreshable);
-    } else {
-      Window.alert("app list returned null");
-    }
-  }
-
-
-  @Override
-  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-    // TODO Auto-generated method stub
-  }
-
-
-  @Override
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-    // TODO Auto-generated method stub
-  }
-*/
-
-
 }
