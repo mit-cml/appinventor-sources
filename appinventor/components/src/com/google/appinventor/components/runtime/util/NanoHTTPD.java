@@ -33,6 +33,8 @@ import java.util.TimeZone;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 
+import android.util.Log;
+
 /**
  * A simple, tiny, nicely embeddable HTTP 1.0 (partially 1.1) server in Java
  *
@@ -80,6 +82,11 @@ import java.io.FileOutputStream;
  */
 public class NanoHTTPD
 {
+  private static final String LOG_TAG = "AppInvHTTPD"; // using this tag on purpose
+                                                       // when filtering logcat for
+                                                       // interesting message, will
+                                                       // use this tag to search
+
         // ==================================================
         // API parts
         // ==================================================
@@ -336,7 +343,7 @@ public class NanoHTTPD
                 public HTTPSession( Socket s )
                 {
                         mySocket = s;
-                        System.err.println("NanoHTTPD: getPoolSize() = " + myExecutor.getPoolSize());
+                        Log.d(LOG_TAG, "NanoHTTPD: getPoolSize() = " + myExecutor.getPoolSize());
                         myExecutor.execute(this);
                 }
 

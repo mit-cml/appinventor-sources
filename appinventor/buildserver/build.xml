@@ -119,57 +119,6 @@
   </target>
 
   <!-- =====================================================================
-       GenStarterAppSrcZip
-       ===================================================================== -->
-  <target name="GenStarterAppSrcZip"
-          depends="init">
-    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
-         AppInventorPhoneApp.apk (i.e. the stem cell app) you should put that file in the
-         ${appinventor.dir}/aiphoneapp directory and add 'android.keystore' to the includes
-         list below.
-      -->
-    <zip destfile="${local.build.dir}/aiphoneapp.zip" basedir="${appinventor.dir}/aiphoneapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*" />
-  </target>
-
-  <!-- =====================================================================
-       CheckStarterApp: Sets the StarterApp.uptodate property to true if
-                        the starter app needs to be rebuilt. This can happen
-                        if the starter app source files have changed, or if
-                        any of the build server jars have changed.
-       ===================================================================== -->
-  <target name="CheckStarterApp"
-          depends="GenStarterAppSrcZip,BuildServer">
-    <uptodate property="StarterApp.uptodate" targetfile="${public.build.dir}/AppInventorPhoneApp.apk">
-      <srcfiles file="${local.build.dir}/aiphoneapp.zip"/>
-      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
-    </uptodate>
-  </target>
-
-  <!-- =====================================================================
-       StarterApp: builds ../build/buildserver/AppInventorPhoneApp.apk
-       ===================================================================== -->
-  <target name="StarterApp"
-          depends="CheckStarterApp"
-          unless="StarterApp.uptodate">
-    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
-      <classpath>
-        <fileset dir="${run.lib.dir}" includes="*.jar" />
-      </classpath>
-      <sysproperty key="file.encoding" value="UTF-8" />
-      <arg value="--inputZipFile" />
-      <arg value="${local.build.dir}/aiphoneapp.zip" />
-      <arg value="--userName" />
-      <arg value="App Inventor" />
-      <arg value="--isForStemCellApp" />
-      <arg value="--outputDir" />
-      <arg value="${public.build.dir}" />
-      <arg value="--dexCacheDir" />
-      <arg value="${public.build.dir}/dexCache" />
-    </java>
-  </target>
-
-  <!-- =====================================================================
        GenPlayAppSrcZip Version for the Google Play Store works over WiFi
        ===================================================================== -->
   <target name="GenPlayAppSrcZip"
@@ -212,7 +161,7 @@
       <arg value="${local.build.dir}/aiplayapp.zip" />
       <arg value="--userName" />
       <arg value="App Inventor" />
-      <arg value="--isForWirelessRepl" />
+      <arg value="--isForCompanion" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
       <arg value="--dexCacheDir" />

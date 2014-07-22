@@ -167,8 +167,7 @@ public final class Compiler {
   private final PrintStream out;
   private final PrintStream err;
   private final PrintStream userErrors;
-  private final boolean isForRepl;
-  private final boolean isForWireless;
+  private final boolean isForCompanion;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
@@ -212,7 +211,7 @@ public final class Compiler {
     for (String componentType : componentTypes) {
       permissions.addAll(componentPermissions.get(componentType));
     }
-    if (isForWireless) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
+    if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
       permissions.add("android.permission.READ_LOGS");
     }
 
@@ -330,7 +329,7 @@ public final class Compiler {
       // these lines we indicate that we use these features BUT THAT THEY ARE NOT REQUIRED so it is ok
       // to make the app available on devices that lack the feature. Without these lines the Play Store
       // makes a guess based on permissions and assumes that they are required features.
-      if (isForWireless) {
+      if (isForCompanion) {
           out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
@@ -365,7 +364,7 @@ public final class Compiler {
       out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
-      if (isForWireless) {              // This is to hook into ACRA
+      if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       }
       out.write(">\n");
@@ -388,8 +387,10 @@ public final class Compiler {
         // TODO:  Check that this doesn't screw up other components.  Also, it might be
         // better to do this programmatically when the NearField component is created, rather
         // than here in the manifest.
-        if (componentTypes.contains("NearField") && !isForWireless && isMain) {
+        if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
+        } else if (isMain && isForCompanion) {
+          out.write("android:launchMode=\"singleTop\" ");
         }
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
@@ -397,15 +398,12 @@ public final class Compiler {
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
-        if (isMain && !isForRepl) {
-          // We only want the LAUNCHER category if this is a normal user-compiled app.
-          // If this is the special REPL app then we don't want the app to show up in
-          // the apps list
+        if (isMain) {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
 
-        if (componentTypes.contains("NearField") && !isForWireless && isMain) {
+        if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
           //  this will trigger the form's onResume method
           //  For now, we're handling text/plain only,but we can add more and make the Nearfield
@@ -475,7 +473,6 @@ public final class Compiler {
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
-   * @param isForRepl {@code true}, if this compilation is for the special REPL app
    * @param keystoreFilePath
    * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
@@ -484,12 +481,12 @@ public final class Compiler {
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, boolean isForWireless, String keystoreFilePath,
+                                boolean isForCompanion, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
+    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForCompanion,
                                      childProcessRam, dexCacheDir);
 
     // Get names of component-required libraries and assets.
@@ -691,20 +688,18 @@ public final class Compiler {
    * @param out  stdout stream for compiler messages
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
-   * @param isForRepl {@code true}, if this compilation is for the special REPL app
    * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForRepl, boolean isForWireless,
+           PrintStream userErrors, boolean isForCompanion,
            int childProcessMaxRam, String dexCacheDir) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
-    this.isForRepl = isForRepl;
-    this.isForWireless = isForWireless;
+    this.isForCompanion = isForCompanion;
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
   }
