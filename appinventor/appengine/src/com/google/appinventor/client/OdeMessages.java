@@ -1480,7 +1480,15 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery app developer prefix text label")
   String galleryByDeveloperPrefixedText();
 
-  @DefaultMessage("Tutorial/Video: ")
+  @DefaultMessage("Created Date: ")
+  @Description("Text for gallery page created date label")
+  String galleryCreatedDateLabel();
+
+  @DefaultMessage("Changed Date: ")
+  @Description("Text for gallery page changed date label")
+  String galleryChangedDateLabel();
+
+  @DefaultMessage("Tutorial / Video: ")
   @Description("Text for gallery page more info link label")
   String galleryMoreInfoLabel();
 
@@ -1488,15 +1496,15 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery page credit label")
   String galleryCreditLabel();
 
-  @DefaultMessage("If this app has a tutorial or video, enter the URL here")
+  @DefaultMessage("If this app has a tutorial or video, please enter the URL here.")
   @Description("Text for gallery page more info link hint")
   String galleryMoreInfoHint();
 
-  @DefaultMessage("Are you remixing the code of another app? Credit them here")
+  @DefaultMessage("Are you remixing code of another app? Credit them here.")
   @Description("Text for gallery page credit hint")
   String galleryCreditHint();
 
-  @DefaultMessage("Input the description of the app here")
+  @DefaultMessage("Please write the description of the app here.")
   @Description("Text for gallery page description hint")
   String galleryDescriptionHint();
 

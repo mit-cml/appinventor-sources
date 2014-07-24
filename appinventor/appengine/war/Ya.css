@@ -549,8 +549,8 @@ select {
 }
 
 .gwt-TextBox {
-  padding: 0px !important;
-  margin: 0px !important;
+  padding: 0px;
+  margin: 0px;
 }
 
 .gwt-Tree .gwt-TreeItem span * {
@@ -1716,7 +1716,7 @@ textarea::-webkit-input-placeholder {
   color: #999;
 }
 .gallery-card-content .gwt-Image,
-.app-meta .gwt-Image { /* Mini meta images */
+.app-stats .gwt-Image { /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
@@ -1881,6 +1881,10 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
   margin-bottom: 5px;
 }
+.app-title-container .app-desc-textarea,
+.app-meta .app-desc-textarea {
+  height: 20px;
+}
 .gallery-app-details .app-comments-textarea,
 .app-desc-textarea {
   height: 50px;
@@ -1975,7 +1979,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-attributor-label {
   display: inline;
 }
-.app-meta {
+.app-stats {
   font-size: 12px;
   font-weight: 600;
   line-height: 15px;
@@ -1984,25 +1988,33 @@ textarea::-webkit-input-placeholder {
   padding: 10px 0 0 15px;
   color: #999;
 }
-.app-meta .gwt-Image { /* Mini meta images */
+.app-stats .gwt-Image { /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
   height: 12px;
 }
-.app-meta .gwt-Label {
+.app-stats .gwt-Label {
   display: inline;
   padding-right: 5px;
 }
-.app-dates {
+.app-meta {
+  font-size: 14px;
   display: block;
   margin: 10px 0;
 }
-.app-dates .gwt-Label {
+.app-meta .gwt-Label {
   line-height: 175%;
   font-weight: 300;
   margin: 0 15px 0 0;
   color: #999;
+  width: 50%;
+  display: inline-block;
+  vertical-align: top;
+}
+.app-meta .app-meta-label {
+  display: inline-block;
+  width: 110px;
 }
 .gallery-app-details .app-tags {
   max-width: 100%;
@@ -2024,11 +2036,11 @@ textarea::-webkit-input-placeholder {
   -o-transition: background-color 1s ease;
   transition: background-color 1s ease; 	
 }
-.app-meta .note-header {
+.app-stats .note-header {
   display: block;
   font-weight: 900;
 }
-.app-meta .note-content {
+.app-stats .note-content {
   display: block;
   font-weight: 100;
   margin-bottom: 15px;
@@ -2102,7 +2114,7 @@ textarea::-webkit-input-placeholder {
   line-height: 1.75;
   color: #666;
 }
-.app-meta .primary-link {
+.app-stats .primary-link {
   font-size: 12px;
 }
 .primary-link,

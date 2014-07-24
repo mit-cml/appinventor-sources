@@ -102,7 +102,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appAuthor;
   private FlowPanel appMeta;
   private FlowPanel appDates;
-  private FlowPanel appOtherInfo;
   private FlowPanel appPrimaryWrapper;
   private FlowPanel appSecondaryWrapper;
   private TabPanel appActionTabs;
@@ -131,7 +130,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Label appChanged;
   private TextArea titleText;
   private TextArea desc;
-  private TextBox moreInfoText;
+  private TextArea moreInfoText;
   private TextArea creditText;
   private FlowPanel descBox;
   private FlowPanel titleBox;
@@ -212,15 +211,12 @@ panel
     // App details - meta
     if (!newOrUpdateApp()) {
       appInfo.add(appMeta);
-      initAppMeta(appMeta);
+      initAppStats(appMeta);
     }
 
     // App details - dates
     appInfo.add(appDates);
-    initAppDates(appDates);
-
-    appInfo.add(appOtherInfo);
-    initOtherInfo(appOtherInfo);
+    initAppMeta(appDates);
 
      // App details - app description
     appInfo.add(descBox);
@@ -302,7 +298,6 @@ panel
     appAuthor = new FlowPanel();
     appMeta = new FlowPanel();
     appDates = new FlowPanel();
-    appOtherInfo = new FlowPanel();
     appPrimaryWrapper = new FlowPanel();
     appSecondaryWrapper = new FlowPanel();
     appDescPanel = new FlowPanel();
@@ -324,7 +319,7 @@ panel
     titleBox = new FlowPanel();
     desc = new TextArea();
     titleText = new TextArea();
-    moreInfoText = new TextBox();
+    moreInfoText = new TextArea();
     creditText = new TextArea();
   }
 
@@ -511,6 +506,7 @@ panel
       });
       titleText.addStyleName("app-desc-textarea");
       container.add(titleText);
+      container.addStyleName("app-title-container");
     } else {
       Label title = new Label(app.getTitle());
       title.addStyleName("app-title");
@@ -571,25 +567,24 @@ panel
   }
 
   /**
-   * Helper method called by constructor to initialize the app's meta fields
-   * @param container   The container that meta fields reside
+   * Helper method called by constructor to initialize the app's stats fields
+   * @param container   The container that stats fields reside
    */
-  private void initAppMeta(Panel container) {
-    // Images for meta data
+  private void initAppStats(Panel container) {
+    // Images for stats data
     Image numDownloads = new Image();
     numDownloads.setUrl(DOWNLOAD_ICON_URL);
     Image numLikes = new Image();
     numLikes.setUrl(HOLLOW_HEART_ICON_URL);
 
-    // Add meta data
-    container.addStyleName("app-meta");
+    // Add stats data
+    container.addStyleName("app-stats");
     container.add(numDownloads);
     container.add(new Label(Integer.toString(app.getDownloads())));
     // Adds dynamic like
     initLikeSection(container);
     // Adds dynamic feature
     initFeatureSection(container);
-
 
     // We are not using views and comments at initial launch
     /*
@@ -606,10 +601,10 @@ panel
 
 
   /**
-   * Helper method called by constructor to initialize the app's date fields
+   * Helper method called by constructor to initialize the app's meta fields
    * @param container   The container that date fields reside
    */
-  private void initAppDates(Panel container) {
+  private void initAppMeta(Panel container) {
     Date createdDate = new Date();
     Date changedDate = new Date();
     if (editStatus == NEWAPP) {
@@ -619,31 +614,33 @@ panel
       
     }
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd");
-    appCreated.setText(MESSAGES.galleryAppCreatedPrefix() + dateFormat.format(createdDate));
-    appChanged.setText(MESSAGES.galleryAppChangedPrefix() + dateFormat.format(changedDate));
-    container.add(appCreated);
-    container.add(appChanged);
-    container.addStyleName("app-dates");
-  }
 
-  /**
-   * Helper method called by constructor to initialize the app's other information fields
-   * @param container   The container that date fields reside
-   */
-  private void initOtherInfo(Panel container) {
+    Label appCreatedLabel = new Label(MESSAGES.galleryCreatedDateLabel());
+    appCreatedLabel.addStyleName("app-meta-label");
+    container.add(appCreatedLabel);
+    appCreated.setText(dateFormat.format(createdDate));
+    container.add(appCreated);
+
+    Label appChangedLabel = new Label(MESSAGES.galleryChangedDateLabel());
+    appChangedLabel.addStyleName("app-meta-label");
+    container.add(appChangedLabel);
+    appChanged.setText(dateFormat.format(changedDate));
+    container.add(appChanged);
+
     if (newOrUpdateApp()) {
       // GUI for editable title container
-      // Set the placeholders of textbox/area
-      moreInfoText.setVisibleLength(400);
+      // Set the placeholders of textarea
       moreInfoText.getElement().setPropertyString("placeholder", MESSAGES.galleryMoreInfoHint());
       creditText.getElement().setPropertyString("placeholder", MESSAGES.galleryCreditHint());
+
       if (editStatus==NEWAPP) {
-        // If it's new app, it will show the placeholder hint
+        // If it's a new app, it will show the placeholder hint
       } else if (editStatus==UPDATEAPP) {
         // If it's not new, just set whatever's in the data field already
         moreInfoText.setText(app.getMoreInfo());
         creditText.setText(app.getCredit());
       }
+
       moreInfoText.addValueChangeHandler(new ValueChangeHandler<String>() {
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
@@ -656,20 +653,20 @@ panel
          app.setCredit(creditText.getText());
         }
       });
-      moreInfoText.addStyleName("app-otherinfo-textbox");
+
+      moreInfoText.addStyleName("app-desc-textarea");
       creditText.addStyleName("app-desc-textarea");
       container.add(moreInfoText);
       container.add(creditText);
-    } else {
-      //"more info" link
+
+    } else { // Public app view
       String linktext = makeValidLink(app.getMoreInfo());
       if(linktext != null){
         Label moreInfoLabel = new Label(MESSAGES.galleryMoreInfoLabel());
-        moreInfoLabel.addStyleName("app-otherinfo-textlabel");
+        moreInfoLabel.addStyleName("app-meta-label");
         container.add(moreInfoLabel);
 
         Anchor userLinkDisplay = new Anchor();
-        userLinkDisplay.addStyleName("app-otherinfo-textdisplay");
         userLinkDisplay.setText(linktext);
         userLinkDisplay.setHref(linktext);
         userLinkDisplay.setTarget("_blank");
@@ -681,14 +678,15 @@ panel
       //"credits" field
       if(app.getCredit() != null && app.getCredit().length() > 0){
         Label creditLabel = new Label(MESSAGES.galleryCreditLabel());
-        creditLabel.addStyleName("app-otherinfo-textlabel");
+        creditLabel.addStyleName("app-meta-label");
         container.add(creditLabel);
 
         Label creditText = new Label(app.getCredit());
-        creditText.addStyleName("app-otherinfo-textdisplay");
         container.add(creditText);
       }
     }
+
+    container.addStyleName("app-meta");
   }
 
   /**
@@ -814,9 +812,8 @@ panel
   private FlowPanel initRemixFromButton(){
     FlowPanel container = new FlowPanel();
     final Label remixedFrom = new Label(MESSAGES.galleryRemixedFrom());
-    remixedFrom.addStyleName("app-otherinfo-textlabel");
+    remixedFrom.addStyleName("app-meta-label");
     final Label parentApp = new Label();
-    parentApp.addStyleName("app-otherinfo-textlink");
     container.add(remixedFrom);
     container.add(parentApp);
     remixedFrom.setVisible(false);
