@@ -33,9 +33,6 @@ import com.google.appinventor.client.GalleryClient;
 public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
-//  private final static GcsService gcsService =
-//      GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
-  
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
@@ -49,9 +46,7 @@ public class ProjectToolbar extends Toolbar {
         new DeleteAction()));
 
     updateButtons();
-
   }
-
 
   private static class NewAction implements Command {
     @Override
@@ -77,7 +72,6 @@ public class ProjectToolbar extends Toolbar {
             deleteProject(project);
           }
         }
-
       } else {
         // The user can select a project to resolve the
         // error.

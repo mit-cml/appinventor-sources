@@ -151,7 +151,7 @@ public final class Project {
   public long getGalleryId() {
     return projectInfo.getGalleryId();
   }
-  
+
   public void setGalleryId(long id) {
     projectInfo.setGalleryId(id);
   }

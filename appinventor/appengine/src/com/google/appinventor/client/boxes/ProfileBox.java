@@ -42,12 +42,11 @@ public final class ProfileBox extends FlowPanel {
 
   public static void setProfile(String userId, int editStatus)
   {
-    OdeLog.log("######### I got in setApp");
-    OdeLog.log("######### I got in setApp user " + userId);
-    OdeLog.log("######### I got in setApp edit " + editStatus);
     pContainer.clear();
     pPage = new ProfilePage(userId, editStatus);
-    pPage.loadImage();
+    if(editStatus == ProfilePage.PRIVATE){
+      pPage.loadImage();
+    }
     pContainer.add(pPage);
   }
   /**

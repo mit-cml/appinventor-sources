@@ -102,7 +102,7 @@ public class GalleryCommentReport implements IsSerializable{
   public void setUserName(String name) {
     this.userName = name;
   }
- 
+
   // Here are the data members
   private long commentId;
   private long timeStamp;

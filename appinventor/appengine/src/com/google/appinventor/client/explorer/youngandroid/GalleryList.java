@@ -83,7 +83,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final List<GalleryApp> selectedApps;
   GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = null;
-  
+
   // UI elements
   private final FlowPanel galleryGUI;
   private final TabPanel appTabs;
@@ -121,17 +121,17 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
-  
+
   public static final int NUMAPPSTOSHOW = 10;
 
   /**
    * Creates a new GalleryList
    */
   public GalleryList() {
-	
-	  gallery = GalleryClient.getInstance();
+
+    gallery = GalleryClient.getInstance();
     gallery.addListener(this);
-	  galleryGF = new GalleryGuiFactory();
+    galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
 
@@ -156,13 +156,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         "family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
     galleryGUI.add(headerExtra);
 
-    // Add content to panels  
+    // Add content to panels
     appFeaturedTab = new GalleryAppTab(appFeatured, appFeaturedContent, REQUEST_FEATURED);
     appRecentTab = new GalleryAppTab(appRecent, appRecentContent, REQUEST_RECENT);
     appSearchTab = new GalleryAppTab(appSearch, appSearchContent, REQUEST_SEARCH);
     appPopularTab = new GalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTDOWNLOADED);
 
-    // addGallerySearchTab(appSearch);  
     // don't think we need because in regular addgallerytab below
 
     // Add panels to main tabPanel
@@ -173,12 +172,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appTabs.selectTab(0);
     appTabs.addStyleName("gallery-app-tabs");
     galleryGUI.add(appTabs);
-    
+
     // Initialize top-level GUI
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
     panel.add(galleryGUI);
-    
+
     initWidget(panel);
   }
 
@@ -311,7 +310,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       next.add(buttonNext);
       next.addStyleName("gallery-nav-next");
       container.add(next);
- 
+
       buttonNext.addClickHandler(new ClickHandler() {
         //  @Override
         public void onClick(ClickEvent event) {
@@ -375,20 +374,18 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appSearchContent.addStyleName("gallery-search-results");
     searchApp.add(appSearchContent);
     searchApp.addStyleName("gallery-search");
-    
+
     sb.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
         gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0, true);
       }
-    });    
+    });
   }
 
   /**
    * Loads the proper tab GUI with gallery's app data.
-   *
    * @param apps: list of returned gallery apps from callback.
-   * 
    * @param requestId: determines the specific type of app data.
    */
   private void refreshApps(GalleryAppListResult appsResult, int requestId, boolean refreshable) {
@@ -514,9 +511,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * Process the results after retrieving list of GalleryComment
    * @see GalleryRequestListener
    */
-  public void onCommentsRequestCompleted(List<GalleryComment> comments)
-  {
-      
+  public void onCommentsRequestCompleted(List<GalleryComment> comments){
+
   }
 
   /**
@@ -524,11 +520,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * @see GalleryRequestListener
    */
   public void onSourceLoadCompleted(UserProject projectInfo) {
-    
+
   }
 
 }
-  
-  
 
- 

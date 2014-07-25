@@ -34,7 +34,7 @@ public class GallerySearchIndex {
 
   private static final Logger LOG = Logger.getLogger(GallerySearchIndex.class.getName());
   private static String GALLERYINDEX="GalleryIndex";
-  private final transient GalleryStorageIo galleryStorageIo = 
+  private final transient GalleryStorageIo galleryStorageIo =
       GalleryStorageIoInstanceHolder.INSTANCE;
   private static volatile GallerySearchIndex  instance= null;
 
@@ -70,9 +70,9 @@ public class GallerySearchIndex {
       .setId(String.valueOf(app.getGalleryAppId()))
       .addField(Field.newBuilder().setName("content").setText(indexWords))
       .build();
-     
+
     Index index = getIndex();
-    
+
     try {
       index.put(doc);
     } catch (PutException e) {
@@ -152,7 +152,7 @@ public class GallerySearchIndex {
    * @return the search index
    */
   private Index getIndex() {
-    IndexSpec indexSpec = IndexSpec.newBuilder().setName(GALLERYINDEX).build(); 
+    IndexSpec indexSpec = IndexSpec.newBuilder().setName(GALLERYINDEX).build();
     Index index = SearchServiceFactory.getSearchService().getIndex(indexSpec);
     return index;
   }

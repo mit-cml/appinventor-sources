@@ -248,7 +248,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
   }
-  
 
   /**
    * Returns an array with project IDs.

@@ -88,13 +88,13 @@ public class GalleryClient {
     final Ode ode = Ode.getInstance();
     return ode.getGallerySettings();
   }
-  
+
  /**
   * FindApps calls search and then tells listeners when done
   * @param keywords search keywords
   * @param start staring index for search
   * @param count number of results
-  * @param sortOrder currently unused, 
+  * @param sortOrder currently unused,
   */
   public void FindApps(String keywords, int start, int count, int sortOrder, final boolean refreshable) {
      // Callback for when the server returns us the apps
@@ -102,15 +102,15 @@ public class GalleryClient {
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.gallerySearchError()) {
-    @Override
-    public void onSuccess(GalleryAppListResult appsResult) {
-      // the server has returned us something
-      for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH, refreshable);
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH, refreshable);
+        }
       }
-    }
-  };
-      
+    };
+
     //this is below the call back, but of course it is done first
     ode.getGalleryService().findApps(keywords, start,count,callback);
   }
@@ -126,13 +126,13 @@ public class GalleryClient {
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryDeveloperAppError()) {
-    @Override
-    public void onSuccess(GalleryAppListResult appsResult) {
-      // the server has returned us something
-      for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false);
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false);
+        }
       }
-    }
     };
     // This is below the call back, but of course it is done first
     ode.getGalleryService().getDeveloperApps(developerId, start,count,callback);
@@ -171,17 +171,16 @@ public class GalleryClient {
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryRecentAppsError()) {
-    @Override
-    public void onSuccess(GalleryAppListResult appsResult) {
-      // the server has returned us something
-      for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable);
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable);
+        }
       }
-    }
     };
     // This is below the call back, but of course it is done first
     ode.getGalleryService().getRecentApps(start, count, callback);
-  
   }
   /**
   * GetMostDownloaded gets the most downloaded apps then tells listeners
@@ -194,18 +193,17 @@ public class GalleryClient {
     final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryDownloadedAppsError()) {
-    @Override
-    public void onSuccess(GalleryAppListResult appsResult) {
-      // the server has returned us something
-      for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable);
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable);
+        }
       }
-    }
     };
-      
-    // ok, this is below the call back, but of course it is done first 
+
+    // ok, this is below the call back, but of course it is done first
     ode.getGalleryService().getMostDownloadedApps(start,count,callback);
-  
   }
   /**
    * GetRemixedToList gets children list that apps remixed to then tells listeners
@@ -231,14 +229,14 @@ public class GalleryClient {
   */
   public void GetComments(long appId,int start,int count) {
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<List<GalleryComment>> galleryCallback = new OdeAsyncCallback<List<GalleryComment>>(	      
+    final OdeAsyncCallback<List<GalleryComment>> galleryCallback = new OdeAsyncCallback<List<GalleryComment>>(
     // failure message
     MESSAGES.galleryCommentError()) {
       @Override
       public void onSuccess(List<GalleryComment> comments) {
         // now relay the result back to UI client
         for (GalleryRequestListener listener:listeners) {
-          listener.onCommentsRequestCompleted(comments); 
+          listener.onCommentsRequestCompleted(comments);
         }
       }
     };
@@ -263,22 +261,22 @@ public class GalleryClient {
     final String projectName = newProjectName;
     final String sourceURL = getGallerySettings().getSourceURL(gApp.getGalleryAppId());
     final long galleryId = gApp.getGalleryAppId();
-    
+
     // first check name to see if valid and unique...
     if (!TextValidators.checkNewProjectName(projectName))
       return false;  // the above function takes care of error messages
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
 
-    final OdeAsyncCallback<Void> galleryCallback = new OdeAsyncCallback<Void>(	      
+    final OdeAsyncCallback<Void> galleryCallback = new OdeAsyncCallback<Void>(
     // failure message
     MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(Void arg2) {
       }
     };
-    
-    final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(	      
+
+    final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
     // failure message
     MESSAGES.createProjectError()) {
       @Override
@@ -289,9 +287,8 @@ public class GalleryClient {
     };
     // this is really what's happening here, we call server to load project
     ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
-
     return true;
-  } 
+  }
 
  /**
   * appWasChanged called to tell galleryList (and possibly others) that app is modified

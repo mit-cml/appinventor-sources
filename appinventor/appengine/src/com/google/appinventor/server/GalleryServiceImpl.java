@@ -83,7 +83,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
   private static final Logger LOG = Logger.getLogger(GalleryServiceImpl.class.getName());
   private static final long serialVersionUID = -8316312003804169166L;
-  private final transient GalleryStorageIo galleryStorageIo = 
+  private final transient GalleryStorageIo galleryStorageIo =
       GalleryStorageIoInstanceHolder.INSTANCE;
   // fileExporter used to get the source code from project being published
   private final FileExporter fileExporter = new FileExporterImpl();
@@ -122,7 +122,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param app info about app being updated
    * @param newImage  true if the user has submitted a new image
    */
-  @Override 
+  @Override
   public void updateApp(GalleryApp app, boolean newImage) {
     updateAppMetadata(app);
     updateAppSource(app.getGalleryAppId(),app.getProjectId(),app.getProjectName());
@@ -175,7 +175,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Returns a wrapped class which contains list of most recently 
+   * Returns a wrapped class which contains list of most recently
    * updated galleryApps and total number of results in database
    * @param start starting index
    * @param count number of apps to return
@@ -184,7 +184,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public GalleryAppListResult getRecentApps(int start,int count) {
     return galleryStorageIo.getRecentGalleryApps(start,count);
- 
   }
 
   /**
@@ -216,7 +215,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Returns a wrapped class which contains a list of galleryApps 
+   * Returns a wrapped class which contains a list of galleryApps
    * by a particular developer and total number of results in database
    * @param userId id of the developer
    * @param start starting index
@@ -226,7 +225,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public GalleryAppListResult getDeveloperApps(String userId, int start,int count) {
     return galleryStorageIo.getDeveloperApps(userId, start,count);
- 
   }
 
   /**
@@ -254,7 +252,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Returns a wrapped class which contains a list of most downloaded 
+   * Returns a wrapped class which contains a list of most downloaded
    * gallery apps and total number of results in database
    * @param start starting index
    * @param count number of apps to return
@@ -461,7 +459,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param projectName project name
    */
   private void storeAIA(long galleryId, long projectId, String projectName) {
-   
+
     final String userId = userInfoProvider.getUserId();
     // build the aia file name using the ai project name and code stolen
     // from DownloadServlet to normalize...
@@ -487,7 +485,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       String galleryKey = settings.getSourceKey(galleryId);
       // setup cloud
       GcsService gcsService = GcsServiceFactory.createGcsService();
-      
+
       //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
       GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
 
@@ -566,10 +564,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
       byte[] buffer = new byte[8000];
       int bytesRead = 0;
-      ByteArrayOutputStream bao = new ByteArrayOutputStream();   
-           
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();
+
       while ((bytesRead = gcsis.read(buffer)) != -1) {
-        bao.write(buffer, 0, bytesRead); 
+        bao.write(buffer, 0, bytesRead);
       }
       // close the project image file
       readChannel.close();
@@ -589,22 +587,21 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
           newImageData = oldImageData;
       }
 
-
       // set up the cloud file (options)
       // After publish, copy the /projects/projectId image into /apps/appId
       //String galleryKey = app.getImageKey();
       String galleryKey = settings.getImageKey(app.getGalleryAppId());
-      
+
       //GcsFilename outfilename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
       GcsFilename outfilename = new GcsFilename(settings.getBucket(), galleryKey);
       GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
           .acl("public-read").cacheControl("no-cache").build();
       GcsOutputChannel writeChannel = gcsService.createOrReplace(outfilename, options);
       writeChannel.write(ByteBuffer.wrap(newImageData));
-    
+
       // Now finalize
       writeChannel.close();
-      
+
     } catch (IOException e) {
       // TODO Auto-generated catch block
       LOG.log(Level.INFO, "FAILED WRITING IMAGE TO GCS");
@@ -652,7 +649,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public void deleteMessage(long msgId) {
-    galleryStorageIo.deleteMessage(msgId); 
+    galleryStorageIo.deleteMessage(msgId);
   }
 
   /**

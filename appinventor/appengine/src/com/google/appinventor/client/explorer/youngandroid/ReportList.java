@@ -497,7 +497,7 @@ public class ReportList extends Composite  {
 
       templateButton = new DropDownButton("template", MESSAGES.labelChooseTemplate(), templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
-      
+
       new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
@@ -752,7 +752,6 @@ public class ReportList extends Composite  {
         msgText.setText(MESSAGES.inappropriateUserProfileContentMessage());
         templateButton.setCaption(MESSAGES.inappropriateUserProfileContentTitle());
       }
-      
     }
   }
   /**

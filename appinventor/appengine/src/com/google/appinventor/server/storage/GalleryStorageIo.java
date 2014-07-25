@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  *
  */
 public interface GalleryStorageIo {
-  
+
   /**
    * Returns a gallery app
    * @param galleryId id of gallery app you want
@@ -66,7 +66,7 @@ public interface GalleryStorageIo {
   Integer getNumGalleryApps();
 
   /**
-   * Returns a wrapped class which contains list of most recently 
+   * Returns a wrapped class which contains list of most recently
    * updated galleryApps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
@@ -75,7 +75,7 @@ public interface GalleryStorageIo {
   GalleryAppListResult getRecentGalleryApps(int start, int count);
 
   /**
-   * Returns a wrapped class which contains a list of most downloaded 
+   * Returns a wrapped class which contains a list of most downloaded
    * gallery apps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want

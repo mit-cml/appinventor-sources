@@ -355,24 +355,22 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
   }
-  
+
   /**
    * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
     currentView = GALLERY;
     deckPanel.showWidget(galleryTabIndex);
-    
   }
-  
+
   /**
-   * Switch to the Gallery App 
+   * Switch to the Gallery App
    */
   public void switchToGalleryAppView(GalleryApp app, int editStatus) {
     currentView = GALLERYAPP;
-//    OdeLog.log("######### I got in switchToGalleryAppView");
     GalleryAppBox.setApp(app, editStatus);
-    deckPanel.showWidget(galleryAppTabIndex);    
+    deckPanel.showWidget(galleryAppTabIndex);
   }
 
   /**
@@ -638,7 +636,7 @@ public class Ode implements EntryPoint {
                     msgCount[0]++;
                   }
                 }
-                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " + 
+                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " +
                 userInfo.concat(Integer.toString(msgCount[0])));
 
                 String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
@@ -857,11 +855,11 @@ public class Ode implements EntryPoint {
     HorizontalPanel appListPanel = new HorizontalPanel();
     appListPanel.setWidth("100%");
     appListPanel.add(GalleryListBox.getGalleryListBox());
-    
+
     gVertPanel.add(appListPanel);
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
-    
+
      // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
     aVertPanel.setWidth("100%");
@@ -871,11 +869,11 @@ public class Ode implements EntryPoint {
     HorizontalPanel appPanel = new HorizontalPanel();
     appPanel.setWidth("100%");
     appPanel.add(GalleryAppBox.getGalleryAppBox());
-    
+
     aVertPanel.add(appPanel);
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
-    
+
     // KM: DEBUGGING BEGIN
     // User profile tab
     VerticalPanel uVertPanel = new VerticalPanel();
@@ -927,8 +925,6 @@ public class Ode implements EntryPoint {
 
       debuggingTabIndex = deckPanel.getWidgetCount();
       deckPanel.add(debuggingTab);
-      
-      
 
       // Hook the window resize event, so that we can adjust the UI.
       Window.addResizeHandler(new ResizeHandler() {
@@ -937,8 +933,6 @@ public class Ode implements EntryPoint {
           resizeWorkArea(debuggingTab);
         }
       });
-      
-      
 
       // Call the window resized handler to get the initial sizes setup. Doing this in a deferred
       // command causes it to occur after all widgets' sizes have been computed by the browser.

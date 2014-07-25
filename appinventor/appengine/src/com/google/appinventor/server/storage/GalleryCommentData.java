@@ -19,7 +19,7 @@ import javax.persistence.Id;
  * @author wolberd@gmail.com (David Wolber)
  *
  */
- 
+
 public class GalleryCommentData {
   @Id Long id;
   String userId;    // author of the comment

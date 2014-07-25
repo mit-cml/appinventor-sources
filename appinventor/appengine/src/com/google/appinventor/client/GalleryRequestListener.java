@@ -21,7 +21,6 @@ public interface GalleryRequestListener {
    * UI objects will call gallery client to get apps, the methods here are the callback
    *
    */
-   
    public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable);
    public void onCommentsRequestCompleted(List<GalleryComment> comments);
    public void onSourceLoadCompleted(UserProject projectInfo);

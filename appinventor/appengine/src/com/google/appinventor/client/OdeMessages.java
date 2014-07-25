@@ -557,7 +557,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reports")
   @Description("Caption for moderation page box.")
   String moderationPageBoxCaption();
-  
+
   // Used in boxes/GalleryListBox.java
 
   @DefaultMessage("Gallery")
@@ -1596,7 +1596,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not retrieve developer gallery apps from gallery")
   @Description("Error message reported when can't get developer gallery apps on server.")
   String galleryDeveloperAppError();
-  
+
   @DefaultMessage("Server error: could not retrieve featured apps from gallery")
   @Description("Error message reported when can't get featured on server.")
   String galleryFeaturedAppError();
@@ -1615,11 +1615,11 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Server error: gallery deletion error")
   @Description("Error message reported when the gallery delete breaks")
-  String galleryDeleteError(); 
+  String galleryDeleteError();
 
   @DefaultMessage("Server error: gallery error when setting project gallery id")
   @Description("Error message reported when the gallery trying to set project gallery id")
-  String gallerySetProjectIdError(); 
+  String gallerySetProjectIdError();
 
   @DefaultMessage("Server error: could not upload project. Please try again later!")
   @Description("Error message reported when a project couldn't be uploaded to the server.")

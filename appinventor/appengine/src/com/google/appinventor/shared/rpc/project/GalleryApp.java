@@ -41,7 +41,7 @@ public class GalleryApp implements IsSerializable {
       long creationDate, long updateDate, String imageURL, String projectName,
       int downloads, int views, int likes, int unreadLikes,
       int unreadDownloads, int comments,
-      String imageBlobId, String sourceBlobId, long galleryAppId, 
+      String imageBlobId, String sourceBlobId, long galleryAppId,
       ArrayList<String> tags) {
     super();
     this.title = title;
@@ -74,7 +74,7 @@ public class GalleryApp implements IsSerializable {
 
   /**
    *  this constructor is called when we are creating a new gallery app but don't have
-   *  the stuff yet 
+   *  the stuff yet
    */
   public GalleryApp(String title, long projectId, String projectName, long galleryAppId, long attributionId) {
   super();
@@ -203,7 +203,7 @@ public class GalleryApp implements IsSerializable {
    * @return createionDate the creation date
    */
   public long getCreationDate() {
-    return this.creationDate; 
+    return this.creationDate;
   }
 
   /**
@@ -478,9 +478,9 @@ public class GalleryApp implements IsSerializable {
   public void setTags(ArrayList<String> tags) {
     this.tags = tags;
   }
-  
+
   @Override
   public String toString() {
-    return title + " ||| " + description + " ||| " +  imageURL; 
+    return title + " ||| " + description + " ||| " +  imageURL;
   }
 }

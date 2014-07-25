@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public class GalleryServlet extends OdeServlet {
-  
+
   private static int BUFFER_SIZE = 1024 * 1024 * 10;
 
   /*
@@ -63,7 +63,7 @@ public class GalleryServlet extends OdeServlet {
   private static final int REQUEST_TYPE_INDEX = 3;
   private static final int GALLERY_OR_USER_ID_INDEX = 4;
   private static final int FILE_PATH_INDEX = 5;
-  
+
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
 
@@ -72,17 +72,17 @@ public class GalleryServlet extends OdeServlet {
 
   // Content type for response header (to avoid security vulnerabilities)
   private static final String CONTENT_TYPE = "text/html; charset=utf-8";
-  
+
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
     setDefaultHeader(resp);
     UploadResponse uploadResponse;
-    
+
     String uri = req.getRequestURI();
     // First, call split with no limit parameter.
     String[] uriComponents = uri.split("/");
-        
+
     if (true) {
       String requestType = uriComponents[REQUEST_TYPE_INDEX];
       LOG.info("######### GOT IN URI");
@@ -99,15 +99,14 @@ public class GalleryServlet extends OdeServlet {
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-        
+
         // Converts the input stream to byte array
         byte[] buffer = new byte[8000];
         int bytesRead = 0;
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();        
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
         while ((bytesRead = uploadedStream.read(buffer)) != -1) {
-          bao.write(buffer, 0, bytesRead); 
+          bao.write(buffer, 0, bytesRead);
         }
-        
         // Set up the cloud file (options)
         String key = "";
         if (requestType.equalsIgnoreCase("apps")) {
@@ -117,9 +116,9 @@ public class GalleryServlet extends OdeServlet {
           key =  "user/" + user_Id + "/image";
           LOG.info("######## THIS IS A USER REQUEST");
         }
-        
+
         FileService fileService = FileServiceFactory.getFileService();
-        
+
         GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
         .setBucket("galleryai2")
         .setKey(key)
@@ -127,7 +126,7 @@ public class GalleryServlet extends OdeServlet {
         .setMimeType("image/jpeg")
         .setCacheControl("no-cache");
         AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
-        
+
         // Open a channel to write to it
         boolean lock = true;
         FileWriteChannel writeChannel =
@@ -140,8 +139,8 @@ public class GalleryServlet extends OdeServlet {
         .acl("public_read")
         .build();
         GcsFilename filename = new GcsFilename("galleryai2", key);
-        GcsOutputChannel outputChannel = 
-            gcsService.createOrReplace(filename, options);                 
+        GcsOutputChannel outputChannel =
+            gcsService.createOrReplace(filename, options);
 
         // Copying InputStream to GcsOutputChannel
         try {
@@ -149,9 +148,9 @@ public class GalleryServlet extends OdeServlet {
         } finally {
             outputChannel.close();
             uploadedStream.close();
-        }    
+        }
         */
-                       
+
         // Now finalize
         bao.flush();
         writeChannel.closeFinally();
@@ -163,13 +162,12 @@ public class GalleryServlet extends OdeServlet {
         // FormSubmitCompleteEvent.getResults() method.
         PrintWriter out = resp.getWriter();
         out.print(uploadResponse.formatAsHtml());
-        
+
       } catch (Exception e) {
         throw CrashReport.createAndLogError(LOG, req, null, e);
       }
       // Set http response information
       resp.setStatus(HttpServletResponse.SC_OK);
-      
     } else {
       throw CrashReport.createAndLogError(LOG, req, null,
           new IllegalArgumentException("Unknown upload kind: "));
@@ -185,7 +183,7 @@ public class GalleryServlet extends OdeServlet {
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);
   }
-  
+
   private InputStream getRequestStream(HttpServletRequest req, String expectedFieldName)
       throws Exception {
     ServletFileUpload upload = new ServletFileUpload();
@@ -207,7 +205,7 @@ public class GalleryServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
   }
-  
+
   /**
    * Helper method for converting input stream
    * @param input
@@ -221,5 +219,5 @@ public class GalleryServlet extends OdeServlet {
         output.write(buffer, 0, bytesRead);
         bytesRead = input.read(buffer);
     }
-}
+  }
 }

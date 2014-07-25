@@ -113,7 +113,7 @@ public class TopPanel extends Composite {
 
     feedbackLink.setStyleName("ode-TopPanelButton");
     links.add(feedbackLink);
-  
+
   /*
   // Code on master branch
     // Gallery Link
@@ -311,7 +311,7 @@ public class TopPanel extends Composite {
                 // Only add if this app actually has unread data
                 if (app.getUnreadDownloads() + app.getUnreadLikes() > 0) {
                   msgCount[0]++;
-                  generateUnreadStatsMessage(app, 
+                  generateUnreadStatsMessage(app,
                       app.getUnreadDownloads(), app.getUnreadLikes(), msgList);
                 }
               }

@@ -40,20 +40,20 @@ public interface GalleryServiceAsync {
   /**
    * @see @link{@link GalleryService#updateAppSource(long, long, String)
    */
-  void updateAppSource(long galleryId, long projectId, String projectName, 
+  void updateAppSource(long galleryId, long projectId, String projectName,
       AsyncCallback<Void> callback);
 
    /**
    * @see @link{@link GalleryService#indexAll(int)
    */
-  void indexAll(int count, 
+  void indexAll(int count,
       AsyncCallback<Void> callback);
 
   /**
    * @see @link{@link GalleryService#deleteApp(long)
    */
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
-  
+
   /**
    * @see @link{@link GalleryService#appWasDownloaded(long)
    */
@@ -92,7 +92,7 @@ public interface GalleryServiceAsync {
    * @see @link{@link GalleryService#getDeveloperApps(String, int, int)
    */
   void getDeveloperApps(String userId, int start, int count, AsyncCallback<GalleryAppListResult> callback);
-  
+
   /**
    * @see @link{@link GalleryService#findApps(String, int, int)
    */

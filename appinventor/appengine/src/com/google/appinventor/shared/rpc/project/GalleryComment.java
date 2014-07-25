@@ -7,7 +7,7 @@ import java.util.logging.Logger;
  * to the view
  */
 public class GalleryComment implements IsSerializable{
-	
+
   /**
    * Default constructor. This constructor is required by GWT.
    */
@@ -93,7 +93,7 @@ public class GalleryComment implements IsSerializable{
   public void setText(String comment) {
     this.comment = comment;
   }
-  
+
   /**
    * @return userId get user id
    */
@@ -141,7 +141,7 @@ public class GalleryComment implements IsSerializable{
 
 // we are implementing a flat comment list to start. If we add replies we may want
 // some tree structure as below (this came from old gallery api client)
- 
+
   public String getTreeId() {
     return treeId;
   }
@@ -157,7 +157,7 @@ public class GalleryComment implements IsSerializable{
   public void setNumChildren(int numChildren) {
     this.numChildren = numChildren;
   }
-  
+
   // Here are the data members
   private long appId;
   private long timeStamp;
@@ -168,11 +168,10 @@ public class GalleryComment implements IsSerializable{
 
   private String treeId;
   private int numChildren;
-  	
-	
+
   @Override
   public String toString() {
-    return comment; 
+    return comment;
   }
 
 }

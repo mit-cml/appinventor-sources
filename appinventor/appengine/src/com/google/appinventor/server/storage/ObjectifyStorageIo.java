@@ -95,7 +95,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final String DEFAULT_ENCODING = "UTF-8";
 
   private static final long MOTD_ID = 1;
-  
+
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
@@ -261,14 +261,12 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (userData != null) {
             userData.email = email;
             datastore.put(userData);
-            
           }
         }
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    
   }
 
   @Override
@@ -316,8 +314,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-
-    
   }
 
   @Override
@@ -820,29 +816,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return modDate.t;
   }
-/*  
-  @Override
-  public long getGalleryId(final String userId, final long projectId) {
-    final Result<Long> galleryId = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            galleryId.t = pd.galleryId;
-          } else {
-            galleryId.t = Long.valueOf(0);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return galleryId.t;
-  }
-*/
+
   @Override
   public String getProjectHistory(final String userId, final long projectId) {
     if (!getProjects(userId).contains(projectId)) {

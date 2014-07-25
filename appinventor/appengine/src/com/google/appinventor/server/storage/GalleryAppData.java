@@ -19,7 +19,6 @@ import javax.persistence.Id;
  * @author wolberd@gmail.com (David Wolber)
  *
  */
- 
 public class GalleryAppData {
   @Id Long id;
   String title;        // user entered, can have spaces

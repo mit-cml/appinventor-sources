@@ -63,7 +63,6 @@ public interface StorageIo {
    */
   void setUserEmail(String userId, String email);
 
-
   /**
    * Sets that the user has accepted the terms of service.
    *
@@ -87,8 +86,6 @@ public interface StorageIo {
    * @return settings
    */
   String loadSettings(String userId);
-
-  
 
   /**
    * Sets the stored name for user with id userId
@@ -126,7 +123,6 @@ public interface StorageIo {
    */
   void storeSettings(String userId, String settings);
 
- 
 
   // Project management
 
@@ -158,22 +154,22 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
-  
+
   /**
    * sets a projects gallery id when it is published
    * @param userId a user Id (the request is made on behalf of this user)*
    * @param projectId project ID
    * @param galleryId gallery ID
    */
-  void setProjectGalleryId(final String userId, final long projectId,final long galleryId); 
- 
+  void setProjectGalleryId(final String userId, final long projectId,final long galleryId);
+
    /**
    * sets a projects attribution id when it is opened from a gallery project
    * @param userId a user Id (the request is made on behalf of this user)*
    * @param projectId project ID
    * @param attributionId attribution ID
    */
-  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);  
+  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);
 
   /**
    * Returns a string with the project settings.
@@ -398,7 +394,7 @@ public interface StorageIo {
    * Returns the attribution id for a project-- the app it was copied/remixed from
    * @param projectId  project ID
    *
-   * @return galleryId 
+   * @return galleryId
    */
   long getProjectAttributionId(final long projectId);
 

@@ -212,5 +212,4 @@ public final class ProjectManager {
       listener.onProjectPublishedOrUnpublished();
     }
   }
- 
 }

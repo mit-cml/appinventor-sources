@@ -67,7 +67,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
      userNameBox
      userLinkLabel
      userLinkBox
-     
+
    appCardWrapper
      imageUploadBox
        imageUploadBoxInner
@@ -89,7 +89,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   public static final int PRIVATE = 0;
   public static final int PUBLIC = 1;
 
-  String userId = "-1";  
+  String userId = "-1";
   final int profileStatus;
 
   final FileUpload imageUpload = new FileUpload();
@@ -114,10 +114,10 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 
   FocusPanel appCardWrapper = new FocusPanel();
   FlowPanel imageUploadBox = new FlowPanel();
-  FlowPanel imageUploadBoxInner = new FlowPanel();  
-  Image userAvatar = new Image(); 
+  FlowPanel imageUploadBoxInner = new FlowPanel();
+  Image userAvatar = new Image();
   Label imageUploadPrompt = new Label();
-  
+
   // the majorContentCard has a label and namebox
   Label userContentHeader = new Label();
   Label usernameLabel = new Label();
@@ -396,7 +396,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     if (!uploadFilename.isEmpty()) {
       String filename = makeValidFilename(uploadFilename);
       // Forge the request URL for gallery servlet
-      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
+      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET +
           "/user/" + userId + "/" + filename;
       Uploader.getInstance().upload(imageUpload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {

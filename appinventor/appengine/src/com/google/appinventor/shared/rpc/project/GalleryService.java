@@ -63,7 +63,7 @@ public interface GalleryService extends RemoteService {
    * @param count the max number of apps to index
    */
   void indexAll(int count);
-  
+
   /**
    * Deletes a new gallery app
    * @param galleryId id of app to delete
@@ -152,7 +152,6 @@ public interface GalleryService extends RemoteService {
    */
   void appWasDownloaded(long galleryId);
 
-  
   /**
    * Returns the comments for an app
    * @param galleryId  gallery ID as received by

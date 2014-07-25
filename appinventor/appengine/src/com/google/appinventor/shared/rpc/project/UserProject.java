@@ -84,6 +84,10 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
+   * @param creationData creation date
+   * @param modificationData modification data
+   * @param galleryId gallery id
+   * @param attributionId attribution id
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
       long modificationDate, long galleryId, long attributionId) {
@@ -106,7 +110,7 @@ public class UserProject implements IsSerializable {
   }
 
   public void setAttributionId(long attributionId) {
-	    this.attributionId = attributionId;
+    this.attributionId = attributionId;
   }
 
   /**

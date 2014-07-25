@@ -139,7 +139,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   }
   // we'll need to talk to the StorageIo to get developer names, so...
-  private final transient StorageIo storageIo = 
+  private final transient StorageIo storageIo =
       StorageIoInstanceHolder.INSTANCE;
 
   /**
@@ -152,7 +152,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @return a {@link GalleryApp} for gallery App
    */
   @Override
-  public GalleryApp createGalleryApp(final String title, 
+  public GalleryApp createGalleryApp(final String title,
       final String projectName, final String description, final String moreInfo,
       final String credit, final long projectId, final String userId) {
 
@@ -167,7 +167,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           long date = System.currentTimeMillis();
           GalleryAppData appData = new GalleryAppData();
           appData.id = null;  // let Objectify auto-generate the project id
-          
+
           appData.dateCreated = date;
           appData.dateModified = date;
           appData.title = title;
@@ -192,15 +192,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
           Key<GalleryAppData> galleryKey = galleryKey(appData.id);
         }
- 
       });
 
-      
     } catch (ObjectifyException e) {
-      
       throw CrashReport.createAndLogError(LOG, null,
           "gallery error", e);
-    } 
+    }
     GalleryApp gApp = new GalleryApp();
     makeGalleryApp(galleryAppData.t, gApp);
     return gApp;
@@ -229,10 +226,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
     // of not using transactions (run with) so i grabbed
-    
+
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-dateModified").filter("active", true).offset(start).limit(count)) {
-      
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
@@ -241,7 +237,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new GalleryAppListResult(apps, totalCount);
   }
   /**
-   * Returns a wrapped class which contains a list of most downloaded 
+   * Returns a wrapped class which contains a list of most downloaded
    * gallery apps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
@@ -253,10 +249,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
     // of not using transactions (run with) so i grabbed
-    
+
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").filter("active", true).offset(start).limit(count)) {
-      
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
@@ -340,7 +335,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
     // of not using transactions (run with) so i grabbed
-    
+
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).filter("active", true).offset(start).limit(count)) {
       GalleryApp gApp = new GalleryApp();
@@ -383,9 +378,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param userId if of user publishing this app
    */
   @Override
-  public void updateGalleryApp(final long galleryId, final String title,  final String description, 
-    final String moreInfo, final String credit, final String userId) {
-    
+  public void updateGalleryApp(final long galleryId, final String title,
+      final String description, final String moreInfo, final String credit,
+      final String userId) {
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -457,7 +453,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("-dateCreated")) {
             datastore.delete(commentData);
           }
-          
         }
       });
       //note that in the gallery service we'll change the associated project's gallery id back to -1
@@ -506,7 +501,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           commentData.galleryKey = galleryKey(galleryId);
           commentData.dateCreated = date;
           theDate.t = date;
-          
+
           datastore.put(commentData);
         }
       });
@@ -1179,11 +1174,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return moderationActions;
   }
-  
+
   /**
    * Converts a db object GalleryAppData into a shared GalleryApp that can be passed
    * around in client. Create the galleryApp first then send it here to get its data
-   * 
+   *
    */
   private void makeGalleryApp(GalleryAppData appData, GalleryApp galleryApp) {
     galleryApp.setTitle(appData.title);
@@ -1227,7 +1222,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new Key<GalleryAppReportData>(GalleryAppReportData.class, appReportId);
   }
 
-  
   private Key<MessageData> msgKey(long id) {
     return new Key<MessageData>(MessageData.class, id);
   }

@@ -66,7 +66,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 /**
- * The gallery page shows a single app from the gallery 
+ * The gallery page shows a single app from the gallery
  *
  * It has different modes for public viewing or when user is publishing for first time
  * or updating a previously published app
@@ -116,7 +116,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
   public static final int VIEWAPP = 0;
   public static final int NEWAPP = 1;
-  public static final int UPDATEAPP = 2;  
+  public static final int UPDATEAPP = 2;
   private int editStatus;
 
   /* Publish & edit state components */
@@ -157,7 +157,7 @@ panel
        title or titlebox
        devName
        appMeta
-       appDates 
+       appDates
        desc/descbox
     appComments
    appsByDev
@@ -223,9 +223,9 @@ panel
     initAppDesc(descBox, appDescPanel);
     /**
      * TODO: I may need to change the code logic here. appDescPanel is actually
-     * not added to [appInfo], instead in public state appDescPanel will be 
+     * not added to [appInfo], instead in public state appDescPanel will be
      * added into the [appActionTabs] (not showing in editable states) as a sub
-     * tab. So it may not be the best idea to modify appDescPanel in a method 
+     * tab. So it may not be the best idea to modify appDescPanel in a method
      * that resides in [appInfo]'s code block. - Vincent, 03/28/2014
      */
 
@@ -288,7 +288,7 @@ panel
   private void initComponents() {
     // Initialize UI
     panel = new VerticalPanel();
-    panel.setWidth("100%");    
+    panel.setWidth("100%");
     galleryGUI = new FlowPanel();
     appSingle = new FlowPanel();
     appDetails = new FlowPanel();
@@ -312,7 +312,7 @@ panel
     appsRemixes = new FlowPanel();
     returnToGallery = new FlowPanel();
 //    tagSelected = "";
-    
+
     appCreated = new Label();
     appChanged = new Label();
     descBox = new FlowPanel();
@@ -346,11 +346,11 @@ panel
     imageUploadBoxInner = new FlowPanel();
     imageUploadPrompt = new Label("Upload your project image!");
     imageUploadPrompt.addStyleName("gallery-editprompt");
-    
+
     updateAppImage(gallery.getCloudImageURL(app.getGalleryAppId()), imageUploadBoxInner);
     image.addStyleName("status-updating");
-    imageUploadPrompt.addStyleName("app-image-uploadprompt"); 
-    imageUploadBoxInner.add(imageUploadPrompt);        
+    imageUploadPrompt.addStyleName("app-image-uploadprompt");
+    imageUploadBoxInner.add(imageUploadPrompt);
 
     upload = new FileUpload();
     upload.addStyleName("app-image-upload");
@@ -363,14 +363,14 @@ panel
       }
     });
     imageUploadBoxInner.add(upload);
-    imageUploadBox.add(imageUploadBoxInner);  
+    imageUploadBox.add(imageUploadBoxInner);
     wrapper = new FocusPanel();
     wrapper.add(imageUploadBox);
     wrapper.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         // The correct way to trigger click event on FileUpload
-        upload.getElement().<InputElement>cast().click(); 
+        upload.getElement().<InputElement>cast().click();
       }
     });
     appHeader.add(wrapper);
@@ -396,11 +396,11 @@ panel
       // Forge the request URL for gallery servlet
       // we used to send the gallery id to the servlet, now the project id as
       // the servlet just stores image temporarily before publish
-      /* String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
+      /* String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET +
           "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"+ filename; */
       // send the project id as the id, to store image temporarily until published
-      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
-          "/apps/" + String.valueOf(app.getProjectId()) + "/"+ filename;   
+      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET +
+          "/apps/" + String.valueOf(app.getProjectId()) + "/"+ filename;
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
           @Override
@@ -409,7 +409,7 @@ panel
             case SUCCESS:
               // Update the app image preview after a success upload
               imageUploadBoxInner.clear();
-              // updateAppImage(app.getCloudImageURL(), imageUploadBoxInner); 
+              // updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);
               updateAppImage(gallery.getProjectImageURL(app.getProjectId()),imageUploadBoxInner);
               imageUploaded=true;
               ErrorReporter.hide();
@@ -424,15 +424,12 @@ panel
             }
           }
        });
-                
     } else {
       if (editStatus == NEWAPP) {
-        Window.alert(MESSAGES.noFileSelected());                  
+        Window.alert(MESSAGES.noFileSelected());
       }
     }
-
   }
-  
 
   /**
    * Helper method to validify file name, used in uploadImage()
@@ -465,7 +462,7 @@ panel
         image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
       }
     });
-    container.add(image);   
+    container.add(image);
   }
 
 
@@ -611,7 +608,6 @@ panel
     } else {
       createdDate = new Date(app.getCreationDate());
       changedDate = new Date(app.getUpdateDate());
-      
     }
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd");
 
@@ -1104,9 +1100,9 @@ panel
          *  open a popup window that will prompt to ask user to enter
          *  a new project name(if "new name" is not valid, user may need to
          *  enter again). After that, "loadSourceFil" and "appWasDownloaded"
-         *  will be called. 
+         *  will be called.
          */
-    	new RemixedYoungAndroidProjectWizard(app, actionButton).center();
+        new RemixedYoungAndroidProjectWizard(app, actionButton).center();
       }
     });
     actionButton.addStyleName("app-action-button");
@@ -1272,7 +1268,7 @@ panel
 //        String tagTitle = "Tagged with " + tagSelected;
 //        galleryGF.generateSidebar(apps, appsByTags, tagTitle, true);
 //        break;
-    } 
+    }
   }
 
   /**

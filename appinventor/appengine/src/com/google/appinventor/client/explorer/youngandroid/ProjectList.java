@@ -249,9 +249,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
-      
       editButton = new Label();
-   
     }
   }
 
@@ -308,7 +306,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
-  
+
   /**
    * Prepares the app publish/update process for each project button. If the project has never
    * been published, we create a gallery app with default title
@@ -322,7 +320,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
     else {
       pw.editButton.setText(PUBLISHBUTTONTEXT);
-      pw.editButton.setTitle(PUBLISHBUTTONTITLE); 
+      pw.editButton.setTitle(PUBLISHBUTTONTITLE);
     }
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
@@ -335,24 +333,24 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             @Override
             public void onSuccess(GalleryApp app) {
               // the server has returned us something
-              int editStatus=GalleryPage.UPDATEAPP; 
+              int editStatus=GalleryPage.UPDATEAPP;
               Ode.getInstance().switchToGalleryAppView(app, editStatus);
             }
           };
-          // ok, this is below the call back, but of course it is done first 
+          // ok, this is below the call back, but of course it is done first
           ode.getGalleryService().getApp(p.getGalleryId(),callback);
         }
         else {
           // app is not yet published
           // first create an app object with default data
-          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
+          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
               p.getProjectName(), p.getGalleryId(), p.getAttributionId());
           Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
-        }      
-      }   
+        }
+      }
     });
   }
-   
+
   /**
    * Gets the number of projects
    *
@@ -384,7 +382,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectAdded(Project project) {
-    OdeLog.log("#### in ProjectList.onProjectAdded");
     projects.add(project);
     projectWidgets.put(project, new ProjectWidgets(project));
     refreshTable(true);

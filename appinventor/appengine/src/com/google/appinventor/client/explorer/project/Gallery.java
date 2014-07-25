@@ -6,7 +6,7 @@ package com.google.appinventor.client.explorer.project;
  * @author wolberd@google.com (David Wolber)
  */
 public interface Gallery {
- /* 
+ /*
         void Publish(GalleryApp app);
         void Update(GalleryApp app);
 

@@ -152,7 +152,7 @@
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>projectService</servlet-name>
   </filter-mapping>
-  
+
   <!-- gallery -->
   <servlet>
     <servlet-name>galleryService</servlet-name>

@@ -63,31 +63,28 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       image.setUrl(gallery.getCloudImageURL(app.getGalleryAppId()));
     }
   }
-  
+
   /**
    * Loads the proper tab GUI with gallery's app data.
-   *
    * @param apps: list of returned gallery apps from callback.
-   * 
    * @param container: the GUI panel where apps will reside.
-   * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
-	public void generateHorizontalAppList(List<GalleryApp> apps, 
-	    FlowPanel container, Boolean refreshable) {
+  public void generateHorizontalAppList(List<GalleryApp> apps,
+      FlowPanel container, Boolean refreshable) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
     }
-		for (final GalleryApp app : apps) {
-		  // Create the associated GUI object for app
-		  GalleryAppWidget gaw = new GalleryAppWidget(app);
-		  
-		  // Create necessary GUI wrappers and components
+    for (final GalleryApp app : apps) {
+      // Create the associated GUI object for app
+      GalleryAppWidget gaw = new GalleryAppWidget(app);
+
+      // Create necessary GUI wrappers and components
       FlowPanel appCard = new FlowPanel();
       FlowPanel appCardContent = new FlowPanel();
       FlowPanel appCardMeta = new FlowPanel();
-      
+
       // Special processing for the app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
@@ -101,14 +98,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
         }
       });
-      
+
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
         }
       });
 
@@ -129,7 +126,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     // For generic cards, do not show comment
 //    Image numComments = new Image();
 //    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
-      
+
 //      appCardMeta.add(numViews);
 //      appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
@@ -139,7 +136,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       // For generic cards, do not show comment
 //      appCardMeta.add(numComments);
 //      appCardMeta.add(gaw.numCommentsLabel);
-      
+
       // Add associated styling
       appCard.addStyleName("gallery-card");
       gaw.image.addStyleName("gallery-card-cover");
@@ -150,21 +147,18 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.numDownloadsLabel.addStyleName("gallery-meta");
       gaw.numLikesLabel.addStyleName("gallery-meta");
 //      gaw.numCommentsLabel.addStyleName("gallery-meta");
-      
+
       container.add(appCard);
     }
     container.addStyleName("gallery-app-collection");
     container.addStyleName("clearfix"); /* For redesigned navigation buttons */
 
   }
-  
+
   /**
    * Creates list of comments in the app page.
-   *
    * @param comments: list of returned gallery comments from callback.
-   * 
    * @param container: the GUI panel where comments will reside.
-   * 
    */
   public void generateAppPageComments(List<GalleryComment> comments, FlowPanel container) {
     container.clear();  // so don't show previous listing
@@ -179,14 +173,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       FlowPanel commentPerson = new FlowPanel();
       FlowPanel commentMeta = new FlowPanel();
       FlowPanel commentContent = new FlowPanel();
-      
+
       // Add commentPerson, default avatar for now
       Image cPerson = new Image();
       cPerson.setUrl("http://i.imgur.com/1h7cUkM.png");
       commentPerson.add(cPerson);
       commentPerson.addStyleName("comment-person");
       commentItem.add(commentPerson);
-      
+
       // Add commentContent
       Label cAuthor = new Label(c.getUserName());
       cAuthor.addStyleName("comment-author");
@@ -211,10 +205,9 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       commentItem.addStyleName("comment-item");
       commentItem.addStyleName("clearfix");
       container.add(commentItem);
-    } 
+    }
   }
 
-  
   /**
    * Creates a sidebar showcasing apps; the CSS name will be the same as the
    * passed-in container's name. This sidebar shows up as a tab under parent.
@@ -252,12 +245,12 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     for (final GalleryApp app : apps) {
       // Create the associated GUI object for app
       GalleryAppWidget gaw = new GalleryAppWidget(app);
-      
+
       // Create necessary GUI wrappers and components
       FlowPanel appCard = new FlowPanel();
       FlowPanel appCardContent = new FlowPanel();
       FlowPanel appCardMeta = new FlowPanel();
-      
+
       // Special processing for the app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
@@ -271,14 +264,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
         }
       });
-      
+
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
         }
       });
 
@@ -299,7 +292,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     // For generic cards, do not show comment
 //    Image numComments = new Image();
 //    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
-      
+
 //      appCardMeta.add(numViews);
 //      appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
@@ -309,7 +302,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       // For generic cards, do not show comment
 //      appCardMeta.add(numComments);
 //      appCardMeta.add(gaw.numCommentsLabel);
-      
+
       // Add associated styling
       appCard.addStyleName("gallery-card");
       appCard.addStyleName("clearfix");
@@ -321,7 +314,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.numDownloadsLabel.addStyleName("gallery-meta");
       gaw.numLikesLabel.addStyleName("gallery-meta");
 //      gaw.numCommentsLabel.addStyleName("gallery-meta");
-      
+
       container.add(appCard);
     }
 
@@ -330,18 +323,15 @@ public class GalleryGuiFactory implements GalleryRequestListener {
   @Override
   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
     // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
     // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
     // TODO Auto-generated method stub
-    
   }
 }

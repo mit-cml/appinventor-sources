@@ -1431,33 +1431,6 @@ textarea::-webkit-input-placeholder {
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* "My Stuff" page related stlyes, including tabs & user profile */
-/*
-.ode-MyTabs {
-  width: 100%;
-}
-.ode-MyTabs .gwt-TabBar {
-  margin: 5px 0 0;	
-}
-.ode-MyTabs .gwt-TabBar .gwt-TabBarItem,
-.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
-  border: none;
-  padding: 5px 10px;
-}
-.ode-MyTabs .gwt-TabBar .gwt-TabBarItem {
-  background-color: rgba(102, 153, 0, 0.3);
-}
-.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
-  background-color: #f7f9f2;	
-}
-/* GWT wrapper for the selected tab content 
-.ode-MyTabs .gwt-TabPanelBottom { 
-    border: 1px solid #d2d2d2;
-    background-color: #f7f9f2;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
-}
-*/
-
 .gwt-TabPanelBottom .gallery-page-single { /* profile page under "My stuff" */
   margin: 20px 0;
 }
@@ -1525,7 +1498,7 @@ textarea::-webkit-input-placeholder {
 .gallery .gwt-TabBar {
   margin: 0;
   border: none;
-  border-style: none; 
+  border-style: none;
 }
 .gallery .gwt-TabBar .gwt-TabBarItem,
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
@@ -1533,10 +1506,10 @@ textarea::-webkit-input-placeholder {
   font-family: "Roboto",Arial,sans-serif;
   text-transform: uppercase;
   padding: 5px;
-  margin: 0;  
+  margin: 0;
   border: none;
   border-style: none;
-  background: none; 
+  background: none;
   background-color: none;
   margin-right: 10px;
 }
@@ -1545,7 +1518,7 @@ textarea::-webkit-input-placeholder {
   padding: 5px 5px 5px 0;
 }
 .gallery .gwt-TabBar .gwt-TabBarItem {
-  color: #999;	
+  color: #999;
   font-weight: 100;
 }
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
@@ -1610,7 +1583,7 @@ textarea::-webkit-input-placeholder {
   cursor: pointer;
 }
 .gallery-app-collection {
-  
+
 }
 .gallery-card {
   width: 160px;
@@ -1630,9 +1603,9 @@ textarea::-webkit-input-placeholder {
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
   background-color: #EEE;
-  -webkit-transition: background-color 1s ease; 
-  -moz-transition: background-color 1s ease; 
-  -o-transition: background-color 1s ease; 	
+  -webkit-transition: background-color 1s ease;
+  -moz-transition: background-color 1s ease;
+  -o-transition: background-color 1s ease;
   cursor: pointer;
 }
 .gallery-app-showcase .gallery-card {
@@ -1650,7 +1623,7 @@ textarea::-webkit-input-placeholder {
   width: 75px;
 }
 .gallery-card-content {
-  padding: 0 15px 15px;	
+  padding: 0 15px 15px;
   overflow: hidden;
 }
 .gallery-app-showcase .gallery-card-content {
@@ -2031,10 +2004,10 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-tags .gwt-Label:hover {
   background-color: #999;
   color: #FFF;
-  -webkit-transition: background-color 1s ease; 
-  -moz-transition: background-color 1s ease; 
+  -webkit-transition: background-color 1s ease;
+  -moz-transition: background-color 1s ease;
   -o-transition: background-color 1s ease;
-  transition: background-color 1s ease; 	
+  transition: background-color 1s ease;
 }
 .app-stats .note-header {
   display: block;
@@ -2054,7 +2027,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-comments {
   width: 100%;
   font-weight: 300;
-} 
+}
 .app-comments .comment-item {
   margin: 10px 0;
 }
