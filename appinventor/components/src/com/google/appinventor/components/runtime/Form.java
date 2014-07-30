@@ -1367,6 +1367,7 @@ public class Form extends Activity
   private void showAboutApplicationNotification() {
     String title = "About This App";
     String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
+    aboutScreen = aboutScreen.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String message = aboutScreen + tagline + yandexTranslateTagline;
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
