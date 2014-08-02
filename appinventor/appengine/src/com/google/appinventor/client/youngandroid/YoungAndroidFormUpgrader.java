@@ -709,6 +709,19 @@ public final class YoungAndroidFormUpgrader {
       // The AboutScreen property was added.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The Scrollable property was set to False by default.
+      if (componentProperties.containsKey("Scrollable")){
+        String value = ((ClientJsonString)componentProperties.get("Scrollable")).getString();
+        if (value.equals("False")){
+          componentProperties.remove("Scrollable");
+        }
+      }
+      else {
+        componentProperties.put("Scrollable", new ClientJsonString("True"));
+      }
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 

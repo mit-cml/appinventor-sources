@@ -207,7 +207,7 @@ public class Form extends Activity
   }
 
   private void defaultPropertyValues() {
-    Scrollable(true); // frameLayout is created in Scrollable()
+    Scrollable(false); // frameLayout is created in Scrollable()
     BackgroundImage("");
     AboutScreen("");
     BackgroundColor(Component.COLOR_WHITE);
@@ -590,7 +590,7 @@ public class Form extends Activity
    * @param scrollable  true if the screen should be vertically scrollable
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "True")
+    defaultValue = "False")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable && frameLayout != null) {
