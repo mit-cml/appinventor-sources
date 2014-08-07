@@ -5,40 +5,22 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.ErrorReporter;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.GalleryListBox;
-import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ViewerBox;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.GalleryClient;
 
 /**
  * The Gallery Toolbar

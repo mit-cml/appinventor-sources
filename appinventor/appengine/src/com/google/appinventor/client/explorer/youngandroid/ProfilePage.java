@@ -5,58 +5,47 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import java.util.List;
-import java.util.logging.Level;
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import java.util.logging.Logger;
 
-
-
-
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryGuiFactory;
 //import com.google.appengine.api.memcache.*;
 //import com.google.appengine.tools.cloudstorage.GcsFilename;
 //import com.google.appengine.tools.cloudstorage.GcsService;
 //import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 //import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.client.Ode;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
-import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.GalleryGuiFactory;
-import com.google.appinventor.client.GalleryRequestListener;
-import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 
 /* profileGUI has:
 

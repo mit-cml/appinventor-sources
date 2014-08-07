@@ -5,36 +5,41 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import java.util.Date;
+import java.util.List;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryGuiFactory;
+import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.Ode;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.utils.Uploader;
+import com.google.appinventor.client.wizards.youngandroid.RemixedYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.GalleryGuiFactory;
-import com.google.appinventor.client.GalleryRequestListener;
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.OdeMessages;
-import com.google.gwt.cell.client.EditTextCell;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -43,27 +48,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import com.google.appinventor.client.utils.Uploader;
-import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
-import com.google.appinventor.client.wizards.youngandroid.RemixedYoungAndroidProjectWizard;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.shared.settings.SettingsConstants;
 
 /**
  * The gallery page shows a single app from the gallery
@@ -84,9 +72,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
-  private final String HOLLOW_HEART_ICON_URL = "http://i.imgur.com/N6Lpeo2.png";
-  private final String RED_HEART_ICON_URL = "http://i.imgur.com/HjRfYkk.png";
-  private final String DOWNLOAD_ICON_URL = "http://i.imgur.com/j6IPJX0.png";
+  private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
+  private final String RED_HEART_ICON_URL = "/images/numLike.png";
+  private final String DOWNLOAD_ICON_URL = "/images/numDownload.png";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -1280,7 +1268,7 @@ panel
    if (appResults != null && appResults.getApps() != null)
       refreshApps(appResults, requestId, refreshable);
     else
-      Window.alert("apps was null");
+      OdeLog.log("apps was null");
   }
 
   /**
@@ -1291,7 +1279,7 @@ panel
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
       galleryGF.generateAppPageComments(comments, appCommentsList);
       if (comments == null)
-        Window.alert("comment list was null");
+        OdeLog.log("comment list was null");
   }
 
   @Override

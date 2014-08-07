@@ -6,12 +6,7 @@
 
 package com.google.appinventor.client.boxes;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.explorer.youngandroid.ProfilePage;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 

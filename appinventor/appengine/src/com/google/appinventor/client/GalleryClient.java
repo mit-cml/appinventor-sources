@@ -1,30 +1,23 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.client;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.appinventor.client.Ode;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
-import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
-import com.google.appinventor.client.explorer.youngandroid.GalleryList;
-
-import java.io.IOException;
-
-import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.shared.rpc.project.UserProject;
 
 
 /**

@@ -5,9 +5,14 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import com.google.appinventor.client.boxes.MotdBox;
-import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.TextButton;
@@ -15,21 +20,20 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.common.collect.Lists;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-
-import java.text.Format;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * The top panel, which contains the main menu, various links plus ads.
@@ -165,13 +169,11 @@ public class TopPanel extends Composite {
     // Account Drop Down Button
     List<DropDownItem> userItems = Lists.newArrayList();
 
-    // Messages
-    userItems.add(new DropDownItem(WIDGET_NAME_MESSAGES, MESSAGES.messagesLink(), new MessageAction()));
-
     // Sign Out
     userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
 
     accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
+    accountButton.setItemEnabled(WIDGET_NAME_MESSAGES, false);
     accountButton.setStyleName("ode-TopPanelButton");
 
     account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
@@ -194,6 +196,15 @@ public class TopPanel extends Composite {
 
     setStyleName("ode-TopPanel");
     setWidth("100%");
+  }
+  
+  public void updateAccountMessageButton(){
+    // Since we want to insert "Messages" before "Sign Out", we need to clear first.
+    accountButton.clearAllItems();
+    // Messages
+    accountButton.addItem(new DropDownItem(WIDGET_NAME_MESSAGES, MESSAGES.messagesLink(), new MessageAction()));
+    // Sign Out
+    accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
   }
 
   private void addLogo(HorizontalPanel panel) {

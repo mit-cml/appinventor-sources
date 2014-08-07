@@ -5,13 +5,11 @@
 
 package com.google.appinventor.shared.rpc.project;
 
-import com.google.appinventor.shared.rpc.RpcResult;
+import java.util.List;
+
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
-import java.io.InputStream;
-import java.util.List;
 
 /**
  * Interface for the service providing gallery information.

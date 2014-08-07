@@ -5,7 +5,12 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.List;
+
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -16,13 +21,6 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-
-import java.io.IOException;
-import java.util.List;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.GalleryClient;
 
 
 

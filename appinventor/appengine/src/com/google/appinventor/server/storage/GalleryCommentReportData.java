@@ -5,13 +5,11 @@
 
 package com.google.appinventor.server.storage;
 
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.Parent;
-import com.googlecode.objectify.annotation.Indexed;
-import com.googlecode.objectify.annotation.Unindexed;
-import java.util.Date;
-
 import javax.persistence.Id;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Indexed;
+import com.googlecode.objectify.annotation.Parent;
 
 /**
  * this class modelled after those in StoredData.java

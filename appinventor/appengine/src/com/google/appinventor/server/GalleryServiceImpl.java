@@ -5,72 +5,39 @@
 
 package com.google.appinventor.server;
 
-import com.google.appengine.api.files.AppEngineFile;
-import com.google.appengine.api.files.FileReadChannel;
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
-import com.google.appengine.api.files.FileWriteChannel;
-import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsFileOptions.Builder;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsFileMetadata;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appinventor.server.project.CommonProjectService;
-import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
-import com.google.appinventor.server.storage.StorageIo;
-import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
-import com.google.appinventor.shared.rpc.RpcResult;
-import com.google.appinventor.shared.rpc.project.FileDescriptor;
-import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
-import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
-import com.google.appinventor.shared.rpc.project.Message;
-import com.google.appinventor.shared.rpc.project.NewProjectParameters;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.ProjectService;
-import com.google.appinventor.shared.rpc.project.GalleryService;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.common.collect.Lists;
-import com.google.appinventor.server.storage.GalleryStorageIo;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.shared.rpc.project.GalleryAppReport;
-
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.GalleryStorageIo;
+import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GalleryAppReport;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
+import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
-import com.google.appinventor.common.utils.StringUtils;
 
 /**
  * The implementation of the RPC service which runs on the server.

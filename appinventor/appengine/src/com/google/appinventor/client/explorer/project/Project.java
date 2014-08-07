@@ -5,16 +5,17 @@
 
 package com.google.appinventor.client.explorer.project;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class represents a project.

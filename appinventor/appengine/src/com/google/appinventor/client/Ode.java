@@ -321,6 +321,30 @@ public class Ode implements EntryPoint {
             topPanel.showModerationLink(true);
           }
           ProjectListBox.loadProfileImage();
+          topPanel.updateAccountMessageButton();
+
+          final String userInfo = user.getUserName();
+          // Get the message count to display right next to user
+          final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(List<Message> msgs) {
+                  msgCount[0] = 0;
+                  // get the new comment list so gui updates
+                  for (Message m : msgs) {
+                    if (m.getStatus().equalsIgnoreCase("1")) {
+                      msgCount[0]++;
+                    }
+                  }
+                  String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
+                  OdeLog.log("### MSG final = " + u);
+                  // Reset message count for further use
+                  topPanel.showUserEmail(u);
+                }
+            };
+          Ode.getInstance().getGalleryService().getMessages(user.getUserId(), messagesCallback);
+
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
@@ -617,35 +641,6 @@ public class Ode implements EntryPoint {
         gallerySettings = new GallerySettings();
         //gallerySettings.loadGallerySettings();
         loadGallerySettings();
-
-        final String userInfo = user.getUserName();
-        // Get the message count to display right next to user
-        final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(List<Message> msgs) {
-                msgCount[0] = 0;
-                // get the new comment list so gui updates
-//                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
-                for (Message m : msgs) {
-                  OdeLog.log("### MSG status = " + m.getStatus());
-                  OdeLog.log("### MSG count = " + msgCount);
-                  if (m.getStatus().equalsIgnoreCase("1")) {
-                    OdeLog.log("### MSG GOT IN");
-                    msgCount[0]++;
-                  }
-                }
-                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " +
-                userInfo.concat(Integer.toString(msgCount[0])));
-
-                String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
-                OdeLog.log("### MSG final = " + u);
-                // Reset message count for further use
-                topPanel.showUserEmail(u);
-              }
-          };
-        Ode.getInstance().getGalleryService().getMessages(user.getUserId(), messagesCallback);
 
         // Initialize project and editor managers
         projectManager = new ProjectManager();

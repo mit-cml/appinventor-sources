@@ -1,31 +1,32 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.server;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.google.appengine.api.search.DeleteException;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.search.GetRequest;
-import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
-import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.PutException;
-import com.google.appengine.api.search.StatusCode;
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
-import com.google.appengine.api.search.DeleteException;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.StatusCode;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.googlecode.objectify.NotFoundException;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.ArrayList;
-import java.util.List;
 
 
 // see sample at https://developers.google.com/appengine/docs/java/search/

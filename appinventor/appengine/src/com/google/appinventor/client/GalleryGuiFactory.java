@@ -1,27 +1,28 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.client;
 
 import java.util.Date;
 import java.util.List;
 
-import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 
 public class GalleryGuiFactory implements GalleryRequestListener {
   GalleryClient gallery = null;
@@ -118,14 +119,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 
       // Set helper icons
       Image numViews = new Image();
-      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+      numViews.setUrl("/images/numView.png");
       Image numDownloads = new Image();
-      numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+      numDownloads.setUrl("/images/numDownload.png");
       Image numLikes = new Image();
-      numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+      numLikes.setUrl("/images/numLikeHollow.png");
     // For generic cards, do not show comment
 //    Image numComments = new Image();
-//    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+//    numComments.setUrl("/image/numComment.png");
 
 //      appCardMeta.add(numViews);
 //      appCardMeta.add(gaw.numViewsLabel);

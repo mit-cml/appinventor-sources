@@ -5,9 +5,9 @@
 
 package com.google.appinventor.shared.rpc.project;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import java.util.List;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Interface for the service providing project information. All declarations

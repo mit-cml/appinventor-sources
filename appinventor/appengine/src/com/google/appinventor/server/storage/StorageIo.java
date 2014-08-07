@@ -5,6 +5,12 @@
 
 package com.google.appinventor.server.storage;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import javax.annotation.Nullable;
+
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
@@ -12,13 +18,6 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.annotation.Nullable;
 
 /**
  * Interface of methods to simplify access to the storage systems.

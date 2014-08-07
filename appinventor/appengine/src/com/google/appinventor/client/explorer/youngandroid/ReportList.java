@@ -6,56 +6,39 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.appinventor.client.Ode;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.OdeMessages;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.Message;
-import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.OdeMessages;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The report list shows all reports in a table.

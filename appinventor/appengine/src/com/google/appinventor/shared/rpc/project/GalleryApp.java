@@ -1,8 +1,12 @@
-package com.google.appinventor.shared.rpc.project;
-import com.google.gwt.user.client.rpc.IsSerializable;
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
+package com.google.appinventor.shared.rpc.project;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GalleryApp is the shared class holding app info. It is used by server to

@@ -5,70 +5,33 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.Ode;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryGuiFactory;
+import com.google.appinventor.client.GalleryRequestListener;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.GalleryGuiFactory;
-import com.google.appinventor.client.GalleryRequestListener;
-import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.io.Console;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.rpc.user.User;
-import com.google.gwt.user.client.Window;
 /**
  * The gallery list shows apps from the gallery in a table.
  *
@@ -505,7 +468,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     if (apps != null)
       refreshApps(appsResult, requestId, refreshable);
     else
-      Window.alert("apps was null");
+      OdeLog.log("apps was null");
   }
   /**
    * Process the results after retrieving list of GalleryComment

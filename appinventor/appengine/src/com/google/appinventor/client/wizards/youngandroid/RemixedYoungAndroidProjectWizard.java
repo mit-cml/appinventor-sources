@@ -5,26 +5,12 @@
 
 package com.google.appinventor.client.wizards.youngandroid;
 
-import java.util.List;
-
-import com.google.appinventor.client.GalleryRequestListener;
-import com.google.appinventor.client.Ode;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.wizards.NewProjectWizard;
-import com.google.appinventor.client.youngandroid.TextValidators;
-import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.gwt.core.client.Scheduler;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
