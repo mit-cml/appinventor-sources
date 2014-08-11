@@ -21,6 +21,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -115,6 +118,30 @@ public class ReplForm extends Form {
         Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
       }
     });
+  }
+
+  // Configure the system menu to include items to kill the application and to show "about"
+  // information and providing the "Settings" menu option.
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // This procedure is called only once.  To change the items dynamically
+    // we would use onPrepareOptionsMenu.
+    super.onCreateOptionsMenu(menu); // sets up the exit and about buttons
+    addSettingsButton(menu);         // Now add our button!
+    return true;
+  }
+
+  public void addSettingsButton(Menu menu) {
+    MenuItem showSettingsItem = menu.add(Menu.NONE, Menu.NONE, 3,
+      "Settings").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            PhoneStatus.doSettings();
+            return true;
+          }
+        });
+    showSettingsItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
   @Override
