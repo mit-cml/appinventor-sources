@@ -104,6 +104,4 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   public void deleteUserFile(String fileName) {
     storageIo.deleteUserFile(userInfoProvider.getUserId(), fileName);
   }
-
-
 }

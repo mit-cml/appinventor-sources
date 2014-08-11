@@ -5,10 +5,6 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import java.util.List;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
@@ -22,7 +18,9 @@ import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProject
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
+import java.util.List;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.

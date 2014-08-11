@@ -5,9 +5,8 @@
 
 package com.google.appinventor.shared.rpc.user;
 
-import java.io.Serializable;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
 
 /**
  * Data Transfer Object representing user data.

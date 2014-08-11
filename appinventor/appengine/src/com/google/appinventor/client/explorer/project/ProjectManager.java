@@ -5,18 +5,16 @@
 
 package com.google.appinventor.client.explorer.project;
 
+import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.UserProject;
 
 /**
  * This class manages projects.
@@ -127,7 +125,6 @@ public final class ProjectManager {
    * @return new project
    */
   public Project addProject(UserProject projectInfo) {
-    OdeLog.log("in ProjectManager addProject");
     Project project = new Project(projectInfo);
     projectsMap.put(projectInfo.getProjectId(), project);
     fireProjectAdded(project);

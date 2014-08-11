@@ -5,10 +5,11 @@
 
 package com.google.appinventor.shared.rpc.project;
 
-import java.util.List;
-
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.List;
 
 /**
  * Interface for the service providing project information. All declarations
