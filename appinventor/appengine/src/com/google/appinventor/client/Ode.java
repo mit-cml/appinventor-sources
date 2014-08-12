@@ -150,8 +150,8 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  private static final int DESIGNER = 0;
-  private static final int PROJECTS = 1;
+  static final int DESIGNER = 0;
+  static final int PROJECTS = 1;
   private static int currentView = DESIGNER;
 
   /*
@@ -262,6 +262,13 @@ public class Ode implements EntryPoint {
    */
   public static boolean isWindowClosing() {
     return getInstance().windowClosing;
+  }
+
+  /**
+   * Get the current view
+   */
+  public int getCurrentView() {
+    return currentView;
   }
 
   /**

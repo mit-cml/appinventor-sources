@@ -396,11 +396,17 @@ public class TopToolbar extends Composite {
     public void execute() {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() == 1) {
-        exportProject(selectedProjects.get(0));
+      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        //If we are in the projects view
+        if (selectedProjects.size() == 1) {
+          exportProject(selectedProjects.get(0));
+        } else {
+          // The user needs to select only one project.
+          ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
+        }
       } else {
-        // The user needs to select only one project.
-        ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
+        //If we are in the designer view.
+        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
       }
     }
 
@@ -770,7 +776,7 @@ public class TopToolbar extends Composite {
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), true);
