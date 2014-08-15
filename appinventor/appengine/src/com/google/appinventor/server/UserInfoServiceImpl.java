@@ -5,8 +5,10 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 
@@ -25,10 +27,32 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private static final long serialVersionUID = -7316312435338169166L;
 
   /**
+   * Returns System Config, including user information record
+   *
+   */
+
+  @Override
+  public Config getSystemConfig(String sessionId) {
+    Config config = new Config();
+    User user = userInfoProvider.getUser();
+    user.setSessionId(sessionId);
+    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
+    Flag<String> rendezvousFlag = Flag.createFlag("use.rendezvousserver", "");
+    if (!rendezvousFlag.get().equals("")) {
+      config.setRendezvousServer(rendezvousFlag.get());
+    }
+    config.setUser(user);
+    return config;
+  }
+
+  /**
    * Returns user information.
+   *
+   * (obsoleted by getSystemConfig())
    *
    * @return  user information record
    */
+
   @Override
   public User getUserInformation(String sessionId) {
     // This is a little evil here. We are fetching the User object

@@ -751,6 +751,10 @@ public class YaVersion {
   // - Initial version.
   public static final int YANDEX_COMPONENT_VERSION = 1;
 
+  // Rendezvous Server Location
+
+  public static final String RENDEZVOUS_SERVER = "rendezvous.appinventor.mit.edu";
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if

@@ -861,7 +861,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
-    xmlhttp.open('GET', 'http://rendezvous.appinventor.mit.edu/rendezvous/' + rs.rendezvouscode, true);
+    xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
             try {
@@ -942,9 +942,22 @@ Blockly.ReplMgr.Dialog.prototype = {
 };
 
 Blockly.ReplMgr.makeDialogMessage = function(code) {
-    var qr = this.qrcode(1, 'L');
-    qr.addData(code);
-    qr.make();
+    var scancode;
+    if (top.rendezvousServer != 'rendezvous.appinventor.mit.edu') { // Should really get this from YAV
+        scancode = top.rendezvousServer + ";" + code;
+    } else {
+        scancode = code;
+    }
+    var qr = this.qrcode(2, 'L');
+    qr.addData(scancode);
+    try {
+        qr.make();
+    } catch (e) {
+        console.log("makeDialog: Using qrcode 4");
+        qr = this.qrcode(4, 'L');
+        qr.addData(scancode);
+        qr.make();
+    }
     var img = qr.createImgTag(6);
     var retval = '<table><tr><td>' + img + '</td><td><font size="+1">Your code is:<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
     return retval;

@@ -50,6 +50,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
@@ -457,21 +458,28 @@ public class Ode implements EntryPoint {
     }
 
     // Get user information.
-    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+    OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
         // failure message
         MESSAGES.serverUnavailable()) {
 
       @Override
-      public void onSuccess(User result) {
+      public void onSuccess(Config result) {
+        user = result.getUser();
         // If user hasn't accepted terms of service, ask them to.
-        if (!result.getUserTosAccepted()) {
+        if (!user.getUserTosAccepted()) {
           // We expect that the redirect to the TOS page should be handled
           // by the onFailure method below. The server should return a
           // "forbidden" error if the TOS wasn't accepted.
           ErrorReporter.reportError(MESSAGES.serverUnavailable());
           return;
         }
-        user = result;
+
+        if (result.getRendezvousServer() != null) {
+          setRendezvousServer(result.getRendezvousServer());
+        } else {
+          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER);
+        }
+
         userSettings = new UserSettings(user);
 
         // Initialize project and editor managers
@@ -545,7 +553,7 @@ public class Ode implements EntryPoint {
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
 
-    userInfoService.getUserInformation(sessionId, callback);
+    userInfoService.getSystemConfig(sessionId, callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
@@ -556,7 +564,7 @@ public class Ode implements EntryPoint {
 
     // load project based on current url
     // TODO(sharon): Seems like a possible race condition here if the onValueChange
-    // handler defined above gets called before the getUserInformation call sets
+    // handler defined above gets called before the getSystemConfig call sets
     // userSettings.
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
@@ -1622,6 +1630,12 @@ public class Ode implements EntryPoint {
     }
     screensLocked = value;
   }
+
+  // Native code to set the top level rendezvousServer variable
+  // where blockly code can easily find it.
+  private native void setRendezvousServer(String server) /*-{
+    top.rendezvousServer = server;
+  }-*/;
 
   // Native code to open a new window (or tab) to display the
   // desired survey. The value below "http://web.mit.edu" is just
