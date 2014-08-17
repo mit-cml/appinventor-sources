@@ -75,6 +75,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
   private final String RED_HEART_ICON_URL = "/images/numLike.png";
   private final String DOWNLOAD_ICON_URL = "/images/numDownload.png";
+  private final String NUM_VIEW_ICON_URL = "/images/numView.png";
+  private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -574,9 +576,9 @@ panel
     // We are not using views and comments at initial launch
     /*
     Image numViews = new Image();
-    numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+    numViews.setUrl(NUM_VIEW_ICON_URL);
     Image numComments = new Image();
-    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+    numComments.setUrl(NUM_COMMENT_ICON_URL);
     container.add(numViews);
     container.add(new Label(Integer.toString(app.getViews())));
     container.add(numComments);

@@ -711,7 +711,7 @@ public class Ode implements EntryPoint {
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
 
-    userInfoService.getUserInformationFromSessionId(sessionId, callback);
+    userInfoService.getUserInformation(sessionId, callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override

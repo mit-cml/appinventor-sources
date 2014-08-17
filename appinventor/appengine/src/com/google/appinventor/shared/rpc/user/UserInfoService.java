@@ -17,18 +17,18 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface UserInfoService extends RemoteService {
 
   /**
-   * Retrieves information about the user of userId
-   *
-   * @return  user information
-   */
-  User getUserInformation(String userId);
-
-  /**
    * Retrieves information about the current user
    *
    * @return  user information
    */
-  User getUserInformationFromSessionId(String sessionId);
+  User getUserInformation(String sessionId);
+
+  /**
+   * Retrieves information about the user of userId
+   *
+   * @return  user information
+   */
+  User getUserInformationByUserId(String userId);
 
   /**
    * Retrieves the user's settings.

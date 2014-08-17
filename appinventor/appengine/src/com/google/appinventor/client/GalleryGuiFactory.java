@@ -26,6 +26,12 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class GalleryGuiFactory implements GalleryRequestListener {
   GalleryClient gallery = null;
+  private final String PERSON_URL = "/images/person.png";
+  private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
+  private final String RED_HEART_ICON_URL = "/images/numLike.png";
+  private final String DOWNLOAD_ICON_URL = "/images/numDownload.png";
+  private final String NUM_VIEW_ICON_URL = "/images/numView.png";
+  private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
 
   /**
    * Generates a new GalleryGuiFactory instance.
@@ -177,7 +183,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 
       // Add commentPerson, default avatar for now
       Image cPerson = new Image();
-      cPerson.setUrl("http://i.imgur.com/1h7cUkM.png");
+      cPerson.setUrl(PERSON_URL);
       commentPerson.add(cPerson);
       commentPerson.addStyleName("comment-person");
       commentItem.add(commentPerson);
@@ -285,14 +291,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 
       // Set helper icons
 //      Image numViews = new Image();
-//      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+//      numViews.setUrl(NUM_VIEW_ICON_URL);
       Image numDownloads = new Image();
-      numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+      numDownloads.setUrl(DOWNLOAD_ICON_URL);
       Image numLikes = new Image();
-      numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+      numLikes.setUrl(HOLLOW_HEART_ICON_URL);
     // For generic cards, do not show comment
 //    Image numComments = new Image();
-//    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+//    numComments.setUrl(NUM_COMMENT_ICON_URL);
 
 //      appCardMeta.add(numViews);
 //      appCardMeta.add(gaw.numViewsLabel);

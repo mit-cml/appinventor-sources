@@ -271,7 +271,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       userLinkBox.setText(currentUser.getUserLink());
     } else {
       // Public state
-      Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
+      Ode.getInstance().getUserInfoService().getUserInformationByUserId(userId, userInformationCallback);
       // Retrieve apps by this author for sidebar
       final OdeAsyncCallback<GalleryAppListResult> byAuthorCallback = new OdeAsyncCallback<GalleryAppListResult>(
           // failure message

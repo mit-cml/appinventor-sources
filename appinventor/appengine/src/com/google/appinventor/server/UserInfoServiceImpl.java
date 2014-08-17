@@ -25,22 +25,12 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private static final long serialVersionUID = -7316312435338169166L;
 
   /**
-   * Returns user information based on userId.
-   *
-   * @return  user information record
-   */
-  @Override
-  public User getUserInformation(String userId) {
-    return storageIo.getUser(userId);
-  }
-
-  /**
    * Returns user information.
    *
    * @return  user information record
    */
   @Override
-  public User getUserInformationFromSessionId(String sessionId) {
+  public User getUserInformation(String sessionId) {
     // This is a little evil here. We are fetching the User object
     // *and* side effecting it by storing the sessionId
     // A more pedagotically correct way would be to do the store
@@ -50,6 +40,16 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     // Store it in the data store
     storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
     return user;
+  }
+
+  /**
+   * Returns user information based on userId.
+   *
+   * @return  user information record
+   */
+  @Override
+  public User getUserInformationByUserId(String userId) {
+    return storageIo.getUser(userId);
   }
 
   /**
