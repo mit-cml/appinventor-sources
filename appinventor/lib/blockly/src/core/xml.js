@@ -268,6 +268,30 @@ Blockly.Xml.domToBlock = function(workspace, xmlBlock, opt_reuseBlock) {
     }
   }
   );
+  // [lyn, 07/03/2014] Special case to handle renaming of event parameters in i8n
+  if (block && block.type == "component_event") {
+    // Create a dictionary mapping default event parameter names appearing in body
+    //   to their possibly translated names in some source language
+    var eventParamDict = Blockly.LexicalVariable.eventParameterDict(block);
+    var sourceEventParams = []; // Event parameter names in source language
+    var targetEventParams = []; // Event parameter names in target language
+    for (var key in eventParamDict) {
+      var sourceEventParam = eventParamDict[key];
+      var targetEventParam = window.parent.BlocklyPanel_getLocalizedParameterName(key);
+      if (sourceEventParam != targetEventParam) { // Only add to translation if they're different
+        sourceEventParams.push(sourceEventParam);
+        targetEventParams.push(targetEventParam);
+      }
+    }
+    if (sourceEventParams.length > 0) { // Do we need to translated some source event parameters?
+      var childBlocks = block.getChildren(); // should be at most one body block
+      for (var j= 0, childBlock; childBlock = childBlocks[j]; j++) {
+        var freeSubstitution = new Blockly.Substitution(sourceEventParams, targetEventParams);
+        // renameFree does the translation.
+        Blockly.LexicalVariable.renameFree(childBlock, freeSubstitution);
+      }
+    }
+  }
   return block;
   },
   function (block, timeDiffOuter) {

@@ -100,6 +100,13 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
 
+  // Switch language
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH = "English";
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Chinese-Taiwan";
+  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = "German";
+  //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = "Vietnamese";
+
   // Enum for type of view showing in the design tab
   public enum View {
     FORM,   // Form editor view
@@ -455,5 +462,4 @@ public class DesignToolbar extends Toolbar {
   public DesignProject getCurrentProject() {
     return currentProject;
   }
-
 }

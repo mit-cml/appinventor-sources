@@ -4,8 +4,6 @@
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
@@ -22,9 +20,9 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
-import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
@@ -38,6 +36,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Editor for Young Android Blocks (.blk) files.
@@ -117,7 +117,7 @@ public final class YaBlocksEditor extends FileEditor
     // This code seems to be using a rather old layout, so we cannot simply pass 100% for height.
     // Instead, it needs to be calculated from the client's window, and a listener added to Window
     // We use VIEWER_WINDOW_OFFSET as an approximation of the size of the top navigation bar
-    // New layouts don't need all this messing; see comments on selected answer at: 
+    // New layouts don't need all this messing; see comments on selected answer at:
     // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
     blocksArea.setHeight(Window.getClientHeight() - VIEWER_WINDOW_OFFSET + "px");
     Window.addResizeHandler(new ResizeHandler() {
@@ -230,7 +230,7 @@ public final class YaBlocksEditor extends FileEditor
       paletteBox.setContent(palettePanel);
     }
     PaletteBox.getPaletteBox().setVisible(false);
-    
+
     // Update the source structure explorer with the tree of this form's components.
     MockForm form = getForm();
     if (form != null) {
@@ -589,6 +589,14 @@ public final class YaBlocksEditor extends FileEditor
     if (editor != null) {
       editor.setDamaged(true);
     }
+  }
+
+  /*
+   * Switch language to the specified language if applicable
+   */
+  @Override
+  public void switchLanguage(String newLanguage) {
+    blocksArea.switchLanguage(newLanguage);
   }
 
 }

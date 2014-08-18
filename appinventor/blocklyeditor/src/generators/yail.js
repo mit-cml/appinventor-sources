@@ -435,8 +435,8 @@ Blockly.Yail.getPropertyValueString = function(propertyValue, propertyType) {
  * @private
  */
 Blockly.Yail.getComponentRenameString = function(oldName, newName) {
-  return Blockly.Yail.YAIL_RENAME_COMPONENT + Blockly.Yail.quotifyForREPL(oldName) 
-    + Blockly.Yail.YAIL_SPACER + Blockly.Yail.quotifyForREPL(newName) 
+  return Blockly.Yail.YAIL_RENAME_COMPONENT + Blockly.Yail.quotifyForREPL(oldName)
+    + Blockly.Yail.YAIL_SPACER + Blockly.Yail.quotifyForREPL(newName)
     + Blockly.Yail.YAIL_CLOSE_BLOCK;
 }
 

@@ -35,7 +35,7 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
 
-    addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
+    addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction()));
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
@@ -139,11 +139,11 @@ public class ProjectToolbar extends Toolbar {
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(),
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
         numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(),
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
         numSelectedProjects > 0);
-    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(),
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
         numSelectedProjects > 0);
   }
 }
