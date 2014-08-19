@@ -367,7 +367,6 @@
         <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/gcs/appengine-gcs-client.jar"/>
         <pathelement location="{lib.dir}/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
