@@ -257,6 +257,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 92:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 93:
+  // - Label was incremented to 3
   // - FILE_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 94:
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
@@ -535,7 +536,9 @@ public class YaVersion {
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int LABEL_COMPONENT_VERSION = 2;
+  // For LABEL_COMPONENT_VERSION 3:
+  // - The HTML format is defined.
+  public static final int LABEL_COMPONENT_VERSION = 3;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

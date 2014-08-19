@@ -1317,4 +1317,11 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  @DefaultMessage("Plain Text")
+  @Description("Label for TextView choice 'Text'")
+  String labelTextFormat();
+
+  @DefaultMessage("HTML Text")
+  @Description("Label for TextView choice 'HTML'")
+  String labelHTMLFormat();
 }
