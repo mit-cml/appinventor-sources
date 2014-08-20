@@ -269,8 +269,9 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     for (var b = 0, block; block = blocks[b]; b++) {
       var blockXY = block.getRelativeToSurfaceXY();
       var blockHW = block.getHeightWidth();
-      if (Blockly.RTL ? blockXY.x > -this.flyout_.width_ + MARGIN :
-           blockXY.x < this.flyout_.width_ - MARGIN) {
+      if (block.isDeletable() && (Blockly.RTL ?
+            blockXY.x > -this.flyout_.width_ + MARGIN :
+            blockXY.x < this.flyout_.width_ - MARGIN)) {
         // Delete any block that's sitting on top of the flyout.
         block.dispose(false, true);
       } else if (blockXY.y + blockHW.height < MARGIN) {

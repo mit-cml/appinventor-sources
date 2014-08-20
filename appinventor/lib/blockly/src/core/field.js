@@ -166,6 +166,7 @@ Blockly.Field.prototype.isVisible = function() {
 Blockly.Field.prototype.setVisible = function(visible) {
   this.visible_ = visible;
   this.getRootElement().style.display = visible ? 'block' : 'none';
+  this.render_();
 };
 
 /**
