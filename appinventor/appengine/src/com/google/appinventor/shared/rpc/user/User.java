@@ -40,6 +40,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param id unique user id (from {@link com.google.appengine.api.users.User#getUserId()}
    * @param email user email address
    * @param tosAccepted TOS accepted?
+   * @param sessionId client session Id
    */
   public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId) {
     this.id = id;

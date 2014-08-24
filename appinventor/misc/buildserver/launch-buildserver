@@ -33,7 +33,7 @@ while true; do
 done
 
 if $EXECUTE; then
-cd lib;
+cd `dirname $0`/lib;
 
 # Revised 10/24 to add updated jackson and guava libs
 # Revised 10/25 to add commons-io-2.0.1.jar

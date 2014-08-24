@@ -439,6 +439,7 @@
                     <li> <a href="#AccelerometerSensor"> AccelerometerSensor </a>
                     </li>
                     <li> <a href="#BarcodeScanner"> BarcodeScanner </a> </li>
+                    <li> <a href="#Clock"> Clock </a> </li>
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
                     <li> <a href="#OrientationSensor"> OrientationSensor </a>
@@ -503,6 +504,117 @@ none
   <dt><code>DoScan()</code></dt>
   <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
 </dl>
+
+ <h2 id="Clock"> Clock </h2>
+  <img src="images/clock.png" alt="" />
+  <p> Use a clock component to create a timer that signals
+    events at
+    regular intervals. The clock component also does various
+    conversions
+    and manipulations with time units. </p>
+  <p> One use of the clock component is a a <em> timer </em> :
+    set the
+    timer interval, and the timer will fire repeatedly at the
+    interval,
+    signalling a timer event. </p>
+  <p> A second use of the clock component is to manipulate time,
+    and
+    express time in various units. The internal time format used
+    by the
+    clock is called an <em> instant </em> . The clock's <code>
+      Now </code>
+    method returns the current time as an instant. The clock
+    provides
+    methods to manipulate instants, for example, return an
+    instant that is
+    several seconds, or months, or years from the given instant.
+    It also
+    provides methods to show the second, minute, hour, day, …,
+    corresponding to a given instant. </p>
+  <h3> Properties </h3>
+  <dl>
+    <dt> <code> TimerInterval </code> </dt>
+    <dd> timer interval in milliseconds </dd>
+    <dt> <code> TimerEnabled </code> </dt>
+    <dd> If true, then the timer will fire </dd>
+    <dt> <code> TimerAlwaysFires </code> </dt>
+    <dd> if true, the timer will fire even if the application is
+      not
+      showing on the screen </dd>
+  </dl>
+  <h3> Events </h3>
+  <dl>
+    <dt> <code> Timer() </code> </dt>
+    <dd> This event is signaled when the timer fires </dd>
+  </dl>
+  <h3> Methods </h3>
+  <dl>
+    <dt> <code> SystemTime() </code> </dt>
+    <dd> The phone's internal time in milliseconds </dd>
+    <dt> <code> Now() </code> </dt>
+    <dd> The instant in time read from phone's clock </dd>
+    <dt> <code> MakeInstant(Text from) </code> </dt>
+    <dd> Make an instant specified by MM/DD/YYYY hh:mm:ss or
+      MM/DD/YYYY
+      or hh:mm. </dd>
+    <dt> <code> MakeInstantFromMillis(Number millis) </code> </dt>
+    <dd> Make an instant specified by time in milliseconds </dd>
+    <dt> <code> GetMillis(instant) </code> </dt>
+    <dd> The instant in time measured as milliseconds since 1970
+    </dd>
+    <dt> <code> AddSeconds(instant, Number seconds) </code> </dt>
+    <dd> An instant in time some number of seconds after the
+      given
+      instant </dd>
+    <dt> <code> AddMinutes(instant, Number minutes) </code> </dt>
+    <dd> An instant in time some number of minutes after the
+      given
+      instant </dd>
+    <dt> <code> AddHours(instant, Number hours) </code> </dt>
+    <dd> An instant in time some number of hours after the given
+      instant </dd>
+    <dt> <code> AddDays(instant, Number days) </code> </dt>
+    <dd> An instant in time some number of days after the given
+      instant </dd>
+    <dt> <code> AddWeeks(instant, Number weeks) </code> </dt>
+    <dd> An instant in time some number of weeks after the given
+      instant </dd>
+    <dt> <code> AddMonths(instant, Number months) </code> </dt>
+    <dd> An instant in time some number of months after the
+      given instant </dd>
+    <dt> <code> AddYears(instant, Number years) </code> </dt>
+    <dd> An instant in time some number of years after the given
+      instant </dd>
+    <dt> <code> Duration(Calendar start, Calendar end) </code>
+    </dt>
+    <dd> Milliseconds between instants </dd>
+    <dt> <code> Second(Calendar instant) </code> </dt>
+    <dd> The second of the minute </dd>
+    <dt> <code> Minute(Calendar instant) </code> </dt>
+    <dd> The minute of the hour </dd>
+    <dt> <code> Hour(Calendar instant) </code> </dt>
+    <dd> The hour of the day </dd>
+    <dt> <code> DayOfMonth(Calendar instant) </code> </dt>
+    <dd> The day of the month,a number from 1 to 31 </dd>
+    <dt> <code> Weekday(Calendar instant) </code> </dt>
+    <dd> The day of the week. a number from 1 (Sunday) to 7
+      (Saturday) </dd>
+    <dt> <code> WeekdayName(Calendar instant) </code> </dt>
+    <dd> The name of the day of the week </dd>
+    <dt> <code> Month(Calendar instant) </code> </dt>
+    <dd> The month of the year, a number from 1 to 12) </dd>
+    <dt> <code> MonthName(Calendar instant) </code> </dt>
+    <dd> The name of the month </dd>
+    <dt> <code> Year(Calendar instant) </code> </dt>
+    <dd> The year </dd>
+    <dt> <code> FormatDateTime(Calendar instant) </code> </dt>
+    <dd> Text describing the date and time of an instant </dd>
+    <dt> <code> FormatDate(Calendar instant) </code> </dt>
+    <dd> Text describing the date of an instant </dd>
+    <dt> <code> FormatTime(Calendar instant) </code> </dt>
+    <dd> Text describing time time of an instant </dd>
+  </dl>
+
 
 <h2 id="LocationSensor">LocationSensor</h2>
 

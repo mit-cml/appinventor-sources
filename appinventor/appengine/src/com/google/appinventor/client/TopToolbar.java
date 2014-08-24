@@ -9,7 +9,15 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.explorer.commands.*;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
+import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
@@ -19,6 +27,7 @@ import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
@@ -32,7 +41,15 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
@@ -84,6 +101,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
+  private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
@@ -123,7 +141,9 @@ public class TopToolbar extends Composite {
         new NewAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
         new ImportProjectAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectMenuItem(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
+        new ImportTemplateAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
@@ -221,7 +241,9 @@ public class TopToolbar extends Composite {
     toolbar.add(fileDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
-    toolbar.add(languageDropDown);
+
+    // Commented out language switching until we have a clean Chinese translation. (AFM)
+    //toolbar.add(languageDropDown);
     toolbar.add(helpDropDown);
 
     //Only if logged in as an admin, add the Admin Button
@@ -300,37 +322,47 @@ public class TopToolbar extends Composite {
   private class WirelessAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, false); // false means we are
-      // *not* the emulator
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, false, false); // false means we are
+                                       // *not* the emulator
+      }
     }
   }
 
   private class EmulatorAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, true, false); // true means we are the
-      // emulator
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, true, false); // true means we are the
+                                      // emulator
+      }
     }
   }
 
   private class UsbAction implements Command {
     @Override
     public void execute() {
-      startRepl(true, false, true);
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(true, false, true);
+      }
     }
   }
 
   private class ResetAction implements Command {
     @Override
     public void execute() {
-      startRepl(false, false, false); // We are really stopping the repl here
+      if (Ode.getInstance().okToConnect()) {
+        startRepl(false, false, false); // We are really stopping the repl here
+      }
     }
   }
 
   private class HardResetAction implements Command {
     @Override
     public void execute() {
-      replHardReset();
+      if (Ode.getInstance().okToConnect()) {
+        replHardReset();
+      }
     }
   }
 
@@ -386,11 +418,17 @@ public class TopToolbar extends Composite {
     public void execute() {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() == 1) {
-        exportProject(selectedProjects.get(0));
+      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        //If we are in the projects view
+        if (selectedProjects.size() == 1) {
+          exportProject(selectedProjects.get(0));
+        } else {
+          // The user needs to select only one project.
+          ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
+        }
       } else {
-        // The user needs to select only one project.
-        ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
+        //If we are in the designer view.
+        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
       }
     }
 
@@ -422,6 +460,13 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       new ProjectUploadWizard().center();
+    }
+  }
+
+  private static class ImportTemplateAction implements Command {
+    @Override
+    public void execute() {
+      new TemplateUploadWizard().center();
     }
   }
 
@@ -774,9 +819,9 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);

@@ -234,6 +234,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ContactPicker")) {
         srcCompVersion = upgradeContactPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("DatePicker")) {
+        srcCompVersion = upgradeDatePickerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("EmailPicker")) {
         srcCompVersion = upgradeEmailPickerProperties(componentProperties, srcCompVersion);
 
@@ -267,6 +270,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("PasswordTextBox")) {
         srcCompVersion = upgradePasswordTextBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("PhoneCall")) {
+        srcCompVersion = upgradePhoneCallProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("PhoneNumberPicker")) {
         srcCompVersion = upgradePhoneNumberPickerProperties(componentProperties, srcCompVersion);
 
@@ -275,6 +281,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("TimePicker")) {
+        srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("TinyWebDB")) {
         srcCompVersion = upgradeTinyWebDBProperties(componentProperties, srcCompVersion);
@@ -592,6 +601,21 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The PhoneNumber, PhoneNumberList, and EmailAddressList properties were added.
+      // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
+      srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeDatePickerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SetDateToDisplay and LaunchPicker methods were added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -684,6 +708,19 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 12) {
       // The AboutScreen property was added.
       srcCompVersion = 12;
+    }
+    if (srcCompVersion < 13) {
+      // The Scrollable property was set to False by default.
+      if (componentProperties.containsKey("Scrollable")){
+        String value = ((ClientJsonString)componentProperties.get("Scrollable")).getString();
+        if (value.equals("False")){
+          componentProperties.remove("Scrollable");
+        }
+      }
+      else {
+        componentProperties.put("Scrollable", new ClientJsonString("True"));
+      }
+      srcCompVersion = 13;
     }
     return srcCompVersion;
   }
@@ -842,6 +879,18 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradePhoneCallProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The PhoneCallStarted event was added.
+      // The PhoneCallEnded event was added.
+      // The IncomingCallAnswered event was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradePhoneNumberPickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -887,6 +936,12 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version  5.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+        // The PlayInForeground method was added.
+        // The OtherPlayerStarted event was added.
+        // Properties related to this component have now been upgraded to version  6.
+        srcCompVersion = 6;
+      }
     return srcCompVersion;
   }
 
@@ -901,6 +956,16 @@ public final class YoungAndroidFormUpgrader {
       // The Sound.SoundError event was marked userVisible false and is no longer used.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SetTimeToDisplay and LaunchPicker methods were added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

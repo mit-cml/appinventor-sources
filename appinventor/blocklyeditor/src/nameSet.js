@@ -117,9 +117,12 @@ Blockly.NameSet.prototype.insert = function(x) {
 /**
  * Destructive set deletion.
  * Removes x from the set. Does not complain if x not in the set.
+ * Note: This used to be called just "delete" but delete is a reserved
+ * word, so we call this deleteName instead
+ *
  * @param x: any value
  */
-Blockly.NameSet.prototype.delete = function(x) {
+Blockly.NameSet.prototype.deleteName = function(x) {
   delete this.elements[x];
 }
 
@@ -195,7 +198,7 @@ Blockly.NameSet.prototype.insertion = function(x) {
  */
 Blockly.NameSet.prototype.deletion = function(x) {
   var result = this.copy();
-  result.delete(x);
+  result.deleteName(x);
   return result;
 }
 

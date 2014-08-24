@@ -486,7 +486,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       + "<p><u>Requirements</u>: This should only be called after the "
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>" )
-  public void TweetWithImage(final String status, final String ImagePath) {
+  public void TweetWithImage(final String status, final String imagePath) {
     if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "TweetWithImage",
           ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, "Need to login?");
@@ -496,6 +496,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         try {
+          // Build the Twitter4j Configuration
           ConfigurationBuilder builder = new ConfigurationBuilder().setMediaProviderAPIKey(TwitPic_API_Key);
           builder.setOAuthConsumerKey(ConsumerKey());
           builder.setOAuthConsumerSecret(ConsumerSecret());
@@ -504,9 +505,14 @@ public final class Twitter extends AndroidNonvisibleComponent implements
           Configuration conf = builder.build();
           ImageUpload upload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
           String url = "";
-            if (new File(ImagePath).exists()) {
-              url = upload.upload(new File(ImagePath));
-            }
+          String cleanImagePath = imagePath;
+          // Clean up the file path if necessary
+          if (cleanImagePath.startsWith("file://")) {
+            cleanImagePath = imagePath.replace("file://", "");
+          }
+          if (new File(cleanImagePath).exists()) {
+            url = upload.upload(new File(cleanImagePath));
+          }
           twitter.updateStatus(status + " " + url);
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",

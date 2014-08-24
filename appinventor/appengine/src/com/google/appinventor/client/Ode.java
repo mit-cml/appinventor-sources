@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
@@ -36,6 +34,8 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.GetMotdService;
@@ -50,6 +50,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
@@ -127,6 +128,10 @@ public class Ode implements EntryPoint {
   // User information
   private User user;
 
+  // Template path if set by /?repo=
+  private String templatePath;
+  private boolean templateLoadingFlag = false;
+
   // Nonce Information
   private String nonce;
 
@@ -146,8 +151,8 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  private static final int DESIGNER = 0;
-  private static final int PROJECTS = 1;
+  static final int DESIGNER = 0;
+  static final int PROJECTS = 1;
   private static int currentView = DESIGNER;
 
   /*
@@ -261,6 +266,13 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Get the current view
+   */
+  public int getCurrentView() {
+    return currentView;
+  }
+
+  /**
    * Switch to the Projects tab
    */
   public void switchToProjectsView() {
@@ -303,8 +315,26 @@ public class Ode implements EntryPoint {
     }
     OdeLog.log("Ode.openPreviousProject called");
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-    getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
-    openProject(value);
+      getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+
+    // Retrieve the userTemplates
+    String userTemplates = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
+    TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
+
+    if (templateLoadingFlag) {  // We are loading a template, open it instead
+                                // of the last project
+      NewProjectCommand callbackCommand = new NewProjectCommand() {
+          @Override
+          public void execute(Project project) {
+            templateLoadingFlag = false;
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+          }
+        };
+      TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
+    } else {
+      openProject(value);
+    }
   }
 
   private void openProject(String projectIdString) {
@@ -420,27 +450,37 @@ public class Ode implements EntryPoint {
     // Initialize global Ode instance
     instance = this;
 
+    // Let's see if we were started with a repo= parameter which points to a template
+    templatePath = Window.Location.getParameter("repo");
+    if (templatePath != null) {
+      OdeLog.wlog("Got a template path of " + templatePath);
+      templateLoadingFlag = true;
+    }
+
     // Get user information.
-    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+    OdeAsyncCallback<Config> callback = new OdeAsyncCallback<Config>(
         // failure message
         MESSAGES.serverUnavailable()) {
 
       @Override
-      public void onSuccess(User result) {
+      public void onSuccess(Config result) {
+        user = result.getUser();
         // If user hasn't accepted terms of service, ask them to.
-        if (!result.getUserTosAccepted()) {
+        if (!user.getUserTosAccepted()) {
           // We expect that the redirect to the TOS page should be handled
           // by the onFailure method below. The server should return a
           // "forbidden" error if the TOS wasn't accepted.
           ErrorReporter.reportError(MESSAGES.serverUnavailable());
           return;
         }
-        user = result;
+
+        if (result.getRendezvousServer() != null) {
+          setRendezvousServer(result.getRendezvousServer());
+        } else {
+          setRendezvousServer(YaVersion.RENDEZVOUS_SERVER);
+        }
+
         userSettings = new UserSettings(user);
-        // Here we call userSettings.loadSettings, but the settings are actually loaded
-        // asynchronously, so this loadSettings call will return before they are loaded.
-        // After the user settings have been loaded, openPreviousProject will be called.
-        userSettings.loadSettings();
 
         // Initialize project and editor managers
         projectManager = new ProjectManager();
@@ -450,6 +490,30 @@ public class Ode implements EntryPoint {
         initializeUi();
 
         topPanel.showUserEmail(user.getUserEmail());
+
+        // Retrieve template data stored in war/templates folder and
+        // and save it for later use in TemplateUploadWizard
+
+        OdeAsyncCallback<String> templateCallback =
+        new OdeAsyncCallback<String>(
+          // failure message
+          MESSAGES.createProjectError()) {
+          @Override
+          public void onSuccess(String json) {
+            // Save the templateData
+            TemplateUploadWizard.initializeBuiltInTemplates(json);
+            // Here we call userSettings.loadSettings, but the settings are actually loaded
+            // asynchronously, so this loadSettings call will return before they are loaded.
+            // After the user settings have been loaded, openPreviousProject will be called.
+            // We have to call this after the builtin templates have been loaded otherwise
+            // we will get a NPF.
+            userSettings.loadSettings();
+
+          }
+        };
+
+        // Service call
+        Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
       }
 
       @Override
@@ -489,7 +553,7 @@ public class Ode implements EntryPoint {
     // when we go to save a file and if different file saving will be disabled
     // Newer sessions invalidate older sessions.
 
-    userInfoService.getUserInformation(sessionId, callback);
+    userInfoService.getSystemConfig(sessionId, callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
@@ -500,11 +564,12 @@ public class Ode implements EntryPoint {
 
     // load project based on current url
     // TODO(sharon): Seems like a possible race condition here if the onValueChange
-    // handler defined above gets called before the getUserInformation call sets
+    // handler defined above gets called before the getSystemConfig call sets
     // userSettings.
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
     //History.fireCurrentHistoryState();
+
   }
 
   /*
@@ -1054,7 +1119,7 @@ public class Ode implements EntryPoint {
           getProjectService().getProjects(new AsyncCallback<long[]>() {
               @Override
               public void onSuccess(long [] projectIds) {
-                if (projectIds.length == 0) {
+                if (projectIds.length == 0 && !templateLoadingFlag) {
                   createNoProjectsDialog(true);
                 }
               }
@@ -1148,7 +1213,7 @@ public class Ode implements EntryPoint {
       getProjectService().getProjects(new AsyncCallback<long[]>() {
           @Override
             public void onSuccess(long [] projectIds) {
-            if (projectIds.length == 0) {
+            if (projectIds.length == 0 && !templateLoadingFlag) {
               createNoProjectsDialog(true);
             }
           }
@@ -1413,6 +1478,57 @@ public class Ode implements EntryPoint {
     dialogBox.show();
   }
 
+  /**
+   * Display a Dialog box that explains that you cannot connect a
+   * device or the emulator to App Inventor until you have a project
+   * selected.
+   */
+
+  private void wontConnectDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.noprojectDialogTitle());
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>" + MESSAGES.noprojectDuringConnect() + "</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    holder.add(okButton);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * Is it OK to connect a device/emulator. Returns true if so false
+   * otherwise.
+   *
+   * Determination is made based on whether or not a project is
+   * selected.
+   *
+   * @return boolean
+   */
+
+  public boolean okToConnect() {
+    if (getCurrentYoungAndroidProjectId() == 0) {
+      wontConnectDialog();
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   /**
    * recordCorruptProject -- Record that we received a corrupt read. This
@@ -1480,6 +1596,12 @@ public class Ode implements EntryPoint {
     }
     screensLocked = value;
   }
+
+  // Native code to set the top level rendezvousServer variable
+  // where blockly code can easily find it.
+  private native void setRendezvousServer(String server) /*-{
+    top.rendezvousServer = server;
+  }-*/;
 
   // Native code to open a new window (or tab) to display the
   // desired survey. The value below "http://web.mit.edu" is just

@@ -1,9 +1,13 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.client;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class TranslationComponentProperty {
 
@@ -20,10 +24,10 @@ public class TranslationComponentProperty {
 
   /**
    * Get a translation map.
-   * 
+   *
    * The output map has the following format: Map = {propertyKey1:
    * {propertyKey1, propertyValue1}, ...}
-   * 
+   *
    * @return map
    */
   public static HashMap<String, String> map() {
@@ -45,6 +49,7 @@ public class TranslationComponentProperty {
     map.put("BallotOptions", MESSAGES.BallotOptionsProperties());
     map.put("BallotQuestion", MESSAGES.BallotQuestionProperties());
     map.put("EmailAddress", MESSAGES.EmailAddressProperties());
+    map.put("EmailAddressList", MESSAGES.EmailAddressListProperties());
     map.put("Elements", MESSAGES.ElementsProperties());
     map.put("Followers", MESSAGES.FollowersProperties());
     map.put("FriendTimeline", MESSAGES.FriendTimelineProperties());
@@ -67,6 +72,7 @@ public class TranslationComponentProperty {
     map.put("ProviderLocked", MESSAGES.ProviderLockedProperties());
     map.put("ProviderName", MESSAGES.ProviderNameProperties());
     map.put("PublicInstances", MESSAGES.PublicInstancesProperties());
+    map.put("PlayOnlyInForeground", MESSAGES.PlayOnlyInForegroundProperties());
     map.put("Players", MESSAGES.PlayersProperties());
     map.put("RequestHeaders", MESSAGES.RequestHeadersProperties());
     map.put("Result", MESSAGES.ResultProperties());
@@ -133,6 +139,7 @@ public class TranslationComponentProperty {
     map.put("NumbersOnly", MESSAGES.NumbersOnlyProperties());
     map.put("PaintColor", MESSAGES.PaintColorProperties());
     map.put("PhoneNumber", MESSAGES.PhoneNumberProperties());
+    map.put("PhoneNumberList", MESSAGES.PhoneNumberListProperties());
     map.put("Picture", MESSAGES.PictureProperties());
     map.put("Pitch", MESSAGES.PitchProperties());
     map.put("PressedEventEnabled", MESSAGES.PressedEventEnabledProperties());
@@ -145,6 +152,7 @@ public class TranslationComponentProperty {
     map.put("ResultName", MESSAGES.ResultNameProperties());
     map.put("Rotates", MESSAGES.RotatesProperties());
     map.put("SaveResponse", MESSAGES.SaveResponseProperties());
+    map.put("ScalePictureToFit", MESSAGES.ScalePictureToFitProperties());
     map.put("ScreenOrientation", MESSAGES.ScreenOrientationProperties());
     map.put("Scrollable", MESSAGES.ScrollableProperties());
     map.put("Secure", MESSAGES.SecureProperties());

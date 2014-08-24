@@ -1,3 +1,6 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+
 /**
  * Visual Blocks Language
  *

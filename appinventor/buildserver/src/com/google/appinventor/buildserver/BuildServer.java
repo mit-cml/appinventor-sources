@@ -491,7 +491,7 @@ public class BuildServer {
     // actually be deleted. That's only if the build server is killed (via ctrl+c) while a build
     // is happening, so we should be careful about that.
     outputDir.deleteOnExit();
-    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false, false,
+    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
       commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);

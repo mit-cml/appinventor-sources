@@ -25,6 +25,13 @@ public interface Images extends Resources {
   ImageResource androidGreenSmall();
 
   /**
+   * App Inventor Logo
+   * {@link Ode#createWelcomeDialog(boolean)}
+   */
+  @Source("com/google/appinventor/images/appinvlogo-32.png")
+  ImageResource appInventorLogo();
+
+  /**
    * Close button image for the box widget
    */
   @Source("com/google/appinventor/images/boxClose.png")
@@ -59,6 +66,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/phonebar.png")
   ImageResource phonebar();
+
+  /**
+   * Navigation bar shown below the form in the visual designer
+   */
+  @Source("com/google/appinventor/images/navigationbar.png")
+  ImageResource navigationbar();
 
   /**
    * Designer palette item: question mark for more component information

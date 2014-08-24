@@ -188,6 +188,14 @@ public interface OdeMessages extends Messages {
   @Description("Error message if the server becomes completely unavailable.")
   String serverUnavailable();
 
+  @DefaultMessage("No Project Chosen")
+  @Description("Title for Error Dialog when connection is attempted without a project.")
+  String noprojectDialogTitle();
+
+  @DefaultMessage("You must first create or select a project before connecting!")
+  @Description("Error message for connection attempt without a project selected.")
+  String noprojectDuringConnect();
+
   // Used in RpcStatusPopup.java
 
   @DefaultMessage("Loading ...")
@@ -266,6 +274,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Checkpoint")
   @Description("Name of Checkpoint menuitem")
   String checkpointMenuItem();
+
+  @DefaultMessage("Import project (.aia) from a repository ...")
+  @Description("Name of Import Template menuitem")
+  String importTemplateButton();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
@@ -538,6 +550,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Display hidden components in Viewer")
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
+
+  @DefaultMessage("Check to see Preview on Tablet size.")
+  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  String previewTabletSize();
+
+  @DefaultMessage("Un-check to see Preview on Phone size.")
+  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  String previewPhoneSize();
 
   // Used in editor/simple/components/MockComponent.java
 
@@ -812,13 +832,13 @@ public interface OdeMessages extends Messages {
   @Description("Caption and summary for Fill Parent choice")
   String fillParentCaption();
 
-  @DefaultMessage("pixels")
-  @Description("Caption for pixels label")
-  String pixelsCaption();
+  @DefaultMessage("DP") // DP - Density Independent Pixels
+  @Description("Caption for DPs label")
+  String dpsCaption();
 
-  @DefaultMessage("{0} pixels")
-  @Description("Summary for custom length in pixels")
-  String pixelsSummary(String pixels);
+  @DefaultMessage("{0} DPs")
+  @Description("Summary for custom length in DPs")
+  String dpsSummary(String dps);
 
   @DefaultMessage("The value must be a number greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
@@ -1263,6 +1283,23 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the project couldn't be created on the server.")
   String createProjectError();
 
+  // Used in wizards/TemplateUploadWizard.java
+
+  @DefaultMessage("Create a Project from a Template")
+  @Description("Caption for template upload wizard.")
+  String templateUploadWizardCaption();
+
+  @DefaultMessage("Add a New Template Library Url")
+  @Description("Caption for template dialog menu item.")
+  String templateUploadNewUrlCaption();
+
+  @DefaultMessage("Input a Url...")
+  @Description("Caption for input template url wizard.")
+  String inputNewUrlCaption();
+
+  @DefaultMessage("Templates Url: ")
+  @Description("Label for template url wizard.")
+  String newUrlLabel();
   // Used in wizards/ProjectUploadWizard.java
 
   @DefaultMessage("Import Project...")
@@ -1913,6 +1950,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PhoneNumberProperties();
   
+  @DefaultMessage("PhoneNumberList")
+  @Description("")
+  String PhoneNumberListProperties();
+  
   @DefaultMessage("Picture")
   @Description("")
   String PictureProperties();
@@ -1961,6 +2002,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SaveResponseProperties();
   
+  @DefaultMessage("ScalePictureToFit")
+  @Description("")
+  String ScalePictureToFitProperties();
+
   @DefaultMessage("SensorPort")
   @Description("")
   String SensorPortProperties();
@@ -2289,6 +2334,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EmailAddressProperties();
 
+  @DefaultMessage("EmailAddressList")
+  @Description("")
+  String EmailAddressListProperties();
+
   @DefaultMessage("Elements")
   @Description("")
   String ElementsProperties();
@@ -2376,6 +2425,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PublicInstances")
   @Description("")
   String PublicInstancesProperties();
+
+  @DefaultMessage("PlayOnlyInForeground")
+  @Description("")
+  String PlayOnlyInForegroundProperties();
 
   @DefaultMessage("Players")
   @Description("")

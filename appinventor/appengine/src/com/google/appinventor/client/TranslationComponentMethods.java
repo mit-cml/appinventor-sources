@@ -1,11 +1,15 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.client;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.output.OdeLog;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class TranslationComponentMethods {
 
@@ -15,7 +19,6 @@ public class TranslationComponentMethods {
   public static enum Language {
     zh_CN, en_US
   }
-
 
   public static String getName(String key) {
     if (!myMap.containsKey(key)) {
@@ -27,17 +30,17 @@ public class TranslationComponentMethods {
 
   /**
    * Get a translation map.
-   * 
-   * The output map has the following format: 
-   *    Map = [{eventName1: String1}, ...]
-   * 
+   *
+   * The output map has the following format:
+   * Map = [{eventName1: String1}, ...]
+   *
    * @return map
    */
-  public static HashMap<String, String> map() { 
+  public static HashMap<String, String> map() {
     // TODO: Some methods may have different descriptions depending on which components
     // they are associated to; need to change the event name to be component type specific
     HashMap<String, String> map = new HashMap<String, String>();
-    
+
     // Methods
     map.put("ResolveActivity", MESSAGES.ResolveActivityMethods());
     map.put("StartActivity", MESSAGES.StartActivityMethods());
@@ -250,7 +253,7 @@ public class TranslationComponentMethods {
     map.put("PutText", MESSAGES.PutTextMethods());
     map.put("PutTextWithEncoding", MESSAGES.PutTextWithEncodingMethods());
     map.put("RequestTranslation", MESSAGES.RequestTranslationMethods());
-    
+
     return map;
   }
 }

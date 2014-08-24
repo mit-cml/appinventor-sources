@@ -195,10 +195,10 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = '然后';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = '其他';
     Blockly.Msg.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = '如果';
-    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = '如果被测试的条件为 真，'
-    + '返回附加到 \'then-return\'，表达式的计算结果 的插槽 ';
-    + '否则返回附加到 \'else-return\'，表达式的计算结果 的插槽 ';
-    + '在大多数返回插槽表达式之一将会评估。';
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP = '如果被测试的条件为 真，' +
+      '返回附加到 \'then-return\'，表达式的计算结果 的插槽 ' +
+      '否则返回附加到 \'else-return\'，表达式的计算结果 的插槽 ' +
+      '在大多数返回插槽表达式之一将会评估。';
 
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#doreturn';
     Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = '做';

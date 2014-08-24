@@ -68,13 +68,6 @@
         Blockly.BlocklyEditor.startup(document.body, formName);
         Blockly.ComponentTypes.populateTypes();
         window.parent.BlocklyPanel_initBlocksArea(formName);
-        
-        /*
-        var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-      	Blockly.mainWorkspace.clear();
-      	Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
-      	*/
-        
         window.parent.BlocklyPanel_checkWarningState(formName);
       }
     </script>

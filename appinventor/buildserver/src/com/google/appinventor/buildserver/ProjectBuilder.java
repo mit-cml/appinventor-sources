@@ -111,7 +111,7 @@ public final class ProjectBuilder {
         + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
   }
 
-    Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl, boolean isForWireless,
+  Result build(String userName, ZipFile inputZip, File outputDir, boolean isForCompanion,
                int childProcessRam, String dexCachePath) {
     try {
       // Download project files into a temporary directory
@@ -157,11 +157,11 @@ public final class ProjectBuilder {
         PrintStream userErrors = new PrintStream(errors);
 
         Set<String> componentTypes =
-            (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
+          isForCompanion ? getAllComponentTypes() : getComponentTypes(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
+            Compiler.compile(project, componentTypes, console, console, userErrors, isForCompanion,
                              keyStorePath, childProcessRam, dexCachePath);
         console.close();
         userErrors.close();

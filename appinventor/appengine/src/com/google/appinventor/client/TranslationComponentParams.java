@@ -1,11 +1,15 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.client;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.output.OdeLog;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class TranslationComponentParams {
 
@@ -26,15 +30,15 @@ public class TranslationComponentParams {
 
   /**
    * Get a translation map.
-   * 
-   * The output map has the following format: 
-   *    Map = [{eventName1: String1}, ...]
-   * 
+   *
+   * The output map has the following format:
+   * Map = [{eventName1: String1}, ...]
+   *
    * @return map
    */
-  public static HashMap<String, String> map() { 
+  public static HashMap<String, String> map() {
     HashMap<String, String> map = new HashMap<String, String>();
-    
+
     // Paramaters
     map.put("xAccel", MESSAGES.xAccelParams());
     map.put("yAccel", MESSAGES.yAccelParams());
@@ -182,8 +186,6 @@ public class TranslationComponentParams {
     map.put("translation", MESSAGES.translationParams());
     map.put("languageToTranslateTo", MESSAGES.languageToTranslateToParams());
     map.put("textToTranslate", MESSAGES.textToTranslateParams());
-
-    
     return map;
   }
 }

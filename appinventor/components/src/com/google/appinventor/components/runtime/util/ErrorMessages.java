@@ -90,6 +90,8 @@ public final class ErrorMessages {
   public static final int ERROR_MEDIA_IMAGE_FILE_FORMAT = 706;
   public static final int ERROR_MEDIA_CANNOT_OPEN = 707;
   public static final int ERROR_MEDIA_FILE_ERROR = 708;
+  public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
+  public static final int ERROR_SOUND_NOT_READY = 710;
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
@@ -158,7 +160,15 @@ public final class ErrorMessages {
   public static final int ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE = 2202;
   public static final int ERROR_TRANSLATE_JSON_RESPONSE = 2203;
 
-  // Please start the next group of error numbers at 2301.
+  // TimePicker errors
+  public static final int ERROR_ILLEGAL_HOUR = 2301;
+  public static final int ERROR_ILLEGAL_MINUTE = 2302;
+
+  // DatePicker errors
+  public static final int ERROR_ILLEGAL_DATE = 2401;
+
+  // Please start the next group of error numbers at 2501.
+
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -313,6 +323,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_MEDIA_CANNOT_OPEN,
         "Cannot open file %s.");
     errorMessages.put(ERROR_MEDIA_FILE_ERROR, "Got file error: %s.");
+    errorMessages.put(ERROR_UNABLE_TO_FOCUS_MEDIA,
+        "Unable to grant exclusive lock of audio output stream to %s.");
+    errorMessages.put(ERROR_SOUND_NOT_READY, "The sound is not ready to play: %s.");
      // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
@@ -409,6 +422,11 @@ public final class ErrorMessages {
         "available; Please try again later.");
     errorMessages.put(ERROR_TRANSLATE_JSON_RESPONSE, "The response from the Yandex.Translate " +
         "service cannot be parsed; Please try again later.");
+    //TimePicker errors
+    errorMessages.put(ERROR_ILLEGAL_HOUR, "The hour must be set to a value between 0 and 23.");
+    errorMessages.put(ERROR_ILLEGAL_MINUTE, "The minute must be set to a value between 0 and 59.");
+    //DatePicker errors
+    errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
   }
 
   private ErrorMessages() {

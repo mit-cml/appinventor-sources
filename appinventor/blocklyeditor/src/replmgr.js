@@ -106,6 +106,8 @@ Blockly.ReplMgr.buildYail = function() {
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
             this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
+            // Tell the Companion the current form name
+            this.putYail(Blockly.Yail.YAIL_SET_FORM_NAME_BEGIN + formName + Blockly.Yail.YAIL_SET_FORM_NAME_END);
             this.putYail(code);
             this.putYail(Blockly.Yail.YAIL_INIT_RUNTIME);
             phoneState.componentYail = code;
@@ -505,6 +507,21 @@ Blockly.ReplMgr.acceptableVersion = function(version) {
 
 Blockly.ReplMgr.processRetvals = function(responses) {
     var block;
+    var context = this;
+    var runtimeerr = function(message) {
+        if (!context.runtimeError) {
+            context.runtimeError = new goog.ui.Dialog(null, true);
+        }
+        if (context.runtimeError.isVisible()) {
+            context.runtimeError.setVisible(false);
+        }
+        context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
+        context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                                       addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
+        context.runtimeError.setContent(message);
+        context.runtimeError.setVisible(true);
+    };
+
     for (var i = 0; i < responses.length; i++) {
         var r = responses[i];
         console.log("processRetVals: " + JSON.stringify(r));
@@ -530,23 +547,14 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             var success = window.parent.BlocklyPanel_pushScreen(r.screen);
             if (!success) {
                 console.log("processRetVals: Invalid Screen: " + r.screen);
+                runtimeerr("Invalid Screen: " + r.screen);
             }
             break;
         case "popScreen":
             window.parent.BlocklyPanel_popScreen();
             break;
         case "error":
-            if (!this.runtimeError) {
-                this.runtimeError = new goog.ui.Dialog(null, true);
-            }
-            if (this.runtimeError.isVisible()) {
-                this.runtimeError.setVisible(false);
-            }
-            this.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
-            this.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
-                                           addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
-            this.runtimeError.setContent(r.value + Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES);
-            this.runtimeError.setVisible(true);
+            runtimeerr(r.value + Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES);
         }
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
@@ -852,7 +860,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
-    xmlhttp.open('GET', 'http://rendezvous.appinventor.mit.edu/rendezvous/' + rs.rendezvouscode, true);
+    xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
             try {
@@ -933,9 +941,22 @@ Blockly.ReplMgr.Dialog.prototype = {
 };
 
 Blockly.ReplMgr.makeDialogMessage = function(code) {
-    var qr = this.qrcode(1, 'L');
-    qr.addData(code);
-    qr.make();
+    var scancode;
+    if (top.rendezvousServer != 'rendezvous.appinventor.mit.edu') { // Should really get this from YAV
+        scancode = top.rendezvousServer + ";" + code;
+    } else {
+        scancode = code;
+    }
+    var qr = this.qrcode(2, 'L');
+    qr.addData(scancode);
+    try {
+        qr.make();
+    } catch (e) {
+        console.log("makeDialog: Using qrcode 4");
+        qr = this.qrcode(4, 'L');
+        qr.addData(scancode);
+        qr.make();
+    }
     var img = qr.createImgTag(6);
     var retval = '<table><tr><td>' + img + '</td><td><font size="+1">' + Blockly.Msg.REPL_YOUR_CODE_IS + ':<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
     return retval;

@@ -479,11 +479,16 @@
 <h2 id="ContactPicker">ContactPicker</h2>
 
 <p>A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
-<li> <code>ContactName</code>: the contact's name </li>
+ <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>EmailAddress</code>: the contact's primary email address </li>
+ <li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>
+ <li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>
+ <li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>
  <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).
-</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+</p><p>The ContactPicker component might not work on all phones. For
+example, on Android systems before system 3.0, it cannot pick phone
+numbers, and the list of email addresses will contain only one email.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -597,96 +602,56 @@
 <h3>Methods</h3>
 none
 
-                    <h2 id="PhoneCall">
-                      PhoneCall
-                    </h2>
-                    <img alt="" src="images/phonecall.png" />
-                    <p>
-                      Use this component to dial the phone and make a call.
-                    </p>
-                    <p>
-                      <code>
-                        PhoneCall
-                      </code>
-                      is a non-visible component that makes a phone call to the
-                      number specified in the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property, which can be set either
-                      in the Designer or Blocks Editor. You can use the
-                      <code>
-                        MakePhoneCall
-                      </code>
-                      method
-                      to make a phone call programatically from your app.
-                    </p>
-                    <p>
-                      This component is often used with the
-                      <code>
-                        ContactPicker
-                      </code>
-                      component, which
-                      lets the user select from the contacts stored on the phone and sets the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property to the contact's phone number.
-                    </p>
-                    <p>
-                      To directly specify the phone number, set the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property to
-                      a
-                      <code>
-                        Text
-                      </code>
-                      with the specified digits (for example, "6505551212"). The
-                      number can be formatted with hyphens, periods, and parentheses; they are ignored.
-                      You can't include spaces in the number.
-                    </p>
-                    <h3>
-                      Properties
-                    </h3>
-                    <dl>
-                      <dt>
-                        <code>
-                          PhoneNumber
-                        </code>
-                      </dt>
-                      <dd>
-                        Phone number to dial.
-                      </dd>
-                    </dl>
-                    <h3>
-                      Methods
-                    </h3>
-                    <dl>
-                      <dt>
-                        <code>
-                          MakePhoneCall()
-                        </code>
-                      </dt>
-                      <dd>
-                        Dials the number specified by the component's
-                        <code>
-                          PhoneNumber
-                        </code>
-                        property.
-                      </dd>
-                    </dl>
+<h2 id="PhoneCall">
+  PhoneCall
+</h2>
+<img alt="" src="images/phonecall.png" />
+  <p>
+    A non-visible component that makes a phone call to the number
+    specified in the <code>PhoneNumber</code> property, which can be
+    set either in the Designer or Blocks Editor. The component has
+    a <code>MakePhoneCall</code> method, enabling the program to
+    launch a phone call.</p><p>Often, this component is used with
+    the <code>ContactPicker</code> component, which lets the user
+    select a contact from the ones stored on the phone and sets
+    the <code>PhoneNumber</code> property to the contact's phone
+    number.</p><p>To directly specify the phone number (e.g.,
+    650-555-1212), set the <code>PhoneNumber</code> property to a Text
+    with the specified digits (e.g., "6505551212").  Dashes, dots, and
+    parentheses may be included (e.g., "(650)-555-1212") but will be
+    ignored; spaces may not be included.
+</p>
 
+<h3>Properties</h3>
+<dl>
+  <dt><code>PhoneNumber</code></dt>
+  <dd></dd>
+</dl>
 
+<h3>Events</h3>
+<dl>
+  <dt><code>IncomingCallAnswered(text phoneNumber)</code></dt>
+  <dd>Event indicating that an incoming phone call is
+  answered. phoneNumber is the incoming call phone number.</dd>
+  <dt><code>PhoneCallEnded(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.</dd>
+  <dt><code>PhoneCallStarted(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+  <dt><code>MakePhoneCall()</code></dt>
+  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+</dl>
 <h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
-
 <p>A button that, when clicked on, displays a list of the contacts' phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
 <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>PhoneNumber</code>: the contact's phone number </li>
  <li> <code>EmailAddress</code>: the contact's email address </li> <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>
-<p>Picking is not supported on all phones.  If it fails, this component will show a notification.  This default error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+<p>The PhoneNumberPicker component may not work on all Android
+devices. For example, on Android systems before system 3.0, the
+returned lists of phone numbers and email addresses will be empty.</p>
 
 <h3>Properties</h3>
 <dl>

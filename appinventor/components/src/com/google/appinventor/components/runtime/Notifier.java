@@ -5,6 +5,22 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Handler;
+import android.text.Html;
+import android.text.SpannableString;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -16,25 +32,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Handler;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * The Notifier component displays alert messages and creates Android log entries through
@@ -183,13 +180,18 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
     alertDialog.setMessage(stringToHTML(message));
+
+    // Warning: The SDK button names are confusing.  If there are
+    // three buttons, they go in the order  POSITIVE | NEUTRAL | NEGATIVE
+    // In our notifier, we want choices like YES | NO | CANCEL, so NO maps to 
+    // neutral and CANCEL maps to NEGATIVE.
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         positiveAction.run();
       }
     });
-    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, button2Text,
+    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, button2Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         negativeAction.run();
@@ -200,7 +202,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // and will raise AfterChoosing when pressed.
     if (cancelable)  {
       final String cancelButtonText="Cancel";
-      alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, cancelButtonText,
+      alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
           new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
           cancelAction.run();
@@ -372,7 +374,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // small compared to early releases.
     // This sets the fontsize according to SDK level,  There is almost certainly
     // a better way to do this, with display metrics for example, but
-    // I (hal) can't figure it out.
+    // I (Hal) can't figure it out.
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
         ? 22 : 15;
     Toast toast = Toast.makeText(activity, message, notifierLength);
@@ -384,7 +386,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
-    textView.setText(message);
+    // Note: The space added to the message below is a patch to work around a bug where,
+    // in a message with multiple words, the trailing words do not appear.  Whether this
+    // bug happens depends on the version of the OS and the exact characters in the message.
+    // The cause of the bug is that the textView parameter are not being set correctly -- I don't know
+    // why not.   But as a result, Android will sometimes compute the length of the required
+    // textbox as one or two pixels short.  Then, when the message is displayed, the
+    // wordwrap mechanism pushes the rest of the words to a "next line" that does not
+    // exist.  Adding the space ensures that the width allocated for the text will be adequate.
+    textView.setText(message + " ");
     toast.setView(textView);
     toast.show();
   }

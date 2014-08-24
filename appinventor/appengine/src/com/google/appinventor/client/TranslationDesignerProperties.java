@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.output.OdeLog;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class TranslationDesignerProperties {
@@ -13,298 +12,297 @@ public class TranslationDesignerProperties {
   public static String getCorrespondingString(String key) {
     String value = key;
 
-
     // Properties
     if (key.equals("AboutScreen")) {
       value = MESSAGES.AboutScreenProperties();
     } else if (key.equals("AboveRangeEventEnabled")) {
-          value = MESSAGES.AboveRangeEventEnabledProperties();
+      value = MESSAGES.AboveRangeEventEnabledProperties();
     } else if (key.equals("Action")) {
-       value = MESSAGES.ActionProperties();
+      value = MESSAGES.ActionProperties();
     } else if (key.equals("ActivityClass")) {
-       value = MESSAGES.ActivityClassProperties();
+      value = MESSAGES.ActivityClassProperties();
     } else if (key.equals("ActivityPackage")) {
-       value = MESSAGES.ActivityPackageProperties();
+      value = MESSAGES.ActivityPackageProperties();
     } else if (key.equals("AlignHorizontal")) {
-       value = MESSAGES.AlignHorizontalProperties();
+      value = MESSAGES.AlignHorizontalProperties();
     } else if (key.equals("AlignVertical")) {
-       value = MESSAGES.AlignVerticalProperties();
+      value = MESSAGES.AlignVerticalProperties();
     } else if (key.equals("AllowCookies")) {
-       value = MESSAGES.AllowCookiesProperties();
+      value = MESSAGES.AllowCookiesProperties();
     } else if (key.equals("ApiKey")) {
-       value = MESSAGES.ApiKeyProperties();
+      value = MESSAGES.ApiKeyProperties();
     } else if (key.equals("BackgroundColor")) {
-       value = MESSAGES.BackgroundColorProperties();
+      value = MESSAGES.BackgroundColorProperties();
     } else if (key.equals("BackgroundImage")) {
-       value = MESSAGES.BackgroundImageProperties();
+      value = MESSAGES.BackgroundImageProperties();
     } else if (key.equals("BelowRangeEventEnabled")) {
-       value = MESSAGES.BelowRangeEventEnabledProperties();
+      value = MESSAGES.BelowRangeEventEnabledProperties();
     } else if (key.equals("BluetoothClient")) {
-       value = MESSAGES.BluetoothClientProperties();
+      value = MESSAGES.BluetoothClientProperties();
     } else if (key.equals("BottomOfRange")) {
-       value = MESSAGES.BottomOfRangeProperties();
+      value = MESSAGES.BottomOfRangeProperties();
     } else if (key.equals("CalibrateStrideLength")) {
-       value = MESSAGES.CalibrateStrideLengthProperties();
+      value = MESSAGES.CalibrateStrideLengthProperties();
     } else if (key.equals("CharacterEncoding")) {
-       value = MESSAGES.CharacterEncodingProperties();
+      value = MESSAGES.CharacterEncodingProperties();
     } else if (key.equals("Checked")) {
-       value = MESSAGES.CheckedProperties();
+      value = MESSAGES.CheckedProperties();
     } else if (key.equals("CloseScreenAnimation")) {
-       value = MESSAGES.CloseScreenAnimationProperties();
+      value = MESSAGES.CloseScreenAnimationProperties();
     } else if (key.equals("ColorChangedEventEnabled")) {
-       value = MESSAGES.ColorChangedEventEnabledProperties();
+      value = MESSAGES.ColorChangedEventEnabledProperties();
     } else if (key.equals("Columns")) {
-       value = MESSAGES.ColumnsProperties();
+      value = MESSAGES.ColumnsProperties();
     } else if (key.equals("ConsumerKey")) {
-       value = MESSAGES.ConsumerKeyProperties();
+      value = MESSAGES.ConsumerKeyProperties();
     } else if (key.equals("ConsumerSecret")) {
-       value = MESSAGES.ConsumerSecretProperties();
+      value = MESSAGES.ConsumerSecretProperties();
     } else if (key.equals("Country")) {
-       value = MESSAGES.CountryProperties();
+      value = MESSAGES.CountryProperties();
     } else if (key.equals("DataType")) {
-       value = MESSAGES.DataTypeProperties();
+      value = MESSAGES.DataTypeProperties();
     } else if (key.equals("DataUri")) {
-       value = MESSAGES.DataUriProperties();
+      value = MESSAGES.DataUriProperties();
     } else if (key.equals("DelimiterByte")) {
-       value = MESSAGES.DelimiterByteProperties();
+      value = MESSAGES.DelimiterByteProperties();
     } else if (key.equals("DetectColor")) {
-       value = MESSAGES.DetectColorProperties();
+      value = MESSAGES.DetectColorProperties();
     } else if (key.equals("DistanceInterval")) {
-       value = MESSAGES.DistanceIntervalProperties();
+      value = MESSAGES.DistanceIntervalProperties();
     } else if (key.equals("DriveMotors")) {
-       value = MESSAGES.DriveMotorsProperties();
+      value = MESSAGES.DriveMotorsProperties();
     } else if (key.equals("ElementsFromString")) {
-       value = MESSAGES.ElementsFromStringProperties();
+      value = MESSAGES.ElementsFromStringProperties();
     } else if (key.equals("Enabled")) {
-       value = MESSAGES.EnabledProperties();
+      value = MESSAGES.EnabledProperties();
     } else if (key.equals("ExtraKey")) {
-       value = MESSAGES.ExtraKeyProperties();
+      value = MESSAGES.ExtraKeyProperties();
     } else if (key.equals("ExtraValue")) {
-       value = MESSAGES.ExtraValueProperties();
+      value = MESSAGES.ExtraValueProperties();
     } else if (key.equals("FollowLinks")) {
-       value = MESSAGES.FollowLinksProperties();
+      value = MESSAGES.FollowLinksProperties();
     } else if (key.equals("FontBold")) {
-       value = MESSAGES.FontBoldProperties();
+      value = MESSAGES.FontBoldProperties();
     } else if (key.equals("FontItalic")) {
-       value = MESSAGES.FontItalicProperties();
+      value = MESSAGES.FontItalicProperties();
     } else if (key.equals("FontSize")) {
-       value = MESSAGES.FontSizeProperties();
+      value = MESSAGES.FontSizeProperties();
     } else if (key.equals("FontTypeface")) {
-       value = MESSAGES.FontTypefaceProperties();
+      value = MESSAGES.FontTypefaceProperties();
     } else if (key.equals("GameId")) {
-       value = MESSAGES.GameIdProperties();
+      value = MESSAGES.GameIdProperties();
     } else if (key.equals("GenerateColor")) {
-       value = MESSAGES.GenerateColorProperties();
+      value = MESSAGES.GenerateColorProperties();
     } else if (key.equals("GenerateLight")) {
-       value = MESSAGES.GenerateLightProperties();
+      value = MESSAGES.GenerateLightProperties();
     } else if (key.equals("GoogleVoiceEnabled")) {
-       value = MESSAGES.GoogleVoiceEnabledProperties();
+      value = MESSAGES.GoogleVoiceEnabledProperties();
     } else if (key.equals("Heading")) {
-       value = MESSAGES.HeadingProperties();
+      value = MESSAGES.HeadingProperties();
     } else if (key.equals("HighByteFirst")) {
-       value = MESSAGES.HighByteFirstProperties();
+      value = MESSAGES.HighByteFirstProperties();
     } else if (key.equals("Hint")) {
-       value = MESSAGES.HintProperties();
+      value = MESSAGES.HintProperties();
     } else if (key.equals("HomeUrl")) {
-       value = MESSAGES.HomeUrlProperties();
+      value = MESSAGES.HomeUrlProperties();
     } else if (key.equals("Icon")) {
-       value = MESSAGES.IconProperties();
+      value = MESSAGES.IconProperties();
     } else if (key.equals("Image")) {
-       value = MESSAGES.ImageProperties();
+      value = MESSAGES.ImageProperties();
     } else if (key.equals("Interval")) {
-       value = MESSAGES.IntervalProperties();
+      value = MESSAGES.IntervalProperties();
     } else if (key.equals("IsLooping")) {
-       value = MESSAGES.IsLoopingProperties();
+      value = MESSAGES.IsLoopingProperties();
     } else if (key.equals("Language")) {
-       value = MESSAGES.LanguageProperties();
+      value = MESSAGES.LanguageProperties();
     } else if (key.equals("LineWidth")) {
-       value = MESSAGES.LineWidthProperties();
+      value = MESSAGES.LineWidthProperties();
     } else if (key.equals("Message")) {
-       value = MESSAGES.MessageProperties();
+      value = MESSAGES.MessageProperties();
     } else if (key.equals("MinimumInterval")) {
-       value = MESSAGES.MinimumIntervalProperties();
+      value = MESSAGES.MinimumIntervalProperties();
     } else if (key.equals("MultiLine")) {
-       value = MESSAGES.MultiLineProperties();
+      value = MESSAGES.MultiLineProperties();
     } else if (key.equals("NumbersOnly")) {
-       value = MESSAGES.NumbersOnlyProperties();
+      value = MESSAGES.NumbersOnlyProperties();
     } else if (key.equals("OpenScreenAnimation")) {
-       value = MESSAGES.OpenScreenAnimationProperties();
+      value = MESSAGES.OpenScreenAnimationProperties();
     } else if (key.equals("PaintColor")) {
-       value = MESSAGES.PaintColorProperties();
+      value = MESSAGES.PaintColorProperties();
     } else if (key.equals("PhoneNumber")) {
-       value = MESSAGES.PhoneNumberProperties();
+      value = MESSAGES.PhoneNumberProperties();
     } else if (key.equals("Picture")) {
-       value = MESSAGES.PictureProperties();
+      value = MESSAGES.PictureProperties();
     } else if (key.equals("PressedEventEnabled")) {
-       value = MESSAGES.PressedEventEnabledProperties();
+      value = MESSAGES.PressedEventEnabledProperties();
     } else if (key.equals("PromptforPermission")) {
-       value = MESSAGES.PromptforPermissionProperties();
+      value = MESSAGES.PromptforPermissionProperties();
     } else if (key.equals("Query")) {
-       value = MESSAGES.QueryProperties();
+      value = MESSAGES.QueryProperties();
     } else if (key.equals("Radius")) {
-       value = MESSAGES.RadiusProperties();
+      value = MESSAGES.RadiusProperties();
     } else if (key.equals("ReadMode")) {
-        value = MESSAGES.ReadModeProperties();
+      value = MESSAGES.ReadModeProperties();
     } else if (key.equals("ReceivingEnabled")) {
-       value = MESSAGES.ReceivingEnabledProperties();
+      value = MESSAGES.ReceivingEnabledProperties();
     } else if (key.equals("ReleasedEventEnabled")) {
-       value = MESSAGES.ReleasedEventEnabledProperties();
+      value = MESSAGES.ReleasedEventEnabledProperties();
     } else if (key.equals("ResponseFileName")) {
-       value = MESSAGES.ResponseFileNameProperties();
+      value = MESSAGES.ResponseFileNameProperties();
     } else if (key.equals("ResultName")) {
-       value = MESSAGES.ResultNameProperties();
+      value = MESSAGES.ResultNameProperties();
     } else if (key.equals("Rotates")) {
-       value = MESSAGES.RotatesProperties();
+      value = MESSAGES.RotatesProperties();
     } else if (key.equals("Rows")) {
-       value = MESSAGES.RowsProperties();
+      value = MESSAGES.RowsProperties();
     } else if (key.equals("SaveResponse")) {
-       value = MESSAGES.SaveResponseProperties();
+      value = MESSAGES.SaveResponseProperties();
     } else if (key.equals("SensorPort")) {
-       value = MESSAGES.SensorPortProperties();
+      value = MESSAGES.SensorPortProperties();
     } else if (key.equals("ScreenOrientation")) {
-       value = MESSAGES.ScreenOrientationProperties();
+      value = MESSAGES.ScreenOrientationProperties();
     } else if (key.equals("Scrollable")) {
-       value = MESSAGES.ScrollableProperties();
+      value = MESSAGES.ScrollableProperties();
     } else if (key.equals("Secure")) {
-       value = MESSAGES.SecureProperties();
+      value = MESSAGES.SecureProperties();
     } else if (key.equals("Selection")) {
-       value = MESSAGES.SelectionProperties();
+      value = MESSAGES.SelectionProperties();
     } else if (key.equals("ServiceURL")) {
-       value = MESSAGES.ServiceURLProperties();
+      value = MESSAGES.ServiceURLProperties();
     } else if (key.equals("Shape")) {
-       value = MESSAGES.ShapeProperties();
+      value = MESSAGES.ShapeProperties();
     } else if (key.equals("ShowFeedback")) {
-        value = MESSAGES.ShowFeedbackProperties();
+      value = MESSAGES.ShowFeedbackProperties();
     } else if (key.equals("show tables")) {
-        value = MESSAGES.ShowTablesProperties();
+      value = MESSAGES.ShowTablesProperties();
     } else if (key.equals("Source")) {
-       value = MESSAGES.SourceProperties();
+      value = MESSAGES.SourceProperties();
     } else if (key.equals("Speed")) {
-       value = MESSAGES.SpeedProperties();
+      value = MESSAGES.SpeedProperties();
     } else if (key.equals("StopBeforeDisconnect")) {
-       value = MESSAGES.StopBeforeDisconnectProperties();
+      value = MESSAGES.StopBeforeDisconnectProperties();
     } else if (key.equals("StopDetectionTimeout")) {
-       value = MESSAGES.StopDetectionTimeoutProperties();
+      value = MESSAGES.StopDetectionTimeoutProperties();
     } else if (key.equals("StrideLength")) {
-       value = MESSAGES.StrideLengthProperties();
+      value = MESSAGES.StrideLengthProperties();
     } else if (key.equals("Text")) {
-       value = MESSAGES.TextProperties();
+      value = MESSAGES.TextProperties();
     } else if (key.equals("TextAlignment")) {
-       value = MESSAGES.TextAlignmentProperties();
+      value = MESSAGES.TextAlignmentProperties();
     } else if (key.equals("TextColor")) {
-       value = MESSAGES.TextColorProperties();
+      value = MESSAGES.TextColorProperties();
     } else if (key.equals("TimeInterval")) {
-       value = MESSAGES.TimeIntervalProperties();
+      value = MESSAGES.TimeIntervalProperties();
     } else if (key.equals("TimerAlwaysFires")) {
-       value = MESSAGES.TimerAlwaysFiresProperties();
+      value = MESSAGES.TimerAlwaysFiresProperties();
     } else if (key.equals("TimerEnabled")) {
-       value = MESSAGES.TimerEnabledProperties();
+      value = MESSAGES.TimerEnabledProperties();
     } else if (key.equals("TimerInterval")) {
-       value = MESSAGES.TimerIntervalProperties();
+      value = MESSAGES.TimerIntervalProperties();
     } else if (key.equals("Title")) {
-       value = MESSAGES.TitleProperties();
+      value = MESSAGES.TitleProperties();
     } else if (key.equals("TopOfRange")) {
-       value = MESSAGES.TopOfRangeProperties();
+      value = MESSAGES.TopOfRangeProperties();
     } else if (key.equals("Url")) {
-       value = MESSAGES.UrlProperties();
+      value = MESSAGES.UrlProperties();
     } else if (key.equals("UseFront")) {
-        value = MESSAGES.UseFrontProperties();
+      value = MESSAGES.UseFrontProperties();
     } else if (key.equals("UseGPS")) {
-       value = MESSAGES.UseGPSProperties();
+      value = MESSAGES.UseGPSProperties();
     } else if (key.equals("UsesLocation")) {
-       value = MESSAGES.UsesLocationProperties();
+      value = MESSAGES.UsesLocationProperties();
     } else if (key.equals("UsesLocationVisible")) {
-       value = MESSAGES.UsesLocationVisibleProperties();
+      value = MESSAGES.UsesLocationVisibleProperties();
     } else if (key.equals("VersionCode")) {
-       value = MESSAGES.VersionCodeProperties();
+      value = MESSAGES.VersionCodeProperties();
     } else if (key.equals("VersionName")) {
-       value = MESSAGES.VersionNameProperties();
+      value = MESSAGES.VersionNameProperties();
     } else if (key.equals("showing")) {
-        value = MESSAGES.VisibilityShowingProperties();
+      value = MESSAGES.VisibilityShowingProperties();
     } else if (key.equals("hidden")) {
-        value = MESSAGES.VisibilityHiddenProperties();
+      value = MESSAGES.VisibilityHiddenProperties();
     } else if (key.equals("Visible")) {
-       value = MESSAGES.VisibleProperties();
+      value = MESSAGES.VisibleProperties();
     } else if (key.equals("Volume")) {
-       value = MESSAGES.VolumeProperties();
+      value = MESSAGES.VolumeProperties();
     } else if (key.equals("WheelDiameter")) {
-       value = MESSAGES.WheelDiameterProperties();
+      value = MESSAGES.WheelDiameterProperties();
     } else if (key.equals("WithinRangeEventEnabled")) {
-       value = MESSAGES.WithinRangeEventEnabledProperties();
+      value = MESSAGES.WithinRangeEventEnabledProperties();
     } else if (key.equals("X")) {
-       value = MESSAGES.XProperties();
+      value = MESSAGES.XProperties();
     } else if (key.equals("Y")) {
-       value = MESSAGES.YProperties();
+      value = MESSAGES.YProperties();
     } else if (key.equals("Z")) {
-       value = MESSAGES.ZProperties();
+      value = MESSAGES.ZProperties();
     } else if (key.equals("ShowFilterBar")) {
-        value = MESSAGES.ShowFilterBarProperties();
+      value = MESSAGES.ShowFilterBarProperties();
     } else if (key.equals("NotifierLength")) {
-        value = MESSAGES.NotifierLengthProperties();
+      value = MESSAGES.NotifierLengthProperties();
     } else if (key.equals("Loop")) {
-        value = MESSAGES.LoopProperties();
+      value = MESSAGES.LoopProperties();
     } else if (key.equals("Pitch")) {
-        value = MESSAGES.PitchProperties();
+      value = MESSAGES.PitchProperties();
     } else if (key.equals("SpeechRate")) {
-        value = MESSAGES.SpeechRateProperties();
+      value = MESSAGES.SpeechRateProperties();
     } else if (key.equals("Sensitivity")) {
-        value = MESSAGES.SensitivityProperties();
+      value = MESSAGES.SensitivityProperties();
     } else if (key.equals("TwitPic_API_Key")) {
-        value = MESSAGES.TwitPic_API_KeyProperties();
+      value = MESSAGES.TwitPic_API_KeyProperties();
     } else if (key.equals("Prompt")) {
-        value = MESSAGES.PromptProperties();
+      value = MESSAGES.PromptProperties();
     } else if (key.equals("ColorLeft")) {
-        value = MESSAGES.ColorLeftProperties();
+      value = MESSAGES.ColorLeftProperties();
     } else if (key.equals("ColorRight")) {
-        value = MESSAGES.ColorRightProperties();
+      value = MESSAGES.ColorRightProperties();
     } else if (key.equals("MaxValue")) {
-        value = MESSAGES.MaxValueProperties();
+      value = MESSAGES.MaxValueProperties();
     } else if (key.equals("MinValue")) {
-        value = MESSAGES.MinValueProperties();
+      value = MESSAGES.MinValueProperties();
     } else if (key.equals("ThumbPosition")) {
-        value = MESSAGES.ThumbPositionProperties();
+      value = MESSAGES.ThumbPositionProperties();
     } else if (key.equals("UseFront")) {
-        value = MESSAGES.UseFrontProperties();
+      value = MESSAGES.UseFrontProperties();
     } else if (key.equals("Day")) {
-        value = MESSAGES.DayProperties();
+      value = MESSAGES.DayProperties();
     } else if (key.equals("Month")) {
-        value = MESSAGES.MonthProperties();
+      value = MESSAGES.MonthProperties();
     } else if (key.equals("MonthInText")) {
-        value = MESSAGES.MonthInTextProperties();
+      value = MESSAGES.MonthInTextProperties();
     } else if (key.equals("Year")) {
-        value = MESSAGES.YearProperties();
+      value = MESSAGES.YearProperties();
     } else if (key.equals("AboutScreen")) {
-        value = MESSAGES.AboutScreenProperties();
+      value = MESSAGES.AboutScreenProperties();
     } else if (key.equals("CloseScreenAnimation")) {
-        value = MESSAGES.CloseScreenAnimationProperties();
+      value = MESSAGES.CloseScreenAnimationProperties();
     } else if (key.equals("OpenScreenAnimation")) {
-        value = MESSAGES.OpenScreenAnimationProperties();
+      value = MESSAGES.OpenScreenAnimationProperties();
     } else if (key.equals("LastMessage")) {
-        value = MESSAGES.LastMessageProperties();
+      value = MESSAGES.LastMessageProperties();
     } else if (key.equals("ReadMode")) {
-        value = MESSAGES.ReadModeProperties();
+      value = MESSAGES.ReadModeProperties();
     } else if (key.equals("TextToWrite")) {
-        value = MESSAGES.TextToWriteProperties();
+      value = MESSAGES.TextToWriteProperties();
     } else if (key.equals("WriteType")) {
-        value = MESSAGES.WriteTypeProperties();
+      value = MESSAGES.WriteTypeProperties();
     } else if (key.equals("CalibrateStrideLength")) {
-        value = MESSAGES.CalibrateStrideLengthProperties();
+      value = MESSAGES.CalibrateStrideLengthProperties();
     } else if (key.equals("Distance")) {
-        value = MESSAGES.DistanceProperties();
+      value = MESSAGES.DistanceProperties();
     } else if (key.equals("ElapsedTime")) {
-        value = MESSAGES.ElapsedTimeProperties();
+      value = MESSAGES.ElapsedTimeProperties();
     } else if (key.equals("Moving")) {
-        value = MESSAGES.MovingProperties();
+      value = MESSAGES.MovingProperties();
     } else if (key.equals("StopDetectionTimeout")) {
-        value = MESSAGES.StopDetectionTimeoutProperties();
+      value = MESSAGES.StopDetectionTimeoutProperties();
     } else if (key.equals("StrideLength")) {
-        value = MESSAGES.StrideLengthProperties();
+      value = MESSAGES.StrideLengthProperties();
     } else if (key.equals("UseGPS")) {
-        value = MESSAGES.UseGPSProperties();
+      value = MESSAGES.UseGPSProperties();
     } else if (key.equals("Hour")) {
-        value = MESSAGES.HourProperties();
+      value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
-        value = MESSAGES.MinuteProperties();
+      value = MESSAGES.MinuteProperties();
     }
     return value;
   }
