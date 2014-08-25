@@ -347,6 +347,30 @@ public class YaVersion {
   // 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
   //    upgrade the .blk file contents (not used in AI 2)
 
+
+  // Note added after internationalization (8/25/2014)
+  // If you add any properties, events or methods to a component you *must*:
+
+  //   Add an entry for each new property/event/method into
+  //   OdeMessages.java iff a property with that name doesn't already
+  //   exist (so if you are adding a property that has the same name as
+  //   another property in a different component, you don't do it a
+  //   second time). To add the "Foo" property you would add:
+
+  //         @defaultMessage("Foo")
+  //         @description(""
+  //         String FooProperties();
+
+  //   You then have to add a mapping to
+  //   TranslationComponentProperties.java (or ..Methods or ..Events
+  //   etc).
+
+  //   If you edit the description of a component (but not yet a
+  //   property,method or event of that component) you must also find and
+  //   update the description in OdeMessages.java
+
+
+
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
