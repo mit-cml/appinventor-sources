@@ -168,7 +168,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   var doitOption = { enabled: this.disabled?false : true};
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: this.disabled?false : true};
-    yailOption.text = "Generate Yail";
+    yailOption.text = Blockly.Msg.GENERATE_YAIL;
     yailOption.callback = function() {
       var yailText;
       //Blockly.Yail.blockToCode1 returns a string if the block is a statement
@@ -183,7 +183,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     };
     options.push(yailOption);
   }
-  doitOption.text = "Do It";
+  doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
     var yailText;
     //Blockly.Yail.blockToCode1 returns a string if the block is a statement
@@ -192,8 +192,8 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     var dialog;
     if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
       dialog = new goog.ui.Dialog(null, true);
-      dialog.setTitle("Cannot Do it");
-      dialog.setContent('You must be connected to the companion or emulator to use "Do It"');
+      dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
+      dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
       dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
         addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
           false, true));

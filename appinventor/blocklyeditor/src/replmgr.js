@@ -554,7 +554,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             window.parent.BlocklyPanel_popScreen();
             break;
         case "error":
-            runtimeerr(r.value + Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES);
+            runtimeerr(r.value + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
         }
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();

@@ -865,7 +865,6 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_SET_TITLE_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_SET_COLLAPSED_TEXT = 'set';
     Blockly.Msg.LANG_VARIABLES_SET_TOOLTIP = 'Sets this variable to be equal to the input.';
-    
     Blockly.Msg.LANG_VARIABLES_VARIABLE = ' variable';
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#do';
@@ -1242,6 +1241,9 @@ Blockly.Msg.en.switch_language_to_english = {
 
 //Misc
     Blockly.Msg.SHOW_WARNINGS = "Show Warnings";
+    Blockly.Msg.HIDE_WARNINGS = "Hide Warnings";
+    Blockly.Msg.MISSING_SOCKETS_WARNINGS = "You should fill all of the sockets with blocks";
+    Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "This block should be connected to an event block or a procedure definition";
 
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Error from Companion";
@@ -1268,7 +1270,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND = "Unable to load update from App Inventor server (server not responding)";
     Blockly.Msg.REPL_NOW_DOWNLOADING = "We are now downloading update from the App Inventor Server, please standby";
     Blockly.Msg.REPL_RUNTIME_ERROR = "Runtime Error";
-    Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES = "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.";
+    Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS = "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.";
     Blockly.Msg.REPL_CONNECTING_USB_CABLE = "Connecting via USB Cable";
     Blockly.Msg.REPL_STARTING_EMULATOR = "Starting the Android Emulator<br/>Please wait: This might take a minute or two.";
     Blockly.Msg.REPL_CONNECTING = "Connecting...";
@@ -1294,6 +1296,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
     Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
 
+// Messages from Blockly.js
+    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Are you sure you want to delete all %1 of these blocks?";
+
+// Blocklyeditor.js
+    Blockly.Msg.GENERATE_YAIL = "Generate Yail";
+    Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
+    Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
   }
 };
 

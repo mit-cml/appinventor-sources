@@ -103,7 +103,7 @@ public class DesignToolbar extends Toolbar {
   // Switch language
   private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
   private static final String WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH = "English";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Chinese-Taiwan";
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Simplified Chinese";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = "German";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = "Vietnamese";
 

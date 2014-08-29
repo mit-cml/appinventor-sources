@@ -441,7 +441,7 @@ Blockly.WarningHandler.checkEmptySockets = function(){
 
   if(containsEmptySockets) {
     if(Blockly.WarningHandler.showWarningsToggle) {
-      var warningMessage = "You should fill all of the sockets with blocks";
+      var warningMessage = Blockly.Msg.MISSING_SOCKETS_WARNINGS;
       if(this.warning){
         this.warning.setText(warningMessage);
       } else {
@@ -460,7 +460,7 @@ Blockly.WarningHandler.checkBlockAtRoot = function(){
   if(this == rootBlock && this.blockType != "event" && this.type !="global_declaration" &&
      this.type != "procedures_defnoreturn" && this.type != "procedures_defreturn"){
     if(Blockly.WarningHandler.showWarningsToggle) {
-      var warningMessage = "This block should be connected to an event block or a procedure definition";
+      var warningMessage = Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS;
       if(this.warning){
         this.warning.setText(warningMessage);
       } else {

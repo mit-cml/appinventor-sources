@@ -433,7 +433,7 @@ Blockly.onKeyDown_ = function(e) {
         }
         // Ask for confirmation before deleting 3 or more blocks
         if (descendantCount >= 3) {
-          if (confirm("Are you sure you want to delete all " + descendantCount + " of these blocks?")) {
+          if (confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)))) {
             Blockly.hideChaff();
             Blockly.selected.dispose(true, true);
           }

@@ -251,7 +251,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of My projects menuitem")
   String projectMenuItem();
 
-  @DefaultMessage("Start new project ...")
+  @DefaultMessage("Start new project")
   @Description("Label of the menu item for creating a new project")
   String newProjectMenuItem();
   
@@ -4679,4 +4679,15 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRowsWithConditionsMethods();
 
+  @DefaultMessage("简体中文")
+  @Description("")
+  String SwitchToSimplifiedChinese();
+
+  @DefaultMessage("繁体中文")
+  @Description("")
+  String SwitchToTraditionalChinese();
+  
+  @DefaultMessage("Progress Bar")
+  @Description("")
+  String ProgressBarFor();
 }

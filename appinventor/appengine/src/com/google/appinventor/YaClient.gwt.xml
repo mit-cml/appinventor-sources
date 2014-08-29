@@ -105,8 +105,10 @@
 
   <!-- English language, independent of country -->
   <extend-property name="locale" values="en"/>
-  <!-- Chinese in Taiwan -->
+  <!-- Simplified Chinese -->
   <extend-property name="locale" values="zh_CN"/>
+  <!-- Traditional Chinese -->
+  <extend-property name="locale" values="zh_TW"/>
 
   <set-property-fallback name="locale" value="en"/>
 

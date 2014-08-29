@@ -120,9 +120,9 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +-------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +-------------------------------------------------+
+     * +--------------------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Language ▾| Help ▾| Admin ▾ |
+     * +--------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -196,6 +196,11 @@ public class TopToolbar extends Composite {
       if (!localeName.equals("default")) {
         SelectLanguage lang = new SelectLanguage();
         lang.setLocale(localeName);
+        if (localeName == "zh_CN") {
+          nativeName = MESSAGES.SwitchToSimplifiedChinese();
+        } else if (localeName == "zh_TW") {
+          nativeName = MESSAGES.SwitchToTraditionalChinese();
+        }
         languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
       }
     }
@@ -243,7 +248,7 @@ public class TopToolbar extends Composite {
     toolbar.add(buildDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
-    //toolbar.add(languageDropDown);
+    toolbar.add(languageDropDown);
     toolbar.add(helpDropDown);
 
     //Only if logged in as an admin, add the Admin Button
