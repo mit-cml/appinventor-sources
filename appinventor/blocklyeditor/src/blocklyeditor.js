@@ -30,6 +30,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
     collapse : true,
     hasScrollbars: true,
     hasTrashcan: true,
+    comments: true,
+    disable: true,
     configForTypeBlock: typeblock_config
   });
 
