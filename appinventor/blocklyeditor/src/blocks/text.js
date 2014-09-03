@@ -262,14 +262,6 @@ Blockly.Blocks['text_starts_at'] = {
         ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
         ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    /*this.appendValueInput('TEXT')
-     .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-     .appendField('starts at')
-     .appendField('text');
-     this.appendValueInput('PIECE')
-     .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-     .appendField('piece')
-     .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -288,14 +280,6 @@ Blockly.Blocks['text_contains'] = {
         ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
         ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    /*this.appendValueInput('TEXT')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('contains')
-      .appendField('text');
-    this.appendValueInput('PIECE')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('piece')
-      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -439,18 +423,6 @@ Blockly.Blocks['text_segment'] = {
         ['START', checkTypeNumber, Blockly.ALIGN_RIGHT],
         ['LENGTH', checkTypeNumber, Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    /*this.appendValueInput('TEXT')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('segment')
-      .appendField('text');
-    this.appendValueInput('START')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
-      .appendField('start')
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('LENGTH')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
-      .appendField('length')
-      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP);
     this.setInputsInline(false);
   },
@@ -470,18 +442,6 @@ Blockly.Blocks['text_replace_all'] = {
         ['SEGMENT', checkTypeText, Blockly.ALIGN_RIGHT],
         ['REPLACEMENT', checkTypeText, Blockly.ALIGN_RIGHT],
         Blockly.ALIGN_RIGHT);
-    /*this.appendValueInput('TEXT')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('replace all')
-      .appendField('text');
-    this.appendValueInput('SEGMENT')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('segment')
-      .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('REPLACEMENT')
-      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('replacement')
-      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP);
     this.setInputsInline(false);
   },
