@@ -1521,7 +1521,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String textBoxComponentPallette();
   
-  @DefaultMessage("timePicker")
+  @DefaultMessage("TimePicker")
   @Description("")
   String timePickerComponentPallette();
   
