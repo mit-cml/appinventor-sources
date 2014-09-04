@@ -276,8 +276,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 13.
   // For YOUNG_ANDROID_VERSION 102:
   // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 103:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 102;
+  public static final int YOUNG_ANDROID_VERSION = 103;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -774,8 +776,11 @@ public class YaVersion {
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;
 
-  // For listView component Version
-  public static final int LISTVIEW_COMPONENT_VERSION = 1;
+  // For LISTVIEW_COMPONENT_VERSION 1:
+  // -- Initial version.
+  // For LISTVIEW_COMPONENT_VERSION 2:
+  // - Added the Elements property getter
+  public static final int LISTVIEW_COMPONENT_VERSION = 2;
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.

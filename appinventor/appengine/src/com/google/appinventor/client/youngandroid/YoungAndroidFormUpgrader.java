@@ -261,6 +261,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ListPicker")) {
         srcCompVersion = upgradeListPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ListView")) {
+        srcCompVersion = upgradeListViewProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("LocationSensor")) {
         srcCompVersion = upgradeLocationSensorProperties(componentProperties, srcCompVersion);
 
@@ -850,6 +853,15 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 8) {
       //  Added title property
       srcCompVersion = 8;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeListViewProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added the Elements getter
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
