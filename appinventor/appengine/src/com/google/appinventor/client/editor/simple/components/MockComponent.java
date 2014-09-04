@@ -383,13 +383,24 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * All components have default names for new component instantiations,
    * usually consisting of the type name and an index. This method
    * returns the next available component index for this component's type.
+   *
+   * We lower case the typeName and cName so we don't wind up with
+   * components of the names 'fooComponent1' and 'FooComponent1' where
+   * the only difference is the case of the first (or other)
+   * letters. Ultimately the case does matter but when gensyming new
+   * component names components whose only difference is in case will
+   * still result in an incremented index. So if 'fooComponent1' exist
+   * the new component will be 'FooComponent2' instead of
+   * 'FooComponent1'. Hopefully this will be less confusing.
+   *
    */
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = TranslationDesignerPallete.getCorrespondingString(getType());
+      final String typeName = TranslationDesignerPallete.getCorrespondingString(getType()).toLowerCase();
       final int nameLength = typeName.length();
       for (String cName : editor.getComponentNames()) {
+        cName = cName.toLowerCase();
         try {
           if (cName.startsWith(typeName)) {
             highIndex = Math.max(highIndex, Integer.parseInt(cName.substring(nameLength)));
