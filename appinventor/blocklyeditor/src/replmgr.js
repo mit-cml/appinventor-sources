@@ -372,16 +372,12 @@ Blockly.ReplMgr.putYail = (function() {
             if (force) {
                 cancelButton = null; // Don't permit deferring the upgrade
             } else {
-                cancelButton = "Not Now";
+                cancelButton = Blockly.Msg.REPL_NOT_NOW;
             }
             if (installer === undefined)
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
             if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
-
-
-
-
                 dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE, Blockly.Msg.REPL_OK, cancelButton, 0, function(response) {
                     dialog.hide();
