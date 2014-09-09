@@ -657,7 +657,9 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
     } else if (this_.workspace.trashcan && this_.workspace.trashcan.isOpen) {
       var trashcan = this_.workspace.trashcan;
       goog.Timer.callOnce(trashcan.close, 100, trashcan);
-      Blockly.selected.dispose(false, true);
+      if (Blockly.selected.confirmDeletion()) {
+        Blockly.selected.dispose(false, true);
+      }
       // Dropping a block on the trash can will usually cause the workspace to
       // resize to contain the newly positioned block.  Force a second resize
       // now that the block has been deleted.
@@ -1185,6 +1187,28 @@ Blockly.Block.prototype.getDescendants = function() {
     blocks.push.apply(blocks, child.getDescendants());
   }
   return blocks;
+};
+
+/**
+ * Show a confirmation dialog if users intend to delete more that #DELETION_THRESHOLD blocks.
+ * @returns {Boolean} true if there are less than #DELETION_THRESHOLD blocks to delete or the user
+ * confirms deletion.
+ */
+Blockly.Block.prototype.confirmDeletion = function(){
+  var DELETION_THRESHOLD = 3;
+
+  var descendantCount = Blockly.selected.getDescendants().length;
+  // Filter out indirect descendants
+  if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
+    descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
+  }
+
+  if (descendantCount >= DELETION_THRESHOLD) {
+    return confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)));
+  }
+  else {
+    return true;
+  }
 };
 
 /**
