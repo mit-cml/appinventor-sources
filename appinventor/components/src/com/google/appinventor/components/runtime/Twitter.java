@@ -14,6 +14,7 @@ import twitter4j.DirectMessage;
 import twitter4j.IDs;
 import twitter4j.Query;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
@@ -220,7 +221,8 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * TwitPicAPIkey property getter method.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @Deprecated
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public String TwitPic_API_Key() {
      return TwitPic_API_Key;
   }
@@ -232,8 +234,11 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    * @param TwitPic_API_Key
    *          the API Key for image uploading, given by TwitPic
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description="The API Key for image uploading, provided by TwitPic.")
+  @Deprecated
+  // Hide the deprecated property from the Designer
+  //@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR,
+      description="The API Key for image uploading, provided by TwitPic.")
   public void TwitPic_API_Key(String TwitPic_API_Key) {
     this.TwitPic_API_Key = TwitPic_API_Key;
   }
@@ -477,12 +482,12 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Tweet with Image, Uploaded to TwitPic
+   * Tweet with Image, Uploaded to Twitter
    */
   @SimpleFunction(description = "This sends a tweet as the logged-in user with the "
-      + "specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds"
-      + MAX_CHARACTERS
-      + " characters. If an image is not found or invalid, only the text will be tweeted."
+      + "specified Text and a path to the image to be uploaded, which will be trimmed if it "
+      + "exceeds " + MAX_CHARACTERS + " characters. "
+      + "If an image is not found or invalid, only the text will be tweeted."
       + "<p><u>Requirements</u>: This should only be called after the "
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>" )
@@ -496,24 +501,17 @@ public final class Twitter extends AndroidNonvisibleComponent implements
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         try {
-          // Build the Twitter4j Configuration
-          ConfigurationBuilder builder = new ConfigurationBuilder().setMediaProviderAPIKey(TwitPic_API_Key);
-          builder.setOAuthConsumerKey(ConsumerKey());
-          builder.setOAuthConsumerSecret(ConsumerSecret());
-          builder.setOAuthAccessToken(accessToken.getToken());
-          builder.setOAuthAccessTokenSecret(accessToken.getTokenSecret());
-          Configuration conf = builder.build();
-          ImageUpload upload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
-          String url = "";
           String cleanImagePath = imagePath;
           // Clean up the file path if necessary
           if (cleanImagePath.startsWith("file://")) {
             cleanImagePath = imagePath.replace("file://", "");
           }
-          if (new File(cleanImagePath).exists()) {
-            url = upload.upload(new File(cleanImagePath));
+          File imageFilePath = new File(cleanImagePath);
+          if (imageFilePath.exists()) {
+            StatusUpdate theTweet = new StatusUpdate(status);
+            theTweet.setMedia(imageFilePath);
+            twitter.updateStatus(theTweet);
           }
-          twitter.updateStatus(status + " " + url);
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
               ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, e.getMessage());
