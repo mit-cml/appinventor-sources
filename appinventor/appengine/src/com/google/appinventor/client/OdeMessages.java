@@ -1399,7 +1399,7 @@ public interface OdeMessages extends Messages {
 
   // Used in wizards/NewProjectWizard.java
 
-  @DefaultMessage("Server error: could not create project. Please try again later!")
+  @DefaultMessage("Server erro  r: could not create project. Please try again later!")
   @Description("Error message reported when the project couldn't be created on the server.")
   String createProjectError();
 
