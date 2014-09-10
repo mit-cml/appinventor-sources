@@ -25,6 +25,7 @@
 'use strict';
 
 /**
+ * [lyn, 09/10/14] Limit size of runtime error dialog window,
  * [lyn, 10/10/13]
  * + Added CSS tags blocklyFieldParameter and blocklyFieldParameterFlydown
  *   to control parameter flydowns.
@@ -230,6 +231,15 @@ Blockly.Css.CONTENT = [
 
   '.blocklyBubbleText {',
   '  fill: #000;',
+  '}',
+
+  '/*',
+  ' * [lyn, 09/10/14] Limit size of runtime error dialog window',
+  ' */',
+  '.blocklyRuntimeErrorDialog {',
+  '  max-width: 75%;',
+  '  max-height: 75%;',
+  '  overflow: auto',
   '}',
 
   /*

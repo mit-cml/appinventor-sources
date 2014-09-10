@@ -507,6 +507,12 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     var runtimeerr = function(message) {
         if (!context.runtimeError) {
             context.runtimeError = new goog.ui.Dialog(null, true);
+            var dialogElement = context.runtimeError.getDialogElement();
+            var dialogClass = dialogElement.getAttribute("class");
+            // [lyn, 09/10/14] Add blocklyRuntimeErrorDialog to CSS class.
+            // This limits height & width of dialog box, and makes content scrollable
+            // (see lib/blockly/src/core/css.java)
+            dialogElement.setAttribute("class", dialogClass + " " + "blocklyRuntimeErrorDialog");
         }
         if (context.runtimeError.isVisible()) {
             context.runtimeError.setVisible(false);
@@ -517,6 +523,13 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         context.runtimeError.setContent(message);
         context.runtimeError.setVisible(true);
     };
+    // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
+    var escapeHTML = function (str) {
+      var div = document.createElement('div');
+      var text = document.createTextNode(str);
+      div.appendChild(text);
+      return div.innerHTML;
+    }
 
     for (var i = 0; i < responses.length; i++) {
         var r = responses[i];
@@ -550,7 +563,8 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             window.parent.BlocklyPanel_popScreen();
             break;
         case "error":
-            runtimeerr(r.value + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            console.log("processRetVals: Error value = " + r.value);
+            runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
         }
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
