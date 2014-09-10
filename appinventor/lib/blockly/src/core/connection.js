@@ -147,7 +147,7 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
       var newBlock = this.sourceBlock_;
       while (newBlock.nextConnection) {
         if (newBlock.nextConnection.targetConnection) {
-          newBlock = newBlock.nextConnection.targetBlock();
+          newBlock = newBlock.getNextBlock();
         } else {
           newBlock.nextConnection.connect(orphanBlock.previousConnection);
           orphanBlock = null;

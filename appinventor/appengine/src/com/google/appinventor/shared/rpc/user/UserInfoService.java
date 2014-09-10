@@ -17,7 +17,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface UserInfoService extends RemoteService {
 
   /**
+   * Retrieves system configuration information, including
+   * the current User information.
+   *
+   */
+
+  Config getSystemConfig(String sessionId);
+
+  /**
    * Retrieves information about the current user
+   *
+   * (Obsoleted by getSystemConfig())
    *
    * @return  user information
    */

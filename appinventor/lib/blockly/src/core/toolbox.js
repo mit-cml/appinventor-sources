@@ -28,6 +28,7 @@ goog.provide('Blockly.Toolbox');
 
 goog.require('Blockly.Flyout');
 goog.require('goog.events.BrowserFeature');
+goog.require('goog.html.SafeHtml');
 goog.require('goog.style');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.ui.tree.TreeNode');
@@ -104,7 +105,8 @@ Blockly.Toolbox.init = function() {
       Blockly.pathToBlockly + 'media/1x1.gif';
   Blockly.Toolbox.CONFIG_['cssCollapsedFolderIcon'] =
       'blocklyTreeIconClosed' + (Blockly.RTL ? 'Rtl' : 'Ltr');
-  var tree = new Blockly.Toolbox.TreeControl('root', Blockly.Toolbox.CONFIG_);
+  var tree = new Blockly.Toolbox.TreeControl(goog.html.SafeHtml.EMPTY,
+                                             Blockly.Toolbox.CONFIG_);
   Blockly.Toolbox.tree_ = tree;
   tree.setShowRootNode(false);
   tree.setShowLines(false);
@@ -196,7 +198,7 @@ Blockly.Toolbox.clearSelection = function() {
 
 /**
  * Extention of a TreeControl object that uses a custom tree node.
- * @param {string} html The HTML content of the node label.
+ * @param {!goog.html.SafeHtml} html The HTML content of the node label.
  * @param {Object=} opt_config The configuration for the tree. See
  *    goog.ui.tree.TreeControl.DefaultConfig. If not specified, a default config
  *    will be used.
@@ -247,8 +249,9 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
  * @override
  */
 Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
-  return new Blockly.Toolbox.TreeNode(opt_html || '', this.getConfig(),
-      this.getDomHelper());
+  return new Blockly.Toolbox.TreeNode(opt_html ?
+      goog.html.SafeHtml.htmlEscape(opt_html) : goog.html.SafeHtml.EMPTY,
+      this.getConfig(), this.getDomHelper());
 };
 
 /**
@@ -271,7 +274,7 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
 
 /**
  * An single node in the tree, customized for Blockly's UI.
- * @param {string} html The html content of the node label.
+ * @param {!goog.html.SafeHtml} html The HTML content of the node label.
  * @param {Object=} opt_config The configuration for the tree. See
  *    goog.ui.tree.TreeControl.DefaultConfig. If not specified, a default config
  *    will be used.
@@ -293,22 +296,12 @@ Blockly.Toolbox.TreeNode = function(html, opt_config, opt_domHelper) {
 goog.inherits(Blockly.Toolbox.TreeNode, goog.ui.tree.TreeNode);
 
 /**
- * Do not show the +/- icon.
- * @return {string} The source for the icon.
- * @override
- */
-Blockly.Toolbox.TreeNode.prototype.getExpandIconHtml = function() {
-  return '<span></span>';
-};
-
-/**
  * Supress population of the +/- icon.
- * @return {null} Null.
- * @protected
+ * @return {!goog.html.SafeHtml} The source for the icon.
  * @override
  */
-Blockly.Toolbox.TreeNode.prototype.getExpandIconElement = function() {
-  return null;
+goog.ui.tree.BaseNode.prototype.getExpandIconSafeHtml = function() {
+  return goog.html.SafeHtml.create('span');
 };
 
 /**

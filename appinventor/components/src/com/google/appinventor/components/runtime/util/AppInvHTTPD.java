@@ -24,6 +24,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.appinventor.components.common.YaVersion;
@@ -50,6 +51,7 @@ public class AppInvHTTPD extends NanoHTTPD {
   private static byte[] hmacKey;
   private static int seq;
   private static final String MIME_JSON = "application/json"; // Other mime types defined in NanoHTTPD
+  private final Handler androidUIHandler = new Handler();
 
   public AppInvHTTPD( int port, File wwwroot, boolean secure, ReplForm form) throws IOException
   {
@@ -231,6 +233,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      if (secure) {             // Only do this for USB and Emulator (secure = true)
+        seq = 1;
+        androidUIHandler.post(new Runnable() { // Must run on the UI Thread
+            public void run() {
+              form.clear();
+            }
+          });
+      }
       return (res);
     } else if (uri.equals("/_update") || uri.equals("/_install")) { // Install a package, including a new companion
       String url = parms.getProperty("url", "");
@@ -424,6 +434,10 @@ public class AppInvHTTPD extends NanoHTTPD {
 
   private void doPackageUpdate(final String inurl) {
     PackageInstaller.doPackageInstall(form, inurl);
+  }
+
+  public void resetSeq() {
+    seq = 1;
   }
 
 }

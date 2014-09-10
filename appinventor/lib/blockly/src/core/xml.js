@@ -26,7 +26,6 @@
 
 goog.provide('Blockly.Xml');
 
-
 goog.require('Blockly.Instrument'); // lyn's instrumentation code
 
 // TODO(scr): Fix circular dependencies
@@ -138,13 +137,11 @@ Blockly.Xml.blockToDom_ = function(block) {
     element.setAttribute('editable', false);
   }
 
-  if (block.nextConnection) {
-    var nextBlock = block.nextConnection.targetBlock();
-    if (nextBlock) {
-      var container = goog.dom.createDom('next', null,
-          Blockly.Xml.blockToDom_(nextBlock));
-      element.appendChild(container);
-    }
+  var nextBlock = block.getNextBlock();
+  if (nextBlock) {
+    var container = goog.dom.createDom('next', null,
+        Blockly.Xml.blockToDom_(nextBlock));
+    element.appendChild(container);
   }
 
   return element;
@@ -268,6 +265,30 @@ Blockly.Xml.domToBlock = function(workspace, xmlBlock, opt_reuseBlock) {
     }
   }
   );
+  // [lyn, 07/03/2014] Special case to handle renaming of event parameters in i8n
+  if (block && block.type == "component_event") {
+    // Create a dictionary mapping default event parameter names appearing in body
+    //   to their possibly translated names in some source language
+    var eventParamDict = Blockly.LexicalVariable.eventParameterDict(block);
+    var sourceEventParams = []; // Event parameter names in source language
+    var targetEventParams = []; // Event parameter names in target language
+    for (var key in eventParamDict) {
+      var sourceEventParam = eventParamDict[key];
+      var targetEventParam = window.parent.BlocklyPanel_getLocalizedParameterName(key);
+      if (sourceEventParam != targetEventParam) { // Only add to translation if they're different
+        sourceEventParams.push(sourceEventParam);
+        targetEventParams.push(targetEventParam);
+      }
+    }
+    if (sourceEventParams.length > 0) { // Do we need to translated some source event parameters?
+      var childBlocks = block.getChildren(); // should be at most one body block
+      for (var j= 0, childBlock; childBlock = childBlocks[j]; j++) {
+        var freeSubstitution = new Blockly.Substitution(sourceEventParams, targetEventParams);
+        // renameFree does the translation.
+        Blockly.LexicalVariable.renameFree(childBlock, freeSubstitution);
+      }
+    }
+  }
   return block;
   },
   function (block, timeDiffOuter) {
@@ -313,9 +334,6 @@ Blockly.Xml.domToBlockInner = function(workspace, xmlBlock, opt_reuseBlock) {
     block.parent_ = parentBlock;
   } else {
     block = Blockly.Block.obtain(workspace, prototypeName);
-//    if (id) {
-//      block.id = parseInt(id, 10);
-//    }
   }
   if (!block.svg_) {
     block.initSvg();
@@ -436,10 +454,6 @@ Blockly.Xml.domToBlockInner = function(workspace, xmlBlock, opt_reuseBlock) {
   if (inline) {
     block.setInputsInline(inline == 'true');
   }
-//  var collapsed = xmlBlock.getAttribute('collapsed');
-//  if (collapsed) {
-//    block.setCollapsed(collapsed == 'true');
-//  }
   var disabled = xmlBlock.getAttribute('disabled');
   if (disabled) {
     block.setDisabled(disabled == 'true');
@@ -459,7 +473,7 @@ Blockly.Xml.domToBlockInner = function(workspace, xmlBlock, opt_reuseBlock) {
 
   if (! Blockly.Instrument.useRenderDown) {
     // Neil's original rendering code
-    var next = block.nextConnection && block.nextConnection.targetBlock();
+    var next = block.getNextBlock();
     if (next) {
       // Next block in a stack needs to square off its corners.
       // Rendering a child will render its parent.
@@ -489,8 +503,13 @@ Blockly.Xml.deleteNext = function(xmlBlock) {
 };
 
 // Export symbols that would otherwise be renamed by Closure compiler.
-Blockly['Xml'] = Blockly.Xml;
-Blockly.Xml['domToText'] = Blockly.Xml.domToText;
-Blockly.Xml['domToWorkspace'] = Blockly.Xml.domToWorkspace;
-Blockly.Xml['textToDom'] = Blockly.Xml.textToDom;
-Blockly.Xml['workspaceToDom'] = Blockly.Xml.workspaceToDom;
+if (!window['Blockly']) {
+  window['Blockly'] = {};
+}
+if (!window['Blockly']['Xml']) {
+  window['Blockly']['Xml'] = {};
+}
+window['Blockly']['Xml']['domToText'] = Blockly.Xml.domToText;
+window['Blockly']['Xml']['domToWorkspace'] = Blockly.Xml.domToWorkspace;
+window['Blockly']['Xml']['textToDom'] = Blockly.Xml.textToDom;
+window['Blockly']['Xml']['workspaceToDom'] = Blockly.Xml.workspaceToDom;

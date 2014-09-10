@@ -374,7 +374,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // small compared to early releases.
     // This sets the fontsize according to SDK level,  There is almost certainly
     // a better way to do this, with display metrics for example, but
-    // I (hal) can't figure it out.
+    // I (Hal) can't figure it out.
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
         ? 22 : 15;
     Toast toast = Toast.makeText(activity, message, notifierLength);
@@ -386,7 +386,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
-    textView.setText(message);
+    // Note: The space added to the message below is a patch to work around a bug where,
+    // in a message with multiple words, the trailing words do not appear.  Whether this
+    // bug happens depends on the version of the OS and the exact characters in the message.
+    // The cause of the bug is that the textView parameter are not being set correctly -- I don't know
+    // why not.   But as a result, Android will sometimes compute the length of the required
+    // textbox as one or two pixels short.  Then, when the message is displayed, the
+    // wordwrap mechanism pushes the rest of the words to a "next line" that does not
+    // exist.  Adding the space ensures that the width allocated for the text will be adequate.
+    textView.setText(message + " ");
     toast.setView(textView);
     toast.show();
   }
