@@ -31,6 +31,7 @@ import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -40,6 +41,7 @@ import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -100,6 +102,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
+  private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
@@ -222,6 +225,9 @@ public class TopToolbar extends Composite {
     helpItems.add(null);
     helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
         new FeedbackAction()));
+    helpItems.add(null);
+    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
+        new AboutCompanionAction()));
 
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
@@ -682,7 +688,45 @@ public class TopToolbar extends Composite {
       );
 
       SimplePanel holder = new SimplePanel();
-      //holder.setStyleName("DialogBox-footer");
+      Button ok = new Button("Close");
+      ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          db.hide();
+        }
+      });
+      holder.add(ok);
+      DialogBoxContents.add(message);
+      DialogBoxContents.add(holder);
+      db.setWidget(DialogBoxContents);
+      db.show();
+    }
+  }
+
+  private static class AboutCompanionAction implements Command {
+    @Override
+    public void execute() {
+      final DialogBox db = new DialogBox(false, true);
+      db.setText("About The Companion");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("200px");
+      db.setWidth("400px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
+
+      String downloadinfo = "";
+      if (!YaVersion.COMPANION_UPDATE_URL.equals("")) {
+        String url = "http://" + Window.Location.getHost() + YaVersion.COMPANION_UPDATE_URL;
+        downloadinfo = "<br/>\n<a href=" + url + ">Download URL: " + url + "</a><br/>\n";
+        downloadinfo += BlocklyPanel.getQRCode(url);
+      }
+
+      VerticalPanel DialogBoxContents = new VerticalPanel();
+      HTML message = new HTML(
+          "Companion Version " + BlocklyPanel.getCompVersion() + downloadinfo
+      );
+
+      SimplePanel holder = new SimplePanel();
       Button ok = new Button("Close");
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
