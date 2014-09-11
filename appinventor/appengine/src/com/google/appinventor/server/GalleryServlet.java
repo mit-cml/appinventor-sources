@@ -20,15 +20,26 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.project.GalleryService;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 
 /**
  * Servlet for handling gallery's app publishing.
@@ -64,6 +75,8 @@ public class GalleryServlet extends OdeServlet {
 
   // Content type for response header (to avoid security vulnerabilities)
   private static final String CONTENT_TYPE = "text/html; charset=utf-8";
+
+  private final GalleryService galleryService = new GalleryServiceImpl();
 
 
   @Override
@@ -101,51 +114,25 @@ public class GalleryServlet extends OdeServlet {
         }
         // Set up the cloud file (options)
         String key = "";
+        GallerySettings settings = galleryService.loadGallerySettings();
         if (requestType.equalsIgnoreCase("apps")) {
-          key = "gallery/projects/" + project_Id + "/image";
+          key = settings.getProjectImageKey(project_Id);
           LOG.info("######## THIS IS A GALLERY REQUEST");
         } else if (requestType.equalsIgnoreCase("user")) {
-          key =  "user/" + user_Id + "/image";
+          key =  settings.getUserImageKey(user_Id);
           LOG.info("######## THIS IS A USER REQUEST");
         }
 
-        FileService fileService = FileServiceFactory.getFileService();
-
-        GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
-        .setBucket("galleryai2")
-        .setKey(key)
-        .setAcl("public-read")
-        .setMimeType("image/jpeg")
-        .setCacheControl("no-cache");
-        AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
-
-        // Open a channel to write to it
-        boolean lock = true;
-        FileWriteChannel writeChannel =
-            fileService.openWriteChannel(writableFile, lock);
+        // setup cloud
+        GcsService gcsService = GcsServiceFactory.createGcsService();
+        GcsFilename filename = new GcsFilename(settings.getBucket(), key);
+        GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
+                .acl("public-read").cacheControl("no-cache").build();
+        GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
         writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
 
-        /* GCS alternative way of uploading (create or replace)
-        private final GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
-        GcsFileOptions options = new GcsFileOptions.Builder()
-        .acl("public_read")
-        .build();
-        GcsFilename filename = new GcsFilename("galleryai2", key);
-        GcsOutputChannel outputChannel =
-            gcsService.createOrReplace(filename, options);
-
-        // Copying InputStream to GcsOutputChannel
-        try {
-            copy(uploadedStream, Channels.newOutputStream(outputChannel));
-        } finally {
-            outputChannel.close();
-            uploadedStream.close();
-        }
-        */
-
         // Now finalize
-        bao.flush();
-        writeChannel.closeFinally();
+        writeChannel.close();
 
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
         // Now, get the PrintWriter for the servlet response and print the UploadResponse.
@@ -160,9 +147,6 @@ public class GalleryServlet extends OdeServlet {
       }
       // Set http response information
       resp.setStatus(HttpServletResponse.SC_OK);
-    } else {
-      throw CrashReport.createAndLogError(LOG, req, null,
-          new IllegalArgumentException("Unknown upload kind: "));
     }
 
     // Now, get the PrintWriter for the servlet response and print the UploadResponse.

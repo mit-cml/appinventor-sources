@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -26,6 +27,9 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class GalleryGuiFactory implements GalleryRequestListener {
   GalleryClient gallery = null;
+
+  public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
+
   private final String PERSON_URL = "/images/person.png";
   private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
   private final String RED_HEART_ICON_URL = "/images/numLike.png";
@@ -66,8 +70,21 @@ public class GalleryGuiFactory implements GalleryRequestListener {
           image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
         }
       });
-      //image.setUrl(app.getCloudImageURL());
-      image.setUrl(gallery.getCloudImageURL(app.getGalleryAppId()));
+      String url = gallery.getCloudImageURL(app.getGalleryAppId());
+      image.setUrl(url);
+
+      if(gallery.getSystemEnvironmet() != null &&
+          gallery.getSystemEnvironmet().toString().equals("Development")){
+        final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(String newUrl) {
+              image.setUrl(newUrl + "?" + System.currentTimeMillis());
+            }
+          };
+        Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
+      }
     }
   }
 

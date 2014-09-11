@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
@@ -657,4 +659,19 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.getModerationActions(reportId);
   }
 
+  /**
+   * It will return a dev server serving url for given image url
+   * @param url image url
+   */
+  @Override
+  public String getBlobServingUrl(String url) {
+    BlobKey bk = BlobstoreServiceFactory.getBlobstoreService().createGsBlobKey(url);
+    String u = null;
+    try {
+        u = ImagesServiceFactory.getImagesService().getServingUrl(bk);
+    } catch (Exception IllegalArgumentException) {
+        LOG.info("Could not read blob");
+    }
+    return u;
+  }
 }

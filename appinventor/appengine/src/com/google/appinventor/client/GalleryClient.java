@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.Config;
 
 
 /**
@@ -44,6 +45,8 @@ public class GalleryClient {
   public static final int REQUEST_REMIXED_TO = 10;
 
   private static volatile GalleryClient  instance= null;
+
+  public String ENVIRONMENT = null;
 
   /**
    * constructor
@@ -338,7 +341,12 @@ public class GalleryClient {
    * @return url of cloud image
    */
   public String getCloudImageURL(long galleryId) {
-    return getGallerySettings().getCloudImageURL(galleryId);
+    if(getSystemEnvironmet() != null &&
+        getSystemEnvironmet().toString().equals("Production")){
+      return getGallerySettings().getCloudImageURL(galleryId);
+    }else {
+      return getGallerySettings().getCloudImageLocation(galleryId);
+    }
   }
 
   /**
@@ -347,7 +355,12 @@ public class GalleryClient {
    * @return url of project image
    */
   public String getProjectImageURL(long projectId) {
-    return getGallerySettings().getProjectImageURL(projectId);
+    if(getSystemEnvironmet() != null &&
+        getSystemEnvironmet().toString().equals("Production")){
+      return getGallerySettings().getProjectImageURL(projectId);
+    }else {
+      return getGallerySettings().getProjectImageLocation(projectId);
+    }
   }
 
   /**
@@ -356,7 +369,19 @@ public class GalleryClient {
    * @return url of user image
    */
   public String getUserImageURL(String userId) {
-    return getGallerySettings().getUserImageURL(userId);
+    if(getSystemEnvironmet() != null &&
+        getSystemEnvironmet().toString().equals("Production")){
+      return getGallerySettings().getUserImageURL(userId);
+    }else {
+      return getGallerySettings().getUserImageLocation(userId);
+    }
+  }
+
+  public void setSystemEnvironmet(String value) {
+    ENVIRONMENT = value;
+  }
+  public String getSystemEnvironmet() {
+    return this.ENVIRONMENT;
   }
 
 }

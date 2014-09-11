@@ -14,11 +14,13 @@ public class GallerySettings implements IsSerializable {
   private String APPSDIR="/gallery/apps/";
   private String APPSDIRFIXED="gallery/apps/";
   private String USERDIR="/user/";
+  private String USERDIRFIXED="user/";
   private String GALLERYPROJECTDIR="/gallery/projects/"; // we put images here pre-publish
   private String GALLERYPROJECTDIRFIXED="gallery/projects/"; // we put images here pre-publish
   private String SOURCEDIR="/aia";
   private String IMAGEDIR="/image";
   private String GCSSERVERURLSTART= "/gs/";
+  private String GCSCLIENTURLSTARTDEVSERVER="/gs/";
   private String GCSCLIENTURLSTART="http://storage.googleapis.com/";
 
   private boolean enabled;
@@ -83,14 +85,27 @@ public class GallerySettings implements IsSerializable {
   }
 
   /**
-   * get the cloud image url based on given galleryid
+   * get the cloud image url based on given galleryid  (Production Server)
    * should be of form: http://storage.googleapis.com/galleryai2/gallery/apps/4796462844084224/image
    * @param galleryId
    * @return the url of cloud image
    */
   public String getCloudImageURL(long galleryId) {
-    String url = GCSCLIENTURLSTART + getBucket() +
-        APPSDIR + galleryId + IMAGEDIR;
+    String url;
+    url = GCSCLIENTURLSTART + getBucket() +
+          APPSDIR + galleryId + IMAGEDIR;
+    return url;
+  }
+
+  /**
+   * get the cloud image location based on given galleryid  (Development Server)
+   * @param galleryId
+   * @return the location of cloud image
+   */
+  public String getCloudImageLocation(long galleryId) {
+    String url;
+    url = GCSCLIENTURLSTARTDEVSERVER + getBucket() +
+          APPSDIR + galleryId + IMAGEDIR;
     return url;
   }
 
@@ -113,13 +128,26 @@ public class GallerySettings implements IsSerializable {
   }
 
   /**
-   * get the project image url based on given projectId
+   * get the project image url based on given projectId   (Production Server)
    * @param projectId project id
    * @return url of project image
    */
   public String getProjectImageURL(long projectId) {
-    String url = GCSCLIENTURLSTART+ getBucket() +
-        GALLERYPROJECTDIR+ projectId + IMAGEDIR;
+    String url;
+    url = GCSCLIENTURLSTART+ getBucket() +
+          GALLERYPROJECTDIR+ projectId + IMAGEDIR;
+    return url;
+  }
+
+  /**
+   * get the project image location based on given projectId (Development Server)
+   * @param location location on Development Server
+   * @return location of project image
+   */
+  public String getProjectImageLocation(long projectId) {
+    String url;
+    url = GCSCLIENTURLSTARTDEVSERVER+ getBucket() +
+          GALLERYPROJECTDIR+ projectId + IMAGEDIR;
     return url;
   }
 
@@ -143,15 +171,39 @@ public class GallerySettings implements IsSerializable {
     String url = GALLERYPROJECTDIRFIXED + projectId + IMAGEDIR;
     return url;
   }
+
+  /**
+   * get the user image key based on given userId
+   * @param userId user id
+   * @return user image key
+   */
+  public String getUserImageKey(String userId) {
+    String url = USERDIRFIXED + userId + IMAGEDIR;
+    return url;
+  }
+
   // http://storage.googleapis.com/gallerai2/user/xxxx/image
   /**
-   * get the user image url based on given userid
+   * get the user image url based on given userid   (Production Server)
    * @param userid user id
    * @return url of user image
    */
   public String getUserImageURL(String userid) {
-    String url = GCSCLIENTURLSTART + getBucket() + USERDIR +
+    String url;
+    url = GCSCLIENTURLSTART + getBucket() + USERDIR +
           userid + IMAGEDIR;
     return url;
+  }
+
+  /**
+   * get the user image location based on given userid (Development Server)
+   * @param location location of image on development server
+   * @return location of user image
+   */
+  public String getUserImageLocation(String userid) {
+    String location;
+    location = GCSCLIENTURLSTARTDEVSERVER + getBucket() + USERDIR +
+          userid + IMAGEDIR;
+    return location;
   }
 }

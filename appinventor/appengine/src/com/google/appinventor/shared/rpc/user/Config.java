@@ -18,6 +18,8 @@ public class Config implements IsSerializable, Serializable {
 
   private String rendezvousServer = null;
 
+  private String environment = null;
+
   public Config() {
   }
 
@@ -35,6 +37,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setRendezvousServer(String value) {
     this.rendezvousServer = value;
+  }
+
+  public String getEnvironmentValue() {
+    return this.environment;
+  }
+
+  public void setEnvironmentValue(String value) {
+    this.environment =  value;
   }
 
 }

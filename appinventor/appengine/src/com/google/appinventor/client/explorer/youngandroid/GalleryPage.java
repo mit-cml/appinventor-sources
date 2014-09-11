@@ -441,20 +441,32 @@ panel
    * @param url  The URL of the image to show
    * @param container  The container that image widget resides
    */
-  private void updateAppImage(String url, Panel container) {
-    image = new Image();
-    image.setUrl(url);
-    image.addStyleName("app-image");
-    // if the user has provided a gallery app image, we'll load it. But if not
-    // the error will occur and we'll load default image
-    image.addErrorHandler(new ErrorHandler() {
-      public void onError(ErrorEvent event) {
-        image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
-      }
-    });
-    container.add(image);
-  }
+  private void updateAppImage(String url, final Panel container) {
+      image = new Image();
+      image.addStyleName("app-image");
+      image.setUrl(url);
+      // if the user has provided a gallery app image, we'll load it. But if not
+      // the error will occur and we'll load default image
+      image.addErrorHandler(new ErrorHandler() {
+        public void onError(ErrorEvent event) {
+          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+        }
+      });
+      container.add(image);
 
+      if(gallery.getSystemEnvironmet() != null &&
+          gallery.getSystemEnvironmet().toString().equals("Development")){
+        final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(String newUrl) {
+              image.setUrl(newUrl + "?" + System.currentTimeMillis());
+            }
+          };
+        Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
+      }
+  }
 
   /**
    * Helper method called by constructor to create the app's main action button

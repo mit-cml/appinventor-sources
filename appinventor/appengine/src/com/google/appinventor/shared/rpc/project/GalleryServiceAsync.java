@@ -214,4 +214,6 @@ public interface GalleryServiceAsync {
    * @return
    */
   void getModerationActions(long reportId, AsyncCallback<List<GalleryModerationAction>> callback);
+
+  void getBlobServingUrl(String url, AsyncCallback<String> callback);
 }
