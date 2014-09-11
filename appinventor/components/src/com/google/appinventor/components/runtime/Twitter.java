@@ -20,11 +20,6 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-import twitter4j.conf.Configuration;
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.media.ImageUpload;
-import twitter4j.media.ImageUploadFactory;
-import twitter4j.media.MediaProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -514,7 +509,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
           }
           else {
             form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
-                ErrorMessages.ERROR_TWITTER_INVALID_IAMGE_PATH);
+                ErrorMessages.ERROR_TWITTER_INVALID_IMAGE_PATH);
           }
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
