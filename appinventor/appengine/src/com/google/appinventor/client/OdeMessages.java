@@ -350,6 +350,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link for About")
   String aboutMenuItem();
   
+  @DefaultMessage("Companion Information")
+  @Description("Information about the Companion")
+  String companionInformation();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();

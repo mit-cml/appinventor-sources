@@ -699,6 +699,9 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static String getQRCode(String inString) {
+    if (currentForm == null) {  // Cannot build a QR code without a current form
+      return "";                // This only happens when you have no projects
+    }
     return doQRCode(currentForm, inString);
   }
 
