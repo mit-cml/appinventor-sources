@@ -47,6 +47,23 @@ Blockly.addClass_ = function(element, className) {
 };
 
 /**
+ * Check to see if a specific class is already assigned to
+ * a block.
+ * @param {!Element} element DOM element to check on.
+ * @param {string} className to check
+ * @return {boolean} true if class is present
+ * @private
+ */
+Blockly.haveClass_ = function(element, className) {
+  var classes = element.getAttribute('class') || '';
+  if ((' ' + classes + ' ').indexOf(' ' + className + ' ') == -1) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+/**
  * Remove a CSS class from a element.
  * Similar to Closure's goog.dom.classes.remove, except it handles SVG elements.
  * @param {!Element} element DOM element to remove class from.

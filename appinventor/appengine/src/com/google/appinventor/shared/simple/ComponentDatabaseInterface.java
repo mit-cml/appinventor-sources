@@ -121,13 +121,15 @@ public interface ComponentDatabaseInterface {
   public static class EventDefinition {
     private final String name;
     private final String description;
+    private final boolean deprecated;
     // "params": [{ "name": "xAccel", "type": "number"},*]
     private final List<ParameterDefinition> params;
 
-    public EventDefinition(String name, String description,
+    public EventDefinition(String name, String description, boolean deprecated,
         List<ParameterDefinition> params) {
       this.name = name;
       this.description = description;
+      this.deprecated = deprecated;
       this.params = params;
     }
 
@@ -138,6 +140,8 @@ public interface ComponentDatabaseInterface {
     public String getDescription() {
       return description;
     }
+
+    public boolean getDeprecated() { return deprecated; }
 
     public List<ParameterDefinition> getParam() {
       return params;
@@ -151,13 +155,15 @@ public interface ComponentDatabaseInterface {
   public static class MethodDefinition {
     private final String name;
     private final String description;
+    private final boolean deprecated;
     // "params": [{ "name": "xAccel", "type": "number"},*]
     private List<ParameterDefinition> params;
 
-    public MethodDefinition(String name, String description,
+    public MethodDefinition(String name, String description, boolean deprecated,
         List<ParameterDefinition> params) {
       this.name = name;
       this.description = description;
+      this.deprecated = deprecated;
       this.params = params;
     }
 
@@ -168,6 +174,8 @@ public interface ComponentDatabaseInterface {
     public String getDescription() {
       return description;
     }
+
+    public boolean getDeprecated() { return deprecated; }
 
     public List<ParameterDefinition> getParam() {
       return params;
