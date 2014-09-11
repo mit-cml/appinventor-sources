@@ -102,7 +102,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
-  private static final String WIDGET_NAME_COMPANIONINFO = "Companion Information";
+  private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
@@ -688,7 +688,6 @@ public class TopToolbar extends Composite {
       );
 
       SimplePanel holder = new SimplePanel();
-      //holder.setStyleName("DialogBox-footer");
       Button ok = new Button("Close");
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
@@ -728,7 +727,6 @@ public class TopToolbar extends Composite {
       );
 
       SimplePanel holder = new SimplePanel();
-      //holder.setStyleName("DialogBox-footer");
       Button ok = new Button("Close");
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
