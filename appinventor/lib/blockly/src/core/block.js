@@ -346,6 +346,14 @@ Blockly.Block.prototype.unselect = function() {
 };
 
 /**
+ * Mark this block as Bad.  Highlight it visually in Red.
+ */
+Blockly.Block.prototype.badBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.addBadBlock();
+};
+
+/**
  * Dispose of this block.
  * @param {boolean} healStack If true, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, dispose of
