@@ -39,6 +39,7 @@ public final class ErrorMessages {
   public static final int ERROR_TWITTER_STOP_FOLLOWING_FAILED = 312;
   public static final int ERROR_TWITTER_REQUEST_FRIEND_TIMELINE_FAILED = 313;
   public static final int ERROR_TWITTER_SEARCH_FAILED = 314;
+  public static final int ERROR_TWITTER_INVALID_IAMGE_PATH = 315;
   // LegoMindstormsNXT errors
   public static final int ERROR_NXT_BLUETOOTH_NOT_SET = 401;
   public static final int ERROR_NXT_NOT_CONNECTED_TO_ROBOT = 402;
@@ -227,6 +228,8 @@ public final class ErrorMessages {
         "Twitter RequestFriendTimeline failed: %s");
     errorMessages.put(ERROR_TWITTER_SEARCH_FAILED,
         "Twitter search failed.");
+    errorMessages.put(ERROR_TWITTER_INVALID_IAMGE_PATH, "Invalid Path to Image; Update will not " +
+        "be sent.");
     // LegoMindstormsNXT errors
     errorMessages.put(ERROR_NXT_BLUETOOTH_NOT_SET,
         "The Bluetooth property has not been set.");

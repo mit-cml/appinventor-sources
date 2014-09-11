@@ -512,6 +512,10 @@ public final class Twitter extends AndroidNonvisibleComponent implements
             theTweet.setMedia(imageFilePath);
             twitter.updateStatus(theTweet);
           }
+          else {
+            form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
+                ErrorMessages.ERROR_TWITTER_INVALID_IAMGE_PATH);
+          }
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
               ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, e.getMessage());
