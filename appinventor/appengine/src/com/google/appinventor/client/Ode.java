@@ -483,37 +483,41 @@ public class Ode implements EntryPoint {
         userSettings = new UserSettings(user);
 
         // Initialize project and editor managers
+        // The project manager loads the user's projects asynchronously
         projectManager = new ProjectManager();
+        projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
+          @Override
+          public void onProjectsLoaded() {
+            projectManager.removeProjectManagerEventListener(this);
+
+            // This handles any built-in templates stored in /war
+            // Retrieve template data stored in war/templates folder and
+            // and save it for later use in TemplateUploadWizard
+            OdeAsyncCallback<String> templateCallback =
+                new OdeAsyncCallback<String>(
+                  // failure message
+                  MESSAGES.createProjectError()) {
+                  @Override
+                  public void onSuccess(String json) {
+                    // Save the templateData
+                    TemplateUploadWizard.initializeBuiltInTemplates(json);
+                    // Here we call userSettings.loadSettings, but the settings are actually loaded
+                    // asynchronously, so this loadSettings call will return before they are loaded.
+                    // After the user settings have been loaded, openPreviousProject will be called.
+                    // We have to call this after the builtin templates have been loaded otherwise
+                    // we will get a NPF.
+                    userSettings.loadSettings();
+                  }
+                };
+            Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
+          }
+        });
         editorManager = new EditorManager();
 
         // Initialize UI
         initializeUi();
 
         topPanel.showUserEmail(user.getUserEmail());
-
-        // Retrieve template data stored in war/templates folder and
-        // and save it for later use in TemplateUploadWizard
-
-        OdeAsyncCallback<String> templateCallback =
-        new OdeAsyncCallback<String>(
-          // failure message
-          MESSAGES.createProjectError()) {
-          @Override
-          public void onSuccess(String json) {
-            // Save the templateData
-            TemplateUploadWizard.initializeBuiltInTemplates(json);
-            // Here we call userSettings.loadSettings, but the settings are actually loaded
-            // asynchronously, so this loadSettings call will return before they are loaded.
-            // After the user settings have been loaded, openPreviousProject will be called.
-            // We have to call this after the builtin templates have been loaded otherwise
-            // we will get a NPF.
-            userSettings.loadSettings();
-
-          }
-        };
-
-        // Service call
-        Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
       }
 
       @Override
@@ -569,7 +573,6 @@ public class Ode implements EntryPoint {
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
     //History.fireCurrentHistoryState();
-
   }
 
   /*

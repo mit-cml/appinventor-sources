@@ -206,10 +206,6 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    *
    */
   public static boolean hasUrl(String hostUrl) {
-//    if (templatesMap.get(hostUrl) != null || dynamicTemplateUrls.contains(hostUrl))
-//      return true;
-//    else
-//      return false;
    return templatesMap.get(hostUrl) != null;
   }
 
@@ -644,7 +640,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param onSuccessCommand command to open the project
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
-   if (url.endsWith(".asc")) {
+    if (url.endsWith(".asc")) {
       openTemplateProject("http://" + url, onSuccessCommand);
     } else  {
       retrieveExternalTemplateData("http://" + url);
@@ -658,19 +654,16 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    */
   private static void openTemplateProject(String url, final NewProjectCommand onSuccessCommand) {
     final Ode ode = Ode.getInstance();
+
+    // This Async callback is called after the project is input and created
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
         // failure message
         MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
-
-        // Make sure the project name is legal and unique.
-        if (!TextValidators.checkNewProjectName(projectInfo.getProjectName())) {
-          return;
-        }
-
-        // This just adds it to the project manager, not to the repo
+        // This just adds the new project to the project manager, not to AppEngine
         Project project = ode.getProjectManager().addProject(projectInfo);
+        // And this opens the project
         if (onSuccessCommand != null) {
           onSuccessCommand.execute(project);
         }
@@ -684,6 +677,17 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       return;
     }
 
+    // If project of the same name already exists, just open it
+    if (!TextValidators.checkNewProjectName(projectName)) {
+      Project project = ode.getProjectManager().getProject(projectName);
+      if (onSuccessCommand != null) {
+        onSuccessCommand.execute(project);
+      }
+     return;   // Don't retrieve the template if the project is a duplicate
+    }
+
+    // Here's where we retrieve the template data
+    // Do a GET to retrieve data at url
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
     try {
       Request response = builder.sendRequest(null, new RequestCallback() {
@@ -691,17 +695,14 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         public void onError(Request request, Throwable exception) {
           Window.alert("Unable to load Project Template Data");
         }
+
+        // Response received from the GET
         @Override
         public void onResponseReceived(Request request, Response response) {
-
-          if (!TextValidators.checkNewProjectName(projectName)) {
-            return;
-          }
-
-          // I think this creates the project. Causing a duplicate?
-          ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
+         // The response.getText is the zip data used to create a new project.
+         // The callback opens the project
+         ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
         }
-
       });
     } catch (RequestException e) {
       Window.alert("Error fetching template file.");
