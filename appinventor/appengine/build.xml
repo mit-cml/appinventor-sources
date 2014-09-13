@@ -314,7 +314,6 @@
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar"/>
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 

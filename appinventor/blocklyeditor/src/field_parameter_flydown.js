@@ -25,19 +25,16 @@ goog.require('Blockly.FieldFlydown');
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of renaming
 //    of proc decl params
 Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_additionalChangeHandler) {
-  // [lyn, 07/02/14] Modified change handler so can be turned off with Blockly.FieldParameterFlydown.changeHandlerEnabled flag
-  var changeHandler = function (text) {
-     if (Blockly.FieldParameterFlydown.changeHandlerEnabled) {
-       // changeHandler is invoked as method on field, so "this" will be the field.
-       // Need to pass correct "this" to both functions!
-       var possiblyRenamedText = Blockly.LexicalVariable.renameParam.call(this, text);
-       if (opt_additionalChangeHandler) {
-         opt_additionalChangeHandler.call(this, possiblyRenamedText);
-       }
-       return possiblyRenamedText;
-     } else {
-       return text;
-     }
+  // default change handler renames all references to this lexical variable
+  var changeHandler = Blockly.LexicalVariable.renameParam;
+  if (opt_additionalChangeHandler) {
+    changeHandler = function (text) {
+      // changeHandler is invoked as method on field, so "this" will be the field.
+      // Need to pass correct "this" to both functions!
+      var possiblyRenamedText = Blockly.LexicalVariable.renameParam.call(this, text);
+      opt_additionalChangeHandler.call(this, possiblyRenamedText);
+      return possiblyRenamedText;
+    }
   }
   Blockly.FieldParameterFlydown.superClass_.constructor.call(this, name, isEditable, displayLocation, changeHandler);
 };
@@ -46,33 +43,6 @@ goog.inherits(Blockly.FieldParameterFlydown, Blockly.FieldFlydown);
 Blockly.FieldParameterFlydown.prototype.fieldCSSClassName = 'blocklyFieldParameter'
 
 Blockly.FieldParameterFlydown.prototype.flyoutCSSClassName = 'blocklyFieldParameterFlydown'
-
-// [lyn, 07/02/14] Added this flag to control changeHandler
-//   There are several spots where we want to disable the changeHandler to avoid
-//   unwanted calls to renameParam, such as when these fields are deleted and then readded
-//   in updates to procedures and local variable declarations.
-Blockly.FieldParameterFlydown.changeHandlerEnabled = true;
-
-// [lyn, 07/02/14] Execute thunk with changeHandler disabled
-Blockly.FieldParameterFlydown.withChangeHanderDisabled= function (thunk) {
-  var oldFlag = Blockly.FieldParameterFlydown.changeHandlerEnabled;
-  Blockly.FieldParameterFlydown.changeHandlerEnabled = false;
-  try {
-    thunk();
-  } finally {
-    Blockly.FieldParameterFlydown.changeHandlerEnabled = oldFlag;
-  }
-};
-
-// [lyn, 06/30/2014] Prevent infinite loops from change handlers on these fields!
-// Path of infinite loop: setText -> renameParam change handler -> renameBound (if renaming capturables) -> setText
-Blockly.FieldParameterFlydown.prototype.setText = function(text) {
-  if (! this.alreadySettingText) {
-    this.alreadySettingText = true;
-    Blockly.FieldTextInput.prototype.setText.call(this,text);
-    this.alreadySettingText = false;
-  }
-};
 
  /**
   * Method for creating blocks

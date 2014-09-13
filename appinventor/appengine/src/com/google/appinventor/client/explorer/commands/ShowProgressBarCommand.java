@@ -119,7 +119,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
     ProgressBarDialogBox() {
       super(false, true);
       setStylePrimaryName("ode-DialogBox");
-      setText(projectNode.getName() + MESSAGES.ProgressBarFor());
+      setText("Progress Bar for "+projectNode.getName());
 
       //click handler for the mini html buttons
       buttonHandler = new ClickHandler() {

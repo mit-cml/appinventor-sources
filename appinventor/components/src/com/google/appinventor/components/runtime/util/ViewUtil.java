@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import android.util.DisplayMetrics;
 import com.google.appinventor.components.runtime.Component;
 
 import android.graphics.drawable.Drawable;
@@ -40,7 +39,7 @@ public final class ViewUtil {
           linearLayoutParams.weight = 1;
           break;
         default:
-          linearLayoutParams.width = calculatePixels(view, width);
+          linearLayoutParams.width = width;
           linearLayoutParams.weight = 0;
           break;
       }
@@ -64,7 +63,7 @@ public final class ViewUtil {
           linearLayoutParams.height = LinearLayout.LayoutParams.FILL_PARENT;
           break;
         default:
-          linearLayoutParams.height = calculatePixels(view, height);
+          linearLayoutParams.height = height;
           break;
       }
       view.requestLayout();
@@ -87,26 +86,13 @@ public final class ViewUtil {
           linearLayoutParams.width = LinearLayout.LayoutParams.FILL_PARENT;
           break;
         default:
-          linearLayoutParams.width = calculatePixels(view, width);
+          linearLayoutParams.width = width;
           break;
       }
       view.requestLayout();
     } else {
       Log.e("ViewUtil", "The view does not have linear layout parameters");
     }
-  }
-
-  /**
-   * Calculate the device dependent pixels to render this view. The size in the designer is given
-   * in Density Independent Pixels, and we need to transform that to real pixels depending on the
-   * device running the app. Formula taken from
-   * http://stackoverflow.com/questions/5012840/android-specifying-pixel-units-like-sp-px-dp-without-using-xml/5012893#5012893
-   * @param view the view is needed to grab the Context object
-   * @param sizeInDP the size (in DP) specified in the designer
-   * @return size in Pixels for the particular device running the app.
-   */
-  private static int calculatePixels(View view, int sizeInDP) {
-    return (int) ((view.getContext().getResources().getDisplayMetrics().density * sizeInDP) + 0.5f);
   }
 
   public static void setChildHeightForVerticalLayout(View view, int height) {
@@ -125,7 +111,7 @@ public final class ViewUtil {
           linearLayoutParams.weight = 1;
           break;
         default:
-          linearLayoutParams.height = calculatePixels(view, height);
+          linearLayoutParams.height = height;
           linearLayoutParams.weight = 0;
           break;
       }
@@ -147,7 +133,7 @@ public final class ViewUtil {
           tableLayoutParams.width = TableRow.LayoutParams.FILL_PARENT;
           break;
         default:
-          tableLayoutParams.width = calculatePixels(view, width);
+          tableLayoutParams.width = width;
           break;
       }
       view.requestLayout();
@@ -168,7 +154,7 @@ public final class ViewUtil {
           tableLayoutParams.height = TableRow.LayoutParams.FILL_PARENT;
           break;
         default:
-          tableLayoutParams.height = calculatePixels(view, height);
+          tableLayoutParams.height = height;
           break;
       }
       view.requestLayout();

@@ -97,7 +97,7 @@ Blockly.AIProcedure.getAllProcedureDeclarationNames = function () {
 Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
   if (workspace  // [lyn, 04/13/14] ensure workspace isn't undefined
       && workspace === Blockly.mainWorkspace) {
-    var blockArray = workspace.getAllBlocks();
+    var blockArray = Blockly.workspace.getAllBlocks();
     for(var i=0;i<blockArray.length;i++){
       var block = blockArray[i];
       if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn") {

@@ -52,9 +52,9 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     Panel customRow = new HorizontalPanel();
     customRow.add(customLengthRadioButton);
     customRow.add(customLengthField);
-    Label dps = new Label(MESSAGES.dpsCaption());
-    dps.setStylePrimaryName("ode-DPsLabel");
-    customRow.add(dps);
+    Label pixels = new Label(MESSAGES.pixelsCaption());
+    pixels.setStylePrimaryName("ode-PixelsLabel");
+    customRow.add(pixels);
 
     Panel panel = new VerticalPanel();
     panel.add(automaticRadioButton);
@@ -112,7 +112,7 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     } else if (lengthHint.equals(CONST_FILL_PARENT)) {
       return MESSAGES.fillParentCaption();
     } else {
-      return MESSAGES.dpsSummary(lengthHint);
+      return MESSAGES.pixelsSummary(lengthHint);
     }
   }
 

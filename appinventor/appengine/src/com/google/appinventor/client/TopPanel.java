@@ -72,7 +72,7 @@ public class TopPanel extends Composite {
     links.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
     // My Projects Link
-    TextButton myProjects = new TextButton(MESSAGES.myProjectsTabName());
+    TextButton myProjects = new TextButton(MESSAGES.tabNameProjects());
     myProjects.setStyleName("ode-TopPanelButton");
 
     myProjects.addClickHandler(new ClickHandler() {
@@ -85,7 +85,7 @@ public class TopPanel extends Composite {
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
-    TextButton guideLink = new TextButton(MESSAGES.guideTabName());
+    TextButton guideLink = new TextButton(MESSAGES.guideLink());
     guideLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
@@ -97,7 +97,7 @@ public class TopPanel extends Composite {
     links.add(guideLink);
 
     // Feedback Link
-    TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
+    TextButton feedbackLink = new TextButton(MESSAGES.feedbackLink());
     feedbackLink.setStyleName("ode-TopPanelButton");
 
     feedbackLink.addClickHandler(new ClickHandler() {
@@ -114,7 +114,7 @@ public class TopPanel extends Composite {
   // Code on master branch
     // Gallery Link
     if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
+      TextButton gallery = new TextButton(MESSAGES.galleryLink());
       gallery.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
