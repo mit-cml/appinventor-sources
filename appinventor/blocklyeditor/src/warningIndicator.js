@@ -119,7 +119,7 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.warningToggleText_ = Blockly.createSvgElement('text',
       {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
-  this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
+  this.warningToggleText_.textContent = "Show Warnings";
 
   return this.svgGroup_;
 };
@@ -197,9 +197,9 @@ Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
  */
 Blockly.WarningIndicator.prototype.updateWarningToggleText = function() {
   if(Blockly.WarningHandler.showWarningsToggle) {
-    this.warningToggleText_.textContent = Blockly.Msg.HIDE_WARNINGS;
+    this.warningToggleText_.textContent = "Hide Warnings";
   } else {
-    this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
+    this.warningToggleText_.textContent = "Show Warnings";
   }
 }
 

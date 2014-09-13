@@ -871,6 +871,8 @@ The value of this property will then be set to the list of mentions (and will ma
   <dt><code><em>SearchResults</em></code></dt>
   <dd>This property, which is initially empty, is set to a list of search results after the program: <ol><li>Calls the <code>SearchTwitter</code> method.</li> <li>Waits for the <code>SearchSuccessful</code> event.</li></ol>
 The value of the property will then be the same as the parameter to <code>SearchSuccessful</code>.  Note that it is not necessary to call the <code>Authorize</code> method before calling <code>SearchTwitter</code>.</dd>
+  <dt><code>TwitPic_API_Key</code></dt>
+  <dd>The API Key for image uploading, provided by TwitPic.</dd>
   <dt><code><em>Username</em></code></dt>
   <dd>The user name of the authorized user. Empty if there is no authorized user.</dd>
 </dl>
@@ -917,9 +919,11 @@ The value of the property will then be the same as the parameter to <code>Search
   <dd>Stops following a user.</dd>
   <dt><code>Tweet(text status)</code></dt>
   <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it exceeds 160 characters. <p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
-  <dt><code>TweetWithImage(text status, text imagePath)</code></dt>
-  <dd>This sends a tweet as the logged-in user with the specified Text and a path to the image to be uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or invalid, the update will not be sent.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>TweetWithImage(text status, text ImagePath)</code></dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds160 characters. If an image is not found or invalid, only the text will be tweeted.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
 </dl>
+
+
 
                   </div>
                 </div>

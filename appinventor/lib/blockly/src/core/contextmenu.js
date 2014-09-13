@@ -57,7 +57,7 @@ Blockly.ContextMenu.show = function(e, options) {
   var menu = new goog.ui.Menu();
   for (var x = 0, option; option = options[x]; x++) {
     var menuItem = new goog.ui.MenuItem(option.text);
-    menu.addChild(menuItem, true);
+    menu.addItem(menuItem);
     menuItem.setEnabled(option.enabled);
     if (option.enabled) {
       var evtHandlerCapturer = function(callback) {

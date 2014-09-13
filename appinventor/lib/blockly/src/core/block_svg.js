@@ -561,25 +561,28 @@ Blockly.BlockSvg.prototype.renderHere = function() {
  * @return {number} X-coordinate of the end of the field row (plus a gap).
  * @private
  */
-Blockly.BlockSvg.prototype.renderFields_ =
-    function(fieldList, cursorX, cursorY) {
+Blockly.BlockSvg.prototype.renderFields_ = function(fieldList,
+                                                    cursorX, cursorY) {
   if (Blockly.RTL) {
     cursorX = -cursorX;
   }
   for (var t = 0, field; field = fieldList[t]; t++) {
+    // Get the dimensions of the field.
+    var fieldSize = field.getSize();
+    var fieldWidth = fieldSize.width;
+
     if (Blockly.RTL) {
-      cursorX -= field.renderSep + field.renderWidth;
+      cursorX -= fieldWidth;
       field.getRootElement().setAttribute('transform',
           'translate(' + cursorX + ', ' + cursorY + ')');
-      if (field.renderWidth) {
+      if (fieldWidth) {
         cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
       }
     } else {
       field.getRootElement().setAttribute('transform',
-          'translate(' + (cursorX + field.renderSep) + ', ' + cursorY + ')');
-      if (field.renderWidth) {
-        cursorX += field.renderSep + field.renderWidth +
-            Blockly.BlockSvg.SEP_SPACE_X;
+          'translate(' + cursorX + ', ' + cursorY + ')');
+      if (fieldWidth) {
+        cursorX += fieldWidth + Blockly.BlockSvg.SEP_SPACE_X;
       }
     }
   }
@@ -661,19 +664,14 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       // The first row gets shifted to accommodate any icons.
       input.fieldWidth += Blockly.RTL ? -iconWidth : iconWidth;
     }
-    var previousFieldEditable = false;
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
       if (j != 0) {
         input.fieldWidth += Blockly.BlockSvg.SEP_SPACE_X;
       }
       // Get the dimensions of the field.
       var fieldSize = field.getSize();
-      field.renderWidth = fieldSize.width;
-      field.renderSep = (previousFieldEditable && field.EDITABLE) ?
-          Blockly.BlockSvg.SEP_SPACE_X : 0;
-      input.fieldWidth += field.renderWidth + field.renderSep;
+      input.fieldWidth += fieldSize.width;
       row.height = Math.max(row.height, fieldSize.height);
-      previousFieldEditable = field.EDITABLE;
     }
 
     if (row.type != Blockly.BlockSvg.INLINE) {
@@ -749,13 +747,19 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
     // If this block is in the middle of a stack, square the corners.
     if (this.block_.previousConnection) {
       var prevBlock = this.block_.previousConnection.targetBlock();
-      if (prevBlock && prevBlock.getNextBlock() == this.block_) {
+      if (prevBlock && prevBlock.nextConnection &&
+          prevBlock.nextConnection.targetConnection ==
+          this.block_.previousConnection) {
         this.squareTopLeftCorner_ = true;
        }
     }
-    var nextBlock = this.block_.getNextBlock();
-    if (nextBlock) {
-      this.squareBottomLeftCorner_ = true;
+    if (this.block_.nextConnection) {
+      var nextBlock = this.block_.nextConnection.targetBlock();
+      if (nextBlock && nextBlock.previousConnection &&
+          nextBlock.previousConnection.targetConnection ==
+          this.block_.nextConnection) {
+        this.squareBottomLeftCorner_ = true;
+      }
     }
   }
 

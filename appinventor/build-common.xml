@@ -295,16 +295,6 @@
   </target>
 
   <!-- ====================================================================
-       common_CommonTranslations builds:
-       - build/common/CommonTranslations.jar
-       ==================================================================== -->
-  
-  <target name="common_CommonTranslations">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
-         target="CommonTranslations"/>
-  </target>
-
-  <!-- ====================================================================
        common_BlocksEditorHttpConstants builds:
        - build/common/BlocksEditorHttpConstants.jar
        - build/common/BlocksEditorHttpConstants-gwt.jar
@@ -346,7 +336,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonTestUtils"/>
   </target>
-  
+
   <!-- ====================================================================
        components_AndroidRuntime builds:
        - build/components/AndroidRuntime.jar

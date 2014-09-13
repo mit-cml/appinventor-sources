@@ -13,12 +13,12 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.view.WindowManager;
 
 /**
  * A button allowing a user to select one among a list of text strings.
@@ -40,7 +40,7 @@ import android.view.WindowManager;
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
     "whether it can be clicked on (<code>Enabled</code>).</p>")
 @SimpleObject
-public class ListPicker extends Picker implements ActivityResultListener, Deleteable, OnResumeListener {
+public class ListPicker extends Picker implements ActivityResultListener, Deleteable {
 
   private static final String LIST_ACTIVITY_CLASS = ListPickerActivity.class.getName();
   static final String LIST_ACTIVITY_ARG_NAME = LIST_ACTIVITY_CLASS + ".list";
@@ -57,7 +57,6 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   private static final boolean DEFAULT_ENABLED = false;
   private String title = "";    // The Title to display the List Picker with
                                 // if left blank, the App Name is used instead
-  private boolean resumedFromListFlag  = false; //flag so onResume knows if the resume was triggered by closing the listpicker activity
 
   /**
    * Create a new ListPicker component.
@@ -69,17 +68,6 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     items = new YailList();
     selection = "";
     selectionIndex = 0;
-    container.$form().registerForOnResume(this);
-  }
-
-  @Override
-  public void onResume() {
-    if (resumedFromListFlag) {
-      container.$form().getWindow().setSoftInputMode(
-              WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-      );
-      resumedFromListFlag = false;
-    }
   }
 
   /**
@@ -246,10 +234,6 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
       }
       selectionIndex = data.getIntExtra(LIST_ACTIVITY_RESULT_INDEX, 0);
       AfterPicking();
-      // It is necessary for the code of onResume to run there instead of here
-      // because the activity has not yet been initialized at this point. At this
-      // point, calls to the keyboard fail.
-      resumedFromListFlag = true;
     }
   }
 

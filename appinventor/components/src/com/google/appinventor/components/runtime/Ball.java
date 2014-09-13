@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2014 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
@@ -46,12 +46,10 @@ public final class Ball extends Sprite {
   private int paintColor;
   private Paint paint;
   static final int DEFAULT_RADIUS = 5;
-  private Form form;
 
   public Ball(ComponentContainer container) {
     super(container);
     paint = new Paint();
-    form = container.$form();
 
     // Set default properties.
     PaintColor(Component.COLOR_BLACK);
@@ -107,8 +105,7 @@ public final class Ball extends Sprite {
       // Kind of both categories: APPEARANCE and BEHAVIOR
       category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
-    // Make sure the radius takes the density of the device into account
-    this.radius = (int) ((this.form.getResources().getDisplayMetrics().density * radius) + 0.5f);
+    this.radius = radius;
     registerChange();
   }
 

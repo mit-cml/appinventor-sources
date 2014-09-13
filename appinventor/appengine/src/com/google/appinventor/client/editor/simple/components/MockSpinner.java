@@ -7,7 +7,6 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.ui.ListBox;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Spinner component.
@@ -31,7 +30,7 @@ public final class MockSpinner extends MockVisibleComponent {
 
     // Initialize mock label UI
     spinnerWidget = new ListBox();
-    spinnerWidget.addItem(MESSAGES.MockSpinnerAddItems());
+    spinnerWidget.addItem("add items...");
     spinnerWidget.setStylePrimaryName("ode-SimpleMockComponent");
     spinnerWidget.addStyleName("spinnerComponentStyle");
     initComponent(spinnerWidget);

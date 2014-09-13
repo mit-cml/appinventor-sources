@@ -9,14 +9,6 @@
 
 /**
  * Lyn's Change History:
- * [lyn, written 11/16-17/13, added 07/01/14]
- *   + Added freeVariables, renameFree, and renameBound to procedure declarations
- *   + Added renameVars for procedure declarations, which allows renaming multiple parameters simultaneously
- *   + Modified updateParams_ to accept optional params argument
- *   + Introduced bodyInputName field for procedure declarations ('STACK' for procedures_defnoreturn;
- *     'RETURN' for procedures_return), and use this to share more methods between the two kinds
- *     of procedure declarations.
- *   + Replaced inlined string list equality tests by new Blockly.LexicalVariable.stringListsEqual
  * [lyn, 10/28/13]
  *   + Fixed a missing change of Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
  *   + I was wrong about re-rendering not being needed in updatedParams_!
@@ -67,7 +59,6 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   // Define a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_HELPURL,
-  bodyInputName: 'STACK',
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var name = Blockly.Procedures.findLegalName(
@@ -89,14 +80,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   onchange: function () {
     this.arguments_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
   },
-  updateParams_: function(opt_params) {  // make rendered block reflect the parameter names currently in this.arguments_
-    // [lyn, 11/17/13] Added optional opt_params argument:
-    //    If its falsey (null or undefined), use the existing this.arguments_ list
-    //    Otherwise, replace this.arguments_ by opt_params
-    // In either case, make rendered block reflect the parameter names in this.arguments_
-    if (opt_params) {
-      this.arguments_ = opt_params;
-    }
+  updateParams_: function() {  // make rendered block reflect the parameter names currently in this.arguments_
     // Check for duplicated arguments.
     // [lyn 10/10/13] Note that in blocks edited within AI2, duplicate parameter names should never occur
     //    because parameters are renamed to avoid duplication. But duplicates might show up
@@ -127,33 +111,25 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     var savedRendered = this.rendered;
     this.rendered = false;
 
+    var oldArgCount = this.inputList.length - 3;
+
     // remove first input
     // console.log("updateParams_: remove input HEADER");
-    var thisBlock = this; // Grab correct object for use in thunk below
-    Blockly.FieldParameterFlydown.withChangeHanderDisabled(
-        // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for horizontal arg fields!
-        function() {thisBlock.removeInput('HEADER');}
-    );
+    this.removeInput('HEADER');
 
-    // [lyn, 07/02/14 fixed logic] remove all old argument inputs (if they were vertical)
-    if (! this.horizontalParameters) {
-      var oldArgCount = this.inputList.length - 1; // Only args and body are left
-      if (oldArgCount > 0) {
-        var paramInput0 = this.getInput('VAR0');
-        if (paramInput0) { // Yes, they were vertical
-          for (var i = 0; i < oldArgCount; i++)
+    //remove all old argument inputs (if they were vertical)
+    if (oldArgCount > 0) {
+      var paramInput0 = this.getInput('VAR0');
+      if (paramInput0) { // Yes, they were vertical
+        for (var i = 0; i < oldArgCount; i++)
+        {
+          try
           {
-            try
-            {
-              Blockly.FieldParameterFlydown.withChangeHanderDisabled(
-                  // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for vertical arg fields!
-                  function() {thisBlock.removeInput('VAR' + i);}
-              );
-            }
-            catch(err)
-            {
-              console.log(err);
-            }
+            this.removeInput('VAR' + i);
+          }
+          catch(err)
+          {
+            console.log(err);
           }
         }
       }
@@ -300,15 +276,15 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     return container;
   },
   domToMutation: function(xmlElement) {
-    var params = [];
+    this.arguments_ = [];
     var children = goog.dom.getChildren(xmlElement);
     for (var x = 0, childNode; childNode = children[x]; x++) {
       if (childNode.nodeName.toLowerCase() == 'arg') {
-        params.push(childNode.getAttribute('name'));
+        this.arguments_.push(childNode.getAttribute('name'));
       }
     }
     this.horizontalParameters = xmlElement.getAttribute('vertical_parameters') !== "true";
-    this.updateParams_(params);
+    this.updateParams_();
   },
   decompose: function(workspace) {
     var containerBlock = new Blockly.Block.obtain(workspace, 'procedures_mutatorcontainer');
@@ -335,11 +311,12 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    var params = [];
+    var prevArguments = this.arguments_;
+    this.arguments_ = [];
     this.paramIds_ = [];
     var paramBlock = containerBlock.getInputTargetBlock('STACK');
     while (paramBlock) {
-      params.push(paramBlock.getFieldValue('NAME'));
+      this.arguments_.push(paramBlock.getFieldValue('NAME'));
       this.paramIds_.push(paramBlock.id);
       paramBlock = paramBlock.nextConnection &&
           paramBlock.nextConnection.targetBlock();
@@ -352,8 +329,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // );
     // [lyn, 11/24/12] Note: update params updates param list in proc declaration,
     // but renameParam updates procedure body appropriately.
-    if (!Blockly.LexicalVariable.stringListsEqual(params, this.arguments_)) { // Only need updates if param list has changed
-      this.updateParams_(params);
+    if (prevArguments.join(',') !== this.arguments_.join(',')) { // Only need updates if param list has changed
+      this.updateParams_();
       Blockly.Procedures.mutateCallers(this.getFieldValue('NAME'),
         this.workspace, this.arguments_, this.paramIds_);
     }
@@ -378,9 +355,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // Return the name of the defined procedure,
     // a list of all its arguments,
     // and that it DOES NOT have a return value.
-    return [this.getFieldValue('NAME'),
-            this.arguments_,
-           this.bodyInputName === 'RETURN']; // true for procedures that return values.
+    return [this.getFieldValue('NAME'), this.arguments_, false];
   },
   getVars: function() {
     var names = []
@@ -393,52 +368,30 @@ Blockly.Blocks['procedures_defnoreturn'] = {
      return this.getVars();
   },
   renameVar: function(oldName, newName) {
-    this.renameVars(Blockly.Substitution.simpleSubstitution(oldName,newName));
-  },
-  renameVars: function(substitution) { // renaming is a dict (i.e., object) mapping old names to new ones
-    var oldParams = this.getParameters();
-    var newParams = substitution.map(oldParams);
-    if (!Blockly.LexicalVariable.stringListsEqual(oldParams, newParams)) {
-      this.updateParams_(newParams);
+    var change = false;
+    for (var x = 0; x < this.arguments_.length; x++) {
+      if (Blockly.Names.equals(oldName, this.arguments_[x])) {
+        this.arguments_[x] = newName;
+        change = true;
+      }
+    }
+    if (change) {
+      this.updateParams_();
       // Update the mutator's variables if the mutator is open.
-      if (this.mutator.isVisible()) {
+      if (this.mutator.isVisible_()) {
         var blocks = this.mutator.workspace_.getAllBlocks();
         for (var x = 0, block; block = blocks[x]; x++) {
-          if (block.type == 'procedures_mutatorarg') {
-            var oldName = block.getFieldValue('NAME');
-            var newName = substitution.apply(oldName);
-            if (newName !== oldName) {
-              block.setFieldValue(newName, 'NAME');
-            }
+          if (block.type == 'procedures_mutatorarg' &&
+              Blockly.Names.equals(oldName, block.getFieldValue('NAME'))) {
+            block.setFieldValue(newName, 'NAME');
           }
         }
       }
     }
   },
-  renameBound: function (boundSubstitution, freeSubstitution) {
-    var paramSubstitution = boundSubstitution.restrictDomain(this.declaredNames());
-    this.renameVars(paramSubstitution);
-    var newFreeSubstitution = freeSubstitution.extend(paramSubstitution);
-    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock(this.bodyInputName), newFreeSubstitution);
-  },
-  renameFree: function (freeSubstitution) { // Should have no effect since only top-level procedures.
-    var freeVars = this.freeVariables(); // Calculate free variables, which should be empty,
-                                         // throwing exception if not.
-    // There should be no free variables, and so nothing to rename. Do nothing else.
-  },
-  freeVariables: function() { // return the free lexical variables of this block
-                              // Should return the empty set: something is wrong if it doesn't!
-    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock(this.bodyInputName));
-    result.subtract(new Blockly.NameSet(this.declaredNames()));
-    if (result.isEmpty()) {
-      return result;
-    } else {
-      throw "Violation of invariant: procedure declaration has nonempty free variables: " + result.toString();
-    }
-  },
   // [lyn, 11/24/12] return list of procedure body (if there is one)
   blocksInScope: function () {
-    var body = this.getInputTargetBlock(this.bodyInputName);
+    var body = this.getInputTargetBlock('STACK');
     return (body && [body]) || [];
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE +
@@ -456,7 +409,6 @@ Blockly.Blocks['procedures_defreturn'] = {
   // Define a procedure with a return value.
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFRETURN_HELPURL,
-  bodyInputName: 'RETURN',
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var name = Blockly.Procedures.findLegalName(
@@ -483,15 +435,23 @@ Blockly.Blocks['procedures_defreturn'] = {
   decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
   compose: Blockly.Blocks.procedures_defnoreturn.compose,
   dispose: Blockly.Blocks.procedures_defnoreturn.dispose,
-  getProcedureDef: Blockly.Blocks.getProcedureDef,
+  getProcedureDef: function() {
+    // Return the name of the defined procedure,
+    // a list of all its arguments,
+    // and that it DOES have a return value.
+    return [this.getFieldValue('NAME'), this.arguments_, true];
+  },
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
   renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
-  renameVars: Blockly.Blocks.procedures_defnoreturn.renameVars,
-  renameBound: Blockly.Blocks.procedures_defnoreturn.renameBound,
-  renameFree: Blockly.Blocks.procedures_defnoreturn.renameFree,
-  freeVariables: Blockly.Blocks.procedures_defnoreturn.freeVariables,
-  blocksInScope: Blockly.Blocks.procedures_defnoreturn.blocksInScope,
+  blocksInScope: function () {
+    /* var doBody = this.getInputTargetBlock('STACK'); */ // *** [lyn, 11/24/12] This will go away with DO-AND-RETURN block
+    var returnBody = this.getInputTargetBlock('RETURN');
+    // var doBodyList = (doBody && [doBody]) || []; // List of non-null doBody or empty list for null doBody
+    var returnBodyList = (returnBody && [returnBody]) || []; // List of non-null returnBody or empty list for null returnBody
+    // return doBodyList.concat(returnBodyList); // List of non-null body elements.
+    return returnBodyList; // List of non-null body elements.
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE +
       ' ' + Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN }],
   customContextMenu: Blockly.Blocks.procedures_defnoreturn.customContextMenu,
@@ -505,7 +465,7 @@ Blockly.Blocks['procedures_mutatorcontainer'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE);
     this.appendStatementInput('STACK');
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP);
+    this.setTooltip('');
     this.contextMenu = false;
   },
   // [lyn. 11/24/12] Set procBlock associated with this container.
@@ -548,7 +508,7 @@ Blockly.Blocks['procedures_mutatorarg'] = {
         .appendField(new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam), 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP);
+    this.setTooltip('');
     this.contextMenu = false;
   },
   // [lyn, 11/24/12] Return the container this mutator arg is in, or null if it's not in one.
@@ -732,7 +692,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
+        .appendField("call ")
         .appendField(this.procDropDown,"PROCNAME");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -741,7 +701,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn(false)[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn(false)[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
   },
   getProcedureCall: function() {
@@ -798,7 +758,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     if (!this.quarkArguments_ || startTracking) {
       // Initialize tracking for this block.
       this.quarkConnections_ = {};
-      if (Blockly.LexicalVariable.stringListsEqual(paramNames, this.arguments_) || startTracking) {
+      if (paramNames.join('\n') == this.arguments_.join('\n') || startTracking) {
         // No change to the parameters, allow quarkConnections_ to be
         // populated with the existing connections.
         this.quarkArguments_ = paramIds;
@@ -909,7 +869,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME}]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + ' no return' }]
 };
 
 
@@ -924,7 +884,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL)
+        .appendField("call ")
         .appendField(this.procDropDown,"PROCNAME");
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP);
@@ -932,7 +892,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn()[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn()[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
   },
   getProcedureCall: Blockly.Blocks.procedures_callnoreturn.getProcedureCall,
@@ -947,6 +907,6 @@ Blockly.Blocks['procedures_callreturn'] = {
   // This generates a single generic call to 'call return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + ' return' }]
 };
 

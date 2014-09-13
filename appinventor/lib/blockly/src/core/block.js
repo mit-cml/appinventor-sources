@@ -447,10 +447,11 @@ Blockly.Block.prototype.unplug = function(healStack, bump) {
       // Detach this block from the parent's tree.
       this.setParent(null);
     }
-    var nextBlock = this.getNextBlock();
-    if (healStack && nextBlock) {
+    if (healStack && this.nextConnection &&
+        this.nextConnection.targetConnection) {
       // Disconnect the next statement.
       var nextTarget = this.nextConnection.targetConnection;
+      var nextBlock = this.nextConnection.targetBlock();
       nextBlock.setParent(null);
       if (previousTarget) {
         // Attach the next statement to the previous statement.
@@ -554,7 +555,7 @@ Blockly.Block.prototype.getHeightWidthNeil = function() {
   var height = this.svg_.height;
   var width = this.svg_.width;
   // Recursively add size of subsequent blocks.
-  var nextBlock = this.getNextBlock();
+  var nextBlock = this.nextConnection && this.nextConnection.targetBlock();
   if (nextBlock) {
     var nextHeightWidth = nextBlock.getHeightWidthNeil();
     height += nextHeightWidth.height - 4;  // Height of tab.
@@ -657,9 +658,7 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
     } else if (this_.workspace.trashcan && this_.workspace.trashcan.isOpen) {
       var trashcan = this_.workspace.trashcan;
       goog.Timer.callOnce(trashcan.close, 100, trashcan);
-      if (Blockly.selected.confirmDeletion()) {
-        Blockly.selected.dispose(false, true);
-      }
+      Blockly.selected.dispose(false, true);
       // Dropping a block on the trash can will usually cause the workspace to
       // resize to contain the newly positioned block.  Force a second resize
       // now that the block has been deleted.
@@ -730,7 +729,7 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
   var block = this;
   var options = [];
 
-  if (this.isDeletable() && this.isMovable() && !block.isInFlyout) {
+  if (this.isDeletable() && !block.isInFlyout) {
     // Option to duplicate this block.
     var duplicateOption = {
       text: Blockly.Msg.DUPLICATE_BLOCK,
@@ -744,7 +743,7 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
     }
     options.push(duplicateOption);
 
-    if (this.isEditable() && !this.collapsed_ && Blockly.comments) {
+    if (this.isEditable() && !this.collapsed_) {
       // Option to add/remove a comment.
       var commentOption = {enabled: true};
       if (this.comment) {
@@ -797,26 +796,24 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
       }
     }
 
-    if (Blockly.disable) {
-      // Option to disable/enable block.
-      var disableOption = {
-        text: this.disabled ?
-            Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
-        enabled: !this.getInheritedDisabled(),
-        callback: function() {
-          block.setDisabled(!block.disabled);
-        }
-      };
-      options.push(disableOption);
-    }
+    // Option to disable/enable block.
+    var disableOption = {
+      text: this.disabled ?
+          Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
+      enabled: !this.getInheritedDisabled(),
+      callback: function() {
+        block.setDisabled(!block.disabled);
+      }
+    };
+    options.push(disableOption);
 
     // Option to delete this block.
     // Count the number of blocks that are nested in this block.
     var descendantCount = this.getDescendants().length;
-    var nextBlock = this.getNextBlock();
-    if (nextBlock) {
+    if (block.nextConnection && block.nextConnection.targetConnection) {
       // Blocks in the current stack would survive this block's deletion.
-      descendantCount -= nextBlock.getDescendants().length;
+      descendantCount -= this.nextConnection.targetBlock().
+          getDescendants().length;
     }
     var deleteOption = {
       text: descendantCount == 1 ? Blockly.Msg.DELETE_BLOCK :
@@ -1079,18 +1076,11 @@ Blockly.Block.prototype.getSurroundParent = function() {
         // Ran off the top.
         return null;
       }
-    } while (block.getNextBlock() == prevBlock);
+    } while (block.nextConnection &&
+             block.nextConnection.targetBlock() == prevBlock);
     // This block is an enclosing parent, not just a statement in a stack.
     return block;
   }
-};
-
-/**
- * Return the next statement block directly connected to this block.
- * @return {Blockly.Block} The next statement block or null.
- */
-Blockly.Block.prototype.getNextBlock = function() {
-  return this.nextConnection && this.nextConnection.targetBlock();
 };
 
 /**
@@ -1187,28 +1177,6 @@ Blockly.Block.prototype.getDescendants = function() {
     blocks.push.apply(blocks, child.getDescendants());
   }
   return blocks;
-};
-
-/**
- * Show a confirmation dialog if users intend to delete more that #DELETION_THRESHOLD blocks.
- * @returns {Boolean} true if there are less than #DELETION_THRESHOLD blocks to delete or the user
- * confirms deletion.
- */
-Blockly.Block.prototype.confirmDeletion = function(){
-  var DELETION_THRESHOLD = 3;
-
-  var descendantCount = Blockly.selected.getDescendants().length;
-  // Filter out indirect descendants
-  if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
-    descendantCount -= Blockly.selected.nextConnection.targetBlock().getDescendants().length;
-  }
-
-  if (descendantCount >= DELETION_THRESHOLD) {
-    return confirm(Blockly.Msg.WARNING_DELETE_X_BLOCKS.replace('%1', String(descendantCount)));
-  }
-  else {
-    return true;
-  }
 };
 
 /**

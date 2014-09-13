@@ -39,7 +39,6 @@ public final class ErrorMessages {
   public static final int ERROR_TWITTER_STOP_FOLLOWING_FAILED = 312;
   public static final int ERROR_TWITTER_REQUEST_FRIEND_TIMELINE_FAILED = 313;
   public static final int ERROR_TWITTER_SEARCH_FAILED = 314;
-  public static final int ERROR_TWITTER_INVALID_IMAGE_PATH = 315;
   // LegoMindstormsNXT errors
   public static final int ERROR_NXT_BLUETOOTH_NOT_SET = 401;
   public static final int ERROR_NXT_NOT_CONNECTED_TO_ROBOT = 402;
@@ -92,8 +91,6 @@ public final class ErrorMessages {
   public static final int ERROR_MEDIA_CANNOT_OPEN = 707;
   public static final int ERROR_MEDIA_FILE_ERROR = 708;
   public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
-  public static final int ERROR_SOUND_NOT_READY = 710;
-  public static final int ERROR_OUT_OF_MEMORY_LOADING_MEDIA = 711;
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
@@ -228,8 +225,6 @@ public final class ErrorMessages {
         "Twitter RequestFriendTimeline failed: %s");
     errorMessages.put(ERROR_TWITTER_SEARCH_FAILED,
         "Twitter search failed.");
-    errorMessages.put(ERROR_TWITTER_INVALID_IMAGE_PATH, "Invalid Path to Image; Update will not " +
-        "be sent.");
     // LegoMindstormsNXT errors
     errorMessages.put(ERROR_NXT_BLUETOOTH_NOT_SET,
         "The Bluetooth property has not been set.");
@@ -329,8 +324,6 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_MEDIA_FILE_ERROR, "Got file error: %s.");
     errorMessages.put(ERROR_UNABLE_TO_FOCUS_MEDIA,
         "Unable to grant exclusive lock of audio output stream to %s.");
-    errorMessages.put(ERROR_SOUND_NOT_READY, "The sound is not ready to play: %s.");
-    errorMessages.put(ERROR_OUT_OF_MEMORY_LOADING_MEDIA, "Not Enough Memory to load: %s.");
      // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");

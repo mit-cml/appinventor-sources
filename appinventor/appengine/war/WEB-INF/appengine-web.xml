@@ -32,17 +32,6 @@
          the log4j configuration is looking for a URL -->
     <property name="log4j.configuration" value="file:WEB-INF/log4j.properties"/>
 
-    <!-- Set this to the IP Address or Host Name of the Rendezvous server.
-         If left as the empty string, the default in YaVersion is used, which
-         should be rendezvous.appinventor.mit.edu. Note: You can specify both
-         a name and a port using a colon to separate them. For example you can
-         use example.com:8888 to specify port 8888. Note: The rendezvous server
-         is assumed to be a path "/rendezvous/" on the server. So specifying
-         "example.com:8888" would mean the Rendezvous Server would be querired
-         on http://example.com:8888/rendezvous/. -->
-
-    <property name="use.rendezvousserver" value=""/>
-
     <!-- set to true if users should not be allowed to access the App
          Inventor server unless they are listed in the appengine/war/whitelist file -->
     <property name="use.whitelist" value="false"/>

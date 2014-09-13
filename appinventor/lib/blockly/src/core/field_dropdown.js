@@ -33,7 +33,6 @@ goog.require('goog.dom');
 goog.require('goog.style');
 goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
-goog.require('goog.userAgent');
 
 
 /**
@@ -56,10 +55,11 @@ Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
   this.value_ = firstTuple[1];
 
   // Add dropdown arrow: "option ▾" (LTR) or "▾ אופציה" (RTL)
+  // Android can't (in 2014) display "▾", so use "▼" instead.
+  var arrowChar = goog.userAgent.ANDROID ? '\u25BC' : '\u25BE';
   this.arrow_ = Blockly.createSvgElement('tspan', {}, null);
   this.arrow_.appendChild(document.createTextNode(
-      Blockly.RTL ? Blockly.FieldDropdown.ARROW_CHAR + ' ' :
-                    ' ' + Blockly.FieldDropdown.ARROW_CHAR));
+      Blockly.RTL ? arrowChar + ' ' : ' ' + arrowChar));
 
   // Call parent's constructor.
   Blockly.FieldDropdown.superClass_.constructor.call(this, firstTuple[0]);
@@ -70,11 +70,6 @@ goog.inherits(Blockly.FieldDropdown, Blockly.Field);
  * Horizontal distance that a checkmark ovehangs the dropdown.
  */
 Blockly.FieldDropdown.CHECKMARK_OVERHANG = 25;
-
-/**
- * Android can't (in 2014) display "▾", so use "▼" instead.
- */
-Blockly.FieldDropdown.ARROW_CHAR = goog.userAgent.ANDROID ? '\u25BC' : '\u25BE';
 
 /**
  * Clone this FieldDropdown.
@@ -124,7 +119,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     var menuItem = new goog.ui.MenuItem(text);
     menuItem.setValue(value);
     menuItem.setCheckable(true);
-    menu.addChild(menuItem, true);
+    menu.addItem(menuItem);
     menuItem.setChecked(value == this.value_);
   }
   goog.events.listen(menu, goog.ui.Component.EventType.ACTION, callback);

@@ -14,12 +14,16 @@ import twitter4j.DirectMessage;
 import twitter4j.IDs;
 import twitter4j.Query;
 import twitter4j.Status;
-import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.media.ImageUpload;
+import twitter4j.media.ImageUploadFactory;
+import twitter4j.media.MediaProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -216,8 +220,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * TwitPicAPIkey property getter method.
    */
-  @Deprecated
-  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String TwitPic_API_Key() {
      return TwitPic_API_Key;
   }
@@ -229,11 +232,8 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    * @param TwitPic_API_Key
    *          the API Key for image uploading, given by TwitPic
    */
-  @Deprecated
-  // Hide the deprecated property from the Designer
-  //@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR,
-      description="The API Key for image uploading, provided by TwitPic.")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description="The API Key for image uploading, provided by TwitPic.")
   public void TwitPic_API_Key(String TwitPic_API_Key) {
     this.TwitPic_API_Key = TwitPic_API_Key;
   }
@@ -477,16 +477,16 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Tweet with Image, Uploaded to Twitter
+   * Tweet with Image, Uploaded to TwitPic
    */
   @SimpleFunction(description = "This sends a tweet as the logged-in user with the "
-      + "specified Text and a path to the image to be uploaded, which will be trimmed if it "
-      + "exceeds " + MAX_CHARACTERS + " characters. "
-      + "If an image is not found or invalid, only the text will be tweeted."
+      + "specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds"
+      + MAX_CHARACTERS
+      + " characters. If an image is not found or invalid, only the text will be tweeted."
       + "<p><u>Requirements</u>: This should only be called after the "
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>" )
-  public void TweetWithImage(final String status, final String imagePath) {
+  public void TweetWithImage(final String status, final String ImagePath) {
     if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "TweetWithImage",
           ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, "Need to login?");
@@ -496,21 +496,18 @@ public final class Twitter extends AndroidNonvisibleComponent implements
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         try {
-          String cleanImagePath = imagePath;
-          // Clean up the file path if necessary
-          if (cleanImagePath.startsWith("file://")) {
-            cleanImagePath = imagePath.replace("file://", "");
-          }
-          File imageFilePath = new File(cleanImagePath);
-          if (imageFilePath.exists()) {
-            StatusUpdate theTweet = new StatusUpdate(status);
-            theTweet.setMedia(imageFilePath);
-            twitter.updateStatus(theTweet);
-          }
-          else {
-            form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
-                ErrorMessages.ERROR_TWITTER_INVALID_IMAGE_PATH);
-          }
+          ConfigurationBuilder builder = new ConfigurationBuilder().setMediaProviderAPIKey(TwitPic_API_Key);
+          builder.setOAuthConsumerKey(ConsumerKey());
+          builder.setOAuthConsumerSecret(ConsumerSecret());
+          builder.setOAuthAccessToken(accessToken.getToken());
+          builder.setOAuthAccessTokenSecret(accessToken.getTokenSecret());
+          Configuration conf = builder.build();
+          ImageUpload upload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
+          String url = "";
+            if (new File(ImagePath).exists()) {
+              url = upload.upload(new File(ImagePath));
+            }
+          twitter.updateStatus(status + " " + url);
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
               ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, e.getMessage());
