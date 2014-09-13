@@ -15,7 +15,6 @@ import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -339,9 +338,8 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     imageUploadPrompt = new Label("Upload your profile image!");
     imageUploadPrompt.addStyleName("gallery-editprompt");
 
-    if(gallery.getGallerySettings() != null){
+    if(gallery.getGallerySettings() != null)
       updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
-    }
     imageUploadPrompt.addStyleName("app-image-uploadprompt");
     imageUploadBoxInner.add(imageUploadPrompt);
 
@@ -445,19 +443,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       }
     });
     container.add(userAvatar);
-
-    if(gallery.getSystemEnvironmet() != null &&
-        gallery.getSystemEnvironmet().toString().equals("Development")){
-      final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(String newUrl) {
-            userAvatar.setUrl(newUrl + "?" + System.currentTimeMillis());
-          }
-        };
-      Ode.getInstance().getGalleryService().getBlobServingUrl(url, callback);
-    }
   }
 
   public void loadImage(){

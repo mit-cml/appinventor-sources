@@ -320,9 +320,8 @@ public class Ode implements EntryPoint {
             ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);
           }
+          ProjectListBox.loadProfileImage();
           topPanel.updateAccountMessageButton();
-          ProjectListBox.getProjectListBox().showProfileTab();
-          ProjectListBox.getProjectListBox().loadProfileImage();
 
           final String userInfo = user.getUserName();
           // Get the message count to display right next to user
@@ -339,6 +338,7 @@ public class Ode implements EntryPoint {
                     }
                   }
                   String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
+                  OdeLog.log("### MSG final = " + u);
                   // Reset message count for further use
                   topPanel.showUserEmail(u);
                 }
@@ -650,7 +650,7 @@ public class Ode implements EntryPoint {
         }
 
         userSettings = new UserSettings(user);
-        GalleryClient.getInstance().setSystemEnvironmet(result.getEnvironmentValue());
+
         // Gallery settings
         gallerySettings = new GallerySettings();
         //gallerySettings.loadGallerySettings();
@@ -662,8 +662,6 @@ public class Ode implements EntryPoint {
 
         // Initialize UI
         initializeUi();
-
-        topPanel.showUserEmail(user.getUserEmail());
 
         // Retrieve template data stored in war/templates folder and
         // and save it for later use in TemplateUploadWizard

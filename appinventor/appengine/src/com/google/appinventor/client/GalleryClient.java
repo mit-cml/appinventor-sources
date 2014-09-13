@@ -18,7 +18,6 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.user.Config;
 
 
 /**
@@ -45,8 +44,6 @@ public class GalleryClient {
   public static final int REQUEST_REMIXED_TO = 10;
 
   private static volatile GalleryClient  instance= null;
-
-  public String ENVIRONMENT = null;
 
   /**
    * constructor
@@ -341,12 +338,7 @@ public class GalleryClient {
    * @return url of cloud image
    */
   public String getCloudImageURL(long galleryId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
-      return getGallerySettings().getCloudImageURL(galleryId);
-    }else {
-      return getGallerySettings().getCloudImageLocation(galleryId);
-    }
+    return getGallerySettings().getCloudImageURL(galleryId);
   }
 
   /**
@@ -355,12 +347,7 @@ public class GalleryClient {
    * @return url of project image
    */
   public String getProjectImageURL(long projectId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
-      return getGallerySettings().getProjectImageURL(projectId);
-    }else {
-      return getGallerySettings().getProjectImageLocation(projectId);
-    }
+    return getGallerySettings().getProjectImageURL(projectId);
   }
 
   /**
@@ -369,19 +356,7 @@ public class GalleryClient {
    * @return url of user image
    */
   public String getUserImageURL(String userId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
-      return getGallerySettings().getUserImageURL(userId);
-    }else {
-      return getGallerySettings().getUserImageLocation(userId);
-    }
-  }
-
-  public void setSystemEnvironmet(String value) {
-    ENVIRONMENT = value;
-  }
-  public String getSystemEnvironmet() {
-    return this.ENVIRONMENT;
+    return getGallerySettings().getUserImageURL(userId);
   }
 
 }

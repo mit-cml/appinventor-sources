@@ -5,7 +5,6 @@
 
 package com.google.appinventor.server;
 
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -43,7 +42,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
-    config.setEnvironmentValue(SystemProperty.environment.value().toString());
     return config;
   }
 

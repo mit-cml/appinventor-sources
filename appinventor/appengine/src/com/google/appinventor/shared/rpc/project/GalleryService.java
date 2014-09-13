@@ -314,6 +314,4 @@ public interface GalleryService extends RemoteService {
    */
   List<GalleryModerationAction> getModerationActions(long reportId);
 
-  String getBlobServingUrl(String url);
-
 }
