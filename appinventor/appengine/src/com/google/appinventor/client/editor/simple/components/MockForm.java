@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2014 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client.editor.simple.components;
@@ -32,7 +32,11 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
- * Mock Form component.
+ * Mock Form component. This implementation provides two main preview sizes corresponding to the
+ * 'normal' and 'large' buckets (http://developer.android.com/guide/practices/screens_support
+ * .html).
+ * Normal size is a 1:1 with pixels on a device with dpi:160. We use that as the baseline for the
+ * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  *
  */
 public final class MockForm extends MockContainer {
@@ -41,9 +45,7 @@ public final class MockForm extends MockContainer {
    * Widget for the mock form title bar.
    */
   private class TitleBar extends Composite {
-    private static final int HEIGHT = 24;
-    
-
+    private static final int HEIGHT = 22;
 
     // UI elements
     private Label title;
@@ -101,6 +103,33 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  /*
+   * Widget for a mock phone navigation bar; Shows at the bottom of the viewer
+   */
+  private class NavigationBar extends Composite {
+    private static final int HEIGHT = 35;
+
+    // UI elements
+    private DockPanel bar;
+    private Image navigationBarImage;
+
+    /*
+     * Creates a new phone navigation bar; Shows at the bottom of the viewer.
+     */
+    NavigationBar() {
+      navigationBarImage = new Image(images.navigationbar());
+
+      bar = new DockPanel();
+      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      bar.add(navigationBarImage, DockPanel.CENTER);
+
+      initWidget(bar);
+
+      setStylePrimaryName("ode-SimpleMockFormPhoneBar"); //reuse the css for the phone
+      setSize("100%", HEIGHT + "px");
+    }
+  }
+
   /**
    * Component type name.
    */
@@ -108,12 +137,28 @@ public final class MockForm extends MockContainer {
 
   private static final String VISIBLE_TYPE = "Screen";
 
-  // TODO(lizlooney) 320x480 is the resolution of the G1. Do we want to change this to the
-  // resolution of the Nexus One?
-  private static final int PORTRAIT_WIDTH = 320;
-  private static final int PORTRAIT_HEIGHT = 480;
-  private static final int LANDSCAPE_WIDTH = 480;
-  private static final int LANDSCAPE_HEIGHT = 320;
+  // Currently App Inventor provides two main sizes that correspond to 'normal' and 'large'
+  // screens. We use phone=normal and tablet=large.
+  // More information about 'bucket' sizes at:
+  // http://developer.android.com/guide/practices/screens_support.html
+  // The values for Phone and Tablet were decided by trial and error. The main reason is that in
+  // the designer we use sizes of GWT widgets, and not the sizes of the actual Android widgets.
+  private static final int PHONE_PORTRAIT_WIDTH = 380;
+  private static final int PHONE_PORTRAIT_HEIGHT = 524;
+  private static final int PHONE_LANDSCAPE_WIDTH = PHONE_PORTRAIT_HEIGHT;
+  private static final int PHONE_LANDSCAPE_HEIGHT = PHONE_PORTRAIT_WIDTH;
+
+  private static final int TABLET_PORTRAIT_WIDTH = 600;
+  private static final int TABLET_PORTRAIT_HEIGHT = 924;
+  private static final int TABLET_LANDSCAPE_WIDTH = TABLET_PORTRAIT_HEIGHT;
+  private static final int TABLET_LANDSCAPE_HEIGHT = TABLET_PORTRAIT_WIDTH;
+
+  // These are default values but they can be changed in the changePreviewSize method
+  private int PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
+  private int PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
+  private int LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
+  private int LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
+  private boolean landscape = false;
 
   // Property names
   private static final String PROPERTY_NAME_TITLE = "Title";
@@ -179,13 +224,8 @@ public final class MockForm extends MockContainer {
     scrollPanel = new ScrollPanel(rootPanel);
     formWidget.add(scrollPanel);
 
-    screenWidth = PORTRAIT_WIDTH;
-    screenHeight = PORTRAIT_HEIGHT;
-    usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT;
-
-    // This is just the initial size of the form. It will be resized in refresh();
-    rootPanel.setPixelSize(screenWidth, usableScreenHeight);
-    resizePanels();
+    //Add navigation bar at the bottom of the viewer.
+    formWidget.add(new NavigationBar());
 
     initComponent(formWidget);
     
@@ -196,21 +236,50 @@ public final class MockForm extends MockContainer {
     } catch (BadPropertyEditorException e) {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
-    };
+    }
     enableAndDisableDropdowns();
     initialized = true;
+  }
+
+  public void changePreviewSize(boolean isTablet) {
+    if (isTablet) {
+      PORTRAIT_WIDTH   = TABLET_PORTRAIT_WIDTH;
+      PORTRAIT_HEIGHT  = TABLET_PORTRAIT_HEIGHT;
+      LANDSCAPE_WIDTH  = TABLET_LANDSCAPE_WIDTH;
+      LANDSCAPE_HEIGHT = TABLET_LANDSCAPE_HEIGHT;
+    }
+    else {
+      PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
+      PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
+      LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
+      LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
+    }
+    if (landscape)
+      resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
+    else
+      resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
   }
 
   /*
    * Resizes the scrollPanel and formWidget based on the screen size.
    */
-  private void resizePanels() {
-    // Set the scrollPanel's width to account for the width of the vertical scrollbar.
-    int vertScrollbarWidth = getVerticalScrollbarWidth();
-    scrollPanel.setPixelSize(screenWidth + vertScrollbarWidth, usableScreenHeight);
-    formWidget.setPixelSize(screenWidth + vertScrollbarWidth, screenHeight);
-  }
+  public void resizePanel(int newWidth, int newHeight){
+    screenWidth = newWidth;
+    screenHeight = newHeight;
+    usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT - NavigationBar.HEIGHT;
 
+    rootPanel.setPixelSize(screenWidth, usableScreenHeight);
+    scrollPanel.setPixelSize(screenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
+    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+
+    // Store properties
+    changeProperty(PROPERTY_NAME_WIDTH, "" + screenWidth);
+    boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
+    if (!scrollable) {
+      changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
+    }
+
+  }
   /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
@@ -366,12 +435,14 @@ public final class MockForm extends MockContainer {
       if (text.equalsIgnoreCase("landscape")) {
         screenWidth = LANDSCAPE_WIDTH;
         screenHeight = LANDSCAPE_HEIGHT;
+        landscape = true;
       } else {
         screenWidth = PORTRAIT_WIDTH;
         screenHeight = PORTRAIT_HEIGHT;
+        landscape = false;
       }
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT;
-      resizePanels();
+      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT - NavigationBar.HEIGHT;
+      resizePanel(screenWidth, screenHeight);
 
       changeProperty(PROPERTY_NAME_WIDTH, "" + screenWidth);
       boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));

@@ -53,7 +53,7 @@
       <url-pattern>/about/*</url-pattern>
       <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
-<!--      <url-pattern>/rendezvous/*</url-pattern> -->
+      <url-pattern>/rendezvous/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 

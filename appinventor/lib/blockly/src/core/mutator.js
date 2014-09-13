@@ -263,14 +263,16 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
  * @private
  */
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
+  if (!this.workspace_) return;
   if (Blockly.Block.dragMode_ == 0) {
     var blocks = this.workspace_.getTopBlocks(false);
     var MARGIN = 20;
     for (var b = 0, block; block = blocks[b]; b++) {
       var blockXY = block.getRelativeToSurfaceXY();
       var blockHW = block.getHeightWidth();
-      if (Blockly.RTL ? blockXY.x > -this.flyout_.width_ + MARGIN :
-           blockXY.x < this.flyout_.width_ - MARGIN) {
+      if (block.isDeletable() && (Blockly.RTL ?
+            blockXY.x > -this.flyout_.width_ + MARGIN :
+            blockXY.x < this.flyout_.width_ - MARGIN)) {
         // Delete any block that's sitting on top of the flyout.
         block.dispose(false, true);
       } else if (blockXY.y + blockHW.height < MARGIN) {

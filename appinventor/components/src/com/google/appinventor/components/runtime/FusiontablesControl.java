@@ -8,7 +8,9 @@ import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.GoogleKeyInitializer;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.services.fusiontables.Fusiontables;
 import com.google.api.services.fusiontables.Fusiontables.Query.Sql;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -26,6 +28,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ClientLoginHelper;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IClientLoginHelper;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -50,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +89,17 @@ import java.util.ArrayList;
     "this component lets you query, create, and modify these tables.</p> "  +
     "<p>This component uses the " +
     "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API V1.0</a>. " +
-    "<p>In order to develop apps that use Fusiontables, you must obtain an API Key." +
+    "<p>Applications using Fusion Tables must authentication to Google's servers. There " +
+    "are two ways this can be done. The first way uses an API Key which you the developer " +
+    "obtain (see below). With this approach end-users must also login to access a Fusion Table. " +
+    "The second approach is to use a Service Account. With this approach you create credentials " +
+    "and a special \"Service Account Email Address\" which you obtain from the " +
+    "<a href=\"https://code.google.com/apis/console/\" target=\"_blank\">Google APIs Console</a>. " +
+    "You then tell the Fusion Table Control the name of the Service Account Email address and upload " +
+    "the secret key as an asset to your application and set the KeyFile property to point at this " +
+    "file. Finally you check the \"UseServiceAuthentication\" checkbox in the designer. " +
+    "When using a Service Account, end-users do not need to login to use Fusion Tables, " +
+    "your service account authenticates all access.</p> " +
     "<p>To get an API key, follow these instructions.</p> " +
     "<ol>" +
     "<li>Go to your <a href=\"https://code.google.com/apis/console/\" target=\"_blank\">Google APIs Console</a> and login if necessary.</li>" +
@@ -124,8 +138,8 @@ import java.util.ArrayList;
     "google-http-client-android2-beta.jar," +
     "google-http-client-android3-beta.jar," +
     "google-oauth-client-beta.jar," +
-    "guava-14.0.1.jar")
-
+    "guava-14.0.1.jar," +
+    "gson-2.1.jar")
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "fusion";
   private static final String DIALOG_TEXT = "Choose an account to access FusionTables";
@@ -141,6 +155,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   public static final String FUSIONTABLES_URL = "https://www.googleapis.com/fusiontables/v1/query";
   public static final String AUTH_TOKEN_TYPE_FUSIONTABLES = "oauth2:https://www.googleapis.com/auth/fusiontables";
   public static final String APP_NAME = "App Inventor";
+  private File cachedServiceCredentials = null; // if using service accounts, temp location of credentials.
 
   private String authTokenType = AUTH_TOKEN_TYPE_FUSIONTABLES;
 
@@ -167,10 +182,29 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   private String errorMessage = "Error on Fusiontables query";
 
   private final Activity activity;
+  private final ComponentContainer container;
   private final IClientLoginHelper requestHelper;
+
+  /**
+  * Path to uploaded private key file;
+  */
+  private String keyPath = "";
+
+  /**
+  * Boolean representing whether to use user auth or service account auth
+  */
+  private boolean isServiceAuth = false;
+
+  /**
+  * Email id of the service account to use for authentication;
+  */
+  private String serviceAccountEmail = "";
+
+  private String scope = "https://www.googleapis.com/auth/fusiontables";
 
   public FusiontablesControl(ComponentContainer componentContainer) {
     super(componentContainer.$form());
+    this.container = componentContainer;
     this.activity = componentContainer.$context();
     requestHelper = createClientLoginHelper(DIALOG_TEXT, FUSIONTABLES_SERVICE);
     query = DEFAULT_QUERY;
@@ -209,31 +243,63 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     alertDialog.show();
   }
 
+  /**
+  * Property to determine whether to use service authentication or user authentication. When this is
+  * checked, service authentication is used.
+  **/
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Indicates whether a service account should be used for authentication")
+  public boolean UseServiceAuthentication() {
+    return isServiceAuth;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty
+  public void UseServiceAuthentication(boolean bool) {
+    this.isServiceAuth = bool;
+  }
+
+  /**
+  * Property for the service account email to use when using service authentication.
+  **/
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The Service Account Email Address when service account authentication " +
+      "is in use.")
+  public String ServiceAccountEmail() {
+    return serviceAccountEmail;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty
+  public void ServiceAccountEmail(String email) {
+    this.serviceAccountEmail = email;
+  }
+
 
   /**
    * Setter for the app developer's API key.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
-    @SimpleProperty
-    public void ApiKey(String apiKey) {
-      this.apiKey = apiKey;
-    }
+  @SimpleProperty
+  public void ApiKey(String apiKey) {
+    this.apiKey = apiKey;
+  }
 
-    /**
-     * Getter for the API key.
-     * @return apiKey the apiKey
-     */
-    @SimpleProperty(
-        description = "Your Google API Key. For help, click on the question" +
-                        "mark (?) next to the FusiontablesControl component in the Palette. ",
-        category = PropertyCategory.BEHAVIOR)
-    public String ApiKey() {
-      return apiKey;
-    }
+  /**
+   * Getter for the API key.
+   * @return apiKey the apiKey
+   */
+  @SimpleProperty(
+      description = "Your Google API Key. For help, click on the question" +
+      "mark (?) next to the FusiontablesControl component in the Palette. ",
+      category = PropertyCategory.BEHAVIOR)
+  public String ApiKey() {
+    return apiKey;
+  }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = DEFAULT_QUERY)
+      defaultValue = DEFAULT_QUERY)
   @SimpleProperty
   public void Query(String query) {
     this.query = query;
@@ -252,6 +318,32 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     return query;
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+      defaultValue = "")
+  @SimpleProperty
+  public void KeyFile(String path) {
+    // If it's the same as on the prior call and the prior load was successful,
+    // do nothing.
+    if (path.equals(keyPath)) {
+      return;
+    }
+
+    // Remove old cached credentials if we are changing the keyPath
+    if (cachedServiceCredentials != null) {
+      cachedServiceCredentials.delete();
+      cachedServiceCredentials = null;
+    }
+    keyPath = (path == null) ? "" : path;
+  }
+
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "Specifies the path of the private key file.  " +
+      "This key file is used to get access to the FusionTables API.")
+  public String KeyFile() {
+    return keyPath;
+  }
+
   /**
    * Calls QueryProcessor to execute the API request asynchronously, if
    * the user has already authenticated with the Fusiontables service.
@@ -263,7 +355,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
 //Deprecated  -- Won't work after 12/2012
   @SimpleFunction(description = "DEPRECATED. This block " +
-       "will be deprecated by the end of 2012.  Use SendQuery.")
+       "is deprecated as of the end of 2012.  Use SendQuery.")
   public void DoQuery() {
     if (requestHelper != null) {
       new QueryProcessor().execute(query);
@@ -285,9 +377,38 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
   // TODO(sharon): figure out why this isn't working
   // TODO(ralph): Looks like it's working for OAuth 2, Let's user switch accounts
-  @SimpleFunction
+  @SimpleFunction(
+      description = "Forget end-users login credentials. Has no effect on service authentication")
   public void ForgetLogin() {
     OAuth2Helper.resetAccountCredential(activity);
+  }
+
+  @SimpleFunction(
+    description="Inserts a row into the specified fusion table. The tableId field is the id of the" +
+      "fusion table. The columns is a comma-separated list of the columns to insert values into. The" +
+      " values field specifies what values to insert into each column.")
+  public void InsertRow(String tableId, String columns, String values) {
+    query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + values + ")";
+    new QueryProcessorV1(activity).execute(query);
+  }
+
+
+  @SimpleFunction(
+    description="Gets all the rows from a specified fusion table. The tableId field is the id of the" +
+      "required fusion table. The columns field is a comma-separeted list of the columns to retrieve.")
+  public void GetRows(String tableId, String columns) {
+    query = "SELECT " + columns + " FROM " + tableId;
+    new QueryProcessorV1(activity).execute(query);
+  }
+
+  @SimpleFunction(
+    description="Gets all the rows from a fusion table that meet certain conditions. The tableId field is" +
+    "the id of the required fusion table. The columns field is a comma-separeted list of the columns to" +
+    "retrieve. The conditions field specifies what rows to retrieve from the table, for example the rows in which" +
+    "a particular column value is not null.")
+  public void GetRowsWithConditions(String tableId, String columns, String conditions) {
+    query = "SELECT " + columns + " FROM " + tableId + " WHERE " + conditions;
+    new QueryProcessorV1(activity).execute(query);
   }
 
 
@@ -641,8 +762,16 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
      */
     @Override
     protected String doInBackground(String... params) {
-      Log.i(TAG, "Starting doInBackground " + params[0]);
       String query = params[0];
+      Log.i(TAG, "Starting doInBackground " + query);
+      if (isServiceAuth) {
+        return serviceAuthRequest(query);
+      } else {
+        return userAuthRequest(query);
+      }
+    }
+
+    private String userAuthRequest(String query) {
       queryResultStr = "";
 
       // Get a fresh access token
@@ -675,6 +804,57 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       } else {
         return OAuth2Helper.getErrorMessage();
       }
+    }
+
+    private String serviceAuthRequest(String query) {
+      String STAG = "SERVICE_ACCOUNT";
+
+      final HttpTransport TRANSPORT = AndroidHttp.newCompatibleTransport();
+      final JsonFactory JSON_FACTORY = new GsonFactory();
+
+      Log.i(STAG, "keyPath " + keyPath);
+
+      try {
+        if (cachedServiceCredentials == null) { // Need to cache the credentials in a temp file
+          // copyMediaToTempFile will copy the credentials either from the /sdcard if
+          // we are running in the Companion, or from the packaged assets if we are a
+          // packaged application.
+          cachedServiceCredentials = MediaUtil.copyMediaToTempFile(container.$form(), keyPath);
+        }
+        GoogleCredential credential = new  GoogleCredential.Builder()
+            .setTransport(TRANSPORT)
+            .setJsonFactory(JSON_FACTORY)
+            .setServiceAccountId(serviceAccountEmail)
+            .setServiceAccountScopes(scope)
+            .setServiceAccountPrivateKeyFromP12File(cachedServiceCredentials)
+            .build();
+
+        Fusiontables fusiontables = new Fusiontables.Builder(TRANSPORT, JSON_FACTORY, credential)
+          .setJsonHttpRequestInitializer(new GoogleKeyInitializer(ApiKey()))
+          .build();
+
+        Sql sql = fusiontables.query().sql(query);
+        sql.put("alt", "csv");
+
+        com.google.api.client.http.HttpResponse response = sql.executeUnparsed();
+
+        // Process the response
+        if (response != null) {
+          queryResultStr = httpResponseToString(response);
+          Log.i(TAG, "Query = " + query + "\nResultStr = " + queryResultStr);
+        } else {
+          queryResultStr = errorMessage;
+          Log.i(TAG, "Error:  " + errorMessage);
+        }
+
+        Log.i(STAG, "executed sql query");
+
+      } catch (Throwable e) {
+        e.printStackTrace();
+        errorMessage = e.getMessage();
+      }
+
+      return queryResultStr;
     }
 
     /**

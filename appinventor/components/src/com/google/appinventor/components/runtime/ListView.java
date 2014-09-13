@@ -176,11 +176,21 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Set a list of text elements to build a ListView
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
-  @SimpleProperty(description="Set a list of text elements to build your list.",
+  @SimpleProperty(description="List of text elements to build your list.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     items = ElementsUtil.elements(itemsList, "Listview");
     setAdapterData();
+  }
+
+  /**
+   * Elements property getter method
+   *
+   * @return a YailList representing the list of strings to be picked from
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public YailList Elements() {
+    return items;
   }
 
   /**

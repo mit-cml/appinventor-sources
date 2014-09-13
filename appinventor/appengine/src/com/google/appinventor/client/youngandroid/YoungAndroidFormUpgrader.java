@@ -261,6 +261,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ListPicker")) {
         srcCompVersion = upgradeListPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ListView")) {
+        srcCompVersion = upgradeListViewProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("LocationSensor")) {
         srcCompVersion = upgradeLocationSensorProperties(componentProperties, srcCompVersion);
 
@@ -709,6 +712,19 @@ public final class YoungAndroidFormUpgrader {
       // The AboutScreen property was added.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // The Scrollable property was set to False by default.
+      if (componentProperties.containsKey("Scrollable")){
+        String value = ((ClientJsonString)componentProperties.get("Scrollable")).getString();
+        if (value.equals("False")){
+          componentProperties.remove("Scrollable");
+        }
+      }
+      else {
+        componentProperties.put("Scrollable", new ClientJsonString("True"));
+      }
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
@@ -718,6 +734,13 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       // The ApiKey property and the SendQuery and ForgetLogin methods were added.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // No properties need to be modified to upgrade to version 3.
+      // GetRows, InsertRows and GetRowsWithConditions methods were added.
+      // KeyFile, UseServiceAuthentication and ServiceAccountEmail properties
+      // were added.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -830,6 +853,15 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 8) {
       //  Added title property
       srcCompVersion = 8;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeListViewProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added the Elements getter
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -1030,6 +1062,11 @@ public final class YoungAndroidFormUpgrader {
       // The designer property TwitPic_API_Key was added
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The designer property TwitPic_API_Key and functions are hidden and deprecated.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
