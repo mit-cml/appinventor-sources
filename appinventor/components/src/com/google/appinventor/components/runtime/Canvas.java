@@ -94,6 +94,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   private final Activity context;
   private final CanvasView view;
+  private float density;
 
   // Android can't correctly give the width and height of a canvas until
   // something has been drawn on it.
@@ -655,6 +656,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   public Canvas(ComponentContainer container) {
     super(container);
     context = container.$context();
+    this.density = context.getResources().getDisplayMetrics().density;
 
     // Create view and add it to its designated container.
     view = new CanvasView(context);
@@ -989,7 +991,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The width of lines drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float LineWidth() {
-    return paint.getStrokeWidth();
+    return ((paint.getStrokeWidth() / this.density) - 0.5f);
   }
 
   /**
@@ -1001,7 +1003,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
   public void LineWidth(float width) {
-    paint.setStrokeWidth((context.getResources().getDisplayMetrics().density * width) + 0.5f);
+    paint.setStrokeWidth((this.density * width) + 0.5f);
   }
 
   /**
@@ -1175,7 +1177,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawCircle(int x, int y, float r) {
-    float densityRadius = (context.getResources().getDisplayMetrics().density * r) + 0.5f;
+    float densityRadius = (this.density * r) + 0.5f;
     view.canvas.drawCircle(x, y, densityRadius, paint);
     view.invalidate();
   }

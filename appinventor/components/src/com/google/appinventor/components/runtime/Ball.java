@@ -46,12 +46,12 @@ public final class Ball extends Sprite {
   private int paintColor;
   private Paint paint;
   static final int DEFAULT_RADIUS = 5;
-  private Form form;
+  private float density;
 
   public Ball(ComponentContainer container) {
     super(container);
     paint = new Paint();
-    form = container.$form();
+    this.density = container.$form().getResources().getDisplayMetrics().density;
 
     // Set default properties.
     PaintColor(Component.COLOR_BLACK);
@@ -108,13 +108,13 @@ public final class Ball extends Sprite {
       category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
     // Make sure the radius takes the density of the device into account
-    this.radius = (int) ((this.form.getResources().getDisplayMetrics().density * radius) + 0.5f);
+    this.radius = (int) ((this.density * radius) + 0.5f);
     registerChange();
   }
 
   @SimpleProperty
   public int Radius() {
-    return radius;
+    return ((int) ((radius / this.density) - 0.5f));
   }
 
   /**
