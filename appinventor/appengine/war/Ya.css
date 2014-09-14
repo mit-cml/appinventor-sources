@@ -849,11 +849,6 @@ select.ode-PropertyEditor[disabled] {
   outline: 1px solid lightgray;
 }
 
-/* class for the Image Mock component */
-.imageComponentCenterPanel {
-  text-align: center;
-}
-
 /* Component Help */
 
 .ode-ComponentHelpPopup {
@@ -964,7 +959,7 @@ select.ode-PropertyEditor[disabled] {
   padding: 2px 10px;
 }
 
-.ode-DPsLabel {
+.ode-PixelsLabel {
   padding-left: 4px;
   font-size: small;
 }
