@@ -160,11 +160,14 @@ public class Form extends Activity
   private String nextFormName;
 
   private FullScreenVideoUtil fullScreenVideoUtil;
+  private float density;
 
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
+
+    this.density = this.getResources().getDisplayMetrics().density;
 
     // Figure out the name of this form.
     String className = getClass().getName();
@@ -1027,7 +1030,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return frameLayout.getWidth();
+    return (int)((frameLayout.getWidth() / this.density) - 0.5f);
   }
 
   /**
@@ -1038,7 +1041,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return frameLayout.getHeight();
+    return (int)((frameLayout.getHeight() / this.density) - 0.5f);
   }
 
   /**
