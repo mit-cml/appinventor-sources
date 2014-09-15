@@ -995,7 +995,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The width of lines drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float LineWidth() {
-    return ((paint.getStrokeWidth() / this.density) - 0.5f);
+    return ((paint.getStrokeWidth() - 0.5f) / this.density);
   }
 
   /**
