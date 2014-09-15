@@ -32,6 +32,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   private int column = ComponentConstants.DEFAULT_ROW_COLUMN;
   private int row = ComponentConstants.DEFAULT_ROW_COLUMN;
 
+  private final float density;
+
   /**
    * Creates a new AndroidViewComponent.
    *
@@ -39,6 +41,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    */
   protected AndroidViewComponent(ComponentContainer container) {
     this.container = container;
+    this.density = this.container.$form().getResources().getDisplayMetrics().density;
   }
 
   /**
@@ -79,7 +82,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Width() {
-    return getView().getWidth();
+    return (int)((getView().getWidth() - 0.5f) / this.density);
   }
 
   /**
@@ -116,7 +119,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Height() {
-    return getView().getHeight();
+    return (int)((getView().getHeight() - 0.5f) / this.density);
   }
 
   /**

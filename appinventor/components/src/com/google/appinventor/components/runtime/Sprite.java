@@ -88,7 +88,7 @@ public abstract class Sprite extends VisibleComponent
   protected double headingCos;      // cosine(heading)
   protected double headingSin;      // sine(heading)
 
-  private float density;
+  float density;
 
   /**
    * Creates a new Sprite component.  This version exists to allow injection
@@ -294,7 +294,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The horizontal coordinate of the left edge of the sprite, " +
       "increasing as the sprite moves to the right.")
   public double X() {
-    return xLeft;
+    return ((xLeft / this.density) - 0.5f);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -319,7 +319,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The vertical coordinate of the top of the sprite, " +
       "increasing as the sprite moves down.")
   public double Y() {
-    return yTop;
+    return ((yTop / this.density) - 0.5f);
   }
 
   /**
@@ -595,7 +595,10 @@ public abstract class Sprite extends VisibleComponent
    */
   @SimpleFunction
   public void MoveIntoBounds() {
-    moveIntoBounds(canvas.Width(), canvas.Height());
+    // Needs density corrections because moveIntoBounds works directly with xLeft and yTop values
+    int realCanvasWidth = (int)((canvas.Width() * this.density) + 0.5f);
+    int realCanvasHeight = (int)((canvas.Height() * this.density) + 0.5f);
+    moveIntoBounds(realCanvasWidth, realCanvasHeight);
   }
 
   /**
@@ -608,8 +611,8 @@ public abstract class Sprite extends VisibleComponent
     description = "Moves the sprite so that its left top corner is at " +
     "the specfied x and y coordinates.")
   public void MoveTo(double x, double y) {
-    xLeft = x;
-    yTop = y;
+    xLeft = (x * this.density) + 0.5f;
+    yTop = (y * this.density) + 0.5f;
     registerChange();
   }
 
@@ -900,6 +903,8 @@ public abstract class Sprite extends VisibleComponent
    * @return whether (qx, qy) falls within this sprite
    */
   public boolean containsPoint(double qx, double qy) {
+    qx = (qx * this.density) + 0.5f;
+    qy = (qy * this.density) + 0.5f;
     return qx >= xLeft && qx < xLeft + Width() &&
         qy >= yTop && qy < yTop + Height();
   }

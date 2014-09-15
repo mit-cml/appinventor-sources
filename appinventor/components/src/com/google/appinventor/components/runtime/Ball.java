@@ -94,6 +94,9 @@ public final class Ball extends Sprite {
   public boolean containsPoint(double qx, double qy) {
     double xCenter = xLeft + radius;
     double yCenter = yTop + radius;
+    // Corrections for density are needed because xLeft, yTop and radius are in DPs at this point
+    qx = (qx * this.density) + 0.5f;
+    qy = (qy * this.density) + 0.5f;
     return ((qx - xCenter) * (qx - xCenter) + (qy - yCenter) * (qy - yCenter))
         <= radius * radius;
   }

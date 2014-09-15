@@ -211,14 +211,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       // we replace any negative values with zero.
       float x = Math.max(0, (int) event.getX());
       float y = Math.max(0, (int) event.getY());
+      x = (x - 0.5f) / density;
+      y = (y - 0.5f) / density;
 
       // Also make sure that by adding or subtracting a half finger that
       // we don't go out of bounds.
+      int halfFingers = (int)(MotionEventParser.HALF_FINGER_HEIGHT * density + 0.5f);
       BoundingBox rect = new BoundingBox(
-          Math.max(0, (int) x - HALF_FINGER_HEIGHT),
-          Math.max(0, (int) y - HALF_FINGER_WIDTH),
-          Math.min(width - 1, (int) x + HALF_FINGER_WIDTH),
-          Math.min(height - 1, (int) y + HALF_FINGER_HEIGHT));
+          Math.max(0, (int) x - halfFingers),
+          Math.max(0, (int) y - halfFingers),
+          Math.min(width - 1, (int) x + halfFingers),
+          Math.min(height - 1, (int) y + halfFingers));
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
@@ -245,9 +248,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
                 "an ACTION_MOVE was passed without a preceding ACTION_DOWN: " + event);
           }
 
+          int tapThreshold = (int)(TAP_THRESHOLD * density + 0.5f);
           // If the new point is near the start point, it may just be a tap
           if (!isDrag &&
-              (Math.abs(x - startX) < TAP_THRESHOLD && Math.abs(y - startY) < TAP_THRESHOLD)) {
+              (Math.abs(x - startX) < tapThreshold && Math.abs(y - startY) < tapThreshold)) {
             break;
           }
           // Otherwise, it's a drag.
@@ -1163,6 +1167,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawPoint(int x, int y) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     view.canvas.drawPoint(x, y, paint);
     view.invalidate();
   }
@@ -1177,6 +1183,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawCircle(int x, int y, float r) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     float densityRadius = (this.density * r) + 0.5f;
     view.canvas.drawCircle(x, y, densityRadius, paint);
     view.invalidate();
@@ -1192,6 +1200,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawLine(int x1, int y1, int x2, int y2) {
+    x1 = (int)((x1 * this.density) + 0.5f);
+    y1 = (int)((y1 * this.density) + 0.5f);
+    x2 = (int)((x2 * this.density) + 0.5f);
+    y2 = (int)((y2 * this.density) + 0.5f);
     view.canvas.drawLine(x1, y1, x2, y2, paint);
     view.invalidate();
   }
@@ -1208,6 +1220,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
   public void DrawText(String text, int x, int y) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     view.canvas.drawText(text, x, y, paint);
     view.invalidate();
   }
@@ -1225,6 +1239,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text starting at the specified coordinates "
       + "at the specified angle using the values of the FontSize and TextAlignment properties.")
   public void DrawTextAtAngle(String text, int x, int y, float angle) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     view.drawTextAtAngle(text, x, y, angle);
   }
 
@@ -1240,6 +1256,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       + "This includes the background and any drawn points, lines, or "
       + "circles but not sprites.")
   public int GetBackgroundPixelColor(int x, int y) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     return view.getBackgroundPixelColor(x, y);
   }
 
@@ -1254,6 +1272,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Sets the color of the specified point. "
       + "This differs from DrawPoint by having an argument for color.")
   public void SetBackgroundPixelColor(int x, int y, int color) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     Paint pixelPaint = new Paint();
     PaintUtil.changePaint(pixelPaint, color);
     view.canvas.drawPoint(x, y, pixelPaint);
@@ -1270,6 +1290,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Gets the color of the specified point.")
   public int GetPixelColor(int x, int y) {
+    x = (int)((x * this.density) + 0.5f);
+    y = (int)((y * this.density) + 0.5f);
     return view.getPixelColor(x, y);
   }
 
@@ -1368,10 +1390,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
   class FlingGestureListener extends GestureDetector.SimpleOnGestureListener {
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-        float velocityY) {
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       float x = Math.max(0, (int) e1.getX()); // set to zero if negative
       float y = Math.max(0, (int) e1.getY()); // set to zero if negative
+
+      //Corrections for density
+      x = (x - 0.5f) / density;
+      y = (y - 0.5f) / density;
 
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;
@@ -1385,11 +1410,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
       // Also make sure that by adding or subtracting a half finger that
       // we don't go out of bounds.
+      int halfFingers = (int)(MotionEventParser.HALF_FINGER_HEIGHT * density + 0.5f);
       BoundingBox rect = new BoundingBox(
-          Math.max(0, (int) x - MotionEventParser.HALF_FINGER_HEIGHT),
-          Math.max(0, (int) y - MotionEventParser.HALF_FINGER_WIDTH),
-          Math.min(width - 1, (int) x + MotionEventParser.HALF_FINGER_WIDTH),
-          Math.min(height - 1, (int) y + MotionEventParser.HALF_FINGER_HEIGHT));
+          Math.max(0, (int) x - halfFingers),
+          Math.max(0, (int) y - halfFingers),
+          Math.min(width - 1, (int) x + halfFingers),
+          Math.min(height - 1, (int) y + halfFingers));
 
       boolean spriteHandledFling = false;
 
