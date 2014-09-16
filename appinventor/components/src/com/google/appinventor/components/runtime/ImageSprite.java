@@ -85,8 +85,8 @@ public class ImageSprite extends Sprite {
     if (unrotatedBitmap != null && visible) {
       int xinit = (int) Math.round(xLeft);
       int yinit = (int) Math.round(yTop);
-      int w = Width();
-      int h = Height();
+      int w = (int)(Width() * this.density + 0.5f);
+      int h = (int)(Height() * this.density + 0.5f);
       // If the sprite doesn't rotate,  use the original drawable
       // otherwise use the bitmapDrawable
       if (!rotates) {
@@ -191,15 +191,16 @@ public class ImageSprite extends Sprite {
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getHeight();
+      int drawableHeight = (int)((drawable.getBitmap().getHeight() - 0.5f) / this.density);
+      return drawable == null ? 0 : drawableHeight;
     }
-    return heightHint;
+    return (int)((heightHint - 0.5f) / this.density);
   }
 
   @Override
   @SimpleProperty
   public void Height(int height) {
-    heightHint = height;
+    heightHint = (int)((height * this.density) - 0.5f);
     registerChange();
   }
 
@@ -208,15 +209,16 @@ public class ImageSprite extends Sprite {
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getWidth();
+      int drawableWidth = (int)((drawable.getBitmap().getWidth() - 0.5f) / this.density);
+      return drawable == null ? 0 : drawableWidth;
     }
-    return widthHint;
+    return (int)((widthHint - 0.5f) / this.density);
   }
 
   @Override
   @SimpleProperty
   public void Width(int width) {
-    widthHint = width;
+    widthHint = (int)((width * this.density) + 0.5f);
     registerChange();
   }
 

@@ -20,7 +20,8 @@ import android.graphics.Paint;
 
 /**
  * Simple ball, based on Sprite implementation.
- *
+ * Note: We do not use the 0.5f approximation in (pixels * density + 0.5f) for Radius to keep the
+ * return value exactly the same as specified.
  */
 @DesignerComponent(version = YaVersion.BALL_COMPONENT_VERSION,
     description = "<p>A round 'sprite' that can be placed on a " +
@@ -72,7 +73,8 @@ public final class Ball extends Sprite {
   // programmer, we omit the SimpleProperty and DesignerProperty pragmas.
   @Override
   public int Height() {
-    return 2 * radius;
+    int ballHeight = (int)((2 * radius) / this.density);
+    return ballHeight;
   }
 
   @Override
@@ -82,7 +84,8 @@ public final class Ball extends Sprite {
 
   @Override
   public int Width() {
-    return 2 * radius;
+    int ballWidth = (int)((2 * radius) / this.density);
+    return ballWidth;
   }
 
   @Override
@@ -110,14 +113,15 @@ public final class Ball extends Sprite {
       // Kind of both categories: APPEARANCE and BEHAVIOR
       category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
-    // Make sure the radius takes the density of the device into account
-    this.radius = (int) ((this.density * radius) + 0.5f);
+    // Make sure the radius takes the density of the device into account,
+    // but don't use the approximation of 0.5f to keep the return size correct (int).
+    this.radius = (int)(this.density * radius);
     registerChange();
   }
 
   @SimpleProperty
   public int Radius() {
-    return ((int) ((radius / this.density) - 0.5f));
+    return (int)(radius / this.density);
   }
 
   /**

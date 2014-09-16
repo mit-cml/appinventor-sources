@@ -67,6 +67,8 @@ import java.util.List;
  * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
  * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
  * changing the background color or image clears the drawing layer.
+ * Note: We do not use the 0.5f approximation in (pixels * density + 0.5f) for LineWidth to keep
+ * the return value exactly the same as specified.
  */
 @DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION,
     description = "<p>A two-dimensional touch-sensitive rectangular panel on " +
@@ -995,7 +997,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The width of lines drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float LineWidth() {
-    return ((paint.getStrokeWidth() - 0.5f) / this.density);
+    return (paint.getStrokeWidth() / this.density);
   }
 
   /**
@@ -1007,7 +1009,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
   public void LineWidth(float width) {
-    paint.setStrokeWidth((this.density * width) + 0.5f);
+    // Make sure the LineWidth takes the density of the device into account,
+    // but don't use the approximation of 0.5f to keep the return size correct (int).
+    paint.setStrokeWidth(width * this.density);
   }
 
   /**

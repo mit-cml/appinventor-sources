@@ -294,7 +294,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The horizontal coordinate of the left edge of the sprite, " +
       "increasing as the sprite moves to the right.")
   public double X() {
-    return ((xLeft / this.density) - 0.5f);
+    return ((xLeft - 0.5f) / this.density);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -319,7 +319,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The vertical coordinate of the top of the sprite, " +
       "increasing as the sprite moves down.")
   public double Y() {
-    return ((yTop / this.density) - 0.5f);
+    return ((yTop  - 0.5f) / this.density);
   }
 
   /**
