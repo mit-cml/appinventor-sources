@@ -310,8 +310,8 @@ public class MediaUtil {
       originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
 
       float screenDensity = form.getResources().getDisplayMetrics().density;
-      int scaledWidth = (int) ((screenDensity * originalBitmapDrawable.getIntrinsicWidth()) + 0.5f);
-      int scaledHeight = (int) ((screenDensity * originalBitmapDrawable.getIntrinsicHeight()) + 0.5f);
+      int scaledWidth = (int) (screenDensity * originalBitmapDrawable.getIntrinsicWidth());
+      int scaledHeight = (int) (screenDensity * originalBitmapDrawable.getIntrinsicHeight());
       Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(), scaledWidth, scaledHeight,
           false);
 

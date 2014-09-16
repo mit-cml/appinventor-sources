@@ -25,7 +25,6 @@ import java.io.IOException;
 
 /**
  * Simple image-based Sprite.
- *
  */
 @DesignerComponent(version = YaVersion.IMAGESPRITE_COMPONENT_VERSION,
     description = "<p>A 'sprite' that can be placed on a " +
@@ -85,8 +84,8 @@ public class ImageSprite extends Sprite {
     if (unrotatedBitmap != null && visible) {
       int xinit = (int) Math.round(xLeft);
       int yinit = (int) Math.round(yTop);
-      int w = (int)(Width() * this.density + 0.5f);
-      int h = (int)(Height() * this.density + 0.5f);
+      int w = (int)(Width() * this.density);
+      int h = (int)(Height() * this.density);
       // If the sprite doesn't rotate,  use the original drawable
       // otherwise use the bitmapDrawable
       if (!rotates) {
@@ -191,16 +190,16 @@ public class ImageSprite extends Sprite {
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      int drawableHeight = (int)((drawable.getBitmap().getHeight() - 0.5f) / this.density);
+      int drawableHeight = (int)(drawable.getBitmap().getHeight() / this.density);
       return drawable == null ? 0 : drawableHeight;
     }
-    return (int)((heightHint - 0.5f) / this.density);
+    return (int)(heightHint / this.density);
   }
 
   @Override
   @SimpleProperty
   public void Height(int height) {
-    heightHint = (int)((height * this.density) - 0.5f);
+    heightHint = (int)(height * this.density);
     registerChange();
   }
 
@@ -209,16 +208,16 @@ public class ImageSprite extends Sprite {
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      int drawableWidth = (int)((drawable.getBitmap().getWidth() - 0.5f) / this.density);
+      int drawableWidth = (int)(drawable.getBitmap().getWidth() / this.density);
       return drawable == null ? 0 : drawableWidth;
     }
-    return (int)((widthHint - 0.5f) / this.density);
+    return (int)(widthHint / this.density);
   }
 
   @Override
   @SimpleProperty
   public void Width(int width) {
-    widthHint = (int)((width * this.density) + 0.5f);
+    widthHint = (int)(width * this.density);
     registerChange();
   }
 

@@ -109,7 +109,8 @@ public class SpriteTest {
   public void setUp() throws Exception {
     EasyMock.expect(canvasMock.getView()).andReturn(canvasViewMock).anyTimes();
     EasyMock.expect(canvasMock.$form()).andReturn(formMock).anyTimes();
-    EasyMock.replay(canvasViewMock, canvasMock, handlerMock);
+    EasyMock.expect(formMock.getResources()).andReturn(null);
+    EasyMock.replay(canvasViewMock, canvasMock, formMock, handlerMock);
   }
 
   protected double normalizeRadians(double r) {

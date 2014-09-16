@@ -106,7 +106,7 @@ public final class ViewUtil {
    * @return size in Pixels for the particular device running the app.
    */
   private static int calculatePixels(View view, int sizeInDP) {
-    return (int) ((view.getContext().getResources().getDisplayMetrics().density * sizeInDP) + 0.5f);
+    return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
   }
 
   public static void setChildHeightForVerticalLayout(View view, int height) {

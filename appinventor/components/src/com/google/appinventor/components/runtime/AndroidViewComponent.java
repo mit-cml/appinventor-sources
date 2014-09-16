@@ -82,7 +82,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Width() {
-    return (int)((getView().getWidth() - 0.5f) / this.density);
+    return (int)(getView().getWidth() / this.density);
   }
 
   /**
@@ -119,7 +119,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Height() {
-    return (int)((getView().getHeight() - 0.5f) / this.density);
+    return (int)(getView().getHeight() / this.density);
   }
 
   /**

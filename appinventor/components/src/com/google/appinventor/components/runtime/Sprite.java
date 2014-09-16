@@ -99,7 +99,11 @@ public abstract class Sprite extends VisibleComponent
    */
   protected Sprite(ComponentContainer container, Handler handler) {
     super();
-    this.density = container.$form().getResources().getDisplayMetrics().density;
+    if (container.$form().getResources() == null) //Added guard clause for tests
+      this.density = 1;
+    else
+      this.density = container.$form().getResources().getDisplayMetrics().density;
+
     androidUIHandler = handler;
 
     // Add to containing Canvas.
@@ -294,7 +298,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The horizontal coordinate of the left edge of the sprite, " +
       "increasing as the sprite moves to the right.")
   public double X() {
-    return ((xLeft - 0.5f) / this.density);
+    return (xLeft / this.density);
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -302,7 +306,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void X(double x) {
-    xLeft = ((this.density * x) + 0.5f);
+    xLeft = (this.density * x);
     registerChange();
   }
 
@@ -311,7 +315,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void Y(double y) {
-    yTop = ((this.density * y) + 0.5f);
+    yTop = (this.density * y);
     registerChange();
   }
 
@@ -319,7 +323,7 @@ public abstract class Sprite extends VisibleComponent
       description = "The vertical coordinate of the top of the sprite, " +
       "increasing as the sprite moves down.")
   public double Y() {
-    return ((yTop  - 0.5f) / this.density);
+    return (yTop / this.density);
   }
 
   /**
@@ -596,8 +600,8 @@ public abstract class Sprite extends VisibleComponent
   @SimpleFunction
   public void MoveIntoBounds() {
     // Needs density corrections because moveIntoBounds works directly with xLeft and yTop values
-    int realCanvasWidth = (int)((canvas.Width() * this.density) + 0.5f);
-    int realCanvasHeight = (int)((canvas.Height() * this.density) + 0.5f);
+    int realCanvasWidth = (int)(canvas.Width() * this.density);
+    int realCanvasHeight = (int)(canvas.Height() * this.density);
     moveIntoBounds(realCanvasWidth, realCanvasHeight);
   }
 
@@ -611,8 +615,8 @@ public abstract class Sprite extends VisibleComponent
     description = "Moves the sprite so that its left top corner is at " +
     "the specfied x and y coordinates.")
   public void MoveTo(double x, double y) {
-    xLeft = (x * this.density) + 0.5f;
-    yTop = (y * this.density) + 0.5f;
+    xLeft = (x * this.density);
+    yTop = (y * this.density);
     registerChange();
   }
 
@@ -903,8 +907,8 @@ public abstract class Sprite extends VisibleComponent
    * @return whether (qx, qy) falls within this sprite
    */
   public boolean containsPoint(double qx, double qy) {
-    qx = (qx * this.density) + 0.5f;
-    qy = (qy * this.density) + 0.5f;
+    qx = (qx * this.density);
+    qy = (qy * this.density);
     return qx >= xLeft && qx < xLeft + Width() &&
         qy >= yTop && qy < yTop + Height();
   }

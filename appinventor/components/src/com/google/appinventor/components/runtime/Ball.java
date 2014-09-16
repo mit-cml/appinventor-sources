@@ -20,8 +20,6 @@ import android.graphics.Paint;
 
 /**
  * Simple ball, based on Sprite implementation.
- * Note: We do not use the 0.5f approximation in (pixels * density + 0.5f) for Radius to keep the
- * return value exactly the same as specified.
  */
 @DesignerComponent(version = YaVersion.BALL_COMPONENT_VERSION,
     description = "<p>A round 'sprite' that can be placed on a " +
@@ -98,8 +96,8 @@ public final class Ball extends Sprite {
     double xCenter = xLeft + radius;
     double yCenter = yTop + radius;
     // Corrections for density are needed because xLeft, yTop and radius are in DPs at this point
-    qx = (qx * this.density) + 0.5f;
-    qy = (qy * this.density) + 0.5f;
+    qx = (qx * this.density);
+    qy = (qy * this.density);
     return ((qx - xCenter) * (qx - xCenter) + (qy - yCenter) * (qy - yCenter))
         <= radius * radius;
   }
@@ -113,8 +111,6 @@ public final class Ball extends Sprite {
       // Kind of both categories: APPEARANCE and BEHAVIOR
       category = PropertyCategory.APPEARANCE)
   public void Radius(int radius) {
-    // Make sure the radius takes the density of the device into account,
-    // but don't use the approximation of 0.5f to keep the return size correct (int).
     this.radius = (int)(this.density * radius);
     registerChange();
   }
