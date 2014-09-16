@@ -16,6 +16,14 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.http.client.UrlBuilder;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.client.tracking.Tracking;
+
+
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -27,10 +35,15 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
   private final DropDownButton accountButton;
+  public DropDownButton languageDropDown;
+
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
+  private static final String WIDGET_NAME_LANGUAGE = "Language";
+
   private static final String SIGNOUT_URL = "/ode/_logout";
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
+  private static final String LANGUAGES_IMAGE_URL = "/images/languages.png";
 
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
@@ -131,9 +144,36 @@ public class TopPanel extends Composite {
     accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
     accountButton.setStyleName("ode-TopPanelButton");
 
+    // Language
+    List<DropDownItem> languageItems = Lists.newArrayList();
+    String[] localeNames = LocaleInfo.getAvailableLocaleNames();
+    String nativeName;
+    for (String localeName : localeNames) {
+      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+      if (!localeName.equals("default")) {
+        SelectLanguage lang = new SelectLanguage();
+        lang.setLocale(localeName);
+        if (localeName == "zh_CN") {
+          nativeName = MESSAGES.SwitchToSimplifiedChinese();
+        } else if (localeName == "zh_TW") {
+          nativeName = MESSAGES.SwitchToTraditionalChinese();
+        }
+        languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
+      }
+    }
+    //MESSAGES.switchLanguageButton()
+    Image languageIcon = new Image(LANGUAGES_IMAGE_URL + "?t=" + System.currentTimeMillis());
+    languageIcon.setSize("20px", "20px");
+    languageIcon.setStyleName("ode-Logo");
+
+    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, "", languageItems, true);
+    languageDropDown.setStyleName("ode-TopPanelButton");
+    languageDropDown.getElement().appendChild(languageIcon.getElement());
+
     account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
     account.add(links);
     account.add(accountButton);
+    account.add(languageDropDown);
 
     rightPanel.add(account);
 
@@ -212,5 +252,41 @@ public class TopPanel extends Composite {
       Window.Location.replace(SIGNOUT_URL);
     }
   }
+
+  private class SelectLanguage implements Command {
+
+    private String localeName;
+
+    @Override
+    public void execute() {
+      final String queryParam = LocaleInfo.getLocaleQueryParam();
+      Command savecmd = new SaveAction();
+      savecmd.execute();
+      if (queryParam != null) {
+        UrlBuilder builder = Window.Location.createUrlBuilder().setParameter(
+            queryParam, localeName);
+        Window.Location.replace(builder.buildString());
+      } else {
+        // If we are using only cookies, just reload
+        Window.Location.reload();
+      }
+    }
+
+    public void setLocale(String nativeName) {
+      localeName = nativeName;
+    }
+  }
+
+  private class SaveAction implements Command {
+    @Override
+    public void execute() {
+      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+      if (projectRootNode != null) {
+        ChainableCommand cmd = new SaveAllEditorsCommand(null);
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
+      }
+    }
+  }
+
 }
 
