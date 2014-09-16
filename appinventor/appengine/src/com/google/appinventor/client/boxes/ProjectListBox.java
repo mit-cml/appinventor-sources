@@ -23,8 +23,10 @@ public final class ProjectListBox extends TabPanel {
   private static final ProjectListBox INSTANCE = new ProjectListBox();
   // Project list for young android
   private final ProjectList projects;
-//  private ProjectToolbar projectToolbar;
-  private static ProfilePage profile;
+  private ProfilePage profile;
+  // Tab container
+  private FlowPanel projectsContainer = new FlowPanel();
+  private FlowPanel profileContainer = new FlowPanel();
 
   /**
    * Returns the singleton projects list box.
@@ -46,19 +48,11 @@ public final class ProjectListBox extends TabPanel {
         false); // removable
     */
     projects = new ProjectList();
-    profile = new ProfilePage("-1",  0);
-
-    FlowPanel projectsContainer = new FlowPanel();
-    FlowPanel studiosContainer = new FlowPanel();
-    FlowPanel profileContainer = new FlowPanel();
-
-//  pContainer.add(projectToolbar);
     projectsContainer.add(projects);
+    profile = new ProfilePage("-1",  0);
     profileContainer.add(profile);
 
     this.add(projectsContainer, MESSAGES.projectListBoxCaption());
-//    this.add(studiosContainer, MESSAGES.studioListBoxCaption());
-    this.add(profileContainer, MESSAGES.profilePageBoxCaption());
     this.selectTab(0);
 
     // Styling options
@@ -66,8 +60,12 @@ public final class ProjectListBox extends TabPanel {
 //    this.addStyleName("ode-MyTabs");
   }
 
-  public static void loadProfileImage(){
+  public void loadProfileImage(){
     profile.loadImage();
+  }
+
+  public void showProfileTab(){
+    this.add(profileContainer, MESSAGES.profilePageBoxCaption());
   }
 
   /**

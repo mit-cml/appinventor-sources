@@ -70,12 +70,6 @@ public interface OdeMessages extends Messages {
   @Description("Header for date modified column of project table.")
   String projectDateModifiedHeader();
 
-  @DefaultMessage("Text")
-  @Description("Header for text column of report table.")
-  String reportTextHeader();
-
-  // Used in DesignToolbar.java
-
   @DefaultMessage("Save")
   @Description("Label of the button for save")
   String saveButton();
@@ -440,14 +434,6 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link for signing out")
   String signOutLink();
 
-  @DefaultMessage("Messages")
-  @Description("Label of the link for user messages")
-  String messagesLink();
-
-  @DefaultMessage("My Stuff")
-  @Description("Name of My Projects tab")
-  String tabNameProjects();
-
   @DefaultMessage("Report an Issue")
   @Description("Link for Report an Issue form")
   String feedbackLink();
@@ -459,6 +445,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Moderation")
   @Description("Name of moderation tab")
   String tabNameModeration();
+
+  @DefaultMessage("Messages")
+  @Description("Label of the link for user messages")
+  String messagesLink();
+
+  @DefaultMessage("My Stuff")
+  @Description("Name of My Projects tab")
+  String tabNameProjects();
 
   @DefaultMessage("Design")
   @Description("Name of Design tab")
@@ -1274,7 +1268,6 @@ public interface OdeMessages extends Messages {
   @Description("Confirmation message for delete keystore")
   String confirmDeleteKeystore();
 
-
   // Used in output/OdeLog.java
 
   @DefaultMessage("Clear")
@@ -1399,7 +1392,7 @@ public interface OdeMessages extends Messages {
 
   // Used in wizards/NewProjectWizard.java
 
-  @DefaultMessage("Server erro  r: could not create project. Please try again later!")
+  @DefaultMessage("Server error: could not create project. Please try again later!")
   @Description("Error message reported when the project couldn't be created on the server.")
   String createProjectError();
 

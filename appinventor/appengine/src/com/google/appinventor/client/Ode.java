@@ -8,7 +8,6 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.client.boxes.AssetListBox;
@@ -314,14 +313,16 @@ public class Ode implements EntryPoint {
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
         if(gallerySettings.galleryEnabled() == true){
+          GalleryClient.getInstance().setSystemEnvironmet(settings.getEnvironment());
           GalleryListBox.loadGalleryList();
           topPanel.showGalleryLink(true);
           if(user.isModerator()){
             ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);
           }
-          ProjectListBox.loadProfileImage();
           topPanel.updateAccountMessageButton();
+          ProjectListBox.getProjectListBox().showProfileTab();
+          ProjectListBox.getProjectListBox().loadProfileImage();
 
           final String userInfo = user.getUserName();
           // Get the message count to display right next to user
@@ -648,6 +649,8 @@ public class Ode implements EntryPoint {
 
         // Initialize UI
         initializeUi();
+
+        topPanel.showUserEmail(user.getUserEmail());
 
         // Retrieve template data stored in war/templates folder and
         // and save it for later use in TemplateUploadWizard

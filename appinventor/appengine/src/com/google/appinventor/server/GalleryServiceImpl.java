@@ -14,10 +14,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
@@ -59,7 +62,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public GallerySettings loadGallerySettings() {
     String bucket = Flag.createFlag("gallery.bucket", "").get();
     boolean galleryEnabled = Flag.createFlag("use.gallery",false).get();
-    GallerySettings settings = new GallerySettings(galleryEnabled, bucket);
+    String envirnment = SystemProperty.environment.value().toString();
+    GallerySettings settings = new GallerySettings(galleryEnabled, bucket, envirnment);
     return settings;
   }
 
@@ -656,5 +660,21 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public List<GalleryModerationAction> getModerationActions(long reportId){
     return galleryStorageIo.getModerationActions(reportId);
   }
+
+  /**
+    * It will return a dev server serving url for given image url
+    * @param url image url
+    */
+   @Override
+   public String getBlobServingUrl(String url) {
+     BlobKey bk = BlobstoreServiceFactory.getBlobstoreService().createGsBlobKey(url);
+     String u = null;
+     try {
+         u = ImagesServiceFactory.getImagesService().getServingUrl(bk);
+     } catch (Exception IllegalArgumentException) {
+         LOG.info("Could not read blob");
+     }
+     return u;
+   }
 
 }
