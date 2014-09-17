@@ -692,7 +692,9 @@ public abstract class Sprite extends VisibleComponent
       return Component.DIRECTION_NONE;
     }
 
-    return hitEdge(canvas.Width(), canvas.Height());
+    int realCanvasWidth = (int)(canvas.Width() * this.density);
+    int realCanvasHeight = (int)(canvas.Height() * this.density);
+    return hitEdge(realCanvasWidth, realCanvasHeight);
   }
 
   /**
