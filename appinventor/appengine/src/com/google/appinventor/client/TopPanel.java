@@ -348,7 +348,7 @@ public class TopPanel extends Composite {
               }
             }
         };
-      Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), mCallback);
+      Ode.getInstance().getGalleryService().getMessages(mCallback);
 
       popup.setWidget(content);
       // Center and show the popup

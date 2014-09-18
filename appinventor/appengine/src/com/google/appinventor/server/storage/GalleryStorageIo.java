@@ -281,7 +281,7 @@ public interface GalleryStorageIo {
    * @param receiverId receiver id
    * @return list of Message
    */
-  List<Message> getMessages(String receiverId);
+  List<Message> getMessages(String userId);
 
   /**
    * get message based on msgId

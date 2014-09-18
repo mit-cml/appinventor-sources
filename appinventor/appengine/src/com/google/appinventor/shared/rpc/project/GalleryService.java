@@ -248,11 +248,10 @@ public interface GalleryService extends RemoteService {
   long sendMessageFromSystem(String senderId, String receiverId, String message);
 
   /**
-   * get all messages associated with given receiver id
-   * @param receiverId
+   * get all messages of current user
    * @return list of Message
    */
-  List<Message> getMessages(String receiverId);
+  List<Message> getMessages();
 
   /**
    * get message based on given message id

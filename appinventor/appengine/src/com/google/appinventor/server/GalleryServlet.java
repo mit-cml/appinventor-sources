@@ -98,9 +98,10 @@ public class GalleryServlet extends OdeServlet {
       if (requestType.equalsIgnoreCase("apps")) {
         project_Id = Long.parseLong(uriComponents[GALLERY_OR_USER_ID_INDEX]);
       } else if (requestType.equalsIgnoreCase("user")) {
-        user_Id = uriComponents[GALLERY_OR_USER_ID_INDEX];
+        //the code below doesn't check if user_Id is the id of current user
+        //user_Id = uriComponents[GALLERY_OR_USER_ID_INDEX];
+        user_Id = userInfoProvider.getUserId();
       }
-//      String fileName = uriComponents[FILE_PATH_INDEX];
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);

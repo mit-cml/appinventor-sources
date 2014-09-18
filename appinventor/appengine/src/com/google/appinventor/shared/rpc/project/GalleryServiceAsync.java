@@ -185,7 +185,7 @@ public interface GalleryServiceAsync {
   /**
    * @see @link{@link GalleryService#getMessages(String)
    */
-  void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
+  void getMessages(AsyncCallback<List<Message>> callback);
   /**
    * @see @link{@link GalleryService#getMessage(long)
    */

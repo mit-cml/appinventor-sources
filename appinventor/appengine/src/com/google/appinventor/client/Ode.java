@@ -344,7 +344,7 @@ public class Ode implements EntryPoint {
                   topPanel.showUserEmail(u);
                 }
             };
-          Ode.getInstance().getGalleryService().getMessages(user.getUserId(), messagesCallback);
+          Ode.getInstance().getGalleryService().getMessages(messagesCallback);
 
         }else{
           topPanel.showModerationLink(false);

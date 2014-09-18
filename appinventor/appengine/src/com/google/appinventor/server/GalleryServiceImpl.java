@@ -595,13 +595,13 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Get messages of user
-   * @param receiverId    id of user receiving messages
+   * Get messages of current user
    * @return List<Message>   list of message
    */
   @Override
-  public List<Message> getMessages(String receiverId) {
-    return galleryStorageIo.getMessages(receiverId);
+  public List<Message> getMessages() {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.getMessages(userId);
   }
 
   /**

@@ -179,7 +179,6 @@
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-    <pathelement location="${lib.dir}/joda-time/joda-time-2.3.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
@@ -198,7 +197,6 @@
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api-labs.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
     <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
-
     <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
   </path>
 
@@ -315,14 +313,9 @@
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar"/>
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-
-        <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>
@@ -367,13 +360,11 @@
         <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="{lib.dir}/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         <pathelement location="${lib.dir}/guava/guava-gwt-14.0.1.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/android/4.2.2/android.jar" /><!-- Added for GalleryServlet -->
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
