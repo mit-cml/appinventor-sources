@@ -166,7 +166,7 @@ public class TopPanel extends Composite {
     languageIcon.setSize("20px", "20px");
     languageIcon.setStyleName("ode-Logo");
 
-    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, "", languageItems, true);
+    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, null, languageItems, true);
     languageDropDown.setStyleName("ode-TopPanelButton");
     languageDropDown.getElement().appendChild(languageIcon.getElement());
 
