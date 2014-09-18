@@ -190,8 +190,7 @@ public class ImageSprite extends Sprite {
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      int drawableHeight = (int)(drawable.getBitmap().getHeight() / this.density);
-      return drawable == null ? 0 : drawableHeight;
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / this.density);
     }
     return (int)(heightHint / this.density);
   }
@@ -208,8 +207,7 @@ public class ImageSprite extends Sprite {
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      int drawableWidth = (int)(drawable.getBitmap().getWidth() / this.density);
-      return drawable == null ? 0 : drawableWidth;
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / this.density);
     }
     return (int)(widthHint / this.density);
   }
