@@ -216,7 +216,7 @@ $Source $Yail
 (add-component HorizontalArrangement2 TextBox CodeBox 
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
 
-(set-and-coerce-property! 'CodeBox 'Hint "Six Digit Code" 'text)
+(set-and-coerce-property! 'CodeBox 'Hint "Six Character Code" 'text)
 
 (set-and-coerce-property! 'CodeBox 'MultiLine #t 'boolean)
 
