@@ -84,6 +84,10 @@
     "./src/substitution.js",
     "./src/language_switch.js",
 
+    // backpack files
+    "./src/backpack.js",
+    "./src/backpackFlyout.js",
+
     //blocks files
     './src/blocks/control.js',
     './src/blocks/logic.js',

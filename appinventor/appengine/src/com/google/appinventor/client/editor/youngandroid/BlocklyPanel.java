@@ -115,6 +115,9 @@ public class BlocklyPanel extends HTMLPanel {
   // Status of blocks loading, indexed by form name.
   private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
 
+  // Blockly backpack
+  private static String backpack;
+  
   // My form name
   private String formName;
 
@@ -155,6 +158,9 @@ public class BlocklyPanel extends HTMLPanel {
   private static void initBlocksArea(String formName) {
 
     OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
+    
+    // Set the Blockly backpack.
+    doSetBackpack(formName, backpack);
 
     // if there are any components added, add them first before we load
     // block content that might reference them
@@ -216,6 +222,10 @@ public class BlocklyPanel extends HTMLPanel {
   // no componentOps entry exists for formName).
   public static boolean blocksInited(String formName) {
     return !componentOps.containsKey(formName);
+  }
+  
+  public void saveBackpackContents() {
+    backpack = doGetBackpack(formName);
   }
 
   /**
@@ -814,6 +824,14 @@ public class BlocklyPanel extends HTMLPanel {
                           // the iframe finishes loading
   }-*/;
 
+  private static native void doSetBackpack(String formName, String backpack) /*-{
+    $wnd.Blocklies[formName].mainWorkspace.backpack.restore(backpack);
+  }-*/;
+
+  private static native String doGetBackpack(String formName) /*-{
+    return $wnd.Blocklies[formName].backpack_;
+  }-*/;
+  
   private static native void doAddComponent(String formName, String typeDescription,
                                             String instanceName, String uid) /*-{
     $wnd.Blocklies[formName].Component.add(instanceName, uid);
