@@ -434,6 +434,18 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG4"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
-         '</xml>';}}
+         '</xml>';}},
+
+    // Canvas.DrawCircle has fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawCircle"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
   ]
 };

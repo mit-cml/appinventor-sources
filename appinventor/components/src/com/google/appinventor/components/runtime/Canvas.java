@@ -731,7 +731,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * Updates the sorted set of Sprites and the screen when a Sprite's Z
    * property is changed.
    *
-   * @param Sprite the Sprite whose Z property has changed
+   * @param sprite the Sprite whose Z property has changed
    */
   void changeSpriteLayer(Sprite sprite) {
     removeSprite(sprite);
@@ -1174,8 +1174,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param r  radius
    */
   @SimpleFunction
-  public void DrawCircle(int x, int y, float r) {
-    view.canvas.drawCircle(x, y, r, paint);
+  public void DrawCircle(int x, int y, float r, boolean fill) {
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    view.canvas.drawCircle(x, y, r, p);
     view.invalidate();
   }
 
