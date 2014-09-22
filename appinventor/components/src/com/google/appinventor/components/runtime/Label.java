@@ -31,6 +31,10 @@ import android.widget.TextView;
 @SimpleObject
 public final class Label extends AndroidViewComponent {
 
+   // amount of left/right padding around text.  This was chosen pretty arbitrarily
+  //  but it looks OK on the Nexus 4 and Nexus 7
+  private static final int PADDING = 3;
+
   private final TextView view;
 
   // Backing for text alignment
@@ -50,6 +54,7 @@ public final class Label extends AndroidViewComponent {
 
   // Backing for text color
   private int textColor;
+  
 
   /**
    * Creates a new Label component.
@@ -71,6 +76,7 @@ public final class Label extends AndroidViewComponent {
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_BLACK);
+    TextViewUtil.setPadding(view, PADDING);
   }
 
   @Override
