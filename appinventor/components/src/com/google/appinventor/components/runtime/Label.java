@@ -54,7 +54,6 @@ public final class Label extends AndroidViewComponent {
 
   // Backing for text color
   private int textColor;
-  
 
   /**
    * Creates a new Label component.
