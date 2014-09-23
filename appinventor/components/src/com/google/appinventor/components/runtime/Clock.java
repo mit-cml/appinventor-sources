@@ -58,8 +58,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
 
     if (form instanceof ReplForm) {
       // In REPL, if this Clock component was added to the project after the
-      // onResume call occurred,
-      // then onScreen would be false, but the REPL app is, in fact, on screen.
+      // onResume call occurred, then onScreen would be false, but the REPL app
+      // is, in fact, on screen.
       onScreen = true;
     }
   }
