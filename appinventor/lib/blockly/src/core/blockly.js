@@ -695,10 +695,10 @@ Blockly.showContextMenu_ = function(e) {
 
   // Retrieve from backpack option.
   var backpackRetrieve = {enabled: true};
-  backpackRetrieve.text = Blockly.MSG_BACKPACK_GET + " (" +
+  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
       Blockly.mainWorkspace.backpack.count() + ")";
   backpackRetrieve.callback = function() {
-      if (Blockly.backpack_) {
+      if (Blockly.mainWorkspace.backpack) {
           Blockly.mainWorkspace.backpack.pasteBackpack(Blockly.backpack_);
       }
   }
@@ -706,10 +706,10 @@ Blockly.showContextMenu_ = function(e) {
 
   // Clear backpack.
   var backpackClear = {enabled: true};
-  backpackClear.text = Blockly.MSG_BACKPACK_EMPTY;
+  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
   backpackClear.callback = function() {
       Blockly.mainWorkspace.backpack.clear();
-      backpackRetrieve.text = Blockly.MSG_BACKPACK_GET;
+      backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
   }
   options.push(backpackClear);
 

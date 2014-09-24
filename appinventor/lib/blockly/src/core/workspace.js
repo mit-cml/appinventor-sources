@@ -190,8 +190,8 @@ Blockly.Workspace.prototype.addWarningIndicator = function(getMetrics) {
  * @param {!Function} getMetrics A function that returns workspace's metrics.
  */
 Blockly.Workspace.prototype.addBackpack = function(getMetrics) {
-  if (Blockly.Backpack && this.editable) {
-    this.backpack = new Blockly.Backpack(getMetrics);
+  if (Blockly.Backpack && !Blockly.readOnly) {
+    this.backpack = new Blockly.Backpack(this);
     var svgBackpack = this.backpack.createDom();
     this.svgGroup_.insertBefore(svgBackpack, this.svgBlockCanvas_);
     this.backpack.init();

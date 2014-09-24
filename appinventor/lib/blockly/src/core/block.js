@@ -664,12 +664,12 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
       // resize to contain the newly positioned block.  Force a second resize
       // now that the block has been deleted.
       Blockly.fireUiEvent(window, 'resize');
-    } else if (this.workspace.backpack && this.workspace.backpack.isOpen) {
-      var backpack = this.workspace.backpack
-      var xy = this.getRelativeToSurfaceXY();
+    } else if (this_.workspace.backpack && this_.workspace.backpack.isOpen) {
+      var backpack = this_.workspace.backpack
+	//      var xy = this.getRelativeToSurfaceXY();
       goog.Timer.callOnce(backpack.close, 100, backpack);
       backpack.addToBackpack(Blockly.selected);
-      Blockly.mainWorkspace.backpack.onMouseUp(e, this.startDragMouseX, this.startDragMouseY);
+      Blockly.mainWorkspace.backpack.onMouseUp(e, Blockly.selected.startDragMouseX, Blockly.selected.startDragMouseY);
     }
     if (Blockly.highlightedConnection_) {
       Blockly.highlightedConnection_.unhighlight();
@@ -819,10 +819,10 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
     // Option to copy to backpack.
     var backpackOption = {
       enabled:true,
-      text: Blockly.MSG_COPY_TO_BACKPACK +
+      text: Blockly.Msg.COPY_TO_BACKPACK +
         " (" + Blockly.mainWorkspace.backpack.count() + ")",
       callback: function() {
-        if (Blockly.selected && Blockly.selected.deletable &&
+        if (Blockly.selected && Blockly.selected.isDeletable() &&
             Blockly.selected.workspace == Blockly.mainWorkspace) {
           Blockly.mainWorkspace.backpack.addToBackpack(Blockly.selected);
         }
@@ -1025,8 +1025,8 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
         this_.workspace.trashcan.onMouseMove(e);
       }
       // Flip the backpack image if needed
-      if (this.workspace.backpack) {
-        this.workspace.backpack.onMouseMove(e);
+      if (this_.workspace.backpack) {
+        this_.workspace.backpack.onMouseMove(e);
       }
     }
     // This event has been handled.  No need to bubble up to the document.

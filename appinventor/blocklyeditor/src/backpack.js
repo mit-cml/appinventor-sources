@@ -35,18 +35,13 @@
 
 goog.provide('Blockly.Backpack');
 
-// These used to got in blocklyeditor/src/language/en/_messages.js but can't find it
-Blockly.MSG_COPY_TO_BACKPACK = 'Add to Backpack';
-Blockly.MSG_BACKPACK_GET = 'Paste Blocks from Backpack';
-Blockly.MSG_BACKPACK_EMPTY = 'Empty the Backpack';
-
 /**
  * Class for a backpack.
- * @param {!Function} getMetrics A function that returns workspace's metrics.
+ * @param {!Blockly.Workspace} workspace The Workspace to sit it.
  * @constructor
  */
-Blockly.Backpack = function(getMetrics) {
-  this.getMetrics_ = getMetrics;
+Blockly.Backpack = function(workspace) {
+  this.workspace_ = workspace;
 };
 
 /**
@@ -61,35 +56,36 @@ Blockly.Backpack.prototype.BPACK_SMALL_ = 'media/backpack-small.png';
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small-over.png';
+//Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small-over.png';
+Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small.png';
 
 /**
  * Width of the image.
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.WIDTH_ = 37;
+Blockly.Backpack.prototype.WIDTH_ = 74;
 
 /**
  * Height of the image.
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.BODY_HEIGHT_ = 35; 
+Blockly.Backpack.prototype.BODY_HEIGHT_ = 70; 
 
 /**
  * Distance between backpack and top edge of workspace.
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.MARGIN_TOP_ = 10;   //65
+Blockly.Backpack.prototype.MARGIN_TOP_ = 10;
 
 /**
  * Distance between backpack and right edge of workspace.
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.MARGIN_SIDE_ = 65;  //135
+Blockly.Backpack.prototype.MARGIN_SIDE_ = 28;
 
 /**
  * Current small/large state of the backpack.
@@ -165,7 +161,6 @@ Blockly.Backpack.prototype.startY = 0;
  * @return {!Element} The backpack's SVG group.
  */
 Blockly.Backpack.prototype.createDom = function() {
-  
   Blockly.Backpack.flyout_ = new Blockly.backpackFlyout();
   // insert the flyout after the main workspace (except, there's no 
   // svg.insertAfter method, so we need to insert before the thing following
@@ -183,32 +178,26 @@ Blockly.Backpack.prototype.createDom = function() {
 };
 
 /**
- * Called from BlocklyPanel to restore the contents of the backpack
- *  when the workspace is initialized. Allows carrying blocks
- *  between workspaces
- *
- * @param Either null or "[]" indicate an empty backpack. All other
- *  states indicate backpack contains blocks.
- */
-Blockly.Backpack.prototype.restore = function(backpack) {
-  Blockly.backpack_ = backpack;
-  if (!backpack || backpack == "[]")  // Initialize the icon
-    this.shrink();
-  else
-    this.grow();
-}
-
-/**
  * Initialize the backpack.
  */
 Blockly.Backpack.prototype.init = function() {
   this.position_();
   // If the document resizes, reposition the backpack.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
-  //Blockly.Backpack.flyout_ = new Blockly.Flyout();
   Blockly.Backpack.flyout_.init(Blockly.mainWorkspace,
-                              Blockly.getMainWorkspaceMetrics,
+                              Blockly.getMainWorkspaceMetrics_,
                               true /*withScrollbar*/);  
+  
+  if (this.getBackpack() == undefined)
+    return;
+
+  var bp_contents = JSON.parse(this.getBackpack());
+  var len = bp_contents.length;
+
+  if (len == 0) 
+    this.shrink();
+  else
+    this.grow();
 };
 
 /**
@@ -228,11 +217,11 @@ Blockly.Backpack.prototype.dispose = function() {
 /**
  *  Pastes the backpack contents to the current workspace.
  */
-Blockly.Backpack.prototype.pasteBackpack = function(backpack) {
-  if (backpack == undefined)
+Blockly.Backpack.prototype.pasteBackpack = function() {
+  if (this.getBackpack() == undefined)
     return;
 
-  bp_contents = JSON.parse(backpack);
+  bp_contents = JSON.parse(this.getBackpack());
   var len = bp_contents.length;
   for (var i = 0; i < len; i++) {
     var xml = Blockly.Xml.textToDom(bp_contents[i]);
@@ -243,8 +232,8 @@ Blockly.Backpack.prototype.pasteBackpack = function(backpack) {
     var ok = true;
     for (var j = 0; j < arr.length; j++) {
       var type = arr[j];
-      if (! Blockly.Language[type]) {
-        ok = false
+      if (! Blockly.Blocks[type]) {
+        ok = false;
         break;
       }
     }
@@ -278,12 +267,12 @@ Blockly.Backpack.prototype.checkValidBlockTypes = function(block, arr) {
  *   blocks 
  */
 Blockly.Backpack.prototype.addToBackpack = function(block) {
-  if (Blockly.backpack_ == undefined) {
-    Blockly.backpack_ = JSON.stringify([]);
+  if (this.getBackpack() == undefined) {
+    this.setBackpack(JSON.stringify([]));
   }
 
   // Copy is made of the expanded block.
-  var isCollapsed = block.collapsed;
+  var isCollapsed = block.collapsed_;
   block.setCollapsed(false);
   var xmlBlock = Blockly.Xml.blockToDom_(block);
   Blockly.Xml.deleteNext(xmlBlock);
@@ -294,11 +283,12 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
   block.setCollapsed(isCollapsed);
 
   // Add the block to the backpack
-  var backpack = Blockly.backpack_;
-  var bp_contents = JSON.parse(backpack)
+  var backpack = this.getBackpack();
+  var bp_contents = JSON.parse(backpack);
   var len = bp_contents.length;
-  bp_contents[len] = "<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>";
-  Blockly.backpack_ = JSON.stringify(bp_contents);
+  var newBlock = "<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>";
+  bp_contents[len] = newBlock;
+  this.setBackpack(JSON.stringify(bp_contents));
   this.grow();
 }
 
@@ -307,7 +297,7 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
  * @private
  */
 Blockly.Backpack.prototype.position_ = function() {
-  var metrics = this.getMetrics_();
+  var metrics = this.workspace_.getMetrics();
   if (!metrics) {
     // There are no metrics available (workspace is probably not visible).
     return;
@@ -324,16 +314,15 @@ Blockly.Backpack.prototype.position_ = function() {
       'translate(' + this.left_ + ',' + this.top_ + ')');
 };
 
-
 /**
  * On left click, open backpack and view flyout
  */
 Blockly.Backpack.prototype.openBackpack = function(){
-  console.log(Blockly.Backpack.flyout_.isVisible());
-  //if (Blockly.Backpack.flyout_.isVisible()) {
-  //    Blockly.Backpack.flyout_.hide();
-  //}
-  var backpack = JSON.parse(Blockly.backpack_);
+  if (Blockly.Backpack.flyout_.isVisible()) {
+      Blockly.Backpack.flyout_.hide();
+  } else {
+  var backpack = JSON.parse(this.getBackpack());
+  //get backpack contents from java
 
   var len = backpack.length;
   var newBackpack = []
@@ -343,38 +332,41 @@ Blockly.Backpack.prototype.openBackpack = function(){
     }
 
   Blockly.Backpack.flyout_.show(newBackpack);
+  }  
 };
 
 
 
 /**
  * Obtains starting coordinates so the block can return to spot after copy
+ * NOTE: This function does not appear to be invoked when you click on a
+ *  block and drag it to the Backpack.  So these values of startX and startY
+ *  are not set.
  * @param {!Event} e Mouse down event.
  */
 Blockly.Backpack.prototype.onMouseDown = function(e){
   var xy = Blockly.getAbsoluteXY_(this.svgGroup_);
   this.startX = xy.x;
   this.startY = xy.y;
-  
-
 }
 
 /**
  * When block is let go over the backpack, copy it and return to original position
  * @param {!Event} e Mouse up event
+ * @param startX x coordinate of the mouseDown event
+ * @param startY y coordinate of the mouseDown event
  */
 Blockly.Backpack.prototype.onMouseUp = function(e, startX, startY){
   var xy = Blockly.getAbsoluteXY_(this.svgGroup_);
-  //var xy = Blockly.convertCoordinates(e.clientX, e.clientY, true);
   var mouseX = e.clientX //xy.x;
   var mouseY = e.clientY //xy.y;
-  console.log("X coord: " + mouseX + " Y coord: " + mouseY + 
-    "\nStartx coord: " + startX + " Starty coord: " + startY +
-    "\n dx: " + (startX - mouseX) + " dy: " + (startY - mouseY));
+  // Note: startX and startY do not give the starting location of the block itself.
+  //  They give the location of the mouse click which can be anywhere on the block.
+  // So this code will not return the block to its original position.
   Blockly.selected.moveBy((startX - e.clientX), (startY - e.clientY));
-
-   
+  Blockly.mainWorkspace.render();
 }
+
 /**
  * Determines if the mouse (with a block) is currently over the backpack.
  * Opens/closes the lid and sets the isLarge flag.
@@ -407,8 +399,6 @@ Blockly.Backpack.prototype.onMouseMove = function(e, startX, startY) {
   if (this.isOpen != over) {
      this.setOpen_(over);
   }
-
-
 };
 
 Blockly.Backpack.prototype.mouseIsOver = function(e) {
@@ -471,14 +461,12 @@ Blockly.Backpack.prototype.close = function() {
 Blockly.Backpack.prototype.grow = function() {
   if (this.isLarge)
     return;
-  var metrics = this.getMetrics_();
-  this.svgBody_.setAttribute('transform','scale(2)');
-  //this.MARGIN_TOP_ = (this.BODY_HEIGHT_ - this.MARGIN_TOP_);
-  console.log("grow:");
-  console.log(this.MARGIN_TOP_);
-  this.MARGIN_SIDE_ = this.MARGIN_SIDE_ - this.WIDTH_;
-  this.BODY_HEIGHT_ = this.BODY_HEIGHT_ * 2;
-  this.WIDTH_ = this.WIDTH_ * 2;
+  var metrics = this.workspace_.getMetrics();
+  this.svgBody_.setAttribute('transform','scale(1.2)');
+  this.MARGIN_SIDE_ = this.MARGIN_SIDE_ / 1.2;
+  this.BODY_HEIGHT_ = this.BODY_HEIGHT_ * 1.2;
+  this.WIDTH_ = this.WIDTH_ * 1.2;
+  this.position_();
   this.isLarge = true;
 }
 
@@ -488,14 +476,12 @@ Blockly.Backpack.prototype.grow = function() {
 Blockly.Backpack.prototype.shrink = function() {
   if (!this.isLarge)
     return;
-  var metrics = this.getMetrics_();
+  var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1)');
-  this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 2;
-  this.WIDTH_ = this.WIDTH_ / 2;
-  //this.MARGIN_TOP_ = (metrics.viewHeight) - (this.MARGIN_TOP_ - this.BODY_HEIGHT_);
-  console.log("shrink");
-  console.log(this.MARGIN_TOP_)
-  this.MARGIN_SIDE_ = this.MARGIN_SIDE_ + this.WIDTH_;
+  this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 1.2;
+  this.WIDTH_ = this.WIDTH_ / 1.2;
+  this.MARGIN_SIDE_ = this.MARGIN_SIDE_ * 1.2;
+  this.position_();
   this.isLarge = false;
 }
 
@@ -503,17 +489,31 @@ Blockly.Backpack.prototype.shrink = function() {
  * Empties the backpack and shrinks its image.
  */
 Blockly.Backpack.prototype.clear = function() {
-  Blockly.backpack_ = JSON.stringify([]); 
-  this.shrink();
+  if (Blockly.mainWorkspace.backpack.confirmClear()) {
+    this.setBackpack(JSON.stringify([])); 
+    this.shrink();
+  }
 }
+
+Blockly.Backpack.prototype.confirmClear = function() {
+  return confirm(Blockly.Msg.BACKPACK_CONFIRM_EMPTY);
+};
 
 /**
  * Returns count of the number of entries in the backpack.
  */
 Blockly.Backpack.prototype.count = function() {
-  if (Blockly.backpack_ == null)
+  if (this.getBackpack() == null)
     return 0;
-  var bp_contents = JSON.parse(Blockly.backpack_);
+  var bp_contents = JSON.parse(this.getBackpack());
   return bp_contents.length;  
+}
+
+Blockly.Backpack.prototype.getBackpack = function() {
+  return window.parent.BlocklyPanel_getBackpack();
+}
+
+Blockly.Backpack.prototype.setBackpack = function(backpack) {
+  window.parent.BlocklyPanel_setBackpack(backpack);
 }
 
