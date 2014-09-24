@@ -88,7 +88,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    *
    * @return timer interval in ms
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR)
   public int TimerInterval() {
     return timerInternal.Interval();
   }
@@ -112,7 +113,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    * @return {@code true} indicates a running timer, {@code false} a stopped
    *         timer
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR)
   public boolean TimerEnabled() {
     return timerInternal.Enabled();
   }
@@ -122,7 +124,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    *
    * @param enabled {@code true} starts the timer, {@code false} stops it
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
   public void TimerEnabled(boolean enabled) {
@@ -200,7 +203,7 @@ public final class Clock extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Create an Calendar from ms since 1/1/1970 00:00:00.0000 
+   * Create an Calendar from ms since 1/1/1970 00:00:00.0000
    * Probably should go in Calendar.
    * @param millis raw millisecond number.
    */
