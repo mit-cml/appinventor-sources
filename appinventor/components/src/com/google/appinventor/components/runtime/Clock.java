@@ -28,12 +28,13 @@ import java.util.Calendar;
  */
 
 @DesignerComponent(version = YaVersion.CLOCK_COMPONENT_VERSION,
-    description = "Non-visible component that provides the instant in time"
-        + "using the internal clock on the phone. It can fire a timer at "
-        + "regularly set intervals and perform time calculations, "
-        + "manipulations, and conversions. Methods to format the date "
-        + "and time are also available.", category = ComponentCategory.SENSORS,
-    nonVisible = true, iconName = "images/clock.png")
+    description = "Non-visible component that provides the instant in "
+        + "time using the internal clock on the phone. It can fire a "
+        + "timer at regularly set intervals and perform time "
+        + "calculations, manipulations, and conversions. Methods to "
+        + "format the date and time are also available.",
+    category = ComponentCategory.SENSORS, nonVisible = true,
+    iconName = "images/clock.png")
 @SimpleObject
 public final class Clock extends AndroidNonvisibleComponent implements
     Component, AlarmHandler, OnStopListener, OnResumeListener,
@@ -60,9 +61,9 @@ public final class Clock extends AndroidNonvisibleComponent implements
     form.registerForOnDestroy(this);
 
     if (form instanceof ReplForm) {
-      // In REPL, if this Clock component was added to the project after the
-      // onResume call occurred, then onScreen would be false, but the REPL app
-      // is, in fact, on screen.
+      // In REPL, if this Clock component was added to the project 
+      //after the onResume call occurred, then onScreen would be false, 
+      //but the REPL app is, in fact, on screen.
       onScreen = true;
     }
   }
@@ -76,7 +77,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
   /**
    * Default Timer event handler.
    */
-  @SimpleEvent(description = "Timer has gone off.")
+  @SimpleEvent(
+      description = "Timer has gone off.")
   public void Timer() {
     if (timerAlwaysFires || onScreen) {
       EventDispatcher.dispatchEvent(this, "Timer");
@@ -113,8 +115,7 @@ public final class Clock extends AndroidNonvisibleComponent implements
    * @return {@code true} indicates a running timer, {@code false} a stopped
    *         timer
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean TimerEnabled() {
     return timerInternal.Enabled();
   }
@@ -124,8 +125,7 @@ public final class Clock extends AndroidNonvisibleComponent implements
    *
    * @param enabled {@code true} starts the timer, {@code false} stops it
    */
-  @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
   public void TimerEnabled(boolean enabled) {
@@ -135,8 +135,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
   /**
    * TimerAlwaysFires property getter method.
    *
-   * return {@code true} if the timer event will fire even if the 
-   * application is not on the screen
+   * return {@code true} if the timer event will fire even if the application is
+   * not on the screen
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean TimerAlwaysFires() {
@@ -147,7 +147,7 @@ public final class Clock extends AndroidNonvisibleComponent implements
    * TimerAlwaysFires property setter method: instructs when to disable
    *
    * @param always {@code true} if the timer event should fire even if the
-   * application is not on the screen
+   *          application is not on the screen
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -203,8 +203,9 @@ public final class Clock extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Create an Calendar from ms since 1/1/1970 00:00:00.0000
-   * Probably should go in Calendar.
+   * Create an Calendar from ms since 1/1/1970 00:00:00.0000 Probably should go
+   * in Calendar.
+   * 
    * @param millis raw millisecond number.
    */
   @SimpleFunction(
