@@ -132,8 +132,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
   /**
    * TimerAlwaysFires property getter method.
    *
-   * return {@code true} if the timer event will fire even if the application is
-   * not on the screen
+   * return {@code true} if the timer event will fire even if the 
+   * application is not on the screen
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean TimerAlwaysFires() {
@@ -144,7 +144,7 @@ public final class Clock extends AndroidNonvisibleComponent implements
    * TimerAlwaysFires property setter method: instructs when to disable
    *
    * @param always {@code true} if the timer event should fire even if the
-   *          application is not on the screen
+   * application is not on the screen
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -187,7 +187,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction(
       description = "An instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm")
-  public static Calendar MakeInstant(String from) {
+  public static
+      Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
     } catch (IllegalArgumentException e) {
@@ -199,14 +200,14 @@ public final class Clock extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Create an Calendar from ms since 1/1/1970 00:00:00.0000 Probably should go
-   * in Calendar.
-   *
+   * Create an Calendar from ms since 1/1/1970 00:00:00.0000 
+   * Probably should go in Calendar.
    * @param millis raw millisecond number.
    */
   @SimpleFunction(
       description = "An instant in time specified by the milliseconds since 1970.")
-  public static Calendar MakeInstantFromMillis(long millis) {
+  public static
+      Calendar MakeInstantFromMillis(long millis) {
     Calendar instant = Dates.Now(); // just to get our hands on an instant
     instant.setTimeInMillis(millis);
     return instant;
@@ -345,7 +346,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction(
       description = "The day of the week represented as a number from 1 (Sunday) to 7 (Saturday)")
-  public static int Weekday(Calendar instant) {
+  public static
+      int Weekday(Calendar instant) {
     return Dates.Weekday(instant);
   }
 
@@ -368,7 +370,8 @@ public final class Clock extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction(
       description = "The month of the year represented as a number from 1 to 12)")
-  public static int Month(Calendar instant) {
+  public static
+      int Month(Calendar instant) {
     return Dates.Month(instant) + 1;
   }
 
