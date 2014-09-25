@@ -33,7 +33,7 @@ import java.util.Calendar;
         + "timer at regularly set intervals and perform time "
         + "calculations, manipulations, and conversions. Methods to "
         + "format the date and time are also available.",
-    category = ComponentCategory.SENSORS, 
+        category = ComponentCategory.SENSORS, 
     nonVisible = true,
     iconName = "images/clock.png")
 @SimpleObject
