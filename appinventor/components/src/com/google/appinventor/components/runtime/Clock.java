@@ -61,7 +61,7 @@ public final class Clock extends AndroidNonvisibleComponent
 
     if (form instanceof ReplForm) {
       // In REPL, if this Clock component was added to the project after the onResume call occurred,
-      //then onScreen would be false, but the REPL app is, in fact, on screen.
+      // then onScreen would be false, but the REPL app is, in fact, on screen.
       onScreen = true;
     }
   }
@@ -196,12 +196,11 @@ public final class Clock extends AndroidNonvisibleComponent
       throw new YailRuntimeError(
           "Argument to MakeInstant should have form MM/DD/YYYY, hh:mm:ss, or MM/DD/YYYY or hh:mm",
           "Sorry to be so picky.");
-      
     }
   }
 
   /**
-   * Create an Calendar from ms since 1/1/1970 00:00:00.0000 
+   * Create an Calendar from ms since 1/1/1970 00:00:00.0000
    * Probably should go in Calendar.
    *
    * @param millis raw millisecond number.
@@ -288,7 +287,7 @@ public final class Clock extends AndroidNonvisibleComponent
   /**
    * Returns the seconds for the given instant.
    *
-   * @param instant i nstant to use seconds of
+   * @param instant  instant to use seconds of
    * @return  seconds (range 0 - 59)
    */
   @SimpleFunction (description = "The second of the minute")
@@ -373,7 +372,7 @@ public final class Clock extends AndroidNonvisibleComponent
     return Dates.MonthName(instant);
   }
 
-/**
+ /**
    * Returns the year of the given instant.
    *
    * @param instant  instant to use year of
@@ -385,7 +384,7 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats the given instant into a string.  *
+   * Converts and formats the given instant into a string.   *
    *
    * @param instant  instant to format
    * @return  formatted instant
