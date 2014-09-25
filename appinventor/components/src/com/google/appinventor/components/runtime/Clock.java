@@ -36,9 +36,9 @@ import java.util.Calendar;
     category = ComponentCategory.SENSORS, nonVisible = true,
     iconName = "images/clock.png")
 @SimpleObject
-public final class Clock extends AndroidNonvisibleComponent 
-  implements Component, AlarmHandler, OnStopListener, OnResumeListener,OnDestroyListener, 
-      Deleteable {
+public final class Clock extends AndroidNonvisibleComponent
+    implements Component, AlarmHandler, OnStopListener, OnResumeListener,OnDestroyListener, 
+            Deleteable {
   private static final int DEFAULT_INTERVAL = 1000; // ms
   private static final boolean DEFAULT_ENABLED = true;
 
