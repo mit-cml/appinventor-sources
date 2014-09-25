@@ -508,73 +508,74 @@ none
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
   <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.Methods to format the date and time are also available.</p> 
-  <h3>Properties</h3>
+  <h3> Properties </h3>
   <dl>
-      <dt><code>TimerAlwaysFires</code></dt>
-      <dd></dd>
-      <dt><code>TimerEnabled</code></dt>
-      <dd></dd>
-      <dt><code>TimerInterval</code></dt>
-      <dd></dd>
+      <dt> <code> TimerAlwaysFires </code> </dt>
+      <dd> </dd>
+      <dt> <code> TimerEnabled </code> </dt>
+      <dd> </dd>
+      <dt> <code> TimerInterval </code> </dt>
+      <dd> </dd>
   </dl> 
-  <h3>Events</h3>
+  <h3> Events </h3>
   <dl>
-    <dt><code>Timer()</code></dt>
+    <dt> <code> Timer() </code> </dt>
     <dd>Timer has gone off.</dd>
   </dl>
-  <h3>Methods</h3>
+  <h3> Methods </h3>
   <dl>
-      <dt><code>InstantInTime AddDays(InstantInTime instant, number days)</code></dt>
-      <dd>An instant in time some days after the argument</dd>
-      <dt><code>InstantInTime AddHours(InstantInTime instant, number hours)</code></dt>
-      <dd>An instant in time some hours after the argument</dd>
-      <dt><code>InstantInTime AddMinutes(InstantInTime instant, number minutes)</code></dt>
-      <dd>An instant in time some minutes after the argument</dd>
-      <dt><code>InstantInTime AddMonths(InstantInTime instant, number months)</code></dt>
-      <dd>An instant in time some months after the argument</dd>
-      <dt><code>InstantInTime AddSeconds(InstantInTime instant, number seconds)</code></dt>
-      <dd>An instant in time some seconds after the argument</dd>
-      <dt><code>InstantInTime AddWeeks(InstantInTime instant, number weeks)</code></dt>
-      <dd>An instant in time some weeks after the argument</dd>
-      <dt><code>InstantInTime AddYears(InstantInTime instant, number years)</code></dt>
-      <dd>An instant in time some years after the argument</dd>
-      <dt><code>number DayOfMonth(InstantInTime instant)</code></dt>
-      <dd>The day of the month</dd>
-      <dt><code>number Duration(InstantInTime start, InstantInTime end)</code></dt>
-      <dd>Milliseconds elapsed between instants</dd>
-      <dt><code>text FormatDate(InstantInTime instant)</code></dt>
-      <dd>Text representing the date of an instant</dd>
-      <dt><code>text FormatDateTime(InstantInTime instant)</code></dt>
-      <dd>Text representing the date and time of an instant</dd>
-      <dt><code>text FormatTime(InstantInTime instant)</code></dt>
-      <dd>Text representing the time of an instant</dd>
-      <dt><code>number GetMillis(InstantInTime instant)</code></dt>
-      <dd>The instant in time measured as milliseconds since 1970.</dd>
-      <dt><code>number Hour(InstantInTime instant)</code></dt>
-      <dd>The hour of the day</dd>
-      <dt><code>InstantInTime MakeInstant(text from)</code></dt>
-      <dd>An instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm</dd>
-      <dt><code>InstantInTime MakeInstantFromMillis(number millis)</code></dt>
-      <dd>An instant in time specified by the milliseconds since 1970.</dd>
-      <dt><code>number Minute(InstantInTime instant)</code></dt>
-      <dd>The minute of the hour</dd>
-      <dt><code>number Month(InstantInTime instant)</code></dt>
-      <dd>The month of the year represented as a number from 1 to 12)</dd>
-      <dt><code>text MonthName(InstantInTime instant)</code></dt>
-      <dd>The name of the month</dd>
-      <dt><code>InstantInTime Now()</code></dt>
-      <dd>The current instant in time read from phone's clock</dd>
-      <dt><code>number Second(InstantInTime instant)</code></dt>
-      <dd>The second of the minute</dd>
-      <dt><code>number SystemTime()</code></dt>
-      <dd>The phone's internal time</dd>
-      <dt><code>number Weekday(InstantInTime instant)</code></dt>
-      <dd>The day of the week represented as a number from 1 (Sunday) to 7 (Saturday)</dd>
-      <dt><code>text WeekdayName(InstantInTime instant)</code></dt>
-      <dd>The name of the day of the week</dd>
-      <dt><code>number Year(InstantInTime instant)</code></dt>
-      <dd>The year</dd>
+      <dt> <code> InstantInTime AddDays(InstantInTime instant, number days) </code> </dt>
+      <dd> An instant in time some days after the argument </dd>
+      <dt> <code> InstantInTime AddHours(InstantInTime instant, number hours) </code> </dt>
+      <dd> An instant in time some hours after the argument </dd>
+      <dt> <code> InstantInTime AddMinutes(InstantInTime instant, number minutes) </code> </dt>
+      <dd> An instant in time some minutes after the argument </dd>
+      <dt> <code> InstantInTime AddMonths(InstantInTime instant, number months) </code> </dt>
+      <dd> An instant in time some months after the argument </dd>
+      <dt> <code> InstantInTime AddSeconds(InstantInTime instant, number seconds) </code> </dt>
+      <dd> An instant in time some seconds after the argument </dd>
+      <dt> <code> InstantInTime AddWeeks(InstantInTime instant, number weeks) </code> </dt>
+      <dd> An instant in time some weeks after the argument </dd>
+      <dt> <code> InstantInTime AddYears(InstantInTime instant, number years) </code> </dt>
+      <dd> An instant in time some years after the argument </dd>
+      <dt> <code> number DayOfMonth(InstantInTime instant) </code> </dt>
+      <dd> The day of the month </dd>
+      <dt> <code> number Duration(InstantInTime start, InstantInTime end) </code> </dt>
+      <dd> Milliseconds elapsed between instants </dd>
+      <dt> <code> text FormatDate(InstantInTime instant) </code> </dt>
+      <dd> Text representing the date of an instant </dd>
+      <dt> <code> text FormatDateTime(InstantInTime instant) </code> </dt>
+      <dd> Text representing the date and time of an instant </dd>
+      <dt> <code> text FormatTime(InstantInTime instant) </code> </dt>
+      <dd> Text representing the time of an instant </dd>
+      <dt> <code> number GetMillis(InstantInTime instant) </code> </dt>
+      <dd> The instant in time measured as milliseconds since 1970. </dd>
+      <dt> <code> number Hour(InstantInTime instant) </code> </dt>
+      <dd> The hour of the day </dd>
+      <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
+      <dd> An instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm </dd>
+      <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
+      <dd> An instant in time specified by the milliseconds since 1970. </dd>
+      <dt> <code> number Minute(InstantInTime instant) </code> </dt>
+      <dd> The minute of the hour </dd>
+      <dt> <code> number Month(InstantInTime instant) </code> </dt>
+      <dd> The month of the year represented as a number from 1 to 12) </dd>
+      <dt> <code> text MonthName(InstantInTime instant) </code> </dt>
+      <dd> The name of the month </dd>
+      <dt> <code> InstantInTime Now() </code> </dt>
+      <dd> The current instant in time read from phone's clock </dd>
+      <dt> <code> number Second(InstantInTime instant) </code> </dt>
+      <dd> The second of the minute </dd>
+      <dt> <code> number SystemTime() </code> </dt>
+      <dd> The phone's internal time </dd>
+      <dt> <code> number Weekday(InstantInTime instant) </code> </dt>
+      <dd> The day of the week represented as a number from 1 (Sunday) to 7 (Saturday) </dd>
+      <dt> <code> text WeekdayName(InstantInTime instant) </code> </dt>
+      <dd> The name of the day of the week </dd>
+      <dt> <code> number Year(InstantInTime instant) </code> </dt>
+      <dd> The year </dd>
   </dl>
+
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
