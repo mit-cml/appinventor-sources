@@ -90,7 +90,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @return timer interval in ms
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, 
+      description ="Interval between timer events in ms")
   public int TimerInterval() {
     return timerInternal.Interval();
   }
@@ -115,7 +116,8 @@ public final class Clock extends AndroidNonvisibleComponent
    *         timer
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, 
+      description = "Fires timer if true")
   public boolean TimerEnabled() {
     return timerInternal.Enabled();
   }
@@ -140,7 +142,8 @@ public final class Clock extends AndroidNonvisibleComponent
    *   is not on the screen
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR,
+      description = "Will fire even when application is not showing on the screen if true")
   public boolean TimerAlwaysFires() {
     return timerAlwaysFires;
   }
