@@ -19,10 +19,25 @@ public class YoungAndroidScreenOrientationChoicePropertyEditor extends ChoicePro
   private static final Choice[] screenOrientationChoices = new Choice[] {
     // To avoid confusion, we only show a subset of the available screen orientation values.
     new Choice(MESSAGES.unspecifiedScreenOrientation(), "unspecified"),
+
     new Choice(MESSAGES.portraitScreenOrientation(), "portrait"),
+    new Choice(MESSAGES.reversePortraitScreenOrientation(), "reversePortrait"),
+    new Choice(MESSAGES.sensorPortraitScreenOrientation(), "sensorPortrait"),
+
     new Choice(MESSAGES.landscapeScreenOrientation(), "landscape"),
+    new Choice(MESSAGES.reverseLandscapeScreenOrientation(), "reverseLandscape"),
+    new Choice(MESSAGES.sensorLandscapeScreenOrientation(), "sensorLandscape"),
+
     new Choice(MESSAGES.sensorScreenOrientation(), "sensor"),
+    new Choice(MESSAGES.nosensorScreenOrientation(), "nosensor"),
+    new Choice(MESSAGES.fullSensorLandscapeScreenOrientation(), "fullSensor"),
+
     new Choice(MESSAGES.userScreenOrientation(), "user"),
+    new Choice(MESSAGES.behindScreenOrientation(), "behind"),
+  };
+
+  private static final Choice[] screen2 = new Choice[] {
+      new Choice(MESSAGES.userScreenOrientation(), "user"),
   };
 
   public YoungAndroidScreenOrientationChoicePropertyEditor() {

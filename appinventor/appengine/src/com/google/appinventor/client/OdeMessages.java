@@ -888,6 +888,34 @@ public interface OdeMessages extends Messages {
   @Description("Text for screen orientation choice 'User '")
   String userScreenOrientation();
 
+  @DefaultMessage("Behind")
+  @Description("Text for screen orientation choice 'Behind '")
+  String behindScreenOrientation();
+
+  @DefaultMessage("NoSensor")
+  @Description("Text for screen orientation choice 'NoSensor '")
+  String nosensorScreenOrientation();
+
+  @DefaultMessage("ReverseLandscape")
+  @Description("Text for screen orientation choice 'ReverseLandscape '")
+  String reverseLandscapeScreenOrientation();
+
+  @DefaultMessage("ReversePortrait")
+  @Description("Text for screen orientation choice 'ReversePortrait '")
+  String reversePortraitScreenOrientation();
+
+  @DefaultMessage("SensorPortrait")
+  @Description("Text for screen orientation choice 'SensorPortrait '")
+  String sensorPortraitScreenOrientation();
+
+  @DefaultMessage("SensorLandscape")
+  @Description("Text for screen orientation choice 'SensorLandscape '")
+  String sensorLandscapeScreenOrientation();
+
+  @DefaultMessage("FullSensor")
+  @Description("Text for screen orientation choice 'FullSensor '")
+  String fullSensorLandscapeScreenOrientation();
+
   // Used in editor/youngandroid/properties/YoungAndroidToastLengthChoicePropertyEditor.java
 
   @DefaultMessage("Short")
