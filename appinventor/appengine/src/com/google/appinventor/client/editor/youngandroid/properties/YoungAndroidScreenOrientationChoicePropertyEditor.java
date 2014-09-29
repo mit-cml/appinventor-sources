@@ -36,10 +36,6 @@ public class YoungAndroidScreenOrientationChoicePropertyEditor extends ChoicePro
     new Choice(MESSAGES.behindScreenOrientation(), "behind"),
   };
 
-  private static final Choice[] screen2 = new Choice[] {
-      new Choice(MESSAGES.userScreenOrientation(), "user"),
-  };
-
   public YoungAndroidScreenOrientationChoicePropertyEditor() {
     super(screenOrientationChoices);
   }
