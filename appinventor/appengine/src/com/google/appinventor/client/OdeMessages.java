@@ -450,6 +450,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link for user messages")
   String messagesLink();
 
+  @DefaultMessage("Profile")
+  @Description("Label of the link for private user profile")
+  String privateProfileLink();
+
   @DefaultMessage("My Stuff")
   @Description("Name of My Projects tab")
   String tabNameProjects();

@@ -35,6 +35,7 @@ public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
   private final DropDownButton accountButton;
   private final String WIDGET_NAME_MESSAGES = "Messages";
+  private final String WIDGET_NAME_PRIVATE_USER_PROFILE = "Profile";
   private final TextButton gallery;
   private final TextButton moderation;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
@@ -193,7 +194,11 @@ public class TopPanel extends Composite {
   public void updateAccountMessageButton(){
     // Since we want to insert "Messages" before "Sign Out", we need to clear first.
     accountButton.clearAllItems();
-    // Messages
+
+    // Gallery Items
+    // (1)Private User Profile
+    accountButton.addItem(new DropDownItem(WIDGET_NAME_PRIVATE_USER_PROFILE, MESSAGES.privateProfileLink(), new PrivateProfileAction()));
+    // (2)Messages
     accountButton.addItem(new DropDownItem(WIDGET_NAME_MESSAGES, MESSAGES.messagesLink(), new MessageAction()));
     // Sign Out
     accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
@@ -270,6 +275,13 @@ public class TopPanel extends Composite {
     @Override
     public void execute() {
       Window.Location.replace(SIGNOUT_URL);
+    }
+  }
+
+  private static class PrivateProfileAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToPrivateUserProfileView();
     }
   }
 

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
@@ -183,7 +184,8 @@ public class Ode implements EntryPoint {
   private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
-  private static final int MODERATIONPAGE = 5;
+  private static final int PRIVATEUSERPROFILE = 5;
+  private static final int MODERATIONPAGE = 6;
   private static int currentView = DESIGNER;
 
   /*
@@ -208,7 +210,7 @@ public class Ode implements EntryPoint {
   private int galleryTabIndex;
   private int galleryAppTabIndex;
   private int userProfileTabIndex;
-  private int galleryInheritanceTabIndex;
+  private int privateUserProfileIndex;
   private int moderationPageTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
@@ -321,8 +323,7 @@ public class Ode implements EntryPoint {
             topPanel.showModerationLink(true);
           }
           topPanel.updateAccountMessageButton();
-          ProjectListBox.getProjectListBox().showProfileTab();
-          ProjectListBox.getProjectListBox().loadProfileImage();
+          PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
 
           final String userInfo = user.getUserName();
           // Get the message count to display right next to user
@@ -423,6 +424,14 @@ public class Ode implements EntryPoint {
       OdeLog.wlog("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
+  }
+
+  /**
+   * Switch to Gallery TabPanel
+   */
+  public void switchToPrivateUserProfileView() {
+    currentView = privateUserProfileIndex;
+    deckPanel.showWidget(privateUserProfileIndex);
   }
 
   /**
@@ -885,6 +894,17 @@ public class Ode implements EntryPoint {
     userProfileTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(uVertPanel);
     // KM: DEBUGGING END
+
+    // Private User Profile TabPanel
+    VerticalPanel ppVertPanel = new VerticalPanel();
+    ppVertPanel.setWidth("100%");
+    ppVertPanel.setSpacing(0);
+    HorizontalPanel privateUserProfileTabPanel = new HorizontalPanel();
+    privateUserProfileTabPanel.setWidth("100%");
+    privateUserProfileTabPanel.add(PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel());
+    ppVertPanel.add(privateUserProfileTabPanel);
+    privateUserProfileIndex = deckPanel.getWidgetCount();
+    deckPanel.add(ppVertPanel);
 
     // Moderation Page tab
     VerticalPanel mPVertPanel = new VerticalPanel();

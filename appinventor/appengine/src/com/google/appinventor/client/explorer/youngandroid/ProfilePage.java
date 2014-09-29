@@ -14,6 +14,7 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
@@ -294,8 +295,8 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       editProfile.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
-          ode.switchToProjectsView();
-          ProjectListBox.getProjectListBox().selectTab(1);
+          ode.switchToPrivateUserProfileView();
+          PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().selectTab(0);
         }
       });
     }else{
