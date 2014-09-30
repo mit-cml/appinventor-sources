@@ -43,7 +43,10 @@ public class TopPanel extends Composite {
 
   private static final String SIGNOUT_URL = "/ode/_logout";
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
-  private static final String LANGUAGES_IMAGE_URL = "/images/languages.png";
+  private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
+  private static final String AMERICAN_ENGLISH_IMAGE_LINK = "<img class='ode-FlagIcon' src='/images/AmericanEnglish.png' height='14'>";
+  private static final String CHINESE_IMAGE_LINK = "<img class='ode-FlagIcon' src='/images/Chinese.png' height='14'>";
+
 
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
@@ -149,35 +152,30 @@ public class TopPanel extends Composite {
     String[] localeNames = LocaleInfo.getAvailableLocaleNames();
     String nativeName;
     for (String localeName : localeNames) {
-      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName) + AMERICAN_ENGLISH_IMAGE_LINK;
       if (!localeName.equals("default")) {
         SelectLanguage lang = new SelectLanguage();
         lang.setLocale(localeName);
         if (localeName == "zh_CN") {
-          nativeName = MESSAGES.SwitchToSimplifiedChinese();
+          nativeName = MESSAGES.SwitchToSimplifiedChinese() + CHINESE_IMAGE_LINK;
         } else if (localeName == "zh_TW") {
-          nativeName = MESSAGES.SwitchToTraditionalChinese();
+          nativeName = MESSAGES.SwitchToTraditionalChinese() + CHINESE_IMAGE_LINK;
         }
         languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
       }
     }
-    //MESSAGES.switchLanguageButton()
     Image languageIcon = new Image(LANGUAGES_IMAGE_URL + "?t=" + System.currentTimeMillis());
     languageIcon.setSize("20px", "20px");
-    languageIcon.setStyleName("ode-Logo");
 
-    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, null, languageItems, true);
+    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, languageIcon, languageItems, true);
     languageDropDown.setStyleName("ode-TopPanelButton");
-    languageDropDown.getElement().appendChild(languageIcon.getElement());
 
     account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
     account.add(links);
-    account.add(accountButton);
     account.add(languageDropDown);
+    account.add(accountButton);
 
     rightPanel.add(account);
-
-    //topPanel.setWidth("width: 100%");
 
     // Add the Logo, Tools, Links to the TopPanel
     addLogo(topPanel);
