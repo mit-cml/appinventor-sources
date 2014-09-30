@@ -273,7 +273,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    SelectionIndex(position + 1); // AI lists are 1-based
+    this.selection = (String) parent.getAdapter().getItem(position);
+    this.selectionIndex = position + 1;
     AfterPicking();
   }
 
