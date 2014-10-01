@@ -44,9 +44,6 @@ public class TopPanel extends Composite {
   private static final String SIGNOUT_URL = "/ode/_logout";
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
   private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
-  private static final String AMERICAN_ENGLISH_IMAGE_LINK = "<img class='ode-FlagIcon' src='/images/AmericanEnglish.png' height='14'>";
-  private static final String CHINESE_IMAGE_LINK = "<img class='ode-FlagIcon' src='/images/Chinese.png' height='14'>";
-
 
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
@@ -152,14 +149,14 @@ public class TopPanel extends Composite {
     String[] localeNames = LocaleInfo.getAvailableLocaleNames();
     String nativeName;
     for (String localeName : localeNames) {
-      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName) + AMERICAN_ENGLISH_IMAGE_LINK;
+      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
       if (!localeName.equals("default")) {
         SelectLanguage lang = new SelectLanguage();
         lang.setLocale(localeName);
         if (localeName == "zh_CN") {
-          nativeName = MESSAGES.SwitchToSimplifiedChinese() + CHINESE_IMAGE_LINK;
+          nativeName = MESSAGES.SwitchToSimplifiedChinese();
         } else if (localeName == "zh_TW") {
-          nativeName = MESSAGES.SwitchToTraditionalChinese() + CHINESE_IMAGE_LINK;
+          nativeName = MESSAGES.SwitchToTraditionalChinese();
         }
         languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
       }
