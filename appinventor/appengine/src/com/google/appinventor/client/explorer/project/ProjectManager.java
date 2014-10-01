@@ -42,6 +42,7 @@ public final class ProjectManager {
         for (UserProject projectInfo : projectInfos) {
           addProject(projectInfo);
         }
+        fireProjectsLoaded();
       }
     });
   }
@@ -178,6 +179,15 @@ public final class ProjectManager {
   private void fireProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectRemoved(project);
+    }
+  }
+
+  /*
+   * Triggers a 'projects loaded' event to be sent to the listener on the listener list.
+   */
+  private void fireProjectsLoaded() {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onProjectsLoaded();
     }
   }
 }

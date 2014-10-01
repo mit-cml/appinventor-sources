@@ -210,7 +210,8 @@ public class AppInvHTTPD extends NanoHTTPD {
     } else if (uri.equals("/_getversion")) {
       Response res;
       try {
-        PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
+        String packageName = form.getPackageName();
+        PackageInfo pInfo = form.getPackageManager().getPackageInfo(packageName, 0);
         String installer;
         if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
           installer = EclairUtil.getInstallerPackageName("edu.mit.appinventor.aicompanion3", form);
@@ -224,7 +225,8 @@ public class AppInvHTTPD extends NanoHTTPD {
         if (installer == null)
           installer = "Not Known";
         res = new Response(HTTP_OK, MIME_JSON, "{\"version\" : \"" + versionName +
-          "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"," + " \"installer\" : \"" + installer + "\"}");
+          "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"," +
+          " \"installer\" : \"" + installer + "\", \"package\" : \"" + packageName + "\" }");
       } catch (NameNotFoundException n) {
         n.printStackTrace();
         res = new Response(HTTP_OK, MIME_JSON, "{\"verison\" : \"Unknown\"");

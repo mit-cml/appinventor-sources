@@ -34,4 +34,11 @@ public interface ProjectManagerEventListener {
    * @param project  project removed
    */
   void onProjectRemoved(Project project);
+
+  /**
+   * Invoked after all projects have been loaded by ProjectManager
+   *
+   */
+  void onProjectsLoaded();
+
 }
