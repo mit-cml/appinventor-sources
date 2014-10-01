@@ -19,4 +19,11 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   @Override
   public void onProjectRemoved(Project project) {
   }
+
+  /**
+   * Invoked after all projects have been loaded by ProjectManager
+   *
+   */
+  @Override
+  public void onProjectsLoaded() { }
 }
