@@ -398,8 +398,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to format
    * @return  formatted instant
    */
-  @SimpleFunction (description = "Text representing the date and time of an "
-      + "instant")
+  @SimpleFunction (description = "Text representing the date and time of an"
+      + " instant")
   public static String FormatDateTime(Calendar instant) {
     return Dates.FormatDateTime(instant);
   }
