@@ -4308,7 +4308,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CheckBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Non-visible component that provides the instant in time using the internal clock on the phone. It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions. Methods to format the date and time are also available.")
+  @DefaultMessage("Non-visible component that provides the instant in time"+
+      "using the internal clock on the phone. It can fire a timer at regularly"+
+      "set intervals and perform time calculations, manipulations, and conversions."+
+      "Methods to format the date and time are also available.")
   @Description("")
   String ClockHelpStringComponentPallette();
 

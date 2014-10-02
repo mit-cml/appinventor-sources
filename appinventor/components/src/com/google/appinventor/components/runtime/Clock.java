@@ -29,10 +29,10 @@ import java.util.Calendar;
 
 @DesignerComponent(version = YaVersion.CLOCK_COMPONENT_VERSION,
     description = "Non-visible component that provides the instant in "
-        + "time using the internal clock on the phone. It can fire a "
-        + "timer at regularly set intervals and perform time "
-        + "calculations, manipulations, and conversions. Methods to "
-        + "format the date and time are also available.",
+    + "time using the internal clock on the phone. It can fire a "
+    + "timer at regularly set intervals and perform time "
+    + "calculations, manipulations, and conversions. Methods to "
+    + "format the date and time are also available.",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/clock.png")
@@ -144,7 +144,8 @@ public final class Clock extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "Will fire even when application is not showing on the screen if true")
+      description = "Will fire even when application is not showing on the "
+      + "screen if true")
   public boolean TimerAlwaysFires() {
     return timerAlwaysFires;
   }
@@ -178,7 +179,8 @@ public final class Clock extends AndroidNonvisibleComponent
     return Dates.Timer();
   }
 
-  @SimpleFunction(description = "The current instant in time read from phone's clock")
+  @SimpleFunction(description = "The current instant in time read from "
+      + "phone's clock")
   public static Calendar Now() {
     return Dates.Now();
   }
@@ -339,7 +341,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use day of week of
    * @return day of week: [1...7] starting with Sunday
    */
-  @SimpleFunction (description = "The day of the week represented as a number from 1 (Sunday) to 7 (Saturday)")
+  @SimpleFunction (description = "The day of the week represented as a "
+      + "number from 1 (Sunday) to 7 (Saturday)")
   public static int Weekday(Calendar instant) {
     return Dates.Weekday(instant);
   }
@@ -361,7 +364,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use month of
    * @return  number of month
    */
-  @SimpleFunction (description = "The month of the year represented as a number from 1 to 12)")
+  @SimpleFunction (description = "The month of the year represented as a "
+      + "number from 1 to 12)")
   public static int Month(Calendar instant) {
     return Dates.Month(instant) + 1;
   }
@@ -394,7 +398,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to format
    * @return  formatted instant
    */
-  @SimpleFunction (description = "Text representing the date and time of an instant")
+  @SimpleFunction (description = "Text representing the date and time of an "
+      + "instant")
   public static String FormatDateTime(Calendar instant) {
     return Dates.FormatDateTime(instant);
   }
