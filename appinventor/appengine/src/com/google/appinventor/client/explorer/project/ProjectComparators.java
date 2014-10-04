@@ -22,7 +22,7 @@ public final class ProjectComparators {
     public int compare(Project proj1, Project proj2) {
       String proj1Name = proj1.getProjectName();
       String proj2Name = proj2.getProjectName();
-      return proj1Name.compareTo(proj2Name); // ascending
+      return proj1Name.compareToIgnoreCase(proj2Name); // ascending
     }
   };
 
@@ -31,7 +31,7 @@ public final class ProjectComparators {
     public int compare(Project proj1, Project proj2) {
       String proj1Name = proj1.getProjectName();
       String proj2Name = proj2.getProjectName();
-      return proj2Name.compareTo(proj1Name); // descending
+      return proj2Name.compareToIgnoreCase(proj1Name); // descending
     }
   };
 
