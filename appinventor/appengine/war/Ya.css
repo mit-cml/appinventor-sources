@@ -1806,7 +1806,7 @@ textarea::-webkit-input-placeholder {
   height: 130px;
 }
 .app-header .status-updating {
-  opacity: 0.1;
+  opacity: 0.6;
 }
 .app-header .app-image-uploadbox {
   width: 128px;
@@ -1985,6 +1985,15 @@ textarea::-webkit-input-placeholder {
   display: inline-block;
   vertical-align: top;
 }
+.app-meta .gwt-Label-auto {
+  line-height: 175%;
+  font-weight: 300;
+  margin: 0 15px 0 0;
+  color: #999;
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+}
 .app-meta .app-meta-label {
   display: inline-block;
   width: 110px;
@@ -2090,6 +2099,11 @@ textarea::-webkit-input-placeholder {
 .app-stats .primary-link {
   font-size: 12px;
 }
+.primary-link-small {
+  color: #b3c833;
+  border-bottom: 1px dotted #b3c833;
+  font-weight: 300; font-size: 11.5px; line-height: 1.75;
+}
 .primary-link,
 .moderator-link {
   color: #b3c833;
@@ -2102,10 +2116,12 @@ textarea::-webkit-input-placeholder {
 }
 .ode-ProjectGalleryLink:hover,
 .primary-link:hover,
+.primary-link-small:hover,
 .moderator-link:hover {
   background-color: #b3c833;
   color: white;
   cursor: pointer;
+  width: auto;
 }
 .app-actions .action-button {
 }

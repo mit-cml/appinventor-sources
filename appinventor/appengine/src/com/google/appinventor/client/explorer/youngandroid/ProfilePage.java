@@ -344,7 +344,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
     }
     imageUploadPrompt.addStyleName("app-image-uploadprompt");
-    imageUploadBoxInner.add(imageUploadPrompt);
+    //imageUploadBoxInner.add(imageUploadPrompt);
 
     // Set the correct handler for servlet side capture
     imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
@@ -360,10 +360,21 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       @Override
       public void onClick(ClickEvent event) {
         // The correct way to trigger click event on FileUpload
-        imageUpload.getElement().<InputElement>cast().click();
+        //imageUpload.getElement().<InputElement>cast().click();
       }
     });
     profileHeader.add(profileHeaderWrapper);
+    
+    Label uploadPrompt = new Label("Upload your profile image");
+    uploadPrompt.addStyleName("primary-link-small");
+    uploadPrompt.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // The correct way to trigger click event on FileUpload
+        imageUpload.getElement().<InputElement>cast().click();
+      }
+    });
+    profileHeader.add(uploadPrompt);
   }
 
 
@@ -436,7 +447,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     userAvatar.setUrl(url + "?" + System.currentTimeMillis());
     userAvatar.addStyleName("app-image");
     if (profileStatus == PRIVATE) {
-      userAvatar.addStyleName("status-updating");
+      //userAvatar.addStyleName("status-updating");
     }
     // if the user has provided a gallery app image, we'll load it. But if not
     // the error will occur and we'll load default image

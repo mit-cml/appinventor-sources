@@ -86,6 +86,18 @@ public class TopPanel extends Composite {
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
+    // Code on gallerydev branch
+    // Gallery Link
+    gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery.setStyleName("ode-TopPanelButton");
+    gallery.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToGalleryView();
+      }
+    });
+    links.add(gallery);
+
     TextButton guideLink = new TextButton(MESSAGES.guideLink());
     guideLink.addClickHandler(new ClickHandler() {
       @Override
@@ -127,18 +139,6 @@ public class TopPanel extends Composite {
       links.add(gallery);
     }
     */
-
-    // Code on gallerydev branch
-    // Gallery Link
-    gallery = new TextButton(MESSAGES.tabNameGallery());
-    gallery.setStyleName("ode-TopPanelButton");
-    gallery.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToGalleryView();
-      }
-    });
-    links.add(gallery);
 
     moderation = new TextButton(MESSAGES.tabNameModeration());
     moderation.setStyleName("ode-TopPanelButton");

@@ -519,10 +519,7 @@ panel
    * @param container   The container that author's info resides
    */
   private void initAppAuthor(Panel container) {
-    // Add author's prefix
-    Label authorPrefix = new Label(MESSAGES.galleryByDeveloperPrefixedText());
-    appInfo.add(authorPrefix);
-    authorPrefix.addStyleName("app-subtitle");
+
 
     // Add author's image - not when creating a new app
     if (editStatus != NEWAPP) {
@@ -812,6 +809,12 @@ panel
     final Label remixedFrom = new Label(MESSAGES.galleryRemixedFrom());
     remixedFrom.addStyleName("app-meta-label");
     final Label parentApp = new Label();
+    //gwt-Label use fixed width which will case border-underline-dot
+    //be longer than text link.
+    //gwt-Label-auto use auto width
+    parentApp.removeStyleName("gwt-Label");
+    parentApp.addStyleName("gwt-Label-auto");
+    parentApp.addStyleName("primary-link");
     container.add(remixedFrom);
     container.add(parentApp);
     remixedFrom.setVisible(false);
@@ -831,7 +834,7 @@ panel
           MESSAGES.galleryError()) {
             @Override
             public void onSuccess(GalleryApp AppRemixedFrom) {
-              parentApp.setText(AppRemixedFrom.getTitle() + ".");
+              parentApp.setText(AppRemixedFrom.getTitle());
               attributionGalleryApp.t = AppRemixedFrom;
             }
           };
