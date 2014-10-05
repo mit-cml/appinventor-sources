@@ -1,0 +1,29 @@
+Important Disclaimer: 
+
+
+
+
+
+This Orbotix software is supplied to you by Orbotix, Inc. ("Orbotix") in consideration of your agreement to the following terms, and your use, installation, modification or redistribution of this Orbotix software constitutes acceptance of these terms.  If you do not accept these terms, please do not use, install, modify or redistribute this Orbotix software.
+
+
+
+Neither the name, trademarks, service marks or logos of Orbotix may be used to endorse or promote products derived from the Orbotix software without specific prior written permission from Orbotix.  Except as expressly stated in this notice, no other rights or licenses, express or implied, are granted by Orbotix herein.
+
+
+
+The Orbotix software is provided by Orbotix on an "As Is" basis.  Orbotix makes no warranties, express or implied, including without limitation the implied warranties of non-infringement, merchantability and fitness for a particular purpose, regarding the Orbotix software or its use and operation alone or in combination with your products.  
+
+In no event shall Orbotix be liable for any special, indirect, incidental or consequential damages arising in any way out of the use, reproduction, modification and/or distribution of the Orbotix software, however caused and whether under theory of contract, tort (including negligence), strict liability or otherwise.
+
+
+
+Legalese aside, the Orbotix software is supplied to you so that it can be used.  
+
+Have fun and code on!
+
+
+
+
+Copyright (C) 2012 Orbotix, Inc.  
+All Rights Reserved.

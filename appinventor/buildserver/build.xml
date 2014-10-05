@@ -82,6 +82,12 @@
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
+    <!-- Sphero library added by Gareth Haylings 29/06/2014 -->
+    <copy toFile="${classes.files.dir}/RobotLibrary.jar" file="${lib.dir}/sphero/RobotLibrary.jar" />
+    <copy toFile="${classes.files.dir}/libachievement_manager.so" file="${lib.dir}/sphero/libachievement_manager.so" />
+    <copy toFile="${classes.files.dir}/libachievement_manager.so-v7a" file="${lib.dir}/sphero/libachievement_manager.so-v7a" />
+    
+    
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
