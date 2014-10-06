@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Implementation of various date and time related runtime functions.
@@ -235,7 +236,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static Calendar Now() {
-    return new GregorianCalendar();
+    return new GregorianCalendar(TimeZone.getTimeZone("GMT"));
   }
 
   /**
