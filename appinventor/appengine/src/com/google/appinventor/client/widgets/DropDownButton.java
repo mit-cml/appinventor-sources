@@ -6,6 +6,10 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 
+import com.google.gwt.cell.client.TextButtonCell;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Image;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,16 +35,50 @@ public class DropDownButton extends TextButton {
     }
   }
 
-  // Create a new drop-down menu button, initially populated with items. Null
+  // Create a new drop-down menu button (with text), initially populated with items. Null
   // items in the list cause a separator to be added at that position.
   public DropDownButton(String widgetName, String caption, List<DropDownItem> toolbarItems,
                         final boolean rightAlign) {
     super(caption + " \u25BE ");  // drop down triangle
+
     this.menu = new ContextMenu();
     this.items = new ArrayList<MenuItem>();
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
-        this.items.add(menu.addItem(item.caption, item.command));
+        this.items.add(menu.addItem(item.caption, true, item.command));
+      } else {
+        menu.addSeparator();
+      }
+    }
+    addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        menu.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+          @Override
+          public void setPosition(int offsetWidth, int offsetHeight) {
+            int left = getAbsoluteLeft();
+            if (rightAlign) {
+              left += getOffsetWidth() - offsetWidth;
+            }
+            int top = getAbsoluteTop() + getOffsetHeight();
+            menu.setPopupPosition(left, top);
+          }
+        });
+      }
+    });
+  }
+
+  // Create a new drop-down menu button (with image), initially populated with items. Null
+  // items in the list cause a separator to be added at that position.
+  public DropDownButton(String widgetName, Image icon, List<DropDownItem> toolbarItems,
+                        final boolean rightAlign) {
+    super(icon);  // icon for button
+
+    this.menu = new ContextMenu();
+    this.items = new ArrayList<MenuItem>();
+    for (DropDownItem item : toolbarItems) {
+      if (item != null) {
+        this.items.add(menu.addItem(item.caption, true, item.command));
       } else {
         menu.addSeparator();
       }
@@ -71,7 +109,7 @@ public class DropDownButton extends TextButton {
   }
 
   public void addItem(DropDownItem item) {
-    items.add(menu.addItem(item.caption, item.command));
+    items.add(menu.addItem(item.caption, true, item.command));
   }
 
   public void removeItem(String itemName) {

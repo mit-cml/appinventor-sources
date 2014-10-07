@@ -37,8 +37,6 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
-import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
@@ -111,12 +109,10 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
-  private static final String WIDGET_NAME_LANGUAGE = "Language";
 
   public DropDownButton fileDropDown;
   public DropDownButton connectDropDown;
   public DropDownButton buildDropDown;
-  public DropDownButton languageDropDown;
   public DropDownButton helpDropDown;
   public DropDownButton adminDropDown;
 
@@ -124,7 +120,7 @@ public class TopToolbar extends Composite {
     /*
      * Layout is as follows:
      * +--------------------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Language ▾| Help ▾| Admin ▾ |
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
      * +--------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
@@ -133,7 +129,6 @@ public class TopToolbar extends Composite {
     List<DropDownItem> fileItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
-    List<DropDownItem> languageItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
 
     // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
@@ -192,22 +187,6 @@ public class TopToolbar extends Composite {
           new GenerateYailAction()));
     }
 
-    String[] localeNames = LocaleInfo.getAvailableLocaleNames();
-    String nativeName;
-    for (String localeName : localeNames) {
-      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
-      if (!localeName.equals("default")) {
-        SelectLanguage lang = new SelectLanguage();
-        lang.setLocale(localeName);
-        if (localeName == "zh_CN") {
-          nativeName = MESSAGES.SwitchToSimplifiedChinese();
-        } else if (localeName == "zh_TW") {
-          nativeName = MESSAGES.SwitchToTraditionalChinese();
-        }
-        languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
-      }
-    }
-
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
@@ -236,8 +215,6 @@ public class TopToolbar extends Composite {
         connectItems, false);
     buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName(),
         buildItems, false);
-   languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, MESSAGES.switchLanguageButton(),
-       languageItems, false);
     helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpTabName(),
         helpItems, false);
 
@@ -245,7 +222,6 @@ public class TopToolbar extends Composite {
     fileDropDown.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
-    languageDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
@@ -254,7 +230,6 @@ public class TopToolbar extends Composite {
     toolbar.add(buildDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
-    toolbar.add(languageDropDown);
     toolbar.add(helpDropDown);
 
     //Only if logged in as an admin, add the Admin Button
@@ -641,29 +616,6 @@ public class TopToolbar extends Composite {
               }
             });
       }
-    }
-  }
-  private class SelectLanguage implements Command {
-
-    private String localeName;
-
-    @Override
-    public void execute() {
-      final String queryParam = LocaleInfo.getLocaleQueryParam();
-      Command savecmd = new SaveAction();
-      savecmd.execute();
-      if (queryParam != null) {
-        UrlBuilder builder = Window.Location.createUrlBuilder().setParameter(
-            queryParam, localeName);
-        Window.Location.replace(builder.buildString());
-      } else {
-        // If we are using only cookies, just reload
-        Window.Location.reload();
-      }
-    }
-
-    public void setLocale(String nativeName) {
-      localeName = nativeName;
     }
   }
 
