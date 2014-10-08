@@ -1044,6 +1044,7 @@ public final class Compiler {
         "-A", project.getAssetsDirectory().getAbsolutePath(),
         "-I", getResource(ANDROID_RUNTIME),
         "-F", tmpPackageName,
+        libsDir.getAbsolutePath()
     };
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
@@ -1064,15 +1065,10 @@ public final class Compiler {
 
   private boolean insertNativeLibraries(File buildDir){
     out.println("________Copying native libraries");
-   // libsDir = createDirectory(buildDir, LIBS_DIR_NAME);
-   // File apkLibDir = createDirectory(libsDir, APK_LIB_DIR_NAME); // This dir will be copied to apk.
-   // File armeabiDir = createDirectory(apkLibDir, ARMEABI_DIR_NAME);
-   // File armeabiV7aDir = createDirectory(apkLibDir, ARMEABI_V7A_DIR_NAME);
-   
-    libsDir = createDirectory(buildDir, "libs");
-    File armeabiDir = createDirectory(libsDir, ARMEABI_DIR_NAME);
-    File armeabiV7aDir = createDirectory(libsDir, ARMEABI_V7A_DIR_NAME);
-   
+    libsDir = createDirectory(buildDir, LIBS_DIR_NAME);
+    File apkLibDir = createDirectory(libsDir, APK_LIB_DIR_NAME); // This dir will be copied to apk.
+    File armeabiDir = createDirectory(apkLibDir, ARMEABI_DIR_NAME);
+    File armeabiV7aDir = createDirectory(apkLibDir, ARMEABI_V7A_DIR_NAME);
     /*
      * Native libraries are targeted for particular processor architectures.
      * Here, non-default architectures (ARMv5TE is default) are identified with suffixes
@@ -1081,17 +1077,13 @@ public final class Compiler {
     try {
       for (String library : nativeLibrariesNeeded) {
         if (library.endsWith(ARMEABI_V7A_SUFFIX)) { // Remove suffix and copy.
-   //       library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
-   //       Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
-   //           File.separator + library)), new File(armeabiV7aDir, library));
-
-          library = library.replace(ARMEABI_V7A_SUFFIX, "");
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + library)), new File(armeabiV7aDir, library));
-           
+          library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
           
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
+              "/" + library)), new File(armeabiV7aDir, library));
         } else {
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + library)),
-              new File(armeabiDir, library));
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_DIR_NAME +
+              "/" + library)), new File(armeabiDir, library));
         }
       }
       return true;
