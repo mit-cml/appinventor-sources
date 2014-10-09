@@ -325,4 +325,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
+
+  @Override
+  public void onProjectsLoaded() {
+    // This can be empty
+  }
 }
