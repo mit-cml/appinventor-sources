@@ -1044,6 +1044,7 @@ public final class Compiler {
         "-A", project.getAssetsDirectory().getAbsolutePath(),
         "-I", getResource(ANDROID_RUNTIME),
         "-F", tmpPackageName,
+        libsDir.getAbsolutePath()
     };
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
@@ -1078,10 +1079,10 @@ public final class Compiler {
         if (library.endsWith(ARMEABI_V7A_SUFFIX)) { // Remove suffix and copy.
           library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
           Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
-              File.separator + library)), new File(armeabiV7aDir, library));
+              "/" + library)), new File(armeabiV7aDir, library));
         } else {
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + library)),
-              new File(armeabiDir, library));
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_DIR_NAME +
+              "/" + library)), new File(armeabiDir, library));
         }
       }
       return true;
