@@ -53,7 +53,7 @@ import orbotix.sphero.*;
 @UsesPermissions(permissionNames = "android.permission.BLUETOOTH_ADMIN, android.permission.BLUETOOTH")
 @UsesLibraries(libraries = "RobotLibrary.jar")
 @UsesNativeLibraries(libraries = "libachievement_manager.so" ,
-                     v7aLibraries = "libachievement_manager.so-v7a")
+                     v7aLibraries = "libachievement_manager.so")
 public class mrSphero extends AndroidNonvisibleComponent
     implements Component{//, OnResumeListener, OnStopListener, OnDestroyListener, OnPauseListener, Deleteable {
 
