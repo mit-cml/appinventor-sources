@@ -1142,7 +1142,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
           Preconditions.checkState(fd != null);
 
-          if ((content.length < 120) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
+          if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
             if (!force) {            // force is true if we *really* want to save it!
               checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
             }
