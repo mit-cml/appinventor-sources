@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.HtmlEntities;
@@ -33,6 +34,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -65,6 +68,9 @@ import java.util.Map;
     iconName = "images/web.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries(libraries = "json.jar")
+
+
 public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
@@ -732,6 +738,45 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       throw new IllegalArgumentException("jsonText is not a legal JSON value");
     }
   }
+
+  /**
+   * CHANGE THIS COMMENT FOR XML
+   * This is not correct!   It messes things up to go through JSON!!!!
+   * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
+   * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
+   * (denoted as A:B enclosed in curly braces) decodes to a list
+   * ((A B)), that is, a list containing the two-element list (A B).
+   *
+   * @param jsonText the JSON text to decode
+   * @return the decoded text
+   */
+
+// for testing
+  String sampleXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+      + "<mobilegate>"    
+  +"<timestamp>232423423423</timestamp>"                          
+  + "<txn>" + "Transaction" + "</txn>" 
+  + "<amt>" + 0 + "</amt>" 
+  + "</mobilegate>"; 
+  
+  
+  @SimpleFunction
+// add description
+public Object XMLTextDecode(String XmlText) {
+  try {
+    Log.i(LOG_TAG, "Point A");
+    //JSONObject json = XML.toJSONObject(sampleXml);
+    JSONObject json = XML.toJSONObject(XmlText);
+    Log.i(LOG_TAG, "Pont B");
+    return JsonTextDecode(json.toString());
+  } catch (JSONException e) {
+    Log.e("Exception in XMLTextDecode", e.getMessage());
+    form.dispatchErrorOccurredEvent(this, "XMLTextDecode",
+				    ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, XmlText);
+    // !!!fix the above error message
+    return "";
+  } 
+}
 
   /**
    * Decodes the given HTML text value.
