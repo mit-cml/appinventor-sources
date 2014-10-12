@@ -1248,8 +1248,7 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.REPL_SOFTWARE_UPDATE ="軟件升級";
     Blockly.Msg.REPL_OK_LOWER ="確定";
     Blockly.Msg.REPL_GOT_IT ="升級完成";
-    Blockly.Msg.REPL_UPDATE_INFO = '正在安裝升級包，請在設備（或模擬器）上檢查確認。<br /><br />註意：升級完成後，請選擇“完成”（不要選打開）。然後在瀏覽器中打開並進入App Inventor，點擊“連接設備”並選擇“重置連接”項。';
-
+    Blockly.Msg.REPL_UPDATE_INFO = '更新正在安裝在你的設備上。請查看你設備(或模擬器)屏幕出現的提示並批準軟件安裝。<br /><br />重要:當更新完成,選擇“完成”(不要點擊“開放”)。然後再次瀏覽 App Inventor 網頁,點擊“連接”菜單,選擇“重置連接”。然後重新連接設備。';
     Blockly.Msg.REPL_UNABLE_TO_UPDATE ="無法將升級包發送給設備或模擬器";
     Blockly.Msg.REPL_UNABLE_TO_LOAD ="無法從App Inventor服務器下載升級包";
     Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND ="無法App Inventor服務器(服務器沒有響應)加載更新信息";
