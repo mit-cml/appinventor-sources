@@ -89,6 +89,18 @@ public class WebTest extends TestCase {
     }
   }
 
+  public void testDecodeXMLText() throws Exception {
+    Object decodedObject = web.XMLTextDecode("<foo> 1 2 3 </foo>");
+    // should be ((foo 1 2 3))
+    assertTrue(decodedObject instanceof ArrayList);
+    ArrayList outerList = (ArrayList) decodedObject;
+    Object contentsObject = outerList.get(0);
+    // should be (foo 1 2 3)
+    assertTrue(contentsObject instanceof ArrayList);
+    ArrayList contents = (ArrayList) contentsObject;
+    assertEquals("foo", contents.get(0));
+     }
+
   public void testbuildRequestData() throws Exception {
     List<Object> list = new ArrayList<Object>();
     list.add(YailList.makeList(new String[] { "First Name", "Barack" }));
