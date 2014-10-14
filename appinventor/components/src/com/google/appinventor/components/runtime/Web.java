@@ -740,10 +740,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * CHANGE THIS COMMENT FOR XML
-   * Decodes the XML text to produce a list structure.  It does this by first converting
-   * the XML to JSON and then decoding the JSON. Each XML string decodes to a list
-   * who first element is the tag and who rest is the list of contents.   For example, 
+   * This description is wrong.  <tag>string</tag> decides to a list that contains a 2-elements list
+   * consisting of tag and string.  Ans similarly for embedded stuff .. get n-element string?
+   * Decodes the XML text to produce a list structure.  Each XML string decodes to a list
+   * who first element is the tag and whose  rest is the list of contents.   For example, 
    * <a>1 2 3</a> decodes to ((a 1 2 3)), and <a><c>1 2 3</c><b>4 5 6</b></a> decodes to
    * ((a ((b 1 2 3) (c 4 5 6)))). Note that the ordering in the result depends on the tags,
    * not the order in the XML string.
@@ -754,7 +754,8 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param jsonText the JSON text to decode
    * @return the decoded text
    */
-  
+   //It does this by first converting
+  // * the XML to JSON and then decoding the JSON.
   @SimpleFunction(description = "Decodes the given XML string to produce a list structure.  " +
       "See the App Inventor documentation on \"Other topics, notes, and details\" for information.")
   // The above description is punted because I can't figure out how to write the documentation
