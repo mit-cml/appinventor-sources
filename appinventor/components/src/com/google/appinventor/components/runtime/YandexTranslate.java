@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 @DesignerComponent(version = YaVersion.YANDEX_COMPONENT_VERSION,
     description = "Use this component to translate words and sentences between different " +
@@ -116,7 +117,7 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
     final String finalURL = YANDEX_TRANSLATE_SERVICE_URL +
         this.yandexKey +
         "&lang=" + languageToTranslateTo +
-        "&text=" + textToTranslate;
+        "&text=" + URLEncoder.encode(textToTranslate, "UTF-8");
 
     URL url = new URL(finalURL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
