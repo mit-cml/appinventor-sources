@@ -480,7 +480,10 @@ public class TopToolbar extends Composite {
     private boolean deleteConfirmation(List<Project> projects) {
       String message;
       if (projects.size() == 1) {
-        message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+        if (projects.get(0).isPublished())
+          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
+        else
+          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
@@ -508,6 +511,11 @@ public class TopToolbar extends Composite {
         // need to clear the ViewerBox first.
         ViewerBox.getViewerBox().clear();
       }
+      if (project.isPublished()) {
+        doDeleteGalleryApp(project.getGalleryId());
+        GalleryClient gallery = GalleryClient.getInstance();
+        gallery.appWasChanged();
+      }
       // Make sure that we delete projects even if they are not open.
       doDeleteProject(projectId);
     }
@@ -525,6 +533,17 @@ public class TopToolbar extends Composite {
               if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
                 Ode.getInstance().createNoProjectsDialog(true);
               }
+            }
+          });
+    }
+    private void doDeleteGalleryApp(final long galleryId) {
+      Ode.getInstance().getGalleryService().deleteApp(galleryId,
+          new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryDeleteError()) {
+            @Override
+            public void onSuccess(Void result) {
+              // need to update gallery list
             }
           });
     }

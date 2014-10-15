@@ -35,6 +35,13 @@ public interface UserInfoService extends RemoteService {
   User getUserInformation(String sessionId);
 
   /**
+   * Retrieves information about the user of userId
+   *
+   * @return  user information
+   */
+  User getUserInformationByUserId(String userId);
+
+  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings
@@ -48,6 +55,18 @@ public interface UserInfoService extends RemoteService {
   void storeUserSettings(String settings);
 
   /**
+   * Stores the user's settings.
+   * @param name  user's settings
+   */
+  void storeUserName(String name);
+
+  /**
+   * Stores the user's settings.
+   * @param name  user's settings
+   */
+  void storeUserLink(String link);
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   boolean hasUserFile(String fileName);
@@ -56,4 +75,6 @@ public interface UserInfoService extends RemoteService {
    * Deletes the user file with the given file name
    */
   void deleteUserFile(String fileName);
+
+
 }

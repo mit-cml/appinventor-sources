@@ -79,6 +79,13 @@ public interface ProjectService extends RemoteService {
   void deleteProject(long projectId);
 
   /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  void setGalleryId(long projectId, long galleryId);
+
+  /**
    * Returns an array with project IDs.
    *
    * @return  IDs of projects found by the back-end
@@ -277,6 +284,17 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
+
+  /**
+   * creates a new project from a gallery app
+   * @param appName name of the app to open
+   * @param aiaPath the url of the aia file in cloud
+   * @param attributionId id of the gallery app that is being remixed
+   *
+   * @return {@link UserProject} info for new project
+   */
+
+  UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
 
   /**
    * Log a string to the server log, always log with

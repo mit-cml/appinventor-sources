@@ -51,6 +51,11 @@ public interface ProjectServiceAsync {
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
 
+   /**
+   * @see ProjectService#setGalleryid
+   */
+  void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
+
   /**
    * @see ProjectService#getProjects()
    */
@@ -145,6 +150,8 @@ public interface ProjectServiceAsync {
    * @see ProjectService#addFile(long, String)
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
+
+  void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#log(String)

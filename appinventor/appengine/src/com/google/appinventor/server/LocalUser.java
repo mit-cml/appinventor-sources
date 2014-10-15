@@ -69,6 +69,26 @@ public class LocalUser implements UserInfoProvider {
   }
 
   @Override
+  public String getUserName() throws UnsupportedOperationException {
+    try {
+      return user.get().getUserName();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
+  public String getUserLink() throws UnsupportedOperationException {
+    try {
+      return user.get().getUserLink();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
   public boolean getUserTosAccepted() throws UnsupportedOperationException {
     try {
       return user.get().getUserTosAccepted();
@@ -82,6 +102,16 @@ public class LocalUser implements UserInfoProvider {
   public boolean getIsAdmin() {
     try {
       return user.get().getIsAdmin();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
+  public int getType() {
+    try {
+      return user.get().getType();
     } catch (NullPointerException e) {
       // This should never happen, but just in case...
       throw new UnsupportedOperationException("User field should have been initialized.");

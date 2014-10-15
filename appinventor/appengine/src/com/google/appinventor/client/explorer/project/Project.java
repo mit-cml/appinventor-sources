@@ -91,6 +91,15 @@ public final class Project {
   }
 
   /**
+   * Returns the id of this project's attribution.
+   *
+   * @return  attribution id
+   */
+  public long getAttributionId() {
+    return projectInfo.getAttributionId();
+  }
+
+  /**
    * Returns the name of this project.
    *
    * @return  project name
@@ -132,6 +141,20 @@ public final class Project {
    */
   public void setDateModified(long date) {
     projectInfo.setDateModified(date);
+  }
+
+  public boolean isPublished() {
+    if (projectInfo.getGalleryId()== UserProject.NOTPUBLISHED) {
+      return false;
+    }
+    return true;
+  }
+  public long getGalleryId() {
+    return projectInfo.getGalleryId();
+  }
+
+  public void setGalleryId(long id) {
+    projectInfo.setGalleryId(id);
   }
 
   /**

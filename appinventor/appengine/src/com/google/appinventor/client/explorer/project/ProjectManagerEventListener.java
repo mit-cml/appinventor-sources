@@ -42,4 +42,9 @@ public interface ProjectManagerEventListener {
    */
   void onProjectsLoaded();
 
+  /**
+   * Invoked after a project is published so we can change its button to "Update"
+   *
+   */
+  void onProjectPublishedOrUnpublished();
 }

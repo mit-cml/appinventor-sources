@@ -46,6 +46,9 @@ public class StoredData {
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
+    public String name;
+    public String link;
+    public int type;
     String sessionid;           // uuid of active session
 
     // Path to template project passed as GET parameter
@@ -62,6 +65,9 @@ public class StoredData {
 
     // Verbose project name
     String name;
+
+    //introduction link
+    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum
@@ -80,6 +86,10 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
+
+    long galleryId;  // this is the galleryId of this project (if published)
+    long attributionId;  // if this project was initiated from the gallery, this is
+       // the id of the gallery app that was copied for remix
   }
 
   // Project properties specific to the user

@@ -48,7 +48,7 @@ public class WhitelistTest {
   }
 
   LocalUser makeUser(String email) {
-    user.set(new User(ID, email, false, false, "test-session"));
+    user.set(new User(ID, email, null, "http://www.appinventor.org/", false, false, 0, "test-session"));
     return user;
   }
 
