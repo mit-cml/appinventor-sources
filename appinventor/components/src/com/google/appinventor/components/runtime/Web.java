@@ -742,7 +742,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Decodes the given XML string to produce a list structure. <tag>string</tag> decodes to
    * a list that contains a pair of tag and string.  More generally, if obj1, obj2, ...
-   * are tag-delmited XML strings, then <tag>obj1 obj2 ...</tag> decodes to a list 
+   * are tag-delimited XML strings, then <tag>obj1 obj2 ...</tag> decodes to a list 
    * that contains a pair whose first element is tag and whose second element is the
    * list of the decoded obj's, ordered alphabetically by tags.  Examples:
    * <foo>123</foo> decodes to a one-item list containing the pair (foo, 123)
