@@ -45,6 +45,13 @@ public class YailList extends Pair {
   }
 
   /**
+   * Create an empty YailList YailList from an array.
+   */
+  public static YailList makeEmptyList() {
+    return new YailList();
+  }
+  
+  /**
    * Create a YailList from an array.
    */
   public static YailList makeList(Object[] objects) {
