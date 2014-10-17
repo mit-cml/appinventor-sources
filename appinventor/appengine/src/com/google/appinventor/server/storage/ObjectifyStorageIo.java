@@ -103,8 +103,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   private final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
 
-  private final GcsService gcsService =
-    GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+  private final GcsService gcsService;
 
   private final String GCS_BUCKET_NAME = Flag.createFlag("gcs.bucket", "").get();
 
@@ -155,6 +154,16 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   ObjectifyStorageIo() {
     fileService = FileServiceFactory.getFileService();
+    RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
+      .retryMaxAttempts(10)
+      .totalRetryPeriodMillis(1000).build();
+    LOG.log(Level.INFO, "RetryParams: getInitialRetryDelayMillis() = " + retryParams.getInitialRetryDelayMillis());
+    LOG.log(Level.INFO, "RetryParams: getRequestTimeoutMillis() = " + retryParams.getRequestTimeoutMillis());
+    LOG.log(Level.INFO, "RetryParams: getRetryDelayBackoffFactor() = " + retryParams.getRetryDelayBackoffFactor());
+    LOG.log(Level.INFO, "RetryParams: getRetryMaxAttempts() = " + retryParams.getRetryMaxAttempts());
+    LOG.log(Level.INFO, "RetryParams: getRetryMinAttempts() = " + retryParams.getRetryMinAttempts());
+    LOG.log(Level.INFO, "RetryParams: getTotalRetryPeriodMillis() = " + retryParams.getTotalRetryPeriodMillis());
+    gcsService = GcsServiceFactory.createGcsService(retryParams);
     memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     initMotd();
   }
@@ -162,6 +171,10 @@ public class ObjectifyStorageIo implements  StorageIo {
   // for testing
   ObjectifyStorageIo(FileService fileService) {
     this.fileService = fileService;
+    RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
+      .retryMaxAttempts(10)
+      .totalRetryPeriodMillis(1000).build();
+    gcsService = GcsServiceFactory.createGcsService(retryParams);
     initMotd();
   }
 
@@ -1628,32 +1641,51 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (fileData != null) {
       if (fileData.isGCS) {     // It's in the Cloud Store
         try {
-          GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
-          int bytesRead = 0;
-          int fileSize = 0;
-          ByteBuffer resultBuffer;
-          try {
-            fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-            resultBuffer = ByteBuffer.allocate(fileSize);
-            GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+          int count;
+          boolean npfHappened = false;
+          boolean recovered = false;
+          for (count = 0; count < 5; count++) {
+            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
+            int bytesRead = 0;
+            int fileSize = 0;
+            ByteBuffer resultBuffer;
             try {
-              while (bytesRead < fileSize) {
-                bytesRead += readChannel.read(resultBuffer);
-                if (bytesRead < fileSize) {
-                  LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+              resultBuffer = ByteBuffer.allocate(fileSize);
+              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+              try {
+                while (bytesRead < fileSize) {
+                  bytesRead += readChannel.read(resultBuffer);
+                  if (bytesRead < fileSize) {
+                    LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                  }
                 }
+                recovered = true;
+              } finally {
+                readChannel.close();
               }
-            } finally {
-              readChannel.close();
+            } catch (NullPointerException e) {
+              // This happens if the object in GCS is non-existent, which would happen
+              // when people uploaded a zero length object. As of this change, we now
+              // store zero length objects into GCS, but there are plenty of older objects
+              // that are missing in GCS.
+              LOG.log(Level.WARNING, "downloadrawfile: NPF recorded for " + fileData.gcsName);
+              npfHappened = true;
+              resultBuffer = ByteBuffer.allocate(0);
             }
-          } catch (NullPointerException e) {
-            // This happens if the object in GCS is non-existent, which would happen
-            // when people uploaded a zero length object. As of this change, we now
-            // store zero length objects into GCS, but there are plenty of older objects
-            // that are missing in GCS.
-            resultBuffer = ByteBuffer.allocate(0);
+            result.t = resultBuffer.array();
           }
-          result.t = resultBuffer.array();
+
+          // report out on how things went above
+          if (npfHappened) {    // We lost at least once
+            if (recovered) {
+              LOG.log(Level.WARNING, "recovered from NPF in downloadrawfile filename = " + fileData.gcsName +
+                " count = " + count);
+            } else {
+              LOG.log(Level.WARNING, "FATAL NPF in downloadrawfile filename = " + fileData.gcsName);
+            }
+          }
+
         } catch (IOException e) {
           throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1760,7 +1792,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       // blobs in the job.
       for (FileData fd : fileData) {
         fileName = fd.fileName;
-        byte[] data;
+        byte[] data = null;
         if (fd.isBlob) {
           try {
             data = getBlobstoreBytes(fd.blobstorePath);
@@ -1770,32 +1802,50 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         } else if (fd.isGCS) {
           try {
-            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
-            int bytesRead = 0;
-            int fileSize = 0;
-            ByteBuffer resultBuffer;
-            try {
-              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-              resultBuffer = ByteBuffer.allocate(fileSize);
-              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+            int count;
+            boolean npfHappened = false;
+            boolean recovered = false;
+            for (count = 0; count < 5; count++) {
+              GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
+              int bytesRead = 0;
+              int fileSize = 0;
+              ByteBuffer resultBuffer;
               try {
-                while (bytesRead < fileSize) {
-                  bytesRead += readChannel.read(resultBuffer);
-                  if (bytesRead < fileSize) {
-                    LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+                resultBuffer = ByteBuffer.allocate(fileSize);
+                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+                try {
+                  while (bytesRead < fileSize) {
+                    bytesRead += readChannel.read(resultBuffer);
+                    if (bytesRead < fileSize) {
+                      LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                    }
                   }
+                  recovered = true;
+                } finally {
+                  readChannel.close();
                 }
-              } finally {
-                readChannel.close();
+              } catch (NullPointerException e) {
+                // This happens if the object in GCS is non-existent, which would happen
+                // when people uploaded a zero length object. As of this change, we now
+                // store zero length objects into GCS, but there are plenty of older objects
+                // that are missing in GCS.
+                LOG.log(Level.WARNING, "exportProjectFile: NPF recorded for " + fd.gcsName);
+                npfHappened = true;
+                resultBuffer = ByteBuffer.allocate(0);
               }
-            } catch (NullPointerException e) {
-              // This happens if the object in GCS is non-existent, which would happen
-              // when people uploaded a zero length object. As of this change, we now
-              // store zero length objects into GCS, but there are plenty of older objects
-              // that are missing in GCS.
-              resultBuffer = ByteBuffer.allocate(0);
+              data = resultBuffer.array();
             }
-            data = resultBuffer.array();
+
+            // report out on how things went above
+            if (npfHappened) {    // We lost at least once
+              if (recovered) {
+                LOG.log(Level.WARNING, "recovered from NPF in exportProjectFile filename = " + fd.gcsName +
+                  " count = " + count);
+              } else {
+                LOG.log(Level.WARNING, "FATAL NPF in exportProjectFile filename = " + fd.gcsName);
+              }
+            }
           } catch (IOException e) {
             throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
