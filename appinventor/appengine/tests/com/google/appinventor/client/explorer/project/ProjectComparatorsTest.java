@@ -23,17 +23,18 @@ public class ProjectComparatorsTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
+    // some of project names begin with lower case to test case ignore sorting
     projects = new ArrayList<Project>();
     projects.add(new Project(
-        new UserProject(1, "WheresSpeedo", "YoungAndroid", 1279563121389L)));
+        new UserProject(1, "wheresSpeedo", "YoungAndroid", 1279563121389L)));
     projects.add(new Project(
-        new UserProject(2, "Test", "YoungAndroid", 1283385318767L)));
+        new UserProject(2, "test", "YoungAndroid", 1283385318767L)));
     projects.add(new Project(
-        new UserProject(3, "Calculator", "YoungAndroid", 1285093039591L)));
+        new UserProject(3, "calculator", "YoungAndroid", 1285093039591L)));
     projects.add(new Project(
         new UserProject(4, "CenteredButton", "YoungAndroid", 1285093334176L)));
     projects.add(new Project(
-        new UserProject(5, "ActivityStarter", "YoungAndroid", 1286912595603L)));
+        new UserProject(5, "activityStarter", "YoungAndroid", 1286912595603L)));
     projects.add(new Project(
         new UserProject(6, "Xylophone", "YoungAndroid", 1287376452708L)));
     projects.add(new Project(
@@ -62,7 +63,7 @@ public class ProjectComparatorsTest extends TestCase {
     for (Project project : projects) {
       String name = project.getProjectName();
       if (previousName != null) {
-        assertTrue(name.compareTo(previousName) >= 0);
+        assertTrue(name.compareToIgnoreCase(previousName) >= 0);
       }
       previousName = name;
     }
@@ -74,7 +75,7 @@ public class ProjectComparatorsTest extends TestCase {
     for (Project project : projects) {
       String name = project.getProjectName();
       if (previousName != null) {
-        assertTrue(name.compareTo(previousName) <= 0);
+        assertTrue(name.compareToIgnoreCase(previousName) <= 0);
       }
       previousName = name;
     }
