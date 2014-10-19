@@ -217,6 +217,7 @@ public class TranslationComponentMethods {
     map.put("Get", MESSAGES.GetMethods());
     map.put("HtmlTextDecode", MESSAGES.HtmlTextDecodeMethods());
     map.put("JsonTextDecode", MESSAGES.JsonTextDecodeMethods());
+    map.put("XmlTextDecode", MESSAGES.XmlTextDecodeMethods());
     map.put("PostFile", MESSAGES.PostFileMethods());
     map.put("PostText", MESSAGES.PostTextMethods());
     map.put("PostTextWithEncoding", MESSAGES.PostTextWithEncodingMethods());
