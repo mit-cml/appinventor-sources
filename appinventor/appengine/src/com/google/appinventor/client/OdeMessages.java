@@ -4113,6 +4113,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String JsonTextDecodeMethods();
 
+  @DefaultMessage("XmlTextDecode")
+  @Description("")
+  String XmlTextDecodeMethods();
+
   @DefaultMessage("PostFile")
   @Description("")
   String PostFileMethods();
