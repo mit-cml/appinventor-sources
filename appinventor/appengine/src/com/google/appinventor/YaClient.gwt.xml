@@ -109,6 +109,8 @@
   <extend-property name="locale" values="zh_CN"/>
   <!-- Traditional Chinese -->
   <extend-property name="locale" values="zh_TW"/>
+  <!-- Spanish from Spain -->
+  <extend-property name="locale" values="es_ES"/>
 
   <set-property-fallback name="locale" value="en"/>
 
