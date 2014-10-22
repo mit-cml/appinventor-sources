@@ -81,12 +81,17 @@ public class ImageSprite extends Sprite {
     rotationCached = false;
   }
 
+  /**
+   * This method uses getWidth and getHeight directly from the bitmap,
+   * so we apply corrections for density for coordinates and size.
+   * @param canvas the canvas on which to draw
+   */
   public void onDraw(android.graphics.Canvas canvas) {
     if (unrotatedBitmap != null && visible) {
-      int xinit = (int) Math.round(xLeft);
-      int yinit = (int) Math.round(yTop);
-      int w = Width();
-      int h = Height();
+      int xinit = (int) (Math.round(xLeft) * form.deviceDensity());
+      int yinit = (int) (Math.round(yTop) * form.deviceDensity());
+      int w = (int)(Width() * form.deviceDensity());
+      int h = (int)(Height() * form.deviceDensity());
       // If the sprite doesn't rotate,  use the original drawable
       // otherwise use the bitmapDrawable
       if (!rotates) {
@@ -191,7 +196,7 @@ public class ImageSprite extends Sprite {
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getHeight();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
     }
     return heightHint;
   }
@@ -208,7 +213,7 @@ public class ImageSprite extends Sprite {
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getWidth();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
     }
     return widthHint;
   }

@@ -61,7 +61,11 @@ public final class Ball extends Sprite {
   @Override
   protected void onDraw(Canvas canvas) {
     if (visible) {
-      canvas.drawCircle((float) xLeft + radius, (float) yTop + radius, radius, paint);
+      float correctedXLeft = (float)(xLeft * form.deviceDensity());
+      float correctedYTop =  (float)(yTop * form.deviceDensity());
+      float correctedRadius = radius * form.deviceDensity();
+      canvas.drawCircle(correctedXLeft + correctedRadius, correctedYTop +
+          correctedRadius, correctedRadius, paint);
     }
   }
 

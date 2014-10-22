@@ -1044,7 +1044,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return frameLayout.getWidth();
+    return (int)(frameLayout.getWidth() / this.deviceDensity);
   }
 
   /**
@@ -1055,7 +1055,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return frameLayout.getHeight();
+    return (int)(frameLayout.getHeight() / this.deviceDensity);
   }
 
   /**
