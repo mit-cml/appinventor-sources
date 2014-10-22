@@ -555,6 +555,14 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
+  @DefaultMessage("Check to see Preview on Tablet size.")
+  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  String previewTabletSize();
+
+  @DefaultMessage("Un-check to see Preview on Phone size.")
+  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  String previewPhoneSize();
+
   // Used in editor/simple/components/MockComponent.java
 
   @DefaultMessage("Rename Component")
