@@ -96,6 +96,8 @@ public class Form extends Activity
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
 
+  private float deviceDensity;
+
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
 
@@ -174,6 +176,8 @@ public class Form extends Activity
 
     activeForm = this;
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
+
+    deviceDensity = this.getResources().getDisplayMetrics().density;
 
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
@@ -1166,6 +1170,10 @@ public class Form extends Activity
   @Override
   public void $add(AndroidViewComponent component) {
     viewLayout.add(component);
+  }
+
+  public float deviceDensity(){
+    return this.deviceDensity;
   }
 
   @Override
