@@ -101,7 +101,7 @@ public final class FileImporterImpl implements FileImporter {
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
             String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-              projectName, qualifiedFormName, null, null, null, null);
+              projectName, qualifiedFormName, null, null, null, null, null);
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -148,7 +148,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null);
+    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null);
     long projectId = storageIo.createProject(userId, project, settings);
     return storageIo.getUserProject(userId, projectId);
   }

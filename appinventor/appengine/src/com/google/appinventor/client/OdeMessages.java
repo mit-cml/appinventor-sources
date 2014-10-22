@@ -2121,6 +2121,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("VersionName")
   @Description("")
   String VersionNameProperties();
+
+  @DefaultMessage("CompatibilityMode")
+  @Description("")
+  String CompatibilityModeProperties();
   
   @DefaultMessage("Visible")
   @Description("")

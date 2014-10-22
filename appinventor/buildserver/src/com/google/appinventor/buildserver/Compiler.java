@@ -93,6 +93,9 @@ public final class Compiler {
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
 
+  private static final String DEFAULT_MIN_SDK = "4";
+  private static final String COMPATIBILITY_MIN_SDK = "3";
+
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
 
@@ -311,6 +314,9 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanVname(project.getVName());
+    String compatible = project.getCompatible();
+    String minSDK = (compatible == null || compatible.equals("False")) ? DEFAULT_MIN_SDK :
+        COMPATIBILITY_MIN_SDK;
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
@@ -355,7 +361,7 @@ public final class Compiler {
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
-      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
 
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual

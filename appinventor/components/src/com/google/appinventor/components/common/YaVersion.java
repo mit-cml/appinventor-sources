@@ -282,8 +282,10 @@ public class YaVersion {
   // - TWITTER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 105:
   // - WEB_COMPONENT_VERSION was incremented to 4.
-  
-  public static final int YOUNG_ANDROID_VERSION = 105;
+  // For YOUNG_ANDROID_VERSION 106:
+  // - FORM_COMPONENT_VERSION was incremented to 14.
+
+  public static final int YOUNG_ANDROID_VERSION = 106;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -525,7 +527,9 @@ public class YaVersion {
   // - AboutScreen property was added
   // For FORM_COMPONENT_VERSION 13:
   // - The Screen.Scrollable property was set to False by default
-  public static final int FORM_COMPONENT_VERSION = 13;
+  // For FORM_COMPONENT_VERSION 14:
+  // - The Screen.CompatibilityMode property was added
+  public static final int FORM_COMPONENT_VERSION = 14;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

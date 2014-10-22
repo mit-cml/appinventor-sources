@@ -731,7 +731,7 @@ public class Form extends Activity
    * AboutScreen property setter method: sets a new aboutApp string for the form in the
    * form's "About this application" menu.
    *
-   * @param title  new form caption
+   * @param aboutScreen content to be displayed in aboutApp
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
@@ -1018,6 +1018,19 @@ public class Form extends Activity
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
+  /**
+   * Compatibility mode property setter method.
+   *
+   * @param compatibilityMode true sets API level to Compiler.COMPATIBILITY_MIN_SDK
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "If selected, the app will be built using compatibility mode")
+  public void CompatibilityMode(boolean compatibilityMode) {
+    // We don't actually need to do anything. This is used by the project and build server.
+  }
+
 
   /**
    * Width property getter method.
