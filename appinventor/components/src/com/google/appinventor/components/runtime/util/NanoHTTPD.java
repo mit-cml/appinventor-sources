@@ -2,7 +2,6 @@
 // Copyright (C) 2001,2005-2011 by Jarno Elonen <elonen@iki.fi>
 // and Copyright (C) 2010 by Konstantinos Togias <info@ktogias.gr>
 // See Details at end of file.
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.components.runtime.util;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
