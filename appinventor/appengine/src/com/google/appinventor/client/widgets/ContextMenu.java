@@ -55,6 +55,27 @@ public final class ContextMenu {
   }
 
   /**
+   * Adds a menu item to the context menu.
+   *
+   * @param text  caption of menu item
+   * @param asHtml whether to treat text as html
+   * @param command   command to execute when menu item is chosen
+   * @return  menu item
+   */
+  public MenuItem addItem(String text, boolean asHtml, final Command command) {
+    MenuItem menuItem = new MenuItem(text, asHtml, new Command() {
+      @Override
+      public void execute() {
+        hide();
+        command.execute();
+      }
+    });
+    menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    menuBar.addItem(menuItem);
+    return menuItem;
+  }
+
+  /**
    * Removes a menu item from the context menu.
    *
    * @param item  menu item to be removed

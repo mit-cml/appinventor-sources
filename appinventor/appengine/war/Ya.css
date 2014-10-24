@@ -328,6 +328,8 @@ select {
 .ode-TopPanelButton,
 .ActionDropDown-Default,
 .ActionDropDown-Options {
+  display: table-cell;
+  vertical-align: middle;
   font-size: 12px;
   cursor: pointer;
   margin: -12px 0px;
