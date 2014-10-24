@@ -6,12 +6,14 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.appinventor.client.output.OdeLog;
 
 /**
  * Mock ListView component.
@@ -30,6 +32,9 @@ public final class MockListView extends MockVisibleComponent {
   private SimplePanel panelForItem;
   private String[] currentList;
   private boolean filterShowing = false;
+  //  Needed for background color of labelInItem
+  private String backgroundColor;
+  private String currentElements;
 
   /**
    * Creates a new MockListView component. I place a label inside a simplepanel which is then placed into a vertical panel
@@ -53,6 +58,17 @@ public final class MockListView extends MockVisibleComponent {
   @Override
   public void onCreateFromPalette() {
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
+  }
+
+  /*
+   * Sets the listview's BackgroundColor property to a new value.
+   */
+  private void setBackgroundColorProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      text = "&HFF000000";  // black
+    }
+    backgroundColor = text;
+    MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, text);
   }
 
   /**
@@ -83,7 +99,8 @@ public final class MockListView extends MockVisibleComponent {
   /*
    * Sets the text to be added in the listview
    */
-  private void setElementsFromStringProperty (String text){
+  private void setElementsFromStringProperty(String text){
+	currentElements = text;
     currentList = text.split(",");
 
     listViewWidget.clear();
@@ -106,7 +123,8 @@ public final class MockListView extends MockVisibleComponent {
   private void createLabelItem(int i) {
     labelInItem =new InlineLabel(currentList[i]);
     labelInItem.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
-    MockComponentsUtil.setWidgetBackgroundColor(labelInItem, "&HFF000000");
+    OdeLog.elog("Setting label item background color.");
+    MockComponentsUtil.setWidgetBackgroundColor(labelInItem, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(labelInItem, "&HFFFFFFFF");
   }
 
@@ -118,6 +136,7 @@ public final class MockListView extends MockVisibleComponent {
     panelForItem.add(labelInItem);
     listViewWidget.add(panelForItem);
   }
+
 
   // PropertyChangeListener implementation
 
@@ -132,6 +151,13 @@ public final class MockListView extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_FILTER_BAR)) {
       setFilterShowBox(newValue);
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
+    	setBackgroundColorProperty(newValue);
+    	if (currentList != null) {
+    		setElementsFromStringProperty(currentElements);
+    	}
+    	refreshForm();
+
     }
   }
 }
