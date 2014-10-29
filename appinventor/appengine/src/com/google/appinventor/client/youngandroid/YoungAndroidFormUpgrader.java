@@ -726,6 +726,13 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 13;
     }
+
+    if (srcCompVersion < 14) {
+      // The Compatibility Mode property was added. No properties need to be modified to update to
+      // version 7.
+      srcCompVersion = 14;
+    }
+
     return srcCompVersion;
   }
 

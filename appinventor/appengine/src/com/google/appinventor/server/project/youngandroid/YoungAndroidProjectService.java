@@ -122,17 +122,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   /**
    * Returns project settings that can be used when creating a new project.
    */
-  public static String getProjectSettings(String icon, String vCode, String vName, String useslocation) {
+  public static String getProjectSettings(String icon, String vCode, String vName,
+                                          String useslocation, String compatibilityMode) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
     useslocation = Strings.nullToEmpty(useslocation);
+    compatibilityMode = Strings.nullToEmpty(compatibilityMode);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
-        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" +
-        icon + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE +
-        "\":\"" + vCode +"\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME +
-        "\":\"" + vName + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION +
-        "\":\"" + useslocation + "\"}}";
+        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE + "\":\"" + compatibilityMode +
+        "\"}}";
   }
 
   /**
@@ -146,7 +149,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param vname the version name
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-    String icon, String vcode, String vname, String useslocation) {
+    String icon, String vcode, String vname, String useslocation, String compatibilityMode) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -163,6 +166,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (useslocation != null && !useslocation.isEmpty()) {
       contents += "useslocation=" + useslocation + "\n";
+    }
+    if (compatibilityMode != null && !compatibilityMode.isEmpty()) {
+      contents += "compatibilitymode=" + compatibilityMode + "\n";
     }
     return contents;
   }
@@ -225,6 +231,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newUsesLocation = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION));
+    String newCompatibilityMode = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -241,13 +250,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldVCode = Strings.nullToEmpty(properties.getProperty("versioncode"));
     String oldVName = Strings.nullToEmpty(properties.getProperty("versionname"));
     String oldUsesLocation = Strings.nullToEmpty(properties.getProperty("useslocation"));
+    String oldCompatibilityMode = Strings.nullToEmpty(properties.getProperty("compatibilitymode"));
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
-      || !newUsesLocation.equals(oldUsesLocation)) {
+      || !newUsesLocation.equals(oldUsesLocation) || !newCompatibilityMode.equals(oldCompatibilityMode)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
-      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon, newVCode, newVName, newUsesLocation);
+      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
+          newVCode, newVName, newUsesLocation, newCompatibilityMode);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -266,7 +277,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
-      qualifiedFormName, null, null, null, null);
+      qualifiedFormName, null, null, null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -286,7 +297,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false"));
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false",
+        "false"));
   }
 
   @Override
@@ -307,6 +319,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String useslocation = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION);
+    String compatibilityMode = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -325,7 +340,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // name and qualified name.
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
-        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode, vname, useslocation);
+        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
+            vname, useslocation, compatibilityMode);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -348,7 +364,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname, useslocation));
+    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
+        useslocation, compatibilityMode));
   }
 
   @Override

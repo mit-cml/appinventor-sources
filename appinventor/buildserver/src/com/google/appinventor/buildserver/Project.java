@@ -67,6 +67,7 @@ public final class Project {
    *    icon - application icon
    *    versioncode - version code
    *    versionname - version name
+   *    compatibilitymode - build the app with API Level = Compiler.COMPATIBILITY_MIN_SDK
    *    source - comma separated list of source root directories
    *    assets - assets directory (for image and data files bundled with the application)
    *    build - output directory for the compiler
@@ -80,6 +81,7 @@ public final class Project {
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
+  private static final String COMPATIBILITY_MODE = "compatibilitymode";
 
   // Table containing project properties
   private Properties properties;
@@ -227,6 +229,24 @@ public final class Project {
    */
   public void setVName(String vname) {
     properties.setProperty(VNAMETAG, vname);
+  }
+
+  /**
+   * Returns the compatibility mode.
+   *
+   * @return "True" if the app is to be built with API Level Compiler.COMPATIBILITY_MIN_SDK.
+   */
+  public String getCompatible() {
+    return properties.getProperty(COMPATIBILITY_MODE);
+  }
+
+  /**
+   * Sets the version name.
+   *
+   * @param compatibilityMode "True" to set compatibilitymode
+   */
+  public void setCompatible(String compatibilityMode) {
+    properties.setProperty(COMPATIBILITY_MODE, compatibilityMode);
   }
 
   /**

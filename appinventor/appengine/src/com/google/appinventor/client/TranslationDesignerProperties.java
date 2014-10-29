@@ -218,6 +218,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.VersionCodeProperties();
     } else if (key.equals("VersionName")) {
       value = MESSAGES.VersionNameProperties();
+    } else if (key.equals("CompatibilityMode")) {
+      value = MESSAGES.CompatibilityModeProperties();
     } else if (key.equals("showing")) {
       value = MESSAGES.VisibilityShowingProperties();
     } else if (key.equals("hidden")) {

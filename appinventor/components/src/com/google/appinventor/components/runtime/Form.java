@@ -97,6 +97,8 @@ public class Form extends Activity
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
 
+  private float deviceDensity;
+
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
 
@@ -175,6 +177,8 @@ public class Form extends Activity
 
     activeForm = this;
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
+
+    deviceDensity = this.getResources().getDisplayMetrics().density;
 
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
@@ -732,7 +736,7 @@ public class Form extends Activity
    * AboutScreen property setter method: sets a new aboutApp string for the form in the
    * form's "About this application" menu.
    *
-   * @param title  new form caption
+   * @param aboutScreen content to be displayed in aboutApp
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
@@ -1019,6 +1023,19 @@ public class Form extends Activity
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
+  /**
+   * Compatibility mode property setter method.
+   *
+   * @param compatibilityMode true sets API level to Compiler.COMPATIBILITY_MIN_SDK
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "If selected, the app will be built using compatibility mode")
+  public void CompatibilityMode(boolean compatibilityMode) {
+    // We don't actually need to do anything. This is used by the project and build server.
+  }
+
 
   /**
    * Width property getter method.
@@ -1028,7 +1045,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return frameLayout.getWidth();
+    return (int)(frameLayout.getWidth() / this.deviceDensity);
   }
 
   /**
@@ -1039,7 +1056,7 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return frameLayout.getHeight();
+    return (int)(frameLayout.getHeight() / this.deviceDensity);
   }
 
   /**
@@ -1154,6 +1171,10 @@ public class Form extends Activity
   @Override
   public void $add(AndroidViewComponent component) {
     viewLayout.add(component);
+  }
+
+  public float deviceDensity(){
+    return this.deviceDensity;
   }
 
   @Override
