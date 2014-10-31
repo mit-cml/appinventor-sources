@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.rpc.user;
 
@@ -34,6 +35,13 @@ public interface UserInfoService extends RemoteService {
   User getUserInformation(String sessionId);
 
   /**
+   * Retrieves information about the user of userId
+   *
+   * @return  user information
+   */
+  User getUserInformationByUserId(String userId);
+
+  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings
@@ -47,6 +55,18 @@ public interface UserInfoService extends RemoteService {
   void storeUserSettings(String settings);
 
   /**
+   * Stores the user's settings.
+   * @param name  user's settings
+   */
+  void storeUserName(String name);
+
+  /**
+   * Stores the user's settings.
+   * @param name  user's settings
+   */
+  void storeUserLink(String link);
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   boolean hasUserFile(String fileName);
@@ -55,4 +75,6 @@ public interface UserInfoService extends RemoteService {
    * Deletes the user file with the given file name
    */
   void deleteUserFile(String fileName);
+
+
 }

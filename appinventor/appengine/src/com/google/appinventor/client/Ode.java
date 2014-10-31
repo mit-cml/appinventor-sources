@@ -1,18 +1,28 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client;
 
 import java.util.Random;
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.ModerationPageBox;
+import com.google.appinventor.client.boxes.GalleryListBox;
+import com.google.appinventor.client.boxes.GalleryAppBox;
+import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -26,6 +36,8 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
+import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
@@ -48,9 +60,14 @@ import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.Message;
+import com.google.appinventor.shared.rpc.project.GalleryService;
+import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
@@ -93,6 +110,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -100,6 +118,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class Ode implements EntryPoint {
+  private static final Logger LOG = Logger.getLogger(Ode.class.getName());
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
@@ -123,21 +142,31 @@ public class Ode implements EntryPoint {
   // User settings
   private static UserSettings userSettings;
 
+  // Gallery settings
+  private static GallerySettings gallerySettings;
+
   private MotdFetcher motdFetcher;
 
   // User information
   private User user;
 
+  // Unread message count, global
+  private final int[] msgCount = {0};
+
   // Template path if set by /?repo=
   private String templatePath;
   private boolean templateLoadingFlag = false;
+
+  // Gallery id if set by /?galleryId=
+  private String galleryId;
+  private boolean galleryIdLoadingFlag = false;
 
   // Nonce Information
   private String nonce;
 
   private String sessionId = generateUuid(); // Create new session id
-
   private Random random = new Random(); // For generating random nonce
+
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -153,6 +182,11 @@ public class Ode implements EntryPoint {
   // Remembers the current View
   static final int DESIGNER = 0;
   static final int PROJECTS = 1;
+  private static final int GALLERY = 2;
+  private static final int GALLERYAPP = 3;
+  private static final int USERPROFILE = 4;
+  private static final int PRIVATEUSERPROFILE = 5;
+  private static final int MODERATIONPAGE = 6;
   private static int currentView = DESIGNER;
 
   /*
@@ -162,7 +196,7 @@ public class Ode implements EntryPoint {
    *  |+-- topPanel -------------------------------+|
    *  ||                                           ||
    *  |+-------------------------------------------+|
-   *  |+-- deckPanel -------------------------------+|
+   *  |+-- deckPanel ------------------------------+|
    *  ||                                           ||
    *  |+-------------------------------------------+|
    *  |+-- statusPanel ----------------------------+|
@@ -174,11 +208,18 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
+  private int galleryTabIndex;
+  private int galleryAppTabIndex;
+  private int userProfileTabIndex;
+  private int privateUserProfileIndex;
+  private int moderationPageTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
   private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
+  private GalleryToolbar galleryListToolbar;
+  private GalleryToolbar galleryPageToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
@@ -190,6 +231,9 @@ public class Ode implements EntryPoint {
 
   // Web service for project related information
   private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);
+
+  // Web service for gallery related information
+  private final GalleryServiceAsync galleryService = GWT.create(GalleryService.class);
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
@@ -250,6 +294,71 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the gallery settings.
+   *
+   * @return  gallery settings
+   */
+  public static GallerySettings getGallerySettings() {
+    return gallerySettings;
+  }
+
+  /**
+   * loads the gallery settings from server
+   *
+   */
+  public void  loadGallerySettings() {
+     // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
+    // failure message
+    MESSAGES.gallerySettingsError()) {
+      @Override
+      public void onSuccess(GallerySettings settings) {
+        gallerySettings = settings;
+        if(gallerySettings.galleryEnabled() == true){
+          GalleryClient.getInstance().setSystemEnvironmet(settings.getEnvironment());
+          GalleryListBox.loadGalleryList();
+          topPanel.showGalleryLink(true);
+          if(user.isModerator()){
+            ModerationPageBox.loadModerationPage();
+            topPanel.showModerationLink(true);
+          }
+          topPanel.updateAccountMessageButton();
+          PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
+
+          final String userInfo = user.getUserName();
+          // Get the message count to display right next to user
+          final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(List<Message> msgs) {
+                  msgCount[0] = 0;
+                  // get the new comment list so gui updates
+                  for (Message m : msgs) {
+                    if (m.getStatus().equalsIgnoreCase("1")) {
+                      msgCount[0]++;
+                    }
+                  }
+                  String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
+                  OdeLog.log("### MSG final = " + u);
+                  // Reset message count for further use
+                  topPanel.showUserEmail(u);
+                }
+            };
+          Ode.getInstance().getGalleryService().getMessages(messagesCallback);
+
+        }else{
+          topPanel.showModerationLink(false);
+          topPanel.showGalleryLink(false);
+        }
+      }
+    };
+    //this is below the call back, but of course it is done first
+    ode.getGalleryService().loadGallerySettings(callback);
+  }
+
+  /**
    * Returns the asset manager.
    *
    * @return  asset manager
@@ -282,6 +391,34 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Switch to the Gallery tab
+   */
+  public void switchToGalleryView() {
+    currentView = GALLERY;
+    deckPanel.showWidget(galleryTabIndex);
+  }
+
+  /**
+   * Switch to the Gallery App
+   */
+  public void switchToGalleryAppView(GalleryApp app, int editStatus) {
+    currentView = GALLERYAPP;
+    GalleryAppBox.setApp(app, editStatus);
+    deckPanel.showWidget(galleryAppTabIndex);
+  }
+
+  /**
+   * Switch to the user profile
+   * TODO: change string parameter
+   */
+  public void switchToUserProfileView(String userId, int editStatus) {
+    currentView = USERPROFILE;
+    OdeLog.log("###########" + userId + "||||||" + editStatus);
+    ProfileBox.setProfile(userId, editStatus);
+    deckPanel.showWidget(userProfileTabIndex);
+  }
+
+  /**
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
@@ -297,6 +434,21 @@ public class Ode implements EntryPoint {
     }
   }
 
+  /**
+   * Switch to Gallery TabPanel
+   */
+  public void switchToPrivateUserProfileView() {
+    currentView = privateUserProfileIndex;
+    deckPanel.showWidget(privateUserProfileIndex);
+  }
+
+  /**
+   * Switch to the Moderation Page tab
+   */
+  public void switchToModerationPageView() {
+    currentView = MODERATIONPAGE;
+    deckPanel.showWidget(moderationPageTabIndex);
+  }
   /**
    * Switch to the Debugging tab
    */
@@ -314,7 +466,7 @@ public class Ode implements EntryPoint {
       return;
     }
     OdeLog.log("Ode.openPreviousProject called");
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+    final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
 
     // Retrieve the userTemplates
@@ -332,6 +484,27 @@ public class Ode implements EntryPoint {
           }
         };
       TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
+    } else if(galleryIdLoadingFlag){
+      try {
+        long galleryId_Long = Long.valueOf(galleryId);
+        final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(GalleryApp app) {
+                if(app == null){
+                  openProject(value);
+                  Window.alert(MESSAGES.galleryIdNotExist());
+                }else{
+                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+                }
+              }
+            };
+        Ode.getInstance().getGalleryService().getApp(galleryId_Long, callback);
+      } catch (NumberFormatException e) {
+        openProject(value);
+        Window.alert(MESSAGES.galleryIdNotExist());
+      }
     } else {
       openProject(value);
     }
@@ -436,7 +609,7 @@ public class Ode implements EntryPoint {
             Window.open(BugReport.getBugReportLink(e), "_blank", "");
           }
         } else {
-          // Display a confirm dialog with error msg and if 'ok' open the debugging view	
+          // Display a confirm dialog with error msg and if 'ok' open the debugging view
           if (Window.confirm(MESSAGES.internalErrorClickOkDebuggingView())) {
             Ode.getInstance().switchToDebuggingView();
           }
@@ -455,6 +628,13 @@ public class Ode implements EntryPoint {
     if (templatePath != null) {
       OdeLog.wlog("Got a template path of " + templatePath);
       templateLoadingFlag = true;
+    }
+
+    // Let's see if we were started with a galleryId= parameter which points to a template
+    galleryId = Window.Location.getParameter("galleryId");
+    if(galleryId != null){
+      OdeLog.wlog("Got a galleryId of " + galleryId);
+      galleryIdLoadingFlag = true;
     }
 
     // Get user information.
@@ -481,6 +661,11 @@ public class Ode implements EntryPoint {
         }
 
         userSettings = new UserSettings(user);
+
+        // Gallery settings
+        gallerySettings = new GallerySettings();
+        //gallerySettings.loadGallerySettings();
+        loadGallerySettings();
 
         // Initialize project and editor managers
         // The project manager loads the user's projects asynchronously
@@ -586,6 +771,7 @@ public class Ode implements EntryPoint {
     // Register services with RPC status popup
     rpcStatusPopup.register((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
+    rpcStatusPopup.register((ExtendedServiceProxy<?>) galleryService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
@@ -619,8 +805,8 @@ public class Ode implements EntryPoint {
     pVertPanel.setSpacing(0);
     HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
-    projectListPanel.add(ProjectListBox.getProjectListBox());
     projectToolbar = new ProjectToolbar();
+    projectListPanel.add(ProjectListBox.getProjectListBox());
     pVertPanel.add(projectToolbar);
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
@@ -684,6 +870,72 @@ public class Ode implements EntryPoint {
     dVertPanel.add(workColumns);
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
+
+    // Gallery list tab
+    VerticalPanel gVertPanel = new VerticalPanel();
+    gVertPanel.setWidth("100%");
+    gVertPanel.setSpacing(0);
+    galleryListToolbar = new GalleryToolbar();
+    gVertPanel.add(galleryListToolbar);
+    HorizontalPanel appListPanel = new HorizontalPanel();
+    appListPanel.setWidth("100%");
+    appListPanel.add(GalleryListBox.getGalleryListBox());
+
+    gVertPanel.add(appListPanel);
+    galleryTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(gVertPanel);
+
+     // Gallery app tab
+    VerticalPanel aVertPanel = new VerticalPanel();
+    aVertPanel.setWidth("100%");
+    aVertPanel.setSpacing(0);
+    galleryPageToolbar = new GalleryToolbar();
+    aVertPanel.add(galleryPageToolbar);
+    HorizontalPanel appPanel = new HorizontalPanel();
+    appPanel.setWidth("100%");
+    appPanel.add(GalleryAppBox.getGalleryAppBox());
+
+    aVertPanel.add(appPanel);
+    galleryAppTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(aVertPanel);
+
+    // KM: DEBUGGING BEGIN
+    // User profile tab
+    VerticalPanel uVertPanel = new VerticalPanel();
+    uVertPanel.setWidth("100%");
+    uVertPanel.setSpacing(0);
+    HorizontalPanel userProfilePanel = new HorizontalPanel();
+    userProfilePanel.setWidth("100%");
+    userProfilePanel.add(ProfileBox.getUserProfileBox());
+
+    uVertPanel.add(userProfilePanel);
+    userProfileTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(uVertPanel);
+    // KM: DEBUGGING END
+
+    // Private User Profile TabPanel
+    VerticalPanel ppVertPanel = new VerticalPanel();
+    ppVertPanel.setWidth("100%");
+    ppVertPanel.setSpacing(0);
+    HorizontalPanel privateUserProfileTabPanel = new HorizontalPanel();
+    privateUserProfileTabPanel.setWidth("100%");
+    privateUserProfileTabPanel.add(PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel());
+    ppVertPanel.add(privateUserProfileTabPanel);
+    privateUserProfileIndex = deckPanel.getWidgetCount();
+    deckPanel.add(ppVertPanel);
+
+    // Moderation Page tab
+    VerticalPanel mPVertPanel = new VerticalPanel();
+    mPVertPanel.setWidth("100%");
+    mPVertPanel.setSpacing(0);
+    HorizontalPanel moderationPagePanel = new HorizontalPanel();
+    moderationPagePanel.setWidth("100%");
+
+    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
+
+    mPVertPanel.add(moderationPagePanel);
+    moderationPageTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(mPVertPanel);
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
@@ -867,6 +1119,16 @@ public class Ode implements EntryPoint {
   public ProjectServiceAsync getProjectService() {
     return projectService;
   }
+
+  /**
+   * Get an instance of the gallery information web service.
+   *
+   * @return gallery web service instance
+   */
+  public GalleryServiceAsync getGalleryService() {
+    return galleryService;
+  }
+
 
   /**
    * Get an instance of the user information web service.

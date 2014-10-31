@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.storage;
 
@@ -88,12 +89,41 @@ public interface StorageIo {
   String loadSettings(String userId);
 
   /**
+   * Sets the stored name for user with id userId
+   *
+   */
+  void setUserName(String userId, String name);
+
+   /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserLink(String userId);
+
+  /**
+   * Sets the stored link for user with id userId
+   *
+   */
+  void setUserLink(String userId, String link);
+
+   /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserName(String userId);
+
+  /**
    * Stores a string with the user's settings.
    *
    * @param userId user ID
    * @param settings user's settings
    */
   void storeSettings(String userId, String settings);
+
 
   // Project management
 
@@ -125,6 +155,22 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
+
+  /**
+   * sets a projects gallery id when it is published
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param galleryId gallery ID
+   */
+  void setProjectGalleryId(final String userId, final long projectId,final long galleryId);
+
+   /**
+   * sets a projects attribution id when it is opened from a gallery project
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param attributionId attribution ID
+   */
+  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);
 
   /**
    * Returns a string with the project settings.
@@ -186,6 +232,24 @@ public interface StorageIo {
    * @return String specially formatted history
    */
   String getProjectHistory(String userId, long projectId);
+
+  // JIS XXX
+  /**
+   * Returns the date the project was created.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getProjectDateCreated(String userId, long projectId);
+ /**
+   * Returns the gallery id or -1 if not published.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+//  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -318,6 +382,22 @@ public interface StorageIo {
    * @return  list of output file ID
    */
   List<String> getProjectOutputFiles(String userId, long projectId);
+
+  /**
+   * Returns the gallery id for a project.
+   * @param projectId  project ID
+   *
+   * @return  list of output file ID
+   */
+  long getProjectGalleryId(String userId, final long projectId);
+
+   /**
+   * Returns the attribution id for a project-- the app it was copied/remixed from
+   * @param projectId  project ID
+   *
+   * @return galleryId
+   */
+  long getProjectAttributionId(final long projectId);
 
   /**
    * Uploads a file.

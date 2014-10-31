@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.storage;
 
@@ -45,6 +46,9 @@ public class StoredData {
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
+    public String name;
+    public String link;
+    public int type;
     String sessionid;           // uuid of active session
 
     // Path to template project passed as GET parameter
@@ -61,6 +65,9 @@ public class StoredData {
 
     // Verbose project name
     String name;
+
+    //introduction link
+    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum
@@ -79,6 +86,10 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
+
+    long galleryId;  // this is the galleryId of this project (if published)
+    long attributionId;  // if this project was initiated from the gallery, this is
+       // the id of the gallery app that was copied for remix
   }
 
   // Project properties specific to the user

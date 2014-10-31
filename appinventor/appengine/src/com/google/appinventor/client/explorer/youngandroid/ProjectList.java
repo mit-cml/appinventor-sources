@@ -1,15 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -49,6 +53,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     ASCENDING,
     DESCENDING,
   }
+
+  // TODO: add these to OdeMessages.java
+  private static final String PUBLISHBUTTONTEXT = "Publish to Gallery";
+  private static final String UPDATEBUTTONTEXT = "Update Gallery app";
+  private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
+  private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
+
+
   private final List<Project> projects;
   private final List<Project> selectedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
@@ -60,6 +72,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private final Label nameSortIndicator;
   private final Label dateCreatedSortIndicator;
   private final Label dateModifiedSortIndicator;
+
+  GalleryClient gallery = null;
 
   /**
    * Creates a new ProjectList
@@ -91,6 +105,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+
+    gallery = GalleryClient.getInstance();
   }
 
   /**
@@ -188,6 +204,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label nameLabel;
     final Label dateCreatedLabel;
     final Label dateModifiedLabel;
+    final Label editButton;
 
     private ProjectWidgets(final Project project) {
       checkBox = new CheckBox();
@@ -227,6 +244,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
+      editButton = new Label();
     }
   }
 
@@ -258,7 +276,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 4);
+    table.resize(1 + projects.size(), 5);
     int row = 1;
     for (Project project : projects) {
       ProjectWidgets pw = projectWidgets.get(project);
@@ -273,10 +291,59 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 1, pw.nameLabel);
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
+      table.setWidget(row, 4, pw.editButton);
+      if(Ode.getGallerySettings().galleryEnabled()){
+        preparePublishApp(project, pw);
+      }
+
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
+  }
+
+  /**
+   * Prepares the app publish/update process for each project button. If the project has never
+   * been published, we create a gallery app with default title
+   * If it has been published, we get the gallery app and send it
+   */
+  private void preparePublishApp(final Project p, final ProjectWidgets pw) {
+    pw.editButton.addStyleName("ode-ProjectGalleryLink");
+    if (p.isPublished()) {
+      pw.editButton.setText(UPDATEBUTTONTEXT);
+      pw.editButton.setTitle(UPDATEBUTTONTITLE);
+    }
+    else {
+      pw.editButton.setText(PUBLISHBUTTONTEXT);
+      pw.editButton.setTitle(PUBLISHBUTTONTITLE);
+    }
+    pw.editButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        final Ode ode = Ode.getInstance();
+        if (p.isPublished()) {
+          // setup what happens when we load the app in
+          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(GalleryApp app) {
+              // the server has returned us something
+              int editStatus=GalleryPage.UPDATEAPP;
+              Ode.getInstance().switchToGalleryAppView(app, editStatus);
+            }
+          };
+          // ok, this is below the call back, but of course it is done first
+          ode.getGalleryService().getApp(p.getGalleryId(),callback);
+        }
+        else {
+          // app is not yet published
+          // first create an app object with default data
+          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
+              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
+        }
+      }
+    });
   }
 
   /**
@@ -314,7 +381,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projectWidgets.put(project, new ProjectWidgets(project));
     refreshTable(true);
   }
-
   @Override
   public void onProjectRemoved(Project project) {
     projects.remove(project);
@@ -330,4 +396,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public void onProjectsLoaded() {
     // This can be empty
   }
+  public void onProjectPublishedOrUnpublished() {
+    refreshTable(false);
+  }
+
 }

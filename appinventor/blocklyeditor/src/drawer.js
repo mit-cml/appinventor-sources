@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
  * @fileoverview Visual blocks editor for App Inventor
@@ -397,6 +398,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
     '<block type="lists_create_with">' +
       '<mutation items="2"></mutation>' +
+    '</block>' +
+  '</xml>'},
+   lists_lookup_in_pairs: {xmlString:
+  '<xml>' +
+    '<block type="lists_lookup_in_pairs">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
 

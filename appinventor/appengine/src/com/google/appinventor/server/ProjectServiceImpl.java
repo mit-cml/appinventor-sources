@@ -1,10 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileReadChannel;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
@@ -27,11 +32,14 @@ import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -194,6 +202,16 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public void deleteProject(long projectId) {
     final String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
+  }
+
+ /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  public void setGalleryId(long projectId, long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
   }
 
   /**
@@ -540,6 +558,68 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public long addFile(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
+  }
+
+  /**
+   * This service is passed a URL to an aia file in GCS, of the form
+   *    /gs/bucket/gallery/apps/<galleryid>/aia
+   * It converts it to a byte array and imports the project using FileImporter.
+   * It also sets the attributionId of the project to point to the galleryID
+   * it is remixing.
+   */
+  @Override
+  public UserProject newProjectFromGallery(String projectName, String aiaPath,
+      long attributionId) {
+    boolean lockForRead = false;
+    try {
+      FileService fileService = FileServiceFactory.getFileService();
+      AppEngineFile readableFile = new AppEngineFile(aiaPath);
+      FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
+      InputStream gcsis =Channels.newInputStream(readChannel);
+      // ok, we don't want to send the gcs stream because it can time out as we
+      // process the zip. We need to copy to a byte buffer first, then send a bytestream
+
+      byte[] buffer = new byte[8000];
+      int bytesRead = 0;
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();
+
+      while ((bytesRead = gcsis.read(buffer)) != -1) {
+        bao.write(buffer, 0, bytesRead);
+      }
+
+      InputStream bais = new ByteArrayInputStream(bao.toByteArray());
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+
+      // close the gcs
+      readChannel.close();
+      // now use byte stream to process aia file
+      FileImporter fileImporter = new FileImporterImpl();
+      UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
+
+      // set the attribution id of the project
+      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
+      //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
+      userProject.setAttributionId(attributionId);
+
+      return userProject;
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+          e);
+      } catch (IOException e) {
+        e.printStackTrace();
+
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath+":"+projectName,
+          e);
+      } catch (FileImporterException e) {
+        e.printStackTrace();
+
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+          e);
+      }
   }
 
   @Override

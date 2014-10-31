@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.storage;
 
@@ -179,10 +180,14 @@ public class ObjectifyStorageIo implements  StorageIo {
     String cachekey = User.usercachekey + "|" + userId;
     User tuser = (User) memcache.get(cachekey);
     if (tuser != null && tuser.getUserTosAccepted() && ((email == null) || (tuser.getUserEmail().equals(email)))) {
+      if (tuser.getUserName()==null) {
+        setUserName(userId,tuser.getDefaultName());
+        tuser.setUserName(tuser.getDefaultName());
+      }
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, false, false, null);
+        tuser = new User(userId, email, null, null, false, false, 0, null);
     }
     final User user = tuser;
     try {
@@ -197,6 +202,9 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
           user.setUserEmail(userData.email);
+          user.setUserName(userData.name);
+          user.setUserLink(userData.link);
+          user.setType(userData.type);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
           user.setSessionId(userData.sessionid);
         }
@@ -220,6 +228,9 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.tosAccepted = false;
     userData.settings = "";
     userData.email = email == null ? "" : email;
+    userData.name = User.getDefaultName(email);
+    userData.type = User.USER;
+    userData.link = "";
     datastore.put(userData);
     return userData;
   }
@@ -253,6 +264,53 @@ public class ObjectifyStorageIo implements  StorageIo {
             userData.email = email;
             datastore.put(userData);
           }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public void setUserName(final String userId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.name = name;
+            datastore.put(userData);
+          }
+          // we need to change the memcache version of user
+          User user = new User(userData.id,userData.email,name, userData.link, userData.tosAccepted,
+              false, userData.type, userData.sessionid);
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+
+  }
+
+  @Override
+  public void setUserLink(final String userId, final String link) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.link = link;
+            datastore.put(userData);
+          }
+          // we need to change the memcache version of user
+          User user = new User(userData.id,userData.email,userData.name,link,userData.tosAccepted,
+              false, userData.type, userData.sessionid);
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       });
     } catch (ObjectifyException e) {
@@ -302,6 +360,50 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public String getUserName(final String userId) {
+    final Result<String> name = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(UserData.class, userId);
+          if (userData != null) {
+            name.t = userData.name;
+          } else {
+            name.t = "unknown";
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return name.t;
+  }
+
+  @Override
+  public String getUserLink(final String userId) {
+    final Result<String> link = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(UserData.class, userId);
+          if (userData != null) {
+            link.t = userData.link;
+          } else {
+            link.t = "unknown";
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return link.t;
+  }
+
+
+
+  @Override
   public void storeSettings(final String userId, final String settings) {
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -319,7 +421,6 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
-
   @Override
   public long createProject(final String userId, final Project project,
       final String projectSettings) {
@@ -342,6 +443,8 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
           pd.type = project.getProjectType();
+          pd.galleryId = UserProject.NOTPUBLISHED;
+          pd.attributionId = UserProject.FROMSCRATCH;
           datastore.put(pd); // put the project in the db so that it gets assigned an id
 
           assert pd.id != null;
@@ -519,6 +622,41 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public void setProjectGalleryId(final String userId, final long projectId,final long galleryId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.galleryId = galleryId;
+            datastore.put(projectData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+  @Override
+  public void setProjectAttributionId(final String userId, final long projectId,final long attributionId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.attributionId = attributionId;
+            datastore.put(projectData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null,"error in setProjectAttributionId",  e);
+    }
+  }
+
+  @Override
   public List<Long> getProjects(final String userId) {
     final List<Long> projects = new ArrayList<Long>();
     try {
@@ -632,7 +770,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     } else {
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified);
+          projectData.t.dateModified, projectData.t.galleryId,
+          projectData.t.attributionId);
     }
   }
 
@@ -705,6 +844,73 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return projectHistory.t;
+  }
+
+  // JIS XXX
+
+  @Override
+  public long getProjectDateCreated(final String userId, final long projectId) {
+    final Result<Long> dateCreated = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            dateCreated.t = pd.dateCreated;
+          } else {
+            dateCreated.t = Long.valueOf(0);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return dateCreated.t;
+  }
+
+  @Override
+  public long getProjectGalleryId(String userId, final long projectId) {
+    final Result<Long> galleryId = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            galleryId.t = pd.galleryId;
+          } else {
+            galleryId.t = Long.valueOf(0);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG,
+          null,"error in getProjectGalleryId", e);
+    }
+    return galleryId.t;
+  }
+  @Override
+  public long getProjectAttributionId(final long projectId) {
+    final Result<Long> attributionId = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            attributionId.t = pd.attributionId;
+          } else {
+            attributionId.t = Long.valueOf(UserProject.FROMSCRATCH);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in getProjectAttributionId", e);
+    }
+    return attributionId.t;
   }
 
   @Override

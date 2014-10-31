@@ -52,6 +52,13 @@
     <!-- Whether or not to use GCS for storage -->
     <property name="use.gcs" value="false" />
 
+    <!-- Name of gallery bucket in Google Cloud Store -->
+    <property name="gallery.bucket" value="" />
+    <!-- Whether or not to use the gallery -->
+    <property name="use.gallery" value="false" />
+
+
+
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
     <property name="require.tos" value="true" />
