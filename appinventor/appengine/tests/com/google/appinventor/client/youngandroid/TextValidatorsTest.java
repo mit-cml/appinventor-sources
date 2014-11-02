@@ -22,6 +22,12 @@ public class TextValidatorsTest extends TestCase {
   private final List<String> illegalIdentifierNames = Arrays.asList("", "_a", "9A", "ab0-", "-aB",
                                                                     "A b", " ", "foo bar");
 
+  private final List<String> legalComponentIdentifierNames = Arrays.asList("你好吗", "按钮1", "图片2",
+		  "图_片2", "图3片_2", "botón1", "botón_2");
+
+  private final List<String> illegalComponentIdentifierNames = Arrays.asList("", "!你好吗", "2你好吗",
+		  "123按_钮", "1按2钮 ", "1botón", "!botón2");
+
   public void testIdentifierFilter(){
     for (String legalIdentifier : legalIdentifierNames) {
       assertTrue(TextValidators.isValidIdentifier(legalIdentifier));
@@ -31,4 +37,12 @@ public class TextValidatorsTest extends TestCase {
     }
   }
 
+  public void testComponentIdentifierFilter(){
+	    for (String legalComponentIdentifier : legalComponentIdentifierNames) {
+	      assertTrue(TextValidators.isValidComponentIdentifier(legalComponentIdentifier));
+	    }
+	    for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
+	      assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
+	    }
+  }
 }

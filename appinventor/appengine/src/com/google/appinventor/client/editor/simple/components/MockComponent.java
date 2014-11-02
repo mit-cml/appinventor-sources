@@ -147,6 +147,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     private void handleOkClick() {
       String newName = newNameTextBox.getText();
+      // Remove leading and trailing whitespace
+      // Replace nonempty sequences of internal spaces by underscores
+      newName = newName.trim().replaceAll("[\\s\\xa0]+", "_");
       if (newName.equals(getName())) {
         hide();
       } else if (validate(newName)) {
@@ -162,7 +165,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private boolean validate(String newName) {
 
       // Check that it meets the formatting requirements.
-      if (!TextValidators.isValidIdentifier(newName)) {
+      if (!TextValidators.isValidComponentIdentifier(newName)) {
         Window.alert(MESSAGES.malformedComponentNameError());
         return false;
       }
