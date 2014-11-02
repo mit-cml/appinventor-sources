@@ -839,10 +839,10 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = '创建全局变量，并通过挂接的代码块赋值';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#get';
-    Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = '求';
+    Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = '取';
     // Blockly.Msg.LANG_VARIABLES_GET_INPUT_ITEM = '项目';
-    Blockly.Msg.LANG_VARIABLES_GET_COLLAPSED_TEXT = '求变量值';
-    Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP = '求变量值';
+    Blockly.Msg.LANG_VARIABLES_GET_COLLAPSED_TEXT = '取变量值';
+    Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP = '取变量值';
 
     Blockly.Msg.LANG_VARIABLES_SET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#set';
     Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET = '设';
@@ -925,7 +925,7 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = '输入项';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE = '输入:';
 
-    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = '突出显示过程';
+    Blockly.Msg.LANG_PROCEDURES_HIGHLIGHT_DEF = '预览代码块功能';
 
     Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP = '';
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP = '';
@@ -1285,9 +1285,9 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
 
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "生成 Yail";
-    Blockly.Msg.DO_IT = "实现功能";
-    Blockly.Msg.CAN_NOT_DO_IT = "不能实现功能";
-    Blockly.Msg.CONNECT_TO_DO_IT = '你必须要连接AI伴侣或者模拟器才能使用"实现功能"';
+    Blockly.Msg.DO_IT = "预览代码块功能";
+    Blockly.Msg.CAN_NOT_DO_IT = "不能预览代码块功能";
+    Blockly.Msg.CONNECT_TO_DO_IT = '你必须要连接AI伴侣或者模拟器才能使用"预览代码块功能"';
   }
 };
 
