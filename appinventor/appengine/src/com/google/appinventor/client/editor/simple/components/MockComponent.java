@@ -162,7 +162,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private boolean validate(String newName) {
 
       // Check that it meets the formatting requirements.
-      if (!TextValidators.isValidIdentifier2(newName)) {
+      if (!TextValidators.isValidComponentIdentifier(newName)) {
         Window.alert(MESSAGES.malformedComponentNameError());
         return false;
       }

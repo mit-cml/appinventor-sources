@@ -61,14 +61,14 @@ public final class TextValidators {
   }
 
   /**
-   * Checks whether the argument is a legal identifier, specifically,
+   * Checks whether the argument is a legal component identifier, specifically,
    * no empty or whitespace is allowed.
    *
    * @param text the proposed identifier
    * @return {@code true} if the argument is a legal identifier, {@code false}
    *         otherwise
    */
-  public static boolean isValidIdentifier2(String text) {
+  public static boolean isValidComponentIdentifier(String text) {
 	return text.matches("^\\S+$");
   }  
   
