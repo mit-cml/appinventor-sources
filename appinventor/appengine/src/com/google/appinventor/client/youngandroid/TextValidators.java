@@ -59,6 +59,18 @@ public final class TextValidators {
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
   }
+
+  /**
+   * Checks whether the argument is a legal identifier, specifically,
+   * no empty or whitespace is allowed.
+   *
+   * @param text the proposed identifier
+   * @return {@code true} if the argument is a legal identifier, {@code false}
+   *         otherwise
+   */
+  public static boolean isValidIdentifier2(String text) {
+	return text.matches("^\\S+$");
+  }  
   
   /**
    * Checks whether the argument is a legal filename, meaning
