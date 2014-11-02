@@ -406,6 +406,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  text_deobsfucate: {xmlString:
+  '<xml>' +
+    '<block type="text_deobsfucate">' +
+      '<value name="ARG1"><block type="text"><title name="TEXT">*blank*</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
