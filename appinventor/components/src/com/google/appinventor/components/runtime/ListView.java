@@ -289,7 +289,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void AfterPicking() {
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
-  //Changes for background color
 
   /**
    * Assigns a value to the backgroundColor
@@ -297,11 +296,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
 
   public void setBackgroundColor(int color) {
-	  backgroundColor = color;
-	  view.setBackgroundColor(backgroundColor);
-	  listViewLayout.setBackgroundColor(backgroundColor);
-	  // Keeps background color behind list elements correct when scrolling through listView
-	  view.setCacheColorHint(backgroundColor);
+      backgroundColor = color;
+      view.setBackgroundColor(backgroundColor);
+      listViewLayout.setBackgroundColor(backgroundColor);
+      // Keeps background color behind list elements correct when scrolling through listView
+      view.setCacheColorHint(backgroundColor);
   }
 
   /**
@@ -331,7 +330,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void BackgroundColor(int argb) {
-	  backgroundColor = argb;
-	  setBackgroundColor(backgroundColor);
+      backgroundColor = argb;
+      setBackgroundColor(backgroundColor);
   }
 }

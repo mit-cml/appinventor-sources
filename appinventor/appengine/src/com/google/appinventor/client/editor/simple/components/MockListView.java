@@ -7,14 +7,12 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.appinventor.client.output.OdeLog;
 
 /**
  * Mock ListView component.
@@ -101,7 +99,7 @@ public final class MockListView extends MockVisibleComponent {
    * Sets the text to be added in the listview
    */
   private void setElementsFromStringProperty(String text){
-	currentElements = text;
+    currentElements = text;
     currentList = text.split(",");
 
     listViewWidget.clear();
@@ -124,7 +122,6 @@ public final class MockListView extends MockVisibleComponent {
   private void createLabelItem(int i) {
     labelInItem =new InlineLabel(currentList[i]);
     labelInItem.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px", "100%");
-    OdeLog.elog("Setting label item background color.");
     MockComponentsUtil.setWidgetBackgroundColor(labelInItem, backgroundColor);
     MockComponentsUtil.setWidgetTextColor(labelInItem, "&HFFFFFFFF");
   }
@@ -138,13 +135,10 @@ public final class MockListView extends MockVisibleComponent {
     listViewWidget.add(panelForItem);
   }
 
-
   // PropertyChangeListener implementation
-
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
-
     // Apply changed properties to the mock component
     if (propertyName.equals(PROPERTY_NAME_LISTVIEW)) {
       setElementsFromStringProperty(newValue);
@@ -153,12 +147,11 @@ public final class MockListView extends MockVisibleComponent {
       setFilterShowBox(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-    	setBackgroundColorProperty(newValue);
-    	if (currentList != null) {
-    		setElementsFromStringProperty(currentElements);
-    	}
-    	refreshForm();
-
+        setBackgroundColorProperty(newValue);
+        if (currentList != null) {
+            setElementsFromStringProperty(currentElements);
+        }
+        refreshForm();
     }
   }
 }
