@@ -864,6 +864,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the Elements getter
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Added option to change Background Color
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
