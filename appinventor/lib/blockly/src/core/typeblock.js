@@ -330,7 +330,7 @@ Blockly.TypeBlock.loadProcedures_ = function(){
     goog.array.forEach(procNames, function(proc){
       options.push(
           {
-            translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' ' + proc[0],
+            translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + ' ' + proc[0],
             dropDown: {
               titleName: 'PROCNAME',
               value: proc[0]
