@@ -61,15 +61,16 @@ public final class TextValidators {
   }
 
   /**
-   * Checks whether the argument is a legal component identifier, specifically,
-   * no empty or whitespace is allowed.
+   * Checks whether the argument is a legal component identifier; please check 
+   * Blockly.LexicalVariable.checkIdentifier for the regex reference
    *
    * @param text the proposed identifier
    * @return {@code true} if the argument is a legal identifier, {@code false}
    *         otherwise
    */
   public static boolean isValidComponentIdentifier(String text) {
-	return text.matches("^\\S+$");
+	return text.matches("^[^-0-9!&%^/>=<`'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
+			"[^-!&%^/>=<'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
   }  
   
   /**
