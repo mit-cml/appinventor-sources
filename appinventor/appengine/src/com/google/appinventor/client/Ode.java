@@ -1812,6 +1812,33 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * This dialog is showned if an account is disabled. It is
+   * completely modal with no escape. The provided URL is displayed in
+   * an iframe, so it can be tailored to each person whose account is
+   * disabled.
+   *
+   * @param Url the Url to display in the dialog box.
+   */
+
+  public void disabledAccountDialog(String Url) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.accountDisabledMessage());
+    dialogBox.setHeight("700px");
+    dialogBox.setWidth("700px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<iframe src=\"" + Url + "\" style=\"border: 0; width: 680px; height: 660px;\"></iframe>");
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
    * Is it OK to connect a device/emulator. Returns true if so false
    * otherwise.
    *

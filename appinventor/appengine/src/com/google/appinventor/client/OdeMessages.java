@@ -5281,6 +5281,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String finalDialogText();
 
+  @DefaultMessage("Your Account is Disabled")
+  @Description("")
+  String accountDisabledMessage();
+
   @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
   @Description("")
   String finalDialogMessage();
