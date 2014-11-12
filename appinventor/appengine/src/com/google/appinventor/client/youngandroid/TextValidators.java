@@ -59,7 +59,20 @@ public final class TextValidators {
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
   }
-  
+
+  /**
+   * Checks whether the argument is a legal component identifier; please check
+   * Blockly.LexicalVariable.checkIdentifier for the regex reference
+   *
+   * @param text the proposed identifier
+   * @return {@code true} if the argument is a legal identifier, {@code false}
+   *         otherwise
+   */
+  public static boolean isValidComponentIdentifier(String text) {
+	return text.matches("^[^-0-9!&%^/>=<`'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
+			"[^-!&%^/>=<'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
+  }
+
   /**
    * Checks whether the argument is a legal filename, meaning
    * it is unchanged by URL encoding and it meets the aapt
