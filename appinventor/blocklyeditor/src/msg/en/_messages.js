@@ -665,6 +665,13 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Returns a new text obtained by replacing all occurrences\n'
         + 'of the segment with the replacement.';
 
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#deobsfucate';
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_INPUT_TEXT = 'text';
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_TITLE_DEOBSFUCATE = 'deobsfucate text';
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_TOOLTIP = 'Deobsfucates the input block';
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_PROMPT_TITLE = "Set String";
+    Blockly.Msg.LANG_TEXT_DEOBSFUCATE_PROMPT_CONTENT = "Enter the String to Obsfucate";
+
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Lists';
 //Blockly.Msg.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list#Empty_lists';

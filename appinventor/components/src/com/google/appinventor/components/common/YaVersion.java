@@ -283,8 +283,10 @@ public class YaVersion {
   // - TWITTER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 105:
   // - WEB_COMPONENT_VERSION was incremented to 4.
-  
-  public static final int YOUNG_ANDROID_VERSION = 105;
+  // For YOUNG_ANDROID_VERSION 106:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 18.
+
+  public static final int YOUNG_ANDROID_VERSION = 106;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -337,8 +339,10 @@ public class YaVersion {
   // - Marked close-screen-with-result as a bad block
   // - Added close-screen-with-value
   // - Added close-screen-with-plain-text
+  // For BLOCKS_LANGUAGE_VERSION 18:
+  // - Added Text Deobsfucate Block
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 17;
+  public static final int BLOCKS_LANGUAGE_VERSION = 18;
 
   // ................................. Component Version Numbers ..................................
 

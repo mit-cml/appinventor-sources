@@ -43,6 +43,9 @@ Blockly.TypeBlock = function( htmlConfig ){
   Blockly.TypeBlock.inputKh_ = new goog.events.KeyHandler(goog.dom.getElement(Blockly.TypeBlock.inputText_));
 
   Blockly.TypeBlock.handleKey = function(e){
+    if (Blockly.TypeBlock.isInhibited_) { // Are we inhibited?
+      return;
+    }
     if (e.altKey || e.ctrlKey || e.metaKey || e.keycode === 9) return; // 9 is tab
     //We need to duplicate delete handling here from blockly.js
     if (e.keyCode === 8 || e.keyCode === 46) {
@@ -84,6 +87,13 @@ Blockly.TypeBlock = function( htmlConfig ){
   // Create the auto-complete panel
   Blockly.TypeBlock.createAutoComplete_(Blockly.TypeBlock.inputText_);
 };
+
+/**
+  * Set to true if we want to inhibit the typeblock key handler.
+  * @private
+  */
+
+Blockly.TypeBlock.isInhibited_ = false;
 
 /**
  * Div where the type block panel will be rendered
@@ -168,6 +178,14 @@ Blockly.TypeBlock.hide = function(){
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
   Blockly.TypeBlock.visible = false;
 };
+
+/**
+  * function to inhibit (or not) the typeblock handling code.
+  */
+
+Blockly.TypeBlock.inhibit = function(inhibited) {
+  Blockly.TypeBlock.isInhibited_ = inhibited;
+}
 
 /**
  * function to show the auto-complete panel to start typing block names

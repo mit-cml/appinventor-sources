@@ -14,6 +14,8 @@ goog.provide('Blockly.Blocks.text');
 
 goog.require('Blockly.Blocks.Utilities');
 
+goog.require('goog.ui.Prompt');
+
 Blockly.Blocks['text'] = {
   // Text value.
   category: 'Text',
@@ -447,4 +449,55 @@ Blockly.Blocks['text_replace_all'] = {
     this.setInputsInline(false);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL}]
+};
+
+Blockly.Blocks['text_deobsfucate'] = {
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_DEOBSFUCATE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendValueInput('ARG1')
+        .appendField(Blockly.Msg.LANG_TEXT_DEOBSFUCATE_TITLE_DEOBSFUCATE);
+    this.emptyInputName = 'EMPTY';
+    this.itemCount_ = 1;
+    this.setTooltip(Blockly.Msg.LANG_TEXT_DEOBSFUCATE_TOOLTIP);
+  },
+  onMouseUp_: function(e) {
+    var arg1 = this.getInputTargetBlock("ARG1");
+    if (arg1) {                 // Only do this if there is a block plugged in!
+      var value = arg1.getFieldValue("TEXT");
+      var block = this;
+      if (value == "*blank*") {
+        window.setTimeout(function() {
+            var prompt = new goog.ui.Prompt(Blockly.Msg.LANG_TEXT_DEOBSFUCATE_PROMPT_TITLE,
+              Blockly.Msg.LANG_TEXT_DEOBSFUCATE_PROMPT_CONTENT,
+              function (newvalue) {
+                prompt.setVisible(false);
+                Blockly.TypeBlock.inhibit(false);
+                newvalue = block.setupObsfucation(newvalue);
+                arg1.setFieldValue(newvalue, "TEXT");
+              });
+            Blockly.TypeBlock.inhibit(true);
+            prompt.setVisible(true);
+            prompt.setModal(true);
+          }, 0);
+      }
+    }
+    return Blockly.Block.prototype.onMouseUp_.call(this, e);
+  },
+  setupObsfucation: function(input) {
+    // The algorithm below is also implemented in scheme in runtime.scm
+    // If you change it here, you have to change it there!
+    // Note: This algorithm is like xor, if applied to its output
+    // it regenerates it input.
+    var acc = [];
+    for (var i = 0; i < input.length; i++) {
+      var c = input.charCodeAt(i);
+      var b = (c ^ input.length - i) & 0xFF;
+      var b2 = ((c >> 8) ^ i) & 0xFF;
+      acc.push(String.fromCharCode((b2 << 8 | b) & 0xFF));
+    }
+    return acc.join('');
+  }
 };
