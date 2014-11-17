@@ -283,8 +283,10 @@ public class YaVersion {
   // - TWITTER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 105:
   // - WEB_COMPONENT_VERSION was incremented to 4.
-  
-  public static final int YOUNG_ANDROID_VERSION = 105;
+  // For YOUNG_ANDROID_VERSION 106:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 3.
+
+  public static final int YOUNG_ANDROID_VERSION = 106;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -787,10 +789,14 @@ public class YaVersion {
   public static final int SPINNER_COMPONENT_VERSION = 1;
 
   // For LISTVIEW_COMPONENT_VERSION 1:
-  // -- Initial version.
+  // - Initial version.
   // For LISTVIEW_COMPONENT_VERSION 2:
-  // - Added the Elements property getter
-  public static final int LISTVIEW_COMPONENT_VERSION = 2;
+  // - Added Elements property
+  // For LISTVIEW_COMPONENT_VERSION 3:
+  // - Added BackgroundColor Property
+  // - Added TextColor Property
+  
+  public static final int LISTVIEW_COMPONENT_VERSION = 3;
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.

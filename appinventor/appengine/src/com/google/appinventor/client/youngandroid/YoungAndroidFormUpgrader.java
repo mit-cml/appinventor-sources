@@ -861,8 +861,13 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeListViewProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-      // Added the Elements getter
+      // Added the Elements property
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Added the BackgroundColor property
+      // Added the TextColor property
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
