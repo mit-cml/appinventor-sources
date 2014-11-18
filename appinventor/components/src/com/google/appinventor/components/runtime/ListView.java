@@ -52,6 +52,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private String selection;
   private boolean showFilter = false;
   private static final boolean DEFAULT_ENABLED = false;
+  // Backing for background color
+  private int backgroundColor;
+  private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
   /**
    * Creates a new ListView component.
@@ -69,7 +72,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_list_item_1,
         items.toStringArray());
     view.setAdapter(adapter);
-    view.setBackgroundColor(COLOR_BLACK);
 
     txtSearchBox = new EditText(container.$context());
     txtSearchBox.setSingleLine(true);
@@ -103,12 +105,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       txtSearchBox.setVisibility(View.GONE);
     }
 
-    listViewLayout.setBackgroundColor(COLOR_BLACK);
     listViewLayout.addView(txtSearchBox);
     listViewLayout.addView(view);
     listViewLayout.requestLayout();
     container.$add(this);
     Width(Component.LENGTH_FILL_PARENT);
+    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
   }
 
   @Override
@@ -288,4 +290,47 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
 
+  /**
+   * Assigns a value to the backgroundColor
+   * @param color  an alpha-red-green-blue integer for a color
+   */
+
+  public void setBackgroundColor(int color) {
+      backgroundColor = color;
+      view.setBackgroundColor(backgroundColor);
+      listViewLayout.setBackgroundColor(backgroundColor);
+      // Keeps background color behind list elements correct when scrolling through listView
+      view.setCacheColorHint(backgroundColor);
+  }
+
+  /**
+   * Returns the listview's background color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @return background color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(
+      description = "The color of the listview background.",
+      category = PropertyCategory.APPEARANCE)
+  public int BackgroundColor() {
+    return backgroundColor;
+  }
+
+  /**
+   * Specifies the ListView's background color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @param argb background color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+  @SimpleProperty
+  public void BackgroundColor(int argb) {
+      backgroundColor = argb;
+      setBackgroundColor(backgroundColor);
+  }
 }
