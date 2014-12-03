@@ -34,7 +34,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -115,6 +117,8 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showTitleBar = true;
+  private boolean fullScreen = false;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -739,6 +743,69 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+  
+  /**
+   * ShowTitleBar property getter method.
+   *
+   * @return  showTitleBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+		    description = "Visibility of the title bar.")
+  public boolean ShowTitleBar() {
+    return showTitleBar;
+  }
+
+  /**
+   * ShowTitleBar property setter method.
+   *
+   * @param visibility boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+		    description = "We can show/hide the title bar.")
+  public void ShowTitleBar(boolean visibility) {
+    if (visibility != showTitleBar) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (visibility) {
+        v.setVisibility(View.VISIBLE);
+      } else {
+        v.setVisibility(View.GONE);
+      }    
+      showTitleBar = visibility;		
+    }
+  }
+  
+  /**
+   * FullScreen property getter method.
+   *
+   * @return  showTitleBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+		    description = "Full Screen status")
+  public boolean FullScreen() {
+    return fullScreen;
+  }
+
+  /**
+   * FullScreen property setter method.
+   *
+   * @param visibility boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+		    description = "We can enable/disable full screen.")
+  public void FullScreen(boolean enabled) {
+	if (enabled != fullScreen) {
+	  if (enabled) {
+	    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	   	getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+	   } else {
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	   }    
+	  fullScreen = enabled;		
+	}
   }
 
   /**
