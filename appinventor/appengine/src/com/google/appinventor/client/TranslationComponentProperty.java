@@ -129,6 +129,7 @@ public class TranslationComponentProperty {
     map.put("HighByteFirst", MESSAGES.HighByteFirstProperties());
     map.put("Hint", MESSAGES.HintProperties());
     map.put("HomeUrl", MESSAGES.HomeUrlProperties());
+    map.put("IgnoreSslErrors", MESSAGES.IgnoreSslErrorsProperties());
     map.put("Image", MESSAGES.ImageProperties());
     map.put("Interval", MESSAGES.IntervalProperties());
     map.put("Language", MESSAGES.LanguageProperties());

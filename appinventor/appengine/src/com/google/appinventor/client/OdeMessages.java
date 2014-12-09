@@ -2390,6 +2390,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IconProperties();
   
+  @DefaultMessage("IgnoreSslErrors")
+  @Description("")
+  String IgnoreSslErrorsProperties();
+ 
   @DefaultMessage("Image")
   @Description("")
   String ImageProperties();

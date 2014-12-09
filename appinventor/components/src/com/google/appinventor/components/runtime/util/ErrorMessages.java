@@ -171,7 +171,10 @@ public final class ErrorMessages {
   // DatePicker errors
   public static final int ERROR_ILLEGAL_DATE = 2401;
 
-  // Please start the next group of error numbers at 2501.
+  // WebViewer errors
+  public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
+
+  // Please start the next group of error numbers at 2601.
 
 
   // Mapping of error numbers to error message format strings.
@@ -436,6 +439,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_ILLEGAL_MINUTE, "The minute must be set to a value between 0 and 59.");
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
+    errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
   }
 
   private ErrorMessages() {

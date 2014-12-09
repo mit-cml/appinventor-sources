@@ -9,7 +9,14 @@ package com.google.appinventor.components.runtime.util;
 import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
+import android.net.http.SslError;
 import android.view.Display;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Player;
 
 /**
@@ -107,4 +114,34 @@ public class FroyoUtil {
   public static void abandonFocus(AudioManager am, Object afChangeListener) {
     am.abandonAudioFocus((AudioManager.OnAudioFocusChangeListener) afChangeListener);
   }
+
+  /**
+   * Get a special WebViewClient that handles SslError. This is used so the
+   * App Inventor programmer can permit https connections to sites with self
+   * signed certificates. It represents a security risk because a Man in the
+   * Middle (MITM) attack will not be detected if we ignore SslErrors.
+   *
+   * @param ignoreErrors set to true to ignore errors
+   */
+  public static WebViewClient getWebViewClient(final boolean ignoreErrors,
+    final boolean followLinks, final Form form, final Component component) {
+    return new WebViewClient() {
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        return !followLinks;
+      }
+
+      @Override
+      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        if (ignoreErrors) {
+          handler.proceed();
+        } else {
+          handler.cancel();
+          form.dispatchErrorOccurredEvent(component, "WebView",
+            ErrorMessages.ERROR_WEBVIEW_SSL_ERROR);
+        }
+      }
+    };
+  }
+
 }
