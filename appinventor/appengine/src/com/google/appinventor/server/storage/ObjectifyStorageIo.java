@@ -552,12 +552,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (useGCSforFile(fileName, content.length)) {
       file.isGCS = true;
       file.gcsName = makeGCSfileName(fileName, projectKey.getId());
-      if (content.length > 0) { // If there is actual content
-        GcsOutputChannel outputChannel =
-          gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, file.gcsName), GcsFileOptions.getDefaultInstance());
-        outputChannel.write(ByteBuffer.wrap(content));
-        outputChannel.close();
-      }
+      GcsOutputChannel outputChannel =
+        gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, file.gcsName), GcsFileOptions.getDefaultInstance());
+      outputChannel.write(ByteBuffer.wrap(content));
+      outputChannel.close();
     } else if (useBlobstoreForFile(fileName, content.length)) {
       file.isBlob = true;
       file.blobstorePath = uploadToBlobstore(content, makeBlobName(projectKey.getId(), fileName));
@@ -1362,12 +1360,10 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.isGCS = true;
             fd.gcsName = makeGCSfileName(fileName, projectId);
             try {
-              if (content.length > 0) { // If there is actual content
-                GcsOutputChannel outputChannel =
-                  gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName), GcsFileOptions.getDefaultInstance());
-                outputChannel.write(ByteBuffer.wrap(content));
-                outputChannel.close();
-              }
+              GcsOutputChannel outputChannel =
+                gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName), GcsFileOptions.getDefaultInstance());
+              outputChannel.write(ByteBuffer.wrap(content));
+              outputChannel.close();
             } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1634,18 +1630,28 @@ public class ObjectifyStorageIo implements  StorageIo {
         try {
           GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
           int bytesRead = 0;
-          int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-          ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
-          GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+          int fileSize = 0;
+          ByteBuffer resultBuffer;
           try {
-            while (bytesRead < fileSize) {
-              bytesRead += readChannel.read(resultBuffer);
-              if (bytesRead < fileSize) {
-                LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+            fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+            resultBuffer = ByteBuffer.allocate(fileSize);
+            GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+            try {
+              while (bytesRead < fileSize) {
+                bytesRead += readChannel.read(resultBuffer);
+                if (bytesRead < fileSize) {
+                  LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                }
               }
+            } finally {
+              readChannel.close();
             }
-          } finally {
-            readChannel.close();
+          } catch (NullPointerException e) {
+            // This happens if the object in GCS is non-existent, which would happen
+            // when people uploaded a zero length object. As of this change, we now
+            // store zero length objects into GCS, but there are plenty of older objects
+            // that are missing in GCS.
+            resultBuffer = ByteBuffer.allocate(0);
           }
           result.t = resultBuffer.array();
         } catch (IOException e) {
@@ -1766,18 +1772,28 @@ public class ObjectifyStorageIo implements  StorageIo {
           try {
             GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
             int bytesRead = 0;
-            int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-            ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
-            GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+            int fileSize = 0;
+            ByteBuffer resultBuffer;
             try {
-              while (bytesRead < fileSize) {
-                bytesRead += readChannel.read(resultBuffer);
-                if (bytesRead < fileSize) {
-                  LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+              resultBuffer = ByteBuffer.allocate(fileSize);
+              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+              try {
+                while (bytesRead < fileSize) {
+                  bytesRead += readChannel.read(resultBuffer);
+                  if (bytesRead < fileSize) {
+                    LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                  }
                 }
+              } finally {
+                readChannel.close();
               }
-            } finally {
-              readChannel.close();
+            } catch (NullPointerException e) {
+              // This happens if the object in GCS is non-existent, which would happen
+              // when people uploaded a zero length object. As of this change, we now
+              // store zero length objects into GCS, but there are plenty of older objects
+              // that are missing in GCS.
+              resultBuffer = ByteBuffer.allocate(0);
             }
             data = resultBuffer.array();
           } catch (IOException e) {
