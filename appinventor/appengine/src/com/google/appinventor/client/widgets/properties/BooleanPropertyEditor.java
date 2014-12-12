@@ -43,13 +43,13 @@ public class BooleanPropertyEditor extends PropertyEditor implements ValueChange
   // Updates the property value shown in the editor
   @Override
   protected void updateValue() {
-    checkbox.setChecked(property.getValue().equals(trueValue));
+    checkbox.setValue(property.getValue().equals(trueValue));
   }
 
   // ValueChangeHandler implementation
 
   @Override
   public void onValueChange(ValueChangeEvent<Boolean> event) {
-    property.setValue(checkbox.isChecked() ? trueValue : falseValue);
+    property.setValue(checkbox.getValue() ? trueValue : falseValue);
   }
 }
