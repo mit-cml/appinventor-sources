@@ -105,7 +105,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
 
   public void testExportProjectSourceZipWithoutHistory() throws IOException {
     ProjectSourceZip project = exporter.exportProjectSourceZip(USER_ID, projectId,
-        false, false, null);
+        false, false, null, false);
     Map<String, byte[]> content = testExportProjectSourceZipHelper(project);
     assertEquals(2, content.size());
     /* Do not expect remix history when includeProjectHistory parameter is false
@@ -116,7 +116,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
   // TODO(user): Add test with properly formatted history
   public void testExportProjectSourceZipWithHistory() throws IOException {
     ProjectSourceZip project = exporter.exportProjectSourceZip(USER_ID, projectId,
-        true, false, null);
+        true, false, null, false);
     Map<String, byte[]> content = testExportProjectSourceZipHelper(project);
     assertEquals(3, content.size());
     // Expect the remix file to be in
@@ -127,7 +127,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
 
   public void testExportProjectSourceZipWithNonExistingProject() throws IOException {
     try {
-      exporter.exportProjectSourceZip(USER_ID, projectId + 1, false, false, null);
+      exporter.exportProjectSourceZip(USER_ID, projectId + 1, false, false, null, false);
       fail();
     } catch (Exception e) {
       assertTrue(e instanceof IllegalArgumentException ||

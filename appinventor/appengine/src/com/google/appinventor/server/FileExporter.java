@@ -43,6 +43,7 @@ public interface FileExporter {
    *        containing the project's history in the zip
    * @param includeAndroidKeystore indicates whether to include the user's android.keystore file
    * @param zipName the desired name for the zip, or null for a name to be generated
+   * @param fatalError set to true to cause missing GCS file to throw exception
    * @return the zip file, which includes a count of the number of zipped files
    *         and (indirectly) the name of the file and its contents
    * @throws IllegalArgumentException if download request cannot be fulfilled
@@ -51,7 +52,8 @@ public interface FileExporter {
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore, @Nullable String zipName)
+                                          boolean includeAndroidKeystore, @Nullable String zipName,
+                                          boolean fatalError)
       throws IOException;
 
   /**

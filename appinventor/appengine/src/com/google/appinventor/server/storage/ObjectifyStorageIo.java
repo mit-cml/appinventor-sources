@@ -1744,7 +1744,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
                                                  final boolean includeProjectHistory,
                                                  final boolean includeAndroidKeystore,
-                                                 @Nullable String zipName) throws IOException {
+                                                 @Nullable String zipName,
+                                                 final boolean fatalError) throws IOException {
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
     final Result<String> projectHistory = new Result<String>();
@@ -1844,6 +1845,9 @@ public class ObjectifyStorageIo implements  StorageIo {
                   " count = " + count);
               } else {
                 LOG.log(Level.WARNING, "FATAL NPF in exportProjectFile filename = " + fd.gcsName);
+                if (fatalError) {
+                  throw new IOException("FATAL Error reading file from GCS filename = " + fd.gcsName);
+                }
               }
             }
           } catch (IOException e) {

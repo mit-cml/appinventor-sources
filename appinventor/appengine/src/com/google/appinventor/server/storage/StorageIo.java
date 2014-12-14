@@ -501,13 +501,15 @@ public interface StorageIo {
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
    * @param zipName  the name of the zip file, if a specific one is desired
-
+   * @param fatalError set true to cause missing GCS file to throw exception
+   *
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
-                                          @Nullable String zipName) throws IOException;
+                                          @Nullable String zipName,
+                                          boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
