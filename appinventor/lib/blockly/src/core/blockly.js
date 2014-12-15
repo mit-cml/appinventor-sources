@@ -250,13 +250,6 @@ Blockly.COLLAPSE_CHARS = 30;
 Blockly.mainWorkspace = null;
 
 /**
- * Contents of the local clipboard.
- * @type {Element}
- * @private
- */
-Blockly.clipboard_ = null;
-
-/**
  * Wrapper function called when a touch mouseUp occurs during a drag operation.
  * @type {Array.<!Array>}
  * @private
@@ -453,8 +446,8 @@ Blockly.onKeyDown_ = function(e) {
     }
     if (e.keyCode == 86) {
       // 'v' for paste.
-      if (Blockly.clipboard_) {
-        Blockly.mainWorkspace.paste(Blockly.clipboard_);
+      if (window.parent.Blocklies.clipboard_) {
+        Blockly.mainWorkspace.paste(window.parent.Blocklies.clipboard_);
       }
     }
   }
@@ -481,7 +474,7 @@ Blockly.copy_ = function(block) {
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
   xmlBlock.setAttribute('y', xy.y);
-  Blockly.clipboard_ = xmlBlock;
+  window.parent.Blocklies.clipboard_ = xmlBlock;
 };
 
 /**
