@@ -696,6 +696,7 @@ Blockly.showContextMenu_ = function(e) {
       //the if statement is just in case some wierdness happens.
       if (window.parent.Blocklies.clipboard_) {
         Blockly.mainWorkspace.paste(window.parent.Blocklies.clipboard_);
+        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
       }
     }
   };

@@ -705,6 +705,16 @@ Blockly.Blocks.component_component_block = {
   }
 };
 
+
+//add the "component doesn't exist" error to every component block
+Object.getOwnPropertyNames(Blockly.Blocks).forEach(function(name) {
+  var block_class
+  if ((block_class = Blockly.Blocks[name]) && block_class.category == 'Component') {
+    block_class.errors = block_class.errors || [];
+    block_class.errors.push({name: "checkComponentNotExistsError"});
+  }
+});
+
 Blockly.ComponentBlock.createComponentDropDown = function(block){
   var componentDropDown = new Blockly.FieldDropdown([["",""]]);
   componentDropDown.block = block;
