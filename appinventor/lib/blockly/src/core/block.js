@@ -861,13 +861,13 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
     this.customContextMenu(options);
   }
 
-  //Add Copy Paste
+  //Add Copy
   
   var copyOption = {
     text: Blockly.Msg.COPY,
     enabled: true,
     callback: function() {
-      block.dispose(true, true);
+      Blockly.copy_(block) ;
     }
   };
 

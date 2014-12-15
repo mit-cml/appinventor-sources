@@ -568,6 +568,7 @@ Blockly.showContextMenu_ = function(e) {
     Blockly.workspace_arranged_latest_position = Blockly.BLKS_VERTICAL;
     arrangeBlocks(Blockly.BLKS_VERTICAL);
   };
+
   options.push(arrangeOptionV);
 
   /**
@@ -685,6 +686,22 @@ Blockly.showContextMenu_ = function(e) {
   helpOption.text = Blockly.Msg.HELP;
   helpOption.callback = function() {};
   options.push(helpOption);
+
+  var pasteOption = {
+    enabled: !!window.parent.Blocklies.clipboard_,
+    text: Blockly.Msg.PASTE = 'Paste',
+    callback: function() {
+      //Note (evan): this if statement shouldn't be necessary.
+      //if !window.parent.Blocklies.clipboard_ then the enabled option should be false.
+      //the if statement is just in case some wierdness happens.
+      if (window.parent.Blocklies.clipboard_) {
+        Blockly.mainWorkspace.paste(window.parent.Blocklies.clipboard_);
+      }
+    }
+  };
+  options.push(pasteOption);
+
+
 
   Blockly.ContextMenu.show(e, options);
 };
