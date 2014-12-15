@@ -40,6 +40,8 @@ Blockly.Msg.en.switch_language_to_english = {
   init: function() {
 // Context menus.
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
+    Blockly.Msg.COPY = 'Copy';
+    Blockly.Msg.PASTE = 'Paste';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
     Blockly.Msg.EXTERNAL_INPUTS = 'External Inputs';

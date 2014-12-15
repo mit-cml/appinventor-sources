@@ -150,6 +150,8 @@ Blockly.Block.prototype.fill = function(workspace, prototypeName) {
   this.editable_ = true;
   this.collapsed_ = false;
 
+  this.isImported_ = false;
+
   this.workspace = workspace;
   this.isInFlyout = workspace.isFlyout;
   // This is missing from our latest version
@@ -859,6 +861,18 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
     this.customContextMenu(options);
   }
 
+  //Add Copy Paste
+  
+  var copyOption = {
+    text: Blockly.Msg.COPY,
+    enabled: true,
+    callback: function() {
+      block.dispose(true, true);
+    }
+  };
+
+  options.push(copyOption)
+
   Blockly.ContextMenu.show(e, options);
   Blockly.ContextMenu.currentBlock = this;
 };
@@ -1259,6 +1273,15 @@ Blockly.Block.prototype.isMovable = function() {
 Blockly.Block.prototype.setMovable = function(movable) {
   this.movable_ = movable;
 };
+
+
+Blockly.Block.prototype.isImported = function() {
+  return this.isImported_;
+}
+
+Blockly.Block.prototype.setIsImported = function(imported) {
+  this.isImported_ = imported; 
+}
 
 /**
  * Get whether this block is editable or not.
