@@ -67,6 +67,10 @@ public class BuildServer {
   private ProjectBuilder projectBuilder = new ProjectBuilder();
 
   static class CommandLineOptions {
+    @Option(name = "--shutdownToken",
+      usage = "Token needed to shutdown the server remotely.")
+    String shutdownToken = null;
+
     @Option(name = "--childProcessRamMb",
       usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
@@ -143,11 +147,21 @@ public class BuildServer {
   // The zip file where we put all the build results for this request.
   private File outputZip;
 
+  // Set to true if we are shutting down
+  private static volatile boolean shuttingDown = false;
+
+  private static String shutdownToken = null;
+
   @GET
   @Path("health")
   @Produces(MediaType.TEXT_PLAIN)
   public Response health() throws IOException {
-    return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    LOG.info("Healthcheck: " + shuttingDown);
+    if (shuttingDown) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
+    } else {
+      return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    }
   }
 
   @GET
@@ -159,6 +173,9 @@ public class BuildServer {
     // Runtime
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+    if (shuttingDown) {
+      variables.put("shutting-down", "Server is shutting down, no new connections.");
+    }
     variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
     variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
     variables.put("vm-name", runtimeBean.getVmName());
@@ -212,6 +229,24 @@ public class BuildServer {
     }
     html.append("</tt></body></html>");
     return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  /**
+   * Indicate that the server is shutting down.
+   */
+
+  @GET
+  @Path("shutdown")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response shutdown(@QueryParam("token") String token) throws IOException {
+    if (commandLineOptions.shutdownToken == null || token == null) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("No Shutdown Token").build();
+    } else if (!token.equals(commandLineOptions.shutdownToken)) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
+    } else {
+      shuttingDown = true;
+      return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    }
   }
 
   /**
@@ -340,6 +375,10 @@ public class BuildServer {
     if (inputZip.length() == 0L) {
       cleanUp();
     } else {
+      if (shuttingDown) {
+        LOG.info("request received during shutdown");
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Temporary build error, try again.").build();
+      }
       if (commandLineOptions.requiredHosts != null) {
         boolean oktoproceed = false;
         for (String host : commandLineOptions.requiredHosts) {

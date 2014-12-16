@@ -197,6 +197,8 @@
       <sysproperty key="file.encoding" value="UTF-8" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--shutdownToken" />
+      <arg value="token" />
     </java>
   </target>
 
