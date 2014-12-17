@@ -1661,6 +1661,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                   }
                 }
                 recovered = true;
+                result.t = resultBuffer.array();
+                break;          // We got the data, break out of the loop!
               } finally {
                 readChannel.close();
               }
@@ -1672,8 +1674,8 @@ public class ObjectifyStorageIo implements  StorageIo {
               LOG.log(Level.WARNING, "downloadrawfile: NPF recorded for " + fileData.gcsName);
               npfHappened = true;
               resultBuffer = ByteBuffer.allocate(0);
+              result.t = resultBuffer.array();
             }
-            result.t = resultBuffer.array();
           }
 
           // report out on how things went above
@@ -1823,6 +1825,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                     }
                   }
                   recovered = true;
+                  data = resultBuffer.array();
+                  break;        // We got the data, break out of the loop!
                 } finally {
                   readChannel.close();
                 }
@@ -1834,8 +1838,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                 LOG.log(Level.WARNING, "exportProjectFile: NPF recorded for " + fd.gcsName);
                 npfHappened = true;
                 resultBuffer = ByteBuffer.allocate(0);
+                data = resultBuffer.array();
               }
-              data = resultBuffer.array();
             }
 
             // report out on how things went above
