@@ -34,7 +34,7 @@
   <import file="../build-common.xml" />
 
   <property name="gwt.sdk" location="${lib.dir}/gwt/2.5.1" />
-  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.7.6" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.17" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
 
@@ -120,14 +120,24 @@
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/findbugs/jsr305.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-14.0.1.jar" /> 
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-18.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/json/json.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/keyczar/keyczar-0.66-080111-java-1.6.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar --> 
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
     <!-- GCS Libs -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-appengine-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-appengine-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-jackson-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-jackson2-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-services-storage-v1-rev23-1.19.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/httpclient-4.0.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/joda-time-2.6.jar" />
     <!-- gwt libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
@@ -178,7 +188,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
@@ -190,7 +200,7 @@
     <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
-    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
@@ -246,10 +256,10 @@
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
-    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
 
@@ -314,7 +324,7 @@
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
+        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <!-- gwt libs -->
@@ -362,8 +372,8 @@
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-14.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <!-- gwt libs -->
@@ -393,7 +403,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>

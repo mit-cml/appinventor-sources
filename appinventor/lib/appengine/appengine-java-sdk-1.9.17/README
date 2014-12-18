@@ -1,0 +1,98 @@
+		    Google App Engine for Java SDK
+		   =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+What is Google App Engine?
+--------------------------
+
+Google App Engine is a web application hosting platform that allows
+you to write your web application in one of several programming
+languages (including Python and Java).  This SDK includes everything
+necessary to develop Java applications that can be hosted by App
+Engine.  This includes a jar file and documentation for the current
+set of App Engine-specific API's, and a development environment that
+can be used to test your application before deploying.
+
+
+Contents
+--------
+
+This bundle contains the following:
+
+  docs/                       - Documentation
+  docs/javadoc                  - Javadoc for the App Engine API's
+
+  bin/                        - Executable Tools
+  bin/appcfg                    - Deploys Java apps to Google
+  bin/dev_appserver             - Launches the development server
+
+  lib/user/                     - API's we provide to you to build your
+                                  application. They should be bundled with your
+                                  webapp (in WEB-INF/lib).
+  lib/shared/                   - API's intrinsic to App Engine such as the
+                                  Servlet and JSP libraries. You must not
+                                  bundle these with your webapp.
+
+  config/                     - Configuration files
+  config/sdk                    - Configuration files for the SDK tools
+  config/user                   - Configuration files for your applications
+
+  demos/                      - Sample applications
+
+
+Dependencies
+------------
+- Java 1.7
+
+Writing an Application
+----------------------
+
+Google App Engine for Java web applications are based on the Java
+Servlet API.  This means that you will want to provide classes that
+extend either the javax.servlet.GenericServlet or
+javax.servlet.http.HttpServlet classes.  You will also need to supply
+a web.xml file that specifies these servlet classes, and a URL pattern
+for each.
+
+For a web application to be compatible with App Engine, it should look like this:
+
+  WEB-INF/web.xml               - Servlet deployment descriptor
+  WEB-INF/appengine-web.xml     - Custom (AE-specific) deployment descriptor
+  WEB-INF/datastore-indexes.xml - (optional) list of datastore indexes to
+                                  build for your application.
+  WEB-INF/lib/appengine-api.jar - Include this to access App Engine API's
+                                - One or more of:
+  WEB-INF/classes/...           -   Class files required by your app
+  WEB-INF/lib/*.jar             -   Other Jar files required by your app
+  WEB-INF/lib/*.zip             -   Other Zip files required by your app
+  ...                           - Any static resources for your application
+
+Running the Local Runtime Environment
+-------------------------------------
+
+All executable scripts live in the bin directory of the SDK. Windows scripts
+have a ".cmd" extension, Unix and MacOSX scripts end with ".sh". The commands
+below assume you're running them from the root directory of the SDK.
+
+To run the local development server use:
+    bin\dev_appserver.cmd <your web application>
+
+It will begin listening on port 8080 on the local machine.
+
+Many of the sample applications have Ant build.xml targets that start
+the local runtime environment.
+
+Uploading your App to Google
+----------------------------
+
+1) Go to http://appengine.google.com and create your application.
+
+2) Make sure that the application identifier in your appengine-web.xml file
+   matches the one you chose in step 1.
+
+3) Run appcfg to upload your application to deploy your application to
+   Google's Servers:
+
+   From the appengine-java-sdk directory, run:
+     bin\appcfg.cmd update <your web application>
+
+4) Try your application out at:  http://<app-id>.appspot.com
