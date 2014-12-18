@@ -14,12 +14,14 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -247,13 +249,10 @@ public final class ProjectBuilder {
       File extractedFile = new File(projectRoot, zipEntry.getName());
       LOG.info("extracting " + extractedFile.getAbsolutePath() + " from input zip");
       Files.createParentDirs(extractedFile); // Do I need this?
-      Files.copy(
-          new InputSupplier<InputStream>() {
-            public InputStream getInput() throws IOException {
-              return extractedInputStream;
-            }
-          },
-          extractedFile);
+      FileOutputStream outFileStream = new FileOutputStream(extractedFile);
+      ByteStreams.copy(extractedInputStream, outFileStream);
+      outFileStream.flush();
+      outFileStream.close();
       projectFileNames.add(extractedFile.getPath());
     }
     return projectFileNames;

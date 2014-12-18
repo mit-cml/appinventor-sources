@@ -97,7 +97,7 @@
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
         <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
         <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
-        <pathelement location="lib/guava/guava-14.0.1.jar" />
+        <pathelement location="lib/guava/guava-18.0.jar" />
         <pathelement location="lib/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="lib/json/json.jar" />
@@ -126,12 +126,19 @@
         <pathelement location="lib/gwt/2.5.1/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.5.1/gwt-user.jar"/>
         <!-- app engine libs -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
-        <pathelement location="lib/gcs/appengine-gcs-client-0.3.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
+        <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>
+        <pathelement location="lib/gcs/google-api-client-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/google-api-client-appengine-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/google-http-client-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/google-http-client-appengine-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/google-http-client-jackson-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/google-http-client-jackson2-1.18.0-rc.jar"/>
+        <pathelement location="lib/gcs/httpclient-4.0.1.jar"/>
         -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/testing/appengine-testing.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/impl/appengine-api-stubs.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/testing/appengine-testing.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-api-stubs.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
         <!-- prevent error importing GitBuildId if it has been generated -->
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>

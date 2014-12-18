@@ -45,6 +45,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
 import com.googlecode.objectify.Key;
@@ -156,7 +157,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     fileService = FileServiceFactory.getFileService();
     RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
       .retryMaxAttempts(10)
-      .totalRetryPeriodMillis(1000).build();
+      .totalRetryPeriodMillis(10000).build();
     LOG.log(Level.INFO, "RetryParams: getInitialRetryDelayMillis() = " + retryParams.getInitialRetryDelayMillis());
     LOG.log(Level.INFO, "RetryParams: getRequestTimeoutMillis() = " + retryParams.getRequestTimeoutMillis());
     LOG.log(Level.INFO, "RetryParams: getRetryDelayBackoffFactor() = " + retryParams.getRetryDelayBackoffFactor());
@@ -173,7 +174,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     this.fileService = fileService;
     RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
       .retryMaxAttempts(10)
-      .totalRetryPeriodMillis(1000).build();
+      .totalRetryPeriodMillis(10000).build();
     gcsService = GcsServiceFactory.createGcsService(retryParams);
     initMotd();
   }
@@ -1487,7 +1488,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       FileWriteChannel blobstoreWriteChannel = fileService.openWriteChannel(blobstoreFile, true);
 
       OutputStream blobstoreOutputStream = Channels.newOutputStream(blobstoreWriteChannel);
-      ByteStreams.copy(ByteStreams.newInputStreamSupplier(content), blobstoreOutputStream);
+      ByteStreams.copy(ByteSource.wrap(content).openStream(), blobstoreOutputStream);
       blobstoreOutputStream.flush();
       blobstoreOutputStream.close();
       blobstoreWriteChannel.closeFinally();

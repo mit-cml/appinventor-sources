@@ -11,6 +11,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
@@ -28,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -1141,8 +1143,14 @@ public final class Compiler {
         file.setExecutable(true);
         file.deleteOnExit();
         file.getParentFile().mkdirs();
-        Files.copy(Resources.newInputStreamSupplier(Compiler.class.getResource(resourcePath)),
-            file);
+        InputStream resourceInput = Compiler.class.getResourceAsStream(resourcePath);
+        if (resourceInput == null) {
+          System.err.println("resourceInput is null: resourcePath = " + resourcePath);
+        }
+        FileOutputStream outFile = new FileOutputStream(file);
+        ByteStreams.copy(Compiler.class.getResourceAsStream(resourcePath), outFile);
+        outFile.flush();
+        outFile.close();
         resources.put(resourcePath, file);
       }
       return file.getAbsolutePath();
