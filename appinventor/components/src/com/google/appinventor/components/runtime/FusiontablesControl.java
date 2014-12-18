@@ -139,7 +139,7 @@ import java.util.ArrayList;
     "google-http-client-android2-beta.jar," +
     "google-http-client-android3-beta.jar," +
     "google-oauth-client-beta.jar," +
-    "guava-14.0.1.jar," +
+    "guava-18.0.jar," +
     "gson-2.1.jar")
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "fusion";

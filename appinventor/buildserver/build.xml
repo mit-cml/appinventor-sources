@@ -78,7 +78,7 @@
     <copy toFile="${classes.files.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
     <copy toFile="${classes.files.dir}/json.jar" file="${lib.dir}/json/json.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-    <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${classes.files.dir}/guava-18.0.jar" file="${lib.dir}/guava/guava-18.0.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/4.2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
@@ -113,7 +113,7 @@
       <fileset dir="${lib.dir}" includes="bouncycastle/bcprov-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="bouncycastle/bcpkix-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
-      <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-18.0.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
@@ -245,7 +245,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
