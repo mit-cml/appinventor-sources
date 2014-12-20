@@ -1019,6 +1019,19 @@ public class Form extends Activity
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
+  
+  /**
+   * Specifies the App Name.
+   *
+   * @param aName the display name of the installed application in the phone
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "the display name of the installed application in the phone.")
+  public void AppName(String aName) {
+    // We don't actually need to do anything.
+  }
 
   /**
    * Width property getter method.

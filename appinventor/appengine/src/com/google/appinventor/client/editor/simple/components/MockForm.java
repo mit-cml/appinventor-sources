@@ -123,6 +123,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ICON = "Icon";
   private static final String PROPERTY_NAME_VCODE = "VersionCode";
   private static final String PROPERTY_NAME_VNAME = "VersionName";
+  private static final String PROPERTY_NAME_ANAME = "AppName";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -331,6 +332,11 @@ public final class MockForm extends MockContainer {
 
     if (propertyName.equals(PROPERTY_NAME_VCODE)) {
       // The VersionCode property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
+    
+    if (propertyName.equals(PROPERTY_NAME_ANAME)) {
+      // The AppName property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
