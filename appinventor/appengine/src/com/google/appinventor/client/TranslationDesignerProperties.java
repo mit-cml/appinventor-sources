@@ -16,8 +16,6 @@ public class TranslationDesignerProperties {
     // Properties
     if (key.equals("AboutScreen")) {
       value = MESSAGES.AboutScreenProperties();
-    } else if (key.equals("ShowTitleBar")) {
-      value = MESSAGES.ShowTitleBarProperties();
     } else if (key.equals("AboveRangeEventEnabled")) {
       value = MESSAGES.AboveRangeEventEnabledProperties();
     } else if (key.equals("Action")) {
@@ -174,6 +172,10 @@ public class TranslationDesignerProperties {
       value = MESSAGES.ServiceURLProperties();
     } else if (key.equals("Shape")) {
       value = MESSAGES.ShapeProperties();
+    } else if (key.equals("ShowTitleBar")) {
+      value = MESSAGES.ShowTitleBarProperties();
+    } else if (key.equals("ShowStatusBar")) {
+      value = MESSAGES.ShowStatusBarProperties();
     } else if (key.equals("ShowFeedback")) {
       value = MESSAGES.ShowFeedbackProperties();
     } else if (key.equals("show tables")) {
@@ -274,8 +276,6 @@ public class TranslationDesignerProperties {
       value = MESSAGES.MonthInTextProperties();
     } else if (key.equals("Year")) {
       value = MESSAGES.YearProperties();
-    } else if (key.equals("FullScreen")) {
-      value = MESSAGES.FullScreenProperties();
     } else if (key.equals("CloseScreenAnimation")) {
       value = MESSAGES.CloseScreenAnimationProperties();
     } else if (key.equals("OpenScreenAnimation")) {

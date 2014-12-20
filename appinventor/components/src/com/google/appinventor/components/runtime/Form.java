@@ -118,7 +118,7 @@ public class Form extends Activity
   // "about this application" menu item is selected.
   private String aboutScreen;
   private boolean showTitleBar = true;
-  private boolean fullScreen = false;
+  private boolean showStatusBar = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -751,7 +751,7 @@ public class Form extends Activity
    * @return  showTitleBar boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "Visibility of the title bar.")
+      description = "Title bar visibility")
   public boolean ShowTitleBar() {
     return showTitleBar;
   }
@@ -761,6 +761,8 @@ public class Form extends Activity
    *
    * @param visibility boolean
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "We can show/hide the title bar.")
   public void ShowTitleBar(boolean visibility) {
@@ -776,33 +778,35 @@ public class Form extends Activity
   }
   
   /**
-   * FullScreen property getter method.
+   * ShowStatusBar property getter method.
    *
-   * @return  showTitleBar boolean
+   * @return  showStatusBar boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "Full Screen status")
-  public boolean FullScreen() {
-    return fullScreen;
+      description = "Status bar visibility")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
   }
 
   /**
-   * FullScreen property setter method.
+   * ShowStatusBar property setter method.
    *
    * @param visibility boolean
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "We can enable/disable full screen.")
-  public void FullScreen(boolean enabled) {
-    if (enabled != fullScreen) {
-      if (enabled) {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-      } else {
+      description = "We can enable/disable status bar.")
+  public void ShowStatusBar(boolean visibility) {
+    if (visibility != showStatusBar) {
+      if (visibility) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
       }    
-      fullScreen = enabled;		
+      showStatusBar = visibility;		
     }
   }
 
