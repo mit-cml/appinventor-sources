@@ -147,20 +147,30 @@ public class BuildServer {
   // The zip file where we put all the build results for this request.
   private File outputZip;
 
-  // Set to true if we are shutting down
-  private static volatile boolean shuttingDown = false;
+  // non-zero means we are shutting down, if currentTimeMillis is > then this, then we are
+  // completely shutdown, otherwise we are just providing NOT OK for health checks but
+  // otherwise still accepting jobs. This avoids having people get an error if the load
+  // balancer sends a job our way because it hasn't decided we are down.
+  private static volatile long shuttingTime = 0;
 
   private static String shutdownToken = null;
+
+  private enum ShutdownState { UP, SHUTTING, DOWN };
 
   @GET
   @Path("health")
   @Produces(MediaType.TEXT_PLAIN)
   public Response health() throws IOException {
-    LOG.info("Healthcheck: " + shuttingDown);
-    if (shuttingDown) {
-      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
-    } else {
+    ShutdownState shut = getShutdownState();
+    if (shut == ShutdownState.UP) {
+      LOG.info("Healthcheck: UP");
       return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    } else if (shut == ShutdownState.DOWN) {
+      LOG.info("Healthcheck: DOWN");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutdown").build();
+    } else {
+      LOG.info("Healthcheck: SHUTTING");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
     }
   }
 
@@ -173,8 +183,9 @@ public class BuildServer {
     // Runtime
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
-    if (shuttingDown) {
-      variables.put("shutting-down", "Server is shutting down, no new connections.");
+    variables.put("state", getShutdownState() + "");
+    if (shuttingTime != 0) {
+      variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
     }
     variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
     variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
@@ -233,19 +244,32 @@ public class BuildServer {
 
   /**
    * Indicate that the server is shutting down.
+   *
+   * @param token -- secret token used like a password to authenticate the shutdown command
+   * @param delay -- the delay in seconds before jobs are no longer accepted
    */
 
   @GET
   @Path("shutdown")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response shutdown(@QueryParam("token") String token) throws IOException {
+  public Response shutdown(@QueryParam("token") String token, @QueryParam("delay") String delay) throws IOException {
     if (commandLineOptions.shutdownToken == null || token == null) {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("No Shutdown Token").build();
     } else if (!token.equals(commandLineOptions.shutdownToken)) {
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
     } else {
-      shuttingDown = true;
-      return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+      long shutdownTime = System.currentTimeMillis();
+      if (delay != null) {
+        try {
+          shutdownTime += Integer.parseInt(delay) *1000;
+        } catch (NumberFormatException e) {
+          // XXX Ignore
+        }
+      }
+      shuttingTime = shutdownTime;
+      DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+      return Response.ok("ok: Will shutdown at " + dateTimeFormat.format(new Date(shuttingTime)),
+          MediaType.TEXT_PLAIN_TYPE).build();
     }
   }
 
@@ -375,8 +399,8 @@ public class BuildServer {
     if (inputZip.length() == 0L) {
       cleanUp();
     } else {
-      if (shuttingDown) {
-        LOG.info("request received during shutdown");
+      if (getShutdownState() == ShutdownState.DOWN) {
+        LOG.info("request received while shutdown completely");
         return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Temporary build error, try again.").build();
       }
       if (commandLineOptions.requiredHosts != null) {
@@ -619,6 +643,16 @@ public class BuildServer {
     public void close() throws IOException {
       super.close();
       file.delete();
+    }
+  }
+
+  private ShutdownState getShutdownState() {
+    if (shuttingTime == 0) {
+      return ShutdownState.UP;
+    } else if (System.currentTimeMillis() > shuttingTime) {
+      return ShutdownState.DOWN;
+    } else {
+      return ShutdownState.SHUTTING;
     }
   }
 }
