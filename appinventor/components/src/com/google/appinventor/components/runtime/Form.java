@@ -34,7 +34,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -115,6 +117,8 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showTitleBar = true;
+  private boolean showStatusBar = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -739,6 +743,71 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+  
+  /**
+   * ShowTitleBar property getter method.
+   *
+   * @return  showTitleBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Title bar visibility")
+  public boolean ShowTitleBar() {
+    return showTitleBar;
+  }
+
+  /**
+   * ShowTitleBar property setter method.
+   *
+   * @param visibility boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "We can show/hide the title bar.")
+  public void ShowTitleBar(boolean visibility) {
+    if (visibility != showTitleBar) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (visibility) {
+        v.setVisibility(View.VISIBLE);
+      } else {
+        v.setVisibility(View.GONE);
+      }    
+      showTitleBar = visibility;		
+    }
+  }
+  
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Status bar visibility")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param visibility boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "We can enable/disable status bar.")
+  public void ShowStatusBar(boolean visibility) {
+    if (visibility != showStatusBar) {
+      if (visibility) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }    
+      showStatusBar = visibility;		
+    }
   }
 
   /**

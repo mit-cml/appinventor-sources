@@ -203,6 +203,8 @@ public class TranslationComponentProperty {
     map.put("MonthInText", MESSAGES.MonthInTextProperties());
     map.put("Year", MESSAGES.YearProperties());
     map.put("AboutScreen", MESSAGES.AboutScreenProperties());
+    map.put("ShowTitleBar", MESSAGES.ShowTitleBarProperties());
+    map.put("ShowStatusBar", MESSAGES.ShowStatusBarProperties());
     map.put("CloseScreenAnimation", MESSAGES.CloseScreenAnimationProperties());
     map.put("OpenScreenAnimation", MESSAGES.OpenScreenAnimationProperties());
     map.put("LastMessage", MESSAGES.LastMessageProperties());
