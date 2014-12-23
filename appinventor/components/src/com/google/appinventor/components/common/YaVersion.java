@@ -287,8 +287,13 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 107:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 108:
+  // - New Obsfucate Text Block was added.
+  //   Note: BLOCKS_LANGUAGE_VERSION would normally be incremented as
+  //   well, but we don't have any code that deals with it, so we
+  //   won't do it for this change
 
-  public static final int YOUNG_ANDROID_VERSION = 107;
+  public static final int YOUNG_ANDROID_VERSION = 108;
 
   // ............................... Blocks Language Version Number ...............................
 

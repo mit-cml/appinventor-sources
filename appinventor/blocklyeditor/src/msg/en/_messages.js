@@ -547,6 +547,9 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = 'Reports whether text1 is lexicographically greater than text2.\n'
         + 'if one text is the prefix of the other, the shorter text is considered smaller.\n'
         + 'Uppercase characters precede lowercase characters.';
+    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_TOOLTIP = 'A text string that will be obsfucated.';
+    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE = 'Obsfucated Text';
+    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#obsfucatetext';
 
     /*Blockly.Msg.LANG_TEXT_ENDSTRING_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
      Blockly.Msg.LANG_TEXT_ENDSTRING_INPUT = 'letters in text';
