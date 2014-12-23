@@ -287,8 +287,8 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 107:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 5
-
-  public static final int YOUNG_ANDROID_VERSION = 107;
+  // For YOUNG_ANDROID_VERION 108: Added PROXIMITYSENSOR_COMPONENT_VERSION
+  public static final int YOUNG_ANDROID_VERSION = 108;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -805,6 +805,9 @@ public class YaVersion {
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int YANDEX_COMPONENT_VERSION = 1;
+
+  //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
 
