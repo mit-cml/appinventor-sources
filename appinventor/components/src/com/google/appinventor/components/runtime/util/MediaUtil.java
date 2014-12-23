@@ -150,10 +150,10 @@ public class MediaUtil {
       return form.getAssets().open(mediaPath);
 
     } catch (IOException e) {
-        if (findCaseinsensitivePath(form, mediaPath) == null) {
+      String path = findCaseinsensitivePath(form, mediaPath);
+      if (path == null) {
           throw e;
         } else {
-          String path = findCaseinsensitivePath(form, mediaPath);
           return form.getAssets().open(path);
         }
     }
@@ -384,10 +384,10 @@ public class MediaUtil {
       return form.getAssets().openFd(mediaPath);
 
     } catch (IOException e) {
-      if (findCaseinsensitivePath(form, mediaPath) == null){
+      String path = findCaseinsensitivePath(form, mediaPath);
+      if (path == null){
         throw e;
       } else {
-      String path = findCaseinsensitivePath(form, mediaPath);
       return form.getAssets().openFd(path);
       }
     }
