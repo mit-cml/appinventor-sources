@@ -14,7 +14,11 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.PROXIMITYSENSOR_COMPONENT_VERSION,
         description = "<p>Non-visible component that can measures the proximity of an object in cm " +
                 "relative to the view screen of a device. This sensor is typically used to determine " +
-                "whether a handset is being held up to a person's ear.</p> ",
+                "whether a handset is being held up to a persons ear; " +
+                "i.e. lets you determine how far away an object is from a device. " +
+                "Most devices return the absolute distance, in cm, but some return only near and far values. " +
+                "In this case, the sensor usually reports its maximum range value in the far state " +
+                "and a lesser value in the near state.</p>",
         category = ComponentCategory.SENSORS,
         nonVisible = true,
         iconName = "images/proximitysensor.png")
@@ -57,7 +61,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      * @return {@code true} indicates that an proximity sensor is available,
      *         {@code false} that it isn't
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Used to determine if device has ProximitySensor or not")
     public boolean Available() {
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
         return (sensors.size() > 0);
@@ -76,8 +80,6 @@ public class ProximitySensor extends AndroidNonvisibleComponent
             stopListening();
         }
     }
-
-    // Deleteable implementation
 
     @Override
     public void onDelete() {
@@ -183,7 +185,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      * @param enabled
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
-    @SimpleProperty
+    @SimpleProperty (description = "If set to true, it will continue sensing for the proximity changes")
     public void KeepRunningWhenOnPause(boolean enabled) {
 
         this.keepRunningWhenOnPause = enabled;
@@ -201,7 +203,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      *
      * @return  distance
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns the distance from the object to the device")
     public float Distance() {
         return distance;
     }

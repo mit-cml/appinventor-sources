@@ -219,6 +219,11 @@ public class TranslationComponentProperty {
     map.put("Hour", MESSAGES.HourProperties());
     map.put("Minute", MESSAGES.MinuteProperties());
 
+    // =========== ProximitySensor
+    map.put("MaximumRange", MESSAGES.MaximumRangeProperties());
+    map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
+    map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
+
     return map;
   }
 }
