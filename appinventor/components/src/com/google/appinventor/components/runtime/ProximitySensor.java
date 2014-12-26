@@ -16,7 +16,7 @@ import java.util.List;
                 "relative to the view screen of a device. This sensor is typically used to determine " +
                 "whether a handset is being held up to a persons ear; " +
                 "i.e. lets you determine how far away an object is from a device. " +
-                "Most devices return the absolute distance, in cm, but some return only near and far values. " +
+                "Many devices return the absolute distance, in cm, but some return only near and far values. " +
                 "In this case, the sensor usually reports its maximum range value in the far state " +
                 "and a lesser value in the near state.</p>",
         category = ComponentCategory.SENSORS,
@@ -61,7 +61,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      * @return {@code true} indicates that an proximity sensor is available,
      *         {@code false} that it isn't
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Used to determine if device has ProximitySensor or not")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports whether or not the device has a proximity sensor")
     public boolean Available() {
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_PROXIMITY);
         return (sensors.size() > 0);
@@ -132,7 +132,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      *
      * @return Sensor's maximum range.
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports the Maximum Range of the devices ProximitySensor")
     public float MaximumRange() {
         return proximitySensor.getMaximumRange();
     }
@@ -157,7 +157,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      *                 {@code false} disables it
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
-    @SimpleProperty (description = "If enabled, then device will start listening for changes in proximity")
+    @SimpleProperty (description = "If enabled, then device will listen for changes in proximity")
     public void Enabled(boolean enabled) {
         if (this.enabled == enabled) {
             return;
@@ -185,7 +185,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      * @param enabled
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
-    @SimpleProperty (description = "If set to true, it will continue sensing for the proximity changes")
+    @SimpleProperty (description = "If set to true, it will keep sensing for proximity changes even when the app is not visible")
     public void KeepRunningWhenOnPause(boolean enabled) {
 
         this.keepRunningWhenOnPause = enabled;
