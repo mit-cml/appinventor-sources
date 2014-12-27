@@ -132,7 +132,7 @@ public class ProximitySensor extends AndroidNonvisibleComponent
      *
      * @return Sensor's maximum range.
      */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports the Maximum Range of the devices ProximitySensor")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Reports the Maximum Range of the device's ProximitySensor")
     public float MaximumRange() {
         return proximitySensor.getMaximumRange();
     }
