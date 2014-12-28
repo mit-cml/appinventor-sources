@@ -817,6 +817,10 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The HasMargins property was added.  No changes are needed.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
