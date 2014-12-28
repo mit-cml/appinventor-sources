@@ -43,6 +43,10 @@ public final class Label extends AndroidViewComponent {
   // computed using the view
   private int defaultLabelMarginInDp = 0;
 
+   // amount of left/right padding around text.  This was chosen pretty arbitrarily
+  //  but it looks OK on the Nexus 4 and Nexus 7
+  private static final int PADDING = 3;
+
   private final TextView view;
   
   private final LinearLayout.LayoutParams linearLayoutParams;
