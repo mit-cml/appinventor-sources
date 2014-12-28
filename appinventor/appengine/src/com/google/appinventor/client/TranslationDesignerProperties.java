@@ -98,6 +98,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.GenerateLightProperties();
     } else if (key.equals("GoogleVoiceEnabled")) {
       value = MESSAGES.GoogleVoiceEnabledProperties();
+    } else if (key.equals("HasMargins")) {
+      value = MESSAGES.HasMarginsProperties();
     } else if (key.equals("Heading")) {
       value = MESSAGES.HeadingProperties();
     } else if (key.equals("HighByteFirst")) {
