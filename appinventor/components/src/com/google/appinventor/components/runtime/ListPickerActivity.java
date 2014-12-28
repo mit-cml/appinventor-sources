@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime;
 
 
 
+import android.content.pm.ActivityInfo;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -54,6 +56,16 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ANIM_TYPE)) {
       closeAnim = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_ANIM_TYPE);
     }
+    if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ORIENTATION_TYPE)) {
+      String orientation = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_ORIENTATION_TYPE).toLowerCase();
+      if (orientation.equals("portrait")) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      }
+      else if (orientation.equals("landscape")) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+      }
+    }
+
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_TITLE)) {
       String title = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_TITLE);
       setTitle(title);
