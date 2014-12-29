@@ -443,6 +443,7 @@
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
                     <li> <a href="#OrientationSensor"> OrientationSensor </a>
+                    <li> <a href="#ProximitySensor"> ProximitySensor </a>
                     </li>
                   </ul>
 
@@ -723,6 +724,43 @@ none
                         pitch, number roll) </code> </dt>
                     <dd> Called when the orientation has changed. </dd>
                   </dl>
+                  <!-- ===== start: ProximitySensor ==== -->
+                  <h2 id="ProximitySensor">ProximitySensor </h2>
+                  <p> A sensor component that can measure the proximity of an object (in cm)
+                      relative to the view screen of a device. This sensor is typically used to determine
+                      whether a handset is being held up to a persons ear;
+                      i.e. lets you determine how far away an object is from a device.
+                      Many devices return the absolute distance, in cm, but some return only near and far values.
+                      In this case, the sensor usually reports its maximum range value in the far state
+                      and a lesser value in the near state. It reports the following value:</p>
+                  <ul>
+                      <li><strong>Distance</strong>: The distance from the object to the device</li>
+                  </ul>
+                  <h3> Properties </h3>
+                  <dl>
+                      <dt> <code class="c2"> Available </code> </dt>
+                      <dd> Reports whether or not the device has a proximity sensor </dd>
+
+                      <dt> <code class="c2"> Enabled </code> </dt>
+                      <dd> If enabled, then device will listen for changes in proximity</dd>
+
+                      <dt> <code class="c2"> KeepRunningWhenOnPause </code> </dt>
+                      <dd> If set to true, it will keep sensing for proximity changes even when the app is not visible</dd>
+
+                       <dt> <code class="c2"> Distance </code> </dt>
+                      <dd> Returns the distance from the object to the device</dd>
+
+                      <dt> <code class="c2"> MaximumRange </code> </dt>
+                      <dd> Reports the Maximum Range of the device's ProximitySensor. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                      <dt> <code> ProximityChanged(number distance) </code> </dt>
+                      <dd> Called when distance (in cm) of the object to the device changes. </dd>
+                  </dl>
+
+                  <!-- ===== end: ProximitySensor ==== -->
+
                   <!-- Content ----------------------- --> </div>
               </div>
             </div>

@@ -292,8 +292,10 @@ public class YaVersion {
   //   Note: BLOCKS_LANGUAGE_VERSION would normally be incremented as
   //   well, but we don't have any code that deals with it, so we
   //   won't do it for this change
+  // For YOUNG_ANDROID_VERION 109:
+  // - Added PROXIMITYSENSOR_COMPONENT_VERSION
 
-  public static final int YOUNG_ANDROID_VERSION = 108;
+  public static final int YOUNG_ANDROID_VERSION = 109;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -810,6 +812,9 @@ public class YaVersion {
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int YANDEX_COMPONENT_VERSION = 1;
+
+  //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
 
