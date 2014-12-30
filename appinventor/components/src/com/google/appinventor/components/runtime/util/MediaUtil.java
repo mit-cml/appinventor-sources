@@ -130,7 +130,11 @@ public class MediaUtil {
   private static String findCaseinsensitivePath(Form form, String mediaPath)
       throws IOException{
     if( !pathCache.containsKey(mediaPath) ){
-      pathCache.put(mediaPath, findCaseinsensitivePathWithoutCache(form, mediaPath));
+      String newPath = findCaseinsensitivePathWithoutCache(form, mediaPath);
+      if( newPath == null){
+        return null;
+      }
+      pathCache.put(mediaPath, newPath);
     }
     return pathCache.get(mediaPath);
   }
@@ -155,7 +159,6 @@ public class MediaUtil {
     }
     return null;
   }
-
 
   /**
    * find path of an asset from a mediaPath using case-insensitive comparison,
