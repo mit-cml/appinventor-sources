@@ -30,13 +30,13 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.VERTICAL_PARAMETERS = 'Colocar Parametros Verticalmente';
     Blockly.Msg.DELETE_BLOCK = 'Borrar Bloque';
     Blockly.Msg.DELETE_X_BLOCKS = 'Borrar %1 Bloques';
-    Blockly.Msg.COLLAPSE_BLOCK = 'Collapsar Bloque';
-    Blockly.Msg.EXPAND_BLOCK = 'Expandir Bloque';
+    Blockly.Msg.COLLAPSE_BLOCK = 'Ocultar Bloque';
+    Blockly.Msg.EXPAND_BLOCK = 'Mostrar Bloque';
     Blockly.Msg.DISABLE_BLOCK = 'Inhabilitar Bloque';
     Blockly.Msg.ENABLE_BLOCK = 'Habilitar Bloque';
     Blockly.Msg.HELP = 'Ayuda';
-    Blockly.Msg.COLLAPSE_ALL = 'Collapsar Bloques';
-    Blockly.Msg.EXPAND_ALL = 'Expandir Bloques';
+    Blockly.Msg.COLLAPSE_ALL = 'Ocultar Bloques';
+    Blockly.Msg.EXPAND_ALL = 'Mostrar Bloques';
     Blockly.Msg.ARRANGE_H = 'Ordenar Bloques Horizontalmente';
     Blockly.Msg.ARRANGE_V = 'Ordenar Bloques Verticalmente';
     Blockly.Msg.ARRANGE_S = 'Ordenar Bloques Diagonalmente';
@@ -755,7 +755,7 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_LISTS_TO_CSV_ROW_TOOLTIP = 'Interpreta la lista como un registro de una tabla, y devuelve un texto CSV'
         + '\(comma-separated value\) que representa al registro. Cada elemento de la lista de registros es '
         + 'considerado como un campo, y está delimitado por comillas en el texto CSV resultante. '
-        + 'Los elementos están separados por comas. Items are separated by commas. No hay un divisor de línea '
+        + 'Los elementos están separados por comas. No hay un divisor de línea '
         + 'al final del texto devuelto.';
 
     Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#listfromcsvrow';
