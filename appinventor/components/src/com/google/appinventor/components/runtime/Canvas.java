@@ -112,6 +112,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
+  private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
   private static final int FLING_INTERVAL = 1000;  // ms
 
   // Keep track of enclosed sprites.  This list should always be
@@ -667,7 +668,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
     PaintColor(DEFAULT_PAINT_COLOR);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    TextAlignment(Component.ALIGNMENT_NORMAL);
+    TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
 
     sprites = new LinkedList<Sprite>();
@@ -1032,7 +1033,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-                    defaultValue = Component.ALIGNMENT_CENTER + "")
+                    defaultValue = DEFAULT_TEXTALIGNMENT + "")
   @SimpleProperty(userVisible = true)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
