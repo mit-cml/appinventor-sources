@@ -218,6 +218,7 @@ public class TranslationComponentProperty {
     map.put("UseGPS", MESSAGES.UseGPSProperties());
     map.put("Hour", MESSAGES.HourProperties());
     map.put("Minute", MESSAGES.MinuteProperties());
+    map.put("HasMargins", MESSAGES.HasMarginsProperties());
 
     // =========== ProximitySensor
     map.put("MaximumRange", MESSAGES.MaximumRangeProperties());

@@ -2369,6 +2369,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GoogleVoiceEnabled")
   @Description("")
   String GoogleVoiceEnabledProperties();
+  
+  @DefaultMessage("HasMargins")
+  @Description("")
+  String HasMarginsProperties();
 
   @DefaultMessage("Heading")
   @Description("")

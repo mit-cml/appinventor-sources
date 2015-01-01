@@ -294,8 +294,10 @@ public class YaVersion {
   //   won't do it for this change
   // For YOUNG_ANDROID_VERION 109:
   // - Added PROXIMITYSENSOR_COMPONENT_VERSION
+  // For YOUNG_ANDROID_VERSION 110:
+  // - LABEL_COMPONENT_VERSION was incremented to 3.
 
-  public static final int YOUNG_ANDROID_VERSION = 109;
+  public static final int YOUNG_ANDROID_VERSION = 110;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -583,7 +585,9 @@ public class YaVersion {
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int LABEL_COMPONENT_VERSION = 2;
+  // For LABEL_COMPONENT_VERSION 3:
+  // - The HasMargins property was added
+  public static final int LABEL_COMPONENT_VERSION = 3;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
