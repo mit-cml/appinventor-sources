@@ -1015,7 +1015,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *          {@link Component#ALIGNMENT_CENTER} or
    *          {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "Determines the alignment of the " +
+      "text drawn by DrawText() or DrawAngle() with respect to the " +
+      "point specified by that command.",
       category = PropertyCategory.APPEARANCE,
       userVisible = true)
   public int TextAlignment() {
@@ -1037,9 +1039,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(userVisible = true)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
-    // Changing this with the property block works, but not with the designer???
-    // This seems to be the same designer as in button base.  Check whether that
-    // one works
     switch (alignment) {
       case Component.ALIGNMENT_NORMAL:
         paint.setTextAlign(Paint.Align.LEFT);
