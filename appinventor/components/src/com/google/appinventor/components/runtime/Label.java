@@ -33,18 +33,18 @@ import android.widget.TextView;
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class Label extends AndroidViewComponent {
-  
+
   // default margin around a label in DPs
   // note that the spacing between adjacent labels will be twice this value
   // because each label has a margin
   private static final int DEFAULT_LABEL_MARGIN = 2;
-  
+
   // default margin in density-independent pixels. This must be
   // computed using the view
   private int defaultLabelMarginInDp = 0;
 
   private final TextView view;
-  
+
   private final LinearLayout.LayoutParams linearLayoutParams;
 
   // Backing for text alignment
@@ -61,7 +61,7 @@ public final class Label extends AndroidViewComponent {
 
   // Backing for font italic
   private boolean italic;
-  
+
   // Whether or not the label should have a margin
   private boolean hasMargins;
 
@@ -76,7 +76,6 @@ public final class Label extends AndroidViewComponent {
   public Label(ComponentContainer container) {
     super(container);
     view = new TextView(container.$context());
-    
 
     // Adds the component to its designated container
     container.$add(this);
@@ -97,7 +96,7 @@ public final class Label extends AndroidViewComponent {
       Log.e("Label", "Error: The label's view does not have linear layout parameters");
       new RuntimeException().printStackTrace();
     }
-    
+
     // Default property values
     TextAlignment(Component.ALIGNMENT_NORMAL);
     BackgroundColor(Component.COLOR_NONE);
@@ -108,13 +107,12 @@ public final class Label extends AndroidViewComponent {
     TextColor(Component.COLOR_BLACK);
     HasMargins(true);
   }
-    
-    // put this in the right file
-    private static int dpToPx(View view, int dp) {
-      float density = view.getContext().getResources().getDisplayMetrics().density;
-      return Math.round((float)dp * density);
-    }
-    
+
+  // put this in the right file
+  private static int dpToPx(View view, int dp) {
+    float density = view.getContext().getResources().getDisplayMetrics().density;
+    return Math.round((float)dp * density);
+  }
 
   @Override
   public View getView() {
@@ -183,7 +181,6 @@ public final class Label extends AndroidViewComponent {
     } else {
       TextViewUtil.setBackgroundColor(view, Component.COLOR_NONE);
     }
-    
   }
 
   /**
@@ -228,7 +225,7 @@ public final class Label extends AndroidViewComponent {
   public boolean FontItalic() {
     return italic;
   }
-  
+
   /**
    * Specifies whether the label's text should be italic.
    * Some fonts do not support italic.
@@ -258,7 +255,7 @@ public final class Label extends AndroidViewComponent {
   public boolean HasMargins() {
     return hasMargins;
   }
-  
+
   /**
    * Specifies whether the label should have margins.
    * This margin value is not well coordinated with the
@@ -275,13 +272,12 @@ public final class Label extends AndroidViewComponent {
     this.hasMargins = hasMargins;
     setLabelMargins(hasMargins);
   }
-  
+
 private void setLabelMargins(boolean hasMargins) {
   int m = hasMargins ? defaultLabelMarginInDp : 0 ;
   linearLayoutParams.setMargins(m, m, m, m);
   view.invalidate();
 }
-  
 
   /**
    * Returns the label's text's font size, measured in pixels.

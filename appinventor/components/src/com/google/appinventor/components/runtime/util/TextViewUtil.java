@@ -174,7 +174,7 @@ public class TextViewUtil {
     textview.setText(text);
     textview.requestLayout();
   }
-  
+
   /**
    * Sets the padding for a {@link TextView}.
    *
