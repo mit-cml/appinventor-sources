@@ -819,6 +819,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 3) {
       // The HasMargins property was added.  No changes are needed.
+      componentProperties.put("HasMargins", new ClientJsonString("False"));
       srcCompVersion = 3;
     }
     return srcCompVersion;
