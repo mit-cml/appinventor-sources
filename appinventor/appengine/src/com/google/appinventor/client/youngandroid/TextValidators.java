@@ -69,8 +69,8 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidComponentIdentifier(String text) {
-	return text.matches("^[^-0-9!&%^/>=<`'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
-			"[^-!&%^/>=<'\"#:;\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
+	return text.matches("^[^-0-9!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
+			"[^-!&%^/>=<'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
   }
 
   /**

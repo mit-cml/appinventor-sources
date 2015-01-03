@@ -20,7 +20,7 @@ public class TextValidatorsTest extends TestCase {
                                                                   "A9", "A9b_c");
 
   private final List<String> illegalIdentifierNames = Arrays.asList("", "_a", "9A", "ab0-", "-aB",
-                                                                    "A b", " ", "foo bar");
+                                                                    "A b", " ", "foo bar", "foo,bar");
 
   private final List<String> legalComponentIdentifierNames = Arrays.asList("你好吗", "按钮1", "图片2",
 		  "图_片2", "图3片_2", "botón1", "botón_2");
