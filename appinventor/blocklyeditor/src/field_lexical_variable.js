@@ -755,7 +755,7 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
  * result.transformed is the transformed name and result.isLegal is whether the transformed
  * named satisfies the above rules.
  */
-git checkout noCommasInComponentNamegit checkout noCommasInComponentNamessBlockly.LexicalVariable.checkIdentifier = function(ident) {
+Blockly.LexicalVariable.checkIdentifier = function(ident) {
   var transformed = ident.trim() // Remove leading and trailing whitespace
                          .replace(/[\s\xa0]+/g, '_'); // Replace nonempty sequences of internal spaces by underscores
   // [lyn, 06/11/14] Previous definition focused on *legal* characters:
@@ -769,7 +769,7 @@ git checkout noCommasInComponentNamegit checkout noCommasInComponentNamessBlockl
   // Character.isJavaIdentifierPart(int)
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
-  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/
+  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/;
   var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }
