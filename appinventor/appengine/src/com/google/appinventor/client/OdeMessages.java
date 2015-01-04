@@ -5228,4 +5228,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MaximumRangeMethods();
 
+  // =========== ListPicker
+  @DefaultMessage("ItemTextColor")
+  @Description("")
+  String ItemTextColorProperties();
+
+  @DefaultMessage("ItemBackgroundColor")
+  @Description("")
+  String ItemBackgroundColorProperties();
+
+
 }
