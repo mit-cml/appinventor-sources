@@ -618,8 +618,8 @@ public class YaVersion {
   // - Added ShowFilterBar property
   // For LISTPICKER_COMPONENT_VERSION 8:
   // - Added title property
-
-  public static final int LISTPICKER_COMPONENT_VERSION = 8;
+  // For LISTPICKER_COMPONENT_VERSION 9 - Added ItemTextColor, ItemBackgroundColor
+  public static final int LISTPICKER_COMPONENT_VERSION = 9;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
