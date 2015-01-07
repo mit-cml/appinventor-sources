@@ -321,7 +321,7 @@ public final class MockComponentsUtil {
 
     String[] style = clearSizeStyle(w);
     int width = w.getOffsetWidth() + 4;
-    int height = w.getOffsetHeight();
+    int height = w.getOffsetHeight() + 10;
     restoreSizeStyle(w, style);
 
     // Detach the widget from the DOM before returning
