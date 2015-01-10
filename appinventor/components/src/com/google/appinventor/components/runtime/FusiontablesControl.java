@@ -453,7 +453,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
     /**
      * Query the fusiontables server.
-     * @return The resulant table, error page, or exception message.
+     * @return The resultant table, error page, or exception message.
      */
     @Override
     protected String doInBackground(String... params) {
@@ -529,9 +529,16 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     } catch (GoogleJsonResponseException e) {
       e.printStackTrace();
       errorMessage = e.getMessage();
+      // ******************
+      Log.e(LOG_TAG, "JsonResponseException");
+      Log.e(LOG_TAG, "e.getMessage() is " + e.getMessage());
+      Log.e(LOG_TAG, "response is " + response);
     } catch (IOException e) {
       e.printStackTrace();
       errorMessage = e.getMessage();
+      Log.e(LOG_TAG, "IOException");
+      Log.e(LOG_TAG, "e.getMessage() is " + e.getMessage());
+      Log.e(LOG_TAG, "response is " + response);
     }
     return response;
   }
@@ -836,8 +843,24 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
         Sql sql = fusiontables.query().sql(query);
         sql.put("alt", "csv");
+        
+        com.google.api.client.http.HttpResponse response = null;
 
-        com.google.api.client.http.HttpResponse response = sql.executeUnparsed();
+        try {
+        response = sql.executeUnparsed();
+       // } catch (android.database.SQLException e) {
+       // } catch (Exception e) {
+        } catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
+          Log.i(LOG_TAG, "Got Exception " + e);
+          Log.i(LOG_TAG, "e is " + e);
+          Log.i(LOG_TAG, "end of printing e");
+          Log.i(LOG_TAG, "exception class is " + e.getClass());
+          Log.i(LOG_TAG, "exception cause is " + e.getCause());
+          // *** process the JsonResponseException ot generate a better error message and
+          // make that a FormErrors
+          // catch other kinds of errors and generate a stand message for the form error
+        }
+      
 
         // Process the response
         if (response != null) {
@@ -865,6 +888,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     protected void onPostExecute(String result) {
       Log.i(LOG_TAG, "Query result " + result);
       if (result == null) {
+        // ******** need to fix this error message
         result = "Error";
       }
       dialog.dismiss();
