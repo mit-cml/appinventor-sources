@@ -491,4 +491,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /*
+   * Designer palette item: FIRST robotics components
+   */
+  @Source("com/google/appinventor/images/ftc.png")
+  ImageResource ftc();
+
 }

@@ -345,7 +345,10 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+      } else if (componentTypes.contains("FtcRobotController")) {
+        out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" />\n");
       }
 
       for (String permission : permissionsNeeded) {
@@ -416,7 +419,13 @@ public final class Compiler {
         if (isMain) {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
+        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
+        }
         out.write("      </intent-filter>\n");
+        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("      <meta-data android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" android:resource=\"@xml/device_filter\" />\n");
+        }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
@@ -526,6 +535,16 @@ public final class Compiler {
     File animDir = createDirectory(resDir, "anim");
     if (!compiler.createAnimationXml(animDir)) {
       return false;
+    }
+
+    if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+      out.println("________Creating device_filter.xml");
+      File xmlDir = createDirectory(resDir, "xml");
+      File deviceFilterFile = new File(xmlDir, "device_filter.xml");
+      String deviceFilterXml = "\n<resources>\n" +
+          "   <usb-device vendor-id=\"1027\" product-id=\"24577\" /> <!-- FT232 HiTechnic -->\n" +
+          "</resources>\n";
+      writeXmlFile(deviceFilterFile, deviceFilterXml);
     }
 
     // Determine android permissions.
@@ -663,7 +682,7 @@ public final class Compiler {
   /*
    * Writes the given string input to the provided file.
    */
-  private boolean writeXmlFile(File file, String input) {
+  private static boolean writeXmlFile(File file, String input) {
     try {
       BufferedWriter writer = new BufferedWriter(new FileWriter(file));
       writer.write(input);

@@ -15,6 +15,7 @@ public class TranslationContainer {
     CompTransMap.put("Sensors", "传感器");
     CompTransMap.put("Screen Arrangement", "屏幕布局");
     CompTransMap.put("LEGO\u00AE MINDSTORMS\u00AE", "乐高机器人套件\u00AE");
+    CompTransMap.put("FIRST\u00AE Tech Challenge", "FIRST\u00AE Tech Challenge"); // Needs translation
     CompTransMap.put("Other stuff", "其他东西");
     CompTransMap.put("Not ready for prime time", "测试中的套件");
     CompTransMap.put("Old stuff", "旧东西");
@@ -70,6 +71,24 @@ public class TranslationContainer {
     CompTransMap.put("NxtTouchSensor", "Nxt触摸传感器");
     CompTransMap.put("NxtUltrasonicSensor", "Nxt超声波传感器");
         
+    //FIRST Tech Challenge
+    CompTransMap.put("FtcAccelerationSensor", "FtcAccelerationSensor"); // Needs translation
+    CompTransMap.put("FtcCompassSensor", "FtcCompassSensor"); // Needs translation
+    CompTransMap.put("FtcDcMotor", "FtcDcMotor"); // Needs translation
+    CompTransMap.put("FtcDcMotorController", "FtcDcMotorController"); // Needs translation
+    CompTransMap.put("FtcDigitalChannel", "FtcDigitalChannel"); // Needs translation
+    CompTransMap.put("FtcGamepad", "FtcGamepad"); // Needs translation
+    CompTransMap.put("FtcGyroSensor", "FtcGyroSensor"); // Needs translation
+    CompTransMap.put("FtcIrSeekerSensor", "FtcIrSeekerSensor"); // Needs translation
+    CompTransMap.put("FtcLightSensor", "FtcLightSensor"); // Needs translation
+    CompTransMap.put("FtcOpMode", "FtcOpMode"); // Needs translation
+    CompTransMap.put("FtcRobotController", "FtcRobotController"); // Needs translation
+    CompTransMap.put("FtcSensorMux", "FtcSensorMux"); // Needs translation
+    CompTransMap.put("FtcServo", "FtcServo"); // Needs translation
+    CompTransMap.put("FtcServoController", "FtcServoController"); // Needs translation
+    CompTransMap.put("FtcUltrasonicSensor", "FtcUltrasonicSensor"); // Needs translation
+    CompTransMap.put("FtcVoltageSensor", "FtcVoltageSensor"); // Needs translation
+
     //Other stuff
     CompTransMap.put("ActivityStarter", "活动启动");
     CompTransMap.put("BarcodeScanner", "条码扫描器");

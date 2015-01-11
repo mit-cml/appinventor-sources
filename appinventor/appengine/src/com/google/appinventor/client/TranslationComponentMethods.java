@@ -258,6 +258,8 @@ public class TranslationComponentMethods {
     map.put("InsertRow", MESSAGES.InsertRowMethods());
     map.put("GetRows", MESSAGES.GetRowsMethods());
     map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
+    map.put("Float", MESSAGES.FloatMethods());
+    map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
 
     return map;
   }

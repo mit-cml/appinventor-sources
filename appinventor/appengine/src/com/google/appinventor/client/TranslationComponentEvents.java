@@ -134,6 +134,12 @@ public class TranslationComponentEvents {
     map.put("AfterTimeSet", MESSAGES.AfterTimeSetEvents());
     map.put("GotTranslation", MESSAGES.GotTranslationEvents());
     map.put("Shaking", MESSAGES.ShakingEvents());
+    map.put("RobotReady", MESSAGES.RobotReadyEvents());
+    map.put("RobotUpdate", MESSAGES.RobotUpdateEvents());
+    map.put("Run", MESSAGES.RunEvents());
+    map.put("Start", MESSAGES.StartEvents());
+    map.put("Stop", MESSAGES.StopEvents());
+    map.put("WifiDirectUpdate", MESSAGES.WifiDirectUpdateEvents());
 
 	/*
   //event helpstrings
@@ -165,6 +171,11 @@ public class TranslationComponentEvents {
 	map.put("StatusChanged-helpstring", MESSAGES.StatusChangedHelpStringEvents());
 	map.put("AfterChoosing-helpstring", MESSAGES.AfterChoosingHelpStringEvents());
 	map.put("AfterTextInput-helpstring", MESSAGES.AfterTextInputHelpStringEvents());
+  map.put("RobotUpdate-helpstring", MESSAGES.RobotUpdateHelpStringEvents());
+  map.put("Run-helpstring", MESSAGES.RunHelpStringEvents());
+  map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
+  map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
+  map.put("WifiDirectUpdate-helpstring", MESSAGES.WifiDirectUpdateHelpStringEvents());
 	*/
 
     return map;

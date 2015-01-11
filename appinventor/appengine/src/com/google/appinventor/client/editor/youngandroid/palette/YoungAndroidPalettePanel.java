@@ -24,6 +24,9 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDcMotorPortNumberChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcServoPortNumberChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
@@ -178,6 +181,27 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new YoungAndroidComponentSelectorPropertyEditor(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FLOAT)) {
       return new FloatPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_DC_MOTOR_CONTROLLER)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("FtcDcMotorController"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_DC_MOTOR_PORT_NUMBER)) {
+      return new YoungAndroidFtcDcMotorPortNumberChoicePropertyEditor ();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_GAMEPAD_NUMBER)) {
+      return new YoungAndroidFtcGamepadNumberChoicePropertyEditor ();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_OP_MODE)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("FtcOpMode"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_ROBOT_CONTROLLER)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("FtcRobotController"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_SENSOR_MUX)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("FtcSensorMux"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_SERVO_CONTROLLER)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("FtcServoController"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FTC_SERVO_PORT_NUMBER)) {
+      return new YoungAndroidFtcServoPortNumberChoicePropertyEditor ();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_INTEGER)) {
       return new IntegerPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT)) {

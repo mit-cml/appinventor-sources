@@ -306,6 +306,39 @@ public class TranslationDesignerProperties {
       value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
+
+    } else if (key.equals("ActiveOpMode")) {
+      value = MESSAGES.ActiveOpModeProperties();
+    } else if (key.equals("Channel")) {
+      value = MESSAGES.ChannelProperties();
+    } else if (key.equals("DriverStationAddress")) {
+      value = MESSAGES.DriverStationAddressProperties();
+    } else if (key.equals("EnableLed")) {
+      value = MESSAGES.EnableLedProperties();
+    } else if (key.equals("Forward")) {
+      value = MESSAGES.ForwardProperties();
+    } else if (key.equals("FtcDcMotorController")) {
+      value = MESSAGES.FtcDcMotorControllerProperties();
+    } else if (key.equals("FtcRobotController")) {
+      value = MESSAGES.FtcRobotControllerProperties();
+    } else if (key.equals("FtcSensorMux")) {
+      value = MESSAGES.FtcSensorMuxProperties();
+    } else if (key.equals("FtcServoController")) {
+      value = MESSAGES.FtcServoControllerProperties();
+    } else if (key.equals("GamepadNumber")) {
+      value = MESSAGES.GamepadNumberProperties();
+    } else if (key.equals("Mode")) {
+      value = MESSAGES.ModeProperties();
+    } else if (key.equals("MotorChannelMode")) {
+      value = MESSAGES.MotorChannelModeProperties();
+    } else if (key.equals("OpModeName")) {
+      value = MESSAGES.OpModeNameProperties();
+    } else if (key.equals("PortNumber")) {
+      value = MESSAGES.PortNumberProperties();
+    } else if (key.equals("SerialNumber")) {
+      value = MESSAGES.SerialNumberProperties();
+    } else if (key.equals("State")) {
+      value = MESSAGES.StateProperties();
     }
     return value;
   }

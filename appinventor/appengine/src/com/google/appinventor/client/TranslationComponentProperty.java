@@ -225,6 +225,53 @@ public class TranslationComponentProperty {
     map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
     map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
 
+    map.put("A", MESSAGES.AProperties());
+    map.put("ActiveOpMode", MESSAGES.ActiveOpModeProperties());
+    map.put("AtRest", MESSAGES.AtRestProperties());
+    map.put("B", MESSAGES.BProperties());
+    map.put("Back", MESSAGES.BackProperties());
+    map.put("Channel", MESSAGES.ChannelProperties());
+    map.put("Direction", MESSAGES.DirectionProperties());
+    map.put("DpadDown", MESSAGES.DpadDownProperties());
+    map.put("DpadLeft", MESSAGES.DpadLeftProperties());
+    map.put("DpadRight", MESSAGES.DpadRightProperties());
+    map.put("DpadUp", MESSAGES.DpadUpProperties());
+    map.put("DriverStationAddress", MESSAGES.DriverStationAddressProperties());
+    map.put("EnableLed", MESSAGES.EnableLedProperties());
+    map.put("Forward", MESSAGES.ForwardProperties());
+    map.put("FtcDcMotorController", MESSAGES.FtcDcMotorControllerProperties());
+    map.put("FtcRobotController", MESSAGES.FtcRobotControllerProperties());
+    map.put("FtcSensorMux", MESSAGES.FtcSensorMuxProperties());
+    map.put("FtcServoController", MESSAGES.FtcServoControllerProperties());
+    map.put("GamepadNumber", MESSAGES.GamepadNumberProperties());
+    map.put("Guide", MESSAGES.GuideProperties());
+    map.put("JoystickDeadzone", MESSAGES.JoystickDeadzoneProperties());
+    map.put("LeftBumper", MESSAGES.LeftBumperProperties());
+    map.put("LeftStickX", MESSAGES.LeftStickXProperties());
+    map.put("LeftStickY", MESSAGES.LeftStickYProperties());
+    map.put("LeftTrigger", MESSAGES.LeftTriggerProperties());
+    map.put("LightLevel", MESSAGES.LightLevelProperties());
+    map.put("Mode", MESSAGES.ModeProperties());
+    map.put("MotorChannelMode", MESSAGES.MotorChannelModeProperties());
+    map.put("OpModeName", MESSAGES.OpModeNameProperties());
+    map.put("PortNumber", MESSAGES.PortNumberProperties());
+    map.put("Position", MESSAGES.PositionProperties());
+    map.put("Power", MESSAGES.PowerProperties());
+    map.put("PowerFloat", MESSAGES.PowerFloatProperties());
+    map.put("RightBumper", MESSAGES.RightBumperProperties());
+    map.put("RightStickX", MESSAGES.RightStickXProperties());
+    map.put("RightStickY", MESSAGES.RightStickYProperties());
+    map.put("RightTrigger", MESSAGES.RightTriggerProperties());
+    map.put("Rotation", MESSAGES.RotationProperties());
+    map.put("SerialNumber", MESSAGES.SerialNumberProperties());
+    map.put("SignalDetected", MESSAGES.SignalDetectedProperties());
+    map.put("Start", MESSAGES.StartProperties());
+    map.put("State", MESSAGES.StateProperties());
+    map.put("Status", MESSAGES.StatusProperties());
+    map.put("Strength", MESSAGES.StrengthProperties());
+    map.put("UltrasonicLevel", MESSAGES.UltrasonicLevelProperties());
+    map.put("Voltage", MESSAGES.VoltageProperties());
+
     return map;
   }
 }

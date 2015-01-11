@@ -20,6 +20,7 @@ public final class ErrorMessages {
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER = 2;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_FUSIONTABLES_CONTROL = 3;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES = 4;
+  public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT = 5;
   // LocationSensor errors
   public static final int ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101;
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
@@ -174,7 +175,19 @@ public final class ErrorMessages {
   // WebViewer errors
   public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
 
-  // Please start the next group of error numbers at 2601.
+  // FTC errors
+  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2601;
+  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2602;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2603;
+  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2604;
+  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2605;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_DC_MOTOR_CONTROLLER = 2606;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_DIGITAL_CHANNEL_CONTROLLER = 2607;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_SENSOR_MUX = 2608;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_SERVO_CONTROLLER = 2609;
+  public static final int ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE = 2610;
+
+  // Please start the next group of error numbers at 2701.
 
 
   // Mapping of error numbers to error message format strings.
@@ -194,6 +207,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES,
         "Warning: This app contains functionality that does not work on this phone: " +
         "using cookies in the Web component.");
+    errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT,
+        "Warning: This app contains functionality that does not work on this phone: " +
+        "Wi-Fi peer-to-peer connectivity.");
     // LocationSensor errors
     errorMessages.put(ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND,
         "Unable to find latitude from %s.");
@@ -440,6 +456,23 @@ public final class ErrorMessages {
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
+    // FTC errors
+    errorMessages.put(ERROR_FTC_DRIVER_STATION_NOT_FOUND, "The driver station was not found.");
+    errorMessages.put(ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION,
+        "Timeout while connecting to driver station.");
+    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_ROBOT, "Failed to create robot.");
+    errorMessages.put(ERROR_FTC_FAILED_TO_START_ROBOT, "Failed to start robot.");
+    errorMessages.put(ERROR_FTC_WIFI_DIRECT_ERROR, "A WiFi direct error occurred: %s");
+    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_DC_MOTOR_CONTROLLER,
+        "Failed to create DC motor controller with serial number %s.");
+    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_DIGITAL_CHANNEL_CONTROLLER,
+        "Failed to create digital channel controller with serial number %s.");
+    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_SENSOR_MUX,
+        "Failed to create sensor mux with serial number %s.");
+    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_SERVO_CONTROLLER,
+        "Failed to create servo controller with serial number %s.");
+    errorMessages.put(ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE,
+        "Could not fit channel mode %s into 1 byte.");
   }
 
   private ErrorMessages() {

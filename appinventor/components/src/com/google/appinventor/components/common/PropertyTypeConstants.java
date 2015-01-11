@@ -76,6 +76,64 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_FLOAT = "float";
 
   /**
+   * FTC channel number choices (1, 2, 3, or 4)
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcChannelNumberChoiceChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_FTC_CHANNEL_NUMBER = "FtcChannelNumber";
+
+  /**
+   * Instances of {@link com.google.appinventor.components.runtime.FtcDcMotorController}
+   * in the current project.
+   */
+  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_CONTROLLER = "FtcDcMotorController";
+
+  /**
+   * FTC port number choices (1, 2, 3, or 4)
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDcMotorPortNumberChoiceChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_PORT_NUMBER = "FtcDcMotorPortNumber";
+
+  /**
+   * FTC gamepad number choices (1 or 2)
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoiceChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_FTC_GAMEPAD_NUMBER = "FtcGamepadNumber";
+
+  /**
+   * Instances of {@link com.google.appinventor.components.runtime.FtcOpMode}
+   * in the current project.
+   */
+  public static final String PROPERTY_TYPE_FTC_OP_MODE = "FtcOpMode";
+
+  /**
+   * FTC port number choices (1, 2, 3, 4, 5, or 6)
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcServoPortNumberChoiceChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_FTC_SERVO_PORT_NUMBER = "FtcServoPortNumber";
+
+  /**
+   * Instances of {@link com.google.appinventor.components.runtime.FtcRobotController}
+   * in the current project.
+   */
+  public static final String PROPERTY_TYPE_FTC_ROBOT_CONTROLLER = "FtcRobotController";
+
+  /**
+   * Instances of {@link com.google.appinventor.components.runtime.FtcSensormux}
+   * in the current project.
+   */
+  public static final String PROPERTY_TYPE_FTC_SENSOR_MUX = "FtcSensorMux";
+
+  /**
+   * Instances of {@link com.google.appinventor.components.runtime.FtcServoController}
+   * in the current project.
+   */
+  public static final String PROPERTY_TYPE_FTC_SERVO_CONTROLLER = "FtcServoController";
+
+  /**
    * Integer values.
    * @see com.google.appinventor.client.widgets.properties.IntegerPropertyEditor
    */
