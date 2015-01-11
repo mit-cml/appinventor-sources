@@ -106,7 +106,7 @@
        ===================================================================== -->
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities">
+          depends="CommonConstants,HtmlEntities,common_CommonVersion">
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
@@ -272,7 +272,7 @@
        ===================================================================== -->
   <target name="AnnotationProcessors"
           description="Create plugins for annotation processing"
-          depends="ComponentProcessingLib,CommonConstants,HtmlEntities">
+          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils">
 
     <property name="AnnotationProcessors-class.dir"
               location="${class.dir}/AnnotationProcessors" />
