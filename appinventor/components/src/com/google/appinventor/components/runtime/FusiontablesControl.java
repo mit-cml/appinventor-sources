@@ -14,8 +14,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.fusiontables.Fusiontables;
 import com.google.api.services.fusiontables.Fusiontables.Query.Sql;
-// TODO(hal): how can we make this import work?
-// import com.google.appinventor.client.Ode;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -146,9 +144,9 @@ import java.util.ArrayList;
 
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "FUSION";
-  
 
-  
+
+
   private static final String DIALOG_TEXT = "Choose an account to access FusionTables";
   private static final String FUSION_QUERY_URL = "http://www.google.com/fusiontables/api/query";
   public static final String FUSIONTABLES_POST = "https://www.googleapis.com/fusiontables/v1/tables";
@@ -186,21 +184,21 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   /**
    * Error message returned from API query
    */
-  
- 
 
-  // standard error message to return 
+
+
+  // standard error message to return
   // private String standardErrorMessage = Ode.MESSAGES.FusionTablesStandardErrorMessage();
   // TODO(hal): Internationalize this correctly.  I don't know how to use
   // the entries in Ode.MESSAGES since this is not a method, event, or property
   // Do we need to add another category of words to be localized, or can use
   // use the mechanism that's already there?
-  
+
   private String standardErrorMessage = "Error on Fusion Tables query";
 
  // variable to hold error message (which might be computed from an exception)
   private String errorMessage;
- 
+
 
   private final Activity activity;
   private final ComponentContainer container;
@@ -549,7 +547,6 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     } catch (GoogleJsonResponseException e) {
       e.printStackTrace();
       errorMessage = e.getMessage();
-      // ******************
       Log.e(LOG_TAG, "JsonResponseException");
       Log.e(LOG_TAG, "e.getMessage() is " + e.getMessage());
       Log.e(LOG_TAG, "response is " + response);
@@ -766,9 +763,9 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    */
   private class QueryProcessorV1 extends AsyncTask<String, Void, String> {
     private static final String TAG = "QueryProcessorV1";
-    
+
     // alternative log tab used in service account processing
-    private static final String STAG =  "FUSION_SERVICE_ACCOUNT"; 
+    private static final String STAG =  "FUSION_SERVICE_ACCOUNT";
 
     private final Activity activity; // The main list activity
     private final ProgressDialog dialog;
@@ -838,7 +835,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     }
 
     private String serviceAuthRequest(String query) {
-      
+
       queryResultStr = "";
 
       final HttpTransport TRANSPORT = AndroidHttp.newCompatibleTransport();
@@ -868,7 +865,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
         // See the try/catch below for the exception thrown if the query is bad SQL
         Sql sql = fusiontables.query().sql(query);
         sql.put("alt", "csv");
-        
+
         com.google.api.client.http.HttpResponse response = null;
 
         try {
@@ -876,33 +873,33 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
           // to the end user, and the response will be null.   The null response will cause
           // the FusionTables.query command to return a standard error message as it result.
         response = sql.executeUnparsed();
-        
+
         } catch (GoogleJsonResponseException e) {
           // This is the exception that was thrown as a result of a bad query to fusion tables.
           // I determined this experimentally since I could not find documentation, so I don't know
           // if throwing this particular exception is officially supported.
           Log.i(STAG, "Got a JsonResponse exception on sql.executeUnparsed");
-         
-          // In principle, would parse the exception message to show a good user message.   
+
+          // TODO(hal): In principle, we would parse the exception message to show a good user message.
           // But for now parseJsonResponseException is a stub that returns the raw message
-          // TODO(hal): Make the parser more intelligent
+          // Make the parser more intelligent
           signalJsonResponseError(query, parseJsonResponseException(e.getMessage()));
-          
+
         } catch (Exception e) {
           // Maybe there could be some other kind of exception thrown?
           Log.i(STAG, "Got an unanticipated exception on sql.executeUnparsed");
           Log.i(STAG, "Exception class is " + e.getClass());
-          Log.i(STAG, "Exception message is " + e.getMessage());  
+          Log.i(STAG, "Exception message is " + e.getMessage());
           Log.i(STAG, "Exception is " + e);
           Log.i(STAG, "Point e");
           Log.i(STAG, "end of printing exception"); // e might have been multiline
-          
+
           // In the case of an unknown exception, we just show the user the exception message.
           // If we knew the type of exception, we might be able to do something more useful
           signalJsonResponseError(query, e.getMessage());
 
         }
-           
+
         // Process the response
         if (response != null) {
           // in the non-error case, get the response as a string to so we can return it
@@ -927,16 +924,16 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       Log.i(STAG, "returning queryResultStr = " + queryResultStr);
       return queryResultStr;
     }  //end of ServiceAuthRequest
-    
-    
+
+
     String parseJsonResponseException(String exceptionMessage) {
       Log.i(STAG, "parseJsonResponseException: " + exceptionMessage);
       // This procedure is here as a stub in case we want to someday make the
       // exception handling create better error messages for users.  For
-      // now, we just return the raw exception message.     
+      // now, we just return the raw exception message.
       return exceptionMessage;
     }
-    
+
 
     /**
      * Fires the AppInventor GotResult() method
@@ -951,18 +948,18 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       GotResult(result);
    }
   }
-  
+
   void signalJsonResponseError(String query, String parsedException) {
     // This will show the user the bad query, together with the resulting
     // exception.
     // TODO(hal):  The standard form error handler will show this as an alert,
-    // which will usually be displayed for too short a time to read. Create a variant of 
+    // which will usually be displayed for too short a time to read. Create a variant of
     // dispatchErrorOccurred that defaults to showing a message dialog rather than an alert.
     // While the App Inventor developer can always specify that with When Screen Error Occurred in
     // designing the app, it might be useful to to have the default be
     // a message dialog in this case,
     form.dispatchErrorOccurredEvent(this, "SendQuery",
-        ErrorMessages.FUSION_TABLES_QUERY_ERROR, query, parsedException);    
+        ErrorMessages.FUSION_TABLES_QUERY_ERROR, query, parsedException);
   }
 
 }
