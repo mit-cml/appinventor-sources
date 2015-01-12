@@ -28,12 +28,12 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -115,6 +115,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showTitleBar = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -739,6 +740,39 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+ 
+  /**
+   * ShowTitleBar property getter method.
+   *
+   * @return  showTitleBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The title bar is the top gray bar on the screen. You have the " +
+      		"option to hide the title bar. This function returns you the visibilty of the title bar.")
+  public boolean ShowTitleBar() {
+    return showTitleBar;
+  }
+  
+  /**
+   * ShowTitleBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  public void ShowTitleBar(boolean show) {
+    if (show != showTitleBar) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (v != null) {
+        if (show) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          v.setVisibility(View.GONE);
+        }    
+        showTitleBar = show;		
+      }
+    }
   }
 
   /**
