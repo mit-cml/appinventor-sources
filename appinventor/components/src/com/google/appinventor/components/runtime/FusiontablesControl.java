@@ -930,7 +930,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       Log.i(STAG, "parseJsonResponseException: " + exceptionMessage);
       // This procedure is here as a stub in case we want to someday make the
       // exception handling create better error messages for users.  For
-      // now, we just return the raw exception message.
+      // now, we just return the raw message.
       return exceptionMessage;
     }
 
@@ -952,13 +952,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   void signalJsonResponseError(String query, String parsedException) {
     // This will show the user the bad query, together with the resulting
     // exception.
-    // TODO(hal):  The standard form error handler will show this as an alert,
-    // which will usually be displayed for too short a time to read. Create a variant of
-    // dispatchErrorOccurred that defaults to showing a message dialog rather than an alert.
-    // While the App Inventor developer can always specify that with When Screen Error Occurred in
-    // designing the app, it might be useful to to have the default be
-    // a message dialog in this case,
-    form.dispatchErrorOccurredEvent(this, "SendQuery",
+    // We use dispatchErrorOccurredEventDialog because the message will be too long
+    // to read as an alert.  The app designer can override this with the Screen.ErrorOccurred
+    // event, just as with ordinary dispatchErrorOccurred
+    form.dispatchErrorOccurredEventDialog(this, "SendQuery",
         ErrorMessages.FUSION_TABLES_QUERY_ERROR, query, parsedException);
   }
 

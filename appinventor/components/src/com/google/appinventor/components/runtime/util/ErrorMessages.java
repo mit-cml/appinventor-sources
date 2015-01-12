@@ -176,7 +176,7 @@ public final class ErrorMessages {
 
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
-  
+
   // Please start the next group of error numbers at 2701.
 
 
@@ -444,7 +444,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
     // FusiontablesControl error
-    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was %s. " +
+    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
   }
 
