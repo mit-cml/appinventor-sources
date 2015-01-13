@@ -1184,6 +1184,10 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // RequestFocus method was added
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1213,7 +1217,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 5) {
+    if (srcCompVersion < 6) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1221,7 +1225,8 @@ public final class YoungAndroidFormUpgrader {
       // WebViewString added
       // No properties need to be modified to upgrade to version 4.
       // IgnoreSslError property added (version 5)
-      srcCompVersion = 5;
+      // ClearCaches method was added (version 6)
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
