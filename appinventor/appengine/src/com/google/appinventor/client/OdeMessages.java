@@ -4685,6 +4685,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ClearLocationsMethods();
 
+  @DefaultMessage("ClearCaches")
+  @Description("")
+  String ClearCachesMethods();
+
   @DefaultMessage("GoBack")
   @Description("")
   String GoBackMethods();

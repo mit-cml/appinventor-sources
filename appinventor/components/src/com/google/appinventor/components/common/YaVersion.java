@@ -310,8 +310,11 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 118:
   // - SOUND_RECORDER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 119:
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 5
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 118;
+  public static final int YOUNG_ANDROID_VERSION = 119;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -749,7 +752,9 @@ public class YaVersion {
   // For TEXTBOX_COMPONENT_VERSION 4:
   // - The HideKeyboard method was added.
   // - The MultiLine property was added.
-  public static final int TEXTBOX_COMPONENT_VERSION = 4;
+  // For TEXTBOX_COMPONENT_VERSION 5:
+  // - RequestFocus method was added
+  public static final int TEXTBOX_COMPONENT_VERSION = 5;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -844,7 +849,9 @@ public class YaVersion {
   // - Add WebViewString
   // For WEBVIEWER_COMPONENT_VERSION 5:
   // - IgnoreSslError property added
-  public static final int WEBVIEWER_COMPONENT_VERSION = 5;
+  // For WEBVIEWER_COMPONENT_VERSION 6:
+  // - ClearCaches method was added
+  public static final int WEBVIEWER_COMPONENT_VERSION = 6;
 
 
   // For YANDEX_COMPONENT_VERSION 1:
