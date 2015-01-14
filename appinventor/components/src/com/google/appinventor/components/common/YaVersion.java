@@ -288,9 +288,20 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 107:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 108:
+  // - New Obsfucate Text Block was added.
+  //   Note: BLOCKS_LANGUAGE_VERSION would normally be incremented as
+  //   well, but we don't have any code that deals with it, so we
+  //   won't do it for this change
+  // For YOUNG_ANDROID_VERION 109:
+  // - Added PROXIMITYSENSOR_COMPONENT_VERSION
+  // For YOUNG_ANDROID_VERSION 110:
+  // - LABEL_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 111:
+  // - BARCODESCANNER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 112:
   // - FORM_COMPONENT_VERSION was incremented to 14.
 
-  public static final int YOUNG_ANDROID_VERSION = 108;
+  public static final int YOUNG_ANDROID_VERSION = 112;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -415,7 +426,9 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   public static final int BALL_COMPONENT_VERSION = 5;
 
-  public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
+  // For BARCODESCANNER_COMPONENT_VERSION 2:
+  // -- UseExternalScanner property was added (default true)
+  public static final int BARCODESCANNER_COMPONENT_VERSION = 2;
 
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 2:
   // - The BluetoothClient.Enabled property was added.
@@ -580,7 +593,9 @@ public class YaVersion {
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int LABEL_COMPONENT_VERSION = 2;
+  // For LABEL_COMPONENT_VERSION 3:
+  // - The HasMargins property was added
+  public static final int LABEL_COMPONENT_VERSION = 3;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
@@ -809,6 +824,9 @@ public class YaVersion {
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int YANDEX_COMPONENT_VERSION = 1;
+
+  //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
+  public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
 

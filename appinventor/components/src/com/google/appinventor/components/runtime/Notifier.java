@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -266,27 +267,35 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setCancelable(false);
     alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
         new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // hide the keyboard
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-          imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
-        AfterTextInput(input.getText().toString());
-      }
-    });
+          public void onClick(DialogInterface dialog, int which) {
+            HideKeyboard((View) input);
+            AfterTextInput(input.getText().toString());
+          }
+        });
 
-      //If cancelable, then add the CANCEL button
-      if (cancelable)  {
-          final String cancelButtonText="Cancel";
-          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
-              new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int which) {
-                      //User pressed CANCEL. Raise AfterTextInput with CANCEL
-                      AfterTextInput(cancelButtonText);
-                  }
-              });
-      }
-
+    //If cancelable, then add the CANCEL button
+    if (cancelable)  {
+      final String cancelButtonText="Cancel";
+      alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+          new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+              HideKeyboard((View) input);
+              //User pressed CANCEL. Raise AfterTextInput with CANCEL
+              AfterTextInput(cancelButtonText);
+            }
+          });
+    }
     alertDialog.show();
+  }
+
+  /**
+  * Hide soft keyboard after user either enters text or cancels.
+  */
+  public void HideKeyboard(View view) {
+    if (view != null) {
+      InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(view.getWindowToken(),  0);
+    }
   }
 
   /**

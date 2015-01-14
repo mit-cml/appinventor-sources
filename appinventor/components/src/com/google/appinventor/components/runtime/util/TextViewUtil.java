@@ -176,6 +176,17 @@ public class TextViewUtil {
   }
 
   /**
+   * Sets the padding for a {@link TextView}.
+   *
+   * @param textview   text view instance
+   * @param padding  left and right padding to be set
+   */
+  public static void setPadding(TextView textview, int padding) {
+    textview.setPadding(padding, padding, 0, 0);
+    textview.requestLayout();
+  }
+
+  /**
    * Sets the text color for a {@link TextView}.
    *
    * @param textview   text view instance

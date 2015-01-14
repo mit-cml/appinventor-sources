@@ -14,7 +14,7 @@
   <target name="all"
           depends="CommonConstants,AndroidRuntime,
                    JsonComponentDescription,XmlComponentDescription,
-                   ComponentList">
+                   ComponentList,Barcode">
   </target>
 
   <target name="tests"
@@ -106,7 +106,7 @@
        ===================================================================== -->
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities">
+          depends="CommonConstants,HtmlEntities,common_CommonVersion">
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
@@ -272,7 +272,7 @@
        ===================================================================== -->
   <target name="AnnotationProcessors"
           description="Create plugins for annotation processing"
-          depends="ComponentProcessingLib,CommonConstants,HtmlEntities">
+          depends="ComponentProcessingLib,CommonConstants,HtmlEntities,common_CommonUtils">
 
     <property name="AnnotationProcessors-class.dir"
               location="${class.dir}/AnnotationProcessors" />
@@ -344,7 +344,7 @@
        ===================================================================== -->
   <target name="ComponentList"
           description="Make simple_components.txt and simple_components_build_info.json."
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,Barcode">
     <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
     <mkdir dir="${ComponentList-class.dir}" />
 
@@ -374,6 +374,42 @@
 
     <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
           todir="${public.build.dir}"/>
+  </target>
+
+  <!-- ======================================================================
+     Internal Inclusion of ZXing 2.1
+
+     In order to ensure that the blocks editor can run on Java 5, we compile
+     with ai.javac5 and we do not depend on any jars that are not compiled
+     with ai.javac5.
+     ====================================================================== -->
+
+  <!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+  <property name="barcode.pkg" value="com/google/zxing/client/android" />
+
+  <!-- =====================================================================
+       OpenBlocks: library containing openblocks code
+       ===================================================================== -->
+
+  <target name="Barcode"
+          depends=""
+          description="Generate ZXing embedded library">
+    <property name="Barcode-class.dir" location="${class.dir}/Barcode" />
+    <mkdir dir="${Barcode-class.dir}" />
+
+    <ai.javac5 destdir="${Barcode-class.dir}">
+      <include name="${barcode.pkg}/**/*.java" />
+      <classpath>
+        <pathelement location="${lib.dir}/QRGenerator/core.jar" />
+        <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
+      </classpath>
+    </ai.javac5>
+
+    <jar basedir="${Barcode-class.dir}"
+         destfile="${public.build.dir}/Barcode.jar" />
+
   </target>
 
 </project>

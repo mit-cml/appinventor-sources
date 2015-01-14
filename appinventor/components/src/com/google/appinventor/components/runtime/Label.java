@@ -16,7 +16,9 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -32,7 +34,18 @@ import android.widget.TextView;
 @SimpleObject
 public final class Label extends AndroidViewComponent {
 
+  // default margin around a label in DPs
+  // note that the spacing between adjacent labels will be twice this value
+  // because each label has a margin
+  private static final int DEFAULT_LABEL_MARGIN = 2;
+
+  // default margin in density-independent pixels. This must be
+  // computed using the view
+  private int defaultLabelMarginInDp = 0;
+
   private final TextView view;
+
+  private final LinearLayout.LayoutParams linearLayoutParams;
 
   // Backing for text alignment
   private int textAlignment;
@@ -49,6 +62,9 @@ public final class Label extends AndroidViewComponent {
   // Backing for font italic
   private boolean italic;
 
+  // Whether or not the label should have a margin
+  private boolean hasMargins;
+
   // Backing for text color
   private int textColor;
 
@@ -64,6 +80,23 @@ public final class Label extends AndroidViewComponent {
     // Adds the component to its designated container
     container.$add(this);
 
+    // Get the layout parameters to use in setting margins (and potentially
+    // other things.
+    // There will be a bug if the label view does not have linear layout params.
+    // TODO(hal): Generalize this for other types of layouts
+    Object lp = view.getLayoutParams();
+    // The following instanceof check will fail if we have not previously
+    // added the label to the container (Why?)
+    if (lp instanceof LinearLayout.LayoutParams) {
+        linearLayoutParams = (LinearLayout.LayoutParams) lp;
+        defaultLabelMarginInDp = dpToPx(view, DEFAULT_LABEL_MARGIN);
+    } else {
+      defaultLabelMarginInDp = 0;
+      linearLayoutParams = null;
+      Log.e("Label", "Error: The label's view does not have linear layout parameters");
+      new RuntimeException().printStackTrace();
+    }
+
     // Default property values
     TextAlignment(Component.ALIGNMENT_NORMAL);
     BackgroundColor(Component.COLOR_NONE);
@@ -72,6 +105,13 @@ public final class Label extends AndroidViewComponent {
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_BLACK);
+    HasMargins(true);
+  }
+
+  // put this in the right file
+  private static int dpToPx(View view, int dp) {
+    float density = view.getContext().getResources().getDisplayMetrics().density;
+    return Math.round((float)dp * density);
   }
 
   @Override
@@ -200,6 +240,44 @@ public final class Label extends AndroidViewComponent {
     this.italic = italic;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
   }
+
+  /**
+   * Returns true if the label should have  margins.
+   *
+   * @return  {@code true} indicates margins, {@code false} no margins
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Reports whether or not the label appears with margins.  All four "
+      + "margins (left, right, top, bottom) are the same.  This property has no effect "
+      + "in the designer, where labels are always shown with margins.",
+      userVisible = true)
+  public boolean HasMargins() {
+    return hasMargins;
+  }
+
+  /**
+   * Specifies whether the label should have margins.
+   * This margin value is not well coordinated with the
+   * designer, where the margins are defined for the arrangement, not just for individual 
+   * labels.
+   *
+   * @param hasMargins {@code true} indicates that there are margins, {@code false} no margins
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(
+      userVisible = true)
+  public void HasMargins(boolean hasMargins) {
+    this.hasMargins = hasMargins;
+    setLabelMargins(hasMargins);
+  }
+
+private void setLabelMargins(boolean hasMargins) {
+  int m = hasMargins ? defaultLabelMarginInDp : 0 ;
+  linearLayoutParams.setMargins(m, m, m, m);
+  view.invalidate();
+}
 
   /**
    * Returns the label's text's font size, measured in pixels.

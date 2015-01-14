@@ -438,9 +438,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
 
-        this.setTooltip(
-          thisBlock,
-          thisBlock.getPropertyObject(thisBlock.propertyName).description);
+        thisBlock.setTooltip(thisBlock.getPropertyObject(thisBlock.propertyName).description);
+        
       }
     );
 

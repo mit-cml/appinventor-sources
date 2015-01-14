@@ -36,6 +36,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Utilities for loading media.
@@ -124,7 +125,29 @@ public class MediaUtil {
     return MediaSource.ASSET;
   }
 
+  private static ConcurrentHashMap<String, String> pathCache = new ConcurrentHashMap<String, String>(2);
+
   private static String findCaseinsensitivePath(Form form, String mediaPath)
+      throws IOException{
+    if( !pathCache.containsKey(mediaPath) ){
+      String newPath = findCaseinsensitivePathWithoutCache(form, mediaPath);
+      if( newPath == null){
+        return null;
+      }
+      pathCache.put(mediaPath, newPath);
+    }
+    return pathCache.get(mediaPath);
+  }
+
+  /**
+   * Don't use this directly! Use findCaseinsensitivePath. It has caching.
+   * This is the original findCaseinsensitivePath, unchanged.
+   * @param form the Form
+   * @param mediaPath the path to the media to resolve
+   * @return the correct path, adjusted for case errors
+   * @throws IOException
+   */
+  private static String findCaseinsensitivePathWithoutCache(Form form, String mediaPath)
       throws IOException{
     String[] mediaPathlist = form.getAssets().list("");
     int l = Array.getLength(mediaPathlist);
@@ -150,10 +173,10 @@ public class MediaUtil {
       return form.getAssets().open(mediaPath);
 
     } catch (IOException e) {
-        if (findCaseinsensitivePath(form, mediaPath) == null) {
+      String path = findCaseinsensitivePath(form, mediaPath);
+      if (path == null) {
           throw e;
         } else {
-          String path = findCaseinsensitivePath(form, mediaPath);
           return form.getAssets().open(path);
         }
     }
@@ -384,10 +407,10 @@ public class MediaUtil {
       return form.getAssets().openFd(mediaPath);
 
     } catch (IOException e) {
-      if (findCaseinsensitivePath(form, mediaPath) == null){
+      String path = findCaseinsensitivePath(form, mediaPath);
+      if (path == null){
         throw e;
       } else {
-      String path = findCaseinsensitivePath(form, mediaPath);
       return form.getAssets().openFd(path);
       }
     }

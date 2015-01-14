@@ -77,6 +77,7 @@ public class TranslationComponentProperty {
     map.put("Players", MESSAGES.PlayersProperties());
     map.put("RequestHeaders", MESSAGES.RequestHeadersProperties());
     map.put("Result", MESSAGES.ResultProperties());
+    map.put("UseExternalScanner", MESSAGES.UseExternalScannerProperties());
     map.put("ResultType", MESSAGES.ResultTypeProperties());
     map.put("ResultUri", MESSAGES.ResultUriProperties());
     map.put("Roll", MESSAGES.RollProperties());
@@ -218,6 +219,12 @@ public class TranslationComponentProperty {
     map.put("UseGPS", MESSAGES.UseGPSProperties());
     map.put("Hour", MESSAGES.HourProperties());
     map.put("Minute", MESSAGES.MinuteProperties());
+    map.put("HasMargins", MESSAGES.HasMarginsProperties());
+
+    // =========== ProximitySensor
+    map.put("MaximumRange", MESSAGES.MaximumRangeProperties());
+    map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
+    map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
 
     return map;
   }

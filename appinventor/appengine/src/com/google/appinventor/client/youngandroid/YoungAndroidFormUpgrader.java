@@ -208,6 +208,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Ball")) {
         srcCompVersion = upgradeBallProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("BarcodeScanner")) {
+        srcCompVersion = upgradeBarcodeScannerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("BluetoothClient")) {
         srcCompVersion = upgradeBluetoothClientProperties(componentProperties, srcCompVersion);
 
@@ -424,6 +427,14 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 5) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+  private static int upgradeBarcodeScannerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The UseExternalScanner property was added.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -727,6 +738,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 13;
     }
     if (srcCompVersion < 14) {
+      // The AppName property was added.
       srcCompVersion = 14;
     }
     return srcCompVersion;
@@ -819,6 +831,11 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The HasMargins property was added.
+      componentProperties.put("HasMargins", new ClientJsonString("False"));
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

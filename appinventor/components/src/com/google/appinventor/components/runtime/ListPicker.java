@@ -50,6 +50,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_ANIM_TYPE = LIST_ACTIVITY_CLASS + ".anim";
   static final String LIST_ACTIVITY_SHOW_SEARCH_BAR = LIST_ACTIVITY_CLASS + ".search";
   static final String LIST_ACTIVITY_TITLE = LIST_ACTIVITY_CLASS + ".title";
+  static final String LIST_ACTIVITY_ORIENTATION_TYPE = LIST_ACTIVITY_CLASS + ".orientation";
 
   private YailList items;
   private String selection;
@@ -224,6 +225,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     // the closing animation will be the same (but in reverse)
     String openAnim = container.$form().getOpenAnimType();
     intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim);
+    intent.putExtra(LIST_ACTIVITY_ORIENTATION_TYPE,container.$form().ScreenOrientation());
     return intent;
   }
 
