@@ -544,7 +544,9 @@ public final class Compiler {
       String deviceFilterXml = "\n<resources>\n" +
           "   <usb-device vendor-id=\"1027\" product-id=\"24577\" /> <!-- FT232 HiTechnic -->\n" +
           "</resources>\n";
-      writeXmlFile(deviceFilterFile, deviceFilterXml);
+      if (!compiler.writeXmlFile(deviceFilterFile, deviceFilterXml)) {
+        return false;
+      }
     }
 
     // Determine android permissions.
@@ -682,7 +684,7 @@ public final class Compiler {
   /*
    * Writes the given string input to the provided file.
    */
-  private static boolean writeXmlFile(File file, String input) {
+  private boolean writeXmlFile(File file, String input) {
     try {
       BufferedWriter writer = new BufferedWriter(new FileWriter(file));
       writer.write(input);
