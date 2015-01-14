@@ -77,6 +77,7 @@ public class TranslationComponentProperty {
     map.put("Players", MESSAGES.PlayersProperties());
     map.put("RequestHeaders", MESSAGES.RequestHeadersProperties());
     map.put("Result", MESSAGES.ResultProperties());
+    map.put("UseExternalScanner", MESSAGES.UseExternalScannerProperties());
     map.put("ResultType", MESSAGES.ResultTypeProperties());
     map.put("ResultUri", MESSAGES.ResultUriProperties());
     map.put("Roll", MESSAGES.RollProperties());

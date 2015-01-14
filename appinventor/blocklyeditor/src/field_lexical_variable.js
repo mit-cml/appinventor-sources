@@ -769,7 +769,7 @@ Blockly.LexicalVariable.checkIdentifier = function(ident) {
   // Character.isJavaIdentifierPart(int)
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
-  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/
+  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/;
   var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }

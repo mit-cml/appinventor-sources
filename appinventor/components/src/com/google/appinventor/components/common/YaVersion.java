@@ -297,6 +297,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 110:
   // - LABEL_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 111:
+  // - BARCODESCANNER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 112:
   // - The FtcAccelerationSensor component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
@@ -314,7 +316,7 @@ public class YaVersion {
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 111;
+  public static final int YOUNG_ANDROID_VERSION = 112;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -439,7 +441,9 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   public static final int BALL_COMPONENT_VERSION = 5;
 
-  public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
+  // For BARCODESCANNER_COMPONENT_VERSION 2:
+  // -- UseExternalScanner property was added (default true)
+  public static final int BARCODESCANNER_COMPONENT_VERSION = 2;
 
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 2:
   // - The BluetoothClient.Enabled property was added.
