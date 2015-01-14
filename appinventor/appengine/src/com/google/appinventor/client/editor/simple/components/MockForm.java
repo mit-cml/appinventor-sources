@@ -433,11 +433,9 @@ public final class MockForm extends MockContainer {
     // The AppName property actually applies to the application and is only visible on Screen1.
     // When we load a form that is not Screen1, this method will be called with the default value
     if (editor.isScreen1()) {
-    	if (!aname.equals("")) {
-        editor.getProjectEditor().changeProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aname);    		
-    	}
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aname);    		
     }
   }
 

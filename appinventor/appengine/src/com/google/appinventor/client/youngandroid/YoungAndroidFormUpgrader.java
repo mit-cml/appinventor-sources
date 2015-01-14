@@ -726,6 +726,9 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 13;
     }
+    if (srcCompVersion < 14) {
+      srcCompVersion = 14;
+    }
     return srcCompVersion;
   }
 

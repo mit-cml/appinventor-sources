@@ -180,6 +180,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   @VisibleForTesting
   public static String getInitialFormPropertiesFileContents(String qualifiedName) {
     final int lastDotPos = qualifiedName.lastIndexOf('.');
+    String packageName = qualifiedName.split("\\.")[2];
     String formName = qualifiedName.substring(lastDotPos + 1);
     // The initial Uuid is set to zero here since (as far as we know) we can't get random numbers
     // in ode.shared.  This shouldn't actually matter since all Uuid's are random int's anyway (and
@@ -191,7 +192,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
-        "\"Title\":\"" + formName + "\"}}\n|#";
+        "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\"}}\n|#";
   }
 
   /**
@@ -295,7 +296,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", ""));
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", projectName));
   }
 
   @Override
