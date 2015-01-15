@@ -737,6 +737,10 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 13;
     }
+    if (srcCompVersion < 14) {
+      // The AppName property was added.
+      srcCompVersion = 14;
+    }
     return srcCompVersion;
   }
 
