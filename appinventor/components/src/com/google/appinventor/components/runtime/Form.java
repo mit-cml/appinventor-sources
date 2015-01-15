@@ -115,6 +115,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showStatusBar = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -739,6 +740,37 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+  
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The status bar is the toppest bar on the screen. You have the option to hide the status bar. This function returns you the visibilty of the status bar.")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  public void ShowStatusBar(boolean show) {
+    if (show != showStatusBar) {
+      if (show) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }    
+      showStatusBar = show;		
+    }
   }
 
   /**
