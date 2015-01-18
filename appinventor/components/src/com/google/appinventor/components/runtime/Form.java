@@ -1362,14 +1362,17 @@ public class Form extends Activity
   private String yandexTranslateTagline = "";
 
   void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Powered by Yandex.Translate</small></p>";
+    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
   private void showAboutApplicationNotification() {
     String title = "About This App";
-    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    aboutScreen = aboutScreen.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
-    String message = aboutScreen + tagline + yandexTranslateTagline;
+    String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
+    // Users can hide the MIT tagline by including an HTML open comment <!-- in the about screen message
+    // But they cannot hide the Yandex tagline in this way, because it appears before the
+    // aboutScreen in the message
+    String message = yandexTranslateTagline + aboutScreen + MITtagline;
+    message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
