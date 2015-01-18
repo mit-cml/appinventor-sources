@@ -1366,12 +1366,10 @@ public class Form extends Activity
   }
 
   private void showAboutApplicationNotification() {
-    String title = "About This App";
+    String title = "About this app";
     String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
-    // Users can hide the MIT tagline by including an HTML open comment <!-- in the about screen message
-    // But they cannot hide the Yandex tagline in this way, because it appears before the
-    // aboutScreen in the message
-    String message = yandexTranslateTagline + aboutScreen + MITtagline;
+    // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
+    String message = aboutScreen + MITtagline + yandexTranslateTagline;
     message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
