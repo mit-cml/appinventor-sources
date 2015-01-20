@@ -39,5 +39,8 @@ public final class YoungAndroidSettings extends Settings {
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION, "false",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 }

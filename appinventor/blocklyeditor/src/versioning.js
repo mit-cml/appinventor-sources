@@ -1752,7 +1752,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 13:
     // - The Screen.Scrollable property was set to False by default
-    13: "noUpgrade"
+    13: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 14:
+    // - The Screen1.AppName was added and no block need to be changed.
+    14: "noUpgrade"
 
   }, // End Screen
 
