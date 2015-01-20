@@ -5252,4 +5252,8 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MaximumRangeMethods();
 
+  @DefaultMessage("Error on Fusion Tables query")
+  @Description("")
+  String FusionTablesStandardErrorMessage();
+
 }
