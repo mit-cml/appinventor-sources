@@ -302,8 +302,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 9.
   // For YOUNG_ANDROID_VERSION 114:
   // - FORM_COMPONENT_VERSION was incremented to 14.
+  // For YOUNG_ANDROID_VERSION 115:
+  // - CANVAS_COMPONENT_VERSION was incremented to 10.
 
-  public static final int YOUNG_ANDROID_VERSION = 114;
+  public static final int YOUNG_ANDROID_VERSION = 115;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -472,29 +474,31 @@ public class YaVersion {
   // - The UseFront property was added.
    public static final int CAMERA_COMPONENT_VERSION = 2;
 
-  // For CANVAS_COMPONENT_VERSION 2:
-  // - The LineWidth property was added.
-  // For CANVAS_COMPONENT_VERSION 3:
-  // - The FontSize property was added.
-  // - The TextAlignment property was added.
-  // - The DrawText method was added.
-  // - The DrawTextAtAngle method was added.
-  // For CANVAS_COMPONENT_VERSION 4:
-  // - Added Save and SaveAs methods
-  // For CANVAS_COMPONENT_VERSION 5:
-  // - Added GetBackgroundPixelColor, GetPixelColor, and SetBackgroundPixelColor methods.
-  // For CANVAS_COMPONENT_VERSION 6:
-  // - Added TouchDown, TouchUp, and Flung events.
-  // For CANVAS_COMPONENT_VERSION 7:
-  // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  // For CANVAS_COMPONENT_VERSION 8:
-  // Dave Wolber's Canvas name changes:
-  // - DrawCircle parameter names changed to centerx,centery, radius
-  // - Touched parameter touchedSprite name changed to touchedAnySprite
-  // - Dragged parameter draggedSprite name changed to draggedAnySprite
-  // For CANVAS_COMPONENT_VERSION 9:
-  // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
-  public static final int CANVAS_COMPONENT_VERSION = 9;
+   // For CANVAS_COMPONENT_VERSION 2:
+   // - The LineWidth property was added.
+   // For CANVAS_COMPONENT_VERSION 3:
+   // - The FontSize property was added.
+   // - The TextAlignment property was added.
+   // - The DrawText method was added.
+   // - The DrawTextAtAngle method was added.
+   // For CANVAS_COMPONENT_VERSION 4:
+   // - Added Save and SaveAs methods
+   // For CANVAS_COMPONENT_VERSION 5:
+   // - Added GetBackgroundPixelColor, GetPixelColor, and SetBackgroundPixelColor methods.
+   // For CANVAS_COMPONENT_VERSION 6:
+   // - Added TouchDown, TouchUp, and Flung events.
+   // For CANVAS_COMPONENT_VERSION 7:
+   // - Callback parameters speed and heading were added to Flung. (for all sprites)
+   // For CANVAS_COMPONENT_VERSION 8:
+   // Dave Wolber's Canvas name changes:
+   // - DrawCircle parameter names changed to centerx,centery, radius
+   // - Touched parameter touchedSprite name changed to touchedAnySprite
+   // - Dragged parameter draggedSprite name changed to draggedAnySprite
+   // For CANVAS_COMPONENT_VERSION 9:
+   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
+   // For CANVAS_COMPONENT_VERSION 10:
+   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
+  public static final int CANVAS_COMPONENT_VERSION = 10;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
