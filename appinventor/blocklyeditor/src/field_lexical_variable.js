@@ -621,7 +621,7 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
     } else if ( sourceBlock.type == "controls_forRange") {
       sourcePrefix = Blockly.loopRangeParameterPrefix;
     } else if (sourceBlock.type == "local_declaration_statement"
-               || sourceBlock.type == "local_declaration_expression" 
+               || sourceBlock.type == "local_declaration_expression"
                || sourceBlock.type == "local_mutatorarg") {
       sourcePrefix = Blockly.localNamePrefix;
     }
@@ -642,8 +642,8 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
       var newIndex = declaredNames.indexOf(newName);
       if (newIndex != -1) {
         declaredNames.splice(newIndex,1);
-  }
-  }
+      }
+    }
   }
   var conflicts = Blockly.LexicalVariable.sortAndRemoveDuplicates(capturables.concat(declaredNames));
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, conflicts);
@@ -743,7 +743,7 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
  *   <first> = letter U charsIn("_$?~@")
  *   <rest> = <first> U digit
  *
- *   Note: an earlier verison also allowed characters in "!&%.^/+-*>=<",
+ *   Note: an earlier version also allowed characters in "!&%.^/+-*>=<",
  *   but we decided to remove these because (1) they may be used for arithmetic,
  *   logic, and selection infix operators in a future AI text language, and we don't want
  *   things like a+b, !c, d.e to be ambiguous between variables and other expressions.

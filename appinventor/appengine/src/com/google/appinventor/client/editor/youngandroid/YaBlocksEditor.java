@@ -21,6 +21,7 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -113,7 +114,7 @@ public final class YaBlocksEditor extends FileEditor
 
     fullFormName = blocksNode.getProjectId() + "_" + blocksNode.getFormName();
     formToBlocksEditor.put(fullFormName, this);
-    blocksArea = new BlocklyPanel(fullFormName);
+    blocksArea = new BlocklyPanel(this, fullFormName); // [lyn, 2014/10/28] pass in editor so can extract form json from it
     blocksArea.setWidth("100%");
     // This code seems to be using a rather old layout, so we cannot simply pass 100% for height.
     // Instead, it needs to be calculated from the client's window, and a listener added to Window
@@ -169,7 +170,8 @@ public final class YaBlocksEditor extends FileEditor
           this.onFailure(e);
           return;
         }
-        blocksArea.loadBlocksContent(blkFileContent);
+        String formJson = myFormEditor.preUpgradeJsonString(); // [lyn, 2014/10/27] added formJson for upgrading
+        blocksArea.loadBlocksContent(formJson, blkFileContent);
         loadComplete = true;
         selectedDrawer = null;
         if (afterFileLoaded != null) {
@@ -598,6 +600,15 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void switchLanguage(String newLanguage) {
     blocksArea.switchLanguage(newLanguage);
+  }
+
+  /*
+   * [lyn, 2014/10/28] Added for accessing current form json from BlocklyPanel
+   * Encodes the associated form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
+   * to send the form info to the blockly world during code generation.
+   */
+  protected String encodeFormAsJsonString() {
+    return myFormEditor.encodeFormAsJsonString();
   }
 
 }

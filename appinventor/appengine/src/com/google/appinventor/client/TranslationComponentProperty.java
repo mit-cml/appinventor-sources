@@ -167,6 +167,7 @@ public class TranslationComponentProperty {
     map.put("Speed", MESSAGES.SpeedProperties());
     map.put("StopBeforeDisconnect", MESSAGES.StopBeforeDisconnectProperties());
     map.put("Text", MESSAGES.TextProperties());
+    map.put("TextAlignment", MESSAGES.TextAlignmentProperties());
     map.put("TextColor", MESSAGES.TextColorProperties());
     map.put("TimeInterval", MESSAGES.TimeIntervalProperties());
     map.put("TimerAlwaysFires", MESSAGES.TimerAlwaysFiresProperties());

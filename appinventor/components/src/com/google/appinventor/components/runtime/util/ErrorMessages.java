@@ -187,6 +187,9 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_FAILED_TO_CREATE_SERVO_CONTROLLER = 2609;
   public static final int ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE = 2610;
 
+  //FusiontablesControl errors
+  public static final int FUSION_TABLES_QUERY_ERROR = 2601;
+
   // Please start the next group of error numbers at 2701.
 
 
@@ -473,6 +476,9 @@ public final class ErrorMessages {
         "Failed to create servo controller with serial number %s.");
     errorMessages.put(ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE,
         "Could not fit channel mode %s into 1 byte.");
+    // FusiontablesControl error
+    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
+       "The response was: %s");
   }
 
   private ErrorMessages() {
@@ -483,4 +489,3 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
-

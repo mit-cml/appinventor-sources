@@ -3373,6 +3373,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String draggedSpriteParams();
 
+  @DefaultMessage("draggedAnySprite")
+  @Description("")
+  String draggedAnySpriteParams();
+
   @DefaultMessage("flungSprite")
   @Description("")
   String flungSpriteParams();
@@ -3380,6 +3384,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("touchedSprite")
   @Description("")
   String touchedSpriteParams();
+
+  @DefaultMessage("touchedAnySprite")
+  @Description("")
+  String touchedAnySpriteParams();
 
   @DefaultMessage("x")
   @Description("")
@@ -3389,9 +3397,21 @@ public interface OdeMessages extends Messages {
   @Description("")
   String yParams();
 
+  @DefaultMessage("centerX")
+  @Description("")
+  String centerXParams();
+
+  @DefaultMessage("centerY")
+  @Description("")
+  String centerYParams();
+
   @DefaultMessage("r")
   @Description("")
   String rParams();
+
+  @DefaultMessage("radius")
+  @Description("")
+  String radiusParams();
 
   @DefaultMessage("x1")
   @Description("")
@@ -5585,5 +5605,9 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MaximumRangeMethods")
   @Description("")
   String MaximumRangeMethods();
+
+  @DefaultMessage("Error on Fusion Tables query")
+  @Description("")
+  String FusionTablesStandardErrorMessage();
 
 }

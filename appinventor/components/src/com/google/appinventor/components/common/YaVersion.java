@@ -288,10 +288,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 107:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 108:
-  // - New Obsfucate Text Block was added.
-  //   Note: BLOCKS_LANGUAGE_VERSION would normally be incremented as
-  //   well, but we don't have any code that deals with it, so we
-  //   won't do it for this change
+  // - New Obsfucate Text Block was added and BLOCKS_LANGUAGE_VERSION incremented to 18
   // For YOUNG_ANDROID_VERION 109:
   // - Added PROXIMITYSENSOR_COMPONENT_VERSION
   // For YOUNG_ANDROID_VERSION 110:
@@ -299,6 +296,15 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 111:
   // - BARCODESCANNER_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 112:
+  // First test of new upgrading architecture: Dave Wolber's Canvas name changes
+  // For YOUNG_ANDROID_VERSION 113:
+  // Second test of new upgrading architecture: Evan Thomas's fillCircle argument for Canvas.DrawCircle
+  // - CANVAS_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 114:
+  // - FORM_COMPONENT_VERSION was incremented to 14.
+  // For YOUNG_ANDROID_VERSION 115:
+  // - CANVAS_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 116:
   // - The FtcAccelerationSensor component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
@@ -316,7 +322,7 @@ public class YaVersion {
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 112;
+  public static final int YOUNG_ANDROID_VERSION = 116;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -369,8 +375,9 @@ public class YaVersion {
   // - Marked close-screen-with-result as a bad block
   // - Added close-screen-with-value
   // - Added close-screen-with-plain-text
-
-  public static final int BLOCKS_LANGUAGE_VERSION = 17;
+  // For BLOCKS_LANGUAGE_VERSION 18:
+  // - New Obsfucate Text Block was added
+  public static final int BLOCKS_LANGUAGE_VERSION = 18;
 
   // ................................. Component Version Numbers ..................................
 
@@ -499,7 +506,16 @@ public class YaVersion {
   // - Added TouchDown, TouchUp, and Flung events.
   // For CANVAS_COMPONENT_VERSION 7:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int CANVAS_COMPONENT_VERSION = 7;
+  // For CANVAS_COMPONENT_VERSION 8:
+  // Dave Wolber's Canvas name changes:
+  // - DrawCircle parameter names changed to centerx,centery, radius
+  // - Touched parameter touchedSprite name changed to touchedAnySprite
+  // - Dragged parameter draggedSprite name changed to draggedAnySprite
+  // For CANVAS_COMPONENT_VERSION 9:
+  // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
+  // For CANVAS_COMPONENT_VERSION 10:
+  // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
+  public static final int CANVAS_COMPONENT_VERSION = 10;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -518,17 +534,17 @@ public class YaVersion {
   // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
   public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
-  // For EMAILPICKER_COMPONENT_VERSION 2:
-  // - The Alignment property was renamed to TextAlignment.
-  public static final int EMAILPICKER_COMPONENT_VERSION = 2;
-
-  // For DATEPICKER_COMPONENT_VERSION 2:
+   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
   // instead of the last set date by default.
   // The SetDateToDisplay and LaunchPicker methods were added to
   // give the user more control of what time is displayed in the
   // datepicker dialog.
   public static final int DATEPICKER_COMPONENT_VERSION = 2;
+
+  // For EMAILPICKER_COMPONENT_VERSION 2:
+  // - The Alignment property was renamed to TextAlignment.
+  public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;
@@ -560,7 +576,9 @@ public class YaVersion {
   // - AboutScreen property was added
   // For FORM_COMPONENT_VERSION 13:
   // - The Screen.Scrollable property was set to False by default
-  public static final int FORM_COMPONENT_VERSION = 13;
+  // For FORM_COMPONENT_VERSION 14:
+  // - The Screen1.AppName was added and no block need to be changed.
+  public static final int FORM_COMPONENT_VERSION = 14;
 
   public static final int FTC_ACCELERATION_SENSOR_COMPONENT_VERSION = 1;
 
@@ -607,7 +625,7 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-    public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 2;
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 2;
 
   public static final int IMAGE_COMPONENT_VERSION = 1;
 
@@ -642,20 +660,6 @@ public class YaVersion {
   // - The HasMargins property was added
   public static final int LABEL_COMPONENT_VERSION = 3;
 
-  public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
-
-  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 1;
-
-  public static final int NXT_DRIVE_COMPONENT_VERSION = 1;
-
-  public static final int NXT_LIGHTSENSOR_COMPONENT_VERSION = 1;
-
-  public static final int NXT_SOUNDSENSOR_COMPONENT_VERSION = 1;
-
-  public static final int NXT_TOUCHSENSOR_COMPONENT_VERSION = 1;
-
-  public static final int NXT_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
-
   // For LISTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   // For LISTPICKER_COMPONENT_VERSION 3:
@@ -674,6 +678,15 @@ public class YaVersion {
 
   public static final int LISTPICKER_COMPONENT_VERSION = 8;
 
+  // For LISTVIEW_COMPONENT_VERSION 1:
+  // - Initial version.
+  // For LISTVIEW_COMPONENT_VERSION 2:
+  // - Added Elements property
+  // For LISTVIEW_COMPONENT_VERSION 3:
+  // - Added BackgroundColor Property
+  // - Added TextColor Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 3;
+
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
@@ -686,6 +699,20 @@ public class YaVersion {
   // For NOTIFIER_COMPONENT_VERSION 3:
   // - Added NotifierColor, TextColor and NotifierLength options
   public static final int NOTIFIER_COMPONENT_VERSION = 3;
+
+  public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 1;
+
+  public static final int NXT_DRIVE_COMPONENT_VERSION = 1;
+
+  public static final int NXT_LIGHTSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int NXT_SOUNDSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int NXT_TOUCHSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int NXT_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
@@ -733,6 +760,13 @@ public class YaVersion {
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 
+  // For SLIDER_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int SLIDER_COMPONENT_VERSION = 1;
+
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
+
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
@@ -754,9 +788,6 @@ public class YaVersion {
   // - The MultiLine property was added.
   public static final int TEXTBOX_COMPONENT_VERSION = 4;
 
-  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
-
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
   // This works only on phones with 2.0 (Eclair) or higher.
@@ -767,6 +798,9 @@ public class YaVersion {
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
+
+  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -849,22 +883,6 @@ public class YaVersion {
   // - IgnoreSslError property added
   public static final int WEBVIEWER_COMPONENT_VERSION = 5;
 
-  // For SLIDER_COMPONENT_VERSION 1:
-  // - Initial version.
-  public static final int SLIDER_COMPONENT_VERSION = 1;
-
-  // For SPINNER_COMPONENT_VERSION 1:
-  public static final int SPINNER_COMPONENT_VERSION = 1;
-
-  // For LISTVIEW_COMPONENT_VERSION 1:
-  // - Initial version.
-  // For LISTVIEW_COMPONENT_VERSION 2:
-  // - Added Elements property
-  // For LISTVIEW_COMPONENT_VERSION 3:
-  // - Added BackgroundColor Property
-  // - Added TextColor Property
-
-  public static final int LISTVIEW_COMPONENT_VERSION = 3;
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
