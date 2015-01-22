@@ -1157,7 +1157,7 @@ Blockly.Versioning.AllUpgradeMaps =
         '</block>'),
 
     // AI2: No blocks need to be modified to upgrade to version 10
-    // The default value of TextAlignment was changed form Normal (left) to Center
+    // The default value of TextAlignment was changed from Normal (left) to Center
     10: "noUpgrade",
 
   }, // End Canvas upgraders
