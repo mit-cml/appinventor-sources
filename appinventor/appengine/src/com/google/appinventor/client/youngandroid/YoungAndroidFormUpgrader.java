@@ -607,8 +607,12 @@ public final class YoungAndroidFormUpgrader {
       // relied on left as the default, but they mostly do not exist, and using this upgrade
       // will mess up projects that rely on the default being center.
       //      int oldDefault = 0;
-      //      JSONValue def =  new ClientJsonString(Integer.toHexString(oldDefault));
+      //      JSONValue def =  new ClientJsonString(Integer.toString(oldDefault));
       //      handleSupplyValueForPreviouslyDefaultedProperty(componentProperties, "TextAlignment", def);
+
+      int oldDefault = 0; // ALIGNMENT_NORMAL (left)
+      JSONValue def = new ClientJsonString(Integer.toString(oldDefault));
+      componentProperties.put("TextAlignment", def);
 
       srcCompVersion = 10;
     }
