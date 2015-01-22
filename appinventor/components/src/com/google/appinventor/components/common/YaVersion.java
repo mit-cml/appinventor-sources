@@ -304,8 +304,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 14.
   // For YOUNG_ANDROID_VERSION 115:
   // - CANVAS_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 116:
+  // - CANVAS_COMPONENT_VERSION was incremented to 11.
 
-  public static final int YOUNG_ANDROID_VERSION = 115;
+  public static final int YOUNG_ANDROID_VERSION = 116;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -498,7 +500,10 @@ public class YaVersion {
   // - DrawCircle has new fourth parameter (for isFilled), due to Evan Thomas
   // For CANVAS_COMPONENT_VERSION 10:
   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
-  public static final int CANVAS_COMPONENT_VERSION = 10;
+   // For CANVAS_COMPONENT_VERSION 11:
+   // Fix to version 10--
+   // - The default value of the TextAlignment property was changed to Component.ALIGNMENT_CENTER
+  public static final int CANVAS_COMPONENT_VERSION = 11;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
