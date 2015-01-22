@@ -610,20 +610,11 @@ public final class YoungAndroidFormUpgrader {
       //      JSONValue def =  new ClientJsonString(Integer.toString(oldDefault));
       //      handleSupplyValueForPreviouslyDefaultedProperty(componentProperties, "TextAlignment", def);
 
-      srcCompVersion = 10;
-    }
-    if (srcCompVersion < 11) {
-      // TextAlignment default was changed to Component.ALIGNMENT_CENTER.
-      // Previously the default was ALIGNMENT_NORMAL (left).
-      // The above comment in upgrade 10 is not correct when it says that
-      // nothing needs to be done.   Instead, we need to upgrade the Canvas
-      // by setting TextAlignment to ALIGN_NORMAL.  New Canvases will be
-      // created with ALIGNMENT_CENTER, but the result of an upgrade will
-      // need to have its alignment manually, if left is not what the developer wants.
       int oldDefault = 0; // ALIGNMENT_NORMAL (left)
       JSONValue def = new ClientJsonString(Integer.toString(oldDefault));
       componentProperties.put("TextAlignment", def);
-      srcCompVersion = 11;
+
+      srcCompVersion = 10;
     }
     return srcCompVersion;
   }

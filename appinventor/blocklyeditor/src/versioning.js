@@ -1160,11 +1160,6 @@ Blockly.Versioning.AllUpgradeMaps =
     // The default value of TextAlignment was changed from Normal (left) to Center
     10: "noUpgrade",
 
-    // AI2: Extra pugrade to fix upgrade 10
-    // No blocks need to be modified to upgrade to version 11
-    // The default value of TextAlignment was changed from Normal (left) to Center
-    11: "noUpgrade",
-    
   }, // End Canvas upgraders
 
   "CheckBox": {
