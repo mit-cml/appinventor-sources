@@ -416,7 +416,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   /**
    * Returns the listview's text font Size
    *
-   * @return text size as an integer
+   * @return text size as an float
    */
   @SimpleProperty(
       description = "The text size of the listview items.",
