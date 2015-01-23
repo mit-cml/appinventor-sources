@@ -1154,7 +1154,11 @@ Blockly.Versioning.AllUpgradeMaps =
     9: Blockly.Versioning.addDefaultMethodArgument("Canvas", "DrawCircle", 3, // Since this will be ARG3
         '<block type="logic_boolean">' +
         '  <field name="BOOL">TRUE</field>' +
-        '</block>')
+        '</block>'),
+
+    // AI2: No blocks need to be modified to upgrade to version 10
+    // The default value of TextAlignment was changed from Normal (left) to Center
+    10: "noUpgrade",
 
   }, // End Canvas upgraders
 
