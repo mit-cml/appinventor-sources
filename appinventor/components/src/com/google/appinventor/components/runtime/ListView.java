@@ -11,6 +11,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.AbsoluteSizeSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -71,6 +72,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   // The text color of the ListView's items.  All items have the same text color
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
+  
+  private float textSize;
+  private static final float DEFAULT_TEXT_SIZE = 12;
 
   /**
    * Creates a new ListView component.
@@ -127,6 +131,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
+    textSize = DEFAULT_TEXT_SIZE;
+    TextSize(textSize);
     ElementsFromString("");
 
     listViewLayout.addView(txtSearchBox);
@@ -253,6 +259,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
+      chars.setSpan(new AbsoluteSizeSpan((int)textSize),0,chars.length(),0);
       objects[i - 1] = chars;
     }
     return objects;
@@ -403,6 +410,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void TextColor(int argb) {
       textColor = argb;
+      setAdapterData();
+  }
+  
+  /**
+   * Returns the listview's text font Size
+   *
+   * @return text size as an integer
+   */
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public float TextSize() {
+    return textSize;
+  }
+
+  /**
+   * Specifies the ListView item's text font size
+   *
+   * @param integer value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = Component.FONT_DEFAULT_SIZE + "")
+  @SimpleProperty
+  public void TextSize(float fontSize) {
+      if(fontSize>1000)
+        textSize = 999;
+      else
+        textSize = fontSize;
       setAdapterData();
   }
 
