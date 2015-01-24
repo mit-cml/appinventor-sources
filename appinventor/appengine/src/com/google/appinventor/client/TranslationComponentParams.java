@@ -193,6 +193,7 @@ public class TranslationComponentParams {
     map.put("languageToTranslateTo", MESSAGES.languageToTranslateToParams());
     map.put("textToTranslate", MESSAGES.textToTranslateParams());
     map.put("event", MESSAGES.eventParams());
+    map.put("key", MESSAGES.keyParams());
     return map;
   }
 }

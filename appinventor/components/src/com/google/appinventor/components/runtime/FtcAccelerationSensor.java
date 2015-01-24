@@ -4,37 +4,33 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
- * A component that provides an interface to an acceleration sensor of an FTC robot.
+ * A component for an acceleration sensor of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_ACCELERATION_SENSOR_COMPONENT_VERSION,
-    description = "A component that provides an interface to an acceleration sensor of an FTC robot.",
+    description = "A component for an acceleration sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "robotcore.jar")
-public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
-    implements Component, Deleteable, FtcSensorMux.Child {
+@UsesLibraries(libraries = "RobotCore.jar")
+public final class FtcAccelerationSensor extends FtcHardwareDevice {
 
-  private FtcSensorMux ftcSensorMux;
-  private int channel = 1;
-  private AccelerationSensor accelerationSensor;
-  
+  private volatile AccelerationSensor accelerationSensor;
+
   /**
    * Creates a new FtcAccelerationSensor component.
    */
@@ -42,77 +38,10 @@ public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
     super(container.$form());
   }
 
-  private boolean isAfterEventLoopInit() {
-    return (ftcSensorMux != null)
-        ? ftcSensorMux.isAfterEventLoopInit()
-        : false;
-  }
-
   // Properties
 
   /**
-   * FtcSensorMux property getter.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The FtcSensorMux component that this IR sensor belongs to.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public FtcSensorMux FtcSensorMux() {
-    return ftcSensorMux;
-  }
-
-  /**
-   * FtcSensorMux property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_SENSOR_MUX,
-      defaultValue = "")
-  @SimpleProperty(userVisible = false)
-  public void FtcSensorMux(FtcSensorMux ftcSensorMux) {
-    if (this.ftcSensorMux != null) {
-      if (isAfterEventLoopInit()) {
-        destroyAccelerationSensor();
-      }
-      this.ftcSensorMux.removeChild(this);
-      this.ftcSensorMux = null;
-    }
-
-    if (ftcSensorMux != null) {
-      this.ftcSensorMux = ftcSensorMux;
-      this.ftcSensorMux.addChild(this);
-      if (isAfterEventLoopInit()) {
-        createAccelerationSensor();
-      }
-    }
-  }
-
-  /**
-   * Channel property getter method.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The channel.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public int Channel() {
-    return channel;
-  }
-
-  /**
-   * Channel property setter method.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_CHANNEL_NUMBER,
-      defaultValue = "1")
-  @SimpleProperty(userVisible = false)
-  public void Channel(int channel) {
-    // TODO: make sure the channel is valid. What are the limits?
-    this.channel = channel;
-    if (isAfterEventLoopInit()) {
-      destroyAccelerationSensor();
-      createAccelerationSensor();
-    }
-  }
-
-  /**
-   * X Acceleration property getter method
+   * X Acceleration property getter.
    */
   @SimpleProperty(description = "The X Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
@@ -123,7 +52,7 @@ public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Y Acceleration property getter method
+   * Y Acceleration property getter.
    */
   @SimpleProperty(description = "The Y Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
@@ -134,7 +63,7 @@ public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Z Acceleration property getter method
+   * Z Acceleration property getter.
    */
   @SimpleProperty(description = "The Z Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
@@ -145,7 +74,7 @@ public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Status property getter method
+   * Status property getter.
    */
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
@@ -155,38 +84,25 @@ public final class FtcAccelerationSensor extends AndroidNonvisibleComponent
         : "";
   }
 
-  private void createAccelerationSensor() {
-    if (ftcSensorMux != null) {
-      accelerationSensor = ftcSensorMux.getHiTechnicDeviceManager().createNxtAccelerationSensor(
-          ftcSensorMux.getSensorMux(), channel);
-    }
-  }
-
-  private void destroyAccelerationSensor() {
-    accelerationSensor = null;
-  }
-
-  // Deleteable implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void onDelete() {
-    destroyAccelerationSensor();
-  }
-
-  // FtcSensorMux.Child implementation
-
-  @Override
-  public void createChild() {
-    createAccelerationSensor();
-  }
-
-  @Override
-  public void debugChild(StringBuilder sb) {
+  public void debugHardwareDevice(StringBuilder sb) {
     sb.append("accelerationSensor is ").append((accelerationSensor == null) ? "null" : "not null").append("\n");
   }
 
+  // FtcHardwareDevice implementation
+
   @Override
-  public void destroyChild() {
-    destroyAccelerationSensor();
+  void initHardwareDevice() {
+    HardwareMap hardwareMap = getHardwareMap();
+    if (hardwareMap != null) {
+      accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
+    }
+  }
+
+  @Override
+  void clearHardwareDevice() {
+    accelerationSensor = null;
   }
 }

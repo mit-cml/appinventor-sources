@@ -4,8 +4,8 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -17,70 +17,57 @@ import com.google.appinventor.components.common.YaVersion;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import android.util.Log;
-
 /**
- * A component that provides an interface to a gamepad of an FTC robot.
+ * A component for a gamepad of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_GAMEPAD_COMPONENT_VERSION,
-    description = "A component that provides an interface to a gamepad of an FTC robot.",
+    description = "A component for a gamepad of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "robotcore.jar")
-public final class FtcGamepad extends FtcRobotControllerChild {
+@UsesLibraries(libraries = "RobotCore.jar")
+public final class FtcGamepad extends AndroidNonvisibleComponent
+    implements Component, Deleteable, FtcRobotController.GamepadDevice {
 
-  private int gamepadIndex; // Must be 0 or 1. 0 is the default.
+  private volatile int gamepadIndex;
+  private volatile EventLoopManager eventLoopManager;
 
   /**
    * Creates a new FtcGamepad component.
    */
   public FtcGamepad(ComponentContainer container) {
-    super(container, "FtcGamepad");
+    super(container.$form());
+    FtcRobotController.addGamepadDevice(form, this);
   }
 
-  private Gamepad getGamepad() {
-    // TODO(4.0): Try to get the gamepad from the active OpMode, fallback to getting the gamepad
-    // from the EventLoopManager if there is no active OpMode.
-    EventLoopManager eventLoopManager = getEventLoopManager();
-    if (eventLoopManager != null) {
-      return eventLoopManager.getGamepad(gamepadIndex);
-    }
-    return null;
-  }
+  // Properties
 
   /**
-   * The GamepadNumber property getter method.
+   * GamepadNumber property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(description = "The gamepad number, either 1 or 2.",
+  @SimpleProperty(description = "The gamepad number.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public int GamepadNumber() {
     return gamepadIndex + 1;
   }
 
   /**
-   * The GamepadNumber property setter method.
+   * GamepadNumber property setter.
    * Can only be set in designer; not visible in blocks.
-   *
-   * @param gamepadNumber either 1 or 2
-   * @throws IllegalArgumentException if gamepadNumber is not 1 or 2.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_GAMEPAD_NUMBER,
       defaultValue = "1")
   @SimpleProperty(userVisible = false)
   public void GamepadNumber(int gamepadNumber) {
-    if (gamepadNumber != 1 && gamepadNumber != 2) {
-      throw new IllegalArgumentException();
-    }
-    this.gamepadIndex = gamepadNumber - 1;
+    gamepadIndex = gamepadNumber - 1;
   }
 
   /**
-   * The JoystickDeadzone property setter method
+   * JoystickDeadzone property setter.
    */
   @SimpleProperty(description = "Set the joystick deadzone; must be between 0 and 1.")
   public void JoystickDeadzone(int joystickDeadzone) {
@@ -93,7 +80,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The AtRest property getter method
+   * AtRest property getter.
    */
   @SimpleProperty(description = "Are all analog sticks and triggers in their rest position?",
       category = PropertyCategory.BEHAVIOR)
@@ -106,7 +93,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The LeftStickX property getter method
+   * LeftStickX property getter.
    */
   @SimpleProperty(description = "The left analog stick horizontal axis value.",
       category = PropertyCategory.BEHAVIOR)
@@ -119,7 +106,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The LeftStickY property getter method
+   * LeftStickY property getter.
    */
   @SimpleProperty(description = "The left analog stick vertical axis value.",
       category = PropertyCategory.BEHAVIOR)
@@ -132,7 +119,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The RightStickX property getter method
+   * RightStickX property getter.
    */
   @SimpleProperty(description = "The right analog stick horizontal axis value.",
       category = PropertyCategory.BEHAVIOR)
@@ -145,7 +132,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The RightStickY property getter method
+   * RightStickY property getter.
    */
   @SimpleProperty(description = "The right analog stick vertical axis value.",
       category = PropertyCategory.BEHAVIOR)
@@ -158,7 +145,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The DpadUp property getter method
+   * DpadUp property getter.
    */
   @SimpleProperty(description = "The dpad up value.",
       category = PropertyCategory.BEHAVIOR)
@@ -171,7 +158,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The DpadDown property getter method
+   * DpadDown property getter.
    */
   @SimpleProperty(description = "The dpad down value.",
       category = PropertyCategory.BEHAVIOR)
@@ -184,7 +171,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The DpadLeft property getter method
+   * DpadLeft property getter.
    */
   @SimpleProperty(description = "The dpad left value.",
       category = PropertyCategory.BEHAVIOR)
@@ -197,7 +184,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The DpadRight property getter method
+   * DpadRight property getter.
    */
   @SimpleProperty(description = "The dpad right value.",
       category = PropertyCategory.BEHAVIOR)
@@ -210,7 +197,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The A property getter method
+   * A property getter.
    */
   @SimpleProperty(description = "The value of the A button.",
       category = PropertyCategory.BEHAVIOR)
@@ -223,7 +210,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The B property getter method
+   * B property getter.
    */
   @SimpleProperty(description = "The value of the B button.",
       category = PropertyCategory.BEHAVIOR)
@@ -236,7 +223,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The X property getter method
+   * X property getter.
    */
   @SimpleProperty(description = "The value of the X button.",
       category = PropertyCategory.BEHAVIOR)
@@ -249,7 +236,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The Y property getter method
+   * Y property getter.
    */
   @SimpleProperty(description = "The value of the Y button.",
       category = PropertyCategory.BEHAVIOR)
@@ -262,7 +249,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The Guide property getter method
+   * Guide property getter.
    */
   @SimpleProperty(description = "The value of the Guide button. " +
       "The Guide button is often the large button in the middle of the controller.",
@@ -276,7 +263,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The Start property getter method
+   * Start property getter.
    */
   @SimpleProperty(description = "The value of the Start button.",
       category = PropertyCategory.BEHAVIOR)
@@ -289,7 +276,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The Back property getter method
+   * Back property getter.
    */
   @SimpleProperty(description = "The value of the Back button.",
       category = PropertyCategory.BEHAVIOR)
@@ -302,7 +289,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The LeftBumper property getter method
+   * LeftBumper property getter.
    */
   @SimpleProperty(description = "The left bumper value.",
       category = PropertyCategory.BEHAVIOR)
@@ -315,7 +302,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The RightBumper property getter method
+   * RightBumper property getter.
    */
   @SimpleProperty(description = "The right bumper value.",
       category = PropertyCategory.BEHAVIOR)
@@ -328,7 +315,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The LeftTrigger property getter method
+   * LeftTrigger property getter.
    */
   @SimpleProperty(description = "The left trigger value.",
       category = PropertyCategory.BEHAVIOR)
@@ -341,7 +328,7 @@ public final class FtcGamepad extends FtcRobotControllerChild {
   }
 
   /**
-   * The RightTrigger property getter method
+   * RightTrigger property getter.
    */
   @SimpleProperty(description = "The right trigger value.",
       category = PropertyCategory.BEHAVIOR)
@@ -351,5 +338,43 @@ public final class FtcGamepad extends FtcRobotControllerChild {
       return gamepad.right_trigger;
     }
     return 0f;
+  }
+
+  /**
+   * Status property getter.
+   */
+  @SimpleProperty(description = "The status of the gamepad.",
+      category = PropertyCategory.BEHAVIOR)
+  public String status() {
+    Gamepad gamepad = getGamepad();
+    if (gamepad != null) {
+      return gamepad.toString();
+    }
+    return "";
+  }
+
+  private Gamepad getGamepad() {
+    if (eventLoopManager != null) {
+      Gamepad[] gamepads = eventLoopManager.getGamepads();
+      if (gamepads != null && gamepadIndex >= 0 && gamepadIndex < gamepads.length) {
+        return gamepads[gamepadIndex];
+      }
+    }
+    return null;
+  }
+
+  // Deleteable implementation
+
+  @Override
+  public void onDelete() {
+    FtcRobotController.removeGamepadDevice(form, this);
+    eventLoopManager = null;
+  }
+
+  // FtcRobotController.GamepadDevice implementation
+
+  @Override
+  public void setEventLoopManager(EventLoopManager eventLoopManager) {
+    this.eventLoopManager = eventLoopManager;
   }
 }

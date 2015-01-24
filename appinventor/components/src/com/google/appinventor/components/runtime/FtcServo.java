@@ -13,38 +13,31 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-// TODO(4.0): add code
-/*
 import com.qualcomm.robotcore.hardware.Servo.Direction;
-*/
 
 /**
- * A component that provides an interface to a servo of an FTC robot.
+ * A component for a servo of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_SERVO_COMPONENT_VERSION,
-    description = "A component that provides an interface to a servo of an FTC robot.",
+    description = "A component for a servo of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "robotcore.jar")
-public final class FtcServo extends AndroidNonvisibleComponent
-    implements Component, Deleteable, FtcServoController.Child {
+@UsesLibraries(libraries = "RobotCore.jar")
+public final class FtcServo extends FtcHardwareDevice {
 
-  private FtcServoController ftcServoController;
-  private int portNumber = 1;
-  private Servo servo;
-  // TODO(4.0): add code
-  /*
-  private Direction direction = Direction.FORWARD;
-  */
-  private double scaleRangeMin = 0;
-  private double scaleRangeMax = 1;
-  private double position = 0;
+  private volatile Direction direction = Direction.FORWARD;
+  private volatile double scaleRangeMin = 0;
+  private volatile double scaleRangeMax = 1;
+  private volatile double position = 0;
+  private volatile Servo servo;
 
   /**
    * Creates a new FtcServo component.
@@ -53,107 +46,34 @@ public final class FtcServo extends AndroidNonvisibleComponent
     super(container.$form());
   }
 
-  private boolean isAfterEventLoopInit() {
-    return (ftcServoController != null)
-        ? ftcServoController.isAfterEventLoopInit()
-        : false;
-  }
-
   // Properties
 
   /**
-   * FtcServoController property getter.
-   * Not visible in blocks.
+   * Direction property getter.
    */
-  @SimpleProperty(description = "The FtcServoController component that this servo belongs to.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public FtcServoController FtcServoController() {
-    return ftcServoController;
-  }
-
-  /**
-   * FtcServoController property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_SERVO_CONTROLLER,
-      defaultValue = "")
-  @SimpleProperty(userVisible = false)
-  public void FtcServoController(FtcServoController ftcServoController) {
-    if (this.ftcServoController != null) {
-      if (isAfterEventLoopInit()) {
-        destroyServo();
-      }
-      this.ftcServoController.removeChild(this);
-      this.ftcServoController = null;
-    }
-
-    if (ftcServoController != null) {
-      this.ftcServoController = ftcServoController;
-      this.ftcServoController.addChild(this);
-      if (isAfterEventLoopInit()) {
-        createServo();
-      }
-    }
-  }
-
-  /**
-   * PortNumber property getter.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The port number on the DC motor controller.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public int PortNumber() {
-    return portNumber;
-  }
-
-  /**
-   * PortNumber property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_SERVO_PORT_NUMBER,
-      defaultValue = "1")
-  @SimpleProperty(userVisible = false)
-  public void PortNumber(int portNumber) {
-    // TODO: make sure the motor is valid. What are the limits?
-    this.portNumber = portNumber;
-    if (isAfterEventLoopInit()) {
-      destroyServo();
-      createServo();
-    }
-  }
-
-  /**
-   * Forward property getter.
-   */
-  @SimpleProperty(description = "Whether this motor should spin forward.",
+  @SimpleProperty(description = "Whether this servo should spin forward or reverse.",
       category = PropertyCategory.BEHAVIOR)
-  public boolean Forward() {
-    // TODO(4.0): add code
-    /*
-    if (servo != null) {
-      return servo.getDirection() == Direction.FORWARD;
-    }
-    return direction == Direction.FORWARD;
-    */
-    // TODO(4.0): remove code begin
-    return true;
-    // TODO(4.0): remove code end
+  public String Direction() {
+    return direction.toString();
   }
 
   /**
-   * Forward property setter.
+   * Direction property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_DIRECTION,
+      defaultValue = "FORWARD")
   @SimpleProperty
-  public void Forward(boolean forward) {
-    // TODO(4.0): add code
-    /*
-    this.direction = forward ? Direction.FORWARD : Direction.REVERSE;
-    if (servo != null) {
-      servo.setDirection(direction);
+  public void Direction(String directionString) {
+    for (Direction iDirection : Direction.values()) {
+      if (directionString.equalsIgnoreCase(iDirection.toString())) {
+        direction = iDirection;
+        setDirection();
+        return;
+      }
     }
-    */
+
+    form.dispatchErrorOccurredEvent(this, "Direction",
+        ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
   }
 
   /**
@@ -223,55 +143,54 @@ public final class FtcServo extends AndroidNonvisibleComponent
   public void Position(double position) {
     if (position >= 0.0 && position <= 1.0) {
       this.position = position;
-      if (servo != null) {
-        if (position >= scaleRangeMin && position <= scaleRangeMax) {
-          servo.setPosition(position);
-        }
-      }
+      setPosition();
+      return;
     }
+
+    form.dispatchErrorOccurredEvent(this, "Position",
+        ErrorMessages.ERROR_FTC_INVALID_POSITION, position);
   }
 
-  // private
-
-  private void createServo() {
-    if (ftcServoController != null) {
-      servo = new Servo(ftcServoController.getServoController(), portNumber);
-      if (scaleRangeMin < scaleRangeMax) {
-        servo.scaleRange(scaleRangeMin, scaleRangeMax);
-      }
-      if (position >= scaleRangeMin && position <= scaleRangeMax) {
-        servo.setPosition(position);
-      }
-    }
-  }
-
-  private void destroyServo() {
+  private void setDirection() {
     if (servo != null) {
-      servo = null;
+      servo.setDirection(direction);
     }
   }
 
-  // Deleteable implementation
-
-  @Override
-  public void onDelete() {
-    destroyServo();
+  private void setScaleRange() {
+    if (servo != null) {
+      servo.scaleRange(scaleRangeMin, scaleRangeMax);
+    }
   }
 
-  // FtcServoController.Child overrides
-
-  @Override
-  public void createChild() {
-    createServo();
+  private void setPosition() {
+    if (servo != null) {
+      servo.setPosition(position);
+    }
   }
 
+  // FtcRobotController.HardwareDevice implementation
+
   @Override
-  public void debugChild(StringBuilder sb) {
+  public void debugHardwareDevice(StringBuilder sb) {
     sb.append("servo is ").append((servo == null) ? "null" : "not null").append("\n");
   }
 
+  // FtcHardwareDevice implementation
+
   @Override
-  public void destroyChild() {
-    destroyServo();
+  void initHardwareDevice() {
+    HardwareMap hardwareMap = getHardwareMap();
+    if (hardwareMap != null) {
+      servo = hardwareMap.servo.get(getDeviceName());
+      setDirection();
+      setScaleRange();
+      setPosition();
+    }
+  }
+
+  @Override
+  void clearHardwareDevice() {
+    servo = null;
   }
 }

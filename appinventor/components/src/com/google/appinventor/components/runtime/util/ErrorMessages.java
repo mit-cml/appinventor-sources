@@ -176,16 +176,16 @@ public final class ErrorMessages {
   public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
 
   // FTC errors
-  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2601;
-  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2602;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2603;
-  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2604;
-  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2605;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_DC_MOTOR_CONTROLLER = 2606;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_DIGITAL_CHANNEL_CONTROLLER = 2607;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_SENSOR_MUX = 2608;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_SERVO_CONTROLLER = 2609;
-  public static final int ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE = 2610;
+  public static final int ERROR_FTC_CONFIG_FILE_NOT_FOUND = 2601;
+  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2602;
+  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2603;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2604;
+  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2605;
+  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2606;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2607;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2608;
+  public static final int ERROR_FTC_INVALID_POSITION = 2609;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2610;
 
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
@@ -460,22 +460,19 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
     // FTC errors
+    errorMessages.put(ERROR_FTC_CONFIG_FILE_NOT_FOUND, "The robot config file %s was not found.");
     errorMessages.put(ERROR_FTC_DRIVER_STATION_NOT_FOUND, "The driver station was not found.");
     errorMessages.put(ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION,
         "Timeout while connecting to driver station.");
     errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_ROBOT, "Failed to create robot.");
     errorMessages.put(ERROR_FTC_FAILED_TO_START_ROBOT, "Failed to start robot.");
     errorMessages.put(ERROR_FTC_WIFI_DIRECT_ERROR, "A WiFi direct error occurred: %s");
-    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_DC_MOTOR_CONTROLLER,
-        "Failed to create DC motor controller with serial number %s.");
-    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_DIGITAL_CHANNEL_CONTROLLER,
-        "Failed to create digital channel controller with serial number %s.");
-    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_SENSOR_MUX,
-        "Failed to create sensor mux with serial number %s.");
-    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_SERVO_CONTROLLER,
-        "Failed to create servo controller with serial number %s.");
-    errorMessages.put(ERROR_FTC_COULD_NOT_FIT_CHANNEL_MODE_IN_BYTE,
-        "Could not fit channel mode %s into 1 byte.");
+    errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
+        "The specified run mode is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_DIRECTION, "The specified direction is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_POSITION, "The specified position is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
+        "The specified IR seeker sensor mode is not valid: %s");
     // FusiontablesControl error
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");

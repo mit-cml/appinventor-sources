@@ -16,134 +16,99 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-// TODO(4.0): add code
-/*
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-*/
-
-import java.util.concurrent.TimeUnit;
 
 /**
- * FtcOpMode component
+ * A component for an Op Mode for an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_OP_MODE_COMPONENT_VERSION,
-    description = "A component that represents an Op Mode of an FTC Robot.",
+    description = "A component for an Op Mode for an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
+@UsesLibraries(libraries = "RobotCore.jar") // TODO(lizlooney) - update UsesLibraries everywhere
 public final class FtcOpMode extends AndroidNonvisibleComponent
-    implements Component, Deleteable {
+    implements Component, Deleteable, FtcRobotController.OpModeWrapper {
+
   private final static String DEFAULT_NAME = "Unnamed Op Mode";
 
-  private FtcRobotController ftcRobotController;
+  private final OpMode opMode;
 
-  // TODO(4.0): add code
-  /*
-  OpMode opmode;
-  */
-  // TODO(4.0): remove code begin
-  private volatile long startTimeInNanoseconds = 0;
-  // TODO(4.0): remove code end
-  private String name = DEFAULT_NAME;
+  private volatile String opModeName = DEFAULT_NAME;
 
   /**
-   * Creates a new FtcOpMode
+   * Creates a new FtcOpMode component.
    */
   public FtcOpMode(ComponentContainer container) {
     super(container.$form());
 
-    // TODO(4.0): add code
-    /*
-    opmode = new OpMode() {
+    opMode = new OpMode() {
+      @Override
       public void start() {
         Start();
       }
 
+      @Override
       public void run() {
         Run();
       }
 
+      @Override
       public void stop() {
         Stop();
       }
     };
-    */
+
+    FtcRobotController.addOpModeWrapper(form, this);
   }
-  
+
   // Properties
 
   /**
-   * FtcRobotController property getter.
+   * OpModeName property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(
-  description = "The FtcRobotController component that this op mode belongs to.",
+  @SimpleProperty(description = "The name of this Op Mode.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public FtcRobotController FtcRobotController() {
-    return ftcRobotController;
-  }
-
-  /**
-   * FtcRobotController property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_ROBOT_CONTROLLER,
-      defaultValue = "")
-  @SimpleProperty(userVisible = false)
-  public void FtcRobotController(FtcRobotController ftcRobotController) {
-    if (this.ftcRobotController != null) {
-      this.ftcRobotController.removeFtcOpMode(this);
-      this.ftcRobotController = null;
-    }
-
-    if (ftcRobotController != null) {
-      this.ftcRobotController = ftcRobotController;
-      this.ftcRobotController.addFtcOpMode(this);
-    }
-  }
-
-  /**
-   * Name property getter method.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The name of this op mode.",
-      category = PropertyCategory.BEHAVIOR,
-      userVisible = false)
   public String OpModeName() {
-    return name;
+    return opModeName;
   }
 
   /**
-   * Name property setter method.
+   * OpModeName property setter.
    * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = DEFAULT_NAME)
   @SimpleProperty(userVisible = false)
-  public void OpModeName(String name) {
-    this.name = name;
+  public void OpModeName(String opModeName) {
+    this.opModeName = opModeName;
   }
+
+  // Functions
 
   @SimpleFunction(description = "Get the number of seconds this op mode has been running.")
   public double GetRuntime() {
-    // TODO(4.0): add code
-    /*
     return opMode.getRuntime();
-    */
-    // TODO(4.0): remove code begin
-    long durationInNanoseconds = System.nanoTime() - startTimeInNanoseconds;
-    return TimeUnit.SECONDS.convert(durationInNanoseconds, TimeUnit.NANOSECONDS);
-    // TODO(4.0): remove code end
+  }
+
+  @SimpleFunction(description = "Adds a text data point to the telemetry for this op mode.")
+  public void TelemetryAddTextData(String key, String text) {
+    opMode.telemetry.addData(key, text);
+  }
+
+  @SimpleFunction(description = "Adds a numeric data point to the telemetry for this op mode.")
+  public void TelemetryAddNumericData(String key, float number) {
+    opMode.telemetry.addData(key, number);
   }
 
   // Events
 
-  @SimpleEvent(description = "This event is run when this op mode is enabled.")
+  @SimpleEvent(description = "This event is run when this op mode is starting.")
   public void Start() {
-    startTimeInNanoseconds = System.nanoTime();
     EventDispatcher.dispatchEvent(this, "Start");
   }
 
@@ -152,7 +117,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Run");
   }
 
-  @SimpleEvent(description = "This event is run when this op mode is disabled.")
+  @SimpleEvent(description = "This event is run when this op mode is stopping.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
@@ -161,28 +126,18 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
   @Override
   public void onDelete() {
-    if (ftcRobotController != null) {
-      ftcRobotController.removeFtcOpMode(this);
-      ftcRobotController = null;
-    }
+    FtcRobotController.removeOpModeWrapper(form, this);
   }
 
-  // TODO(4.0): remove code begin
-  // OpMode implementation
+  // FtcRobotController.OpModeWrapper implementation
 
-  public void triggerStartEvent() {
-    // All FtcOpMode events are executed on robot event thread, not on the Android event thread.
-    Start();
+  @Override
+  public String getOpModeName() {
+    return opModeName;
   }
 
-  public void triggerRunEvent() {
-    // All FtcOpMode events are executed on robot event thread, not on the Android event thread.
-    Run();
+  @Override
+  public OpMode getOpMode() {
+    return opMode;
   }
-
-  public void triggerStopEvent() {
-    // All FtcOpMode events are executed on robot event thread, not on the Android event thread.
-    Stop();
-  }
-  // TODO(4.0): remove code end
 }

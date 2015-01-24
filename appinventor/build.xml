@@ -119,10 +119,10 @@
         <pathelement location="lib/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
         <!-- ftc libs -->
-        <pathelement location="lib/ftc/ftccommon.jar" />
-        <pathelement location="lib/ftc/hitechnic.jar" />
-        <pathelement location="lib/ftc/robotcore.jar" />
-        <pathelement location="lib/ftc/wirelessp2p.jar" />
+        <pathelement location="lib/ftc/FtcCommon.jar" />
+        <pathelement location="lib/ftc/HiTechnic.jar" />
+        <pathelement location="lib/ftc/RobotCore.jar" />
+        <pathelement location="lib/ftc/WirelessP2p.jar" />
         <pathelement location="lib/ftc/d2xx.jar" />
         <!-- fusiontables libs -->
         <pathelement location="lib/fusiontables/fusiontables.jar" />

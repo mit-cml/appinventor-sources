@@ -184,10 +184,6 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcCompassSensorComponentPallette();
     } else if (key.equals("FtcDcMotor")) {
       value = MESSAGES.ftcDcMotorComponentPallette();
-    } else if (key.equals("FtcDcMotorController")) {
-      value = MESSAGES.ftcDcMotorControllerComponentPallette();
-    } else if (key.equals("FtcDigitalChannel")) {
-      value = MESSAGES.ftcDigitalChannelComponentPallette();
     } else if (key.equals("FtcGamepad")) {
       value = MESSAGES.ftcGamepadComponentPallette();
     } else if (key.equals("FtcGyroSensor")) {
@@ -200,12 +196,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcOpModeComponentPallette();
     } else if (key.equals("FtcRobotController")) {
       value = MESSAGES.ftcRobotControllerComponentPallette();
-    } else if (key.equals("FtcSensorMux")) {
-      value = MESSAGES.ftcSensorMuxComponentPallette();
     } else if (key.equals("FtcServo")) {
       value = MESSAGES.ftcServoComponentPallette();
-    } else if (key.equals("FtcServoController")) {
-      value = MESSAGES.ftcServoControllerComponentPallette();
     } else if (key.equals("FtcUltrasonicSensor")) {
       value = MESSAGES.ftcUltrasonicSensorComponentPallette();
     } else if (key.equals("FtcVoltageSensor")) {
@@ -348,10 +340,6 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcCompassSensorHelpStringComponentPallette();
     } else if (key.equals("FtcDcMotor-helpString")) {
       value = MESSAGES.FtcDcMotorHelpStringComponentPallette();
-    } else if (key.equals("FtcDcMotorController-helpString")) {
-      value = MESSAGES.FtcDcMotorControllerHelpStringComponentPallette();
-    } else if (key.equals("FtcDigitalChannel-helpString")) {
-      value = MESSAGES.FtcDigitalChannelHelpStringComponentPallette();
     } else if (key.equals("FtcGamepad-helpString")) {
       value = MESSAGES.FtcGamepadHelpStringComponentPallette();
     } else if (key.equals("FtcGyroSensor-helpString")) {
@@ -364,12 +352,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcOpModeHelpStringComponentPallette();
     } else if (key.equals("FtcRobotController-helpString")) {
       value = MESSAGES.FtcRobotControllerHelpStringComponentPallette();
-    } else if (key.equals("FtcSensorMux-helpString")) {
-      value = MESSAGES.FtcSensorMuxHelpStringComponentPallette();
     } else if (key.equals("FtcServo-helpString")) {
       value = MESSAGES.FtcServoHelpStringComponentPallette();
-    } else if (key.equals("FtcServoController-helpString")) {
-      value = MESSAGES.FtcServoControllerHelpStringComponentPallette();
     } else if (key.equals("FtcUltrasonicSensor-helpString")) {
       value = MESSAGES.FtcUltrasonicSensorHelpStringComponentPallette();
     } else if (key.equals("FtcVoltageSensor-helpString")) {

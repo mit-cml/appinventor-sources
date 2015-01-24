@@ -308,17 +308,13 @@ public class YaVersion {
   // - The FtcAccelerationSensor component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
-  // - The FtcDcMotorController component was added.
-  // - The FtcDigitalChannel component was added.
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
   // - The FtcIrSeekerSensor component was added.
   // - The FtcLightSensor component was added.
   // - The FtcOpMode component was added.
   // - The FtcRobotController component was added.
-  // - The FtcSensorMux component was added.
   // - The FtcServo component was added.
-  // - The FtcServoController component was added.
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
 
@@ -586,8 +582,6 @@ public class YaVersion {
 
   public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
 
-  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 1;
-
   public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
 
   public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
@@ -602,11 +596,7 @@ public class YaVersion {
 
   public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 1;
 
-  public static final int FTC_SENSOR_MUX_COMPONENT_VERSION = 1;
-
   public static final int FTC_SERVO_COMPONENT_VERSION = 1;
-
-  public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 1;
 
   public static final int FTC_ULTRASONIC_SENSOR_COMPONENT_VERSION = 1;
 

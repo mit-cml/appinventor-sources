@@ -16,28 +16,50 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
+import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import com.qualcomm.ftccommon.CommandList;
-import com.qualcomm.hitechnic.HiTechnicDeviceManager;
+import com.qualcomm.hitechnic.HiTechnicHardwareFactory;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.factory.RobotFactory;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.HardwareFactory;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LegacyModule;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.mock.MockDeviceManager;
+import com.qualcomm.robotcore.hardware.mock.MockHardwareFactory;
+import com.qualcomm.robotcore.robocol.Command;
+import com.qualcomm.robotcore.robocol.Telemetry;
 import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.SerialNumber;
+import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.WifiDirectAssistantCallback;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -61,24 +83,46 @@ import java.util.concurrent.atomic.AtomicBoolean;
                  "android.permission.READ_EXTERNAL_STORAGE, " +
                  "android.permission.BLUETOOTH_ADMIN, " +
                  "android.permission.WAKE_LOCK")
-@UsesLibraries(libraries = "ftccommon.jar,hitechnic.jar,robotcore.jar,wirelessp2p.jar,d2xx.jar")
+@UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,HiTechnic.jar,WirelessP2p.jar,d2xx.jar")
 public final class FtcRobotController extends AndroidNonvisibleComponent 
     implements Component, OnInitializeListener, OnDestroyListener, Deleteable,
-    WifiDirectAssistantCallback, EventLoopManager.EventLoopMonitor, EventLoop {
+    WifiDirectAssistantCallback, EventLoopManager.EventLoopMonitor, EventLoop, OpModeRegister {
 
-  interface Child {
-    void createChild();
-    void debugChild(StringBuilder sb);
-    void destroyChild();
+  interface HardwareDevice {
+    void setHardwareMap(HardwareMap hardwareMap);
+    void debugHardwareDevice(StringBuilder sb);
   }
 
-  private static final long USB_SCAN_WAITTIME_MILLIS = 30 * 1000L; // 30 seconds
+  interface GamepadDevice {
+    void setEventLoopManager(EventLoopManager eventLoopManager);
+  }
+
+  interface OpModeWrapper {
+    String getOpModeName();
+    OpMode getOpMode();
+  }
+
+  private static final boolean USE_MOCK_HARDWARE_FACTORY = true;
+
+  private static final long USB_SCAN_WAITTIME_MILLIS = 10 * 1000L; // 10 seconds
   private static final long WIFI_DIRECT_TIMEOUT_MILLIS = 2 * 60 * 1000L; // 2 minutes
+  private static final String CONFIG_FILES_DIR = Environment.getExternalStorageDirectory() +
+      "/robotConfigFiles/";
+  private static final String DEFAULT_CONFIG_FILENAME = "robot_config.xml";
+
+  private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
+  private static final Map<Form, List<GamepadDevice>> gamepadDevices = Maps.newHashMap();
+  private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
+
+  // Telemetry
+  private final ElapsedTime telemetryTimer = new ElapsedTime();
+  private final double telemetryInterval = 0.250; // in seconds
 
   private volatile String driverStationAddress = "";
-  private final List<Child> children = Lists.newArrayList();
-  private final List<FtcOpMode> ftcOpModes = Lists.newArrayList();
+  private volatile String configFilename = DEFAULT_CONFIG_FILENAME;
   private final AtomicBoolean isInitialized = new AtomicBoolean(false);
+
+  private final OpModeManager opModeManager;
 
   /*
    * wakeLock is set in onInitialize, if the device version is Ice Cream Sandwich or later.
@@ -98,28 +142,28 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private volatile Thread robotSetupThread;
 
   /*
-   * robot is created by the robotSetupThread, after the driver station is connected.
+   * hardwareFactory is created by the robotSetupThread.
+   */
+  private volatile HardwareFactory hardwareFactory;
+
+  /*
+   * robot is created by the robotSetupThread.
    */
   private volatile Robot robot;
 
   /*
-   * eventLoopManager and deviceMgr are set in init, which is called after the robotSetupThread
-   * calls robot.start().
+   * eventLoopManager is set in init, which is called after the robotSetupThread calls
+   * robot.start().
    */
   private volatile EventLoopManager eventLoopManager;
-  /*
-   * deviceMgr is set in init
-   */
-  private volatile HiTechnicDeviceManager deviceMgr;
-
-  // TODO(4.0): remove code begin
-  private volatile FtcOpMode activeOpMode;
-  // TODO(4.0): remove code end
 
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
     form.registerForOnInitialize(this);
     form.registerForOnDestroy(this);
+
+    OpModeRegister opModeRegister = this;
+    opModeManager = new OpModeManager(new HardwareMap(), opModeRegister);
   }
 
   @Override
@@ -134,62 +178,119 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
       wifiDirectAssistant = WifiDirectAssistant.getWifiDirectAssistant(form);
       wifiDirectAssistant.setCallback(this);
-      wifiDirectAssistant.disable();
+      wifiDirectAssistant.disable(); // TODO(lizlooney): Is this really needed?
       wifiDirectAssistant.enable();
       wifiDirectAssistant.discoverPeers();
       startRobotSetup();
     }
   }
 
-  EventLoopManager getEventLoopManager() {
-    return eventLoopManager;
-  }
-
-  HiTechnicDeviceManager getHiTechnicDeviceManager() {
-    return deviceMgr;
-  }
-
-  boolean isAfterEventLoopInit() {
-    return eventLoopManager != null;
-  }
-
   /**
-   * Adds a {@link Child} to the children list.
+   * Adds a {@link HardwareDevice} to the hardware devices.
    */
-  void addChild(Child child) {
-    children.add(child);
+  static void addHardwareDevice(Form form, HardwareDevice hardwareDevice) {
+    synchronized (hardwareDevices) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm == null) {
+        hardwareDevicesForForm = Lists.newArrayList();
+        hardwareDevices.put(form, hardwareDevicesForForm);
+      }
+      hardwareDevicesForForm.add(hardwareDevice);
+    }
   }
 
   /**
-   * Removes a {@link Child} from the children list.
+   * Removes a {@link HardwareDevice} from the hardware devices.
    */
-  void removeChild(Child child) {
-    children.remove(child);
+  static void removeHardwareDevice(Form form, HardwareDevice hardwareDevice) {
+    synchronized (hardwareDevices) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        hardwareDevicesForForm.remove(hardwareDevice);
+      }
+    }
   }
 
   /**
-   * Adds an {@link FtcOpMode} to the ftcOpModes list.
+   * Adds a {@link GamepadDevice} to the gamepad devices.
+   */
+  static void addGamepadDevice(Form form, GamepadDevice gamepadDevice) {
+    synchronized (gamepadDevices) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm == null) {
+        gamepadDevicesForForm = Lists.newArrayList();
+        gamepadDevices.put(form, gamepadDevicesForForm);
+      }
+      gamepadDevicesForForm.add(gamepadDevice);
+    }
+  }
+
+  /**
+   * Removes a {@link GamepadDevice} from the gamepad devices.
+   */
+  static void removeGamepadDevice(Form form, GamepadDevice gamepadDevice) {
+    synchronized (gamepadDevices) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        gamepadDevicesForForm.remove(gamepadDevice);
+      }
+    }
+  }
+
+  /**
+   * Adds an {@link OpModeWrapper} to the opModeWrappers list.
    *
-   * @param ftcOpMode  the {@code FtcOpMode} to be added
+   * @param opModeWrapper  the {@code OpModeWrapper} to be added
    */
-  void addFtcOpMode(FtcOpMode ftcOpMode) {
-    // TODO(4.0)
-    ftcOpModes.add(ftcOpMode);
+  static void addOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
+    synchronized (opModeWrappers) {
+      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
+      if (opModeWrappersForForm == null) {
+        opModeWrappersForForm = Lists.newArrayList();
+        opModeWrappers.put(form, opModeWrappersForForm);
+      }
+      opModeWrappersForForm.add(opModeWrapper);
+    }
   }
 
   /**
-   * Removes an {@link FtcOpMode} from the ftcOpModes list.
+   * Removes an {@link OpModeWrapper} from the opModeWrappers list.
    *
-   * @param ftcOpMode  the {@code FtcOpMode} to be removed
+   * @param opModeWrapper  the {@code OpModeWrapper} to be removed
    */
-  void removeFtcOpMode(FtcOpMode ftcOpMode) {
-    ftcOpModes.remove(ftcOpMode);
+  static void removeOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
+    synchronized (opModeWrappers) {
+      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
+      if (opModeWrappersForForm != null) {
+        opModeWrappersForForm.remove(opModeWrapper);
+      }
+    }
   }
 
   // Properties
 
   /**
-   * DriverStationAddress property getter method.
+   * ConfigFilename property getter.
+   */
+  @SimpleProperty(description = "The name of the robot configuration file.",
+      category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String ConfigFilename() {
+    return configFilename;
+  }
+
+  /**
+   * ConfigFilename property setter.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = DEFAULT_CONFIG_FILENAME)
+  @SimpleProperty(userVisible = false)
+  public void ConfigFilename(String configFilename) {
+    this.configFilename = configFilename;
+    startRobotSetup();
+  }
+
+  /**
+   * DriverStationAddress property getter.
    * Not visible in blocks.
    */
   @SimpleProperty(description = "The address of the driver station.",
@@ -199,7 +300,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   /**
-   * DriverStationAddress property setter method.
+   * DriverStationAddress property setter.
    * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
@@ -219,55 +320,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       startRobotSetup();
     }
   }
-
-  /**
-   * Returns the list of paired wifi direct peers. Each element of the returned
-   * list is a String consisting of the peer's address, a space, and the
-   * peer's name.
-   *
-   * @return a List representing the addresses and names of wifi direct peers.
-   */
-  @SimpleProperty(description = "The addresses and names of wifi direct peers",
-      category = PropertyCategory.BEHAVIOR)
-  public List<String> AddressesAndNames() {
-    List<String> addressesAndNames = Lists.newArrayList();
-    if (wifiDirectAssistant != null) {
-      for (WifiP2pDevice peer : wifiDirectAssistant.getPeers()) {
-        addressesAndNames.add(peer.deviceAddress + " " + peer.deviceName);
-      }
-    }
-    return addressesAndNames;
-  }
-
-  // TODO(4.0): remove code begin
-  /**
-   * ActiveOpMode property getter.
-   */
-  @SimpleProperty(description = "The active FtcOpMode component",
-      category = PropertyCategory.BEHAVIOR)
-  public FtcOpMode ActiveOpMode() {
-    return activeOpMode;
-  }
-
-  /**
-   * ActiveOpMode property setter.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_OP_MODE,
-      defaultValue = "")
-  @SimpleProperty
-  public void ActiveOpMode(FtcOpMode activeOpMode) {
-    if (this.activeOpMode != null && isAfterEventLoopInit()) {
-      this.activeOpMode.triggerStopEvent();
-    }
-
-    this.activeOpMode = activeOpMode;
-    System.out.println(System.currentTimeMillis() + " HeyLiz - activeOpMode is " + activeOpMode);
-
-    if (this.activeOpMode != null && isAfterEventLoopInit()) {
-      this.activeOpMode.triggerStartEvent();
-    }
-  }
-  // TODO(4.0): remove code end
 
   // Events
 
@@ -293,7 +345,174 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
   // ....end debugging code
 
-  // private
+  // WifiDirectAssistantCallback implementation
+
+  @Override
+  public void onWifiDirectEvent(WifiDirectAssistant.Event event) {
+    switch (event) {
+      case PEERS_AVAILABLE:
+        if (wifiDirectAssistant.getConnectStatus() == ConnectStatus.CONNECTING ||
+            wifiDirectAssistant.getConnectStatus() == ConnectStatus.CONNECTED) {
+          /*
+           * We get extra an extra PEER_AVAILABLE event when first connecting, and right after
+           * the connection is complete. Just ignore these events.
+           */
+          return;
+        }
+        connectToDriverStation();
+        break;
+      case CONNECTING:
+      case CONNECTED_AS_PEER:
+        wifiDirectAssistant.cancelDiscoverPeers();
+        break;
+      case DISCONNECTED:
+        wifiDirectAssistant.discoverPeers();
+        break;
+      case ERROR:
+        String reason = wifiDirectAssistant.getFailureReason();
+        Log.e("FtcRobotController", "Wifi Direct Error: " + reason);
+        form.dispatchErrorOccurredEvent(this, "",
+            ErrorMessages.ERROR_FTC_WIFI_DIRECT_ERROR, reason);
+        break;
+    }
+
+    triggerWifiDirectUpdateEvent(event);
+  }
+
+  // EventLoopManager.EventLoopMonitor implementation
+  
+  @Override
+  public void onStateChange(EventLoopManager.State state) {
+    triggerRobotUpdateEvent(state.toString());
+  }
+
+  // EventLoop implementation
+
+  @Override
+  public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException {
+    this.eventLoopManager = eventLoopManager;
+
+    HardwareMap hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
+    opModeManager.setHardwareMap(hardwareMap);
+
+    // Initialize each hardware device component.
+    List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+    if (hardwareDevicesForForm != null) {
+      StringBuilder sb = new StringBuilder();
+      for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+        hardwareDevice.setHardwareMap(hardwareMap);
+        hardwareDevice.debugHardwareDevice(sb);
+      }
+      triggerInfoEvent(sb.toString());
+    }
+  }
+
+  @Override
+  public void loop() throws RobotCoreException {
+    opModeManager.runActiveOpMode(eventLoopManager.getGamepads());
+
+    // Send telemetry data.
+    if (telemetryTimer.time() > telemetryInterval) {
+      telemetryTimer.reset();
+      Telemetry telemetry = opModeManager.getActiveOpMode().telemetry;
+
+      if (telemetry.hasData()) {
+        eventLoopManager.sendTelemetryData(telemetry);
+      }
+      telemetry.clearData();
+    }
+  }
+
+  @Override
+  public void teardown() throws RobotCoreException {
+    opModeManager.stopActiveOpMode();
+
+    List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+    if (hardwareDevicesForForm != null) {
+      for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+        hardwareDevice.setHardwareMap(null);
+      }
+    }
+
+    HardwareMap hardwareMap = opModeManager.getHardwareMap();
+
+    // Power down and close the DC motor controllers.
+    for (DcMotorController dcMotorController : hardwareMap.dcMotorController.values()) {
+      dcMotorController.close();
+    }
+
+    // Power down and close the servo controllers.
+    for (ServoController servoController : hardwareMap.servoController.values()) {
+      servoController.pwmDisable();
+      servoController.close();
+    }
+
+    // Power down and close the legacy modules.
+    // This should be after the servo and motor controllers, since some of them
+    // may be connected through this device.
+    for (LegacyModule legacyModule : hardwareMap.legacyModule.values()) {
+      legacyModule.close();
+    }
+  }
+
+  @Override
+  public void processCommand(Command command) {
+    String commandName = command.getName();
+    if (commandName.equals(CommandList.CMD_RESTART_ROBOT)) {
+      handleCommandRestartRobot();
+    } else if (commandName.equals(CommandList.CMD_REQUEST_OP_MODE_LIST)) {
+      handleCommandRequestOpModeList();
+    } else if (commandName.equals(CommandList.CMD_SWITCH_OP_MODE)) {
+      handleCommandSwitchOpMode(command.getExtra());
+    }
+  }
+
+  private void handleCommandRestartRobot() {
+    startRobotSetup();
+  }
+
+  private void handleCommandRequestOpModeList() {
+    StringBuilder sb = new StringBuilder();
+    String delimiter = "";
+    for (String opModeName : opModeManager.getOpModes()) {
+      sb.append(delimiter).append(opModeName);
+      delimiter = Util.ASCII_RECORD_SEPARATOR;
+    }
+    String opModeList = sb.toString();
+    eventLoopManager.sendCommand(new Command(CommandList.CMD_REQUEST_OP_MODE_LIST_RESP, opModeList));
+  }
+
+  private void handleCommandSwitchOpMode(String extra) {
+    opModeManager.switchOpModes(extra);
+    eventLoopManager.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
+  }
+
+  // OpModeRegister implementation
+
+  @Override
+  public void register(OpModeManager opModeManager) {
+    List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
+    if (opModeWrappersForForm != null) {
+      for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
+        opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
+      }
+    }
+  }
+
+  // OnDestroyListener implementation
+
+  @Override
+  public void onDestroy() {
+    prepareToDie();
+  }
+
+  // Deleteable implementation
+  @Override
+  public void onDelete() {
+    prepareToDie();
+  }
+
+  // private methods
 
   private void triggerWifiDirectUpdateEvent(final WifiDirectAssistant.Event event) {
     form.runOnUiThread(new Runnable() {
@@ -304,11 +523,11 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     });
   }
 
-  private void triggerRobotUpdateEvent(final EventLoopManager.EventLoopMonitor.State state) {
+  private void triggerRobotUpdateEvent(final String state) {
     form.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        RobotUpdate(state.toString());
+        RobotUpdate(state);
       }
     });
   }
@@ -336,15 +555,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   // ....end debugging code
 
   private void connectToDriverStation() {
-    // Truncate the driver station address at the first space.
-    // This allows the address to be an element from the AddressesAndNames property.
-    int firstSpace = driverStationAddress.indexOf(" ");
-    String address = (firstSpace != -1)
-        ? driverStationAddress.substring(0, firstSpace)
-        : driverStationAddress;
-
     for (WifiP2pDevice peer : wifiDirectAssistant.getPeers()) {
-      if (peer.deviceAddress.equalsIgnoreCase(address)) {
+      if (peer.deviceAddress.equalsIgnoreCase(driverStationAddress)) {
         triggerInfoEvent("Before wifiDirectAssistant.connect");
         wifiDirectAssistant.connect(peer);
         triggerInfoEvent("After wifiDirectAssistant.connect");
@@ -370,6 +582,43 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
         }
 
         long startTime = System.currentTimeMillis();
+
+        if (USE_MOCK_HARDWARE_FACTORY) {
+          // TODO(lizlooney): remove this temp testing code.
+          try {
+            DeviceManager dm = new MockDeviceManager(null, null);
+            DcMotorController mc = dm.createUsbDcMotorController(new SerialNumber("MC"));
+            ServoController sc = dm.createUsbServoController(new SerialNumber("SC"));
+
+            HardwareMap mockHardwareMap = new HardwareMap();
+            mockHardwareMap.dcMotor.put("left", new DcMotor(mc, 1));
+            mockHardwareMap.dcMotor.put("right", new DcMotor(mc, 2));
+            mockHardwareMap.servo.put("a", new Servo(sc, 1));
+            mockHardwareMap.servo.put("b", new Servo(sc, 2));
+            hardwareFactory = new MockHardwareFactory(mockHardwareMap);
+          } catch (RobotCoreException e) {
+            triggerInfoEvent("Mock hardware factory failure " + e);
+            return;
+          } catch (InterruptedException e) {
+            triggerInfoEvent("Mock hardware factory failure " + e);
+            return;
+          }
+        } else {
+          String filename = CONFIG_FILES_DIR + configFilename;
+          FileInputStream fis;
+          try {
+            fis = new FileInputStream(filename);
+          } catch (FileNotFoundException e) {
+            triggerInfoEvent("Could not find config file " + filename);
+            form.dispatchErrorOccurredEvent(FtcRobotController.this, "",
+                ErrorMessages.ERROR_FTC_CONFIG_FILE_NOT_FOUND, filename);
+            return;
+          }
+
+          HiTechnicHardwareFactory hitechnicFactory = new HiTechnicHardwareFactory(form);
+          hitechnicFactory.setXmlInputStream(fis);
+          hardwareFactory = hitechnicFactory;
+        }
 
         // If the driver station is not connected yet, wait for it.
         while (!wifiDirectAssistant.isConnected()) {
@@ -459,145 +708,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
         Thread.currentThread().interrupt();
       }
     }
-  }
-
-  // WifiDirectAssistantCallback implementation
-
-  @Override
-  public void onWifiDirectEvent(WifiDirectAssistant.Event event) {
-    switch (event) {
-      case PEERS_AVAILABLE:
-        if (wifiDirectAssistant.getConnectStatus() == ConnectStatus.CONNECTING ||
-            wifiDirectAssistant.getConnectStatus() == ConnectStatus.CONNECTED) {
-          /*
-           * We get extra an extra PEER_AVAILABLE event when first connecting, and right after
-           * the connection is complete. Just ignore these events.
-           */
-          return;
-        }
-        connectToDriverStation();
-        break;
-      case CONNECTING:
-      case CONNECTED_AS_PEER:
-        wifiDirectAssistant.cancelDiscoverPeers();
-        break;
-      case DISCONNECTED:
-        wifiDirectAssistant.discoverPeers();
-        break;
-      case ERROR:
-        String reason = wifiDirectAssistant.getFailureReason();
-        Log.e("FtcRobotController", "Wifi Direct Error: " + reason);
-        form.dispatchErrorOccurredEvent(this, "",
-            ErrorMessages.ERROR_FTC_WIFI_DIRECT_ERROR, reason);
-        break;
-    }
-
-    triggerWifiDirectUpdateEvent(event);
-  }
-
-  // EventLoopMonitor implementation
-  
-  @Override
-  public void onStateChange(EventLoopManager.EventLoopMonitor.State state) {
-    triggerRobotUpdateEvent(state);
-  }
-
-  // EventLoop implementation
-
-  @Override
-  public void init(EventLoopManager eventLoopManager) throws RobotCoreException {
-    this.eventLoopManager = eventLoopManager;
-
-    // TODO(4.0): add code
-    /*
-    // reset the hardware mappings
-    hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
-
-    // Start up the op mode manager
-    opModeManager.setHardwareMap(hardwareMap);
-    */
-
-    deviceMgr = new HiTechnicDeviceManager(form, eventLoopManager);
-
-    for (Child child : children) {
-      child.createChild();
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (Child child : children) {
-      child.debugChild(sb);
-    }
-    triggerInfoEvent(sb.toString());
-
-    // TODO(4.0): remove code begin
-    if (activeOpMode != null) {
-      activeOpMode.triggerStartEvent();
-    }
-    // TODO(4.0): remove code end
-  }
-
-  @Override
-  public void loop() throws RobotCoreException {
-    // TODO(4.0): add code
-    /*
-    Gamepad gamepads[] = eventLoopManager.getGamepads();
-    opModeManager.runActiveOpMode(gamepads);
-    */
-    // TODO(4.0): remove code begin
-    if (activeOpMode != null) {
-      activeOpMode.triggerRunEvent();
-    }
-    // TODO(4.0): remove code end
-  }
-
-  @Override
-  public void teardown() throws RobotCoreException {
-    // TODO(4.0): add code
-    /*
-    opModeManager.stopActiveOpMode();
-    */
-    // TODO(4.0): remove code begin
-    if (activeOpMode != null) {
-      activeOpMode.triggerStopEvent();
-    }
-    // TODO(4.0): remove code end
-
-    for (Child child : children) {
-      child.destroyChild();
-    }
-  }
-
-  @Override
-  // TODO(4.0): add code
-  /*
-  public void processCommand(Command command) {
-    String commandName = command.getName();
-  */
-  // TODO(4.0): remove code begin
-  public void processCommand(String commandName) {
-  // TODO(4.0): remove code end
-    if (commandName.equals(CommandList.CMD_RESTART_ROBOT)) {
-      startRobotSetup();
-    // TODO(4.0): add code
-    /*
-    } else if (commandName.equals(CommandList.CMD_REQUEST_OP_MODE_LIST)) {
-      handleCommandRequestOpModeList();
-    } else if (commandName.equals(CommandList.CMD_SWITCH_OP_MODE)) {
-      handleCommandSwitchOpMode(command.getExtra());
-    */
-    }
-  }
-
-  // OnDestroyListener implementation
-  @Override
-  public void onDestroy() {
-    prepareToDie();
-  }
-
-  // Deleteable implementation
-  @Override
-  public void onDelete() {
-    prepareToDie();
   }
 
   private void prepareToDie() {

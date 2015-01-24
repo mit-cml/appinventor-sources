@@ -1142,6 +1142,44 @@ public interface OdeMessages extends Messages {
   @Description("Show toast for a Toast_Long of time")
   String longToastLength();
 
+  // Used in editor/youngandroid/properties/YoungAndroidFtcDcMotorRunModeChoicePropertyEditor.java
+
+  @DefaultMessage("Run")
+  @Description("Text for FTC DC motor run mode choice 'RUN'")
+  String runFtcDcMotorRunMode();
+
+  @DefaultMessage("Run No Encoder")
+  @Description("Text for FTC DC motor run mode choice 'RUN_NO_ENCODER'")
+  String runNoEncoderFtcDcMotorRunMode();
+
+  @DefaultMessage("Position")
+  @Description("Text for FTC DC motor run mode choice 'POSITION'")
+  String positionFtcDcMotorRunMode();
+
+  @DefaultMessage("Reset")
+  @Description("Text for FTC DC motor run mode choice 'RESET'")
+  String resetFtcDcMotorRunMode();
+
+  // Used in editor/youngandroid/properties/YoungAndroidFtcDirectionChoicePropertyEditor.java
+
+  @DefaultMessage("Forward")
+  @Description("Text for FTC direction choice 'FORWARD'")
+  String forwardFtcDirection();
+
+  @DefaultMessage("Reverse")
+  @Description("Text for FTC direction choice 'REVERSE'")
+  String reverseFtcDirection();
+
+  // Used in editor/youngandroid/properties/YoungAndroidFtcIrSeekerSensorModeChoicePropertyEditor.java
+
+  @DefaultMessage("DC")
+  @Description("Text for FTC IR seeker sensor mode choice 'DC'")
+  String dcFtcIrSeekerSensorMode();
+
+  @DefaultMessage("AC")
+  @Description("Text for FTC IR seeker sensor mode choice 'AC'")
+  String acFtcIrSeekerSensorMode();
+
   // Used in explorer/SourceStructureExplorer.java
 
   @DefaultMessage("Rename")
@@ -2218,14 +2256,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcDcMotorComponentPallette();
 
-  @DefaultMessage("FtcDcMotorController")
-  @Description("")
-  String ftcDcMotorControllerComponentPallette();
-
-  @DefaultMessage("FtcDigitalChannel")
-  @Description("")
-  String ftcDigitalChannelComponentPallette();
-
   @DefaultMessage("FtcGamepad")
   @Description("")
   String ftcGamepadComponentPallette();
@@ -2250,17 +2280,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcRobotControllerComponentPallette();
 
-  @DefaultMessage("FtcSensorMux")
-  @Description("")
-  String ftcSensorMuxComponentPallette();
-
   @DefaultMessage("FtcServo")
   @Description("")
   String ftcServoComponentPallette();
-
-  @DefaultMessage("FtcServoController")
-  @Description("")
-  String ftcServoControllerComponentPallette();
 
   @DefaultMessage("FtcUltrasonicSensor")
   @Description("")
@@ -3084,10 +3106,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AProperties();
 
-  @DefaultMessage("ActiveOpMode")
-  @Description("")
-  String ActiveOpModeProperties();
-
   @DefaultMessage("AtRest")
   @Description("")
   String AtRestProperties();
@@ -3099,6 +3117,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Back")
   @Description("")
   String BackProperties();
+
+  @DefaultMessage("DeviceName")
+  @Description("")
+  String DeviceNameProperties();
 
   @DefaultMessage("Channel")
   @Description("")
@@ -3131,26 +3153,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("EnableLed")
   @Description("")
   String EnableLedProperties();
-
-  @DefaultMessage("Forward")
-  @Description("")
-  String ForwardProperties();
-
-  @DefaultMessage("FtcDcMotorController")
-  @Description("")
-  String FtcDcMotorControllerProperties();
-
-  @DefaultMessage("FtcRobotController")
-  @Description("")
-  String FtcRobotControllerProperties();
-
-  @DefaultMessage("FtcSensorMux")
-  @Description("")
-  String FtcSensorMuxProperties();
-
-  @DefaultMessage("FtcServoController")
-  @Description("")
-  String FtcServoControllerProperties();
 
   @DefaultMessage("GamepadNumber")
   @Description("")
@@ -3188,9 +3190,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ModeProperties();
 
-  @DefaultMessage("MotorChannelMode")
+  @DefaultMessage("RunMode")
   @Description("")
-  String MotorChannelModeProperties();
+  String RunModeProperties();
 
   @DefaultMessage("OpModeName")
   @Description("")
@@ -3231,10 +3233,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
-
-  @DefaultMessage("SerialNumber")
-  @Description("")
-  String SerialNumberProperties();
 
   @DefaultMessage("SignalDetected")
   @Description("")
@@ -3866,6 +3864,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String eventParams();
   
+  @DefaultMessage("key")
+  @Description("")
+  String keyParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -5074,6 +5076,16 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRuntimeMethods();
 
+  @DefaultMessage("TelemetryAddTextData")
+  @Description("")
+  String TelemetryAddTextDataMethods();
+
+
+  @DefaultMessage("TelemetryAddNumericData")
+  @Description("")
+  String TelemetryAddNumericDataMethods();
+
+
   
   //Mock Components
   @DefaultMessage("add items...")
@@ -5338,43 +5350,35 @@ public interface OdeMessages extends Messages {
   String YandexTranslateHelpStringComponentPallette();
 
   // FIRST Tech Challenge component help strings
-  @DefaultMessage("A component that provides an interface to an acceleration sensor of an FTC robot.")
+  @DefaultMessage("A component for an acceleration sensor of an FTC robot.")
   @Description("")
   String FtcAccelerationSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a compass sensor of an FTC robot.")
+  @DefaultMessage("A component for a compass sensor of an FTC robot.")
   @Description("")
   String FtcCompassSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a DC motor of an FTC robot.")
+  @DefaultMessage("A component for a DC motor of an FTC robot.")
   @Description("")
   String FtcDcMotorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a DC motor controller of an FTC robot.")
-  @Description("")
-  String FtcDcMotorControllerHelpStringComponentPallette();
-
-  @DefaultMessage("A component that provides an interface to a digital channel of an FTC robot.")
-  @Description("")
-  String FtcDigitalChannelHelpStringComponentPallette();
-
-  @DefaultMessage("A component that provides an interface to a gamepad of an FTC robot.")
+  @DefaultMessage("A component for a gamepad of an FTC robot.")
   @Description("")
   String FtcGamepadHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a gyro sensor of an FTC robot.")
+  @DefaultMessage("A component for a gyro sensor of an FTC robot.")
   @Description("")
   String FtcGyroSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to an IR seeker sensor of an FTC robot.")
+  @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")
   String FtcIrSeekerSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a light sensor of an FTC robot.")
+  @DefaultMessage("A component for a light sensor of an FTC robot.")
   @Description("")
   String FtcLightSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that represents an Op Mode of an FTC Robot.")
+  @DefaultMessage("A component for an Op Mode for an FTC robot.")
   @Description("")
   String FtcOpModeHelpStringComponentPallette();
 
@@ -5382,23 +5386,15 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcRobotControllerHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a sensor mux of an FTC robot.")
-  @Description("")
-  String FtcSensorMuxHelpStringComponentPallette();
-
-  @DefaultMessage("A component that provides an interface to a servo of an FTC robot.")
+  @DefaultMessage("A component for a servo of an FTC robot.")
   @Description("")
   String FtcServoHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a servo controller of an FTC robot.")
-  @Description("")
-  String FtcServoControllerHelpStringComponentPallette();
-
-  @DefaultMessage("A component that provides an interface to an ultrasonic sensor of an FTC robot.")
+  @DefaultMessage("A component for an ultrasonic sensor of an FTC robot.")
   @Description("")
   String FtcUltrasonicSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component that provides an interface to a voltage sensor of an FTC robot.")
+  @DefaultMessage("A component for a voltage sensor of an FTC robot.")
   @Description("")
   String FtcVoltageSensorHelpStringComponentPallette();
 

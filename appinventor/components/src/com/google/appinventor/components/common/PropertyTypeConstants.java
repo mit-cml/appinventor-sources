@@ -76,62 +76,32 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_FLOAT = "float";
 
   /**
-   * FTC channel number choices (1, 2, 3, or 4)
+   * FTC DC Motor Run Mode
    * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcChannelNumberChoiceChoicePropertyEditor
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDcMotorRunModeChoicePropertyEditor
    */
-  public static final String PROPERTY_TYPE_FTC_CHANNEL_NUMBER = "FtcChannelNumber";
+  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_RUN_MODE = "FtcDcMotorRunMode";
 
   /**
-   * Instances of {@link com.google.appinventor.components.runtime.FtcDcMotorController}
-   * in the current project.
-   */
-  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_CONTROLLER = "FtcDcMotorController";
-
-  /**
-   * FTC port number choices (1, 2, 3, or 4)
+   * FTC direction choices (forward or reverse)
    * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDcMotorPortNumberChoiceChoicePropertyEditor
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDirectionChoicePropertyEditor
    */
-  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_PORT_NUMBER = "FtcDcMotorPortNumber";
+  public static final String PROPERTY_TYPE_FTC_DIRECTION = "FtcDirection";
 
   /**
    * FTC gamepad number choices (1 or 2)
    * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoiceChoicePropertyEditor
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_FTC_GAMEPAD_NUMBER = "FtcGamepadNumber";
 
   /**
-   * Instances of {@link com.google.appinventor.components.runtime.FtcOpMode}
-   * in the current project.
-   */
-  public static final String PROPERTY_TYPE_FTC_OP_MODE = "FtcOpMode";
-
-  /**
-   * FTC port number choices (1, 2, 3, 4, 5, or 6)
+   * FTC IR seeker sensor mode choices (DC or AC)
    * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcServoPortNumberChoiceChoicePropertyEditor
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcIrSeekerSensorModeChoicePropertyEditor
    */
-  public static final String PROPERTY_TYPE_FTC_SERVO_PORT_NUMBER = "FtcServoPortNumber";
-
-  /**
-   * Instances of {@link com.google.appinventor.components.runtime.FtcRobotController}
-   * in the current project.
-   */
-  public static final String PROPERTY_TYPE_FTC_ROBOT_CONTROLLER = "FtcRobotController";
-
-  /**
-   * Instances of {@link com.google.appinventor.components.runtime.FtcSensormux}
-   * in the current project.
-   */
-  public static final String PROPERTY_TYPE_FTC_SENSOR_MUX = "FtcSensorMux";
-
-  /**
-   * Instances of {@link com.google.appinventor.components.runtime.FtcServoController}
-   * in the current project.
-   */
-  public static final String PROPERTY_TYPE_FTC_SERVO_CONTROLLER = "FtcServoController";
+  public static final String PROPERTY_TYPE_FTC_IRSEEKERSENSOR_MODE = "FtcIrSeekerSensorMode";
 
   /**
    * Integer values.
