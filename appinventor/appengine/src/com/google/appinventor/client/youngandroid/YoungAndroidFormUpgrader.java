@@ -599,17 +599,9 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 10) {
       // TextAlignment default was changed to Component.ALIGNMENT_CENTER.
       // Previously the default was ALIGNMENT_NORMAL (left).
-      // No properties need to be modified to upgrade to version 10.
-
-      // *** The following upgrade code works, but has been commented out.
-      // With that upgrade, projects that used to have default alignment would be upgraded to
-      // have alignment specified as left.  This was developed to catch projects that
-      // relied on left as the default, but they mostly do not exist, and using this upgrade
-      // will mess up projects that rely on the default being center.
-      //      int oldDefault = 0;
-      //      JSONValue def =  new ClientJsonString(Integer.toHexString(oldDefault));
-      //      handleSupplyValueForPreviouslyDefaultedProperty(componentProperties, "TextAlignment", def);
-
+      int oldDefault = 0; // ALIGNMENT_NORMAL (left)
+      JSONValue def = new ClientJsonString(Integer.toString(oldDefault));
+      componentProperties.put("TextAlignment", def);
       srcCompVersion = 10;
     }
     return srcCompVersion;
