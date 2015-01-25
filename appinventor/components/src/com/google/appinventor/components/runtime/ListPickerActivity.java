@@ -6,14 +6,18 @@
 
 package com.google.appinventor.components.runtime;
 
-
-
 import android.content.pm.ActivityInfo;
-import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.app.Activity;
 import android.content.Context;
@@ -23,7 +27,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
 
-import java.util.ArrayList;
 
 /**
  * ListPickerActivity class - Brings up a list of items specified in an intent
