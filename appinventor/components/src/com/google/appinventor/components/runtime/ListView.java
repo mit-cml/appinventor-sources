@@ -73,8 +73,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
   
-  private float textSize;
-  private static final float DEFAULT_TEXT_SIZE = 12;
+  private int textSize;
+  private static final int DEFAULT_TEXT_SIZE = 12;
 
   /**
    * Creates a new ListView component.
@@ -259,7 +259,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
-      chars.setSpan(new AbsoluteSizeSpan((int)textSize),0,chars.length(),0);
+      chars.setSpan(new AbsoluteSizeSpan(textSize),0,chars.length(),0);
       objects[i - 1] = chars;
     }
     return objects;
@@ -421,7 +421,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty(
       description = "The text size of the listview items.",
       category = PropertyCategory.APPEARANCE)
-  public float TextSize() {
+  public int TextSize() {
     return textSize;
   }
 
@@ -437,7 +437,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       if(fontSize>1000)
         textSize = 999;
       else
-        textSize = fontSize;
+        textSize = (int)fontSize;
       setAdapterData();
   }
 
