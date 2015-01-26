@@ -17,6 +17,7 @@ goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyHandler');
 goog.require('goog.ui.ac');
 goog.require('goog.style');
+goog.require('Blockly.Drawer');
 
 goog.require('goog.ui.ac.ArrayMatcher');
 goog.require('goog.ui.ac.AutoComplete');
@@ -458,15 +459,8 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         blockToCreateName = blockToCreate.canonicName;
         // components have mutator attributes we need to deal with. We can also add these for special blocks
         //   e.g., this is done for create empty list
-        if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
-          //construct xml
-          var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
-          for(var attributeName in blockToCreate.mutatorAttributes) {
-            xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
-          }
-
-          xmlString += '>';
-          xmlString += '</mutation></block></xml>';
+        var xmlString;
+        if(xmlString = Blockly.Drawer.getDefaultXMLString(blockToCreate.canonicName, blockToCreate.mutatorAttributes)) {
           var xml = Blockly.Xml.textToDom(xmlString);
           block = Blockly.Xml.domToBlock(Blockly.mainWorkspace, xml.firstChild);
         } else {

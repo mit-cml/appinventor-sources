@@ -176,7 +176,7 @@ public class ProjectServiceTest {
         YOUNG_ANDROID_COMMENT + user1Project1Source1);
     assertEquals(YOUNG_ANDROID_COMMENT + user1Project1Source1,
         projectServiceImpl.load(user1Project1, user1Project1Source1FileId));
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
 
@@ -215,7 +215,7 @@ public class ProjectServiceTest {
         u1p2s1));
     checkModificationDateMatchesStored(oldModificationDate, USER_ID_ONE, user1Project1);
     modificationDate = projectServiceImpl.save("test-session", filesWithContent);
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project2);
     oldModificationDate = modificationDate;
 
@@ -236,7 +236,7 @@ public class ProjectServiceTest {
 
     oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
     modificationDate = projectServiceImpl.deleteFile("test-session", user1Project1, user1Project1Source1FileId);
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
 
