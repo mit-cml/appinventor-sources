@@ -74,7 +74,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
   
   private int textSize;
-  private static final int DEFAULT_TEXT_SIZE = 12;
+  private static final int DEFAULT_TEXT_SIZE = 14;
 
   /**
    * Creates a new ListView component.
@@ -430,14 +430,14 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    *
    * @param integer value for font size
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = Component.FONT_DEFAULT_SIZE + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
-  public void TextSize(float fontSize) {
+  public void TextSize(int fontSize) {
       if(fontSize>1000)
         textSize = 999;
       else
-        textSize = (int)fontSize;
+        textSize = fontSize;
       setAdapterData();
   }
 
