@@ -111,8 +111,11 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private static final String DEFAULT_CONFIG_FILENAME = "robot_config.xml";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
+  private static final Object hardwareDevicesLock = new Object();
   private static final Map<Form, List<GamepadDevice>> gamepadDevices = Maps.newHashMap();
+  private static final Object gamepadDevicesLock = new Object();
   private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
+  private static final Object opModeWrappersLock = new Object();
 
   // Telemetry
   private final ElapsedTime telemetryTimer = new ElapsedTime();
@@ -189,7 +192,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * Adds a {@link HardwareDevice} to the hardware devices.
    */
   static void addHardwareDevice(Form form, HardwareDevice hardwareDevice) {
-    synchronized (hardwareDevices) {
+    synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm == null) {
         hardwareDevicesForForm = Lists.newArrayList();
@@ -203,7 +206,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * Removes a {@link HardwareDevice} from the hardware devices.
    */
   static void removeHardwareDevice(Form form, HardwareDevice hardwareDevice) {
-    synchronized (hardwareDevices) {
+    synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm != null) {
         hardwareDevicesForForm.remove(hardwareDevice);
@@ -215,7 +218,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * Adds a {@link GamepadDevice} to the gamepad devices.
    */
   static void addGamepadDevice(Form form, GamepadDevice gamepadDevice) {
-    synchronized (gamepadDevices) {
+    synchronized (gamepadDevicesLock) {
       List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
       if (gamepadDevicesForForm == null) {
         gamepadDevicesForForm = Lists.newArrayList();
@@ -229,7 +232,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * Removes a {@link GamepadDevice} from the gamepad devices.
    */
   static void removeGamepadDevice(Form form, GamepadDevice gamepadDevice) {
-    synchronized (gamepadDevices) {
+    synchronized (gamepadDevicesLock) {
       List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
       if (gamepadDevicesForForm != null) {
         gamepadDevicesForForm.remove(gamepadDevice);
@@ -243,7 +246,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * @param opModeWrapper  the {@code OpModeWrapper} to be added
    */
   static void addOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
-    synchronized (opModeWrappers) {
+    synchronized (opModeWrappersLock) {
       List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
       if (opModeWrappersForForm == null) {
         opModeWrappersForForm = Lists.newArrayList();
@@ -259,7 +262,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * @param opModeWrapper  the {@code OpModeWrapper} to be removed
    */
   static void removeOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
-    synchronized (opModeWrappers) {
+    synchronized (opModeWrappersLock) {
       List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
       if (opModeWrappersForForm != null) {
         opModeWrappersForForm.remove(opModeWrapper);
@@ -396,14 +399,25 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     opModeManager.setHardwareMap(hardwareMap);
 
     // Initialize each hardware device component.
-    List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-    if (hardwareDevicesForForm != null) {
-      StringBuilder sb = new StringBuilder();
-      for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-        hardwareDevice.setHardwareMap(hardwareMap);
-        hardwareDevice.debugHardwareDevice(sb);
+    StringBuilder sb = new StringBuilder();
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.setHardwareMap(hardwareMap);
+          hardwareDevice.debugHardwareDevice(sb);
+        }
       }
-      triggerInfoEvent(sb.toString());
+    }
+    triggerInfoEvent(sb.toString());
+
+    synchronized (gamepadDevicesLock) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
+          gamepadDevice.setEventLoopManager(eventLoopManager);
+        }
+      }
     }
   }
 
@@ -427,10 +441,20 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   public void teardown() throws RobotCoreException {
     opModeManager.stopActiveOpMode();
 
-    List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-    if (hardwareDevicesForForm != null) {
-      for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-        hardwareDevice.setHardwareMap(null);
+    synchronized (gamepadDevicesLock) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
+          gamepadDevice.setEventLoopManager(null);
+        }
+      }
+    }
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.setHardwareMap(null);
+        }
       }
     }
 
@@ -491,10 +515,12 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   @Override
   public void register(OpModeManager opModeManager) {
-    List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
-    if (opModeWrappersForForm != null) {
-      for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
-        opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
+    synchronized (opModeWrappersLock) {
+      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
+      if (opModeWrappersForForm != null) {
+        for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
+          opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
+        }
       }
     }
   }

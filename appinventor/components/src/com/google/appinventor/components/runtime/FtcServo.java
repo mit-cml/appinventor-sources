@@ -91,7 +91,7 @@ public final class FtcServo extends FtcHardwareDevice {
    * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "0")
+      defaultValue = "0.0")
   @SimpleProperty(userVisible = false)
   public void ScaleRangeMinimum(double scaleRangeMin) {
     if (scaleRangeMin >= 0.0 && scaleRangeMin <= 1.0) {
@@ -114,7 +114,7 @@ public final class FtcServo extends FtcHardwareDevice {
    * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "1")
+      defaultValue = "1.0")
   @SimpleProperty(userVisible = false)
   public void ScaleRangeMaximum(double scaleRangeMax) {
     if (scaleRangeMax >= 0.0 && scaleRangeMax <= 1.0) {
@@ -138,7 +138,7 @@ public final class FtcServo extends FtcHardwareDevice {
    * Position property setter.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "0")
+      defaultValue = "0.0")
   @SimpleProperty
   public void Position(double position) {
     if (position >= 0.0 && position <= 1.0) {
