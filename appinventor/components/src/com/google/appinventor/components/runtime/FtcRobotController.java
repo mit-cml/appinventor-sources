@@ -28,22 +28,15 @@ import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.factory.RobotFactory;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.hardware.mock.MockDeviceManager;
-import com.qualcomm.robotcore.hardware.mock.MockHardwareFactory;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.Telemetry;
 import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
@@ -84,7 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
                  "android.permission.BLUETOOTH_ADMIN, " +
                  "android.permission.WAKE_LOCK")
 @UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,HiTechnic.jar,WirelessP2p.jar,d2xx.jar")
-public final class FtcRobotController extends AndroidNonvisibleComponent 
+public final class FtcRobotController extends AndroidNonvisibleComponent
     implements Component, OnInitializeListener, OnDestroyListener, Deleteable,
     WifiDirectAssistantCallback, EventLoopManager.EventLoopMonitor, EventLoop, OpModeRegister {
 
@@ -102,13 +95,12 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     OpMode getOpMode();
   }
 
-  private static final boolean USE_MOCK_HARDWARE_FACTORY = true;
-
   private static final long USB_SCAN_WAITTIME_MILLIS = 10 * 1000L; // 10 seconds
   private static final long WIFI_DIRECT_TIMEOUT_MILLIS = 2 * 60 * 1000L; // 2 minutes
-  private static final String CONFIG_FILES_DIR = Environment.getExternalStorageDirectory() +
-      "/robotConfigFiles/";
-  private static final String DEFAULT_CONFIG_FILENAME = "robot_config.xml";
+  private static final String CONFIG_FILES_DIR =
+      Environment.getExternalStorageDirectory() + "/FIRST/";
+  private static final String CONFIG_FILE_EXT = ".xml";
+  private static final String DEFAULT_CONFIG_FILENAME = "robot_config";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
   private static final Object hardwareDevicesLock = new Object();
@@ -123,9 +115,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   private volatile String driverStationAddress = "";
   private volatile String configFilename = DEFAULT_CONFIG_FILENAME;
-  private final AtomicBoolean isInitialized = new AtomicBoolean(false);
-
-  private final OpModeManager opModeManager;
 
   /*
    * wakeLock is set in onInitialize, if the device version is Ice Cream Sandwich or later.
@@ -137,6 +126,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
    * or later.
    */
   private volatile WifiDirectAssistant wifiDirectAssistant;
+
+  private volatile OpModeManager opModeManager;
 
   /*
    * robotSetupThread is created in startRobotSetup, which is called from onInitialize, if the
@@ -162,22 +153,20 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
+    System.out.println(System.currentTimeMillis() + " HeyLiz - FtcRobotController................................................................................");
     form.registerForOnInitialize(this);
     form.registerForOnDestroy(this);
-
-    OpModeRegister opModeRegister = this;
-    opModeManager = new OpModeManager(new HardwareMap(), opModeRegister);
   }
 
   @Override
   public void onInitialize() {
-    System.out.println(System.currentTimeMillis() + " HeyLiz - onInitialize................................................................................");
-    isInitialized.set(true);
-
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
       PowerManager powerManager = (PowerManager) form.getSystemService(Context.POWER_SERVICE);
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
       wakeLock.acquire();
+
+      OpModeRegister opModeRegister = this;
+      opModeManager = new OpModeManager(new HardwareMap(), opModeRegister);
 
       wifiDirectAssistant = WifiDirectAssistant.getWifiDirectAssistant(form);
       wifiDirectAssistant.setCallback(this);
@@ -274,6 +263,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   /**
    * ConfigFilename property getter.
+   * Not visible in blocks.
    */
   @SimpleProperty(description = "The name of the robot configuration file.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
@@ -283,13 +273,16 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   /**
    * ConfigFilename property setter.
+   * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = DEFAULT_CONFIG_FILENAME)
   @SimpleProperty(userVisible = false)
   public void ConfigFilename(String configFilename) {
     this.configFilename = configFilename;
-    startRobotSetup();
+    if (wifiDirectAssistant != null) {
+      startRobotSetup();
+    }
   }
 
   /**
@@ -315,9 +308,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
 
     this.driverStationAddress = driverStationAddress;
-    System.out.println(System.currentTimeMillis() + " HeyLiz - driverStationAddress is " + driverStationAddress);
 
-    if (wifiDirectAssistant != null && isInitialized.get()) {
+    if (wifiDirectAssistant != null) {
       wifiDirectAssistant.enable();
       wifiDirectAssistant.discoverPeers();
       startRobotSetup();
@@ -399,17 +391,14 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     opModeManager.setHardwareMap(hardwareMap);
 
     // Initialize each hardware device component.
-    StringBuilder sb = new StringBuilder();
     synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm != null) {
         for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
           hardwareDevice.setHardwareMap(hardwareMap);
-          hardwareDevice.debugHardwareDevice(sb);
         }
       }
     }
-    triggerInfoEvent(sb.toString());
 
     synchronized (gamepadDevicesLock) {
       List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
@@ -508,7 +497,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   private void handleCommandSwitchOpMode(String extra) {
     opModeManager.switchOpModes(extra);
-    eventLoopManager.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
+    eventLoopManager.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP,
+        opModeManager.getActiveOpModeName()));
   }
 
   // OpModeRegister implementation
@@ -559,7 +549,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   private void triggerRobotReadyEvent() {
-    System.out.println(System.currentTimeMillis() + " HeyLiz - robot ready");
     form.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -609,42 +598,20 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
         long startTime = System.currentTimeMillis();
 
-        if (USE_MOCK_HARDWARE_FACTORY) {
-          // TODO(lizlooney): remove this temp testing code.
-          try {
-            DeviceManager dm = new MockDeviceManager(null, null);
-            DcMotorController mc = dm.createUsbDcMotorController(new SerialNumber("MC"));
-            ServoController sc = dm.createUsbServoController(new SerialNumber("SC"));
-
-            HardwareMap mockHardwareMap = new HardwareMap();
-            mockHardwareMap.dcMotor.put("left", new DcMotor(mc, 1));
-            mockHardwareMap.dcMotor.put("right", new DcMotor(mc, 2));
-            mockHardwareMap.servo.put("a", new Servo(sc, 1));
-            mockHardwareMap.servo.put("b", new Servo(sc, 2));
-            hardwareFactory = new MockHardwareFactory(mockHardwareMap);
-          } catch (RobotCoreException e) {
-            triggerInfoEvent("Mock hardware factory failure " + e);
-            return;
-          } catch (InterruptedException e) {
-            triggerInfoEvent("Mock hardware factory failure " + e);
-            return;
-          }
-        } else {
-          String filename = CONFIG_FILES_DIR + configFilename;
-          FileInputStream fis;
-          try {
-            fis = new FileInputStream(filename);
-          } catch (FileNotFoundException e) {
-            triggerInfoEvent("Could not find config file " + filename);
-            form.dispatchErrorOccurredEvent(FtcRobotController.this, "",
-                ErrorMessages.ERROR_FTC_CONFIG_FILE_NOT_FOUND, filename);
-            return;
-          }
-
-          HiTechnicHardwareFactory hitechnicFactory = new HiTechnicHardwareFactory(form);
-          hitechnicFactory.setXmlInputStream(fis);
-          hardwareFactory = hitechnicFactory;
+        String filename = CONFIG_FILES_DIR + configFilename + CONFIG_FILE_EXT;
+        FileInputStream fis;
+        try {
+          fis = new FileInputStream(filename);
+        } catch (FileNotFoundException e) {
+          triggerInfoEvent("Could not find config file " + filename);
+          form.dispatchErrorOccurredEvent(FtcRobotController.this, "",
+              ErrorMessages.ERROR_FTC_CONFIG_FILE_NOT_FOUND, filename);
+          return;
         }
+
+        HiTechnicHardwareFactory hitechnicFactory = new HiTechnicHardwareFactory(form);
+        hitechnicFactory.setXmlInputStream(fis);
+        hardwareFactory = hitechnicFactory;
 
         // If the driver station is not connected yet, wait for it.
         while (!wifiDirectAssistant.isConnected()) {

@@ -32,6 +32,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public final class FtcGamepad extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.GamepadDevice {
 
+  private static final float DEFAULT_JOYSTICK_DEADZONE = 0.2f;
+
+  private volatile float joystickDeadzone = DEFAULT_JOYSTICK_DEADZONE;
   private volatile int gamepadIndex;
   private volatile EventLoopManager eventLoopManager;
 
@@ -67,11 +70,23 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   }
 
   /**
+   * JoystickDeadzone property getter.
+   */
+  @SimpleProperty(description = "The joystick deadzone; must be between 0.0 and 1.0.",
+      category = PropertyCategory.BEHAVIOR)
+  public float JoystickDeadzone() {
+    return joystickDeadzone;
+  }
+
+  /**
    * JoystickDeadzone property setter.
    */
-  @SimpleProperty(description = "Set the joystick deadzone; must be between 0 and 1.")
-  public void JoystickDeadzone(int joystickDeadzone) {
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = "" + DEFAULT_JOYSTICK_DEADZONE)
+  @SimpleProperty
+  public void JoystickDeadzone(float joystickDeadzone) {
     if (joystickDeadzone >= 0.0f && joystickDeadzone <= 1.0f) {
+      this.joystickDeadzone = joystickDeadzone;
       Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         gamepad.setJoystickDeadzone(joystickDeadzone);
@@ -345,7 +360,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
    */
   @SimpleProperty(description = "The status of the gamepad.",
       category = PropertyCategory.BEHAVIOR)
-  public String status() {
+  public String Status() {
     Gamepad gamepad = getGamepad();
     if (gamepad != null) {
       return gamepad.toString();
@@ -376,5 +391,9 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @Override
   public void setEventLoopManager(EventLoopManager eventLoopManager) {
     this.eventLoopManager = eventLoopManager;
+    Gamepad gamepad = getGamepad();
+    if (gamepad != null) {
+      gamepad.setJoystickDeadzone(joystickDeadzone);
+    }
   }
 }

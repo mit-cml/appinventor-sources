@@ -80,7 +80,7 @@ public final class FtcServo extends FtcHardwareDevice {
    * ScaleRangeMinimum property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(description = "The scale range minimum motor position; must be between 0 and 1.",
+  @SimpleProperty(description = "The scale range minimum motor position; must be between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public double ScaleRangeMinimum() {
     return scaleRangeMin;
@@ -103,7 +103,7 @@ public final class FtcServo extends FtcHardwareDevice {
    * ScaleRangeMaximum property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(description = "The scale range maximum motor position; must be between 0 and 1.",
+  @SimpleProperty(description = "The scale range maximum motor position; must be between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public double ScaleRangeMaximum() {
     return scaleRangeMax;
@@ -125,7 +125,7 @@ public final class FtcServo extends FtcHardwareDevice {
   /**
    * Position property getter.
    */
-  @SimpleProperty(description = "The current motor position; must be between 0 and 1.",
+  @SimpleProperty(description = "The current motor position; must be between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR)
   public double Position() {
     if (servo != null) {
