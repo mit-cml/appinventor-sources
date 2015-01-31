@@ -5038,17 +5038,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRuntimeMethods();
 
-  @DefaultMessage("TelemetryAddTextData")
+  @DefaultMessage("ScaleRange")
   @Description("")
-  String TelemetryAddTextDataMethods();
-
+  String ScaleRangeMethods();
 
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")
   String TelemetryAddNumericDataMethods();
 
+  @DefaultMessage("TelemetryAddTextData")
+  @Description("")
+  String TelemetryAddTextDataMethods();
 
-  
   //Mock Components
   @DefaultMessage("add items...")
   @Description("")

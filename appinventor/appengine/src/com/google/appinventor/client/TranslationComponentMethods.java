@@ -260,6 +260,9 @@ public class TranslationComponentMethods {
     map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
     map.put("Float", MESSAGES.FloatMethods());
     map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
+    map.put("ScaleRange", MESSAGES.ScaleRangeMethods());
+    map.put("TelemetryAddNumericData", MESSAGES.TelemetryAddNumericDataMethods());
+    map.put("TelemetryAddTextData", MESSAGES.TelemetryAddTextDataMethods());
 
     return map;
   }

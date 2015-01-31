@@ -6,6 +6,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -32,10 +33,6 @@ import com.qualcomm.robotcore.hardware.Servo.Direction;
 @UsesLibraries(libraries = "RobotCore.jar")
 public final class FtcServo extends FtcHardwareDevice {
 
-  private volatile Direction direction = Direction.FORWARD;
-  private volatile double scaleRangeMin = 0;
-  private volatile double scaleRangeMax = 1;
-  private volatile double position = 0;
   private volatile Servo servo;
 
   /**
@@ -53,7 +50,10 @@ public final class FtcServo extends FtcHardwareDevice {
   @SimpleProperty(description = "Whether this servo should spin forward or reverse.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
-    return direction.toString();
+    if (servo != null) {
+      return servo.getDirection().toString();
+    }
+    return Direction.FORWARD.toString();
   }
 
   /**
@@ -61,10 +61,11 @@ public final class FtcServo extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String directionString) {
-    for (Direction iDirection : Direction.values()) {
-      if (directionString.equalsIgnoreCase(iDirection.toString())) {
-        direction = iDirection;
-        setDirection();
+    for (Direction direction : Direction.values()) {
+      if (directionString.equalsIgnoreCase(direction.toString())) {
+        if (servo != null) {
+          servo.setDirection(direction);
+        }
         return;
       }
     }
@@ -74,55 +75,15 @@ public final class FtcServo extends FtcHardwareDevice {
   }
 
   /**
-   * ScaleRangeMinimum property getter.
-   */
-  @SimpleProperty(
-      description = "The scale range minimum motor position; must be between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR)
-  public double ScaleRangeMinimum() {
-    return scaleRangeMin;
-  }
-
-  /**
-   * ScaleRangeMinimum property setter.
-   */
-  @SimpleProperty
-  public void ScaleRangeMinimum(double scaleRangeMin) {
-    if (scaleRangeMin >= 0.0 && scaleRangeMin <= 1.0) {
-      this.scaleRangeMin = scaleRangeMin;
-    }
-  }
-
-  /**
-   * ScaleRangeMaximum property getter.
-   */
-  @SimpleProperty(
-      description = "The scale range maximum motor position; must be between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR)
-  public double ScaleRangeMaximum() {
-    return scaleRangeMax;
-  }
-
-  /**
-   * ScaleRangeMaximum property setter.
-   */
-  @SimpleProperty
-  public void ScaleRangeMaximum(double scaleRangeMax) {
-    if (scaleRangeMax >= 0.0 && scaleRangeMax <= 1.0) {
-      this.scaleRangeMax = scaleRangeMax;
-    }
-  }
-
-  /**
    * Position property getter.
    */
-  @SimpleProperty(description = "The current motor position; must be between 0.0 and 1.0.",
+  @SimpleProperty(description = "The current motor position, between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR)
   public double Position() {
     if (servo != null) {
-      position = servo.getPosition();
+      return servo.getPosition();
     }
-    return position;
+    return 0.0;
   }
 
   /**
@@ -130,31 +91,22 @@ public final class FtcServo extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Position(double position) {
-    if (position >= 0.0 && position <= 1.0) {
-      this.position = position;
-      setPosition();
-      return;
-    }
-
-    form.dispatchErrorOccurredEvent(this, "Position",
-        ErrorMessages.ERROR_FTC_INVALID_POSITION, position);
-  }
-
-  private void setDirection() {
-    if (servo != null) {
-      servo.setDirection(direction);
-    }
-  }
-
-  private void setScaleRange() {
-    if (servo != null) {
-      servo.scaleRange(scaleRangeMin, scaleRangeMax);
-    }
-  }
-
-  private void setPosition() {
     if (servo != null) {
       servo.setPosition(position);
+    }
+  }
+
+  // Functions
+
+  @SimpleFunction(description = "Sets the scale range of this servo.")
+  public void ScaleRange(double scaleRangeMin, double scaleRangeMax) {
+    if (servo != null) {
+      try {
+        servo.scaleRange(scaleRangeMin, scaleRangeMax);
+      } catch (IllegalArgumentException e) {
+        form.dispatchErrorOccurredEvent(this, "ScaleRange",
+            ErrorMessages.ERROR_FTC_INVALID_SCALE_RANGE, scaleRangeMin, scaleRangeMin);
+      }
     }
   }
 
@@ -172,9 +124,6 @@ public final class FtcServo extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       servo = hardwareMap.servo.get(getDeviceName());
-      setDirection();
-      setScaleRange();
-      setPosition();
     }
   }
 

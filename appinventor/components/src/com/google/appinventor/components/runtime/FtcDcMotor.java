@@ -35,8 +35,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @UsesLibraries(libraries = "RobotCore.jar")
 public final class FtcDcMotor extends FtcHardwareDevice {
 
-  private volatile Direction direction = Direction.FORWARD;
-  private volatile RunMode runMode = RunMode.RUN;
   private volatile DcMotor dcMotor;
 
   /**
@@ -54,7 +52,13 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleProperty(description = "The run mode.",
       category = PropertyCategory.BEHAVIOR)
   public String RunMode() {
-    return runMode.toString();
+    if (dcMotor != null) {
+      DcMotorController dcMotorController = dcMotor.getController();
+      if (dcMotorController != null) {
+        return dcMotorController.getMotorChannelMode(dcMotor.getPortNumber()).toString();
+      }
+    }
+    return RunMode.RUN.toString();
   }
 
   /**
@@ -62,10 +66,14 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void RunMode(String runModeString) {
-    for (RunMode iRunMode : RunMode.values()) {
-      if (runModeString.equalsIgnoreCase(iRunMode.toString())) {
-        runMode = iRunMode;
-        setRunMode();
+    for (RunMode runMode : RunMode.values()) {
+      if (runModeString.equalsIgnoreCase(runMode.toString())) {
+        if (dcMotor != null) {
+          DcMotorController dcMotorController = dcMotor.getController();
+          if (dcMotorController != null) {
+            dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), runMode);
+          }
+        }
         return;
       }
     }
@@ -80,7 +88,10 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleProperty(description = "Whether this motor should spin forward or reverse.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
-    return direction.toString();
+    if (dcMotor != null) {
+      return dcMotor.getDirection().toString();
+    }
+    return Direction.FORWARD.toString();
   }
 
   /**
@@ -88,10 +99,11 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String directionString) {
-    for (Direction iDirection : Direction.values()) {
-      if (directionString.equalsIgnoreCase(iDirection.toString())) {
-        direction = iDirection;
-        setDirection();
+    for (Direction direction : Direction.values()) {
+      if (directionString.equalsIgnoreCase(direction.toString())) {
+        if (dcMotor != null) {
+          dcMotor.setDirection(direction);
+        }
         return;
       }
     }
@@ -103,7 +115,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * Power property getter.
    */
-  @SimpleProperty(description = "The current motor power; must be between -1 and 1.",
+  @SimpleProperty(description = "The current motor power, between -1 and 1.",
       category = PropertyCategory.BEHAVIOR)
   public double Power() {
     if (dcMotor != null) {
@@ -117,10 +129,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Power(double power) {
-    if (power >= -1.0 && power <= 1.0) {
-      if (dcMotor != null) {
-        dcMotor.setPower(power);
-      }
+    if (dcMotor != null) {
+      dcMotor.setPower(power);
     }
   }
 
@@ -145,21 +155,6 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public void Float() {
     if (dcMotor != null) {
       dcMotor.setPowerFloat();
-    }
-  }
-
-  private void setDirection() {
-    if (dcMotor != null) {
-      dcMotor.setDirection(direction);
-    }
-  }
-
-  private void setRunMode() {
-    if (dcMotor != null) {
-      DcMotorController dcMotorController = dcMotor.getController();
-      if (dcMotorController != null) {
-        dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), runMode);
-      }
     }
   }
 

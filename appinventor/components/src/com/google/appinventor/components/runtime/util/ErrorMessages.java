@@ -184,7 +184,7 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2606;
   public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2607;
   public static final int ERROR_FTC_INVALID_DIRECTION = 2608;
-  public static final int ERROR_FTC_INVALID_POSITION = 2609;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2609;
   public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2610;
 
   //FusiontablesControl errors
@@ -470,7 +470,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
         "The specified run mode is not valid: %s");
     errorMessages.put(ERROR_FTC_INVALID_DIRECTION, "The specified direction is not valid: %s");
-    errorMessages.put(ERROR_FTC_INVALID_POSITION, "The specified position is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE, "The specified scale range is not valid: %s %s");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode is not valid: %s");
     // FusiontablesControl error
