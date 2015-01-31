@@ -78,7 +78,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for save")
   String saveButton();
 
-  @DefaultMessage("Save Me")
+  @DefaultMessage("Save As")
   @Description("Label of the button for save as")
   String saveAsButton();
 
@@ -5207,15 +5207,15 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRowsWithConditionsMethods();
 
-  @DefaultMessage("简体中文")
+  @DefaultMessage("绠�浣撲腑鏂�")
   @Description("")
   String SwitchToSimplifiedChinese();
 
-  @DefaultMessage("繁体中文")
+  @DefaultMessage("绻佷綋涓枃")
   @Description("")
   String SwitchToTraditionalChinese();
 
-  @DefaultMessage("Español")
+  @DefaultMessage("Espa帽ol")
   @Description("")
   String SwitchToSpanish();
   
