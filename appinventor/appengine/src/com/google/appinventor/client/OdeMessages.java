@@ -1142,44 +1142,6 @@ public interface OdeMessages extends Messages {
   @Description("Show toast for a Toast_Long of time")
   String longToastLength();
 
-  // Used in editor/youngandroid/properties/YoungAndroidFtcDcMotorRunModeChoicePropertyEditor.java
-
-  @DefaultMessage("Run")
-  @Description("Text for FTC DC motor run mode choice 'RUN'")
-  String runFtcDcMotorRunMode();
-
-  @DefaultMessage("Run No Encoder")
-  @Description("Text for FTC DC motor run mode choice 'RUN_NO_ENCODER'")
-  String runNoEncoderFtcDcMotorRunMode();
-
-  @DefaultMessage("Position")
-  @Description("Text for FTC DC motor run mode choice 'POSITION'")
-  String positionFtcDcMotorRunMode();
-
-  @DefaultMessage("Reset")
-  @Description("Text for FTC DC motor run mode choice 'RESET'")
-  String resetFtcDcMotorRunMode();
-
-  // Used in editor/youngandroid/properties/YoungAndroidFtcDirectionChoicePropertyEditor.java
-
-  @DefaultMessage("Forward")
-  @Description("Text for FTC direction choice 'FORWARD'")
-  String forwardFtcDirection();
-
-  @DefaultMessage("Reverse")
-  @Description("Text for FTC direction choice 'REVERSE'")
-  String reverseFtcDirection();
-
-  // Used in editor/youngandroid/properties/YoungAndroidFtcIrSeekerSensorModeChoicePropertyEditor.java
-
-  @DefaultMessage("DC")
-  @Description("Text for FTC IR seeker sensor mode choice 'DC'")
-  String dcFtcIrSeekerSensorMode();
-
-  @DefaultMessage("AC")
-  @Description("Text for FTC IR seeker sensor mode choice 'AC'")
-  String acFtcIrSeekerSensorMode();
-
   // Used in explorer/SourceStructureExplorer.java
 
   @DefaultMessage("Rename")

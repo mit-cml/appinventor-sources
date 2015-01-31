@@ -309,22 +309,12 @@ public class TranslationDesignerProperties {
 
     } else if (key.equals("DeviceName")) {
       value = MESSAGES.DeviceNameProperties();
-    } else if (key.equals("Direction")) {
-      value = MESSAGES.DirectionProperties();
     } else if (key.equals("DriverStationAddress")) {
       value = MESSAGES.DriverStationAddressProperties();
-    } else if (key.equals("EnableLed")) {
-      value = MESSAGES.EnableLedProperties();
     } else if (key.equals("GamepadNumber")) {
       value = MESSAGES.GamepadNumberProperties();
-    } else if (key.equals("Mode")) {
-      value = MESSAGES.ModeProperties();
-    } else if (key.equals("RunMode")) {
-      value = MESSAGES.RunModeProperties();
     } else if (key.equals("OpModeName")) {
       value = MESSAGES.OpModeNameProperties();
-    } else if (key.equals("State")) {
-      value = MESSAGES.StateProperties();
     }
     return value;
   }

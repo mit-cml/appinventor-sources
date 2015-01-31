@@ -4,7 +4,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -55,8 +54,6 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   /**
    * EnableLed property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
   @SimpleProperty
   public void EnableLed(boolean enableLed) {
     this.enableLed = enableLed;

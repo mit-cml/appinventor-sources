@@ -5,7 +5,6 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -60,8 +59,6 @@ public final class FtcServo extends FtcHardwareDevice {
   /**
    * Direction property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_DIRECTION,
-      defaultValue = "FORWARD")
   @SimpleProperty
   public void Direction(String directionString) {
     for (Direction iDirection : Direction.values()) {
@@ -78,21 +75,18 @@ public final class FtcServo extends FtcHardwareDevice {
 
   /**
    * ScaleRangeMinimum property getter.
-   * Not visible in blocks.
    */
-  @SimpleProperty(description = "The scale range minimum motor position; must be between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+  @SimpleProperty(
+      description = "The scale range minimum motor position; must be between 0.0 and 1.0.",
+      category = PropertyCategory.BEHAVIOR)
   public double ScaleRangeMinimum() {
     return scaleRangeMin;
   }
 
   /**
    * ScaleRangeMinimum property setter.
-   * Can only be set in designer; not visible in blocks.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "0.0")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void ScaleRangeMinimum(double scaleRangeMin) {
     if (scaleRangeMin >= 0.0 && scaleRangeMin <= 1.0) {
       this.scaleRangeMin = scaleRangeMin;
@@ -101,21 +95,18 @@ public final class FtcServo extends FtcHardwareDevice {
 
   /**
    * ScaleRangeMaximum property getter.
-   * Not visible in blocks.
    */
-  @SimpleProperty(description = "The scale range maximum motor position; must be between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+  @SimpleProperty(
+      description = "The scale range maximum motor position; must be between 0.0 and 1.0.",
+      category = PropertyCategory.BEHAVIOR)
   public double ScaleRangeMaximum() {
     return scaleRangeMax;
   }
 
   /**
    * ScaleRangeMaximum property setter.
-   * Can only be set in designer; not visible in blocks.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "1.0")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void ScaleRangeMaximum(double scaleRangeMax) {
     if (scaleRangeMax >= 0.0 && scaleRangeMax <= 1.0) {
       this.scaleRangeMax = scaleRangeMax;
@@ -137,8 +128,6 @@ public final class FtcServo extends FtcHardwareDevice {
   /**
    * Position property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "0.0")
   @SimpleProperty
   public void Position(double position) {
     if (position >= 0.0 && position <= 1.0) {

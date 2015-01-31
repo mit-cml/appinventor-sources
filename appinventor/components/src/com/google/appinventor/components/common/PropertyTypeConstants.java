@@ -76,32 +76,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_FLOAT = "float";
 
   /**
-   * FTC DC Motor Run Mode
-   * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDcMotorRunModeChoicePropertyEditor
-   */
-  public static final String PROPERTY_TYPE_FTC_DC_MOTOR_RUN_MODE = "FtcDcMotorRunMode";
-
-  /**
-   * FTC direction choices (forward or reverse)
-   * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcDirectionChoicePropertyEditor
-   */
-  public static final String PROPERTY_TYPE_FTC_DIRECTION = "FtcDirection";
-
-  /**
    * FTC gamepad number choices (1 or 2)
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_FTC_GAMEPAD_NUMBER = "FtcGamepadNumber";
-
-  /**
-   * FTC IR seeker sensor mode choices (DC or AC)
-   * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcIrSeekerSensorModeChoicePropertyEditor
-   */
-  public static final String PROPERTY_TYPE_FTC_IRSEEKERSENSOR_MODE = "FtcIrSeekerSensorMode";
 
   /**
    * Integer values.

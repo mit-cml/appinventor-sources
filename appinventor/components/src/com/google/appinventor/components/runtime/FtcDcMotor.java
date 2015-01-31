@@ -4,7 +4,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -61,8 +60,6 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * RunMode property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_DC_MOTOR_RUN_MODE,
-      defaultValue = "RUN")
   @SimpleProperty
   public void RunMode(String runModeString) {
     for (RunMode iRunMode : RunMode.values()) {
@@ -89,8 +86,6 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * Direction property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_DIRECTION,
-      defaultValue = "FORWARD")
   @SimpleProperty
   public void Direction(String directionString) {
     for (Direction iDirection : Direction.values()) {
@@ -182,8 +177,6 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       dcMotor = hardwareMap.dcMotor.get(getDeviceName());
-      setDirection();
-      setRunMode();
     }
   }
 

@@ -81,8 +81,6 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * JoystickDeadzone property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "" + DEFAULT_JOYSTICK_DEADZONE)
   @SimpleProperty
   public void JoystickDeadzone(float joystickDeadzone) {
     if (joystickDeadzone >= 0.0f && joystickDeadzone <= 1.0f) {

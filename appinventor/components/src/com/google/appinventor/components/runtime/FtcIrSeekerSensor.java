@@ -4,7 +4,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -57,14 +56,14 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Mode property setter.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FTC_IRSEEKERSENSOR_MODE,
-      defaultValue = "DC")
   @SimpleProperty
   public void Mode(String modeString) {
     for (Mode iMode : Mode.values()) {
       if (modeString.equalsIgnoreCase(iMode.toString())) {
         mode = iMode;
-        setMode();
+        if (irSeekerSensor != null) {
+          irSeekerSensor.setMode(mode);
+        }
         return;
       }
     }
@@ -106,12 +105,6 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
         : 0;
   }
 
-  private void setMode() {
-    if (irSeekerSensor != null) {
-      irSeekerSensor.setMode(mode);
-    }
-  }
-
   // FtcRobotController.HardwareDevice implementation
 
   @Override
@@ -126,7 +119,6 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
-      setMode();
     }
   }
 
