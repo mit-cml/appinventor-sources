@@ -3830,6 +3830,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String keyParams();
 
+  @DefaultMessage("max")
+  @Description("")
+  String maxParams();
+
+  @DefaultMessage("min")
+  @Description("")
+  String minParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -5037,6 +5045,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GetRuntime")
   @Description("")
   String GetRuntimeMethods();
+
+  @DefaultMessage("RangeClip")
+  @Description("")
+  String RangeClipMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")

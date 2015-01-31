@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -314,6 +315,13 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       wifiDirectAssistant.discoverPeers();
       startRobotSetup();
     }
+  }
+
+  // Functions
+
+  @SimpleFunction(description = "RangeClip")
+  public double RangeClip(double number, double min, double max) {
+    return Range.clip(number, min, max);
   }
 
   // Events
