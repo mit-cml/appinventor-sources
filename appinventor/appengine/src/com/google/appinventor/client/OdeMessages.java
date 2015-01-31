@@ -78,7 +78,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for save")
   String saveButton();
 
-  @DefaultMessage("Save As")
+  @DefaultMessage("Save Me")
   @Description("Label of the button for save as")
   String saveAsButton();
 
