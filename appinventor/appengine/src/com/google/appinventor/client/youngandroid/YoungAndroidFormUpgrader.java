@@ -912,6 +912,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the TextColor property
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Added the TextSize property
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

@@ -185,6 +185,7 @@ public class TranslationComponentProperty {
     map.put("Y", MESSAGES.YProperties());
     map.put("Z", MESSAGES.ZProperties());
     map.put("ShowFilterBar", MESSAGES.ShowFilterBarProperties());
+    map.put("TextSize", MESSAGES.TextSizeProperties());
     map.put("NotifierLength", MESSAGES.NotifierLengthProperties());
     map.put("Loop", MESSAGES.LoopProperties());
     map.put("Pitch", MESSAGES.PitchProperties());
