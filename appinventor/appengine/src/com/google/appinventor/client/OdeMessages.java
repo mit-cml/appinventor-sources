@@ -2842,6 +2842,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EmailAddressProperties();
 
+  @DefaultMessage("TextContactUri")
+  @Description("")
+  String TextContactUriProperties();
+
   @DefaultMessage("EmailAddressList")
   @Description("")
   String EmailAddressListProperties();
@@ -5207,15 +5211,15 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRowsWithConditionsMethods();
 
-  @DefaultMessage("简体中文")
+  @DefaultMessage("绠�浣撲腑鏂�")
   @Description("")
   String SwitchToSimplifiedChinese();
 
-  @DefaultMessage("繁体中文")
+  @DefaultMessage("绻佷綋涓枃")
   @Description("")
   String SwitchToTraditionalChinese();
 
-  @DefaultMessage("Español")
+  @DefaultMessage("Espa帽ol")
   @Description("")
   String SwitchToSpanish();
   
