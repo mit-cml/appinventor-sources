@@ -306,8 +306,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 10.
   // For YOUNG_ANDROID_VERSION 116:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 117:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 4.
 
-  public static final int YOUNG_ANDROID_VERSION = 116;
+  public static final int YOUNG_ANDROID_VERSION = 117;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -639,7 +641,9 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 3:
   // - Added BackgroundColor Property
   // - Added TextColor Property
-  public static final int LISTVIEW_COMPONENT_VERSION = 3;
+  // For LISTVIEW_COMPONENT_VERSION 4:
+  // - Added TextSize Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 4;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

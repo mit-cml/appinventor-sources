@@ -2682,6 +2682,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShowFilterBarProperties();
   
+  @DefaultMessage("TextSize")
+  @Description("")
+  String TextSizeProperties();
+
   @DefaultMessage("NotifierLength")
   @Description("")
   String NotifierLengthProperties();
