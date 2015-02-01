@@ -2842,6 +2842,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EmailAddressProperties();
 
+  @DefaultMessage("TextContactUri")
+  @Description("")
+  String TextContactUriProperties();
+
   @DefaultMessage("EmailAddressList")
   @Description("")
   String EmailAddressListProperties();

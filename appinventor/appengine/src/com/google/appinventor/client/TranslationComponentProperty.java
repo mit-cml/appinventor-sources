@@ -50,6 +50,7 @@ public class TranslationComponentProperty {
     map.put("BallotOptions", MESSAGES.BallotOptionsProperties());
     map.put("BallotQuestion", MESSAGES.BallotQuestionProperties());
     map.put("EmailAddress", MESSAGES.EmailAddressProperties());
+    map.put("TextContactUri", MESSAGES.TextContactUriProperties());
     map.put("EmailAddressList", MESSAGES.EmailAddressListProperties());
     map.put("Elements", MESSAGES.ElementsProperties());
     map.put("Followers", MESSAGES.FollowersProperties());
