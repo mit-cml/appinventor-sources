@@ -72,6 +72,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   // The text color of the ListView's items.  All items have the same text color
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
+  
+  private int textSize;
+  private static final int DEFAULT_TEXT_SIZE = 14;
 
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
@@ -411,6 +414,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void TextColor(int argb) {
       textColor = argb;
+      setAdapterData();
+  }
+  
+  /**
+   * Returns the listview's text font Size
+   *
+   * @return text size as an float
+   */
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextSize() {
+    return textSize;
+  }
+
+  /**
+   * Specifies the ListView item's text font size
+   *
+   * @param integer value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SimpleProperty
+  public void TextSize(int fontSize) {
+      if(fontSize>1000)
+        textSize = 999;
+      else
+        textSize = fontSize;
       setAdapterData();
   }
 
