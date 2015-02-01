@@ -70,7 +70,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
         // This is the error produced when there are two recorders running.
         // There might be other causes, but we don't know them.
         Log.i(TAG, "got IllegalStateException. Are there two recorders running?");
-        //pass back a message extension for dispatchErrorOccurred
+        // Pass back a message detail for dispatchErrorOccurred
         throw (new IllegalStateException("Is there another recording running?"));
       }
     }
