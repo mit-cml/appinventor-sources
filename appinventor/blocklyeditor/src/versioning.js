@@ -1480,7 +1480,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
     // AI2: Added title property
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added  ItemTextColor and ItemBackgroundColor
+    9: "noUpgrade"
 
   }, // End ListPicker upgraders
 

@@ -304,8 +304,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 14.
   // For YOUNG_ANDROID_VERSION 115:
   // - CANVAS_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 116:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 9.
 
-  public static final int YOUNG_ANDROID_VERSION = 115;
+  public static final int YOUNG_ANDROID_VERSION = 116;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -517,7 +519,7 @@ public class YaVersion {
   // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
   public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
-   // For DATEPICKER_COMPONENT_VERSION 2:
+  // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
   // instead of the last set date by default.
   // The SetDateToDisplay and LaunchPicker methods were added to
@@ -626,8 +628,9 @@ public class YaVersion {
   // - Added ShowFilterBar property
   // For LISTPICKER_COMPONENT_VERSION 8:
   // - Added title property
-
-  public static final int LISTPICKER_COMPONENT_VERSION = 8;
+  // For LISTPICKER_COMPONENT_VERSION 9:
+  // - Added ItemTextColor, ItemBackgroundColor
+  public static final int LISTPICKER_COMPONENT_VERSION = 9;
 
   // For LISTVIEW_COMPONENT_VERSION 1:
   // - Initial version.

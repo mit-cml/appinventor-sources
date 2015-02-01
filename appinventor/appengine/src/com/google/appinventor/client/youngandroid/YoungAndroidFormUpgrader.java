@@ -894,6 +894,10 @@ public final class YoungAndroidFormUpgrader {
       //  Added title property
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // Added ItemTextColor, ItemBackgroundColor
+      srcCompVersion = 9;
+    }
     return srcCompVersion;
   }
 

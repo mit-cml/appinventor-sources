@@ -5256,6 +5256,15 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MaximumRangeMethods();
 
+  // =========== ListPicker
+  @DefaultMessage("ItemTextColor")
+  @Description("")
+  String ItemTextColorProperties();
+
+  @DefaultMessage("ItemBackgroundColor")
+  @Description("")
+  String ItemBackgroundColorProperties();
+
   @DefaultMessage("Error on Fusion Tables query")
   @Description("")
   String FusionTablesStandardErrorMessage();

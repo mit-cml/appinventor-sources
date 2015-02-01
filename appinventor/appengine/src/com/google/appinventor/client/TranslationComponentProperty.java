@@ -228,6 +228,10 @@ public class TranslationComponentProperty {
     map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
     map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
 
+    // ========== ListPicker
+    map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
+    map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
+
     return map;
   }
 }
