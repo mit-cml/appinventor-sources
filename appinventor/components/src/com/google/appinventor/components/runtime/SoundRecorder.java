@@ -62,9 +62,17 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       recorder.setOnInfoListener(SoundRecorder.this);
     }
 
-    void start() {
+    void start() throws IllegalStateException {
       Log.i(TAG, "starting");
+      try {
       recorder.start();
+      } catch (IllegalStateException e) {
+        // This is the error produced when there are two recorders running.
+        // There might be other causes, but we don't know them.
+        Log.i(TAG, "got IllegalStateException. Are there two recorders running?");
+        //pass back a message extension for dispatchErrorOccurred
+        throw (new IllegalStateException("Is there another recording running?"));
+      }
     }
 
     void stop() {
@@ -111,7 +119,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     try {
       controller.start();
     } catch (Throwable t) {
-      controller.stop();
+     // controller.stop();
       controller = null;
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());
