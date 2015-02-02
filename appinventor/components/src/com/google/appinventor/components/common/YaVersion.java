@@ -306,8 +306,10 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 10.
   // For YOUNG_ANDROID_VERSION 116:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 117:
+  // - SOUND_RECORDER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 116;
+  public static final int YOUNG_ANDROID_VERSION = 117;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -727,7 +729,9 @@ public class YaVersion {
   // - The Sound.SoundError event was marked userVisible false and is no longer used.
   public static final int SOUND_COMPONENT_VERSION = 3;
 
-  public static final int SOUND_RECORDER_COMPONENT_VERSION = 1;
+  // For SOUND_RECORDER_COMPONENT_VERSION 2:
+  // - The SavedRecording property was added.
+  public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
 

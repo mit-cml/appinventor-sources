@@ -7,14 +7,19 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
@@ -41,15 +46,28 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
 
   private static final String TAG = "SoundRecorder";
 
+  // the path to the savedRecording
+  // if it is the null string, the recorder will generate a path
+  // note that this is also initialized to "" in the designer
+  private String savedRecording = "";
+
+
   /**
    * This class encapsulates the required state during recording.
    */
   private class RecordingController {
     final MediaRecorder recorder;
-    final String file;
 
-    RecordingController() throws IOException {
-      file = FileUtil.getRecordingFile("3gp").getAbsolutePath();
+    // file is the same as savedRecording, but we'll keep it local to the
+    // RecordingController for future flexibility
+     final String file;
+
+    RecordingController(String savedRecording) throws IOException {
+      // pick a pathname if none was specified
+      file = (savedRecording.equals("")) ?
+          FileUtil.getRecordingFile("3gp").getAbsolutePath() :
+            savedRecording;
+
       recorder = new MediaRecorder();
       recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -94,6 +112,33 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     super(container.$form());
   }
 
+
+  /**
+   * Returns the path to the saved recording
+   *
+   * @return  savedRecording path to recording
+   */
+  @SimpleProperty(
+      description = "Specifies the path to the file where the recording is stored. " +
+          "If this proprety is the empty string, then starting a recording will create a file in " +
+          "an appropriate location.",
+          category = PropertyCategory.BEHAVIOR)
+  public String SavedRecording() {
+    return savedRecording;
+  }
+
+  /**
+   * Specifies the path to the saved recording displayed by the label.
+   *
+   * @param pathName  path to saved recording
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty
+  public void SavedRecording(String pathName) {
+    savedRecording = pathName;
+  }
+
   /**
    * Starts recording.
    */
@@ -110,7 +155,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       return;
     }
     try {
-      controller = new RecordingController();
+      controller = new RecordingController(savedRecording);
     } catch (Throwable t) {
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());
