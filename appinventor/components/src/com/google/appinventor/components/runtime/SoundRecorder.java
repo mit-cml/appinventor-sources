@@ -19,8 +19,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
-
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
@@ -87,8 +85,10 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       } catch (IllegalStateException e) {
         // This is the error produced when there are two recorders running.
         // There might be other causes, but we don't know them.
-        Log.i(TAG, "got IllegalStateException. Are there two recorders running?");
-        // Pass back a message detail for dispatchErrorOccurred
+        // Using Log.e will log a stack trace, so we can investigate
+        Log.e(TAG, "got IllegalStateException. Are there two recorders running?", e);
+        // Pass back a message detail for dispatchErrorOccurred to
+        // show at user level
         throw (new IllegalStateException("Is there another recording running?"));
       }
     }
@@ -164,7 +164,9 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     try {
       controller.start();
     } catch (Throwable t) {
-     // controller.stop();
+      // I'm commenting the next line out because stop can throw an error, and
+      // it's not clear to me how to handle that.
+      // controller.stop();
       controller = null;
       form.dispatchErrorOccurredEvent(
           this, "Start", ErrorMessages.ERROR_SOUND_RECORDER_CANNOT_CREATE, t.getMessage());

@@ -377,8 +377,9 @@ public class YaVersion {
   // 2. Increment the version number for that component below
   // 3. Add code in com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader#
   //    upgradeComponentProperties to upgrade the .scm file contents
-  // 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
-  //    upgrade the .blk file contents (not used in AI 2)
+  // *** OBSOLETE 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
+  // *** OBSOLETE upgrade the .blk file contents (not used in AI 2)
+  // 4. For AI2, update the table in blocklyeditor/src/versioning.js
 
 
   // Note added after internationalization (8/25/2014)
