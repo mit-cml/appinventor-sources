@@ -87,6 +87,28 @@ public class TextViewUtil {
     textview.invalidate();
   }
 
+    /**
+     * Returns the focus state of a {@link TextView}.
+     *
+     * @param textview   text view instance
+     * @return  {@code true} for has focus, {@code false} if not
+     */
+    public static boolean hasFocus(TextView textview) {
+        return textview.hasFocus();
+    }
+
+    /**
+     * Focuses a {@link TextView}.
+     *
+     * @param textview   text view instance
+     * @param focused  {@code true} for focused, {@code false} unfocused
+     */
+    public static void setFocus(TextView textview, boolean focused) {
+        if(focused){
+            textview.requestFocus();
+        }
+    }
+
   /**
    * Returns the font size for a {@link TextView}.
    *

@@ -229,6 +229,26 @@ public abstract class TextBoxBase extends AndroidViewComponent
     TextViewUtil.setEnabled(view, enabled);
   }
 
+    /**
+     * Returns true if the textbox is active and useable.
+     *
+     * @return  {@code true} indicates enabled, {@code false} disabled
+     */
+    @SimpleProperty(
+            category = PropertyCategory.BEHAVIOR,
+            description = "Whether the user can enter text into this input box")
+    public boolean Focus() { return TextViewUtil.hasFocus(view); }
+
+    /**
+     * Specifies whether the textbox should be currently focused.
+     *
+     * @param onfocus  {@code true} for enabled, {@code false} disabled
+     */
+    @SimpleProperty
+    public void Focus(boolean onfocus) {
+        TextViewUtil.setFocus(view, onfocus);
+    }
+
   /**
    * Returns true if the textbox's text should be bold.
    * If bold has been requested, this property will return true, even if the
