@@ -152,12 +152,20 @@ public class OpModeManager {
     public void run() {
       // power down the servos
       for (Map.Entry<String, ServoController> servoController : hardwareMap.servoController.entrySet()) {
-        servoController.getValue().pwmDisable();
+        try {
+          servoController.getValue().pwmDisable();
+        } catch (Throwable e) {
+          e.printStackTrace();
+        }
       }
 
       // power down the motors
       for (Map.Entry<String, DcMotor> dcMotor : hardwareMap.dcMotor.entrySet()) {
-        dcMotor.getValue().setPowerFloat();
+        try {
+          dcMotor.getValue().setPowerFloat();
+        } catch (Throwable e) {
+          e.printStackTrace();
+        }
       }
     }
 
