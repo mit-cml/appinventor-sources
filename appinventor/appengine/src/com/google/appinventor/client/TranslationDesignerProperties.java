@@ -307,6 +307,8 @@ public class TranslationDesignerProperties {
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
 
+    } else if (key.equals("Configuration")) {
+      value = MESSAGES.ConfigurationProperties();
     } else if (key.equals("DeviceName")) {
       value = MESSAGES.DeviceNameProperties();
     } else if (key.equals("DriverStationAddress")) {

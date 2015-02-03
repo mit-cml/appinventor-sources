@@ -231,6 +231,7 @@ public class TranslationComponentProperty {
     map.put("AtRest", MESSAGES.AtRestProperties());
     map.put("B", MESSAGES.BProperties());
     map.put("Back", MESSAGES.BackProperties());
+    map.put("Configuration", MESSAGES.ConfigurationProperties());
     map.put("DeviceName", MESSAGES.DeviceNameProperties());
     map.put("Direction", MESSAGES.DirectionProperties());
     map.put("DpadDown", MESSAGES.DpadDownProperties());

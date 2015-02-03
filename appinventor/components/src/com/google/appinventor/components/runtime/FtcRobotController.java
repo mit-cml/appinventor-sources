@@ -102,7 +102,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private static final String CONFIG_FILES_DIR =
       Environment.getExternalStorageDirectory() + "/FIRST/";
   private static final String CONFIG_FILE_EXT = ".xml";
-  private static final String DEFAULT_CONFIG_FILENAME = "robot_config";
+  private static final String DEFAULT_CONFIGURATION = "robot_config";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
   private static final Object hardwareDevicesLock = new Object();
@@ -116,7 +116,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private final double telemetryInterval = 0.250; // in seconds
 
   private volatile String driverStationAddress = "";
-  private volatile String configFilename = DEFAULT_CONFIG_FILENAME;
+  private volatile String configuration = DEFAULT_CONFIGURATION;
 
   /*
    * wakeLock is set in onInitialize, if the device version is Ice Cream Sandwich or later.
@@ -264,24 +264,24 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   // Properties
 
   /**
-   * ConfigFilename property getter.
+   * Configuration property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(description = "The name of the robot configuration file.",
+  @SimpleProperty(description = "The name of the robot configuration.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String ConfigFilename() {
-    return configFilename;
+  public String Configuration() {
+    return configuration;
   }
 
   /**
-   * ConfigFilename property setter.
+   * Configuration property setter.
    * Can only be set in designer; not visible in blocks.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = DEFAULT_CONFIG_FILENAME)
+      defaultValue = DEFAULT_CONFIGURATION)
   @SimpleProperty(userVisible = false)
-  public void ConfigFilename(String configFilename) {
-    this.configFilename = configFilename;
+  public void Configuration(String configuration) {
+    this.configuration = configuration;
     if (wifiDirectAssistant != null) {
       startRobotSetup();
     }
@@ -607,7 +607,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
         long startTime = System.currentTimeMillis();
 
-        String filename = CONFIG_FILES_DIR + configFilename + CONFIG_FILE_EXT;
+        String filename = CONFIG_FILES_DIR + configuration + CONFIG_FILE_EXT;
         FileInputStream fis;
         try {
           fis = new FileInputStream(filename);

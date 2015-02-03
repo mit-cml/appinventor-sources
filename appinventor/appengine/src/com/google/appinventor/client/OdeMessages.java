@@ -3088,6 +3088,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ChannelProperties();
 
+  @DefaultMessage("Configuration")
+  @Description("")
+  String ConfigurationProperties();
+
   @DefaultMessage("Direction")
   @Description("")
   String DirectionProperties();
