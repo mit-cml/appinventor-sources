@@ -306,8 +306,12 @@ public class YaVersion {
   // - CANVAS_COMPONENT_VERSION was incremented to 10.
   // For YOUNG_ANDROID_VERSION 116:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 117:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 4.
+  // For YOUNG_ANDROID_VERSION 118:
+  // - SOUND_RECORDER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 116;
+  public static final int YOUNG_ANDROID_VERSION = 118;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -375,8 +379,9 @@ public class YaVersion {
   // 2. Increment the version number for that component below
   // 3. Add code in com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader#
   //    upgradeComponentProperties to upgrade the .scm file contents
-  // 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
-  //    upgrade the .blk file contents (not used in AI 2)
+  // *** OBSOLETE 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
+  // *** OBSOLETE upgrade the .blk file contents (not used in AI 2)
+  // 4. For AI2, update the table in blocklyeditor/src/versioning.js
 
 
   // Note added after internationalization (8/25/2014)
@@ -639,7 +644,9 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 3:
   // - Added BackgroundColor Property
   // - Added TextColor Property
-  public static final int LISTVIEW_COMPONENT_VERSION = 3;
+  // For LISTVIEW_COMPONENT_VERSION 4:
+  // - Added TextSize Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 4;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -727,7 +734,9 @@ public class YaVersion {
   // - The Sound.SoundError event was marked userVisible false and is no longer used.
   public static final int SOUND_COMPONENT_VERSION = 3;
 
-  public static final int SOUND_RECORDER_COMPONENT_VERSION = 1;
+  // For SOUND_RECORDER_COMPONENT_VERSION 2:
+  // - The SavedRecording property was added.
+  public static final int SOUND_RECORDER_COMPONENT_VERSION = 2;
 
   public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 1;
 
