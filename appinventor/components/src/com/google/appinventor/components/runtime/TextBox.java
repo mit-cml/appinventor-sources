@@ -158,8 +158,8 @@ public final class TextBox extends TextBoxBase {
      * Request focus to current textbox.
      */
     @SimpleFunction(
-            description = "Hide the keyboard.  Only multiline text boxes need this. " +
-                    "Single line text boxes close the keyboard when the users presses the Done key.")
+            description = "Sets textbox active."
+    )
     public void RequestFocus() {
         TextViewUtil.requestFocus(view);
     }
