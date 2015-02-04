@@ -21,6 +21,7 @@ import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 
 /**
  * A box in which the user can enter text.
@@ -152,6 +153,16 @@ public final class TextBox extends TextBoxBase {
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
+
+    /**
+     * Request focus to current textbox.
+     */
+    @SimpleFunction(
+            description = "Hide the keyboard.  Only multiline text boxes need this. " +
+                    "Single line text boxes close the keyboard when the users presses the Done key.")
+    public void RequestFocus() {
+        TextViewUtil.requestFocus(view);
+    }
 
   /**
    * Multi line property getter method.

@@ -229,17 +229,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
     TextViewUtil.setEnabled(view, enabled);
   }
 
-    /**
-     * Sets the textbox to active.
-     */
-    @SimpleProperty(
-            category =  PropertyCategory.BEHAVIOR,
-            description = "Sets textbox to active."
-    )
-    public void RequestFocus() {
-        TextViewUtil.setFocus(view, true);
-    }
-
   /**
    * Returns true if the textbox's text should be bold.
    * If bold has been requested, this property will return true, even if the

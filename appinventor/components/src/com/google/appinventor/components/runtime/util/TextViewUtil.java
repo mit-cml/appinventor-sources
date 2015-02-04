@@ -91,12 +91,10 @@ public class TextViewUtil {
      * Focuses a {@link TextView}.
      *
      * @param textview   text view instance
-     * @param focused  {@code true} for focused, {@code false} unfocused
+     * @return  {@code true} for active, {@code false} inactive
      */
-    public static void setFocus(TextView textview, boolean focused) {
-        if(focused){
-            textview.requestFocus();
-        }
+    public static boolean requestFocus(TextView textview) {
+        return textview.requestFocus();
     }
 
   /**
