@@ -232,7 +232,10 @@ public abstract class TextBoxBase extends AndroidViewComponent
     /**
      * Sets the textbox to active.
      */
-    @SimpleProperty
+    @SimpleProperty(
+            category =  PropertyCategory.BEHAVIOR,
+            description = "Sets textbox to active."
+    )
     public void RequestFocus() {
         TextViewUtil.setFocus(view, true);
     }
