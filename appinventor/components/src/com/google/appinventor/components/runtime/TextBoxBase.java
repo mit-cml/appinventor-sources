@@ -230,13 +230,11 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
     /**
-     * Specifies whether the textbox should be currently focused.
-     *
-     * @param onfocus  {@code true} for enabled, {@code false} disabled
+     * Sets the textbox to active.
      */
     @SimpleProperty
-    public void RequestFocus(boolean onfocus) {
-        TextViewUtil.setFocus(view, onfocus);
+    public void RequestFocus {
+        TextViewUtil.setFocus(view, true);
     }
 
   /**
