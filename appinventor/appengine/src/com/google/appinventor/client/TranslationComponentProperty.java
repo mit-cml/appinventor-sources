@@ -115,7 +115,7 @@ public class TranslationComponentProperty {
     map.put("CharacterEncoding", MESSAGES.CharacterEncodingProperties());
     map.put("Checked", MESSAGES.CheckedProperties());
     map.put("ColorChangedEventEnabled", MESSAGES.ColorChangedEventEnabledProperties());
-    map.put("Focus", MESSAGES.FocusProperties());
+    map.put("RequestFocus", MESSAGES.RequestFocusProperties());
     map.put("Country", MESSAGES.CountryProperties());
     map.put("ConsumerKey", MESSAGES.ConsumerKeyProperties());
     map.put("ConsumerSecret", MESSAGES.ConsumerSecretProperties());

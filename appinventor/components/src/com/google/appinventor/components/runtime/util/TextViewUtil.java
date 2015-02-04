@@ -88,16 +88,6 @@ public class TextViewUtil {
   }
 
     /**
-     * Returns the focus state of a {@link TextView}.
-     *
-     * @param textview   text view instance
-     * @return  {@code true} for has focus, {@code false} if not
-     */
-    public static boolean hasFocus(TextView textview) {
-        return textview.hasFocus();
-    }
-
-    /**
      * Focuses a {@link TextView}.
      *
      * @param textview   text view instance

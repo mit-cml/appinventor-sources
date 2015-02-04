@@ -3680,9 +3680,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LongClickEvents();
 
-  @DefaultMessage("Focus")
+  @DefaultMessage("RequestFocus")
   @Description("")
-  String FocusProperties();
+  String RequestFocusProperties();
 
   @DefaultMessage("LostFocus")
   @Description("")
