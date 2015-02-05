@@ -22,6 +22,9 @@ import com.google.gwt.widgetideas.graphics.client.Color;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class MockComponentsUtil {
+  // Height and width offsets for text in the components
+  private static final int WIDTH_OFFSET = 4;
+  private static final int HEIGHT_OFFSET = 12;
 
   private MockComponentsUtil() {
   }
@@ -320,8 +323,8 @@ public final class MockComponentsUtil {
     RootPanel.get().add(w);
 
     String[] style = clearSizeStyle(w);
-    int width = w.getOffsetWidth() + 4;
-    int height = w.getOffsetHeight();
+    int width = w.getOffsetWidth() + WIDTH_OFFSET;
+    int height = w.getOffsetHeight() + HEIGHT_OFFSET;
     restoreSizeStyle(w, style);
 
     // Detach the widget from the DOM before returning
