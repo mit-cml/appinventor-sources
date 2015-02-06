@@ -3682,7 +3682,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("RequestFocus")
   @Description("")
-  String RequestFocusProperties();
+  String RequestFocusMethods();
 
   @DefaultMessage("LostFocus")
   @Description("")

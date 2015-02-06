@@ -87,16 +87,6 @@ public class TextViewUtil {
     textview.invalidate();
   }
 
-    /**
-     * Focuses a {@link TextView}.
-     *
-     * @param textview   text view instance
-     * @return  {@code true} for active, {@code false} inactive
-     */
-    public static boolean requestFocus(TextView textview) {
-        return textview.requestFocus();
-    }
-
   /**
    * Returns the font size for a {@link TextView}.
    *
