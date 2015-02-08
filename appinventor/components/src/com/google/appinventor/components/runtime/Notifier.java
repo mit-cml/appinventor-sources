@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -84,6 +85,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private static final String LOG_TAG = "Notifier";
   private final Activity activity;
   private final Handler handler;
+  private ProgressDialog progressDialog;
 
   //Length of Notifier message display
   private int notifierLength = Component.TOAST_LENGTH_LONG;
@@ -103,6 +105,45 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     super(container.$form());
     activity = container.$context();
     handler = new Handler();
+    progressDialog = null;
+  }
+
+  /**
+   * Display a progress dialog that cannot be dismissed by the user. To dismiss
+   * this alert, you must use the DismissProgressDialog block
+   *
+   * @param message the text in the alert box
+   * @param title the title for the alert box
+   */
+  @SimpleFunction
+  public void ShowProgressDialog(String message, String title) {
+    progressDialog(message, title);
+  }
+
+  /**
+   * Dismisses the alert created by the ShowProgressDialog block
+   */
+  @SimpleFunction
+  public void DismissProgressDialog() {
+    if (progressDialog != null) {
+      progressDialog.dismiss();
+      progressDialog = null;
+    }
+  }
+
+  /**
+   * This method creates the actual ProgressDialog. If one is already being
+   * displayed, then it dismisses it, and creates this new one.
+   * @param message	the message for the dialog
+   * @param title the title for the dialog
+   */
+  public void progressDialog(String message, String title) {
+	if (progressDialog != null) {
+	  DismissProgressDialog();
+	}
+    progressDialog = ProgressDialog.show(activity, title, message);
+    // prevents the user from escaping the dialog by hitting the Back button
+    progressDialog.setCancelable(true);
   }
 
   /**
