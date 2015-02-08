@@ -662,7 +662,9 @@ public class YaVersion {
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
   // For NOTIFIER_COMPONENT_VERSION 3:
   // - Added NotifierColor, TextColor and NotifierLength options
-  public static final int NOTIFIER_COMPONENT_VERSION = 3;
+  // For NOTIFIER_COMPONENT_VERSION 4:
+  // - Added a ProgressDialog method, and the DismissProgressDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 4;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

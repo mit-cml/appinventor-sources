@@ -1088,6 +1088,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // A new type of dialog was created, a ProgressDialog, and a method to
+      // dismiss the dialog was also added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
