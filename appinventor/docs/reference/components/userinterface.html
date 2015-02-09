@@ -745,6 +745,10 @@
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt><code>Width</code></dt>
   <dd>Box width (x-size). </dd>
+  <dt><code>ItemTextColor</code></dt>
+  <dd>The text color of the ListPicker items.</dd>
+  <dt><code>ItemBackgroundColor</code></dt>
+  <dd>The background color of the ListPicker items.</dd>
 </dl>
 
 <h3>Events</h3>
@@ -915,6 +919,8 @@ none
   <dt><code>AlignVertical</code></dt>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.</dd>
   <dt><code>BackgroundColor</code></dt>
+  <dt><code>AppName</code> (designer only)</dt>
+  <dd>This is the display name of the installed application in the phone. If the AppName is blank, it will be set to the name of the project when the project is built.</dd>
   <dd></dd>
   <dt><code>BackgroundImage</code></dt>
   <dd>The screen background image.</dd>
@@ -1141,6 +1147,8 @@ none
                       Single
                       line text boxes close the keyboard when the users presses
                       the Done key. </dd>
+                    <dt><code>RequestFocus()</code></dt>
+                    <dd>Sets the textbox active.</dd>
                   </dl>
 
                   <h2 id="TimePicker">TimePicker</h2>
@@ -1239,6 +1247,8 @@ none
   <dd>Returns true if the WebViewer can go back in the history list.</dd>
   <dt><code>boolean CanGoForward()</code></dt>
   <dd>Returns true if the WebViewer can go forward in the history list.</dd>
+  <dt><code>ClearCaches()</code></dt>
+  <dd>Clear the WebViewer caches</dd>
   <dt><code>ClearLocations()</code></dt>
   <dd>Clear stored location permissions.</dd>
   <dt><code>GoBack()</code></dt>

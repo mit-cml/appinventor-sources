@@ -241,6 +241,21 @@ public class File extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
+   * Replace Windows-style CRLF with Unix LF as String. This allows
+   * end-user to treat Windows text files same as Unix or Mac. In
+   * future, allowing user to choose to normalize new lines might also
+   * be nice - in case someone really wants to detect Windows-style
+   * line separators, or save a file which was read (and expect no
+   * changes in size or checksum).
+   * @param string to convert
+   */
+
+  private String normalizeNewLines(String s) {
+    return s.replaceAll("\r\n", "\n");
+  }
+
+
+  /**
    * Asynchronously reads from the given file. Calls the main event thread
    * when the function has completed reading from the file.
    * @param filepath the file to read
@@ -258,7 +273,15 @@ public class File extends AndroidNonvisibleComponent implements Component {
       while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
         output.write(buffer, 0, length);
       }
-      final String text = output.toString();
+
+      // Now that we have the file as a String,
+      // normalize any line separators to avoid compatibility between Windows and Mac
+      // text files. Users can expect \n to mean a line separator regardless of how
+      // file was created. Currently only doing this for files opened locally - not files we pull
+      // from other places like URLs.
+
+      final String text = normalizeNewLines(output.toString());
+
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
