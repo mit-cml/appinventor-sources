@@ -216,6 +216,7 @@ public class TranslationComponentMethods {
     map.put("BuildPostData", MESSAGES.BuildPostDataMethods());
     map.put("ClearCookies", MESSAGES.ClearCookiesMethods());
     map.put("Get", MESSAGES.GetMethods());
+    map.put("RequestFocus", MESSAGES.RequestFocusMethods());
     map.put("HtmlTextDecode", MESSAGES.HtmlTextDecodeMethods());
     map.put("JsonTextDecode", MESSAGES.JsonTextDecodeMethods());
     map.put("XmlTextDecode", MESSAGES.XmlTextDecodeMethods());
@@ -226,6 +227,7 @@ public class TranslationComponentMethods {
     map.put("CanGoBack", MESSAGES.CanGoBackMethods());
     map.put("CanGoForward", MESSAGES.CanGoForwardMethods());
     map.put("ClearLocations", MESSAGES.ClearLocationsMethods());
+    map.put("ClearCaches", MESSAGES.ClearCachesMethods());
     map.put("GoBack", MESSAGES.GoBackMethods());
     map.put("GoForward", MESSAGES.GoForwardMethods());
     map.put("GoHome", MESSAGES.GoHomeMethods());

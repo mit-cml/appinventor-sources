@@ -429,6 +429,18 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
+   * Clear the webview cache, both ram and disk. This is useful
+   * when using the webviewer to poll a page that may not be sending
+   * appropriate cache control headers. This is particularly useful
+   * when using the webviwer to look at a Fusion Table.
+   */
+
+  @SimpleFunction(description = "Clear WebView caches.")
+  public void ClearCaches() {
+    webview.clearCache(true);
+  }
+
+  /**
    * Allows the setting of properties to be monitored from the javascript
    * in the WebView
    */

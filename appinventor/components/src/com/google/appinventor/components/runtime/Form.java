@@ -561,6 +561,26 @@ public class Form extends Activity
   }
 
 
+  public void ErrorOccurredDialog(Component component, String functionName, int errorNumber,
+      String message, String title, String buttonText) {
+    String componentType = component.getClass().getName();
+    componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
+    Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber +
+        ", componentType = " + componentType + ", functionName = " + functionName +
+        ", messages = " + message);
+    if ((!(EventDispatcher.dispatchEvent(
+        this, "ErrorOccurred", component, functionName, errorNumber, message)))
+        && screenInitialized)  {
+      // If dispatchEvent returned false, then no user-supplied error handler was run.
+      // If in addition, the screen initializer was run, then we assume that the
+      // user did not provide an error handler.   In this case, we run a default
+      // error handler, namely, showing a message dialog to the end user of the app.
+      // The app writer can override this by providing an error handler.
+      new Notifier(this).ShowMessageDialog("Error " + errorNumber + ": " + message, title, buttonText);
+    }
+  }
+
+
   public void dispatchErrorOccurredEvent(final Component component, final String functionName,
       final int errorNumber, final Object... messageArgs) {
     runOnUiThread(new Runnable() {
@@ -570,6 +590,29 @@ public class Form extends Activity
       }
     });
   }
+
+  // This is like dispatchErrorOccurred, except that it defaults to showing
+  // a message dialog rather than an alert.   The app writer can override either of these behaviors,
+  // but using the event dialog version frees the app writer of the need to explicitly override
+  // the alert behavior in the case
+  // where a message dialog is what's generally needed.
+  public void dispatchErrorOccurredEventDialog(final Component component, final String functionName,
+      final int errorNumber, final Object... messageArgs) {
+    runOnUiThread(new Runnable() {
+      public void run() {
+        String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
+        ErrorOccurredDialog(
+            component,
+            functionName,
+            errorNumber,
+            message,
+            "Error in " + functionName,
+            "Dismiss");
+      }
+    });
+  }
+
+
 
   /**
    * Scrollable property getter method.
@@ -1021,6 +1064,20 @@ public class Form extends Activity
   }
 
   /**
+   * Specifies the App Name.
+   *
+   * @param aName the display name of the installed application in the phone
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "This is the display name of the installed application in the phone." +
+    		"If the AppName is blank, it will be set to the name of the project when the project is built.")
+  public void AppName(String aName) {
+    // We don't actually need to do anything.
+  }
+
+  /**
    * Width property getter method.
    *
    * @return  width property used by the layout
@@ -1362,14 +1419,15 @@ public class Form extends Activity
   private String yandexTranslateTagline = "";
 
   void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Powered by Yandex.Translate</small></p>";
+    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
   private void showAboutApplicationNotification() {
-    String title = "About This App";
-    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    aboutScreen = aboutScreen.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
-    String message = aboutScreen + tagline + yandexTranslateTagline;
+    String title = "About this app";
+    String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
+    // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
+    String message = aboutScreen + MITtagline + yandexTranslateTagline;
+    message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }

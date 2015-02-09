@@ -20,7 +20,14 @@ public class TranslationComponentProperty {
   }
 
   public static String getName(String key) {
-    return myMap.get(key);
+    String value = myMap.get(key);
+    if (key == null) {
+      // This will help implementors debug if the forget to add an entry
+      // when defining a new property
+      return "**Missing key in TranslationComponentProperty**";
+    } else {
+      return value;
+    }
   }
 
   /**
@@ -156,6 +163,7 @@ public class TranslationComponentProperty {
     map.put("ResultName", MESSAGES.ResultNameProperties());
     map.put("Rotates", MESSAGES.RotatesProperties());
     map.put("SaveResponse", MESSAGES.SaveResponseProperties());
+    map.put("SavedRecording", MESSAGES.SavedRecordingProperties());
     map.put("ScalePictureToFit", MESSAGES.ScalePictureToFitProperties());
     map.put("ScreenOrientation", MESSAGES.ScreenOrientationProperties());
     map.put("Scrollable", MESSAGES.ScrollableProperties());
@@ -167,6 +175,7 @@ public class TranslationComponentProperty {
     map.put("Speed", MESSAGES.SpeedProperties());
     map.put("StopBeforeDisconnect", MESSAGES.StopBeforeDisconnectProperties());
     map.put("Text", MESSAGES.TextProperties());
+    map.put("TextAlignment", MESSAGES.TextAlignmentProperties());
     map.put("TextColor", MESSAGES.TextColorProperties());
     map.put("TimeInterval", MESSAGES.TimeIntervalProperties());
     map.put("TimerAlwaysFires", MESSAGES.TimerAlwaysFiresProperties());
@@ -183,6 +192,7 @@ public class TranslationComponentProperty {
     map.put("Y", MESSAGES.YProperties());
     map.put("Z", MESSAGES.ZProperties());
     map.put("ShowFilterBar", MESSAGES.ShowFilterBarProperties());
+    map.put("TextSize", MESSAGES.TextSizeProperties());
     map.put("NotifierLength", MESSAGES.NotifierLengthProperties());
     map.put("Loop", MESSAGES.LoopProperties());
     map.put("Pitch", MESSAGES.PitchProperties());
@@ -225,6 +235,10 @@ public class TranslationComponentProperty {
     map.put("MaximumRange", MESSAGES.MaximumRangeProperties());
     map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
     map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
+
+    // ========== ListPicker
+    map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
+    map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
 
     return map;
   }
