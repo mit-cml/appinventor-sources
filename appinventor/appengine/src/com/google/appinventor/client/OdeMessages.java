@@ -1754,6 +1754,11 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
+  // Used in RemixedYoungAndroidProjectWizard.java
+  @DefaultMessage("Loading App ...")
+  @Description("loading indicator when opening the app")
+  String loadingAppIndicatorText();
+
   // Used in ProfilePage.java
   @DefaultMessage("Edit Profile")
   @Description("Edit Profile Button, only seen by profile owner")

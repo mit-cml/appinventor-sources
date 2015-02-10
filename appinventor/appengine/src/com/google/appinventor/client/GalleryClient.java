@@ -20,6 +20,7 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * Gallery Client is a facade for the ui to talk to the gallery server side.
@@ -253,7 +254,7 @@ public class GalleryClient {
   * @param gApp the app to open
   * @return True if success, otherwise false
   */
-  public boolean loadSourceFile(GalleryApp gApp, String newProjectName) {
+  public boolean loadSourceFile(GalleryApp gApp, String newProjectName, final PopupPanel popup) {
     final String projectName = newProjectName;
     final String sourceURL = getGallerySettings().getSourceURL(gApp.getGalleryAppId());
     final long galleryId = gApp.getGalleryAppId();
@@ -264,14 +265,6 @@ public class GalleryClient {
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
 
-    final OdeAsyncCallback<Void> galleryCallback = new OdeAsyncCallback<Void>(
-    // failure message
-    MESSAGES.createProjectError()) {
-      @Override
-      public void onSuccess(Void arg2) {
-      }
-    };
-
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
     // failure message
     MESSAGES.createProjectError()) {
@@ -279,6 +272,12 @@ public class GalleryClient {
       public void onSuccess(UserProject projectInfo) {
         Project project = ode.getProjectManager().addProject(projectInfo);
         Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        popup.hide();
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        popup.hide();
+        super.onFailure(caught);
       }
     };
     // this is really what's happening here, we call server to load project
