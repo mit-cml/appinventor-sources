@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -19,6 +20,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.Contacts;
@@ -177,6 +180,20 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     return ensureNotNull(phoneNumberList);
   }
 
+  /**
+   *  return nothing, just call another activity which is view contact
+   */
+  @SimpleFunction(description = "view a contact through its URI")
+  public void ViewContact(String uri) {
+    if(textConactUri != null){
+    	Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(uri));
+    	if (intent.resolveActivity(this.activityContext.getPackageManager()) != null) {
+            this.activityContext.startActivity(intent);
+        }
+    }
+  }
+  
+  
   @Override
   protected Intent getIntent() {
     return new Intent(Intent.ACTION_PICK, intentUri);
