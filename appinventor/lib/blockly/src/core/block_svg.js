@@ -461,6 +461,24 @@ Blockly.BlockSvg.prototype.removeSelect = function() {
 };
 
 /**
+ * Mark this block as bad.  Highlight it visually in red.
+ */
+Blockly.BlockSvg.prototype.addBadBlock = function() {
+  Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+      'badBlock');
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Check to see if the block is marked as bad.
+ */
+Blockly.BlockSvg.prototype.isBadBlock = function() {
+  return Blockly.haveClass_(/** @type {!Element} */ (this.svgGroup_),
+    'badBlock');
+}
+
+/**
  * Adds the dragging class to this block.
  * Also disables the highlights/shadows to improve performance.
  */
