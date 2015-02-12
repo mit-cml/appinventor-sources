@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -19,6 +20,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.Contacts;
@@ -41,6 +44,7 @@ import java.util.List;
     "the chosen contact: <ul>\n" +
     "<li> <code>ContactName</code>: the contact's name </li>\n "  +
     "<li> <code>EmailAddress</code>: the contact's primary email address </li>\n " +
+    "<li> <code>TextContactUri</code>: the contact's URI in string </li>\n"+
     "<li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>\n " +
     "<li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>\n " +
     "<li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>\n " +
@@ -74,6 +78,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
 
   protected String contactName;
   protected String emailAddress;
+  protected String textConactUri;
   protected String contactPictureUri;
   protected String phoneNumber;
 
@@ -137,7 +142,17 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     //    }
     return ensureNotNull(emailAddress);
   }
-
+  
+  /**
+   * TextContactUri property getter method.
+   * @Author: Yifan(Evan) Li
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR)
+  public String TextContactUri() {
+    return ensureNotNull(textConactUri);
+  }
+  
   /**
    * EmailAddressList property getter method.
    */
@@ -165,6 +180,20 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     return ensureNotNull(phoneNumberList);
   }
 
+  /**
+   *  return nothing, just call another activity which is view contact
+   */
+  @SimpleFunction(description = "view a contact through its URI")
+  public void ViewContact(String uri) {
+    if(textConactUri != null){
+    	Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(uri));
+    	if (intent.resolveActivity(this.activityContext.getPackageManager()) != null) {
+            this.activityContext.startActivity(intent);
+        }
+    }
+  }
+  
+  
   @Override
   protected Intent getIntent() {
     return new Intent(Intent.ACTION_PICK, intentUri);
@@ -206,13 +235,16 @@ public class ContactPicker extends Picker implements ActivityResultListener {
             DATA_PROJECTION = HoneycombUtil.getDataProjection();
             dataCursor = HoneycombUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
             postHoneycombGetContactEmailAndPhone(dataCursor);
+            
+            //explicit set TextContactUri
+            textConactUri = contactUri.toString();
           } else {
             contactCursor = activityContext.getContentResolver().query(contactUri,
                 PROJECTION, null, null, null);
             preHoneycombGetContactInfo(contactCursor, contactUri);
           }
           Log.i("ContactPicker",
-                "Contact name = " + contactName + ", email address = " + emailAddress +
+                "Contact name = " + contactName + ", email address = " + emailAddress + ",contact Uri = " + textConactUri + 
                 ", phone number = " + phoneNumber + ", contactPhotoUri = " +  contactPictureUri);
         } catch (Exception e) {
           // There was an exception in trying to extract the cursor from the activity context.
@@ -241,6 +273,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
       String emailId = guardCursorGetString(contactCursor, EMAIL_INDEX);
       emailAddress = getEmailAddress(emailId);
+      textConactUri = contactUri.toString();
       contactPictureUri = contactUri.toString();
       emailAddressList = emailAddress.equals("") ? new ArrayList() : Arrays.asList(emailAddress);
     }

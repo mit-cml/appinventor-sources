@@ -2849,7 +2849,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("EmailAddress")
   @Description("")
   String EmailAddressProperties();
-
+  
+  @DefaultMessage("TextContactUri")
+  @Description("")
+  String TextContactUriProperties();
+  
   @DefaultMessage("EmailAddressList")
   @Description("")
   String EmailAddressListProperties();
@@ -3985,6 +3989,7 @@ public interface OdeMessages extends Messages {
   String ShakingEvents();
 
   //Methods
+  
   @DefaultMessage("ResolveActivity")
   @Description("")
   String ResolveActivityMethods();
