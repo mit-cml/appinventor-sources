@@ -53,7 +53,8 @@ Blockly.Blocks['lists_create_with'] = {
   },
   // create type blocks for both make a list (two items) and create empty list
   typeblock: [
-      { translatedName: Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST },
+      { translatedName: Blockly.Msg.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST,
+        mutatorAttributes: { items: 2 } },
       { translatedName: Blockly.Msg.LANG_LISTS_CREATE_EMPTY_TITLE,
         mutatorAttributes: { items: 0 } }]
 };
