@@ -116,7 +116,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       Flag.createFlag("build.server.host", "localhost:9990");
   // host[:port] to tell build server app host url
   private static final Flag<String> appengineHost =
-      Flag.createFlag("appengine.host", "localhost:8080");
+      Flag.createFlag("appengine.host", "");
 
   public YoungAndroidProjectService(StorageIo storageIo) {
     super(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, storageIo);
