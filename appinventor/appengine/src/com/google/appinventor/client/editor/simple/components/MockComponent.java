@@ -159,6 +159,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         getForm().fireComponentRenamed(MockComponent.this, oldName);
       } else {
         newNameTextBox.setFocus(true);
+        newNameTextBox.selectAll();
       }
     }
 
@@ -201,6 +202,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         @Override
         public void execute() {
           newNameTextBox.setFocus(true);
+          newNameTextBox.selectAll();
         }
       });
     }
