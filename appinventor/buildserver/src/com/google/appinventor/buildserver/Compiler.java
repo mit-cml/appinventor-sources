@@ -26,7 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -320,7 +319,7 @@ public final class Compiler {
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
-      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(manifestFile), "UTF-8"));
+      BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       // TODO(markf) Allow users to set versionCode and versionName attributes.
       // See http://developer.android.com/guide/publishing/publishing.html for
