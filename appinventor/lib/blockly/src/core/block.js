@@ -249,8 +249,21 @@ Blockly.Block.prototype.initSvg = function() {
   if (!Blockly.readOnly) {
     Blockly.bindEvent_(this.svg_.getRootElement(), 'mousedown', this,
                        this.onMouseDown_);
+    Blockly.bindEvent_(this.svg_.getRootElement(), 'dblclick', this,
+                       this.onDblClick_);
   }
   this.workspace.getCanvas().appendChild(this.svg_.getRootElement());
+};
+
+Blockly.Block.prototype.onDblClick_ = function(e) {
+  if (this.isInFlyout) {
+    return;
+  }
+
+  // this.select() is called in onmousedown_()
+  goog.asserts.assert(Blockly.selected == this);
+  this.setCollapsed(!this.collapsed_);
+  e.stopPropagation();
 };
 
 /**
