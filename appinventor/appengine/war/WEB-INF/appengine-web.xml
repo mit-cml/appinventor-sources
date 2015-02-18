@@ -8,7 +8,9 @@
     <include path="/blockly-*.js" expiration="365d">
       <http-header name="Content-Type" value="application/javascript; charset=UTF-8" />
     </include>
-
+    <include path="/fonts/*" expiration="365d">
+      <http-header name="Content-Type" value="font/ttf" />
+    </include>
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
     <include path="/blocklyframe.html" expiration="0s" />
