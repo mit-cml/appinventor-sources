@@ -23,6 +23,7 @@
   <scriptdef name="generateguid" language="javascript">
     <attribute name="property" />
     <![CDATA[
+             load("nashorn:mozilla_compat.js");
              importClass( java.util.UUID );
              project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
     ]]>
