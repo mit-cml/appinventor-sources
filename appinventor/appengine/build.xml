@@ -23,7 +23,12 @@
   <scriptdef name="generateguid" language="javascript">
     <attribute name="property" />
     <![CDATA[
-             load("nashorn:mozilla_compat.js");
+             try {
+               load("nashorn:mozilla_compat.js");
+             }
+             catch (exception) {
+               // Ignore the exception as the compat mode is only needed for Java 8
+             }
              importClass( java.util.UUID );
              project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
     ]]>
