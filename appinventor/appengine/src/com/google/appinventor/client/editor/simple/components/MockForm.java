@@ -198,9 +198,11 @@ public final class MockForm extends MockContainer {
     } catch (BadPropertyEditorException e) {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
-    };
+    }
     enableAndDisableDropdowns();
     initialized = true;
+    // Now that the default for Scrollable is false, we need to force setting the property when creating the MockForm
+    setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
   }
 
   /*
