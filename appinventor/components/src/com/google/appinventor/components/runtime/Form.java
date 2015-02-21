@@ -28,7 +28,6 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -760,6 +759,7 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowStatusBar(boolean show) {
     if (show != showStatusBar) {
       if (show) {
