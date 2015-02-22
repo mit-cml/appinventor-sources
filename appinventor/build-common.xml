@@ -146,7 +146,7 @@
        compiles all the specified tests, builds them into a library,
        runs them with junit, and then generates a report. It sets
        haltonfailure to no so that the tests will continue to run even
-       after a failure, and so that a report wil be generated.
+       after a failure, and so that a report will be generated.
 
        Depends on having the following properties and paths defined:
 

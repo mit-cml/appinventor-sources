@@ -3,7 +3,7 @@
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer" />
     <meta content="Front Page" about="/front_page" property="dc:title" />
     <meta name="Generator" content="Drupal 7 (http://drupal.org)" />
-    <title>XML and Web Services</title>
+    <title>Working with XML and Web Services</title>
     <style>
       body{
       background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
@@ -433,16 +433,37 @@
 
           <div id="content-column"><div class="content-inner">
               <section id="main-content" role="main">
-                <div id="content">  <div class="region region-content">
+                <div id="content">  <div class="region
+                region-content">
 
-       <iframe width="100%" height="800"
-       src="https://docs.google.com/document/d/1t9gvp0KD6tvterA42jSzp6YlfOqqfsbr7BmM7Hzpu00/pub?embedded=true"></iframe>
-                    <!-- Content -->
+       <!-- Here's where we insert the link to the Google Doc that holds the page contents, so people
+            can comment and edit, together with an iframe that holds
+            the web published version of the doc.   The we use the web
+            version because the Doc version is limited in the number
+            of people who can view it simultaneously with permission to
+            comment. -->
+
+       <!-- ************  BEGIN NON-TEMPLATE STUFF *************** -->
+
+       <a href="https://docs.google.com/document/d/1t9gvp0KD6tvterA42jSzp6YlfOqqfsbr7BmM7Hzpu00/edit#heading=h.pymbe4170mqo"
+
+	   target="_blank">
+
+           Click here for a version of this page on which you can comment.</a>
+
+       <!-- Insert the Web version here -->
+       <iframe width="100%" height="4000" frameborder="0" scrolling="yes" id="frame1"
+	       src="https://docs.google.com/document/d/1t9gvp0KD6tvterA42jSzp6YlfOqqfsbr7BmM7Hzpu00/pub"/>
                   </div>
                 </div>
               </section>
           </div></div>
       </div></div>
+      <!-- End of inserted doc -->
+
+
+       <!-- ************  END NON-TEMPLATE STUFF *************** -->
+
 
       <footer role="contentinfo">
         <div class="region region-footer">

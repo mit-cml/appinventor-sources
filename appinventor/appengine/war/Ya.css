@@ -10,7 +10,13 @@ they get cut off in Windows.
 
 @font-face {
   font-family: Roboto;
-  src: url(/fonts/Roboto-Regular.ttf) format("truetype");
+  src: url('/fonts/Roboto-Regular.ttf') format("truetype");
+}
+
+@font-face {
+  font-weight: bold;
+  font-family: Roboto;
+  src: url('/fonts/Roboto-Bold.ttf') format("truetype");
 }
 
 body, html {

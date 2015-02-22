@@ -17,6 +17,7 @@ goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyHandler');
 goog.require('goog.ui.ac');
 goog.require('goog.style');
+goog.require('Blockly.Drawer');
 
 goog.require('goog.ui.ac.ArrayMatcher');
 goog.require('goog.ui.ac.AutoComplete');
@@ -458,25 +459,25 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         blockToCreateName = blockToCreate.canonicName;
         // components have mutator attributes we need to deal with. We can also add these for special blocks
         //   e.g., this is done for create empty list
-        if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
-          //construct xml
-          var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
-          for(var attributeName in blockToCreate.mutatorAttributes) {
-            xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
-          }
-
-          xmlString += '>';
-          xmlString += '</mutation></block></xml>';
-          var xml = Blockly.Xml.textToDom(xmlString);
-          block = Blockly.Xml.domToBlock(Blockly.mainWorkspace, xml.firstChild);
-        } else {
-          block = new Blockly.Block.obtain(Blockly.mainWorkspace, blockToCreateName);
-          block.initSvg(); //Need to init the block before doing anything else
-          if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
-            //Need to make sure Procedure Block inputs are updated
-            Blockly.FieldProcedure.onChange.call(block.getField_("PROCNAME"), blockToCreate.dropDown.value);
+        var xmlString = Blockly.Drawer.getDefaultXMLString(blockToCreate.canonicName, blockToCreate.mutatorAttributes);
+        var xml;
+        if (xmlString === null) {
+          var blockType = blockToCreate.canonicName;
+          if (blockType == 'procedures_callnoreturn' || blockType == 'procedures_callreturn') {
+            xmlString = Blockly.Drawer.procedureCallersXMLString(blockType == 'procedures_callreturn');
+          } else {
+            xmlString = '<xml><block type="' + blockType + '">';
+            if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
+              xmlString += Blockly.Drawer.mutatorAttributesToXMLString(blockToCreate.mutatorAttributes);
+            }
+            xmlString += '</block></xml>';
           }
         }
+        xml = Blockly.Xml.textToDom(xmlString);
+        var xmlBlock = xml.firstChild;
+        if (xml.children.length > 1 && goog.dom.getElement(inputText).value === 'make a list')
+          xmlBlock = xml.children[1];
+        block = Blockly.Xml.domToBlock(Blockly.mainWorkspace, xmlBlock);
 
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
