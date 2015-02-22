@@ -87,6 +87,11 @@ Blockly.Blocks.component_event = {
     // [lyn, 12/23/2013] Move this out of domToMutation into top-level component_event
     // this.onchange = Blockly.WarningHandler.checkErrors;
 
+    if (this.getEventTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      this.badBlock();
+      this.setDisabled(true);
+    }
+
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
   // Also must create flydown params and DO input if they don't exist.
@@ -323,6 +328,10 @@ Blockly.Blocks.component_method = {
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
+    if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      this.badBlock();
+      this.setDisabled(true);
+    }
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {

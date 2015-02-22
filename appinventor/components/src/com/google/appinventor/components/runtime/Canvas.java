@@ -112,6 +112,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
+  private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
   private static final int FLING_INTERVAL = 1000;  // ms
 
   // Keep track of enclosed sprites.  This list should always be
@@ -667,7 +668,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
     PaintColor(DEFAULT_PAINT_COLOR);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    TextAlignment(Component.ALIGNMENT_NORMAL);
+    TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
 
     sprites = new LinkedList<Sprite>();
@@ -1014,9 +1015,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *          {@link Component#ALIGNMENT_CENTER} or
    *          {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "Determines the alignment of the " +
+      "text drawn by DrawText() or DrawAngle() with respect to the " +
+      "point specified by that command.",
       category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      userVisible = true)
   public int TextAlignment() {
     return textAlignment;
   }
@@ -1032,8 +1035,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-                    defaultValue = Component.ALIGNMENT_CENTER + "")
-  @SimpleProperty(userVisible = false)
+                    defaultValue = DEFAULT_TEXTALIGNMENT + "")
+  @SimpleProperty(userVisible = true)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     switch (alignment) {

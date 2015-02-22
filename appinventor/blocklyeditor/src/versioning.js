@@ -31,13 +31,13 @@ Blockly.Versioning.loggingFlag = true;
 
 Blockly.Versioning.setLogging = function (bool) {
   Blockly.Versioning.loggingFlag = bool;
-}
+};
 
 Blockly.Versioning.log = function log(string) { // Display feedback on upgrade if Blockly.Versioning.loggingFlag is on.
   if (Blockly.Versioning.loggingFlag) {
     console.log("Blockly.Versioning: " + string);
   }
-}
+};
 
 /**
  * [lyn, 2014/11/04] Simplified version of Halloween AI2 upgrading architecture.
@@ -82,16 +82,16 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent) 
     if (componentType == "Form") {
       componentType = "Screen"; // Treat Form as if it were Screen
     }
-    Blockly.Versioning.log("In Blockly.Versioning.upgrade, upgradeComponentType("  + componentType + ","
-        + preUpgradeVersion + ","  + systemVersion + "," + rep + ")");
+    Blockly.Versioning.log("In Blockly.Versioning.upgrade, upgradeComponentType("  + componentType + "," +
+        preUpgradeVersion + ","  + systemVersion + "," + rep + ")");
     if (preUpgradeVersion > systemVersion) {
       // What to do in this case? Currently, throw an exception, but might want to do something else:
-      throw "Unexpected situation in Blockly.Versioning.upgrade: preUpgradeVersion of " + componentType
-          +  " = " + preUpgradeVersion + " > systemVersion = " + systemVersion;
+      throw "Unexpected situation in Blockly.Versioning.upgrade: preUpgradeVersion of " + componentType +
+          " = " + preUpgradeVersion + " > systemVersion = " + systemVersion;
     } else if (preUpgradeVersion < systemVersion) {
       // Need to upgrade this component
-      Blockly.Versioning.log("upgrading component type " + componentType + " from version "
-          + preUpgradeVersion + " to version " + systemVersion);
+      Blockly.Versioning.log("upgrading component type " + componentType + " from version " +
+          preUpgradeVersion + " to version " + systemVersion);
       var upgradeMap = Blockly.Versioning.AllUpgradeMaps[componentType];
       if (! upgradeMap) {
         throw "Blockly.Versioning.upgrade: no upgrade map for component type " + componentType;
@@ -99,12 +99,12 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent) 
       for (var version = preUpgradeVersion + 1; version <= systemVersion; version++) {
         var versionUpgrader = upgradeMap[version];
         if (! versionUpgrader) {
-          throw "Blockly.Versioning.upgrade: no upgrader to upgrade component type " + componentType
-              + " to version " + version;
+          throw "Blockly.Versioning.upgrade: no upgrader to upgrade component type " + componentType +
+              " to version " + version;
         }
         // Perform upgrade
-        Blockly.Versioning.log("applying upgrader for upgrading component type " + componentType
-            + " from version " + (version-1) + " to version " + version);
+        Blockly.Versioning.log("applying upgrader for upgrading component type " + componentType +
+            " from version " + (version-1) + " to version " + version);
         // Apply upgrader, possibly mutating rep and changing its dynamic type.
         rep = Blockly.Versioning.applyUpgrader(versionUpgrader, rep);
       }
@@ -116,18 +116,24 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent) 
   // Upgrade language based on language version
 
   var systemLanguageVersion = window.parent.BlocklyPanel_getBlocksLanguageVersion();
+  var systemYoungAndroidVersion = window.parent.BlocklyPanel_getYaVersion();
   var versionTags = dom.getElementsByTagName('yacodeblocks');
+
   // if there is no version in the file, then this is an early ai2 project, prior to
   // 10/21/13, when the blocks internal xml structure was overhauled
   // with descriptive mutator tags. blocksOverhaul translates the blocks
 
   var preUpgradeLanguageVersion;
-  if (versionTags.length==0) {
+  if (versionTags.length===0) {
     Blockly.Versioning.v17_blocksOverhaul(dom);
     preUpgradeLanguageVersion = 17;  // default for oldest ai2
   }
   else {
-    preUpgradeLanguageVersion = parseInt(versionTags[0].getAttribute('language-version'))
+    if (systemYoungAndroidVersion == parseInt(versionTags[0].getAttribute('ya-version'), 10)) {
+      Blockly.Versioning.ensureWorkspace(dom);
+      return;
+    }
+    preUpgradeLanguageVersion = parseInt(versionTags[0].getAttribute('language-version'), 10);
   }
 
   var blocksRep = dom; // Initial blocks rep is dom
@@ -1154,7 +1160,11 @@ Blockly.Versioning.AllUpgradeMaps =
     9: Blockly.Versioning.addDefaultMethodArgument("Canvas", "DrawCircle", 3, // Since this will be ARG3
         '<block type="logic_boolean">' +
         '  <field name="BOOL">TRUE</field>' +
-        '</block>')
+        '</block>'),
+
+    // AI2: No blocks need to be modified to upgrade to version 10
+    // The default value of TextAlignment was changed from Normal (left) to Center
+    10: "noUpgrade"
 
   }, // End Canvas upgraders
 
@@ -1470,7 +1480,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
     // AI2: Added title property
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added  ItemTextColor and ItemBackgroundColor
+    9: "noUpgrade"
 
   }, // End ListPicker upgraders
 
@@ -1482,7 +1495,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Added BackgroundColor Property
     // - Added TextColor Property
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2:
+    // - Added TextSize Property
+    4: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -1490,13 +1506,6 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The TimeInterval and DistanceInterval properties were added.
     // No changes required.
-    2: "noUpgrade"
-
-  }, // End LocationSensor upgraders
-
-  "LocationSensor": {
-
-    // AI2: The TimeInterval and DistanceInterval properties were added.
     2: "noUpgrade"
 
   }, // End LocationSensor upgraders
@@ -1643,7 +1652,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The Shape property was added.
     // No blocks need to be modified to upgrade to version 4.
-    4: "noUpgrade",
+    4: "noUpgrade"
 
   }, // End PhoneNumberPicker upgraders
 
@@ -1752,7 +1761,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 13:
     // - The Screen.Scrollable property was set to False by default
-    13: "noUpgrade"
+    13: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 14:
+    // - The Screen1.AppName was added and no block need to be changed.
+    14: "noUpgrade"
 
   }, // End Screen
 
@@ -1791,7 +1804,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "SoundRecorder": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+    // AI2: The Sound.SavedRecording property was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
 
   }, // End SoundRecorder upgraders
 
@@ -1834,7 +1850,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // No blocks need to be modified to upgrade to version 4, although old
     // block need to have MultiLine explicitly set to true, since the new default
     // is false (see YoungAndroidFormUpgrade).
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2: Added RequestFocus method
+    5: "noUpgrade"
 
   }, // End TextBox upgraders
 
@@ -2024,7 +2043,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: IgnoreSslError property added
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: Added ClearCaches method
+    6: "noUpgrade"
 
   }, // End WebViewer upgraders
 
