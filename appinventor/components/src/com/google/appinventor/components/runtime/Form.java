@@ -216,6 +216,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowTitleBar(true);
   }
 
   @Override
@@ -761,6 +762,7 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowTitleBar(boolean show) {
     if (show != showTitleBar) {
       View v = (View)findViewById(android.R.id.title).getParent();
