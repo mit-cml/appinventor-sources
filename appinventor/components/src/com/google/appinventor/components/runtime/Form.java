@@ -792,8 +792,7 @@ public class Form extends Activity
    * @return  showTitleBar boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The title bar is the top gray bar on the screen. You have the " +
-      		"option to hide the title bar. This function returns you the visibilty of the title bar.")
+      description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
   public boolean ShowTitleBar() {
     return showTitleBar;
   }
