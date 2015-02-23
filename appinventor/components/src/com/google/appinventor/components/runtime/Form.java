@@ -791,7 +791,7 @@ public class Form extends Activity
    * @return  showStatusBar boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The status bar is the toppest bar on the screen. You have the option to hide the status bar. This function returns you the visibilty of the status bar.")
+      description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
   public boolean ShowStatusBar() {
     return showStatusBar;
   }
