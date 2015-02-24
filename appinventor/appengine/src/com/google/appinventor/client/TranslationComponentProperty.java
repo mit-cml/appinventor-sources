@@ -205,6 +205,7 @@ public class TranslationComponentProperty {
     map.put("MaxValue", MESSAGES.MaxValueProperties());
     map.put("MinValue", MESSAGES.MinValueProperties());
     map.put("ThumbPosition", MESSAGES.ThumbPositionProperties());
+    map.put("ThumbEnabled", MESSAGES.ThumbEnabled());
     map.put("FontBold", MESSAGES.FontBoldProperties());
     map.put("FontItalic", MESSAGES.FontItalicProperties());
     map.put("ShowFeedback", MESSAGES.ShowFeedbackProperties());

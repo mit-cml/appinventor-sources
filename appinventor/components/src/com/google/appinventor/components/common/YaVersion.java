@@ -726,7 +726,9 @@ public class YaVersion {
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
-  public static final int SLIDER_COMPONENT_VERSION = 1;
+  // For SLIDER_COMPONENT_VERSION 2:
+  // - Added the property to allow for the removal of the Thumb Slider
+  public static final int SLIDER_COMPONENT_VERSION = 2;
 
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;

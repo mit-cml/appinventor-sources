@@ -500,7 +500,10 @@ public final class YoungAndroidFormUpgrader {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
     }
-
+    if (srcCompVersion < 2) {
+      // Added the property to allow for the removal of the Thumb Slider
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
