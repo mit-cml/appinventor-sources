@@ -313,8 +313,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 119:
   // - TEXTBOX_COMPONENT_VERSION was incremented to 5
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 120:
+  // - SLIDER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 119;
+  public static final int YOUNG_ANDROID_VERSION = 120;
 
   // ............................... Blocks Language Version Number ...............................
 
