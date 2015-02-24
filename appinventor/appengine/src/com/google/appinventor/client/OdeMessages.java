@@ -2738,6 +2738,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ThumbPositionProperties();
 
+  @DefaultMessage("ThumbEnabled")
+  @Description("")
+  String ThumbEnabled();
+
   @DefaultMessage("Day")
   @Description("")
   String DayProperties();

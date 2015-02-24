@@ -1779,7 +1779,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Slider": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Added the property to allow for the removal of the Thumb Slider
+    2: "noUpgrade"
 
   }, // End Slider upgraders
 
