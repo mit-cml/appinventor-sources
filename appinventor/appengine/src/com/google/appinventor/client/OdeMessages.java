@@ -4353,6 +4353,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShowTextDialogMethods();
 
+  @DefaultMessage("ShowProgressDialog")
+  @Description("")
+  String ShowProgressDialogMethods();
+
+  @DefaultMessage("DismissProgressDialog")
+  @Description("")
+  String DismissProgressDialogMethods();
+
   @DefaultMessage("GetColor")
   @Description("")
   String GetColorMethods();
