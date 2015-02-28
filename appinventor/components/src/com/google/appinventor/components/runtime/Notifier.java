@@ -47,6 +47,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *      which the AfterTextInput event is raised.
  * <li> ShowAlert: displays an alert that goes away by itself after
  *      a short time.
+ * <li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by
+ *      the user. Can only be dismissed by using the DismissProgressDialog block.
+ * <li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.
  * <li> LogError: logs an error message to the Android log.
  * <li> LogInfo: logs an info message to the Android log.
  * <li> LogWarning: logs a warning message to the Android log.
@@ -66,6 +69,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
         "which the AfterTextInput event is raised. " +
         "<li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li>" +
+        "<li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by " +
+        "the user. It can only be dismissed by using the DismissProgressDialog block.</li>" +
+        "<li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li>" +
         "<li> LogError: logs an error message to the Android log. </li>" +
         "<li> LogInfo: logs an info message to the Android log.</li>" +
         "<li> LogWarning: logs a warning message to the Android log.</li>" +
@@ -115,7 +121,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param message the text in the alert box
    * @param title the title for the alert box
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Shows a dialog box with an optional title and message "
+    + "(use empty strings if they are not wanted). This dialog box contains a spinning "
+    + "artifact to indicate that the program is working. It cannot be canceled by the user "
+    + "but must be dismissed by the App Inventor Program by using the DismissProgressDialog "
+    + "block.")
   public void ShowProgressDialog(String message, String title) {
     progressDialog(message, title);
   }
@@ -123,7 +133,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Dismisses the alert created by the ShowProgressDialog block
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Dismiss a previously displayed ProgressDialog box")
   public void DismissProgressDialog() {
     if (progressDialog != null) {
       progressDialog.dismiss();
@@ -138,12 +148,12 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param title the title for the dialog
    */
   public void progressDialog(String message, String title) {
-	if (progressDialog != null) {
-	  DismissProgressDialog();
-	}
+    if (progressDialog != null) {
+      DismissProgressDialog();
+    }
     progressDialog = ProgressDialog.show(activity, title, message);
     // prevents the user from escaping the dialog by hitting the Back button
-    progressDialog.setCancelable(true);
+    progressDialog.setCancelable(false);
   }
 
   /**
