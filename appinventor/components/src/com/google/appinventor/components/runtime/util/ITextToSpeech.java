@@ -5,7 +5,9 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * This abstracts out what a text to speech implementation needs to have.  In particular we use
@@ -72,4 +74,9 @@ public interface ITextToSpeech {
    *                   accelerate it (2.0 is twice the normal speech rate).
    */
   public void setSpeechRate(float speechRate);
+  
+  public int isLanguageAvailable(Locale loc);
+  
+  public boolean isInitialized() ;
+   
 }
