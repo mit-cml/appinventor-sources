@@ -142,6 +142,8 @@ public class TranslationComponentMethods {
     map.put("ShowChooseDialog", MESSAGES.ShowChooseDialogMethods());
     map.put("ShowMessageDialog", MESSAGES.ShowMessageDialogMethods());
     map.put("ShowTextDialog", MESSAGES.ShowTextDialogMethods());
+    map.put("ShowProgressDialog", MESSAGES.ShowProgressDialogMethods());
+    map.put("DismissProgressDialog", MESSAGES.DismissProgressDialogMethods());
     map.put("GetColor", MESSAGES.GetColorMethods());
     map.put("GetLightLevel", MESSAGES.GetLightLevelMethods());
     map.put("DeleteFile", MESSAGES.DeleteFileMethods());

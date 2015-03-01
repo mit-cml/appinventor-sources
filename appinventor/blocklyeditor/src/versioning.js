@@ -1542,7 +1542,11 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // AI2: Added NotifierColor, TextColor and NotifierLength options
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Added a ProgressDialog, a dialog that cannot be dismissed by the user.
+    // The ShowProgressDialog will show the dialog, and DismissProgressDialog is the only way to dismiss it
+    4: "noUpgrade"
 
   }, // End Notifier upgraders
 

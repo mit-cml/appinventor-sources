@@ -315,8 +315,10 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 120:
   // - SLIDER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 121:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 120;
+  public static final int YOUNG_ANDROID_VERSION = 121;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -664,7 +666,9 @@ public class YaVersion {
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
   // For NOTIFIER_COMPONENT_VERSION 3:
   // - Added NotifierColor, TextColor and NotifierLength options
-  public static final int NOTIFIER_COMPONENT_VERSION = 3;
+  // For NOTIFIER_COMPONENT_VERSION 4:
+  // - Added a ShowProgressDialog method, and a DismissProgressDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 4;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
