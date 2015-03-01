@@ -427,7 +427,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     EventDispatcher.dispatchEvent(this, "BeforeSpeaking");
   }
 
-
   /**
    * Event to raise after the message is spoken.
    *
@@ -454,36 +453,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.onDestroy();
   }
   
-  
-//  @SimpleFunction(description = "?? To be supplied")
-//  public void getAvailableVoices() {
-//   // Log.d(LOG_TAG, "starting Activity for result");
-//    if (requestCode == 0) { // only need to register once
-//      requestCode = container.$form().registerForActivityResult(this); }
-//    Intent checkIntent = new Intent();
-//    checkIntent.setAction(android.speech.tts.TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-//    container.$context().startActivityForResult(checkIntent, requestCode);
-//  }
-// 
-//  
-//  @SimpleEvent()
-//  public void AfterVoicesObtained(YailList voices) {
-//    EventDispatcher.dispatchEvent(this, "AfterVoicesObtained", voices);
-//  }
-// 
-//  public void resultReturned(int resultRequestCode, int resultCode, Intent data) {
-//    Log.d(LOG_TAG, "data is " + data);
-//    Log.d(LOG_TAG, "resultCode is " + resultCode);
-//    Log.d(LOG_TAG, "desired result code is " 
-//        + android.speech.tts.TextToSpeech.Engine.CHECK_VOICE_DATA_PASS);
-//    if ((resultRequestCode == requestCode)
-//        &&
-//        (resultCode == android.speech.tts.TextToSpeech.Engine.CHECK_VOICE_DATA_PASS)) {
-//      ArrayList<String> voices =
-//          data.getStringArrayListExtra(android.speech.tts.TextToSpeech.Engine.EXTRA_AVAILABLE_VOICES);
-//      Log.d(LOG_TAG, "voices is " + voices.toString());
-//      AfterVoicesObtained(YailList.makeList(voices));
-//    }
-//  }  
+
 
 }
