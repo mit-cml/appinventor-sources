@@ -2242,6 +2242,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ApiKeyProperties();
 
+  @DefaultMessage("AvailableCountries")
+  @Description("")
+  String AvailableCountriesProperties();
+
+  @DefaultMessage("AvailableLanguages")
+  @Description("")
+  String AvailableLanguagesProperties();
+
   @DefaultMessage("BackgroundColor")
   @Description("")
   String BackgroundColorProperties();
