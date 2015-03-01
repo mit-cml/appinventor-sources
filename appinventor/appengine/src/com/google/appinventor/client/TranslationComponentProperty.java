@@ -52,6 +52,8 @@ public class TranslationComponentProperty {
     map.put("Angle", MESSAGES.AngleProperties());
     map.put("Animation", MESSAGES.AnimationProperties());
     map.put("Available", MESSAGES.AvailableProperties());
+    map.put("AvailableCountries", MESSAGES.AvailableCountriesProperties());
+    map.put("AvailableLanguages", MESSAGES.AvailableLanguagesProperties());
     map.put("AvailableProviders", MESSAGES.AvailableProvidersProperties());
     map.put("Azimuth", MESSAGES.AzimuthProperties());
     map.put("BallotOptions", MESSAGES.BallotOptionsProperties());

@@ -513,7 +513,12 @@ public final class YoungAndroidFormUpgrader {
       // Added speech pitch and rate
       srcCompVersion = 2;
     }
-
+    if (srcCompVersion < 3) {
+      // The AvailableLanguages property was added
+      // The AvailableCountires property was added
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

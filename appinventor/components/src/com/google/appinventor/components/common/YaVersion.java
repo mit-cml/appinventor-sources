@@ -1,4 +1,4 @@
-// -*- mode: java; c-basic-offset: 2; -*-
+ // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -315,8 +315,10 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 120:
   // - SLIDER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 121:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 120;
+  public static final int YOUNG_ANDROID_VERSION = 121;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -771,8 +773,12 @@ public class YaVersion {
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
 
-  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 2:
+  // - added speech pitch and rate
+  // For TEXTTOSPEECH_COMPONENT_VERSION 3:
+  // - the AvailableLanguages property was added
+  // - the AvailableCountries property was added 
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 3;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
