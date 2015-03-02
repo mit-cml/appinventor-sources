@@ -1223,7 +1223,10 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyRename(componentName, "Alignment", "TextAlignment");
     */
-    2: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    // RequestFocus was added
+    3: "noUpgrade"
 
   }, // End EmailPicker upgraders
 
@@ -1622,7 +1625,10 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyRename(componentName, "Alignment", "TextAlignment");
     */
-    2: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+
+    // RequestFocus was added
+    3: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 

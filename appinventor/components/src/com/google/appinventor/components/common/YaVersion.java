@@ -317,8 +317,11 @@ public class YaVersion {
   // - SLIDER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 121:
   // - NOTIFIER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 122:
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 3
+  // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 121;
+  public static final int YOUNG_ANDROID_VERSION = 122;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -541,7 +544,9 @@ public class YaVersion {
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int EMAILPICKER_COMPONENT_VERSION = 2;
+  // For EMAILPICKER_COMPONENT_VERSION 3:
+  // - RequestFocus function was added (via TextBoxBase)
+  public static final int EMAILPICKER_COMPONENT_VERSION = 3;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;
@@ -691,7 +696,9 @@ public class YaVersion {
 
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 2;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 3:
+  // - Added RequestFocus Function (via TextBoxBase)
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
 
   public static final int PEDOMETER_COMPONENT_VERSION = 1;
 

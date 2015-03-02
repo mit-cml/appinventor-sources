@@ -667,6 +667,10 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // RequestFocus function was added (via TextBoxBase)
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -953,6 +957,10 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Added RequestFocus Function (via TextBoxBase)
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

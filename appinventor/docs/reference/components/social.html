@@ -564,6 +564,11 @@ numbers, and the list of email addresses will contain only one email.</p>
 <p>An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>
  <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>
 <p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.</p>
+<h3>Methods</h3>
+<dl>
+  <dt><code>RequestFocus()</code></dt>
+  <dd>Sets the EmailPicker active.</dd>
+</dl>
 
 <h3>Properties</h3>
 <dl>

@@ -886,6 +886,11 @@ none
                   <p> Password text box components are usually used with a
                     button
                     component. The user taps the button after entering text. </p>
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt><code>RequestFocus()</code></dt>
+                    <dd>Sets the PasswordTextBox active.</dd>
+                  </dl>
                   <h3> Properties </h3>
                   <dl>
                     <dt> <code> BackgroundColor </code> </dt>
@@ -1074,6 +1079,16 @@ none
                   <p> If the text entered by the user should not be displayed,
                     use <code>
                       PasswordTextBox </code> instead. </p>
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> HideKeyboard() </code> </dt>
+                    <dd> Hide the keyboard. Only multiline text boxes need this.
+                      Single
+                      line text boxes close the keyboard when the users presses
+                      the Done key. </dd>
+                    <dt><code>RequestFocus()</code></dt>
+                    <dd>Sets the textbox active.</dd>
+                  </dl>
                   <h3> Properties </h3>
                   <dl>
                     <dt> <code> BackgroundColor </code> </dt>
@@ -1155,16 +1170,6 @@ none
                     <dd> Event raised when this component is no longer selected
                       for
                       input, such as if the user touches a different text box. </dd>
-                  </dl>
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> HideKeyboard() </code> </dt>
-                    <dd> Hide the keyboard. Only multiline text boxes need this.
-                      Single
-                      line text boxes close the keyboard when the users presses
-                      the Done key. </dd>
-                    <dt><code>RequestFocus()</code></dt>
-                    <dd>Sets the textbox active.</dd>
                   </dl>
 
                   <h2 id="TimePicker">TimePicker</h2>
