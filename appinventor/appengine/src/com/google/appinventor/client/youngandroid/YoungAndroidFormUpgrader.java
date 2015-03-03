@@ -290,6 +290,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("SoundRecorder")) {
+        srcCompVersion = upgradeSoundRecorderProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
@@ -497,7 +500,10 @@ public final class YoungAndroidFormUpgrader {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
     }
-
+    if (srcCompVersion < 2) {
+      // Added the property to allow for the removal of the Thumb Slider
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -507,7 +513,12 @@ public final class YoungAndroidFormUpgrader {
       // Added speech pitch and rate
       srcCompVersion = 2;
     }
-
+    if (srcCompVersion < 3) {
+      // The AvailableLanguages property was added
+      // The AvailableCountires property was added
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -660,6 +671,10 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // RequestFocus function was added (via TextBoxBase)
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -894,6 +909,10 @@ public final class YoungAndroidFormUpgrader {
       //  Added title property
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // Added ItemTextColor, ItemBackgroundColor
+      srcCompVersion = 9;
+    }
     return srcCompVersion;
   }
 
@@ -907,6 +926,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the BackgroundColor property
       // Added the TextColor property
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Added the TextSize property
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -939,6 +962,10 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Added RequestFocus Function (via TextBoxBase)
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1024,6 +1051,17 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeSoundRecorderProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SoundRecorder.RecordFile property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+
   private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1065,6 +1103,11 @@ public final class YoungAndroidFormUpgrader {
       // The BackgroundColor, NotifierLength, and TextColor options were added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // A new type of dialog was created, a ProgressDialog, and a method to
+      // dismiss the dialog was also added.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -1162,6 +1205,10 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // RequestFocus method was added
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1191,7 +1238,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 5) {
+    if (srcCompVersion < 6) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -1199,7 +1246,8 @@ public final class YoungAndroidFormUpgrader {
       // WebViewString added
       // No properties need to be modified to upgrade to version 4.
       // IgnoreSslError property added (version 5)
-      srcCompVersion = 5;
+      // ClearCaches method was added (version 6)
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }

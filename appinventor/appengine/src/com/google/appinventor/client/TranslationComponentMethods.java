@@ -142,6 +142,8 @@ public class TranslationComponentMethods {
     map.put("ShowChooseDialog", MESSAGES.ShowChooseDialogMethods());
     map.put("ShowMessageDialog", MESSAGES.ShowMessageDialogMethods());
     map.put("ShowTextDialog", MESSAGES.ShowTextDialogMethods());
+    map.put("ShowProgressDialog", MESSAGES.ShowProgressDialogMethods());
+    map.put("DismissProgressDialog", MESSAGES.DismissProgressDialogMethods());
     map.put("GetColor", MESSAGES.GetColorMethods());
     map.put("GetLightLevel", MESSAGES.GetLightLevelMethods());
     map.put("DeleteFile", MESSAGES.DeleteFileMethods());
@@ -216,6 +218,7 @@ public class TranslationComponentMethods {
     map.put("BuildPostData", MESSAGES.BuildPostDataMethods());
     map.put("ClearCookies", MESSAGES.ClearCookiesMethods());
     map.put("Get", MESSAGES.GetMethods());
+    map.put("RequestFocus", MESSAGES.RequestFocusMethods());
     map.put("HtmlTextDecode", MESSAGES.HtmlTextDecodeMethods());
     map.put("JsonTextDecode", MESSAGES.JsonTextDecodeMethods());
     map.put("XmlTextDecode", MESSAGES.XmlTextDecodeMethods());
@@ -226,6 +229,7 @@ public class TranslationComponentMethods {
     map.put("CanGoBack", MESSAGES.CanGoBackMethods());
     map.put("CanGoForward", MESSAGES.CanGoForwardMethods());
     map.put("ClearLocations", MESSAGES.ClearLocationsMethods());
+    map.put("ClearCaches", MESSAGES.ClearCachesMethods());
     map.put("GoBack", MESSAGES.GoBackMethods());
     map.put("GoForward", MESSAGES.GoForwardMethods());
     map.put("GoHome", MESSAGES.GoHomeMethods());

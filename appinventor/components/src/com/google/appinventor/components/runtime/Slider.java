@@ -53,6 +53,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private float maxValue;
   // thumbPosition is a number between minValue and maxValue
   private float thumbPosition;
+  private boolean thumbEnabled;
 
   // the total slider width
   private LayerDrawable fullBar;
@@ -90,6 +91,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     minValue = Component.SLIDER_MIN_VALUE;
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
+    thumbEnabled = true;
 
     seekbar.setOnSeekBarChangeListener(this);
 
@@ -138,6 +140,34 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     // Set the thumb position on the seekbar
     seekbar.setProgress((int) seekbarPosition);
+  }
+
+  /**
+   * Sets whether or not the slider thumb should be shown
+   *
+   * @param enabled Whether or not the slider thumb should be shown
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "True")
+  @SimpleProperty(description = "Sets whether or not to display the slider thumb.",
+     userVisible = true)
+  public void ThumbEnabled(boolean enabled) {
+    thumbEnabled = enabled;
+    int alpha = thumbEnabled ? 255 : 0;
+    seekbar.getThumb().mutate().setAlpha(alpha);
+    seekbar.setEnabled(thumbEnabled);
+  }
+
+  /**
+   * Whether or not the slider thumb is being be shown
+   *
+   * @return Whether or not the slider thumb is being be shown
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Returns whether or not the slider thumb is being be shown",
+      userVisible = true)
+  public boolean ThumbEnabled() {
+    return thumbEnabled;
   }
 
   /**

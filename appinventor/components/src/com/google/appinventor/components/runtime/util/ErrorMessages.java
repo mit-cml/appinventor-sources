@@ -175,22 +175,25 @@ public final class ErrorMessages {
   // WebViewer errors
   public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
 
-  // FTC errors
-  public static final int ERROR_FTC_CONFIG_FILE_NOT_FOUND = 2601;
-  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2602;
-  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2603;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2604;
-  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2605;
-  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2606;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2607;
-  public static final int ERROR_FTC_INVALID_DIRECTION = 2608;
-  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2609;
-  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2610;
-
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
-  // Please start the next group of error numbers at 2701.
+  //TextToSpeech errors
+  public static final int ERROR_TTS_NOT_READY = 2701;
+
+  // FTC errors
+  public static final int ERROR_FTC_CONFIG_FILE_NOT_FOUND = 2801;
+  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2802;
+  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2803;
+  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2804;
+  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2805;
+  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2806;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2807;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2808;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2809;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2810;
+
+  // Please start the next group of error numbers at 2901.
 
 
   // Mapping of error numbers to error message format strings.
@@ -459,6 +462,12 @@ public final class ErrorMessages {
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
+    // FusiontablesControl errors
+    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
+       "The response was: %s");
+    // TextToSpeech errors
+    errorMessages.put(ERROR_TTS_NOT_READY,
+       "TextToSpeech is not yet ready to perform this operation");
     // FTC errors
     errorMessages.put(ERROR_FTC_CONFIG_FILE_NOT_FOUND, "The robot config file %s was not found.");
     errorMessages.put(ERROR_FTC_DRIVER_STATION_NOT_FOUND, "The driver station was not found.");
@@ -473,9 +482,6 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE, "The specified scale range is not valid: %s %s");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode is not valid: %s");
-    // FusiontablesControl error
-    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
-       "The response was: %s");
   }
 
   private ErrorMessages() {

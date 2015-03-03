@@ -20,7 +20,14 @@ public class TranslationComponentProperty {
   }
 
   public static String getName(String key) {
-    return myMap.get(key);
+    String value = myMap.get(key);
+    if (key == null) {
+      // This will help implementors debug if the forget to add an entry
+      // when defining a new property
+      return "**Missing key in TranslationComponentProperty**";
+    } else {
+      return value;
+    }
   }
 
   /**
@@ -45,6 +52,8 @@ public class TranslationComponentProperty {
     map.put("Angle", MESSAGES.AngleProperties());
     map.put("Animation", MESSAGES.AnimationProperties());
     map.put("Available", MESSAGES.AvailableProperties());
+    map.put("AvailableCountries", MESSAGES.AvailableCountriesProperties());
+    map.put("AvailableLanguages", MESSAGES.AvailableLanguagesProperties());
     map.put("AvailableProviders", MESSAGES.AvailableProvidersProperties());
     map.put("Azimuth", MESSAGES.AzimuthProperties());
     map.put("BallotOptions", MESSAGES.BallotOptionsProperties());
@@ -156,6 +165,7 @@ public class TranslationComponentProperty {
     map.put("ResultName", MESSAGES.ResultNameProperties());
     map.put("Rotates", MESSAGES.RotatesProperties());
     map.put("SaveResponse", MESSAGES.SaveResponseProperties());
+    map.put("SavedRecording", MESSAGES.SavedRecordingProperties());
     map.put("ScalePictureToFit", MESSAGES.ScalePictureToFitProperties());
     map.put("ScreenOrientation", MESSAGES.ScreenOrientationProperties());
     map.put("Scrollable", MESSAGES.ScrollableProperties());
@@ -184,6 +194,7 @@ public class TranslationComponentProperty {
     map.put("Y", MESSAGES.YProperties());
     map.put("Z", MESSAGES.ZProperties());
     map.put("ShowFilterBar", MESSAGES.ShowFilterBarProperties());
+    map.put("TextSize", MESSAGES.TextSizeProperties());
     map.put("NotifierLength", MESSAGES.NotifierLengthProperties());
     map.put("Loop", MESSAGES.LoopProperties());
     map.put("Pitch", MESSAGES.PitchProperties());
@@ -196,6 +207,7 @@ public class TranslationComponentProperty {
     map.put("MaxValue", MESSAGES.MaxValueProperties());
     map.put("MinValue", MESSAGES.MinValueProperties());
     map.put("ThumbPosition", MESSAGES.ThumbPositionProperties());
+    map.put("ThumbEnabled", MESSAGES.ThumbEnabled());
     map.put("FontBold", MESSAGES.FontBoldProperties());
     map.put("FontItalic", MESSAGES.FontItalicProperties());
     map.put("ShowFeedback", MESSAGES.ShowFeedbackProperties());
@@ -227,6 +239,11 @@ public class TranslationComponentProperty {
     map.put("KeepRunningWhenOnPause", MESSAGES.KeepRunningWhenOnPauseProperties());
     map.put("ProximityChanged", MESSAGES.ProximityChangedPropertiesProperties());
 
+    // ========== ListPicker
+    map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
+    map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
+
+    // ========== FTC
     map.put("A", MESSAGES.AProperties());
     map.put("AtRest", MESSAGES.AtRestProperties());
     map.put("B", MESSAGES.BProperties());

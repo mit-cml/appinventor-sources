@@ -264,6 +264,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.MinValueProperties();
     } else if (key.equals("ThumbPosition")) {
       value = MESSAGES.ThumbPositionProperties();
+    } else if (key.equals("ThumbEnabled")) {
+      value = MESSAGES.ThumbEnabled();
     } else if (key.equals("UseFront")) {
       value = MESSAGES.UseFrontProperties();
     } else if (key.equals("Day")) {

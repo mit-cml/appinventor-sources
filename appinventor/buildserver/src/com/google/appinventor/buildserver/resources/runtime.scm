@@ -1088,9 +1088,21 @@
                     (show-arglist-no-parens arglist))
      (string-append "Bad arguments to " string-name))))
 
+;;; show a string that is the elements in arglist, with the individual
+;;; elements delimited by brackets to make error messages more readable
 (define (show-arglist-no-parens args)
-  (let ((s (get-display-representation args)))
-    (substring s 1 (- (string-length s) 1))))
+  (let* ((elements (map get-display-representation args))
+         (bracketed (map (lambda (s) (string-append "[" s "]")) elements)))
+    (let loop ((result "") (rest-elements bracketed))
+      (if (null? rest-elements)
+          result
+          (loop (string-append result " " (car rest-elements))
+                (cdr rest-elements))))))
+
+
+;;(define (show-arglist-no-parens args)
+;;  (let ((s (get-display-representation args)))
+;;    (substring s 1 (- (string-length s) 1))))
 
 ;;; Coerce the list of args to the corresponding list of types
 
