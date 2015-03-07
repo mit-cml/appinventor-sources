@@ -2,13 +2,18 @@
 // Copyright 2014 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.ftc;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.ComponentContainer;
+import com.google.appinventor.components.runtime.Deleteable;
+import com.google.appinventor.components.runtime.FtcRobotController;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -58,11 +63,11 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     }
   }
 
-  final String getDeviceName() {
+  protected final String getDeviceName() {
     return deviceName;
   }
 
-  final HardwareMap getHardwareMap() {
+  protected final HardwareMap getHardwareMap() {
     return hardwareMap;
   }
 
@@ -90,7 +95,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
 
   // abstract methods
 
-  abstract void initHardwareDevice();
+  protected abstract void initHardwareDevice();
 
-  abstract void clearHardwareDevice();
+  protected abstract void clearHardwareDevice();
 }

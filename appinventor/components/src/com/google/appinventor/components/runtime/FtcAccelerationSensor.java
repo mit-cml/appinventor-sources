@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
 
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -94,7 +95,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  void initHardwareDevice() {
+  protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
@@ -102,7 +103,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   }
 
   @Override
-  void clearHardwareDevice() {
+  protected void clearHardwareDevice() {
     accelerationSensor = null;
   }
 }

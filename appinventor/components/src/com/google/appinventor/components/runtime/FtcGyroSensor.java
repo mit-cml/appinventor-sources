@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
 
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -74,7 +75,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  void initHardwareDevice() {
+  protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
@@ -82,7 +83,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   }
 
   @Override
-  void clearHardwareDevice() {
+  protected void clearHardwareDevice() {
     gyroSensor = null;
   }
 }

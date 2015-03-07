@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -120,7 +121,7 @@ public final class FtcServo extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  void initHardwareDevice() {
+  protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       servo = hardwareMap.servo.get(getDeviceName());
@@ -128,7 +129,7 @@ public final class FtcServo extends FtcHardwareDevice {
   }
 
   @Override
-  void clearHardwareDevice() {
+  protected void clearHardwareDevice() {
     servo = null;
   }
 }

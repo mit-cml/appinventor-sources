@@ -192,7 +192,6 @@ public class TranslationComponentParams {
     map.put("translation", MESSAGES.translationParams());
     map.put("languageToTranslateTo", MESSAGES.languageToTranslateToParams());
     map.put("textToTranslate", MESSAGES.textToTranslateParams());
-    map.put("event", MESSAGES.eventParams());
     map.put("key", MESSAGES.keyParams());
     map.put("max", MESSAGES.maxParams());
     map.put("min", MESSAGES.minParams());

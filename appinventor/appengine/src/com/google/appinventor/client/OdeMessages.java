@@ -3846,10 +3846,6 @@ public interface OdeMessages extends Messages {
   String textToTranslateParams();
 
   // FIRST Tech Challenge method/event parameters
-  @DefaultMessage("event")
-  @Description("")
-  String eventParams();
-  
   @DefaultMessage("key")
   @Description("")
   String keyParams();

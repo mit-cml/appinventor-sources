@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
@@ -98,7 +99,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  void initHardwareDevice() {
+  protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       lightSensor = hardwareMap.lightSensor.get(getDeviceName());
@@ -107,7 +108,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   }
 
   @Override
-  void clearHardwareDevice() {
+  protected void clearHardwareDevice() {
     lightSensor = null;
   }
 }

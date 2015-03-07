@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -168,7 +169,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  void initHardwareDevice() {
+  protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       dcMotor = hardwareMap.dcMotor.get(getDeviceName());
@@ -176,7 +177,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   @Override
-  void clearHardwareDevice() {
+  protected void clearHardwareDevice() {
     if (dcMotor != null) {
       dcMotor.setPowerFloat();
       dcMotor = null;
