@@ -32,19 +32,10 @@ import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
-import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.factory.RobotFactory;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LegacyModule;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.robocol.Command;
-import com.qualcomm.robotcore.robocol.Telemetry;
-import com.qualcomm.robotcore.robot.Robot;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.Util;
+// TODO(lizlooney): What other com.qualcomm.robotcore.util classes should be supported?
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
 
@@ -104,11 +95,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     OpMode getOpMode();
   }
 
-  private static final long USB_SCAN_WAITTIME_MILLIS = 10 * 1000L; // 10 seconds
-  private static final long WIFI_DIRECT_TIMEOUT_MILLIS = 2 * 60 * 1000L; // 2 minutes
-  private static final String CONFIG_FILES_DIR =
-      Environment.getExternalStorageDirectory() + "/FIRST/";
-  private static final String CONFIG_FILE_EXT = ".xml";
   private static final String DEFAULT_CONFIGURATION = "robot_config";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
@@ -117,10 +103,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private static final Object gamepadDevicesLock = new Object();
   private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
   private static final Object opModeWrappersLock = new Object();
-
-  // Telemetry
-  private final ElapsedTime telemetryTimer = new ElapsedTime();
-  private final double telemetryInterval = 0.250; // in seconds
 
   private volatile String driverStationAddress = "";
   private volatile String configuration = DEFAULT_CONFIGURATION;
@@ -133,28 +115,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private FtcRobotControllerS ftcRobotControllerS; // set in onInitialize
   private FtcRobotControllerA ftcRobotControllerA; // set in onInitialize
 
-  /*
-   * wifiDirectAssistant is set in onInitialize, if the device version is Ice Cream Sandwich
-   * or later.
-   */
-  private volatile WifiDirectAssistant wifiDirectAssistant;
-
-  private volatile OpModeManager opModeManager;
-
-  /*
-   * robot is created by the robotSetupThread.
-   */
-  private volatile Robot robot;
-
-  /*
-   * eventLoopManager is set in init, which is called after the robotSetupThread calls
-   * robot.start().
-   */
-  private volatile EventLoopManager eventLoopManager;
-
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
-    System.out.println(System.currentTimeMillis() + " HeyLiz - FtcRobotController................................................................................");
     form.registerForOnInitialize(this);
     form.registerForOnNewIntent(this);
     form.registerForOnDestroy(this);
@@ -167,13 +129,9 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
       wakeLock.acquire();
 
-      OpModeRegister opModeRegister = this;
-      opModeManager = new OpModeManager(new HardwareMap(), opModeRegister);
-
       ftcRobotControllerS = new FtcRobotControllerS(this);
       FtcRobotControllerA ftcRobotControllerA = new FtcRobotControllerA(this, ftcRobotControllerS);
-
-      ftcRobotControllerS.bindHeyLiz();
+      ftcRobotControllerS.init();
     }
   }
 
@@ -374,10 +332,16 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "RobotUpdate", status);
   }
 
-
-  // HeyLiz who should call this? FtcEventLoop.init
-  void initHardwareDevices(HardwareMap hardwareMap) {
-    // Initialize each hardware device component.
+  // Called from FtcEventLoop.init
+  public void onEventLoopInit(EventLoopManager eventLoopManager, HardwareMap hardwareMap) {
+    synchronized (gamepadDevicesLock) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
+          gamepadDevice.setEventLoopManager(eventLoopManager);
+        }
+      }
+    }
     synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm != null) {
@@ -388,19 +352,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
 
-  // HeyLiz who should call this? FtcEventLoop.init
-  void initGamepadDevices(EventLoopManager eventLoopManager) {
-    synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
-          gamepadDevice.setEventLoopManager(eventLoopManager);
-        }
-      }
-    }
-  }
-
-  void teardownGamepadDevices() {
+  // Called from FtcEventLoop.teardown
+  public void onEventLoopTeardown() {
     synchronized (gamepadDevicesLock) {
       List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
       if (gamepadDevicesForForm != null) {
@@ -409,9 +362,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
         }
       }
     }
-  }
-
-  void teardownHardwareDevices() {
     synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm != null) {
@@ -450,7 +400,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   private void prepareToDie() {
-    ftcRobotControllerS.unbindHeyLiz();
+    ftcRobotControllerS.teardown();
 
     wakeLock.release();
     wakeLock = null;

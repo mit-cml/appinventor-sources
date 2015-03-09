@@ -78,6 +78,7 @@ public class TranslationContainer {
     CompTransMap.put("FtcGamepad", "FtcGamepad"); // Needs translation
     CompTransMap.put("FtcGyroSensor", "FtcGyroSensor"); // Needs translation
     CompTransMap.put("FtcIrSeekerSensor", "FtcIrSeekerSensor"); // Needs translation
+    CompTransMap.put("FtcLegacyModule", "FtcLegacyModule"); // Needs translation
     CompTransMap.put("FtcLightSensor", "FtcLightSensor"); // Needs translation
     CompTransMap.put("FtcOpMode", "FtcOpMode"); // Needs translation
     CompTransMap.put("FtcRobotController", "FtcRobotController"); // Needs translation

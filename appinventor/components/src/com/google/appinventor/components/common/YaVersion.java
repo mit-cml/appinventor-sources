@@ -329,6 +329,7 @@ public class YaVersion {
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
   // - The FtcIrSeekerSensor component was added.
+  // - The FtcLegacyModule component was added.
   // - The FtcLightSensor component was added.
   // - The FtcOpMode component was added.
   // - The FtcRobotController component was added.
@@ -610,6 +611,8 @@ public class YaVersion {
   public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
 
   public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 1;
 
   public static final int FTC_LIGHT_SENSOR_COMPONENT_VERSION = 1;
 

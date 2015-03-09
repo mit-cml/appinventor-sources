@@ -164,7 +164,7 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
     return robotStatus;
   }
 
-  public void bindHeyLiz() {
+  public void init() {
     DbgLog.msg("Starting FTC Controller S");
 
     wifiDirect = WifiDirectAssistant.getWifiDirectAssistant(context);
@@ -177,7 +177,7 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
     }
   }
 
-  public void unbindHeyLiz() {
+  public void teardown() {
     DbgLog.msg("Stopping FTC Controller S");
 
     wifiDirect.disable();

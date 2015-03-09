@@ -2230,6 +2230,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcIrSeekerSensorComponentPallette();
 
+  @DefaultMessage("FtcLegacyModule")
+  @Description("")
+  String ftcLegacyModuleComponentPallette();
+
   @DefaultMessage("FtcLightSensor")
   @Description("")
   String ftcLightSensorComponentPallette();
@@ -3845,7 +3849,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String textToTranslateParams();
 
-  // FIRST Tech Challenge method/event parameters
+  // FIRST Tech Challenge parameters
   @DefaultMessage("key")
   @Description("")
   String keyParams();
@@ -3857,6 +3861,55 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("min")
   @Description("")
   String minParams();
+
+  @DefaultMessage("scaleRangeMax")
+  @Description("")
+  String scaleRangeMaxParams();
+
+  @DefaultMessage("scaleRangeMin")
+  @Description("")
+  String scaleRangeMinParams();
+
+  @DefaultMessage("physicalPort")
+  @Description("")
+  String physicalPortParams();
+
+  @DefaultMessage("i2cAddress")
+  @Description("")
+  String i2cAddressParams();
+
+  @DefaultMessage("memAddress")
+  @Description("")
+  String memAddressParams();
+
+  @DefaultMessage("memLength")
+  @Description("")
+  String memLengthParams();
+
+  @DefaultMessage("initialValues")
+  @Description("")
+  String initialValuesParams();
+
+  @DefaultMessage("initialValue")
+  @Description("")
+  String initialValueParams();
+
+  @DefaultMessage("enable")
+  @Description("")
+  String enableParams();
+
+  @DefaultMessage("line")
+  @Description("")
+  String lineParams();
+
+  @DefaultMessage("set")
+  @Description("")
+  String setParams();
+
+  @DefaultMessage("data")
+  @Description("")
+  String dataParams();
+  
 
   //Events
   @DefaultMessage("AccelerationChanged")
@@ -5074,6 +5127,90 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
+  @DefaultMessage("EnableNxtI2cReadMode")
+  @Description("")
+  String EnableNxtI2cReadModeMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeBytes")
+  @Description("")
+  String EnableNxtI2cWriteModeBytesMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteMode1ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteMode1ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteMode2ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteMode2ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteMode4ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteMode4ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteMode8ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteMode8ByteNumberMethods();
+
+  @DefaultMessage("EnableAnalogReadMode")
+  @Description("")
+  String EnableAnalogReadModeMethods();
+
+  @DefaultMessage("Enable9v")
+  @Description("")
+  String Enable9vMethods();
+
+  @DefaultMessage("SetDigitalLine")
+  @Description("")
+  String SetDigitalLineMethods();
+
+  @DefaultMessage("ReadI2cSignedBytes")
+  @Description("")
+  String ReadI2cSignedBytesMethods();
+
+  @DefaultMessage("ReadI2cUnsignedBytes")
+  @Description("")
+  String ReadI2cUnsignedBytesMethods();
+
+  @DefaultMessage("ReadI2cNumber")
+  @Description("")
+  String ReadI2cNumberMethods();
+
+  @DefaultMessage("WriteI2cBytes")
+  @Description("")
+  String WriteI2cBytesMethods();
+
+  @DefaultMessage("WriteI2c1ByteNumber")
+  @Description("")
+  String WriteI2c1ByteNumberMethods();
+
+  @DefaultMessage("WriteI2c2ByteNumber")
+  @Description("")
+  String WriteI2c2ByteNumberMethods();
+
+  @DefaultMessage("WriteI2c4ByteNumber")
+  @Description("")
+  String WriteI2c4ByteNumberMethods();
+
+  @DefaultMessage("WriteI2c8ByteNumber")
+  @Description("")
+  String WriteI2c8ByteNumberMethods();
+
+  @DefaultMessage("ReadAnalogSignedBytes")
+  @Description("")
+  String ReadAnalogSignedBytesMethods();
+
+  @DefaultMessage("ReadAnalogUnsignedBytes")
+  @Description("")
+  String ReadAnalogUnsignedBytesMethods();
+
+  @DefaultMessage("ReadAnalogNumber")
+  @Description("")
+  String ReadAnalogNumberMethods();
+
+  @DefaultMessage("IsPortReady")
+  @Description("")
+  String IsPortReadyMethods();
+
   @DefaultMessage("Float")
   @Description("")
   String FloatMethods();
@@ -5385,6 +5522,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")
   String FtcIrSeekerSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a legacy module of an FTC robot.")
+  @Description("")
+  String FtcLegacyModuleHelpStringComponentPallette();
 
   @DefaultMessage("A component for a light sensor of an FTC robot.")
   @Description("")

@@ -4,6 +4,8 @@
 
 package com.google.appinventor.components.runtime.ftc;
 
+import com.google.appinventor.components.runtime.FtcRobotController;
+
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.EventLoop;
@@ -43,15 +45,17 @@ public class FtcEventLoop implements EventLoop {
   HardwareMap hardwareMap = new HardwareMap();
 
   private final OpModeManager opModeManager;
+  private final FtcRobotController ftcRobotController;
 
   // Gamepad UI Timer
   ElapsedTime updateGamepadUi = new ElapsedTime();
 
   FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerA.Callback callback,
-      OpModeRegister opModeRegister) {
+      OpModeRegister opModeRegister, FtcRobotController ftcRobotController) {
     this.hardwareFactory = hardwareFactory;
     this.callback = callback;
     opModeManager = new OpModeManager(hardwareMap, opModeRegister);
+    this.ftcRobotController = ftcRobotController;
   }
 
   /**
@@ -77,6 +81,8 @@ public class FtcEventLoop implements EventLoop {
 
     // Start up the op mode manager
     opModeManager.setHardwareMap(hardwareMap);
+
+    ftcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
 
     DbgLog.msg("======= INIT FINISH =======");
   }
@@ -149,6 +155,7 @@ public class FtcEventLoop implements EventLoop {
       module.close();
     }
 
+    ftcRobotController.onEventLoopTeardown();
     DbgLog.msg("======= TEARDOWN COMPLETE =======");
   }
 

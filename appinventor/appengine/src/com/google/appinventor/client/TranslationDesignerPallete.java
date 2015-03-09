@@ -190,6 +190,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcGyroSensorComponentPallette();
     } else if (key.equals("FtcIrSeekerSensor")) {
       value = MESSAGES.ftcIrSeekerSensorComponentPallette();
+    } else if (key.equals("FtcLegacyModule")) {
+      value = MESSAGES.ftcLegacyModuleComponentPallette();
     } else if (key.equals("FtcLightSensor")) {
       value = MESSAGES.ftcLightSensorComponentPallette();
     } else if (key.equals("FtcOpMode")) {
@@ -346,6 +348,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcGyroSensorHelpStringComponentPallette();
     } else if (key.equals("FtcIrSeekerSensor-helpString")) {
       value = MESSAGES.FtcIrSeekerSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcLegacyModule-helpString")) {
+      value = MESSAGES.FtcLegacyModuleHelpStringComponentPallette();
     } else if (key.equals("FtcLightSensor-helpString")) {
       value = MESSAGES.FtcLightSensorHelpStringComponentPallette();
     } else if (key.equals("FtcOpMode-helpString")) {

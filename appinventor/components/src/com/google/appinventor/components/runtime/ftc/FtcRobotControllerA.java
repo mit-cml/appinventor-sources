@@ -74,7 +74,7 @@ public class FtcRobotControllerA {
     }
 
     public void updateUi(final String opModeName, final Gamepad[] gamepads) {
-      // HeyLiz! Not sure about this one.
+      // HeyLiz! Not sure whether this should be an event in app inventor.
     }
 
     public void wifiDirectUpdate(final WifiDirectAssistant.Event event) {
@@ -189,7 +189,8 @@ public class FtcRobotControllerA {
       factory = hitechnicFactory;
     }
 
-    eventLoop = new FtcEventLoop(factory, callback, ftcRobotController.getOpModeRegister());
+    eventLoop = new FtcEventLoop(factory, callback, ftcRobotController.getOpModeRegister(),
+        ftcRobotController);
 
     controllerS.setCallback(callback);
     controllerS.setupRobot(eventLoop);
