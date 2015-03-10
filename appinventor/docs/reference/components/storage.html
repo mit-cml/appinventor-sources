@@ -500,7 +500,7 @@ none
   developer) obtain. With this approach end-users must also
   login to access a Fusion Table.
   <p> The second approach is to use Service Authentication. With this approach you create credentials and a
-  special "Service Account Email Address" which allows end-users to use your Fusion Tables without logging in; your service account authenticates all access.</p>
+  special "Service Account Email Address" which allows end-users to edit your Fusion Tables without logging in; your service account authenticates all access.</p>
 
 <h3> Using the FusiontablesControl Component </h3>
 <h4>Creating Fusion Tables</h4>
@@ -510,9 +510,9 @@ none
   are the steps:</p>
 <ol>
   <li>On the web, login to your Gmail account or any other Google
-    service (e.g., Drive, YouTube).</li>
-  <li>Select the <i>More &gt; Even more</i> menu and scroll through the
-    page of Google services to find the <i>Fusion Tables</i> service.</li>
+    service (e.g., Drive, YouTube). Navigate to Google Drive.</li>
+  <li>Click the <i>New</i> button and navigate to <i>More</i>. If you do not see a Google Fusion Tables option, select <i>Connect more apps</i> and scroll through the
+    page of Google services to find the <i>Fusion Tables</i> service and connect it to your Google Drive.</li>
   <li>You may want to view some of the examples and work through a
     tutorial (e.g. <a href="http://appinventor.mit.edu/explore/ai2/pizzaparty.html">  Pizza Party Tutorial</a>) to learn the basics.</li>
   <li>Click the <i>See my tables</i> button (top right of the page).
@@ -530,19 +530,19 @@ none
   Designer, don't forget to set its <i>ApiKey</i> property, which is
   initially blank. You should copy this from
   your <a href="https://code.google.com/apis/console/"
-          target="_blank">Google APIs Console</a> and paste it into the property
+          target="_blank">Google Developers Console</a> and paste it into the property
   field. </p>
 
 <p>To get an <b>API key</b>, follow these instructions.</p>
 <ol>
-  <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a> and login if necessary.</li>
+  <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google Developers Console</a> and login if necessary.</li>
   <li>Under <i>APIs &amp; auth</i> select the <i>APIs</i> item from the menu on the left.</li>
   <li>Choose the <i>Fusion Tables API</i> from the list provided and turn it on.</li>
   <li>On the left bar, select the <i>Credentials</i> item.</li>
   <li>Under <i>Public API access</i> click <i>Create new Key</i>, choose <i>Android key</i> and click <i>Create</i> to generate an API key. </li>
 </ol>
 <p>Your API key(s) will appear in the pane next to "Public API access". You must provide that key as the
-  value for the <i>ApiKey</i> property in your tFusionables app.</p>
+  value for the <i>ApiKey</i> property in your Fusion Tables app.</p>
   <p>Once you have an API key, set the value of the <i>Query</i>
   property to a valid Fusiontables SQL query and call <i>SendQuery</i>
   to execute the query. App Inventor will send the query to the
@@ -564,8 +564,8 @@ none
           target="_blank">Google APIs Console</a> under <i>APIs &amp; auth</i> select the <i>APIs</i> item from the menu on the left. </li>
   <li>Click the <i>Create new Client ID</i> button. Select the <i>Service account</i> option, and click <i>Create Client ID</i>. </li>
   <li>A file called the <i>KeyFile</i> (ends in extension .p12) will automatically download onto your computer. Save it in a place you will remember. Once the creation is complete, you will get a table with your Service Account information. </li>
-  <li>In the designer window of App Inventor, add the <i>ServiceAccountEmail</i> (from the table on the console) and upload the KeyFile to the FusionTablesControl properties and check the <i>UseServiceAuthentication</i> box. </li>
-  <li>Share the Fusion Table with your ServiceAccountEmail (from the table), and give it editing permissions, just like you would share any other Google Doc with an email address.</li>
+  <li>In the designer window of App Inventor, select the FusionTablesControl. In the properties pane, add the <i>ServiceAccountEmail</i> (from the table on the console), upload the KeyFile, and check the <i>UseServiceAuthentication</i> box. </li>
+  <li>Share the Fusion Table with your ServiceAccountEmail, and give it editing permissions, just like you would share any other Google Doc with an email address.</li>
 </ol>
 
 
