@@ -52,7 +52,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
 
     // Initialize mock button UI
     buttonWidget = new Button();
-    buttonWidget.addStyleName("ode-SimpleMockButton");
+    buttonWidget.setStylePrimaryName("ode-SimpleMockButton");
     image = new Image();
     image.addErrorHandler(new ErrorHandler() {
       @Override

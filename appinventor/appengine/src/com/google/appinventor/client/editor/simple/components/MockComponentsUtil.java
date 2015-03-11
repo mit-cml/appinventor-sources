@@ -22,6 +22,8 @@ import com.google.gwt.widgetideas.graphics.client.Color;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class MockComponentsUtil {
+  // Width offset constant for the component
+  private static final int WIDTH_OFFSET = 4;
 
   private MockComponentsUtil() {
   }
@@ -320,7 +322,7 @@ public final class MockComponentsUtil {
     RootPanel.get().add(w);
 
     String[] style = clearSizeStyle(w);
-    int width = w.getOffsetWidth() + 4;
+    int width = w.getOffsetWidth() + WIDTH_OFFSET;
     int height = w.getOffsetHeight();
     restoreSizeStyle(w, style);
 
