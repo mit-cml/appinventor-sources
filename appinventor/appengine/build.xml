@@ -14,10 +14,7 @@
   </description>
 
   <!-- =====================================================================
-       Generate a Unique ID for this build. This is used to name blockly-all.js
-       in a unique way (blockly-${guid1}.js) so blockly is cacheable but
-       different builds get their own copy instead of a potentially out of date
-       version. This is particularly important when we do releases.
+       Definition for generating a Unique ID.
        ===================================================================== -->
 
   <scriptdef name="generateguid" language="javascript">
@@ -33,8 +30,6 @@
              project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
     ]]>
   </scriptdef>
-  <generateguid property="guid1" />
-  <echo message="${guid1}" />
 
   <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
     <os family="mac"/>
@@ -63,11 +58,23 @@
   <property name="build.war.dir" location="${local.build.dir}/war" />
 
   <!-- =====================================================================
+       Generate a Unique ID for this build. This is used to name blockly-all.js
+       in a unique way (blockly-${guid1}.js) so blockly is cacheable but
+       different builds get their own copy instead of a potentially out of date
+       version. This is particularly important when we do releases.
+       ===================================================================== -->
+  <target name="GenerateGuid1"
+          description="Generate a Unique ID for this build">
+    <generateguid property="guid1" />
+    <echo message="${guid1}" />
+  </target>
+
+  <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war">
@@ -99,7 +106,7 @@
 
   <target name="CopyBlocklyToBuildWar"
           description="Create blockly-all.js and add to war with unique name"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
     <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
       <filterset>
