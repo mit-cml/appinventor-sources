@@ -181,14 +181,15 @@ Blockly.Drawer.instanceNameToXMLArray = function(instanceName) {
   var eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
   for(var i=0;i<eventObjects.length;i++) {
     if (eventObjects[i].deprecated === "true") continue;
-    mutatorAttributes = {component_type: typeName, instance_name: instanceName, event_name : eventObjects[i].name};
+    mutatorAttributes = {component_type: typeName, instance_name: instanceName, event_name : eventObjects[i].name, is_generic: "false"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
   }
+
   //create non-generic method blocks
   var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
   for(var i=0;i<methodObjects.length;i++) {
     if (methodObjects[i].deprecated === "true") continue;
-    mutatorAttributes = {component_type: typeName, instance_name: instanceName, method_name: methodObjects[i].name, is_generic:"false"};
+    mutatorAttributes = {component_type: typeName, instance_name: instanceName, method_name: methodObjects[i].name, is_generic: "false"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
   }
 
@@ -218,10 +219,18 @@ Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
   var xmlArray = [];
   var mutatorAttributes;
 
+  //create event blocks
+  var eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
+  for(var i=0;i<eventObjects.length;i++) {
+    if (eventObjects[i].deprecated === "true") continue;
+    mutatorAttributes = {component_type: typeName, event_name : eventObjects[i].name, is_generic: "true"};
+    xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
+  }
+
   //create generic method blocks
   var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
   for(var i=0;i<methodObjects.length;i++) {
-    mutatorAttributes = {component_type: typeName, method_name: methodObjects[i].name, is_generic:"true"};
+    mutatorAttributes = {component_type: typeName, method_name: methodObjects[i].name, is_generic: "true"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
   }
 

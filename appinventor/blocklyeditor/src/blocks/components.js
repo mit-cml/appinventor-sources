@@ -49,8 +49,15 @@ Blockly.Blocks.component_event = {
 
     var container = document.createElement('mutation');
     container.setAttribute('component_type', this.typeName);
-    container.setAttribute('instance_name', this.instanceName);//instance name not needed
     container.setAttribute('event_name', this.eventName);
+    var isGenericString = "false";
+    if(this.isGeneric){
+      isGenericString = "true";
+    }
+    container.setAttribute('is_generic', isGenericString);
+    if(!this.isGeneric) {
+      container.setAttribute('instance_name', this.instanceName);//instance name not needed
+    }
     if (!this.horizontalParameters) {
       container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
                                                              // The absence of this attribute means horizontal.
@@ -61,21 +68,35 @@ Blockly.Blocks.component_event = {
   domToMutation : function(xmlElement) {
 
     this.typeName = xmlElement.getAttribute('component_type');
-    this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
     this.eventName = xmlElement.getAttribute('event_name');
     var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
+    var isGenericString = xmlElement.getAttribute('is_generic');
+    this.isGeneric = (isGenericString == "true" ? true : false);
+    if(!this.isGeneric) {
+      this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
+    }
 
      // Orient parameters horizontally by default
 
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
+    if(!this.isGeneric) {
+      this.appendDummyInput('WHENTITLE')
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
         .appendField('.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
-    this.componentDropDown.setValue(this.instanceName);
+      //for non-generic blocks, set the value of the component drop down
+      this.componentDropDown.setValue(this.instanceName);
+    } else {
+      this.appendDummyInput('WHENTITLE')
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
+      var compInput = this.appendValueInput("COMPONENT")
+        .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    }
+
     this.setParameterOrientation(horizParams);
     this.setTooltip(this.getEventTypeObject().description);
     this.setPreviousStatement(false);

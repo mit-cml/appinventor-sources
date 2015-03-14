@@ -144,7 +144,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       map.globals.push(block);
       // TODO: eventually deal with variable declarations, once we have them
     } else if (block.category == 'Component') {
-      var instanceName = block.instanceName;
+      var instanceName = block.isGeneric ? block.getInputTargetBlock("COMPONENT").instanceName : block.instanceName;
       if(block.blockType != "event") {
         continue;
       }

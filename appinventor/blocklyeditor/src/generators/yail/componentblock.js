@@ -33,9 +33,10 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
+  var instanceName = this.isGeneric ? this.getInputTargetBlock("COMPONENT").instanceName : this.instanceName;
 
   var code = Blockly.Yail.YAIL_DEFINE_EVENT
-    + this.getFieldValue("COMPONENT_SELECTOR")
+    + instanceName
     + Blockly.Yail.YAIL_SPACER
     + this.eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -48,6 +49,7 @@ Blockly.Yail.component_event = function() {
     + Blockly.Yail.YAIL_SPACER
     + body
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  console.log("code for", instanceName, code);
   return code;
 }
 
