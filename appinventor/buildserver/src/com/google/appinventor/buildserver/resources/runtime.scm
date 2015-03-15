@@ -1310,15 +1310,21 @@
          (yail-equal? (cdr x1) (cdr x2))))))
 
 (define (yail-atomic-equal? x1 x2)
-  (cond 
+  (cond
    ;; equal? covers the case where x1 and x2 are equal objects or equal strings.
    ((equal? x1 x2) #t)
-   ;; if both are strings, compare them with string equality
-   ;; for example, "0" is not equal to "00" even though
-   ;; both convert to 0
-   ((and (string? x1) (string? x2))
-    (equal? x1 x2))
-   ;; otherwise, try comparing coverting x1 and x2 to numbers
+   ;; This implementation says that "0" is equal to "00" since
+   ;; both convert to 0.
+
+   ;; We could change this to require that
+   ;; two strings are string=, but then equality would not be transitive
+   ;; since "0" and "00" are both equal to 0, but would not be equal to
+   ;; each other
+   ;; Uncomment these two lines to use string=? on strings
+   ;; ((and (string? x1) (string? x2))
+   ;;  (equal? x1 x2))
+
+   ;; If the x1 and x2 are not equa?, try comparing coverting x1 and x2 to numbers
    ;; and comparing them numerically
    ;; Note that equal? is not sufficient for numbers
    ;; because in Scheme (= 1 1.0) is true while
@@ -1326,8 +1332,8 @@
    (else
     (let ((nx1 (as-number x1)))
       (and nx1
-	   (let ((nx2 (as-number x2)))
-	     (and nx2 (= nx1 nx2))))))))
+           (let ((nx2 (as-number x2)))
+             (and nx2 (= nx1 nx2))))))))
 
 ;;; Return the number, converting from a string if necessary
 ;;; Return #f if not a number
