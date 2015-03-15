@@ -55,7 +55,7 @@
 
 
 ;; test that we can use keys that are themselves lists
-(define (testLoookupInPairs1)
+(define (testLookupInPairs1)
   (let* ((key-k '(a b c))
 	 (key (kawa-list->yail-list key-k))
 	 (alist-k '(((a b c) (100 200 300)) (d 2) (f 3)))
@@ -64,7 +64,7 @@
 
 
 ;;Test that "0" is considered equal to "00" in looking up keys
-(define (testLoookupInPairs2)
+(define (testLookupInPairs2)
   (let* ((key-k '("0" b c))
 	 (key (kawa-list->yail-list key-k))
 	 (alist-k '((("00" b c) (100 200 300)) (d 2) (f 3)))
