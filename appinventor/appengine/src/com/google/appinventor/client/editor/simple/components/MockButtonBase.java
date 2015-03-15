@@ -52,7 +52,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
 
     // Initialize mock button UI
     buttonWidget = new Button();
-    buttonWidget.setStylePrimaryName("ode-SimpleMockButton");
+    buttonWidget.setStylePrimaryName("ode-SimpleMockComponent");
     image = new Image();
     image.addErrorHandler(new ErrorHandler() {
       @Override
@@ -248,6 +248,8 @@ abstract class MockButtonBase extends MockVisibleComponent {
   }
 
   private final void updatePreferredSizeOfButton() {
+    // There is currently a bug where if the font size of the button is set to be
+    // less than 10, the button drops out of its bordering box in the designer.
     preferredSizeOfButton = MockComponentsUtil.getPreferredSizeOfDetachedWidget(
         createClonedButton());
   }
