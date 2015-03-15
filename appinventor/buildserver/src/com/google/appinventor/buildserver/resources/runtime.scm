@@ -1310,17 +1310,24 @@
          (yail-equal? (cdr x1) (cdr x2))))))
 
 (define (yail-atomic-equal? x1 x2)
-  (or (equal? x1 x2)
-      ;; equal? covers the case where x1 and x2 are equal objects
-      ;; or equal strings.
-      ;; if that fails, try comparing x1 and x2 numerically
-      ;; Note that equal? is not sufficient for numbers
-      ;; because in Scheme (= 1 1.0) is true while
-      ;; (equal? 1 1.0) is false.
-      (let ((nx1 (as-number x1)))
-        (and nx1
-             (let ((nx2 (as-number x2)))
-               (and nx2 (= nx1 nx2)))))))
+  (cond 
+   ;; equal? covers the case where x1 and x2 are equal objects or equal strings.
+   ((equal? x1 x2) #t)
+   ;; if both are strings, compare them with string equality
+   ;; for example, "0" is not equal to "00" even though
+   ;; both convert to 0
+   ((and (string? x1) (string? x2))
+    (equal? x1 x2))
+   ;; otherwise, try comparing coverting x1 and x2 to numbers
+   ;; and comparing them numerically
+   ;; Note that equal? is not sufficient for numbers
+   ;; because in Scheme (= 1 1.0) is true while
+   ;; (equal? 1 1.0) is false.
+   (else
+    (let ((nx1 (as-number x1)))
+      (and nx1
+	   (let ((nx2 (as-number x2)))
+	     (and nx2 (= nx1 nx2))))))))
 
 ;;; Return the number, converting from a string if necessary
 ;;; Return #f if not a number
@@ -1951,7 +1958,8 @@ list, use the make-yail-list constructor with no arguments.
 ;;; Yail-alist lookup looks up the key in a list of pairs and returns resulting match.
 ;;; It returns the default if the key is not in the table.
 ;;; Note that we can't simply use kawa assoc here, because we are
-;;; dealing with Yail lists
+;;; dealing with Yail lists.  We also need to ccompare with yail-equal?
+;;; rather than equal? to  allow for yail's implicit conversion between strings and numbers
 
 ;;; TODO(hal):  Implement dictionaries and
 ;;; integrate these with get JSON from web services.  Probably need to
@@ -1971,9 +1979,10 @@ list, use the make-yail-list constructor with no arguments.
             (format #f "Lookup in pairs: the list ~A is not a well-formed list of pairs"
                     (get-display-representation yail-list-of-pairs))
             "Invalid list of pairs"))
-          ((equal? key (car (yail-list-contents (car pairs-to-check))))
+          ((yail-equal? key (car (yail-list-contents (car pairs-to-check))))
            (cadr (yail-list-contents (car pairs-to-check))))
           (else (loop (cdr pairs-to-check))))))
+
 
 
 (define (pair-ok? candidate-pair)
