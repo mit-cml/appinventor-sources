@@ -192,7 +192,14 @@ abstract class MockButtonBase extends MockVisibleComponent {
    * Sets the button's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    // This is a temporary assertion until the bug described on line 258 is fixed.
+    float size = Float.parseFloat(text);
+    if (size < 10) {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, "10");
+    } else {
+      // Keep this condition
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    }
     updatePreferredSizeOfButton();
   }
 
@@ -250,6 +257,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
   private final void updatePreferredSizeOfButton() {
     // There is currently a bug where if the font size of the button is set to be
     // less than 10, the button drops out of its bordering box in the designer.
+    // When fixed, remove the condition following line 195.
     preferredSizeOfButton = MockComponentsUtil.getPreferredSizeOfDetachedWidget(
         createClonedButton());
   }
