@@ -1448,7 +1448,9 @@
 (define (yail-divide n d)
   (if (= d 0)
       (/ n 0.0)
-      (/ n d)))
+      ;; force inexactness so that integer division does not produce
+      ;; rationals, which is simpler for App Inventor users.
+      (/ (exact->inexact n) d)))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
