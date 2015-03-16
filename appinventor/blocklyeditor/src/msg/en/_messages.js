@@ -287,7 +287,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = 'http://appinventor.mit.edu/explore/ai2/support/blocks/logic#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = 'http://appinventor.mit.edu/explore/ai2/support/blocks/logic#not=';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Tests whether two things are equal. \n' +
-        'The things being compared can be any thing, not only numbers.';
+        'The things being compared can be any things, not only numbers. \n' +
+        'Numbers are considered to be equal to their printed form as strings, \n' +
+        'for example, the number 0 is equal to the text \"0\".  Also, two strings \n' +
+        'that represent numbers are equal if the numbers are equal, for example \n' +
+        '\"1\" is equal to \"01\".';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Return true if both inputs are not equal to each other.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'logic equal';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
