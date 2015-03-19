@@ -64,17 +64,62 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description =
+      "Read signed bytes from the device memory map; only works in NXT I2C read mode.")
+  public List<Integer> ReadListOfSignedBytesFromI2c(int physicalPort) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = legacyModule.readI2c(physicalPort);
+        return convertByteArrayToYailListSigned(bytes);
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "ReadListOfSignedBytesFromI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  @SimpleFunction(description =
+      "Read unsigned bytes from the device memory map; only works in NXT I2C read mode.")
+  public List<Integer> ReadListOfUnsignedBytesFromI2c(int physicalPort) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = legacyModule.readI2c(physicalPort);
+        return convertByteArrayToYailListUnsigned(bytes);
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "ReadListOfUnsignedBytesFromI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  @SimpleFunction(description =
+      "Read a number from the device memory map; only works in NXT I2C read mode.")
+  public long ReadNumberFromI2c(int physicalPort) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = legacyModule.readI2c(physicalPort);
+        return convertByteArrayToNumber(bytes);
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "ReadNumberFromI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a list of byte values.")
-  public void EnableNxtI2cWriteModeBytes(int physicalPort, int i2cAddress, int memAddress,
+  public void EnableNxtI2cWriteModeWithListOfBytes(int physicalPort, int i2cAddress, int memAddress,
       YailList initialValues) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertYailListToBytes(initialValues, "EnableNxtI2cWriteModeBytes");
+        byte[] bytes = convertYailListToByteArray(initialValues, "EnableNxtI2cWriteModeWithListOfBytes");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeBytes",
+        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWithListOfBytes",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
@@ -82,16 +127,17 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a 1-byte number.")
-  public void EnableNxtI2cWriteMode1ByteNumber(int physicalPort, int i2cAddress, int memAddress,
+  public void EnableNxtI2cWriteModeWith1ByteNumber(int physicalPort, int i2cAddress, int memAddress,
       String initialValue) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertNumberTo1Byte(initialValue, "EnableNxtI2cWriteMode1ByteNumber");
+        byte[] bytes =
+            convertNumberTo1ByteArray(initialValue, "EnableNxtI2cWriteModeWith1ByteNumber");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode1ByteNumber",
+        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith1ByteNumber",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
@@ -99,16 +145,17 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a 2-byte number.")
-  public void EnableNxtI2cWriteMode2ByteNumber(int physicalPort, int i2cAddress, int memAddress,
+  public void EnableNxtI2cWriteModeWith2ByteNumber(int physicalPort, int i2cAddress, int memAddress,
       String initialValue) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertNumberTo2Bytes(initialValue, "EnableNxtI2cWriteMode2ByteNumber");
+        byte[] bytes =
+            convertNumberTo2ByteArray(initialValue, "EnableNxtI2cWriteModeWith2ByteNumber");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode2ByteNumber",
+        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith2ByteNumber",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
@@ -116,16 +163,17 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a 4-byte number.")
-  public void EnableNxtI2cWriteMode4ByteNumber(int physicalPort, int i2cAddress, int memAddress,
+  public void EnableNxtI2cWriteModeWith4ByteNumber(int physicalPort, int i2cAddress, int memAddress,
       String initialValue) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertNumberTo4Bytes(initialValue, "EnableNxtI2cWriteMode4ByteNumber");
+        byte[] bytes =
+            convertNumberTo4ByteArray(initialValue, "EnableNxtI2cWriteModeWith4ByteNumber");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode4ByteNumber",
+        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith4ByteNumber",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
@@ -133,16 +181,99 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a 8-byte number.")
-  public void EnableNxtI2cWriteMode8ByteNumber(int physicalPort, int i2cAddress, int memAddress,
+  public void EnableNxtI2cWriteModeWith8ByteNumber(int physicalPort, int i2cAddress, int memAddress,
       String initialValue) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertNumberTo8Bytes(initialValue, "EnableNxtI2cWriteMode8ByteNumber");
+        byte[] bytes =
+            convertNumberTo8ByteArray(initialValue, "EnableNxtI2cWriteModeWith8ByteNumber");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode8ByteNumber",
+        form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith8ByteNumber",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Write to the device memory map; only works in NXT I2C write mode.")
+  public void WriteListOfBytesToI2c(int physicalPort, YailList data) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = convertYailListToByteArray(data, "WriteListOfBytesToI2c");
+        if (bytes != null) {
+          legacyModule.writeI2c(physicalPort, bytes);
+        }
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "WriteListOfBytesToI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description =
+      "Write a 1-byte number to the device memory map; only works in NXT I2C write mode.")
+  public void Write1ByteNumberToI2c(int physicalPort, String data) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = convertNumberTo1ByteArray(data, "Write1ByteNumberToI2c");
+        if (bytes != null) {
+          legacyModule.writeI2c(physicalPort, bytes);
+        }
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "Write1ByteNumberToI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+  }
+
+
+  @SimpleFunction(description =
+      "Write a 2-byte number to the device memory map; only works in NXT I2C write mode.")
+  public void Write2ByteNumberToI2c(int physicalPort, String data) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = convertNumberTo2ByteArray(data, "Write2ByteNumberToI2c");
+        if (bytes != null) {
+          legacyModule.writeI2c(physicalPort, bytes);
+        }
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "Write2ByteNumberToI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+  }
+
+
+  @SimpleFunction(description =
+      "Write a 4-byte number to the device memory map; only works in NXT I2C write mode.")
+  public void Write4ByteNumberToI2c(int physicalPort, String data) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = convertNumberTo4ByteArray(data, "Write4ByteNumberToI2c");
+        if (bytes != null) {
+          legacyModule.writeI2c(physicalPort, bytes);
+        }
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "Write4ByteNumberToI2c",
+            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+      }
+    }
+  }
+
+
+  @SimpleFunction(description =
+      "Write a 8-byte number to the device memory map; only works in NXT I2C write mode.")
+  public void Write8ByteNumberToI2c(int physicalPort, String data) {
+    if (legacyModule != null) {
+      try {
+        byte[] bytes = convertNumberTo8ByteArray(data, "Write8ByteNumberToI2c");
+        if (bytes != null) {
+          legacyModule.writeI2c(physicalPort, bytes);
+        }
+      } catch (Throwable e) {
+        form.dispatchErrorOccurredEvent(this, "Write8ByteNumberToI2c",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
@@ -160,16 +291,19 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Enable or disable 9V power on a port.")
-  public void Enable9v(int physicalPort, boolean enable) {
+  @SimpleFunction(description =
+      "Read a 2-byte analog value from a device; only works in analog read mode.")
+  public int ReadNumberFromAnalog(int physicalPort) {
     if (legacyModule != null) {
       try {
-        legacyModule.enable9v(physicalPort, enable);
+        byte[] bytes = legacyModule.readAnalog(physicalPort);
+        return convertByteArrayToNumber(bytes);
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "Enable9v",
+        form.dispatchErrorOccurredEvent(this, "ReadNumberFromAnalog",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
+    return 0;
   }
 
   @SimpleFunction(description = "Set the value of digital line 0 or 1 while in analog mode.")
@@ -184,176 +318,16 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description =
-      "Read signed bytes from the device memory map; only works in NXT I2C read mode.")
-  public List<Integer> ReadI2cSignedBytes(int physicalPort) {
+  @SimpleFunction(description = "Enable or disable 9V power on a port.")
+  public void Enable9v(int physicalPort, boolean enable) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = legacyModule.readI2c(physicalPort);
-        return convertBytesToYailListSigned(bytes);
+        legacyModule.enable9v(physicalPort, enable);
       } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadI2cSignedBytes",
+        form.dispatchErrorOccurredEvent(this, "Enable9v",
             ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
       }
     }
-    return Collections.emptyList();
-  }
-
-  @SimpleFunction(description =
-      "Read unsigned bytes from the device memory map; only works in NXT I2C read mode.")
-  public List<Integer> ReadI2cUnsignedBytes(int physicalPort) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = legacyModule.readI2c(physicalPort);
-        return convertBytesToYailListUnsigned(bytes);
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadI2cUnsignedBytes",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-    return Collections.emptyList();
-  }
-
-  @SimpleFunction(description =
-      "Read a number from the device memory map; only works in NXT I2C read mode.")
-  public long ReadI2cNumber(int physicalPort) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = legacyModule.readI2c(physicalPort);
-        return convertBytesToNumber(bytes);
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadI2cNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Write to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2cBytes(int physicalPort, YailList data) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = convertYailListToBytes(data, "WriteI2cBytes");
-        if (bytes != null) {
-          legacyModule.writeI2c(physicalPort, bytes);
-        }
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "WriteI2cBytes",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description =
-      "Write a 1-byte number to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2c1ByteNumber(int physicalPort, String data) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = convertNumberTo1Byte(data, "WriteI2c1ByteNumber");
-        if (bytes != null) {
-          legacyModule.writeI2c(physicalPort, bytes);
-        }
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "WriteI2c1ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-  }
-
-
-  @SimpleFunction(description =
-      "Write a 2-byte number to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2c2ByteNumber(int physicalPort, String data) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = convertNumberTo2Bytes(data, "WriteI2c2ByteNumber");
-        if (bytes != null) {
-          legacyModule.writeI2c(physicalPort, bytes);
-        }
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "WriteI2c2ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-  }
-
-
-  @SimpleFunction(description =
-      "Write a 4-byte number to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2c4ByteNumber(int physicalPort, String data) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = convertNumberTo4Bytes(data, "WriteI2c4ByteNumber");
-        if (bytes != null) {
-          legacyModule.writeI2c(physicalPort, bytes);
-        }
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "WriteI2c4ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-  }
-
-
-  @SimpleFunction(description =
-      "Write a 8-byte number to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2c8ByteNumber(int physicalPort, String data) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = convertNumberTo8Bytes(data, "WriteI2c8ByteNumber");
-        if (bytes != null) {
-          legacyModule.writeI2c(physicalPort, bytes);
-        }
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "WriteI2c8ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description =
-      "Read an analog value as signed bytes from a device; only works in analog read mode.")
-  public List<Integer> ReadAnalogSignedBytes(int physicalPort) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = legacyModule.readAnalog(physicalPort);
-        return convertBytesToYailListSigned(bytes);
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadAnalogSignedBytes",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-    return Collections.emptyList();
-  }
-
-  @SimpleFunction(description =
-      "Read an analog value as unsigned bytes from a device; only works in analog read mode.")
-  public List<Integer> ReadAnalogUnsignedBytes(int physicalPort) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = legacyModule.readAnalog(physicalPort);
-        return convertBytesToYailListUnsigned(bytes);
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadAnalogUnsignedBytes",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-    return Collections.emptyList();
-  }
-
-  @SimpleFunction(description =
-      "Read an analog value from a device; only works in analog read mode.")
-  public long ReadAnalogNumber(int physicalPort) {
-    if (legacyModule != null) {
-      try {
-        byte[] bytes = legacyModule.readAnalog(physicalPort);
-        return convertBytesToNumber(bytes);
-      } catch (Throwable e) {
-        form.dispatchErrorOccurredEvent(this, "ReadAnalogNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
-      }
-    }
-    return 0;
   }
 
   @SimpleFunction(description = "Determine if a physical port is ready.")
@@ -391,7 +365,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     legacyModule = null;
   }
 
-  private byte[] convertYailListToBytes(YailList list, String functionName) {
+  private byte[] convertYailListToByteArray(YailList list, String functionName) {
     Object[] array = list.toArray();
     byte[] bytes = new byte[array.length];
     for (int i = 0; i < array.length; i++) {
@@ -410,7 +384,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return bytes;
   }
 
-  private byte[] convertNumberTo1Byte(String number, String functionName) {
+  private byte[] convertNumberTo1ByteArray(String number, String functionName) {
     byte n;
     try {
       n = Byte.decode(number);
@@ -422,7 +396,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return new byte[]{n};
   }
 
-  private byte[] convertNumberTo2Bytes(String number, String functionName) {
+  private byte[] convertNumberTo2ByteArray(String number, String functionName) {
     short n;
     try {
       n = Short.decode(number);
@@ -434,7 +408,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return TypeConversion.shortToByteArray(n);
   }
 
-  private byte[] convertNumberTo4Bytes(String number, String functionName) {
+  private byte[] convertNumberTo4ByteArray(String number, String functionName) {
     int n;
     try {
       n = Integer.decode(number);
@@ -446,7 +420,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return TypeConversion.intToByteArray(n);
   }
 
-  private byte[] convertNumberTo8Bytes(String number, String functionName) {
+  private byte[] convertNumberTo8ByteArray(String number, String functionName) {
     long n;
     try {
       n = Long.decode(number);
@@ -458,7 +432,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return TypeConversion.longToByteArray(n);
   }
 
-  private List<Integer> convertBytesToYailListSigned(byte[] bytes) {
+  private List<Integer> convertByteArrayToYailListSigned(byte[] bytes) {
     List<Integer> list = new ArrayList<Integer>();
     for (int i = 0; i < bytes.length; i++) {
       int n = bytes[i];
@@ -467,7 +441,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return list;
   }
 
-  private List<Integer> convertBytesToYailListUnsigned(byte[] bytes) {
+  private List<Integer> convertByteArrayToYailListUnsigned(byte[] bytes) {
     List<Integer> list = new ArrayList<Integer>();
     for (int i = 0; i < bytes.length; i++) {
       int n = bytes[i] & 0xFF;
@@ -476,7 +450,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return list;
   }
 
-  private long convertBytesToNumber(byte[] bytes) {
+  private static long convertByteArrayToNumber(byte[] bytes) {
     switch (bytes.length) {
       case 1:
         return bytes[0];

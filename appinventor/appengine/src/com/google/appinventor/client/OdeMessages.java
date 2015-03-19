@@ -5127,90 +5127,6 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
-  @DefaultMessage("EnableNxtI2cReadMode")
-  @Description("")
-  String EnableNxtI2cReadModeMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteModeBytes")
-  @Description("")
-  String EnableNxtI2cWriteModeBytesMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteMode1ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteMode1ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteMode2ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteMode2ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteMode4ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteMode4ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteMode8ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteMode8ByteNumberMethods();
-
-  @DefaultMessage("EnableAnalogReadMode")
-  @Description("")
-  String EnableAnalogReadModeMethods();
-
-  @DefaultMessage("Enable9v")
-  @Description("")
-  String Enable9vMethods();
-
-  @DefaultMessage("SetDigitalLine")
-  @Description("")
-  String SetDigitalLineMethods();
-
-  @DefaultMessage("ReadI2cSignedBytes")
-  @Description("")
-  String ReadI2cSignedBytesMethods();
-
-  @DefaultMessage("ReadI2cUnsignedBytes")
-  @Description("")
-  String ReadI2cUnsignedBytesMethods();
-
-  @DefaultMessage("ReadI2cNumber")
-  @Description("")
-  String ReadI2cNumberMethods();
-
-  @DefaultMessage("WriteI2cBytes")
-  @Description("")
-  String WriteI2cBytesMethods();
-
-  @DefaultMessage("WriteI2c1ByteNumber")
-  @Description("")
-  String WriteI2c1ByteNumberMethods();
-
-  @DefaultMessage("WriteI2c2ByteNumber")
-  @Description("")
-  String WriteI2c2ByteNumberMethods();
-
-  @DefaultMessage("WriteI2c4ByteNumber")
-  @Description("")
-  String WriteI2c4ByteNumberMethods();
-
-  @DefaultMessage("WriteI2c8ByteNumber")
-  @Description("")
-  String WriteI2c8ByteNumberMethods();
-
-  @DefaultMessage("ReadAnalogSignedBytes")
-  @Description("")
-  String ReadAnalogSignedBytesMethods();
-
-  @DefaultMessage("ReadAnalogUnsignedBytes")
-  @Description("")
-  String ReadAnalogUnsignedBytesMethods();
-
-  @DefaultMessage("ReadAnalogNumber")
-  @Description("")
-  String ReadAnalogNumberMethods();
-
-  @DefaultMessage("IsPortReady")
-  @Description("")
-  String IsPortReadyMethods();
-
   @DefaultMessage("Float")
   @Description("")
   String FloatMethods();
@@ -5234,6 +5150,82 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("TelemetryAddTextData")
   @Description("")
   String TelemetryAddTextDataMethods();
+
+  @DefaultMessage("EnableNxtI2cReadMode")
+  @Description("")
+  String EnableNxtI2cReadModeMethods();
+
+  @DefaultMessage("ReadListOfSignedBytesFromI2c")
+  @Description("")
+  String ReadListOfSignedBytesFromI2cMethods();
+
+  @DefaultMessage("ReadListOfUnsignedBytesFromI2c")
+  @Description("")
+  String ReadListOfUnsignedBytesFromI2cMethods();
+
+  @DefaultMessage("ReadNumberFromI2c")
+  @Description("")
+  String ReadNumberFromI2cMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeWithListOfBytes")
+  @Description("")
+  String EnableNxtI2cWriteModeWithListOfBytesMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeWith1ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteModeWith1ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeWith2ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteModeWith2ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeWith4ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteModeWith4ByteNumberMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteModeWith8ByteNumber")
+  @Description("")
+  String EnableNxtI2cWriteModeWith8ByteNumberMethods();
+
+  @DefaultMessage("WriteListOfBytesToI2c")
+  @Description("")
+  String WriteListOfBytesToI2cMethods();
+
+  @DefaultMessage("Write1ByteNumberToI2c")
+  @Description("")
+  String Write1ByteNumberToI2cMethods();
+
+  @DefaultMessage("Write2ByteNumberToI2c")
+  @Description("")
+  String Write2ByteNumberToI2cMethods();
+
+  @DefaultMessage("Write4ByteNumberToI2c")
+  @Description("")
+  String Write4ByteNumberToI2cMethods();
+
+  @DefaultMessage("Write8ByteNumberToI2c")
+  @Description("")
+  String Write8ByteNumberToI2cMethods();
+
+  @DefaultMessage("EnableAnalogReadMode")
+  @Description("")
+  String EnableAnalogReadModeMethods();
+
+  @DefaultMessage("ReadNumberFromAnalog")
+  @Description("")
+  String ReadNumberFromAnalogMethods();
+
+  @DefaultMessage("SetDigitalLine")
+  @Description("")
+  String SetDigitalLineMethods();
+
+  @DefaultMessage("Enable9v")
+  @Description("")
+  String Enable9vMethods();
+
+  @DefaultMessage("IsPortReady")
+  @Description("")
+  String IsPortReadyMethods();
 
 
   //Mock Components
