@@ -293,7 +293,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Read a 2-byte analog value from a device; only works in analog read mode.")
-  public int ReadNumberFromAnalog(int physicalPort) {
+  public long ReadNumberFromAnalog(int physicalPort) {
     if (legacyModule != null) {
       try {
         byte[] bytes = legacyModule.readAnalog(physicalPort);
