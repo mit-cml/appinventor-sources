@@ -287,7 +287,11 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_EQ = 'http://appinventor.mit.edu/explore/ai2/support/blocks/logic#=';
     Blockly.Msg.LANG_LOGIC_COMPARE_HELPURL_NEQ = 'http://appinventor.mit.edu/explore/ai2/support/blocks/logic#not=';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Tests whether two things are equal. \n' +
-        'The things being compared can be any thing, not only numbers.';
+        'The things being compared can be any things, not only numbers. \n' +
+        'Numbers are considered to be equal to their printed form as strings, \n' +
+        'for example, the number 0 is equal to the text \"0\".  Also, two strings \n' +
+        'that represent numbers are equal if the numbers are equal, for example \n' +
+        '\"1\" is equal to \"01\".';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Return true if both inputs are not equal to each other.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'logic equal';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
@@ -628,13 +632,13 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divides text into pieces using the text \'at\' as the dividing points and produces a list of the results.  \n'
         + 'Splitting "one,two,three,four" at "," (comma) returns the list "(one two three four)". \n'
-        + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato", returns the list "(one two three four)".'
+        + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato", returns the list "(one two three four)".';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divides the given text into a list, using any of the items in the list \'at\' as the \n'
         + 'dividing point, and returns a list of the results. \n'
         + 'Splitting "appleberry,banana,cherry,dogfood" with \'at\' as the two-element list whose \n'
         + 'first item is a comma and whose second item is "rry" returns a list of four items: \n'
-        + '"(applebe banana che dogfood)".'
+        + '"(applebe banana che dogfood)".';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatany';
 
     /*.LANG_TEXT_PRINT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';

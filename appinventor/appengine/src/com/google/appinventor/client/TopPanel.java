@@ -194,24 +194,16 @@ public class TopPanel extends Composite {
     String[] localeNames = LocaleInfo.getAvailableLocaleNames();
     String nativeName;
     for (String localeName : localeNames) {
-      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
       if (!localeName.equals("default")) {
         SelectLanguage lang = new SelectLanguage();
         lang.setLocale(localeName);
-        if (localeName == "zh_CN") {
-          nativeName = MESSAGES.SwitchToSimplifiedChinese();
-        } else if (localeName == "zh_TW") {
-          nativeName = MESSAGES.SwitchToTraditionalChinese();
-        } else if (localeName == "es_ES") {
-          nativeName = MESSAGES.SwitchToSpanish();
-        }
+        nativeName = getDisplayName(localeName);
         languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
       }
     }
-    Image languageIcon = new Image(LANGUAGES_IMAGE_URL + "?t=" + System.currentTimeMillis());
-    languageIcon.setSize("20px", "20px");
-
-    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, languageIcon, languageItems, true);
+    String currentLang = LocaleInfo.getCurrentLocale().getLocaleName();
+    String nativeDisplayName = getDisplayName(currentLang);
+    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, nativeDisplayName, languageItems, true);
     languageDropDown.setStyleName("ode-TopPanelButton");
 
     account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
@@ -235,6 +227,20 @@ public class TopPanel extends Composite {
     setWidth("100%");
   }
 
+  private String getDisplayName(String localeName){
+    String nativeName=LocaleInfo.getLocaleNativeDisplayName(localeName);
+    if (localeName == "zh_CN") {
+      nativeName = MESSAGES.SwitchToSimplifiedChinese();
+    } else if (localeName == "zh_TW") {
+      nativeName = MESSAGES.SwitchToTraditionalChinese();
+    } else if (localeName == "es_ES") {
+      nativeName = MESSAGES.SwitchToSpanish();
+    }else if (localeName == "it_IT") {
+      nativeName = MESSAGES.SwitchToItalian();
+    }
+    return nativeName;
+  }
+  
   public void updateAccountMessageButton(){
     // Since we want to insert "Messages" before "Sign Out", we need to clear first.
     accountButton.clearAllItems();
@@ -344,6 +350,7 @@ public class TopPanel extends Composite {
     public void setLocale(String nativeName) {
       localeName = nativeName;
     }
+
   }
 
   private class SaveAction implements Command {

@@ -111,6 +111,15 @@ public class YailEvalTest extends TestCase {
      assertTrue((Boolean) scheme.eval("(testTailRecursion)"));
    }
 
+   public void testLookupInPairs1() throws Throwable {
+     assertTrue((Boolean) scheme.eval("(testLookupInPairs1)"));
+   }
+
+   public void testLookupInPairs2() throws Throwable {
+     assertTrue((Boolean) scheme.eval("(testLookupInPairs2)"));
+   }
+
+
   public void testIsNumber() throws Throwable {
     assertTrue((Boolean) scheme.eval(
         "(call-yail-primitive is-number? (*list-for-runtime* \"1.01\") '(any) \"is a number?\")"));
@@ -197,6 +206,8 @@ public class YailEvalTest extends TestCase {
     "(yail-equal? \"1\" 1)"));
     assertTrue((Boolean) scheme.eval(
     "(yail-equal? \"1\" 1.0)"));
+    assertTrue((Boolean) scheme.eval(
+    "(yail-equal? \"0\" \"00\")"));
     assertFalse((Boolean) scheme.eval(
     "(yail-equal? \"1\" 1.01)"));
     assertFalse((Boolean) scheme.eval(
