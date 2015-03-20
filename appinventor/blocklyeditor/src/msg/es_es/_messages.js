@@ -595,8 +595,8 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
         + 'porque es el punto de corte.';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divide el texto especificado en una lista de dos elementos, utilizando la primera posición de un elemento \n'
-        + 'en la lista \'at\' como punto de corte. \n\n'
-        + 'Recortar “Me gustan las manzanas plátanos manzanas uvas”  "I love apples bananas apples grapes" por la lista "(ma,pl)" devuelve \n'
+        + 'en la lista \'en\' como punto de corte. \n\n'
+        + 'Recortar “Me gustan las manzanas plátanos manzanas uvas” por la lista "(pl ma)" devuelve \n'
         + 'una lista de dos elementos, siendo el primero "Me gustan las" y el segundo \n'
         + '"nzanas plátanos manzanas uvas."';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';

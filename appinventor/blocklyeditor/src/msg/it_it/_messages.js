@@ -619,10 +619,10 @@ Blockly.Msg.it_it.switch_language_to_italian = {
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divide il testo in due elementi di una lista, usando la prima ricorrenza di ogni elemento \n'
-        + 'nella lista \'lista\' come punto di divisione. \n\n'
-        + 'Dividendo "Io amo le mele banane angurie arance." con la lista “(ba,me)” risulterà \n'
+        + 'nella lista \'a\' come punto di divisione. \n\n'
+        + 'Dividendo "Io amo le mele banane angurie arance." con la lista “(ba me)” risulterà \n'
         + 'una lista di due elementi, come primo "Io amo le" e come secondo \n'
-        + '"nane angurie arance."';
+        + '"le banane angurie arance."';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divide il testo un più pezzi usando il testo \'ogni\' come punto di divisione e produce una lista con i risultati. \n'
         + 'Dividendo "uno,due,tre,quattro" ogni "," (virgola) risulterà una lista “(uno due tre quattro)”. \n'
