@@ -626,7 +626,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divide il testo un più pezzi usando il testo \'ogni\' come punto di divisione e produce una lista con i risultati. \n'
         + 'Dividendo "uno,due,tre,quattro" ogni "," (virgola) risulterà una lista “(uno due tre quattro)”. \n'
-        + 'Dividendo "una-patata,due-patate,tre-patate,quattro" ogni "-patata", verrà prodotta la lista “(uno due tre quattro)”.'
+        + 'Dividendo "una-patata,due-patate,tre-patate,quattro" ogni "-patata,", verrà prodotta la lista “(uno due tre quattro)”.'
 
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divide il testo in una lista, usando ogni elemento della lista \'lista\' come \n'

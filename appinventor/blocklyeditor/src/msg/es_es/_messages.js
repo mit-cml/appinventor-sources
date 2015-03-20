@@ -602,7 +602,7 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divide el texto en partes utilizando el texto \'at\' como puntos de corte y genera una lista con los resultados.  \n'
         + 'Recortar "uno,dos,tres,cuatro" en "," (coma) devuelve la lista "(uno dos tres cuatro)". \n'
-        + 'Recortar "uno-patata,dos-patata,tres-patata,cuatro" en "-patata", devuelve la lista"(uno dos tres cuatro)".'
+        + 'Recortar "uno-patata,dos-patata,tres-patata,cuatro" en "-patata,", devuelve la lista"(uno dos tres cuatro)".'
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divide el texto especificado en una lista, utilizando cualquiera de los elementos de la lista \'at\' como \n'
         + 'punto de corte, y devuelve una lista con los resultados. \n'
