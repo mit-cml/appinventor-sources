@@ -4277,17 +4277,13 @@ public interface OdeMessages extends Messages {
   String ShakingEvents();
 
   // FIRST Tech Challenge events
-  @DefaultMessage("RobotReady")
+  @DefaultMessage("Loop")
   @Description("")
-  String RobotReadyEvents();
+  String LoopEvents();
 
   @DefaultMessage("RobotUpdate")
   @Description("")
   String RobotUpdateEvents();
-
-  @DefaultMessage("Run")
-  @Description("")
-  String RunEvents();
 
   @DefaultMessage("Start")
   @Description("")

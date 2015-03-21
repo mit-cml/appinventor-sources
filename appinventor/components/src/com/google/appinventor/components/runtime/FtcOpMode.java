@@ -53,7 +53,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
       @Override
       public void run() {
-        Run();
+        Loop();
       }
 
       @Override
@@ -107,17 +107,17 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
   // Events
 
-  @SimpleEvent(description = "This event is run when this op mode is starting.")
+  @SimpleEvent(description = "This event is triggered when this op mode is starting.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }
 
-  @SimpleEvent(description = "This event is run repeatedly while this op mode is running.")
-  public void Run() {
-    EventDispatcher.dispatchEvent(this, "Run");
+  @SimpleEvent(description = "This event is triggered repeatedly while this op mode is active.")
+  public void Loop() {
+    EventDispatcher.dispatchEvent(this, "Loop");
   }
 
-  @SimpleEvent(description = "This event is run when this op mode is stopping.")
+  @SimpleEvent(description = "This event is triggered when this op mode is stopping.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
