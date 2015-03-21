@@ -795,9 +795,10 @@ public class Form extends Activity
    * @return  screen orientation
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The requested screen orientation. Commonly used values are" +
-      " unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-      "See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the " +
+      description = "The requested screen orientation, specified as a text value.  " +
+      "Commonly used values are " +
+      "landscape, portrait, sensor, user and unspecified.  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {

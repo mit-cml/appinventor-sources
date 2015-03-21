@@ -44,6 +44,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
     setStylePrimaryName("ode-DialogBox");
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
+    projectNameTextBox.setText(replaceNonTextChar(app.getTitle()));
     projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
@@ -101,5 +102,9 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
   @Override
   protected void onHide() {
     actionButton.setEnabled(true);
+  }
+
+  private String replaceNonTextChar(String s){
+    return s.replaceAll("[^A-Za-z0-9]", "");
   }
 }
