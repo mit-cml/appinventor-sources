@@ -764,11 +764,12 @@
 <h3>Events</h3>
 <dl>
   <dt><code>AfterPicking()</code></dt>
-  <dd>Simple event to be raised after the picker activity returns its
+  <dd>Event to be raised after the picker activity returns its
  result and the properties have been filled in.</dd>
   <dt><code>BeforePicking()</code></dt>
-  <dd>Simple event to raise when the component is clicked but before the
- picker activity is started.</dd>
+  <dd>Event to raise when the button of the component is clicked or the list is shown
+ using the Open block.  This event occurs before the list of items is displayed, and 
+ can be used to prepare the list before it is shown.</dd>
   <dt><code>GotFocus()</code></dt>
   <dd>Indicates the cursor moved over the button so it is now possible
  to click it.</dd>
