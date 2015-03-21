@@ -1291,7 +1291,7 @@
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
         ((integer? n) (call-with-output-string (lambda (port) (display n port))))
         ;; if it's a rational then format it as a decimal
-        ;; Note that rationals are still exact rationals -- they just print
+        ;; Note that Kawa rationals are still exact rationals -- they just print
         ;; as decimals.  That is, 7*(1/7) equals 1 exactly
         ((exact? n) (appinventor-number->string (exact->inexact n)))
         (else (*format-inexact* n))))
@@ -1463,7 +1463,12 @@
       (/ n 0.0)
       ;; force inexactness so that integer division does not produce
       ;; rationals, which is simpler for App Inventor users.
-      (/ (exact->inexact n) d)))
+      ;; In most cases, rationals are converted to decimals anyway at higher levels
+      ;; of the system, so that the forcing to inexact would be unnecessary.  But
+      ;; there are places where the conversion doesn't happen.  For example, if we
+      ;; inserted the result of dividing 2 by 3 into a ListView or a picker,
+      ;; which would appear as the string "2/3" if the division produced a rational.
+      (exact->inexact (/ n d))))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
