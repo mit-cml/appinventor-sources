@@ -373,8 +373,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   }
 
 //Deprecated  -- Won't work after 12/2012
-  @SimpleFunction(description = "DEPRECATED. This block " +
-       "is deprecated as of the end of 2012.  Use SendQuery.")
+  @SimpleFunction(userVisible = false,
+      description = "DEPRECATED. This block is deprecated as of the end of 2012.  Use SendQuery.")
   public void DoQuery() {
     if (requestHelper != null) {
       new QueryProcessor().execute(query);
