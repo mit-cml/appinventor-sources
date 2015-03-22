@@ -107,19 +107,6 @@ public class YailList extends Pair {
     int size = this.size();
     String[] objects = new String[size];
     for (int i = 1; i <= size; i++) {
-      
-//      Object element = get(i);
-//      Log.i(LOG_TAG,"element is " + element);
-//      if (Number.class.isInstance(element)) {
-//        Log.i(LOG_TAG, "isInstance is true");
-//        nElement = (Number) element;
-//        result = YailNumberToString.format(nElement.doubleValue());
-//        Log.i(LOG_TAG,"nElement is " + nElement);
-//        Log.i(LOG_TAG,"result is " + result);
-//      } else {
-//        Log.i(LOG_TAG, "isInstance is false");
-//        result = String.valueOf(element);
-//      }
       objects[i - 1] = YailListElementToString(get(i));
     }
     return objects;

@@ -10,8 +10,8 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,8 +29,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import android.util.Log;
 
 /**
  * ListView Component. Non-Visible component to create a ListView in the Screen from a series of
@@ -245,7 +243,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Sets the items of the ListView through an adapter
    */
   public void setAdapterData(){
-    Log.i(LOG_TAG,"calling set adapter data");
     adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
         itemsToColoredText());
     view.setAdapter(adapter);
