@@ -16,6 +16,8 @@ import org.json.JSONException;
 import java.util.Collection;
 import java.util.List;
 
+import android.util.Log;
+
 /**
  * The YailList is a wrapper around the gnu.list.Pair class used
  * by the Kawa framework. YailList is the main list primitive used
@@ -23,6 +25,8 @@ import java.util.List;
  *
  */
 public class YailList extends Pair {
+  
+  private static final String LOG_TAG = "YailList";
 
   // Component writers take note!
   // If you want to pass back a list to the blocks language, the
@@ -92,14 +96,49 @@ public class YailList extends Pair {
 
   /**
    * Return this YailList as an array of Strings.
+   * In the case of numbers, we convert to strings using
+   * YailNumberToString for consistency with the
+   * other places where we convert Yail numbers for printing.
    */
+   
   public String[] toStringArray() {
+//    String result;
+//    Number nElement;
     int size = this.size();
     String[] objects = new String[size];
     for (int i = 1; i <= size; i++) {
-      objects[i - 1] = String.valueOf(get(i));
+      
+//      Object element = get(i);
+//      Log.i(LOG_TAG,"element is " + element);
+//      if (Number.class.isInstance(element)) {
+//        Log.i(LOG_TAG, "isInstance is true");
+//        nElement = (Number) element;
+//        result = YailNumberToString.format(nElement.doubleValue());
+//        Log.i(LOG_TAG,"nElement is " + nElement);
+//        Log.i(LOG_TAG,"result is " + result);
+//      } else {
+//        Log.i(LOG_TAG, "isInstance is false");
+//        result = String.valueOf(element);
+//      }
+      objects[i - 1] = YailListElementToString(get(i));
     }
     return objects;
+  }
+  
+  /**
+   * Convert a YailList element to a string.  This is the same as 
+   * toString except in the case of a number, where we convert strings using
+   * YailNumberToString for consistency with the
+   * other places where we convert Yail numbers for printing.
+   * @param element
+   * @return the string
+   */
+  public static String YailListElementToString(Object element) {
+    if (Number.class.isInstance(element)) {
+      return YailNumberToString.format(((Number) element).doubleValue());
+    } else {
+      return String.valueOf(element);
+    }
   }
 
   /**

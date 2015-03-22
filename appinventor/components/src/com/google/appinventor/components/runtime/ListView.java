@@ -30,6 +30,8 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import android.util.Log;
+
 /**
  * ListView Component. Non-Visible component to create a ListView in the Screen from a series of
  * elements added from a comma separated set of text elements. It is similar to the ListPicker
@@ -243,6 +245,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Sets the items of the ListView through an adapter
    */
   public void setAdapterData(){
+    Log.i(LOG_TAG,"calling set adapter data");
     adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
         itemsToColoredText());
     view.setAdapter(adapter);
@@ -254,8 +257,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     int size = items.size();
     Spannable [] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
-      String itemString = items.get(i).toString();
-      // Is there a more efficient way to do this that does not
+      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
+      // YailList.ToStringArray.
+      // ListView however, does the string conversion via the adapter, so we must ensure
+      // that the adapter uses YailListElementToSring
+      String itemString = YailList.YailListElementToString(items.get(i));
+      // Is there a more efficient way to do conversion to spannable strings that does not
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
