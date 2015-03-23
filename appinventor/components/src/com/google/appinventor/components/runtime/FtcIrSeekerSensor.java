@@ -59,18 +59,24 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String modeString) {
-    for (Mode iMode : Mode.values()) {
-      if (modeString.equalsIgnoreCase(iMode.toString())) {
-        mode = iMode;
-        if (irSeekerSensor != null) {
-          irSeekerSensor.setMode(mode);
+    if (irSeekerSensor != null) {
+      try {
+        for (Mode iMode : Mode.values()) {
+          if (iMode.toString().equalsIgnoreCase(modeString)) {
+            mode = iMode;
+            irSeekerSensor.setMode(mode);
+            return;
+          }
         }
-        return;
+
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE, modeString);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-
-    form.dispatchErrorOccurredEvent(this, "Mode",
-        ErrorMessages.ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE, modeString);
   }
 
   /**
@@ -79,9 +85,16 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "Whether a signal is detected by the sensor.",
       category = PropertyCategory.BEHAVIOR)
   public boolean SignalDetected() {
-    return (irSeekerSensor != null)
-        ? irSeekerSensor.signalDetected()
-        : false;
+    if (irSeekerSensor != null) {
+      try {
+        return irSeekerSensor.signalDetected();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SignalDetected",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
   }
 
   /**
@@ -90,9 +103,18 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Angle.",
       category = PropertyCategory.BEHAVIOR)
   public double Angle() {
-    return (irSeekerSensor != null && irSeekerSensor.signalDetected())
-        ? irSeekerSensor.getAngle()
-        : 0;
+    if (irSeekerSensor != null) {
+      try {
+        if (irSeekerSensor.signalDetected()) {
+          return irSeekerSensor.getAngle();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Angle",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -101,9 +123,18 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Strength.",
       category = PropertyCategory.BEHAVIOR)
   public double Strength() {
-    return (irSeekerSensor != null && irSeekerSensor.signalDetected())
-        ? irSeekerSensor.getStrength()
-        : 0;
+    if (irSeekerSensor != null) {
+      try {
+        if (irSeekerSensor.signalDetected()) {
+          return irSeekerSensor.getStrength();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Strength",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   // FtcRobotController.HardwareDevice implementation

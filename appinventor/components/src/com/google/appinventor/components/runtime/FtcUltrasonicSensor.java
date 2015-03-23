@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
@@ -44,12 +45,19 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   /**
    * UltrasonicLevel property getter.
    */
-  @SimpleProperty(description = "The UltrasonicLevel.",
+  @SimpleProperty(description = "The ultrasonic level.",
       category = PropertyCategory.BEHAVIOR)
   public double UltrasonicLevel() {
-    return (ultrasonicSensor != null)
-        ? ultrasonicSensor.getUltrasonicLevel()
-        : 0;
+    if (ultrasonicSensor != null) {
+      try {
+        return ultrasonicSensor.getUltrasonicLevel();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "UltrasonicLevel",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -58,9 +66,19 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    return (ultrasonicSensor != null)
-        ? ultrasonicSensor.status()
-        : "";
+    if (ultrasonicSensor != null) {
+      try {
+        String status = ultrasonicSensor.status();
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   // FtcRobotController.HardwareDevice implementation

@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -85,9 +86,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   public void JoystickDeadzone(float joystickDeadzone) {
     if (joystickDeadzone >= 0.0f && joystickDeadzone <= 1.0f) {
       this.joystickDeadzone = joystickDeadzone;
-      Gamepad gamepad = getGamepad();
-      if (gamepad != null) {
-        gamepad.setJoystickDeadzone(joystickDeadzone);
+      try {
+        Gamepad gamepad = getGamepad();
+        if (gamepad != null) {
+          gamepad.setJoystickDeadzone(joystickDeadzone);
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -98,9 +105,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "Are all analog sticks and triggers in their rest position?",
       category = PropertyCategory.BEHAVIOR)
   public boolean AtRest() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.atRest();
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.atRest();
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "AtRest",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return true;
   }
@@ -111,9 +124,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The left analog stick horizontal axis value.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickX() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.left_stick_x;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.left_stick_x;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "LeftStickX",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -124,9 +143,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The left analog stick vertical axis value.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickY() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.left_stick_y;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.left_stick_y;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "LeftStickY",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -137,9 +162,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The right analog stick horizontal axis value.",
       category = PropertyCategory.BEHAVIOR)
   public float RightStickX() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.right_stick_x;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.right_stick_x;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RightStickX",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -150,9 +181,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The right analog stick vertical axis value.",
       category = PropertyCategory.BEHAVIOR)
   public float RightStickY() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.right_stick_y;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.right_stick_y;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RightStickY",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -163,9 +200,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The dpad up value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadUp() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.dpad_up;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.dpad_up;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "DpadUp",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -176,9 +219,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The dpad down value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadDown() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.dpad_down;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.dpad_down;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "DpadDown",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -189,9 +238,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The dpad left value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadLeft() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.dpad_left;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.dpad_left;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "DpadLeft",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -202,9 +257,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The dpad right value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadRight() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.dpad_right;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.dpad_right;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "DpadRight",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -215,9 +276,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the A button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean A() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.a;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.a;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "A",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -228,9 +295,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the B button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean B() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.b;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.b;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "B",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -241,9 +314,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the X button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean X() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.x;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.x;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "X",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -254,9 +333,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the Y button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Y() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.y;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.y;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Y",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -268,9 +353,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       "The Guide button is often the large button in the middle of the controller.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Guide() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.guide;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.guide;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Guide",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -281,9 +372,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the Start button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Start() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.start;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.start;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Start",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -294,9 +391,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The value of the Back button.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Back() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.back;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.back;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Back",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -307,9 +410,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The left bumper value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean LeftBumper() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.left_bumper;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.left_bumper;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "LeftBumper",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -320,9 +429,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The right bumper value.",
       category = PropertyCategory.BEHAVIOR)
   public boolean RightBumper() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.right_bumper;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.right_bumper;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RightBumper",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return false;
   }
@@ -333,9 +448,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The left trigger value.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftTrigger() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.left_trigger;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.left_trigger;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "LeftTrigger",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -346,9 +467,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The right trigger value.",
       category = PropertyCategory.BEHAVIOR)
   public float RightTrigger() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.right_trigger;
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.right_trigger;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RightTrigger",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0f;
   }
@@ -359,9 +486,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The status of the gamepad.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    Gamepad gamepad = getGamepad();
-    if (gamepad != null) {
-      return gamepad.toString();
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.toString();
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Status",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return "";
   }

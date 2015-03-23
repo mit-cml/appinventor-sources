@@ -54,9 +54,18 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public String RunMode() {
     if (dcMotor != null) {
-      DcMotorController dcMotorController = dcMotor.getController();
-      if (dcMotorController != null) {
-        return dcMotorController.getMotorChannelMode(dcMotor.getPortNumber()).toString();
+      try {
+        DcMotorController dcMotorController = dcMotor.getController();
+        if (dcMotorController != null) {
+          RunMode runMode = dcMotorController.getMotorChannelMode(dcMotor.getPortNumber());
+          if (runMode != null) {
+            return runMode.toString();
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "RunMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return RunMode.RUN.toString();
@@ -67,20 +76,26 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void RunMode(String runModeString) {
-    for (RunMode runMode : RunMode.values()) {
-      if (runModeString.equalsIgnoreCase(runMode.toString())) {
-        if (dcMotor != null) {
-          DcMotorController dcMotorController = dcMotor.getController();
-          if (dcMotorController != null) {
-            dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), runMode);
+    if (dcMotor != null) {
+      try {
+        DcMotorController dcMotorController = dcMotor.getController();
+        if (dcMotorController != null) {
+          for (RunMode runMode : RunMode.values()) {
+            if (runMode.toString().equalsIgnoreCase(runModeString)) {
+              dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), runMode);
+              return;
+            }
           }
+
+          form.dispatchErrorOccurredEvent(this, "RunMode",
+              ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, runModeString);
         }
-        return;
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "RunMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-
-    form.dispatchErrorOccurredEvent(this, "RunMode",
-        ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, runModeString);
   }
 
   /**
@@ -90,7 +105,16 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
     if (dcMotor != null) {
-      return dcMotor.getDirection().toString();
+      try {
+        Direction direction = dcMotor.getDirection();
+        if (direction != null) {
+          return direction.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return Direction.FORWARD.toString();
   }
@@ -100,17 +124,23 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String directionString) {
-    for (Direction direction : Direction.values()) {
-      if (directionString.equalsIgnoreCase(direction.toString())) {
-        if (dcMotor != null) {
-          dcMotor.setDirection(direction);
+    if (dcMotor != null) {
+      try {
+        for (Direction direction : Direction.values()) {
+          if (direction.toString().equalsIgnoreCase(directionString)) {
+            dcMotor.setDirection(direction);
+            return;
+          }
         }
-        return;
+
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-
-    form.dispatchErrorOccurredEvent(this, "Direction",
-        ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
   }
 
   /**
@@ -120,7 +150,13 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public double Power() {
     if (dcMotor != null) {
-      return dcMotor.getPower();
+      try {
+        return dcMotor.getPower();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Power",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return 0.0;
   }
@@ -131,7 +167,13 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleProperty
   public void Power(double power) {
     if (dcMotor != null) {
-      dcMotor.setPower(power);
+      try {
+        dcMotor.setPower(power);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Power",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
   }
 
@@ -142,7 +184,13 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public boolean PowerFloat() {
     if (dcMotor != null) {
-      return dcMotor.getPowerFloat();
+      try {
+        return dcMotor.getPowerFloat();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "PowerFloat",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return true;
   }
@@ -155,7 +203,13 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleFunction(description = "Allow the motor to float.")
   public void Float() {
     if (dcMotor != null) {
-      dcMotor.setPowerFloat();
+      try {
+        dcMotor.setPowerFloat();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Float",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
   }
 

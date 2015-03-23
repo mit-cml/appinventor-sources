@@ -192,9 +192,9 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_DIRECTION = 2808;
   public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2809;
   public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2810;
-  public static final int ERROR_FTC_LEGACY_MODULE = 2811;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT = 2812;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER = 2813;
+  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT = 2811;
+  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER = 2812;
+  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2813;
 
   // Please start the next group of error numbers at 2901.
 
@@ -485,12 +485,12 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE, "The specified scale range is not valid: %s %s");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode is not valid: %s");
-    errorMessages.put(ERROR_FTC_LEGACY_MODULE,
-        "An unexpected error occurred with the legacy module: %s");
     errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT,
         "Could not decode element [%s] %s as a number.");
     errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER,
         "Could not decode value %s as a number.");
+    errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
+        "An unexpected error occurred with: %s");
   }
 
   private ErrorMessages() {

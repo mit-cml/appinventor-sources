@@ -3248,6 +3248,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String UltrasonicLevelProperties();
 
+  @DefaultMessage("UsbScanTimeInSeconds")
+  @Description("")
+  String UsbScanTimeInSecondsProperties();
+
   @DefaultMessage("Voltage")
   @Description("")
   String VoltageProperties();

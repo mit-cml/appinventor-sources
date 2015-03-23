@@ -13,6 +13,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
@@ -67,9 +68,16 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, on a scale of 0 to 1.",
       category = PropertyCategory.BEHAVIOR)
   public double LightLevel() {
-    return (lightSensor != null)
-        ? lightSensor.getLightLevel()
-        : 0;
+    if (lightSensor != null) {
+      try {
+        return lightSensor.getLightLevel();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "LightLevel",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -78,14 +86,30 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    return (lightSensor != null)
-        ? lightSensor.status()
-        : "";
+    if (lightSensor != null) {
+      try {
+        String status = lightSensor.status();
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   private void setEnableLed() {
     if (lightSensor != null) {
-      lightSensor.enableLed(enableLed);
+      try {
+        lightSensor.enableLed(enableLed);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableLed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
   }
 

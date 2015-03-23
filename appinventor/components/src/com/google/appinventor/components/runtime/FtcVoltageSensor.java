@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -47,9 +48,16 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Voltage.",
       category = PropertyCategory.BEHAVIOR)
   public double Voltage() {
-    return (voltageSensor != null)
-        ? voltageSensor.getVoltage()
-        : 0;
+    if (voltageSensor != null) {
+      try {
+        return voltageSensor.getVoltage();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Voltage",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   // FtcRobotController.HardwareDevice implementation

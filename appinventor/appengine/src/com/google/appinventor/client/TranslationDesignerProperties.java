@@ -319,6 +319,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.GamepadNumberProperties();
     } else if (key.equals("OpModeName")) {
       value = MESSAGES.OpModeNameProperties();
+    } else if (key.equals("UsbScanTimeInSeconds")) {
+      value = MESSAGES.UsbScanTimeInSecondsProperties();
     }
     return value;
   }

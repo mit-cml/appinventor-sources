@@ -95,6 +95,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     OpMode getOpMode();
   }
 
+  private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
   private static final String DEFAULT_CONFIGURATION = "robot_config";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
@@ -104,6 +105,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
   private static final Object opModeWrappersLock = new Object();
 
+  private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
   private volatile String driverStationAddress = "";
   private volatile String configuration = DEFAULT_CONFIGURATION;
 
@@ -236,6 +238,10 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     return form;
   }
 
+  public int getUsbScanTimeInSeconds() {
+    return usbScanTimeInSeconds;
+  }
+
   public String getDriverStationMac() {
     return driverStationAddress;
   }
@@ -292,6 +298,28 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   /**
+   * UsbScanTimeInSeconds property getter.
+   * Not visible in blocks.
+   */
+  @SimpleProperty(description = "The time reserved for scanning USB devices, in seconds.",
+      category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public int UsbScanTimeInSeconds() {
+    return usbScanTimeInSeconds;
+  }
+
+  /**
+   * UsbScanTimeInSeconds property setter.
+   * Can only be set in designer; not visible in blocks.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_USB_SCAN_TIME_IN_SECONDS + "")
+  @SimpleProperty(userVisible = false)
+  public void UsbScanTimeInSeconds(int usbScanTimeInSeconds) {
+    this.usbScanTimeInSeconds = usbScanTimeInSeconds;
+    // HeyLiz restart robot?
+  }
+
+  /**
    * DriverStationAddress property getter.
    * Not visible in blocks.
    */
@@ -317,7 +345,14 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   @SimpleFunction(description = "RangeClip")
   public double RangeClip(double number, double min, double max) {
-    return Range.clip(number, min, max);
+    try {
+      return Range.clip(number, min, max);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RangeClip",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0.0;
   }
 
   // Events

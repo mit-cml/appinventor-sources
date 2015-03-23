@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -47,9 +48,16 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Direction, in degrees.",
       category = PropertyCategory.BEHAVIOR)
   public double Direction() {
-    return (compassSensor != null)
-        ? compassSensor.getDirection()
-        : 0;
+    if (compassSensor != null) {
+      try {
+        return compassSensor.getDirection();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -58,16 +66,28 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    return (compassSensor != null)
-        ? compassSensor.status()
-        : "";
+    if (compassSensor != null) {
+      try {
+        String status = compassSensor.status();
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   // FtcRobotController.HardwareDevice implementation
 
   @Override
   public void debugHardwareDevice(StringBuilder sb) {
-    sb.append("compassSensor is ").append((compassSensor == null) ? "null" : "not null").append("\n");
+    sb.append("compassSensor is ")
+        .append((compassSensor == null) ? "null" : "not null")
+        .append("\n");
   }
 
   // FtcHardwareDevice implementation

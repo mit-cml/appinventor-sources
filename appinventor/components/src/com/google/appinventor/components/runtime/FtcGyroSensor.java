@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -47,9 +48,16 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Rotation.",
       category = PropertyCategory.BEHAVIOR)
   public double Rotation() {
-    return (gyroSensor != null)
-        ? gyroSensor.getRotation()
-        : 0;
+    if (gyroSensor != null) {
+      try {
+        return gyroSensor.getRotation();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Rotation",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   // TODO(lizlooney): some sensors hava a status method, but some don't. Should I have a Status
@@ -60,9 +68,19 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    return (gyroSensor != null)
-        ? gyroSensor.status()
-        : "";
+    if (gyroSensor != null) {
+      try {
+        String status = gyroSensor.status();
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   // FtcRobotController.HardwareDevice implementation

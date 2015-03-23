@@ -57,8 +57,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       try {
         legacyModule.enableNxtI2cReadMode(physicalPort, i2cAddress, memAddress, memLength);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cReadMode",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -71,8 +72,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
         byte[] bytes = legacyModule.readI2c(physicalPort);
         return convertByteArrayToYailListSigned(bytes);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadListOfSignedBytesFromI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return Collections.emptyList();
@@ -86,8 +88,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
         byte[] bytes = legacyModule.readI2c(physicalPort);
         return convertByteArrayToYailListUnsigned(bytes);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadListOfUnsignedBytesFromI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return Collections.emptyList();
@@ -101,8 +104,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
         byte[] bytes = legacyModule.readI2c(physicalPort);
         return convertByteArrayToNumber(bytes);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadNumberFromI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return 0;
@@ -110,17 +114,19 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @SimpleFunction(description =
       "Enable a physical port in NXT I2C write mode, with a list of byte values.")
-  public void EnableNxtI2cWriteModeWithListOfBytes(int physicalPort, int i2cAddress, int memAddress,
-      YailList initialValues) {
+  public void EnableNxtI2cWriteModeWithListOfBytes(int physicalPort, int i2cAddress,
+      int memAddress, YailList initialValues) {
     if (legacyModule != null) {
       try {
-        byte[] bytes = convertYailListToByteArray(initialValues, "EnableNxtI2cWriteModeWithListOfBytes");
+        byte[] bytes =
+            convertYailListToByteArray(initialValues, "EnableNxtI2cWriteModeWithListOfBytes");
         if (bytes != null) {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWithListOfBytes",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -137,8 +143,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith1ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -155,8 +162,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith2ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -173,8 +181,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith4ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -191,8 +200,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteModeWith8ByteNumber",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -206,8 +216,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.writeI2c(physicalPort, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "WriteListOfBytesToI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -222,8 +233,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.writeI2c(physicalPort, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Write1ByteNumberToI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -239,8 +251,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.writeI2c(physicalPort, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Write2ByteNumberToI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -256,8 +269,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.writeI2c(physicalPort, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Write4ByteNumberToI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -273,8 +287,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
           legacyModule.writeI2c(physicalPort, bytes);
         }
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Write8ByteNumberToI2c",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -285,8 +300,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       try {
         legacyModule.enableAnalogReadMode(physicalPort, i2cAddress);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableAnalogReadMode",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -299,8 +315,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
         byte[] bytes = legacyModule.readAnalog(physicalPort);
         return convertByteArrayToNumber(bytes);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadNumberFromAnalog",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return 0;
@@ -312,8 +329,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       try {
         legacyModule.setDigitalLine(physicalPort, line, set);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetDigitalLine",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -324,8 +342,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       try {
         legacyModule.enable9v(physicalPort, enable);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Enable9v",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
@@ -336,8 +355,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       try {
         return legacyModule.isPortReady(physicalPort);
       } catch (Throwable e) {
+        e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "IsPortReady",
-            ErrorMessages.ERROR_FTC_LEGACY_MODULE, e.toString());
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return false;

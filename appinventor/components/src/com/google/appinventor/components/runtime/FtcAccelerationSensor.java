@@ -12,8 +12,10 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.ftc.FtcHardwareDevice;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
+import com.qualcomm.robotcore.hardware.AccelerationSensor.Acceleration;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -47,9 +49,19 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The X Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
   public double XAccel() {
-    return (accelerationSensor != null)
-        ? accelerationSensor.getAcceleration().x
-        : 0;
+    if (accelerationSensor != null) {
+      try {
+        Acceleration acceleration = accelerationSensor.getAcceleration();
+        if (acceleration != null) {
+          return acceleration.x;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "XAccel",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -58,9 +70,19 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Y Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
   public double YAccel() {
-    return (accelerationSensor != null)
-        ? accelerationSensor.getAcceleration().y
-        : 0;
+    if (accelerationSensor != null) {
+      try {
+        Acceleration acceleration = accelerationSensor.getAcceleration();
+        if (acceleration != null) {
+          return acceleration.y;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "YAccel",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -69,9 +91,19 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Z Acceleration, in g's.",
       category = PropertyCategory.BEHAVIOR)
   public double ZAccel() {
-    return (accelerationSensor != null)
-        ? accelerationSensor.getAcceleration().z
-        : 0;
+    if (accelerationSensor != null) {
+      try {
+        Acceleration acceleration = accelerationSensor.getAcceleration();
+        if (acceleration != null) {
+          return acceleration.z;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ZAccel",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -80,16 +112,28 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    return (accelerationSensor != null)
-        ? accelerationSensor.status()
-        : "";
+    if (accelerationSensor != null) {
+      try {
+        String status = accelerationSensor.status();
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   // FtcRobotController.HardwareDevice implementation
 
   @Override
   public void debugHardwareDevice(StringBuilder sb) {
-    sb.append("accelerationSensor is ").append((accelerationSensor == null) ? "null" : "not null").append("\n");
+    sb.append("accelerationSensor is ")
+        .append((accelerationSensor == null) ? "null" : "not null")
+        .append("\n");
   }
 
   // FtcHardwareDevice implementation

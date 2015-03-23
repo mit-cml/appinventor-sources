@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -97,12 +98,24 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for this op mode.")
   public void TelemetryAddTextData(String key, String text) {
-    opMode.telemetry.addData(key, text);
+    try {
+      opMode.telemetry.addData(key, text);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "TelemetryAddTextData",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
   }
 
   @SimpleFunction(description = "Adds a numeric data point to the telemetry for this op mode.")
   public void TelemetryAddNumericData(String key, float number) {
-    opMode.telemetry.addData(key, number);
+    try {
+      opMode.telemetry.addData(key, number);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "TelemetryAddNumericData",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
   }
 
   // Events

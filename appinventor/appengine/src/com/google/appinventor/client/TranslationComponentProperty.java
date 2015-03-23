@@ -282,6 +282,7 @@ public class TranslationComponentProperty {
     map.put("Status", MESSAGES.StatusProperties());
     map.put("Strength", MESSAGES.StrengthProperties());
     map.put("UltrasonicLevel", MESSAGES.UltrasonicLevelProperties());
+    map.put("UsbScanTimeInSeconds", MESSAGES.UsbScanTimeInSecondsProperties());
     map.put("Voltage", MESSAGES.VoltageProperties());
 
     return map;

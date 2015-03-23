@@ -52,7 +52,16 @@ public final class FtcServo extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
     if (servo != null) {
-      return servo.getDirection().toString();
+      try {
+        Direction direction = servo.getDirection();
+        if (direction != null) {
+          return direction.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return Direction.FORWARD.toString();
   }
@@ -62,17 +71,23 @@ public final class FtcServo extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String directionString) {
-    for (Direction direction : Direction.values()) {
-      if (directionString.equalsIgnoreCase(direction.toString())) {
-        if (servo != null) {
-          servo.setDirection(direction);
+    if (servo != null) {
+      try {
+        for (Direction direction : Direction.values()) {
+          if (direction.toString().equalsIgnoreCase(directionString)) {
+            servo.setDirection(direction);
+            return;
+          }
         }
-        return;
+
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Direction",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-
-    form.dispatchErrorOccurredEvent(this, "Direction",
-        ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
   }
 
   /**
@@ -82,7 +97,13 @@ public final class FtcServo extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public double Position() {
     if (servo != null) {
-      return servo.getPosition();
+      try {
+        return servo.getPosition();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Position",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return 0.0;
   }
@@ -93,7 +114,13 @@ public final class FtcServo extends FtcHardwareDevice {
   @SimpleProperty
   public void Position(double position) {
     if (servo != null) {
-      servo.setPosition(position);
+      try {
+        servo.setPosition(position);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Position",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
   }
 
@@ -107,6 +134,10 @@ public final class FtcServo extends FtcHardwareDevice {
       } catch (IllegalArgumentException e) {
         form.dispatchErrorOccurredEvent(this, "ScaleRange",
             ErrorMessages.ERROR_FTC_INVALID_SCALE_RANGE, scaleRangeMin, scaleRangeMin);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ScaleRange",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
