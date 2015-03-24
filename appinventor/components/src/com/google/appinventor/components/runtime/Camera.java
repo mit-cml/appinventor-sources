@@ -91,7 +91,6 @@ public class Camera extends AndroidNonvisibleComponent
    * @param front
    *          {@code true} for front-facing camera, {@code false} for default
    */
-
   @SimpleProperty(userVisible = false, description = "DEPRECATED MARCH 2015, FEATURE NO LONGER AVAILABLE: "
     + "Specifies whether the front-facing camera should be used (when available). "
     + "If the device does not have a front-facing camera, this option will be ignored "
