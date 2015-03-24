@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2014 MIT, All rights reserved
+// Copyright 2015 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
@@ -18,8 +18,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
-import com.google.appinventor.components.runtime.ftc.FtcRobotControllerA;
-import com.google.appinventor.components.runtime.ftc.FtcRobotControllerS;
+import com.google.appinventor.components.runtime.ftc.FtcRobotControllerActivity;
+import com.google.appinventor.components.runtime.ftc.FtcRobotControllerService;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -42,7 +42,6 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -83,7 +82,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   public interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
-    void debugHardwareDevice(StringBuilder sb);
   }
 
   interface GamepadDevice {
@@ -109,13 +107,17 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private volatile String driverStationAddress = "";
   private volatile String configuration = DEFAULT_CONFIGURATION;
 
+  private volatile String robotError = "";
+  private volatile String wifiDirectStatus = "";
+  private volatile String robotStatus = "";
+
   /*
    * wakeLock is set in onInitialize, if the device version is Ice Cream Sandwich or later.
    */
   private PowerManager.WakeLock wakeLock;
 
-  private FtcRobotControllerS ftcRobotControllerS; // set in onInitialize
-  private FtcRobotControllerA ftcRobotControllerA; // set in onInitialize
+  private FtcRobotControllerService ftcRobotControllerService; // set in onInitialize
+  private FtcRobotControllerActivity ftcRobotControllerActivity; // set in onInitialize
 
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
@@ -131,18 +133,19 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
       wakeLock.acquire();
 
-      ftcRobotControllerS = new FtcRobotControllerS(this);
-      FtcRobotControllerA ftcRobotControllerA = new FtcRobotControllerA(this, ftcRobotControllerS);
-      ftcRobotControllerS.init();
+      ftcRobotControllerService = new FtcRobotControllerService(this, form);
+      ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form);
+
+      ftcRobotControllerService.onBind();
+      ftcRobotControllerActivity.onCreate();
+      ftcRobotControllerActivity.onServiceBind(ftcRobotControllerService);
     }
   }
 
   @Override
   public void onNewIntent(Intent intent) {
-    // In Qualcomm's code, this is done in FtcRobotControllerActivity.
-    if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
-      // a new USB device has been attached
-      DbgLog.msg("USB Device attached; app restart may be needed");
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onNewIntent(intent);
     }
   }
   
@@ -228,15 +231,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
 
-  // Methods called by FtcRobotControllerS and FtcRobotControllerA
-
-  public Activity getActivity() {
-    return form;
-  }
-
-  public Context getContext() {
-    return form;
-  }
+  // Methods called by FtcRobotControllerService and FtcRobotControllerActivity
 
   public int getUsbScanTimeInSeconds() {
     return usbScanTimeInSeconds;
@@ -254,23 +249,25 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     return this;
   }
 
-  public void triggerWifiDirectUpdateEvent(final String status) {
-    form.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        WifiDirectUpdate(status);
-      }
-    });
+  public void setRobotError(String robotError) {
+    if (!this.robotError.equals(robotError)) {
+      this.robotError = robotError;
+      RobotError(robotError);
+    }
   }
 
-  public void triggerRobotUpdateEvent(final String status) {
-    DbgLog.msg(status);
-    form.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        RobotUpdate(status);
-      }
-    });
+  public void setWifiDirectStatus(String wifiDirectStatus) {
+    if (!this.wifiDirectStatus.equals(wifiDirectStatus)) {
+      this.wifiDirectStatus = wifiDirectStatus;
+      WifiDirectStatus(wifiDirectStatus);
+    }
+  }
+
+  public void setRobotStatus(String robotStatus) {
+    if (!this.robotStatus.equals(robotStatus)) {
+      this.robotStatus = robotStatus;
+      RobotStatus(robotStatus);
+    }
   }
 
   // Properties
@@ -357,14 +354,19 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   // Events
 
-  @SimpleEvent(description = "WifiDirectUpdate event")
-  public void WifiDirectUpdate(String status) {
-    EventDispatcher.dispatchEvent(this, "WifiDirectUpdate", status);
+  @SimpleEvent(description = "RobotError event")
+  public void RobotError(String error) {
+    EventDispatcher.dispatchEvent(this, "RobotError", error);
   }
 
-  @SimpleEvent(description = "RobotUpdate event")
-  public void RobotUpdate(String status) {
-    EventDispatcher.dispatchEvent(this, "RobotUpdate", status);
+  @SimpleEvent(description = "WifiDirectStatus event")
+  public void WifiDirectStatus(String status) {
+    EventDispatcher.dispatchEvent(this, "WifiDirectStatus", status);
+  }
+
+  @SimpleEvent(description = "RobotStatus event")
+  public void RobotStatus(String status) {
+    EventDispatcher.dispatchEvent(this, "RobotStatus", status);
   }
 
   // Called from FtcEventLoop.init
@@ -435,7 +437,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   private void prepareToDie() {
-    ftcRobotControllerS.teardown();
+    ftcRobotControllerService.onUnbind();
 
     wakeLock.release();
     wakeLock = null;

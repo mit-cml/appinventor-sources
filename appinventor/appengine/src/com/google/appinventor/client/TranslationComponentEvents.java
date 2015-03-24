@@ -135,10 +135,11 @@ public class TranslationComponentEvents {
     map.put("GotTranslation", MESSAGES.GotTranslationEvents());
     map.put("Shaking", MESSAGES.ShakingEvents());
     map.put("Loop", MESSAGES.LoopEvents());
-    map.put("RobotUpdate", MESSAGES.RobotUpdateEvents());
+    map.put("RobotError", MESSAGES.RobotErrorEvents());
+    map.put("RobotStatus", MESSAGES.RobotStatusEvents());
     map.put("Start", MESSAGES.StartEvents());
     map.put("Stop", MESSAGES.StopEvents());
-    map.put("WifiDirectUpdate", MESSAGES.WifiDirectUpdateEvents());
+    map.put("WifiDirectStatus", MESSAGES.WifiDirectStatusEvents());
 
 	/*
   //event helpstrings
@@ -171,10 +172,11 @@ public class TranslationComponentEvents {
 	map.put("AfterChoosing-helpstring", MESSAGES.AfterChoosingHelpStringEvents());
 	map.put("AfterTextInput-helpstring", MESSAGES.AfterTextInputHelpStringEvents());
   map.put("Loop-helpstring", MESSAGES.LoopHelpStringEvents());
-  map.put("RobotUpdate-helpstring", MESSAGES.RobotUpdateHelpStringEvents());
+  map.put("RobotError-helpstring", MESSAGES.RobotErrorHelpStringEvents());
+  map.put("RobotStatus-helpstring", MESSAGES.RobotStatusHelpStringEvents());
   map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
   map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
-  map.put("WifiDirectUpdate-helpstring", MESSAGES.WifiDirectUpdateHelpStringEvents());
+  map.put("WifiDirectStatus-helpstring", MESSAGES.WifiDirectStatusHelpStringEvents());
 	*/
 
     return map;

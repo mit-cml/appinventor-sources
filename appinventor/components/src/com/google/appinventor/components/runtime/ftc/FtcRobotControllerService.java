@@ -35,7 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.google.appinventor.components.runtime.ftc;
 
-import com.google.appinventor.components.runtime.FtcRobotController;
+import android.content.Context;
+import android.net.wifi.p2p.WifiP2pDevice;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.EventLoop;
@@ -48,9 +49,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.WifiDirectAssistantCallback;
 
-import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
-
 import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,12 +56,11 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class FtcRobotControllerS implements WifiDirectAssistantCallback {
+import com.google.appinventor.components.runtime.FtcRobotController;
+
+public class FtcRobotControllerService implements WifiDirectAssistantCallback {
 
   private final static double NETWORK_MAX_WAIT = 120.0; // 2 minutes
-
-  private final FtcRobotController ftcRobotController;
-  private final Context context;
 
   private WifiDirectAssistant wifiDirect;
   private Robot robot;
@@ -72,7 +69,7 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
   private WifiDirectAssistant.Event wifiDirectStatus = WifiDirectAssistant.Event.DISCONNECTED;
   private String robotStatus = "Robot Status: null";
 
-  private FtcRobotControllerA.Callback callback = null;
+  private FtcRobotControllerActivity.Callback callback = null;
   private final EventLoopMonitor eventLoopMonitor = new EventLoopMonitor();
 
   private final ElapsedTime networkTimer = new ElapsedTime();
@@ -82,9 +79,12 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
 
   private Thread robotSetupThread = null;
 
-  public FtcRobotControllerS(FtcRobotController ftcRobotController) {
+  private final FtcRobotController ftcRobotController;
+  private final Context context;
+
+  public FtcRobotControllerService(FtcRobotController ftcRobotController, Context context) {
     this.ftcRobotController = ftcRobotController;
-    context = ftcRobotController.getContext();
+    this.context = context;
   }
 
   private class EventLoopMonitor implements EventLoopManager.EventLoopMonitor {
@@ -181,22 +181,20 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
     }
   }
 
-  // Methods called by FtcRobotController and FtcRobotControllerA.
-
-  String getDriverStationMac() {
+  public String getDriverStationMac() {
     return ftcRobotController.getDriverStationMac();
   }
 
-  WifiDirectAssistant.Event getWifiDirectStatus() {
+  public WifiDirectAssistant.Event getWifiDirectStatus() {
     return wifiDirectStatus;
   }
 
-  String getRobotStatus() {
+  public String getRobotStatus() {
     return robotStatus;
   }
 
-  public void init() {
-    DbgLog.msg("Starting FTC Controller S");
+  public void onBind() {
+    DbgLog.msg("Starting FTC Controller Service");
 
     wifiDirect = WifiDirectAssistant.getWifiDirectAssistant(context);
     wifiDirect.setCallback(this);
@@ -208,18 +206,18 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
     }
   }
 
-  public void teardown() {
-    DbgLog.msg("Stopping FTC Controller S");
+  public void onUnbind() {
+    DbgLog.msg("Stopping FTC Controller Service");
 
     wifiDirect.disable();
     shutdownRobot();
   }
 
-  synchronized void setCallback(FtcRobotControllerA.Callback callback) {
+  public synchronized void setCallback(FtcRobotControllerActivity.Callback callback) {
     this.callback = callback;
   }
 
-  synchronized void setupRobot(EventLoop eventLoop) {
+  public synchronized void setupRobot(EventLoop eventLoop) {
 
     /*
      * There is a bug in the Android activity life cycle with regards to apps
@@ -230,7 +228,7 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
      */
 
     if (robotSetupThread != null && robotSetupThread.isAlive()) {
-      DbgLog.msg("FtcRobotControllerS.setupRobot() is currently running, stopping old setup");
+      DbgLog.msg("FtcRobotControllerService.setupRobot() is currently running, stopping old setup");
       robotSetupThread.interrupt();
       while (robotSetupThread.isAlive() == true) Thread.yield();
       DbgLog.msg("Old setup stopped; restarting setup");
@@ -249,7 +247,7 @@ public class FtcRobotControllerS implements WifiDirectAssistantCallback {
     while (robotSetupThread.getState() == Thread.State.NEW) Thread.yield();
   }
 
-  synchronized void shutdownRobot() {
+  public synchronized void shutdownRobot() {
 
     // if setup thread is running, stop it
     if (robotSetupThread != null && robotSetupThread.isAlive()) robotSetupThread.interrupt();

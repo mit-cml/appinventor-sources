@@ -1,19 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2014 MIT, All rights reserved
+// Copyright 2015 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
-package com.google.appinventor.components.runtime.ftc;
+package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
-import com.google.appinventor.components.runtime.Component;
-import com.google.appinventor.components.runtime.ComponentContainer;
-import com.google.appinventor.components.runtime.Deleteable;
-import com.google.appinventor.components.runtime.FtcRobotController;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 

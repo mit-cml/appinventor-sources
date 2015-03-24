@@ -3104,17 +3104,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BackProperties();
 
-  @DefaultMessage("DeviceName")
-  @Description("")
-  String DeviceNameProperties();
-
-  @DefaultMessage("Channel")
-  @Description("")
-  String ChannelProperties();
-
   @DefaultMessage("Configuration")
   @Description("")
   String ConfigurationProperties();
+
+  @DefaultMessage("DeviceName")
+  @Description("")
+  String DeviceNameProperties();
 
   @DefaultMessage("Direction")
   @Description("")
@@ -3180,17 +3176,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ModeProperties();
 
-  @DefaultMessage("RunMode")
-  @Description("")
-  String RunModeProperties();
-
   @DefaultMessage("OpModeName")
   @Description("")
   String OpModeNameProperties();
-
-  @DefaultMessage("PortNumber")
-  @Description("")
-  String PortNumberProperties();
 
   @DefaultMessage("Position")
   @Description("")
@@ -3223,6 +3211,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
+
+  @DefaultMessage("RunMode")
+  @Description("")
+  String RunModeProperties();
 
   @DefaultMessage("SignalDetected")
   @Description("")
@@ -3858,6 +3850,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String keyParams();
 
+  @DefaultMessage("error")
+  @Description("")
+  String errorParams();
+
   @DefaultMessage("max")
   @Description("")
   String maxParams();
@@ -4285,9 +4281,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LoopEvents();
 
-  @DefaultMessage("RobotUpdate")
+  @DefaultMessage("RobotError")
   @Description("")
-  String RobotUpdateEvents();
+  String RobotErrorEvents();
+
+  @DefaultMessage("RobotStatus")
+  @Description("")
+  String RobotStatusEvents();
 
   @DefaultMessage("Start")
   @Description("")
@@ -4297,9 +4297,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StopEvents();
 
-  @DefaultMessage("WifiDirectUpdate")
+  @DefaultMessage("WifiDirectStatus")
   @Description("")
-  String WifiDirectUpdateEvents();
+  String WifiDirectStatusEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
