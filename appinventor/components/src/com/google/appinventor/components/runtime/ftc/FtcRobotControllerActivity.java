@@ -261,8 +261,7 @@ public class FtcRobotControllerActivity {
       factory = hitechnicFactory;
     }
 
-    eventLoop = new FtcEventLoop(factory, callback,
-        ftcRobotController, ftcRobotController.getOpModeRegister());
+    eventLoop = new FtcEventLoop(factory, callback, ftcRobotController);
 
     controllerService.setCallback(callback);
     controllerService.setupRobot(eventLoop);

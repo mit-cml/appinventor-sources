@@ -79,7 +79,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     implements Component, OnInitializeListener, OnNewIntentListener, OnDestroyListener, Deleteable,
     OpModeRegister {
 
-  public interface HardwareDevice {
+  interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
   }
 
@@ -151,7 +151,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   /**
    * Adds a {@link HardwareDevice} to the hardware devices.
    */
-  public static void addHardwareDevice(Form form, HardwareDevice hardwareDevice) {
+  static void addHardwareDevice(Form form, HardwareDevice hardwareDevice) {
     synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm == null) {
@@ -165,7 +165,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   /**
    * Removes a {@link HardwareDevice} from the hardware devices.
    */
-  public static void removeHardwareDevice(Form form, HardwareDevice hardwareDevice) {
+  static void removeHardwareDevice(Form form, HardwareDevice hardwareDevice) {
     synchronized (hardwareDevicesLock) {
       List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
       if (hardwareDevicesForForm != null) {
@@ -230,24 +230,22 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
 
-  // Methods called by FtcRobotControllerService and FtcRobotControllerActivity
-
+  // Called from FtcFtcRobotControllerService
   public int getUsbScanTimeInSeconds() {
     return usbScanTimeInSeconds;
   }
 
+  // Called from FtcFtcRobotControllerService
   public String getDriverStationMac() {
     return driverStationAddress;
   }
 
+  // Called from FtcFtcRobotControllerActivity
   public String getHardwareConfigFilename() {
     return configuration;
   }
 
-  public OpModeRegister getOpModeRegister() {
-    return this;
-  }
-
+  // Called from FtcFtcRobotControllerActivity on the UI thraed
   public void setRobotError(String robotError) {
     if (!this.robotError.equals(robotError)) {
       this.robotError = robotError;
@@ -255,6 +253,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
 
+  // Called from FtcFtcRobotControllerActivity on the UI thraed
   public void setWifiDirectStatus(String wifiDirectStatus) {
     if (!this.wifiDirectStatus.equals(wifiDirectStatus)) {
       this.wifiDirectStatus = wifiDirectStatus;
@@ -262,10 +261,51 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
 
+  // Called from FtcFtcRobotControllerActivity on the UI thraed
   public void setRobotStatus(String robotStatus) {
     if (!this.robotStatus.equals(robotStatus)) {
       this.robotStatus = robotStatus;
       RobotStatus(robotStatus);
+    }
+  }
+
+  // Called from FtcEventLoop.init
+  public void onEventLoopInit(EventLoopManager eventLoopManager, HardwareMap hardwareMap) {
+    synchronized (gamepadDevicesLock) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
+          gamepadDevice.setEventLoopManager(eventLoopManager);
+        }
+      }
+    }
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.setHardwareMap(hardwareMap);
+        }
+      }
+    }
+  }
+
+  // Called from FtcEventLoop.teardown
+  public void onEventLoopTeardown() {
+    synchronized (gamepadDevicesLock) {
+      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
+      if (gamepadDevicesForForm != null) {
+        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
+          gamepadDevice.setEventLoopManager(null);
+        }
+      }
+    }
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.setHardwareMap(null);
+        }
+      }
     }
   }
 
@@ -372,46 +412,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   @SimpleEvent(description = "RobotStatus event")
   public void RobotStatus(String status) {
     EventDispatcher.dispatchEvent(this, "RobotStatus", status);
-  }
-
-  // Called from FtcEventLoop.init
-  public void onEventLoopInit(EventLoopManager eventLoopManager, HardwareMap hardwareMap) {
-    synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
-          gamepadDevice.setEventLoopManager(eventLoopManager);
-        }
-      }
-    }
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.setHardwareMap(hardwareMap);
-        }
-      }
-    }
-  }
-
-  // Called from FtcEventLoop.teardown
-  public void onEventLoopTeardown() {
-    synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
-          gamepadDevice.setEventLoopManager(null);
-        }
-      }
-    }
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.setHardwareMap(null);
-        }
-      }
-    }
   }
 
   // OpModeRegister implementation

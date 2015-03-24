@@ -40,7 +40,6 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -83,11 +82,11 @@ public class FtcEventLoop implements EventLoop {
   private final FtcRobotController ftcRobotController;
 
   FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback,
-      FtcRobotController ftcRobotController, OpModeRegister opModeRegister) {
+      FtcRobotController ftcRobotController) {
     this.hardwareFactory = hardwareFactory;
     this.callback = callback;
     this.ftcRobotController = ftcRobotController;
-    opModeManager = new OpModeManager(hardwareMap, opModeRegister);
+    opModeManager = new OpModeManager(hardwareMap, /* OpModeRegister */ ftcRobotController);
   }
 
   /**
