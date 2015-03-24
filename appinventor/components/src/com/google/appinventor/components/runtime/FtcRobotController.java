@@ -35,7 +35,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
-// TODO(lizlooney): What other com.qualcomm.robotcore.util classes should be supported?
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
 
@@ -354,6 +353,9 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
     return 0.0;
   }
+
+  // TODO(lizlooney): Add support for other com.qualcomm.robotcore.util classes:
+  // CurvedWheelMotion, Range (other methods), RollingAverage
 
   // Events
 
