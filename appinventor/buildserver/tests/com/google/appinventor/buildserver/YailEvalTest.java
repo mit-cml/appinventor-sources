@@ -1163,6 +1163,11 @@ public class YailEvalTest extends TestCase {
      testBinaryDoubleFunction("atan2-degrees", args1, args2, vals);
    }
 
+   public void testIntegerDivison() throws Throwable {
+     // Check that integer division does not produce rationals
+     assertFalse((Boolean) scheme.eval("(exact? (yail-divide 2 3))"));
+   }
+
    public void testConvertToStrings() throws Throwable {
      String schemeInputString = "(convert-to-strings (make-yail-list \"abc\" 123 (list 4 5 6)))";
      String schemeExpectedResultString = "(abc 123 (4 5 6))";
