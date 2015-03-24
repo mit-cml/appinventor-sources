@@ -250,6 +250,12 @@ public class TranslationComponentProperty {
     map.put("Back", MESSAGES.BackProperties());
     map.put("Configuration", MESSAGES.ConfigurationProperties());
     map.put("DeviceName", MESSAGES.DeviceNameProperties());
+    map.put("DifferentialControlLoopCoefficientD",
+        MESSAGES.DifferentialControlLoopCoefficientDProperties());
+    map.put("DifferentialControlLoopCoefficientI",
+        MESSAGES.DifferentialControlLoopCoefficientIProperties());
+    map.put("DifferentialControlLoopCoefficientP",
+        MESSAGES.DifferentialControlLoopCoefficientPProperties());
     map.put("Direction", MESSAGES.DirectionProperties());
     map.put("DpadDown", MESSAGES.DpadDownProperties());
     map.put("DpadLeft", MESSAGES.DpadLeftProperties());
@@ -258,6 +264,7 @@ public class TranslationComponentProperty {
     map.put("DriverStationAddress", MESSAGES.DriverStationAddressProperties());
     map.put("EnableLed", MESSAGES.EnableLedProperties());
     map.put("GamepadNumber", MESSAGES.GamepadNumberProperties());
+    map.put("GearRatio", MESSAGES.GearRatioProperties());
     map.put("Guide", MESSAGES.GuideProperties());
     map.put("JoystickDeadzone", MESSAGES.JoystickDeadzoneProperties());
     map.put("LeftBumper", MESSAGES.LeftBumperProperties());
@@ -266,6 +273,8 @@ public class TranslationComponentProperty {
     map.put("LeftTrigger", MESSAGES.LeftTriggerProperties());
     map.put("LightLevel", MESSAGES.LightLevelProperties());
     map.put("Mode", MESSAGES.ModeProperties());
+    map.put("MotorCurrentPosition", MESSAGES.MotorCurrentPositionProperties());
+    map.put("MotorTargetPosition", MESSAGES.MotorTargetPositionProperties());
     map.put("OpModeName", MESSAGES.OpModeNameProperties());
     map.put("Position", MESSAGES.PositionProperties());
     map.put("Power", MESSAGES.PowerProperties());

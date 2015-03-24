@@ -290,8 +290,10 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       defaultValue = DEFAULT_CONFIGURATION)
   @SimpleProperty(userVisible = false)
   public void Configuration(String configuration) {
-    this.configuration = configuration;
-    // HeyLiz restart robot?
+    if (!this.configuration.equals(configuration)) {
+      this.configuration = configuration;
+      ftcRobotControllerActivity.restartRobot();
+    }
   }
 
   /**
@@ -313,7 +315,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   @SimpleProperty(userVisible = false)
   public void UsbScanTimeInSeconds(int usbScanTimeInSeconds) {
     this.usbScanTimeInSeconds = usbScanTimeInSeconds;
-    // HeyLiz restart robot?
   }
 
   /**
@@ -334,8 +335,10 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       defaultValue = "")
   @SimpleProperty(userVisible = false)
   public void DriverStationAddress(String driverStationAddress) {
-    this.driverStationAddress = driverStationAddress;
-    // HeyLiz restart robot?
+    if (!this.driverStationAddress.equals(driverStationAddress)) {
+      this.driverStationAddress = driverStationAddress;
+      ftcRobotControllerActivity.restartRobot();
+    }
   }
 
   // Functions

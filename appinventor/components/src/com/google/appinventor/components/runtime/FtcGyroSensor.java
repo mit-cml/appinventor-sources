@@ -59,8 +59,6 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  // TODO(lizlooney): some sensors hava a status method, but some don't. Should I have a Status
-  // property in app inventor?
   /**
    * Status property getter.
    */

@@ -308,7 +308,6 @@ public class TranslationDesignerProperties {
       value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
-
     } else if (key.equals("Configuration")) {
       value = MESSAGES.ConfigurationProperties();
     } else if (key.equals("DeviceName")) {

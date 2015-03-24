@@ -3112,6 +3112,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DeviceNameProperties();
 
+  @DefaultMessage("DifferentialControlLoopCoefficientD")
+  @Description("")
+  String DifferentialControlLoopCoefficientDProperties();
+
+  @DefaultMessage("DifferentialControlLoopCoefficientI")
+  @Description("")
+  String DifferentialControlLoopCoefficientIProperties();
+
+  @DefaultMessage("DifferentialControlLoopCoefficientP")
+  @Description("")
+  String DifferentialControlLoopCoefficientPProperties();
+
   @DefaultMessage("Direction")
   @Description("")
   String DirectionProperties();
@@ -3144,6 +3156,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GamepadNumberProperties();
 
+  @DefaultMessage("GearRatio")
+  @Description("")
+  String GearRatioProperties();
+
   @DefaultMessage("Guide")
   @Description("")
   String GuideProperties();
@@ -3175,6 +3191,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Mode")
   @Description("")
   String ModeProperties();
+
+  @DefaultMessage("MotorCurrentPosition")
+  @Description("")
+  String MotorCurrentPositionProperties();
+
+  @DefaultMessage("MotorTargetPosition")
+  @Description("")
+  String MotorTargetPositionProperties();
 
   @DefaultMessage("OpModeName")
   @Description("")
@@ -3846,37 +3870,49 @@ public interface OdeMessages extends Messages {
   String textToTranslateParams();
 
   // FIRST Tech Challenge parameters
-  @DefaultMessage("key")
+  @DefaultMessage("d")
   @Description("")
-  String keyParams();
+  String dParams();
+
+  @DefaultMessage("data")
+  @Description("")
+  String dataParams();
+
+  @DefaultMessage("enable")
+  @Description("")
+  String enableParams();
 
   @DefaultMessage("error")
   @Description("")
   String errorParams();
 
-  @DefaultMessage("max")
+  @DefaultMessage("i")
   @Description("")
-  String maxParams();
+  String iParams();
 
-  @DefaultMessage("min")
+  @DefaultMessage("initialValue")
   @Description("")
-  String minParams();
+  String initialValueParams();
 
-  @DefaultMessage("scaleRangeMax")
+  @DefaultMessage("initialValues")
   @Description("")
-  String scaleRangeMaxParams();
-
-  @DefaultMessage("scaleRangeMin")
-  @Description("")
-  String scaleRangeMinParams();
-
-  @DefaultMessage("physicalPort")
-  @Description("")
-  String physicalPortParams();
+  String initialValuesParams();
 
   @DefaultMessage("i2cAddress")
   @Description("")
   String i2cAddressParams();
+
+  @DefaultMessage("key")
+  @Description("")
+  String keyParams();
+
+  @DefaultMessage("line")
+  @Description("")
+  String lineParams();
+
+  @DefaultMessage("max")
+  @Description("")
+  String maxParams();
 
   @DefaultMessage("memAddress")
   @Description("")
@@ -3886,30 +3922,30 @@ public interface OdeMessages extends Messages {
   @Description("")
   String memLengthParams();
 
-  @DefaultMessage("initialValues")
+  @DefaultMessage("min")
   @Description("")
-  String initialValuesParams();
+  String minParams();
 
-  @DefaultMessage("initialValue")
+  @DefaultMessage("p")
   @Description("")
-  String initialValueParams();
+  String pParams();
 
-  @DefaultMessage("enable")
+  @DefaultMessage("physicalPort")
   @Description("")
-  String enableParams();
+  String physicalPortParams();
 
-  @DefaultMessage("line")
+  @DefaultMessage("scaleRangeMax")
   @Description("")
-  String lineParams();
+  String scaleRangeMaxParams();
+
+  @DefaultMessage("scaleRangeMin")
+  @Description("")
+  String scaleRangeMinParams();
 
   @DefaultMessage("set")
   @Description("")
   String setParams();
 
-  @DefaultMessage("data")
-  @Description("")
-  String dataParams();
-  
 
   //Events
   @DefaultMessage("AccelerationChanged")
@@ -5127,45 +5163,13 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
-  @DefaultMessage("Float")
+  @DefaultMessage("EnableAnalogReadMode")
   @Description("")
-  String FloatMethods();
-
-  @DefaultMessage("GetRuntime")
-  @Description("")
-  String GetRuntimeMethods();
-
-  @DefaultMessage("RangeClip")
-  @Description("")
-  String RangeClipMethods();
-
-  @DefaultMessage("ScaleRange")
-  @Description("")
-  String ScaleRangeMethods();
-
-  @DefaultMessage("TelemetryAddNumericData")
-  @Description("")
-  String TelemetryAddNumericDataMethods();
-
-  @DefaultMessage("TelemetryAddTextData")
-  @Description("")
-  String TelemetryAddTextDataMethods();
+  String EnableAnalogReadModeMethods();
 
   @DefaultMessage("EnableNxtI2cReadMode")
   @Description("")
   String EnableNxtI2cReadModeMethods();
-
-  @DefaultMessage("ReadListOfSignedBytesFromI2c")
-  @Description("")
-  String ReadListOfSignedBytesFromI2cMethods();
-
-  @DefaultMessage("ReadListOfUnsignedBytesFromI2c")
-  @Description("")
-  String ReadListOfUnsignedBytesFromI2cMethods();
-
-  @DefaultMessage("ReadNumberFromI2c")
-  @Description("")
-  String ReadNumberFromI2cMethods();
 
   @DefaultMessage("EnableNxtI2cWriteModeWithListOfBytes")
   @Description("")
@@ -5187,6 +5191,62 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EnableNxtI2cWriteModeWith8ByteNumberMethods();
 
+  @DefaultMessage("Enable9v")
+  @Description("")
+  String Enable9vMethods();
+
+  @DefaultMessage("Float")
+  @Description("")
+  String FloatMethods();
+
+  @DefaultMessage("GetRuntime")
+  @Description("")
+  String GetRuntimeMethods();
+
+  @DefaultMessage("IsPortReady")
+  @Description("")
+  String IsPortReadyMethods();
+
+  @DefaultMessage("RangeClip")
+  @Description("")
+  String RangeClipMethods();
+
+  @DefaultMessage("ReadListOfSignedBytesFromI2c")
+  @Description("")
+  String ReadListOfSignedBytesFromI2cMethods();
+
+  @DefaultMessage("ReadListOfUnsignedBytesFromI2c")
+  @Description("")
+  String ReadListOfUnsignedBytesFromI2cMethods();
+
+  @DefaultMessage("ReadNumberFromAnalog")
+  @Description("")
+  String ReadNumberFromAnalogMethods();
+
+  @DefaultMessage("ReadNumberFromI2c")
+  @Description("")
+  String ReadNumberFromI2cMethods();
+
+  @DefaultMessage("ScaleRange")
+  @Description("")
+  String ScaleRangeMethods();
+
+  @DefaultMessage("SetDifferentialControlLoopCoefficients")
+  @Description("")
+  String SetDifferentialControlLoopCoefficientsMethods();
+
+  @DefaultMessage("SetDigitalLine")
+  @Description("")
+  String SetDigitalLineMethods();
+
+  @DefaultMessage("TelemetryAddNumericData")
+  @Description("")
+  String TelemetryAddNumericDataMethods();
+
+  @DefaultMessage("TelemetryAddTextData")
+  @Description("")
+  String TelemetryAddTextDataMethods();
+
   @DefaultMessage("WriteListOfBytesToI2c")
   @Description("")
   String WriteListOfBytesToI2cMethods();
@@ -5206,26 +5266,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Write8ByteNumberToI2c")
   @Description("")
   String Write8ByteNumberToI2cMethods();
-
-  @DefaultMessage("EnableAnalogReadMode")
-  @Description("")
-  String EnableAnalogReadModeMethods();
-
-  @DefaultMessage("ReadNumberFromAnalog")
-  @Description("")
-  String ReadNumberFromAnalogMethods();
-
-  @DefaultMessage("SetDigitalLine")
-  @Description("")
-  String SetDigitalLineMethods();
-
-  @DefaultMessage("Enable9v")
-  @Description("")
-  String Enable9vMethods();
-
-  @DefaultMessage("IsPortReady")
-  @Description("")
-  String IsPortReadyMethods();
 
 
   //Mock Components

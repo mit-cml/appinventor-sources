@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar") // TODO(lizlooney) - update UsesLibraries everywhere
+@UsesLibraries(libraries = "RobotCore.jar")
 public final class FtcOpMode extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.OpModeWrapper {
 

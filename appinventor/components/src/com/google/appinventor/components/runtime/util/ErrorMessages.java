@@ -182,19 +182,13 @@ public final class ErrorMessages {
   public static final int ERROR_TTS_NOT_READY = 2701;
 
   // FTC errors
-  public static final int ERROR_FTC_CONFIG_FILE_NOT_FOUND = 2801;
-  public static final int ERROR_FTC_DRIVER_STATION_NOT_FOUND = 2802;
-  public static final int ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION = 2803;
-  public static final int ERROR_FTC_FAILED_TO_CREATE_ROBOT = 2804;
-  public static final int ERROR_FTC_FAILED_TO_START_ROBOT = 2805;
-  public static final int ERROR_FTC_WIFI_DIRECT_ERROR = 2806;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2807;
-  public static final int ERROR_FTC_INVALID_DIRECTION = 2808;
-  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2809;
-  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2810;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT = 2811;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER = 2812;
-  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2813;
+  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2801;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2802;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2803;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2804;
+  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT = 2805;
+  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER = 2806;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2807;
 
   // Please start the next group of error numbers at 2901.
 
@@ -472,25 +466,20 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
     // FTC errors
-    errorMessages.put(ERROR_FTC_CONFIG_FILE_NOT_FOUND, "The robot config file %s was not found.");
-    errorMessages.put(ERROR_FTC_DRIVER_STATION_NOT_FOUND, "The driver station was not found.");
-    errorMessages.put(ERROR_FTC_TIMEOUT_WHILE_CONNECTING_TO_DRIVER_STATION,
-        "Timeout while connecting to driver station.");
-    errorMessages.put(ERROR_FTC_FAILED_TO_CREATE_ROBOT, "Failed to create robot.");
-    errorMessages.put(ERROR_FTC_FAILED_TO_START_ROBOT, "Failed to start robot.");
-    errorMessages.put(ERROR_FTC_WIFI_DIRECT_ERROR, "A WiFi direct error occurred: %s");
+    errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
+        "An unexpected error occurred: %s");
     errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
         "The specified run mode is not valid: %s");
-    errorMessages.put(ERROR_FTC_INVALID_DIRECTION, "The specified direction is not valid: %s");
-    errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE, "The specified scale range is not valid: %s %s");
+    errorMessages.put(ERROR_FTC_INVALID_DIRECTION,
+        "The specified direction is not valid: %s");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode is not valid: %s");
     errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT,
         "Could not decode element [%s] %s as a number.");
     errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER,
         "Could not decode value %s as a number.");
-    errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
-        "An unexpected error occurred with: %s");
+    errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE,
+        "The specified scale range is not valid: %s %s");
   }
 
   private ErrorMessages() {

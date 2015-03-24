@@ -81,6 +81,7 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
 
   private final FtcRobotController ftcRobotController;
   private final Context context;
+  private volatile boolean sleepForUsbScan = true;
 
   public FtcRobotControllerService(FtcRobotController ftcRobotController, Context context) {
     this.ftcRobotController = ftcRobotController;
@@ -123,21 +124,24 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
           robot = null;
         }
 
-        updateRobotStatus("Robot Status: scanning for USB devices");
+        if (sleepForUsbScan) {
+          updateRobotStatus("Robot Status: scanning for USB devices");
 
-        /*
-         * Give android a chance to finish scanning for USB devices before
-         * we create our robot object.
-         *
-         * It take Android up to ~300ms per USB device plugged into a hub.
-         * Higher quality hubs take less time.
-         */
-        try {
-          Thread.sleep(1000L * ftcRobotController.getUsbScanTimeInSeconds());
-        } catch (InterruptedException e) {
-          // we received an interrupt, abort
-          updateRobotStatus("Robot Status: abort due to interrupt");
-          return;
+          /*
+           * Give android a chance to finish scanning for USB devices before
+           * we create our robot object.
+           *
+           * It take Android up to ~300ms per USB device plugged into a hub.
+           * Higher quality hubs take less time.
+           */
+          try {
+            Thread.sleep(1000L * ftcRobotController.getUsbScanTimeInSeconds());
+          } catch (InterruptedException e) {
+            // we received an interrupt, abort
+            updateRobotStatus("Robot Status: abort due to interrupt");
+            return;
+          }
+          sleepForUsbScan = false;
         }
 
         robot = RobotFactory.createRobot();

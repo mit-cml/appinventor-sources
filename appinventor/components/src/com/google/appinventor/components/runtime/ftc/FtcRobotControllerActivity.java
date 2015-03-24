@@ -186,6 +186,10 @@ public class FtcRobotControllerActivity {
     this.activity = activity;
   }
 
+  public void restartRobot() {
+    callback.restartRobot();
+  }
+
   public void onNewIntent(Intent intent) {
     if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
       // a new USB device has been attached

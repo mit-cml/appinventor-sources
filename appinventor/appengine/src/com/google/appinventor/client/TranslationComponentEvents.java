@@ -134,6 +134,8 @@ public class TranslationComponentEvents {
     map.put("AfterTimeSet", MESSAGES.AfterTimeSetEvents());
     map.put("GotTranslation", MESSAGES.GotTranslationEvents());
     map.put("Shaking", MESSAGES.ShakingEvents());
+
+    // ========== FTC
     map.put("Loop", MESSAGES.LoopEvents());
     map.put("RobotError", MESSAGES.RobotErrorEvents());
     map.put("RobotStatus", MESSAGES.RobotStatusEvents());
@@ -171,12 +173,14 @@ public class TranslationComponentEvents {
 	map.put("StatusChanged-helpstring", MESSAGES.StatusChangedHelpStringEvents());
 	map.put("AfterChoosing-helpstring", MESSAGES.AfterChoosingHelpStringEvents());
 	map.put("AfterTextInput-helpstring", MESSAGES.AfterTextInputHelpStringEvents());
-  map.put("Loop-helpstring", MESSAGES.LoopHelpStringEvents());
-  map.put("RobotError-helpstring", MESSAGES.RobotErrorHelpStringEvents());
-  map.put("RobotStatus-helpstring", MESSAGES.RobotStatusHelpStringEvents());
-  map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
-  map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
-  map.put("WifiDirectStatus-helpstring", MESSAGES.WifiDirectStatusHelpStringEvents());
+
+	// ========== FTC
+	map.put("Loop-helpstring", MESSAGES.LoopHelpStringEvents());
+	map.put("RobotError-helpstring", MESSAGES.RobotErrorHelpStringEvents());
+	map.put("RobotStatus-helpstring", MESSAGES.RobotStatusHelpStringEvents());
+	map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
+	map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
+	map.put("WifiDirectStatus-helpstring", MESSAGES.WifiDirectStatusHelpStringEvents());
 	*/
 
     return map;

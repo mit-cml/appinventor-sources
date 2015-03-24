@@ -262,31 +262,35 @@ public class TranslationComponentMethods {
     map.put("InsertRow", MESSAGES.InsertRowMethods());
     map.put("GetRows", MESSAGES.GetRowsMethods());
     map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
-    map.put("Float", MESSAGES.FloatMethods());
-    map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
-    map.put("RangeClip", MESSAGES.RangeClipMethods());
-    map.put("ScaleRange", MESSAGES.ScaleRangeMethods());
-    map.put("TelemetryAddNumericData", MESSAGES.TelemetryAddNumericDataMethods());
-    map.put("TelemetryAddTextData", MESSAGES.TelemetryAddTextDataMethods());
+
+    // ========== FTC
+    map.put("EnableAnalogReadMode", MESSAGES.EnableAnalogReadModeMethods());
     map.put("EnableNxtI2cReadMode", MESSAGES.EnableNxtI2cReadModeMethods());
-    map.put("ReadListOfSignedBytesFromI2c", MESSAGES.ReadListOfSignedBytesFromI2cMethods());
-    map.put("ReadListOfUnsignedBytesFromI2c", MESSAGES.ReadListOfUnsignedBytesFromI2cMethods());
-    map.put("ReadNumberFromI2c", MESSAGES.ReadNumberFromI2cMethods());
     map.put("EnableNxtI2cWriteModeWithListOfBytes", MESSAGES.EnableNxtI2cWriteModeWithListOfBytesMethods());
     map.put("EnableNxtI2cWriteModeWith1ByteNumber", MESSAGES.EnableNxtI2cWriteModeWith1ByteNumberMethods());
     map.put("EnableNxtI2cWriteModeWith2ByteNumber", MESSAGES.EnableNxtI2cWriteModeWith2ByteNumberMethods());
     map.put("EnableNxtI2cWriteModeWith4ByteNumber", MESSAGES.EnableNxtI2cWriteModeWith4ByteNumberMethods());
     map.put("EnableNxtI2cWriteModeWith8ByteNumber", MESSAGES.EnableNxtI2cWriteModeWith8ByteNumberMethods());
+    map.put("Enable9v", MESSAGES.Enable9vMethods());
+    map.put("Float", MESSAGES.FloatMethods());
+    map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
+    map.put("IsPortReady", MESSAGES.IsPortReadyMethods());
+    map.put("RangeClip", MESSAGES.RangeClipMethods());
+    map.put("ReadListOfSignedBytesFromI2c", MESSAGES.ReadListOfSignedBytesFromI2cMethods());
+    map.put("ReadListOfUnsignedBytesFromI2c", MESSAGES.ReadListOfUnsignedBytesFromI2cMethods());
+    map.put("ReadNumberFromAnalog", MESSAGES.ReadNumberFromAnalogMethods());
+    map.put("ReadNumberFromI2c", MESSAGES.ReadNumberFromI2cMethods());
+    map.put("ScaleRange", MESSAGES.ScaleRangeMethods());
+    map.put("SetDifferentialControlLoopCoefficients",
+        MESSAGES.SetDifferentialControlLoopCoefficientsMethods());
+    map.put("SetDigitalLine", MESSAGES.SetDigitalLineMethods());
+    map.put("TelemetryAddNumericData", MESSAGES.TelemetryAddNumericDataMethods());
+    map.put("TelemetryAddTextData", MESSAGES.TelemetryAddTextDataMethods());
     map.put("WriteListOfBytesToI2c", MESSAGES.WriteListOfBytesToI2cMethods());
     map.put("Write1ByteNumberToI2c", MESSAGES.Write1ByteNumberToI2cMethods());
     map.put("Write2ByteNumberToI2c", MESSAGES.Write2ByteNumberToI2cMethods());
     map.put("Write4ByteNumberToI2c", MESSAGES.Write4ByteNumberToI2cMethods());
     map.put("Write8ByteNumberToI2c", MESSAGES.Write8ByteNumberToI2cMethods());
-    map.put("EnableAnalogReadMode", MESSAGES.EnableAnalogReadModeMethods());
-    map.put("ReadNumberFromAnalog", MESSAGES.ReadNumberFromAnalogMethods());
-    map.put("SetDigitalLine", MESSAGES.SetDigitalLineMethods());
-    map.put("Enable9v", MESSAGES.Enable9vMethods());
-    map.put("IsPortReady", MESSAGES.IsPortReadyMethods());
 
     return map;
   }
