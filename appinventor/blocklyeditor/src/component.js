@@ -229,6 +229,7 @@ Blockly.ComponentTypes.populateTypes = function() {
     Blockly.ComponentTypes[typeName] = {};
     Blockly.ComponentTypes[typeName].componentInfo = componentInfo;
     Blockly.ComponentTypes[typeName].eventDictionary = {};
+    Blockly.ComponentTypes[typeName].multiEventDictionary = {};
     Blockly.ComponentTypes[typeName].methodDictionary = {};
     Blockly.ComponentTypes[typeName].setPropertyList = [];
     Blockly.ComponentTypes[typeName].getPropertyList = [];
@@ -237,6 +238,9 @@ Blockly.ComponentTypes.populateTypes = function() {
     //parse type description and fill in all of the fields
     for(var k=0;k<componentInfo.events.length;k++) {
       Blockly.ComponentTypes[typeName].eventDictionary[componentInfo.events[k].name] = componentInfo.events[k];
+    }
+    for(var k=0;k<componentInfo.multiEvents.length;k++) {
+      Blockly.ComponentTypes[typeName].multiEventDictionary[componentInfo.multiEvents[k].name] = componentInfo.multiEvents[k];
     }
     for(var k=0;k<componentInfo.methods.length;k++) {
       Blockly.ComponentTypes[typeName].methodDictionary[componentInfo.methods[k].name] = componentInfo.methods[k];

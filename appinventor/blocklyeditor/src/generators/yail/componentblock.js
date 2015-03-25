@@ -49,7 +49,6 @@ Blockly.Yail.component_event = function() {
     + Blockly.Yail.YAIL_SPACER
     + body
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  console.log("code for", instanceName, code);
   return code;
 }
 

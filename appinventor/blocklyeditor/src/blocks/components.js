@@ -55,6 +55,11 @@ Blockly.Blocks.component_event = {
       isGenericString = "true";
     }
     container.setAttribute('is_generic', isGenericString);
+    var isMultiString = "false";
+    if (this.isMulti) {
+      isMultiString = "true";
+    }
+    container.setAttribute('is_multi', isMultiString);
     if(!this.isGeneric) {
       container.setAttribute('instance_name', this.instanceName);//instance name not needed
     }
@@ -71,7 +76,9 @@ Blockly.Blocks.component_event = {
     this.eventName = xmlElement.getAttribute('event_name');
     var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
     var isGenericString = xmlElement.getAttribute('is_generic');
+    var isMultiString = xmlElement.getAttribute('is_multi');
     this.isGeneric = (isGenericString == "true" ? true : false);
+    this.isMulti = (isMultiString == "true" ? true : false);
     if(!this.isGeneric) {
       this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
     }
@@ -92,9 +99,11 @@ Blockly.Blocks.component_event = {
     } else {
       this.appendDummyInput('WHENTITLE')
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
-      var compInput = this.appendValueInput("COMPONENT")
-        .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
-        .setAlign(Blockly.ALIGN_RIGHT);
+      if (this.isMulti) {
+        var compInput = this.appendValueInput("COMPONENT")
+          .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
+          .setAlign(Blockly.ALIGN_RIGHT);
+      }
     }
 
     this.setParameterOrientation(horizParams);
@@ -184,7 +193,7 @@ Blockly.Blocks.component_event = {
   },
   // Return a list of parameter names
   getParameters: function () {
-    return this.getEventTypeObject().params;
+    return this.isMulti ? this.getMultiEventTypeObject().params : this.getEventTypeObject().params;
   },
   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
   rename : function(oldname, newname) {
@@ -243,6 +252,11 @@ Blockly.Blocks.component_event = {
   getEventTypeObject : function() {
     return Blockly.ComponentTypes[this.typeName].eventDictionary[this.eventName];
   },
+
+  getMultiEventTypeObject : function() {
+    return Blockly.ComponentTypes[this.typeName].multiEventDictionary[this.eventName];
+  },
+
   typeblock : function(){
     var tb = [];
     var instanceNames = Blockly.ComponentInstances.getInstanceNames();
