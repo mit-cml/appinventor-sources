@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesPermissions(permissionNames = // TODO: update this list.
+@UsesPermissions(permissionNames =
                  "android.permission.ACCESS_WIFI_STATE, " +
                  "android.permission.CHANGE_WIFI_STATE, " +
                  "android.permission.ACCESS_NETWORK_STATE, " +
@@ -72,7 +72,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
                  "android.permission.INTERNET, " +
                  "android.permission.WRITE_EXTERNAL_STORAGE, " +
                  "android.permission.READ_EXTERNAL_STORAGE, " +
-                 "android.permission.BLUETOOTH_ADMIN, " +
                  "android.permission.WAKE_LOCK")
 @UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,HiTechnic.jar,WirelessP2p.jar,d2xx.jar")
 public final class FtcRobotController extends AndroidNonvisibleComponent
