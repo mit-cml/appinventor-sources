@@ -397,8 +397,20 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     return 0.0;
   }
 
-  // TODO(lizlooney): Add support for other com.qualcomm.robotcore.util classes:
-  // CurvedWheelMotion, Range (other methods), RollingAverage
+  @SimpleFunction(description = "RangeScale")
+  public double RangeScale(double number, double x1, double x2, double y1, double y2) {
+    try {
+      return Range.scale(number, x1, x2, y1, y2);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RangeScale",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0.0;
+  }
+
+  // TODO(lizlooney): Consider adding support for other com.qualcomm.robotcore.util classes:
+  // CurvedWheelMotion, RollingAverage
 
   // Events
 

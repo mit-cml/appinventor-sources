@@ -5211,6 +5211,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RangeClipMethods();
 
+  @DefaultMessage("RangeScale")
+  @Description("")
+  String RangeScaleMethods();
+
   @DefaultMessage("ReadListOfSignedBytesFromI2c")
   @Description("")
   String ReadListOfSignedBytesFromI2cMethods();

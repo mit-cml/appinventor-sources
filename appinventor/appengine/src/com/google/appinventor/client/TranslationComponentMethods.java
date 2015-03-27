@@ -276,6 +276,7 @@ public class TranslationComponentMethods {
     map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
     map.put("IsPortReady", MESSAGES.IsPortReadyMethods());
     map.put("RangeClip", MESSAGES.RangeClipMethods());
+    map.put("RangeScale", MESSAGES.RangeScaleMethods());
     map.put("ReadListOfSignedBytesFromI2c", MESSAGES.ReadListOfSignedBytesFromI2cMethods());
     map.put("ReadListOfUnsignedBytesFromI2c", MESSAGES.ReadListOfUnsignedBytesFromI2cMethods());
     map.put("ReadNumberFromAnalog", MESSAGES.ReadNumberFromAnalogMethods());
