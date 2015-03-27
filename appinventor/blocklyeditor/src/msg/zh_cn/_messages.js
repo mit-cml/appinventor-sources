@@ -603,13 +603,13 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = '以列表中的任意项作为分隔符，\n'
     + '在首次出现分隔符的位置将给定文本分解为一个两项列表。\n\n'
-    + '如以"(稥,苹)"作为分隔符分解"我喜欢苹果香蕉苹果葡萄"，\n'
+    + '如以"(稥 苹)"作为分隔符分解"我喜欢苹果香蕉苹果葡萄"，\n'
     + '将返回一个两项列表，其第一项为"我喜欢"，第二项为\n'
     + '"果香蕉苹果葡萄"';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = '以指定文本作为分隔符，将字符串分解为不同片段，并生成一个列表作为返回结果。\n'
     + ' 如以","(逗号)分解"一,二,三,四"，将返回列表"(一 二 三 四)"，\n'
-    + ' 而以"-土豆"作为分隔符分解字符串"一-土豆,二-土豆,三-土豆,四"，则返回列表"(一 二 三 四)"。'
+    + ' 而以"-土豆"作为分隔符分解字符串"一-土豆,二-土豆,三-土豆,四"，则返回列表"(一 ,二 ,三 ,四)"。'
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY  = '以分隔符列表中的任意一项作为分隔符，将给定文本分解为列表，\n'
     + '并将列表作为处理结果返回。\n'
