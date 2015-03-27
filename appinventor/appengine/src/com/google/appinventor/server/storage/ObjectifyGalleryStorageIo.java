@@ -413,7 +413,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           }
         }
       });
-      //note that in the gallery service we'll change the associated project's gallery id back to -1
+      //note that in the gallery service we'll change the associated project's gallery id back to 0
       //  and we'll remove the aia and image file
      } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,"gallery remove error", e);

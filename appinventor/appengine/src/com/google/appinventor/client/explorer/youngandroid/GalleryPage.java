@@ -1225,7 +1225,7 @@ panel
             MESSAGES.galleryDeleteError()) {
             @Override
             public void onSuccess(Void result) {
-              // once we have deleted, set the project id back to -1
+              // once we have deleted, set the project id back to not published
               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
                   MESSAGES.gallerySetProjectIdError()) {
                 @Override
@@ -1244,7 +1244,7 @@ panel
               GalleryClient client = GalleryClient.getInstance();
               client.appWasChanged();  // tell views to update
               Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(),
-                  -1, projectCallback);
+                  UserProject.NOTPUBLISHED, projectCallback);
             }
             @Override
             public void onFailure(Throwable caught) {

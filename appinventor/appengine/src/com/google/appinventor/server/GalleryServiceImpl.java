@@ -248,7 +248,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // remove its image/aia from cloud
     deleteAIA(galleryId);
     deleteImage(galleryId);
-    // change its associated AI project so that its galleryId is reset to -1
 
   }
   /**

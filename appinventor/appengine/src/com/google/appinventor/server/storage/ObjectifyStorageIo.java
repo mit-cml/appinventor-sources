@@ -833,7 +833,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             modDate.t = pd.dateModified;
           } else {
-            modDate.t = Long.valueOf(0);
+            modDate.t = UserProject.NOTPUBLISHED;
           }
         }
       }, false); // Transaction not needed, and we want the caching we get if we don't
@@ -885,7 +885,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             dateCreated.t = pd.dateCreated;
           } else {
-            dateCreated.t = Long.valueOf(0);
+            dateCreated.t = UserProject.NOTPUBLISHED;
           }
         }
       }, true);
@@ -907,7 +907,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             galleryId.t = pd.galleryId;
           } else {
-            galleryId.t = Long.valueOf(0);
+            galleryId.t = UserProject.NOTPUBLISHED;
           }
         }
       }, true);
@@ -928,7 +928,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (pd != null) {
             attributionId.t = pd.attributionId;
           } else {
-            attributionId.t = Long.valueOf(UserProject.FROMSCRATCH);
+            attributionId.t = UserProject.FROMSCRATCH;
           }
         }
       }, true);
