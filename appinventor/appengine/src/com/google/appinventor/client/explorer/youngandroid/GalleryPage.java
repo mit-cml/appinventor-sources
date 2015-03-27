@@ -1065,6 +1065,8 @@ panel
                 } else {    // otherwise show as featured
                   featurePrompt.setText(MESSAGES.galleryFeaturedText());
                 }
+                //update gallery list
+                gallery.appWasChanged();
               }
           };
         Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(),

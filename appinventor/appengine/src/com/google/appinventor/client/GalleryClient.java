@@ -289,9 +289,10 @@ public class GalleryClient {
   * appWasChanged called to tell galleryList (and possibly others) that app is modified
   */
   public void appWasChanged() {
-    // for now, let's update the recent list and the popular list (in case one was deleted)
+    // for now, let's update the recent list, the popular list and feature list (in case one was deleted)
     GetMostRecent(0,GalleryList.NUMAPPSTOSHOW, true);
     GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW, true);
+    GetFeatured(0, GalleryList.NUMAPPSTOSHOW, 0, true);
   }
 
  /**

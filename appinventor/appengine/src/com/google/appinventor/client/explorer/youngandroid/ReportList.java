@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
@@ -58,6 +59,7 @@ public class ReportList extends Composite  {
   private final List<GalleryAppReport> selectedGalleryAppReports;
   private final Map<GalleryAppReport, ReportWidgets> ReportWidgets;
   private DropDownButton templateButton;
+  private GalleryClient galleryClient;
 
   // UI elements
   private final Grid table;
@@ -72,6 +74,7 @@ public class ReportList extends Composite  {
    * Creates a new ProjectList
    */
   public ReportList() {
+    galleryClient = GalleryClient.getInstance();
     // Initialize UI
     panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -340,6 +343,8 @@ public class ReportList extends Composite  {
                   rw.appActive = true;
                   storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
                       GalleryModerationAction.REACTIVATEAPP, null);
+                  //update gallery list
+                  galleryClient.appWasChanged();
                 }
               };
               Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
@@ -609,6 +614,8 @@ public class ReportList extends Composite  {
                           storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
                               GalleryModerationAction.REACTIVATEAPP, getMessagePreview(msgText.getText()));
                         }
+                        //update gallery list
+                        galleryClient.appWasChanged();
                       }
                    };
                 Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
