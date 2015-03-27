@@ -1340,14 +1340,18 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Are you really sure you want to delete this project: {0}?"+
       " Note that the published copy of this project will be removed from the gallery as well.")
-  @Description("Confirmation message for selecting a single project and clicking delete")
+  @Description("Confirmation message for selecting a single project and clicking delete when gallery is on")
   String confirmDeleteSinglePublishedProject(String projectName);
 
-  @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
-      " Note that  if any of the projects have been published, the published version in"+
-      " the gallery will be removed as well.")
+  @DefaultMessage("Are you really sure you want to delete these projects: {0}?")
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
+
+  @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
+      " Note that if any of the projects have been published, the published version in"+
+      " the gallery will be removed as well.")
+  @Description("Confirmation message for selecting multiple projects and clicking delete when gallery is on")
+  String confirmDeleteManyProjectsWithGalleryOn(String projectNames);
 
   @DefaultMessage("Server error: could not delete project. Please try again later!")
   @Description("Error message reported when deleting a project failed on the server.")
