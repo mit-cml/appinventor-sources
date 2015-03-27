@@ -330,7 +330,9 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   public void Configuration(String configuration) {
     if (!this.configuration.equals(configuration)) {
       this.configuration = configuration;
-      ftcRobotControllerActivity.restartRobot();
+      if (ftcRobotControllerActivity != null) {
+        ftcRobotControllerActivity.restartRobot();
+      }
     }
   }
 
@@ -375,7 +377,9 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   public void DriverStationAddress(String driverStationAddress) {
     if (!this.driverStationAddress.equals(driverStationAddress)) {
       this.driverStationAddress = driverStationAddress;
-      ftcRobotControllerActivity.restartRobot();
+      if (ftcRobotControllerActivity != null) {
+        ftcRobotControllerActivity.restartRobot();
+      }
     }
   }
 
