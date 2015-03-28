@@ -102,8 +102,6 @@ public class YailList extends Pair {
    */
 
   public String[] toStringArray() {
-//    String result;
-//    Number nElement;
     int size = this.size();
     String[] objects = new String[size];
     for (int i = 1; i <= size; i++) {
@@ -114,7 +112,7 @@ public class YailList extends Pair {
 
   /**
    * Convert a YailList element to a string.  This is the same as
-   * toString except in the case of a number, where we convert strings using
+   * toString except in the case of numbers, which we convert to strings using
    * YailNumberToString for consistency with the
    * other places where we convert Yail numbers for printing.
    * @param element
