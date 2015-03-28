@@ -102,8 +102,6 @@ public class YailList extends Pair {
    */
 
   public String[] toStringArray() {
-//    String result;
-//    Number nElement;
     int size = this.size();
     String[] objects = new String[size];
     for (int i = 1; i <= size; i++) {
@@ -120,23 +118,6 @@ public class YailList extends Pair {
    * @param element
    * @return the string
    */
-//  public static String YailListElementToString(Object element) {
-//    if (Number.class.isInstance(element)) {
-//      double DElement = ((Number) element).doubleValue();
-//      int IElement = (int) DElement;
-//      // if this is an integer, show it without a decimal point.
-//      // This check is redundant with theh check
-//      if (DElement == IElement) {
-//        return String.valueOf(IElement);
-//      } else {
-//        return YailNumberToString.format(((Number) element).doubleValue());
-//      }
-//    }
-//    else {
-//      return String.valueOf(element);
-//    }
-//  }
-
   public static String YailListElementToString(Object element) {
     if (Number.class.isInstance(element)) {
       return YailNumberToString.format(((Number) element).doubleValue());
