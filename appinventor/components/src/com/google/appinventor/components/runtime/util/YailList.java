@@ -114,12 +114,29 @@ public class YailList extends Pair {
 
   /**
    * Convert a YailList element to a string.  This is the same as
-   * toString except in the case of a number, where we convert strings using
+   * toString except in the case of numbers, which we convert to strings using
    * YailNumberToString for consistency with the
    * other places where we convert Yail numbers for printing.
    * @param element
    * @return the string
    */
+//  public static String YailListElementToString(Object element) {
+//    if (Number.class.isInstance(element)) {
+//      double DElement = ((Number) element).doubleValue();
+//      int IElement = (int) DElement;
+//      // if this is an integer, show it without a decimal point.
+//      // This check is redundant with theh check
+//      if (DElement == IElement) {
+//        return String.valueOf(IElement);
+//      } else {
+//        return YailNumberToString.format(((Number) element).doubleValue());
+//      }
+//    }
+//    else {
+//      return String.valueOf(element);
+//    }
+//  }
+
   public static String YailListElementToString(Object element) {
     if (Number.class.isInstance(element)) {
       return YailNumberToString.format(((Number) element).doubleValue());
