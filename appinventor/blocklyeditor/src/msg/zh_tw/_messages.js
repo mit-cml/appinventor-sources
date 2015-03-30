@@ -604,13 +604,13 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = '以清單中的任意項作為分隔符號，\n'
     + '在首次出現分隔符號的位置將給定文字分解為一個兩項清單。\n\n'
-    + '如以"(稥,蘋)"作為分隔符號分解"我喜歡蘋果香蕉蘋果葡萄"，\n'
+    + '如以"(稥 蘋)"作為分隔符號分解"我喜歡蘋果香蕉蘋果葡萄"，\n'
     + '將傳回一個兩項清單，其第一項為"我喜歡"，第二項為\n'
     + '"果香蕉蘋果葡萄"';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = '以指定文字作為分隔符號，將字元串分解為不同片段，並產生一個清單作為傳回結果。\n'
     + ' 如以","(逗號)分解"一,二,三,四"，將傳回清單"(一 二 三 四)"，\n'
-    + ' 而以"-土豆"作為分隔符號分解字元串"一-土豆,二-土豆,三-土豆,四"，則傳回清單"(一 二 三 四)"。'
+    + ' 而以"-土豆"作為分隔符號分解字元串"一-土豆,二-土豆,三-土豆,四"，則傳回清單"(一 ,二 ,三 ,四)"。'
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY  = '以分隔符號清單中的任意一項作為分隔符號，將給定文字分解為清單，\n'
     + '並將清單作為處理結果傳回。\n'

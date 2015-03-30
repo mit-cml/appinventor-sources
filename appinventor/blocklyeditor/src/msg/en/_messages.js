@@ -626,13 +626,13 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divides the given text into a two-item list, using the first location of any item \n'
         + 'in the list \'at\' as the dividing point. \n\n'
-        + 'Splitting "I love apples bananas apples grapes" by the list "(ba,ap)" returns \n'
+        + 'Splitting "I love apples bananas apples grapes" by the list "(ba ap)" returns \n'
         + 'a list of two items, the first being "I love" and the second being \n'
         + '"ples bananas apples grapes."';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divides text into pieces using the text \'at\' as the dividing points and produces a list of the results.  \n'
         + 'Splitting "one,two,three,four" at "," (comma) returns the list "(one two three four)". \n'
-        + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato", returns the list "(one two three four)".';
+        + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato,", returns the list "(one two three four)".';
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divides the given text into a list, using any of the items in the list \'at\' as the \n'
         + 'dividing point, and returns a list of the results. \n'
