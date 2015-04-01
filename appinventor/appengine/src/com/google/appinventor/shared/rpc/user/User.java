@@ -26,6 +26,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user introduction link
   private String link;
 
+  // email notification frequency
+  private int emailFrequency;
+
   // whether user has accepted terms of service
   private boolean tosAccepted;
   
@@ -45,6 +48,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   public static final int USER = 0;
   public static final int MODERATOR = 1;
+  public static final int DEFAULT_EMAIL_NOTIFICATION_FREQUENCY = 5;
 
   /**
    * Creates a new user data transfer object.
@@ -54,7 +58,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param tosAccepted TOS accepted?
    * @param sessionId client session Id
    */
-  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin, int type, String sessionId) {
+  public User(String id, String email, String name, String link, int emailFrequency, boolean tosAccepted, boolean isAdmin, int type, String sessionId) {
     this.id = id;
     this.email = email;
     if (name==null)
@@ -64,6 +68,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
     this.link = link;
+    this.emailFrequency = emailFrequency;
     this.type = type;
     this.sessionId = sessionId;
   }
@@ -138,6 +143,23 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    */
   public void setUserLink(String link) {
     this.link = link;
+  }
+
+  /**
+   * Returns the email notification frequency set by user.
+   *
+   * @return emailFrequency email frequency
+   */
+  @Override
+  public int getUserEmailFrequency() {
+    return emailFrequency;
+  }
+
+  /**
+   * Sets the user's email notification frequency
+   */
+  public void setUserEmailFrequency(int emailFrequency) {
+    this.emailFrequency = emailFrequency;
   }
 
   /**
@@ -251,6 +273,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    return new User(id, email, name, link, tosAccepted, isAdmin, type, sessionId);
+    return new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
   }
 }

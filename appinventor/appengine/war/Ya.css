@@ -1493,6 +1493,22 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0px;
   border-radius: 0px;
 }
+.ode-UserProfileWrapper .profile-textbox-small {
+  display: inline-block;
+  width: 5%;
+  height: 22px;
+  font-size: 12px;
+  line-height: 100%;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  margin-right: 8px;
+}
+.profile-textlabel-emaildescription {
+  width: 385px;
+  color: #999;
+  margin-bottom: 6px;
+}
 
 
 /* Gallery app collections, or app cards related styles */

@@ -19,6 +19,7 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.gwt.user.client.Window;
 
 /**
  * Gallery Client is a facade for the ui to talk to the gallery server side.
@@ -298,7 +299,7 @@ public class GalleryClient {
  /**
   * appWasDownloaded called to tell backend that app is downloaded
   */
-  public void appWasDownloaded(final long galleryId) {
+  public void appWasDownloaded(final long galleryId, final String userId) {
     // Inform the GalleryService (which eventually goes to ObjectifyGalleryStorageIo)
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
@@ -316,7 +317,16 @@ public class GalleryClient {
         };
         Ode.getInstance().getGalleryService().getApp(galleryId, appCallback);
 
-      }
+        final OdeAsyncCallback<Boolean> checkCallback = new OdeAsyncCallback<Boolean>(
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean b) {
+            //email will be send automatically if condition matches (in ObjectifyGalleryStorageIo)
+          }
+        };
+        Ode.getInstance().getGalleryService().checkIfSendAppStats(userId, galleryId,
+            getGallerySettings().getAdminEmail(), Window.Location.getHost(), checkCallback);
+       }
     };
     // ok, this is below the call back, but of course it is done first
     ode.getGalleryService().appWasDownloaded(galleryId, callback);

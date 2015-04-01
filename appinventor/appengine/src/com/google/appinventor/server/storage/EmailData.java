@@ -10,13 +10,13 @@ import javax.persistence.Id;
 
 import com.googlecode.objectify.annotation.Indexed;
 
-public class MessageData {
+public class EmailData {
 
   @Id Long id;
-  String senderId;
-  String receiverId;
-  String message;   // the message body
-  String status; // 1 = notify; 2 = active; 3 = removed
+  String senderId;    // the sender id
+  String receiverId;  // the receiver id
+  String title;       // the email title
+  String body;        // the email body
   @Indexed public long datestamp;
 
 }

@@ -964,7 +964,15 @@ panel
               @Override
               public void onSuccess(Integer num) {
                 // TODO: deal with/discuss server data sync later; now is updating locally.
-                // Bin you need to finish this man - Vincent 03/27/14
+                final OdeAsyncCallback<Boolean> checkCallback = new OdeAsyncCallback<Boolean>(
+                    MESSAGES.galleryError()) {
+                      @Override
+                      public void onSuccess(Boolean b) {
+                        //email will be send automatically if condition matches (in ObjectifyGalleryStorageIo)
+                      }
+                };
+                Ode.getInstance().getGalleryService().checkIfSendAppStats(app.getDeveloperId(), app.getGalleryAppId(),
+                    gallery.getGallerySettings().getAdminEmail(), Window.Location.getHost(), checkCallback);
               }
           };
         final OdeAsyncCallback<Boolean> isLikedByUserCallback = new OdeAsyncCallback<Boolean>(

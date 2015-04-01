@@ -67,7 +67,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
         String projectName = projectNameTextBox.getText();
         boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText());
         if(success){
-          gallery.appWasDownloaded(app.getGalleryAppId());
+          gallery.appWasDownloaded(app.getGalleryAppId(), app.getDeveloperId());
         }
         else {
           show();

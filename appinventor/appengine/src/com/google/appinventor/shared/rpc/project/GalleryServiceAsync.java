@@ -180,34 +180,24 @@ public interface GalleryServiceAsync {
   void deactivateGalleryApp(long galleryId, AsyncCallback<Boolean> callback);
 
   /**
-   * @see @link{@link GalleryService#sendMessageFromSystem(String, String, String)
+   * @see @link{@link GalleryService#sendEmail(String, String, String, String, String)
    */
-  void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Long> callback);
+  void sendEmail(String senderId, String receiverId, String receiverEmail, String title, String body, AsyncCallback<Long> callback);
+
   /**
-   * @see @link{@link GalleryService#getMessages(String)
+   * @see @link{@link GalleryService#getEmail(long)
    */
-  void getMessages(AsyncCallback<List<Message>> callback);
+  void getEmail(long emailId, AsyncCallback<Email> callback);
+
   /**
-   * @see @link{@link GalleryService#getMessage(long)
+   * @see @link{@link GalleryService#checkIfSendAppStats(String, long, String, String);
    */
-  void getMessage(long msgId, AsyncCallback<Message> callback);
-  /**
-   * @see @link{@link GalleryService#deleteMessage(long)
-   */
-  void deleteMessage(long msgId, AsyncCallback<Void> callback);
-  /**
-   * @see @link{@link GalleryService#readMessage(long)
-   */
-  void readMessage(long msgId, AsyncCallback<Void> callback);
-  /**
-   * @see @link{@link GalleryService#appStatsWasRead(long)
-   */
-  void appStatsWasRead(long appId, AsyncCallback<Void> callback);
+  void checkIfSendAppStats(String userId, long galleryId, String adminEmail, String currentHost, AsyncCallback<Boolean> callback);
 
   /**
    * see {@link GalleryService#storeModerationAction(long, long, long, String, int)}
    */
-  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview, AsyncCallback<Void> callback);
+  void storeModerationAction(long reportId, long galleryId, long emailId, String moderatorId, int actionType, String moderatorName, String emailPreview, AsyncCallback<Void> callback);
 
   /**
    * see @link {@link GalleryService#getModerationActions(long)}
