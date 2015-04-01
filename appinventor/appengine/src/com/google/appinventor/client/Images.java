@@ -491,4 +491,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+   * UDOO
+   */
+  @Source("com/google/appinventor/images/udoo.png")
+  ImageResource udoo();
+
 }

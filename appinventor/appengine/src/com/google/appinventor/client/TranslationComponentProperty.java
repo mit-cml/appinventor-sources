@@ -240,6 +240,10 @@ public class TranslationComponentProperty {
     // ========== ListPicker
     map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
     map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
+    
+    // ========== UDOO
+    map.put("PinNumber", MESSAGES.PinNumberProperties());
+    map.put("Direction", MESSAGES.DirectionProperties());
 
     return map;
   }

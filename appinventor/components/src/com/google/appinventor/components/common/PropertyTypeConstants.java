@@ -94,6 +94,13 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor#NXT_GENERATED_COLORS
    */
   public static final String PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR = "lego_nxt_generated_color";
+  
+  /**
+   * GPIO directions (in/out).
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGpioDirectionsChoicePropertyEditor#directions
+   */
+  public static final String PROPERTY_TYPE_GPIO_DIRECTIONS = "gpio_directions";
 
   /**
    * Non-negative (positive or zero) floating-point values.

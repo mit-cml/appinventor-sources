@@ -5292,5 +5292,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Error on Fusion Tables query")
   @Description("")
   String FusionTablesStandardErrorMessage();
+  
+  // =========== UDOO
+  @DefaultMessage("PinNumber")
+  @Description("")
+  String PinNumberProperties();
+
+  @DefaultMessage("Direction")
+  @Description("")
+  String DirectionProperties();
 
 }

@@ -308,6 +308,10 @@ public class TranslationDesignerProperties {
       value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
+    } else if (key.equals("PinNumber")) {
+      value = MESSAGES.PinNumberProperties();
+    } else if (key.equals("Direction")) {
+      value = MESSAGES.DirectionProperties();
     }
     return value;
   }

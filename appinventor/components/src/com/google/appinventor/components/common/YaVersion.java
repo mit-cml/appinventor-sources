@@ -903,5 +903,5 @@ public class YaVersion {
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
 
-
+  public static final int UDOO_GPIO_COMPONENT_VERSION = 1;
 }
