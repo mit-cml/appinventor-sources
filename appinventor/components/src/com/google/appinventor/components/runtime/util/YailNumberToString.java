@@ -6,7 +6,11 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import android.util.Log;
+
+
 import java.text.*;
+import java.util.Locale;
 
 /**
  * Convert inexact numbers to strings for printing in App Inventor.
@@ -15,6 +19,9 @@ import java.text.*;
  * @author halabelson@google.com (Hal Abelson)
  */
 public final class YailNumberToString {
+
+  static final String LOG_TAG = "YailNumberToString";
+
   // format magnitudes larger than BIGBOUND in scientific notation
   private static final double BIGBOUND = 1.e6;
   // format magnitudes smaller than SMALLBOUND in scientific notation
@@ -28,22 +35,37 @@ public final class YailNumberToString {
   // format for scientific notation
   private static final String sciPattern = "0.####E0";
 
+  // TODO(hal): We are making the decimal separator be a period, regardless of
+  // the locale of the phone.   We need to think about how to allow comma as decimal separator,
+  // which will require updating number parsing and other places that transform numbers to strings,
+  // such as FormatAsDecimal
+
+  static Locale locale = Locale.US;
+  static DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
+
+  static DecimalFormat decimalFormat = new DecimalFormat(decPattern, symbols);
+  static DecimalFormat sciFormat = new DecimalFormat(sciPattern, symbols);
+
+
   // TODO(halabelson): DecimalFormat scientific notation apparently does not provide a
   // way to specify the maximum number of digits in the mantissa. One consequence is that this
   // formatting method, when given floats of very large magnitude, will produce too many
   // places in the mantissa.  Consider post-processing the result of
   // DecimalFormat to remove these extra digits.
-  private static final DecimalFormat formatterDec = new DecimalFormat(decPattern);
-  private static final DecimalFormat formatterSci = new DecimalFormat(sciPattern);
 
-  // This implementation assumes that Kawa inexact numbers can be passed to this routine
+  // This implementation assumes that Kawa inexact numbers are passed to this routine
   // as doubles.
   public static String format(double number) {
-    double mag = Math.abs(number);
-    if (mag < BIGBOUND && mag > SMALLBOUND) {
-      return formatterDec.format(number);
+    // We will print integer values without a decimal point.
+    if (number == Math.rint(number)) {
+      return String.valueOf((int) number);
     } else {
-      return formatterSci.format(number);
+      double mag = Math.abs(number);
+      if (mag < BIGBOUND && mag > SMALLBOUND) {
+        return decimalFormat.format(number);
+      } else {
+        return sciFormat.format(number);
+      }
     }
   }
 }

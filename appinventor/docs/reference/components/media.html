@@ -696,140 +696,72 @@ none
                       <dt> <code> BeforeGettingText() </code> </dt>
                       <dd> Signaled just before the recognizer is called. </dd>
                     </dl>
-                    <h2 id="TextToSpeech"> TextToSpeech </h2>
-                    <img src="images/texttospeech.png" alt="Picture of Text to Speech component">
-                    <p> Use a text-to-speech component to have the device speak
-                      text audibly. </p>
-                    <p> In order for this component to work, the device must
-                      have the <em> TTS Extended Service </em> app by
-                      Eyes-Free Project installed. You can download this from <a
-                        href="http://code.google.com/p/eyes-free/downloads/list">
-                        http://code.google.com/p/eyes-free/downloads/list </a>
-                    </p>
-                    <p> The text-to-speech component has properties you can set
-                      to guide the pronunciation of the text to be spoken. These
-                      properties use three-letter codes to specify the language
-                      and the country in which the language is spoken. For
-                      example, you can specify British English or US English.
-                      For British English, the language code is <code> eng </code>
-                      and the country code is <code> GBR </code> , while for
-                      US English, the language code is <code> eng </code> and
-                      the country code is <code> USA </code> . The complete
-                      list is below. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> Country </code> </dt>
-                      <dd> The country code for speech production. </dd>
-                      <dt> <code> Language </code> </dt>
-                      <dd> The language code for speech production. </dd>
-                      <dt> <code class="c2"> Result </code> </dt>
-                      <dd> Details to come. </dd>
-                        <dt><code>Pitch</code></dt>
-                        <dd>Sets the Pitch for tts. The values should be between 0 and 2 where lower values lower the tone of synthesized voice and greater values increases it</dd>
-                        <dd></dd>
-                        <dt><code>SpeechRate</code></dt>
-                        <dd>Sets the SpeechRate for tts. The values should be between 0 and 2 where lower values slow down the pitch and greater values accelerate it</dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Speak(Text message) </code> </dt>
-                      <dd> Speaks the given text. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> AfterSpeaking(Text result) </code> </dt>
-                      <dd> Signaled after the text is spoken. The argument is
-                        the text result that was produced. </dd>
-                      <dt> <code> BeforeSpeaking() </code> </dt>
-                      <dd> Signaled just before the text is spoken. </dd>
-                    </dl>
-                    <p> Here are the language and country codes you can use. The
-                      codes are organized first by language; then, in each
-                      language section are a list of possible country codes: </p>
-                    <ul>
-                      <li> ces (Czech)
-                        <ul>
-                          <li> CZE </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> spa (Spanish)
-                        <ul>
-                          <li> ESP </li>
-                          <li> USA </li>
-                        </ul>
-                        <br>
-                      </li>
-                      <li> deu (German)
-                        <ul>
-                          <li> AUT </li>
-                          <li> BEL </li>
-                          <li> CHE </li>
-                          <li> DEU </li>
-                          <li> LIE </li>
-                          <li> LUX </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> fra (French)
-                        <ul>
-                          <li> BEL </li>
-                          <li> CAN </li>
-                          <li> CHE </li>
-                          <li> FRA </li>
-                          <li> LUX </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> nld (Dutch)
-                        <ul>
-                          <li> BEL </li>
-                          <li> NLD </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> ita (Italian)
-                        <ul>
-                          <li> CHE </li>
-                          <li> ITA </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> pol (Polish)
-                        <ul>
-                          <li> POL </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> eng (English)
-                        <ul>
-                          <li> AUS </li>
-                          <li> BEL </li>
-                          <li> BWA </li>
-                          <li> BLZ </li>
-                          <li> CAN </li>
-                          <li> GBR </li>
-                          <li> HKG </li>
-                          <li> IRL </li>
-                          <li> IND </li>
-                          <li> JAM </li>
-                          <li> MHL </li>
-                          <li> MLT </li>
-                          <li> NAM </li>
-                          <li> NZL </li>
-                          <li> PHL </li>
-                          <li> PAK </li>
-                          <li> SGP </li>
-                          <li> TTO </li>
-                          <li> USA </li>
-                          <li> VIR </li>
-                          <li> ZAF </li>
-                          <li> ZWE </li>
-                        </ul>
-                      </li>
-                    </ul>
-<h2 id="VideoPlayer">VideoPlayer</h2>
 
+<h2 id="TextToSpeech">TextToSpeech</h2>
+
+<p>The TestToSpeech component speaks a given text aloud.  You can set
+the pitch and the rate of speech. <p>You can also set a language by
+supplying a language code.  This changes the pronounciation of words,
+not the actual language spoken.  For example, setting the language to
+French and speaking English text will sound like someone speaking
+English (en) with a French accent.</p> <p>You can also specify a
+country by supplying a country code. This can affect the
+pronounciation.  For example, British English (GBR) will sound
+different from US English (USA).  Not every country code will affect
+every language.</p> <p>The languages and countries available depend on
+the particular device, and can be listed with the AvailableLanguages
+and AvailableCountries properties.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>AvailableCountries</em></code></dt>
+  <dd>List of the country codes available on this device for use with
+  TextToSpeech.  Check the Android developer documentation under
+  supported languages to find the meanings of these
+  abbreviations.</dd>
+  <dt><code><em>AvailableLanguages</em></code></dt>
+  <dd>List of the languages available on this device for use with
+  TextToSpeech.  Check the Android developer documentation under
+  supported languages to find the meanings of these
+  abbreviations.</dd>
+  <dt><code>Country</code></dt>
+  <dd>Country code to use for speech generation.  This can affect the
+  pronounciation.  For example, British English (GBR) will sound
+  different from US English (USA).  Not every country code will affect
+  every language.</dd>
+  <dt><code>Language</code></dt>
+  <dd>Sets the language for TextToSpeech. This changes the way that
+  words are pronounced, not the actual language that is spoken.  For
+  example setting the language to and speaking English text with sound
+  like someone speaking English with a Frernch accent.</dd>
+  <dt><code>Pitch</code></dt>
+  <dd>Sets the Pitch for TextToSpeech. The values should be between 0 and 2
+  where lower values lower the tone of synthesized voice and greater
+  values raise it.</dd>
+  <dt><code><em>Result</em></code></dt>
+  <dd></dd>
+  <dt><code>SpeechRate</code></dt>
+  <dd>Sets the SpeechRate for TextToSpeech. The values should be between 0 and
+  2 where lower values slow down the pitch and greater values
+  accelerate it.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSpeaking(boolean result)</code></dt>
+  <dd>Event to raise after the message is spoken.</dd>
+  <dt><code>BeforeSpeaking()</code></dt>
+  <dd>Event to raise when Speak is invoked, before the message is spoken.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Speak(text message)</code></dt>
+  <dd>Speaks the given message.</dd>
+</dl>
+
+
+<h2 id="VideoPlayer">VideoPlayer</h2>
 
 <p>A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats.  For more details about legal formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.</p>
 

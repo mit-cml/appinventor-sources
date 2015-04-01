@@ -1888,7 +1888,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "TextToSpeech": {
 
     // AI2:  added speech pitch and rate
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // the AvailableLanguages property was added
+    // the AvailableCountries property was added
+    3: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 

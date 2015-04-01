@@ -29,7 +29,10 @@ import com.google.appinventor.components.runtime.util.YailList;
         " These elements can be set in the Designer or Blocks Editor by setting the" +
         "<code>ElementsFromString</code> property to a string-separated concatenation" +
         " (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the " +
-        "<code>Elements</code> property to a List in the Blocks editor.</p>",
+        "<code>Elements</code> property to a List in the Blocks editor. " +
+        "Spinners are created with the first item already selected. So selecting " +
+        " it does not generate an After Picking event. Consequently it's useful to make the " +
+        " first Spinner item be a non-choice like \"Select from below...\". </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/spinner.png")

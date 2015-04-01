@@ -111,7 +111,8 @@
   <extend-property name="locale" values="zh_TW"/>
   <!-- Spanish from Spain -->
   <extend-property name="locale" values="es_ES"/>
-
+  <!-- Italian -->
+  <extend-property name="locale" values="it_IT"/>
   <set-property-fallback name="locale" value="en"/>
 
 </module>

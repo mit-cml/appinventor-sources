@@ -475,8 +475,8 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         }
         xml = Blockly.Xml.textToDom(xmlString);
         var xmlBlock = xml.firstChild;
-        if (xml.children.length > 1 && goog.dom.getElement(inputText).value === 'make a list')
-          xmlBlock = xml.children[1];
+        if (xml.childNodes.length > 1 && goog.dom.getElement(inputText).value === 'make a list')
+          xmlBlock = xml.childNodes[1];
         block = Blockly.Xml.domToBlock(Blockly.mainWorkspace, xmlBlock);
 
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){

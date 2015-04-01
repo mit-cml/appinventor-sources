@@ -320,8 +320,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 122:
   // - EMAILPICKER_COMPONENT_VERSION was incremented to 3
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 123:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 122;
+  public static final int YOUNG_ANDROID_VERSION = 123;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -782,8 +784,12 @@ public class YaVersion {
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
 
-  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 2:
+  // - added speech pitch and rate
+  // For TEXTTOSPEECH_COMPONENT_VERSION 3:
+  // - the AvailableLanguages property was added
+  // - the AvailableCountries property was added
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 3;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -895,10 +901,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.24";
+  public static final String PREFERRED_COMPANION = "2.26";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.23ai2", "2.23ai2zx1", "2.24"};
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.26" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
