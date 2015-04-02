@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -22,6 +23,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 @DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION,
@@ -42,9 +44,17 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
-  private String selection;
-  private int selectionIndex;
+  private String selection = "";
+  private int selectionIndex = 0;
   private boolean isInitialized=false;
+
+  private boolean bold = false;
+  private int fontTypeface;
+  private boolean italic = false;
+  private int backgroundColor;
+  private int textColor;
+  private int textAlignment;
+
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -55,14 +65,258 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
+    //Aayush
+    Enabled(true);
 
     container.$add(this);
+  }
+
+  /**
+   * Returns the Spinner's background color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return  background RGB color with alpha
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "Returns the button's background color")
+  public int BackgroundColor() {
+    return backgroundColor;
+  }
+
+  /**
+   * Specifies the Spinner's background color as an alpha-red-green-blue
+   * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
+   * original beveling is restored.  If an Image has been set, the color
+   * change will not be visible until the Image is removed.
+   *
+   * @param argb background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty(description = "Specifies the button's background color. " +
+          "The background color will not be visible if an Image is being displayed.")
+  public void BackgroundColor(int argb) {
+    backgroundColor = argb;
+      //if you want to change only background of textbox color
+    TextView selectedTextView = (TextView) view.getSelectedView();
+    TextViewUtil.setBackgroundColor(selectedTextView, argb);
   }
 
   @Override
   public View getView(){
     return view;
   }
+
+  /**
+   * Returns true if the Spinner is active and clickable.
+   *
+   * @return  {@code true} indicates enabled, {@code false} disabled
+   */
+  @SimpleProperty(
+          category = PropertyCategory.BEHAVIOR,
+          description = "If set, user can tap check box to cause action.")
+  public boolean Enabled() {
+    return view.isEnabled();
+  }
+
+  /**
+   * Specifies whether the Spinner should be active and clickable.
+   *
+   * @param enabled  {@code true} for enabled, {@code false} disabled
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "True")
+  @SimpleProperty
+  public void Enabled(boolean enabled) {
+    view.setEnabled(enabled);
+  }
+
+  /**
+   * Returns true if the Spinners's selected text should be bold.
+   * If bold has been requested, this property will return true, even if the
+   * font does not support bold.
+   *
+   * @return  {@code true} indicates bold, {@code false} normal
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "If set, button text is displayed in bold.")
+  public boolean FontBold() {
+    return bold;
+  }
+
+  /**
+   * Specifies whether the button's text should be bold.
+   * Some fonts do not support bold.
+   *
+   * @param bold  {@code true} indicates bold, {@code false} normal
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE)
+  public void FontBold(boolean bold) {
+    this.bold = bold;
+    TextView selectedTextView = (TextView) view.getSelectedView();
+    TextViewUtil.setFontTypeface(selectedTextView, fontTypeface, bold, italic);
+  }
+
+  /**
+   * Returns true if the Spinner's text should be italic.
+   * If italic has been requested, this property will return true, even if the
+   * font does not support italic.
+   *
+   * @return  {@code true} indicates italic, {@code false} normal
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "If set, button text is displayed in italics.")
+  public boolean FontItalic() {
+    return italic;
+  }
+
+  /**
+   * Specifies whether the Spinner's text should be italic.
+   * Some fonts do not support italic.
+   *
+   * @param italic  {@code true} indicates italic, {@code false} normal
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "False")
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE)
+  public void FontItalic(boolean italic) {
+    this.italic = italic;
+    TextView selectedTextView = (TextView) view.getSelectedView();
+    TextViewUtil.setFontTypeface(selectedTextView, fontTypeface, bold, italic);
+  }
+
+    /**
+     * Returns the Spinner's text's font size, measured in pixels.
+     *
+     * @return  font size in pixel
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Point size for button text.")
+    public float FontSize() {
+        TextView selectedTextView = (TextView) view.getSelectedView();
+        return TextViewUtil.getFontSize(selectedTextView);
+    }
+
+    /**
+     * Specifies the Spinner's text's font size, measured in pixels.
+     *
+     * @param size  font size in pixel
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+            defaultValue = Component.FONT_DEFAULT_SIZE + "")
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public void FontSize(float size) {
+        TextView selectedTextView = (TextView) view.getSelectedView();
+        TextViewUtil.setFontSize(selectedTextView, size);
+    }
+
+  /**
+   * Returns the Spinner's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @return  one of {@link Component#TYPEFACE_DEFAULT},
+   *          {@link Component#TYPEFACE_SERIF},
+   *          {@link Component#TYPEFACE_SANSSERIF} or
+   *          {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "Font family for button text.",
+          userVisible = false)
+  public int FontTypeface() {
+    return fontTypeface;
+  }
+
+  /**
+   * Specifies the Spinner's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+          defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(
+          userVisible = false)
+  public void FontTypeface(int typeface) {
+    fontTypeface = typeface;
+    TextView selectedTextView = (TextView) view.getSelectedView();
+    TextViewUtil.setFontTypeface(selectedTextView, typeface, bold, italic);
+  }
+
+    /**
+     * Returns the alignment of the Spinner's text: center, normal
+     * (e.g., left-justified if text is written left to right), or
+     * opposite (e.g., right-justified if text is written left to right).
+     *
+     * @return  one of {@link Component#ALIGNMENT_NORMAL},
+     *          {@link Component#ALIGNMENT_CENTER} or
+     *          {@link Component#ALIGNMENT_OPPOSITE}
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Left, center, or right.",
+            userVisible = false)
+    public int TextAlignment() {
+        return textAlignment;
+    }
+
+    /**
+     * Specifies the alignment of the Spinner's text: center, normal
+     * (e.g., left-justified if text is written left to right), or
+     * opposite (e.g., right-justified if text is written left to right).
+     *
+     * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
+     *                   {@link Component#ALIGNMENT_CENTER} or
+     *                   {@link Component#ALIGNMENT_OPPOSITE}
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+            defaultValue = Component.ALIGNMENT_CENTER + "")
+    @SimpleProperty(userVisible = false)
+    public void TextAlignment(int alignment) {
+        this.textAlignment = alignment;
+        TextView selectedTextView = (TextView) view.getSelectedView();
+        TextViewUtil.setAlignment(selectedTextView, alignment, true);
+    }
+
+    /**
+     * Returns the Spinner's text color as an alpha-red-green-blue
+     * integer.
+     *
+     * @return  text RGB color with alpha
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Color for button text.")
+    public int TextColor() {
+        return textColor;
+    }
+
+    /**
+     * Specifies the Spinner's text color as an alpha-red-green-blue
+     * integer.
+     *
+     * @param argb  text RGB color with alpha
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+            defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+    @SimpleProperty
+    public void TextColor(int argb) {
+        textColor = argb;
+        TextView selectedTextView = (TextView) view.getSelectedView();
+        TextViewUtil.setTextColor(selectedTextView, argb);
+    }
 
   /**
    * Selection property getter method.
@@ -176,8 +430,19 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleFunction(description = "displays the dropdown list for selection, " +
       "same action as when the user clicks on the spinner.")
   public void DisplayDropdown(){
-    view.performClick();
+      BeforePicking();
+      view.performClick();
   }
+
+    /**
+     * Event to raise when the button of the component is clicked or the list is shown
+     * using the Open block.  This event occurs before the list of items is displayed, and
+     * can be used to prepare the list before it is shown.
+     */
+    @SimpleEvent
+    public void BeforePicking() {
+        EventDispatcher.dispatchEvent(this, "BeforePicking");
+    }
 
   /**
    * Indicates a user has selected an item
