@@ -144,10 +144,15 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       map.globals.push(block);
       // TODO: eventually deal with variable declarations, once we have them
     } else if (block.category == 'Component') {
-      var instanceName = block.isGeneric ? block.getInputTargetBlock("COMPONENT").instanceName : block.instanceName;
       if(block.blockType != "event") {
         continue;
       }
+      // Multi events are not tied to specific instances
+      if (block.isMulti) {
+        map.globals.push(block);
+        continue;
+      }
+      var instanceName = block.isGeneric ? block.getInputTargetBlock("COMPONENT").instanceName : block.instanceName;
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];  // first block we've found for this component
       }
