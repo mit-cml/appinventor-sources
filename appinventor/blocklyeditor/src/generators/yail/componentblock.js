@@ -33,12 +33,14 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
-  var instanceName = this.isGeneric ? this.getInputTargetBlock("COMPONENT").instanceName : this.instanceName;
+  // When get the blocks, we tie multi blocks to an arbitrary instance of the same component type
+  var instanceName = (this.isGeneric && !this.isMulti) ? this.getInputTargetBlock("COMPONENT").instanceName : this.instanceName;
+  var eventName = (this.isMulti) ? ("MultiGeneric-" + this.eventName) : this.eventName
 
   var code = Blockly.Yail.YAIL_DEFINE_EVENT
     + instanceName
     + Blockly.Yail.YAIL_SPACER
-    + this.eventName
+    + eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     + this.declaredNames()

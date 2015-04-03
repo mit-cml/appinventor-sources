@@ -16,5 +16,5 @@ public interface HandlesEventDispatching {
   public boolean canDispatchEvent(Component component, String eventName);
 
   public boolean dispatchEvent(Component component, String componentName, String eventName,
-      Object[] args);
+      boolean isMulti, Object[] args);
 }

@@ -496,7 +496,7 @@ public class Form extends Activity
    */
   @Override
   public boolean dispatchEvent(Component component, String componentName, String eventName,
-      Object[] args) {
+      boolean isMulti, Object[] args) {
     throw new UnsupportedOperationException();
   }
 

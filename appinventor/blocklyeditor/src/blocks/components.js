@@ -99,7 +99,7 @@ Blockly.Blocks.component_event = {
     } else {
       this.appendDummyInput('WHENTITLE')
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
-      if (this.isMulti) {
+      if (!this.isMulti) {
         var compInput = this.appendValueInput("COMPONENT")
           .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
           .setAlign(Blockly.ALIGN_RIGHT);

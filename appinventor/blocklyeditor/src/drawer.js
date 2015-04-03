@@ -231,7 +231,6 @@ Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
   var multiEventObjects = Blockly.ComponentTypes[typeName].componentInfo.multiEvents;
   for(var i=0;i<multiEventObjects.length;i++) {
     if (multiEventObjects[i].deprecated === "true") continue;
-    console.log(multiEventObjects[i]);
     mutatorAttributes = {component_type: typeName, event_name : multiEventObjects[i].name, is_generic: "true", is_multi: "true"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
   }

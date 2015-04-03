@@ -399,6 +399,7 @@
        (define (dispatchEvent componentObject :: com.google.appinventor.components.runtime.Component
                               registeredComponentName :: java.lang.String
                               eventName :: java.lang.String
+                              isMulti :: boolean
                               args :: java.lang.Object[]) :: boolean
            ;; Check that the component object that generated the event
            ;; matches the component object associated with the
@@ -407,7 +408,8 @@
            ;; for event handlers and component names.
            (let ((registeredObject (string->symbol registeredComponentName)))
                  (if (is-bound-in-form-environment registeredObject)
-                     (if (eq? (lookup-in-form-environment registeredObject) componentObject)
+                     ;; temporarily deleted because I have no ideas how to get true out of this condition using isMulti
+                     ;;(if (or (eq? (lookup-in-form-environment registeredObject) componentObject) (isMulti))
                         (let ((handler (lookup-handler registeredComponentName eventName)))
                                 ;; Note: This try-catch was originally part of the
                                 ;; generated handler from define-event.  It was moved
@@ -426,7 +428,7 @@
                                     (exception:printStackTrace)
                                     (process-exception exception)
                                     #f))))
-                        #f)
+                        ;;#f)
                      ;; else unregister event for registeredComponentName
                      (begin
                        (com.google.appinventor.components.runtime.EventDispatcher:unregisterEventForDelegation

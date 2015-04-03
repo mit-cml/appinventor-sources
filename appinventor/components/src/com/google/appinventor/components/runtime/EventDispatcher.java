@@ -76,6 +76,7 @@ public class EventDispatcher {
   }
 
   private static final boolean DEBUG = false;
+  private static final String MULTI_GENERIC_PREFIX = "MultiGeneric-";
 
   private static final Map<HandlesEventDispatching, EventRegistry>
       mapDispatchDelegateToEventRegistry = new HashMap<HandlesEventDispatching, EventRegistry>();
@@ -195,7 +196,14 @@ public class EventDispatcher {
       EventRegistry er = getEventRegistry(dispatchDelegate);
       Set<EventClosure> eventClosures = er.eventClosuresMap.get(eventName);
       if (eventClosures != null && eventClosures.size() > 0) {
-        dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
+        dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, false, args);
+      }
+      eventClosures = er.eventClosuresMap.get(MULTI_GENERIC_PREFIX + eventName);
+      Object[] newArgs = new Object[args.length + 1];
+      newArgs[0] = component;
+      System.arraycopy(args, 0, newArgs, 1, args.length);
+      if (eventClosures != null && eventClosures.size() > 0) {
+        dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, true, newArgs);
       }
     }
     return dispatched;
@@ -210,7 +218,7 @@ public class EventDispatcher {
    */
   private static boolean delegateDispatchEvent(HandlesEventDispatching dispatchDelegate,
                                                Set<EventClosure> eventClosures,
-                                               Component component, Object... args) {
+                                               Component component, boolean isMulti, Object... args) {
     // The event closures set will contain all event closures matching the event name.
     // We depend on the delegate's dispatchEvent method to check the registered event closure and
     // only dispatch the event if the registered component matches the component that generated the
@@ -220,6 +228,7 @@ public class EventDispatcher {
       if (dispatchDelegate.dispatchEvent(component,
                                          eventClosure.componentId,
                                          eventClosure.eventName,
+                                         isMulti,
                                          args)) {
         if (DEBUG) {
           Log.i("EventDispatcher", "Successfully dispatched event " +
