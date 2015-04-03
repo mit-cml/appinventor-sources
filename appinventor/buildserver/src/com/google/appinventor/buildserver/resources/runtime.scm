@@ -1289,7 +1289,14 @@
 ;;; exact complex numbers seems incomplete, e.g. (exact->inexact +1i) gives an error
 (define (appinventor-number->string n)
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
-        ((integer? n) (call-with-output-string (lambda (port) (display n port))))
+        ;; In Scheme (integer? 2.0) is true, but (display 2.0) is 2.0
+        ;; so we make sure to display the exact integer
+        ;; note that if we divide 4 by 2, we get an inexact 2 internally, but this
+        ;; will display as 2 rather than 2.0
+        ;; Note that we could have used *format* inexact here, too, since YailNumberToString
+        ;; checks for integers EXCEPT FOR the fact that the integer n might be a bignum, in which case
+        ;; the conversion to a java double will produce a wrong answer
+        ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
         ;; if it's a rational then format it as a decimal
         ;; Note that Kawa rationals are still exact rationals -- they just print
         ;; as decimals.  That is, 7*(1/7) equals 1 exactly
