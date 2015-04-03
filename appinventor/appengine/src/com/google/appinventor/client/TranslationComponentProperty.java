@@ -248,7 +248,9 @@ public class TranslationComponentProperty {
     map.put("AtRest", MESSAGES.AtRestProperties());
     map.put("B", MESSAGES.BProperties());
     map.put("Back", MESSAGES.BackProperties());
+    map.put("ChannelMode", MESSAGES.ChannelModeProperties());
     map.put("Configuration", MESSAGES.ConfigurationProperties());
+    map.put("CurrentPosition", MESSAGES.CurrentPositionProperties());
     map.put("DeviceName", MESSAGES.DeviceNameProperties());
     map.put("DifferentialControlLoopCoefficientD",
         MESSAGES.DifferentialControlLoopCoefficientDProperties());
@@ -273,8 +275,6 @@ public class TranslationComponentProperty {
     map.put("LeftTrigger", MESSAGES.LeftTriggerProperties());
     map.put("LightLevel", MESSAGES.LightLevelProperties());
     map.put("Mode", MESSAGES.ModeProperties());
-    map.put("MotorCurrentPosition", MESSAGES.MotorCurrentPositionProperties());
-    map.put("MotorTargetPosition", MESSAGES.MotorTargetPositionProperties());
     map.put("OpModeName", MESSAGES.OpModeNameProperties());
     map.put("Position", MESSAGES.PositionProperties());
     map.put("Power", MESSAGES.PowerProperties());
@@ -284,12 +284,12 @@ public class TranslationComponentProperty {
     map.put("RightStickY", MESSAGES.RightStickYProperties());
     map.put("RightTrigger", MESSAGES.RightTriggerProperties());
     map.put("Rotation", MESSAGES.RotationProperties());
-    map.put("RunMode", MESSAGES.RunModeProperties());
     map.put("SignalDetected", MESSAGES.SignalDetectedProperties());
     map.put("Start", MESSAGES.StartProperties());
     map.put("State", MESSAGES.StateProperties());
     map.put("Status", MESSAGES.StatusProperties());
     map.put("Strength", MESSAGES.StrengthProperties());
+    map.put("TargetPosition", MESSAGES.TargetPositionProperties());
     map.put("UltrasonicLevel", MESSAGES.UltrasonicLevelProperties());
     map.put("UsbScanTimeInSeconds", MESSAGES.UsbScanTimeInSecondsProperties());
     map.put("Voltage", MESSAGES.VoltageProperties());

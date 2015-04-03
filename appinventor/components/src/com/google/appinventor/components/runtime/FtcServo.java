@@ -92,7 +92,7 @@ public final class FtcServo extends FtcHardwareDevice {
   /**
    * Position property getter.
    */
-  @SimpleProperty(description = "The current motor position, between 0.0 and 1.0.",
+  @SimpleProperty(description = "The current servo position, between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR)
   public double Position() {
     if (servo != null) {

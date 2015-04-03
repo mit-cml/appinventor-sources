@@ -186,9 +186,9 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2802;
   public static final int ERROR_FTC_INVALID_DIRECTION = 2803;
   public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2804;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT = 2805;
-  public static final int ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER = 2806;
-  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2807;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2805;
+  public static final int ERROR_FTC_INVALID_NUMBER = 2806;
+  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2807;
 
   // Please start the next group of error numbers at 2901.
 
@@ -474,12 +474,12 @@ public final class ErrorMessages {
         "The specified direction is not valid: %s");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode is not valid: %s");
-    errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_ELEMENT,
-        "Could not decode element [%s] %s as a number.");
-    errorMessages.put(ERROR_FTC_LEGACY_MODULE_COULD_NOT_DECODE_NUMBER,
-        "Could not decode value %s as a number.");
     errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE,
         "The specified scale range is not valid: %s %s");
+    errorMessages.put(ERROR_FTC_INVALID_NUMBER,
+        "The specified number is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_BYTE_ARRAY,
+        "The specified byte array is not valid");
   }
 
   private ErrorMessages() {

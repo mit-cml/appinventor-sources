@@ -3196,13 +3196,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ModeProperties();
 
-  @DefaultMessage("MotorCurrentPosition")
+  @DefaultMessage("CurrentPosition")
   @Description("")
-  String MotorCurrentPositionProperties();
+  String CurrentPositionProperties();
 
-  @DefaultMessage("MotorTargetPosition")
+  @DefaultMessage("TargetPosition")
   @Description("")
-  String MotorTargetPositionProperties();
+  String TargetPositionProperties();
 
   @DefaultMessage("OpModeName")
   @Description("")
@@ -3240,9 +3240,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RotationProperties();
 
-  @DefaultMessage("RunMode")
+  @DefaultMessage("ChannelMode")
   @Description("")
-  String RunModeProperties();
+  String ChannelModeProperties();
 
   @DefaultMessage("SignalDetected")
   @Description("")
@@ -5167,6 +5167,42 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
+  @DefaultMessage("Convert1ByteNumberToByteArray")
+  @Description("")
+  String Convert1ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert2ByteNumberToByteArray")
+  @Description("")
+  String Convert2ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert4ByteNumberToByteArray")
+  @Description("")
+  String Convert4ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert8ByteNumberToByteArray")
+  @Description("")
+  String Convert8ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("ConvertByteArrayToUnsigned1ByteNumber")
+  @Description("")
+  String ConvertByteArrayToUnsigned1ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayToSigned1ByteNumber")
+  @Description("")
+  String ConvertByteArrayToSigned1ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo2ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo2ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo4ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo4ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo8ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo8ByteNumberMethods();
+
   @DefaultMessage("EnableAnalogReadMode")
   @Description("")
   String EnableAnalogReadModeMethods();
@@ -5175,25 +5211,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EnableNxtI2cReadModeMethods();
 
-  @DefaultMessage("EnableNxtI2cWriteModeWithListOfBytes")
+  @DefaultMessage("EnableNxtI2cWriteMode")
   @Description("")
-  String EnableNxtI2cWriteModeWithListOfBytesMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteModeWith1ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteModeWith1ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteModeWith2ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteModeWith2ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteModeWith4ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteModeWith4ByteNumberMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteModeWith8ByteNumber")
-  @Description("")
-  String EnableNxtI2cWriteModeWith8ByteNumberMethods();
+  String EnableNxtI2cWriteModeMethods();
 
   @DefaultMessage("Enable9v")
   @Description("")
@@ -5219,21 +5239,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RangeScaleMethods();
 
-  @DefaultMessage("ReadListOfSignedBytesFromI2c")
+  @DefaultMessage("ReadI2c")
   @Description("")
-  String ReadListOfSignedBytesFromI2cMethods();
+  String ReadI2cMethods();
 
-  @DefaultMessage("ReadListOfUnsignedBytesFromI2c")
+  @DefaultMessage("ReadAnalog")
   @Description("")
-  String ReadListOfUnsignedBytesFromI2cMethods();
-
-  @DefaultMessage("ReadNumberFromAnalog")
-  @Description("")
-  String ReadNumberFromAnalogMethods();
-
-  @DefaultMessage("ReadNumberFromI2c")
-  @Description("")
-  String ReadNumberFromI2cMethods();
+  String ReadAnalogMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")
@@ -5255,25 +5267,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TelemetryAddTextDataMethods();
 
-  @DefaultMessage("WriteListOfBytesToI2c")
+  @DefaultMessage("WriteI2c")
   @Description("")
-  String WriteListOfBytesToI2cMethods();
+  String WriteI2cMethods();
 
-  @DefaultMessage("Write1ByteNumberToI2c")
-  @Description("")
-  String Write1ByteNumberToI2cMethods();
-
-  @DefaultMessage("Write2ByteNumberToI2c")
-  @Description("")
-  String Write2ByteNumberToI2cMethods();
-
-  @DefaultMessage("Write4ByteNumberToI2c")
-  @Description("")
-  String Write4ByteNumberToI2cMethods();
-
-  @DefaultMessage("Write8ByteNumberToI2c")
-  @Description("")
-  String Write8ByteNumberToI2cMethods();
 
 
   //Mock Components

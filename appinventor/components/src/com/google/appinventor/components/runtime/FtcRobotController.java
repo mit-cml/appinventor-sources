@@ -78,6 +78,8 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     implements Component, OnInitializeListener, OnNewIntentListener, OnDestroyListener, Deleteable,
     OpModeRegister {
 
+  // TODO(lizlooney): Add support for selecting the wifi channel.
+
   interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
   }
@@ -385,7 +387,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   // Functions
 
-  @SimpleFunction(description = "RangeClip")
+  @SimpleFunction(description = "Clip number if number is less than min or greater than max")
   public double RangeClip(double number, double min, double max) {
     try {
       return Range.clip(number, min, max);
@@ -397,7 +399,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     return 0.0;
   }
 
-  @SimpleFunction(description = "RangeScale")
+  @SimpleFunction(description = "Scale a number in the range of x1 to x2, to the range of y1 to y2")
   public double RangeScale(double number, double x1, double x2, double y1, double y2) {
     try {
       return Range.scale(number, x1, x2, y1, y2);
@@ -410,7 +412,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   }
 
   // TODO(lizlooney): Consider adding support for other com.qualcomm.robotcore.util classes:
-  // CurvedWheelMotion, RollingAverage
+  // BatteryChecker, CurvedWheelMotion, RollingAverage
 
   // Events
 

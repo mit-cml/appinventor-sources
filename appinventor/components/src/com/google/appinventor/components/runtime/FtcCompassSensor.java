@@ -59,6 +59,9 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return 0;
   }
 
+  // TODO(lizlooney): add property setter/getter for Mode
+  // TODO(lizlooney): add property getter for CalibrationFailed 
+
   /**
    * Status property getter.
    */

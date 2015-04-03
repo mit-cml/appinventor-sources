@@ -32,6 +32,8 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
 @UsesLibraries(libraries = "RobotCore.jar")
 public final class FtcIrSeekerSensor extends FtcHardwareDevice {
 
+  // TODO(lizlooney): update
+  // private volatile Mode mode = Mode.MODE_600HZ_DC;
   private volatile Mode mode = Mode.DC;
   private volatile IrSeekerSensor irSeekerSensor;
 
@@ -47,7 +49,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode; DC or AC.",
+  @SimpleProperty(description = "The mode; MODE_600HZ_DC or MODE_1200HZ_AC.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
     return mode.toString();

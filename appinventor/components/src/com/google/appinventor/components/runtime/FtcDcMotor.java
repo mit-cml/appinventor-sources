@@ -48,51 +48,57 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   // Properties
 
   /**
-   * RunMode property getter.
+   * ChannelMode property getter.
    */
-  @SimpleProperty(description = "The run mode.",
+  @SimpleProperty(description = "The channel mode.",
       category = PropertyCategory.BEHAVIOR)
-  public String RunMode() {
+  public String ChannelMode() {
     if (dcMotor != null) {
       try {
         DcMotorController dcMotorController = dcMotor.getController();
         if (dcMotorController != null) {
-          RunMode runMode = dcMotorController.getMotorChannelMode(dcMotor.getPortNumber());
-          if (runMode != null) {
-            return runMode.toString();
+          // TODO(lizlooney): remove controller code and update
+          // RunMode mode = dcMotor.getChannelMode();
+          RunMode mode = dcMotorController.getMotorChannelMode(dcMotor.getPortNumber());
+          if (mode != null) {
+            return mode.toString();
           }
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "RunMode",
+        form.dispatchErrorOccurredEvent(this, "ChannelMode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+    // TODO(lizlooney): update
+    // return RunMode.RUN_USING_ENCODERS.toString();
     return RunMode.RUN.toString();
   }
 
   /**
-   * RunMode property setter.
+   * ChannelMode property setter.
    */
   @SimpleProperty
-  public void RunMode(String runModeString) {
+  public void ChannelMode(String modeString) {
     if (dcMotor != null) {
       try {
         DcMotorController dcMotorController = dcMotor.getController();
         if (dcMotorController != null) {
-          for (RunMode runMode : RunMode.values()) {
-            if (runMode.toString().equalsIgnoreCase(runModeString)) {
-              dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), runMode);
+          for (RunMode mode : RunMode.values()) {
+            if (mode.toString().equalsIgnoreCase(modeString)) {
+              // TODO(lizlooney): remove controller code and update
+              // dcMotor.setChannelMode(mode);
+              dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), mode);
               return;
             }
           }
 
-          form.dispatchErrorOccurredEvent(this, "RunMode",
-              ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, runModeString);
+          form.dispatchErrorOccurredEvent(this, "ChannelMode",
+              ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "RunMode",
+        form.dispatchErrorOccurredEvent(this, "ChannelMode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -196,13 +202,15 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * MotorTargetPosition property getter.
+   * TargetPosition property getter.
    */
   @SimpleProperty(description = "The motor target position, where 1.0 is one full rotation.",
       category = PropertyCategory.BEHAVIOR)
-  public double MotorTargetPosition() {
+  public double TargetPosition() {
     if (dcMotor != null) {
       try {
+        // TODO(lizlooney): update
+        // return dcMotor.getTargetPosition();
         DcMotorController dcMotorController = dcMotor.getController();
         if (dcMotorController != null) {
           return dcMotorController.getMotorTargetPosition(dcMotor.getPortNumber());
@@ -217,12 +225,14 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * MotorTargetPosition property setter.
+   * TargetPosition property setter.
    */
   @SimpleProperty
-  public void MotorTargetPosition(double position) {
+  public void TargetPosition(double position) {
     if (dcMotor != null) {
       try {
+        // TODO(lizlooney): update
+        // return dcMotor.setTargetPosition(position);
         DcMotorController dcMotorController = dcMotor.getController();
         if (dcMotorController != null) {
           dcMotorController.setMotorTargetPosition(dcMotor.getPortNumber(), position);
@@ -236,13 +246,15 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * MotorCurrentPosition property getter.
+   * CurrentPosition property getter.
    */
   @SimpleProperty(description = "The current motor position, where 1.0 is one full rotation.",
       category = PropertyCategory.BEHAVIOR)
-  public double MotorCurrentPosition() {
+  public double CurrentPosition() {
     if (dcMotor != null) {
       try {
+        // TODO(lizlooney): update
+        // return dcMotor.getCurrentPosition(position);
         DcMotorController dcMotorController = dcMotor.getController();
         if (dcMotorController != null) {
           return dcMotorController.getMotorCurrentPosition(dcMotor.getPortNumber());
