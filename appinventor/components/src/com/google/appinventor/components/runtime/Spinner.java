@@ -49,7 +49,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private boolean isInitialized=false;
 
   private boolean bold = false;
-  private int fontTypeface;
+  private int fontTypeface = Component.TYPEFACE_DEFAULT;
   private boolean italic = false;
   private int backgroundColor;
   private int textColor;
