@@ -282,15 +282,15 @@ public class TranslationComponentMethods {
     map.put("IsPortReady", MESSAGES.IsPortReadyMethods());
     map.put("RangeClip", MESSAGES.RangeClipMethods());
     map.put("RangeScale", MESSAGES.RangeScaleMethods());
-    map.put("ReadI2c", MESSAGES.ReadI2cMethods());
     map.put("ReadAnalog", MESSAGES.ReadAnalogMethods());
+    map.put("ReadLegacyModuleCache", MESSAGES.ReadLegacyModuleCacheMethods());
     map.put("ScaleRange", MESSAGES.ScaleRangeMethods());
     map.put("SetDifferentialControlLoopCoefficients",
         MESSAGES.SetDifferentialControlLoopCoefficientsMethods());
     map.put("SetDigitalLine", MESSAGES.SetDigitalLineMethods());
     map.put("TelemetryAddNumericData", MESSAGES.TelemetryAddNumericDataMethods());
     map.put("TelemetryAddTextData", MESSAGES.TelemetryAddTextDataMethods());
-    map.put("WriteI2c", MESSAGES.WriteI2cMethods());
+    map.put("WriteLegacyModuleCache", MESSAGES.WriteLegacyModuleCacheMethods());
 
     return map;
   }

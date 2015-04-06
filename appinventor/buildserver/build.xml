@@ -70,8 +70,8 @@
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${classes.files.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
     <copy toFile="${classes.files.dir}/FtcCommon.jar" file="${lib.dir}/ftc/FtcCommon.jar" />
-    <copy toFile="${classes.files.dir}/HiTechnic.jar" file="${lib.dir}/ftc/HiTechnic.jar" />
     <copy toFile="${classes.files.dir}/RobotCore.jar" file="${lib.dir}/ftc/RobotCore.jar" />
+    <copy toFile="${classes.files.dir}/ModernRobotics.jar" file="${lib.dir}/ftc/ModernRobotics.jar" />
     <copy toFile="${classes.files.dir}/WirelessP2p.jar" file="${lib.dir}/ftc/WirelessP2p.jar" />
     <copy toFile="${classes.files.dir}/d2xx.jar" file="${lib.dir}/ftc/d2xx.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />

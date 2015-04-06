@@ -197,7 +197,6 @@ public class TranslationComponentParams {
     map.put("d", MESSAGES.dParams());
     map.put("data", MESSAGES.dataParams());
     map.put("enable", MESSAGES.enableParams());
-    map.put("error", MESSAGES.errorParams());
     map.put("i", MESSAGES.iParams());
     map.put("initialValue", MESSAGES.initialValueParams());
     map.put("initialValues", MESSAGES.initialValuesParams());
@@ -210,8 +209,6 @@ public class TranslationComponentParams {
     map.put("min", MESSAGES.minParams());
     map.put("p", MESSAGES.pParams());
     map.put("physicalPort", MESSAGES.physicalPortParams());
-    map.put("scaleRangeMax", MESSAGES.scaleRangeMaxParams());
-    map.put("scaleRangeMin", MESSAGES.scaleRangeMinParams());
     map.put("set", MESSAGES.setParams());
     return map;
   }

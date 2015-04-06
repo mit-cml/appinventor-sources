@@ -55,14 +55,9 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public String ChannelMode() {
     if (dcMotor != null) {
       try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          // TODO(lizlooney): remove controller code and update
-          // RunMode mode = dcMotor.getChannelMode();
-          RunMode mode = dcMotorController.getMotorChannelMode(dcMotor.getPortNumber());
-          if (mode != null) {
-            return mode.toString();
-          }
+        RunMode mode = dcMotor.getChannelMode();
+        if (mode != null) {
+          return mode.toString();
         }
       } catch (Throwable e) {
         e.printStackTrace();
@@ -70,9 +65,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    // TODO(lizlooney): update
-    // return RunMode.RUN_USING_ENCODERS.toString();
-    return RunMode.RUN.toString();
+    return RunMode.RUN_USING_ENCODERS.toString();
   }
 
   /**
@@ -82,20 +75,15 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public void ChannelMode(String modeString) {
     if (dcMotor != null) {
       try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          for (RunMode mode : RunMode.values()) {
-            if (mode.toString().equalsIgnoreCase(modeString)) {
-              // TODO(lizlooney): remove controller code and update
-              // dcMotor.setChannelMode(mode);
-              dcMotorController.setMotorChannelMode(dcMotor.getPortNumber(), mode);
-              return;
-            }
+        for (RunMode mode : RunMode.values()) {
+          if (mode.toString().equalsIgnoreCase(modeString)) {
+            dcMotor.setChannelMode(mode);
+            return;
           }
-
-          form.dispatchErrorOccurredEvent(this, "ChannelMode",
-              ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
         }
+
+        form.dispatchErrorOccurredEvent(this, "ChannelMode",
+            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ChannelMode",
@@ -209,12 +197,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public double TargetPosition() {
     if (dcMotor != null) {
       try {
-        // TODO(lizlooney): update
-        // return dcMotor.getTargetPosition();
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          return dcMotorController.getMotorTargetPosition(dcMotor.getPortNumber());
-        }
+        return dcMotor.getTargetPosition();
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "MotorTargetPosition",
@@ -231,12 +214,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public void TargetPosition(double position) {
     if (dcMotor != null) {
       try {
-        // TODO(lizlooney): update
-        // return dcMotor.setTargetPosition(position);
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          dcMotorController.setMotorTargetPosition(dcMotor.getPortNumber(), position);
-        }
+        dcMotor.setTargetPosition(position);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "MotorTargetPosition",
@@ -253,12 +231,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public double CurrentPosition() {
     if (dcMotor != null) {
       try {
-        // TODO(lizlooney): update
-        // return dcMotor.getCurrentPosition(position);
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          return dcMotorController.getMotorCurrentPosition(dcMotor.getPortNumber());
-        }
+        return dcMotor.getCurrentPosition();
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "MotorCurrentPosition",

@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
+import com.google.appinventor.client.editor.simple.components.MockFtcRobotController;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -284,6 +285,8 @@ public final class SimpleComponentDescriptor {
       return new MockContactPicker(editor);
     } else if (name.equals(MockPhoneNumberPicker.TYPE)) {
       return new MockPhoneNumberPicker(editor);
+    } else if (name.equals(MockFtcRobotController.TYPE)) {
+      return new MockFtcRobotController(editor);
     } else if (name.equals(MockEmailPicker.TYPE)) {
       return new MockEmailPicker(editor);
     } else if (name.equals(MockListPicker.TYPE)) {

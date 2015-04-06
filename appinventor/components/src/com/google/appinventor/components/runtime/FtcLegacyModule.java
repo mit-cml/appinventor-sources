@@ -57,13 +57,13 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Read the device memory map; only works in NXT I2C read mode.")
-  public Object ReadI2c(int physicalPort) {
+  public Object ReadLegacyModuleCache(int physicalPort) {
     if (legacyModule != null) {
       try {
-        return legacyModule.readI2c(physicalPort);
+        return legacyModule.readLegacyModuleCache(physicalPort);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadI2c",
+        form.dispatchErrorOccurredEvent(this, "ReadLegacyModuleCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -78,10 +78,10 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     if (legacyModule != null) {
       try {
         if (initialValues.equals("")) {
-          legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress,
+          legacyModule.enableNxtI2cWriteMode(physicalPort, i2cAddress, memAddress,
               new byte[0]);
         } else if (initialValues instanceof byte[]) {
-          legacyModule.enableNxtI2ctWriteMode(physicalPort, i2cAddress, memAddress,
+          legacyModule.enableNxtI2cWriteMode(physicalPort, i2cAddress, memAddress,
               (byte[]) initialValues);
         } else {
           form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode",
@@ -96,18 +96,18 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Write to the device memory map; only works in NXT I2C write mode.")
-  public void WriteI2c(int physicalPort, Object data) {
+  public void WriteLegacyModuleCache(int physicalPort, Object data) {
     if (legacyModule != null) {
       try {
         if (data instanceof byte[]) {
-          legacyModule.writeI2c(physicalPort, (byte[]) data);
+          legacyModule.writeLegacyModuleCache(physicalPort, (byte[]) data);
         } else {
-          form.dispatchErrorOccurredEvent(this, "WriteI2c",
+          form.dispatchErrorOccurredEvent(this, "WriteLegacyModuleCache",
               ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, "data is not valid");
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2c",
+        form.dispatchErrorOccurredEvent(this, "WriteLegacyModuleCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }

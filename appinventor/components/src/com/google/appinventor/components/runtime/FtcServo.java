@@ -126,13 +126,13 @@ public final class FtcServo extends FtcHardwareDevice {
   // Functions
 
   @SimpleFunction(description = "Sets the scale range of this servo.")
-  public void ScaleRange(double scaleRangeMin, double scaleRangeMax) {
+  public void ScaleRange(double min, double max) {
     if (servo != null) {
       try {
-        servo.scaleRange(scaleRangeMin, scaleRangeMax);
+        servo.scaleRange(min, max);
       } catch (IllegalArgumentException e) {
         form.dispatchErrorOccurredEvent(this, "ScaleRange",
-            ErrorMessages.ERROR_FTC_INVALID_SCALE_RANGE, scaleRangeMin, scaleRangeMin);
+            ErrorMessages.ERROR_FTC_INVALID_SCALE_RANGE, min, min);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ScaleRange",

@@ -248,8 +248,8 @@ public class TranslationComponentProperty {
     map.put("AtRest", MESSAGES.AtRestProperties());
     map.put("B", MESSAGES.BProperties());
     map.put("Back", MESSAGES.BackProperties());
+    map.put("CalibrationFailed", MESSAGES.CalibrationFailedProperties());
     map.put("ChannelMode", MESSAGES.ChannelModeProperties());
-    map.put("Configuration", MESSAGES.ConfigurationProperties());
     map.put("CurrentPosition", MESSAGES.CurrentPositionProperties());
     map.put("DeviceName", MESSAGES.DeviceNameProperties());
     map.put("DifferentialControlLoopCoefficientD",
@@ -263,7 +263,6 @@ public class TranslationComponentProperty {
     map.put("DpadLeft", MESSAGES.DpadLeftProperties());
     map.put("DpadRight", MESSAGES.DpadRightProperties());
     map.put("DpadUp", MESSAGES.DpadUpProperties());
-    map.put("DriverStationAddress", MESSAGES.DriverStationAddressProperties());
     map.put("EnableLed", MESSAGES.EnableLedProperties());
     map.put("GamepadNumber", MESSAGES.GamepadNumberProperties());
     map.put("GearRatio", MESSAGES.GearRatioProperties());

@@ -4,6 +4,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -24,31 +27,23 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import com.qualcomm.ftccommon.CommandList;
-import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.hitechnic.HiTechnicHardwareFactory;
-import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
-import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
-import com.qualcomm.robotcore.wifi.WifiDirectAssistant.ConnectStatus;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.p2p.WifiP2pDevice;
+import android.graphics.Typeface;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -60,9 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @DesignerComponent(version = YaVersion.FTC_ROBOT_CONTROLLER_COMPONENT_VERSION,
     description = "The primary FTC Robot Controller component",
-    category = ComponentCategory.FIRSTTECHCHALLENGE,
-    nonVisible = true,
-    iconName = "images/ftc.png")
+    category = ComponentCategory.FIRSTTECHCHALLENGE)
 @SimpleObject
 @UsesPermissions(permissionNames =
                  "android.permission.ACCESS_WIFI_STATE, " +
@@ -72,13 +65,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
                  "android.permission.INTERNET, " +
                  "android.permission.WRITE_EXTERNAL_STORAGE, " +
                  "android.permission.READ_EXTERNAL_STORAGE, " +
+                 "android.permission.WRITE_SETTINGS, " +
                  "android.permission.WAKE_LOCK")
-@UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,HiTechnic.jar,WirelessP2p.jar,d2xx.jar")
-public final class FtcRobotController extends AndroidNonvisibleComponent
-    implements Component, OnInitializeListener, OnNewIntentListener, OnDestroyListener, Deleteable,
-    OpModeRegister {
-
-  // TODO(lizlooney): Add support for selecting the wifi channel.
+@UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,ModernRobotics.jar,WirelessP2p.jar,d2xx.jar")
+public final class FtcRobotController extends AndroidViewComponent implements OnInitializeListener,
+    ActivityResultListener, OnNewIntentListener, OnDestroyListener, Deleteable, OpModeRegister {
 
   interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
@@ -93,6 +84,7 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     OpMode getOpMode();
   }
 
+  private static final int NUM_GAMEPADS = 2;
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
   private static final String DEFAULT_CONFIGURATION = "robot_config";
 
@@ -103,9 +95,19 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
   private static final Object opModeWrappersLock = new Object();
 
+  private final Form form;
+  public final LinearLayout entireScreenLayout;
+  public final TextView textDeviceName;
+  public final LinearLayout headerLayout;
+  public final TextView textActiveFilename;
+  public final TextView textWifiDirectStatus;
+  public final TextView textRobotStatus;
+  public final TextView[] textGamepad = new TextView[NUM_GAMEPADS];
+  public final TextView textOpMode;
+  public final TextView textErrorMessage;
+
+  private final int requestCode;
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
-  private volatile String driverStationAddress = "";
-  private volatile String configuration = DEFAULT_CONFIGURATION;
 
   private volatile String robotError = "";
   private volatile String wifiDirectStatus = "";
@@ -121,10 +123,37 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
 
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
+    form = container.$form();
+
+    Context context = container.$context();
+    entireScreenLayout = new LinearLayout(context);
+    textDeviceName = new TextView(context);
+    headerLayout = new LinearLayout(context);
+    textActiveFilename = new TextView(context);
+    textWifiDirectStatus = new TextView(context);
+    textRobotStatus = new TextView(context);
+    textGamepad[0] = new TextView(context);
+    textGamepad[1] = new TextView(context);
+    textOpMode = new TextView(context);
+    textErrorMessage = new TextView(context);
+    initLayout(context);
+    
+    container.$add(this);
+
     form.registerForOnInitialize(this);
+    requestCode = form.registerForActivityResult(this);
     form.registerForOnNewIntent(this);
     form.registerForOnDestroy(this);
   }
+
+  // AndroidViewComponent implementation
+
+  @Override
+  public View getView() {
+    return entireScreenLayout;
+  }
+
+  // OnInitializeListener implementation
 
   @Override
   public void onInitialize() {
@@ -139,8 +168,22 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
       ftcRobotControllerService.onBind();
       ftcRobotControllerActivity.onCreate();
       ftcRobotControllerActivity.onServiceBind(ftcRobotControllerService);
+      ftcRobotControllerActivity.onStart();
     }
   }
+
+  // ActivityResultListener implementation
+
+  @Override
+  public void resultReturned(int requestCode, int resultCode, Intent data) {
+    if (requestCode == this.requestCode) {
+      if (ftcRobotControllerActivity != null) {
+        ftcRobotControllerActivity.onActivityResult(requestCode, resultCode, data);
+      }
+    }
+  }
+
+  // OnNewIntentListener implementation
 
   @Override
   public void onNewIntent(Intent intent) {
@@ -149,6 +192,34 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     }
   }
   
+  // OnDestroyListener implementation
+
+  @Override
+  public void onDestroy() {
+    prepareToDie();
+  }
+
+  // Deleteable implementation
+
+  @Override
+  public void onDelete() {
+    prepareToDie();
+  }
+
+  // OpModeRegister implementation
+
+  @Override
+  public void register(OpModeManager opModeManager) {
+    synchronized (opModeWrappersLock) {
+      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
+      if (opModeWrappersForForm != null) {
+        for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
+          opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
+        }
+      }
+    }
+  }
+
   /**
    * Adds a {@link HardwareDevice} to the hardware devices.
    */
@@ -236,40 +307,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
     return usbScanTimeInSeconds;
   }
 
-  // Called from FtcFtcRobotControllerService
-  public String getDriverStationMac() {
-    return driverStationAddress;
-  }
-
-  // Called from FtcFtcRobotControllerActivity
-  public String getHardwareConfigFilename() {
-    return configuration;
-  }
-
-  // Called from FtcFtcRobotControllerActivity on the UI thraed
-  public void setRobotError(String robotError) {
-    if (!this.robotError.equals(robotError)) {
-      this.robotError = robotError;
-      RobotError(robotError);
-    }
-  }
-
-  // Called from FtcFtcRobotControllerActivity on the UI thraed
-  public void setWifiDirectStatus(String wifiDirectStatus) {
-    if (!this.wifiDirectStatus.equals(wifiDirectStatus)) {
-      this.wifiDirectStatus = wifiDirectStatus;
-      WifiDirectStatus(wifiDirectStatus);
-    }
-  }
-
-  // Called from FtcFtcRobotControllerActivity on the UI thraed
-  public void setRobotStatus(String robotStatus) {
-    if (!this.robotStatus.equals(robotStatus)) {
-      this.robotStatus = robotStatus;
-      RobotStatus(robotStatus);
-    }
-  }
-
   // Called from FtcEventLoop.init
   public void onEventLoopInit(EventLoopManager eventLoopManager, HardwareMap hardwareMap) {
     synchronized (gamepadDevicesLock) {
@@ -313,32 +350,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   // Properties
 
   /**
-   * Configuration property getter.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The name of the robot configuration.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String Configuration() {
-    return configuration;
-  }
-
-  /**
-   * Configuration property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = DEFAULT_CONFIGURATION)
-  @SimpleProperty(userVisible = false)
-  public void Configuration(String configuration) {
-    if (!this.configuration.equals(configuration)) {
-      this.configuration = configuration;
-      if (ftcRobotControllerActivity != null) {
-        ftcRobotControllerActivity.restartRobot();
-      }
-    }
-  }
-
-  /**
    * UsbScanTimeInSeconds property getter.
    * Not visible in blocks.
    */
@@ -357,32 +368,6 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   @SimpleProperty(userVisible = false)
   public void UsbScanTimeInSeconds(int usbScanTimeInSeconds) {
     this.usbScanTimeInSeconds = usbScanTimeInSeconds;
-  }
-
-  /**
-   * DriverStationAddress property getter.
-   * Not visible in blocks.
-   */
-  @SimpleProperty(description = "The address of the driver station.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String DriverStationAddress() {
-    return driverStationAddress;
-  }
-
-  /**
-   * DriverStationAddress property setter.
-   * Can only be set in designer; not visible in blocks.
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  @SimpleProperty(userVisible = false)
-  public void DriverStationAddress(String driverStationAddress) {
-    if (!this.driverStationAddress.equals(driverStationAddress)) {
-      this.driverStationAddress = driverStationAddress;
-      if (ftcRobotControllerActivity != null) {
-        ftcRobotControllerActivity.restartRobot();
-      }
-    }
   }
 
   // Functions
@@ -414,52 +399,67 @@ public final class FtcRobotController extends AndroidNonvisibleComponent
   // TODO(lizlooney): Consider adding support for other com.qualcomm.robotcore.util classes:
   // BatteryChecker, CurvedWheelMotion, RollingAverage
 
-  // Events
+  private void initLayout(Context context) {
+    entireScreenLayout.setOrientation(LinearLayout.VERTICAL);
+    LinearLayout deviceNameLayout = new LinearLayout(context);
+    deviceNameLayout.setOrientation(LinearLayout.HORIZONTAL);
+    deviceNameLayout.setBackgroundColor(0xC1E2E4);
 
-  @SimpleEvent(description = "RobotError event")
-  public void RobotError(String error) {
-    EventDispatcher.dispatchEvent(this, "RobotError", error);
-  }
+    TextView label = new TextView(context);
+    label.setTextColor(0xFF000000);
+    label.setText("Device Name:");
+    deviceNameLayout.addView(label,
+        new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1));
+    textDeviceName.setTextColor(0xFF000000);
+    deviceNameLayout.addView(textDeviceName,
+        new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+    entireScreenLayout.addView(deviceNameLayout,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
-  @SimpleEvent(description = "WifiDirectStatus event")
-  public void WifiDirectStatus(String status) {
-    EventDispatcher.dispatchEvent(this, "WifiDirectStatus", status);
-  }
-
-  @SimpleEvent(description = "RobotStatus event")
-  public void RobotStatus(String status) {
-    EventDispatcher.dispatchEvent(this, "RobotStatus", status);
-  }
-
-  // OpModeRegister implementation
-
-  @Override
-  public void register(OpModeManager opModeManager) {
-    synchronized (opModeWrappersLock) {
-      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
-      if (opModeWrappersForForm != null) {
-        for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
-          opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
-        }
-      }
-    }
-  }
-
-  // OnDestroyListener implementation
-
-  @Override
-  public void onDestroy() {
-    prepareToDie();
-  }
-
-  // Deleteable implementation
-  @Override
-  public void onDelete() {
-    prepareToDie();
+    headerLayout.setOrientation(LinearLayout.HORIZONTAL);
+    headerLayout.setBackgroundColor(0x309EA4);
+    label = new TextView(context);
+    label.setTextColor(0xFF000000);
+    label.setText("Active Configuration File:");
+    headerLayout.addView(label,
+        new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1));
+    textActiveFilename.setTextColor(0xFF000000);
+    headerLayout.addView(textActiveFilename,
+        new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+    entireScreenLayout.addView(headerLayout,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    textWifiDirectStatus.setTextColor(0xFF000000);
+    entireScreenLayout.addView(textWifiDirectStatus,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    textRobotStatus.setTextColor(0xFF000000);
+    entireScreenLayout.addView(textRobotStatus,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    textOpMode.setTextColor(0xFF000000);
+    entireScreenLayout.addView(textOpMode,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    textErrorMessage.setTextColor(0xFF990000);
+    textErrorMessage.setTypeface(
+        Typeface.create(textErrorMessage.getTypeface(), Typeface.BOLD));
+    textErrorMessage.setMinLines(2);
+    textErrorMessage.setMaxLines(4);
+    entireScreenLayout.addView(textErrorMessage,
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    // Add a spacer that takes the full width and all the remaining weight.
+    entireScreenLayout.addView(new TextView(context),
+        new LinearLayout.LayoutParams(MATCH_PARENT, 0, 1));
+    textGamepad[0].setTextColor(0xFF000000);
+    entireScreenLayout.addView(textGamepad[0],
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+    textGamepad[1].setTextColor(0xFF000000);
+    entireScreenLayout.addView(textGamepad[1],
+        new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
   }
 
   private void prepareToDie() {
+    form.unregisterForActivityResult(this);
+
     ftcRobotControllerService.onUnbind();
+    ftcRobotControllerActivity.onStop();
 
     wakeLock.release();
     wakeLock = null;

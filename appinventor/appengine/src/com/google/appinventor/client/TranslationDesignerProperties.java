@@ -308,12 +308,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
-    } else if (key.equals("Configuration")) {
-      value = MESSAGES.ConfigurationProperties();
     } else if (key.equals("DeviceName")) {
       value = MESSAGES.DeviceNameProperties();
-    } else if (key.equals("DriverStationAddress")) {
-      value = MESSAGES.DriverStationAddressProperties();
     } else if (key.equals("GamepadNumber")) {
       value = MESSAGES.GamepadNumberProperties();
     } else if (key.equals("OpModeName")) {

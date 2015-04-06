@@ -431,7 +431,9 @@ public final class Compiler {
         }
         out.write("      </intent-filter>\n");
         if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
-          out.write("      <meta-data android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" android:resource=\"@xml/device_filter\" />\n");
+          out.write("      <meta-data\n");
+          out.write("        android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"\n");
+          out.write("        android:resource=\"@xml/device_filter\" />\n");
         }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
@@ -558,8 +560,9 @@ public final class Compiler {
       out.println("________Creating device_filter.xml");
       File xmlDir = createDirectory(resDir, "xml");
       File deviceFilterFile = new File(xmlDir, "device_filter.xml");
-      String deviceFilterXml = "\n<resources>\n" +
-          "   <usb-device vendor-id=\"1027\" product-id=\"24577\" /> <!-- FT232 HiTechnic -->\n" +
+      String deviceFilterXml = "\n" +
+          "<resources>\n" +
+          "   <usb-device vendor-id=\"1027\" product-id=\"24577\" /> <!-- FT232 Modern Robotics -->\n" +
           "</resources>\n";
       if (!compiler.writeXmlFile(deviceFilterFile, deviceFilterXml)) {
         return false;

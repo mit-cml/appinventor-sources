@@ -125,8 +125,8 @@
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
         <pathelement location="${lib.dir}/ftc/FtcCommon.jar" />
-        <pathelement location="${lib.dir}/ftc/HiTechnic.jar" />
         <pathelement location="${lib.dir}/ftc/RobotCore.jar" />
+        <pathelement location="${lib.dir}/ftc/ModernRobotics.jar" />
         <pathelement location="${lib.dir}/ftc/WirelessP2p.jar" />
         <pathelement location="${lib.dir}/ftc/d2xx.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
@@ -232,8 +232,8 @@
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
           <pathelement location="${lib.dir}/ftc/FtcCommon.jar" />
-          <pathelement location="${lib.dir}/ftc/HiTechnic.jar" />
           <pathelement location="${lib.dir}/ftc/RobotCore.jar" />
+          <pathelement location="${lib.dir}/ftc/ModernRobotics.jar" />
           <pathelement location="${lib.dir}/ftc/WirelessP2p.jar" />
           <pathelement location="${lib.dir}/ftc/d2xx.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />

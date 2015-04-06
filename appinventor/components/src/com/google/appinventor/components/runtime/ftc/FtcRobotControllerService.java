@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Qualcomm Technologies Inc
+/* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
 
 All rights reserved.
 
@@ -35,10 +35,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.google.appinventor.components.runtime.ftc;
 
+//AI import android.app.Service;
 import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
+import android.content.Intent;
+//AI import android.os.Binder;
+import android.os.Build;
+//AI import android.os.IBinder;
 
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.Device;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -50,17 +55,15 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant.WifiDirectAssistantCallback;
 
 import java.net.InetAddress;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
 
-public class FtcRobotControllerService implements WifiDirectAssistantCallback {
+public class FtcRobotControllerService /*AI extends Service*/ implements WifiDirectAssistantCallback {
 
-  private final static double NETWORK_MAX_WAIT = 120.0; // 2 minutes
+  private final static double NETWORK_MAX_WAIT = 120.0; // in seconds
+  private final static int NETWORK_WAIT = 1000; // in milliseconds
+
+  //AI private final IBinder binder = new FtcRobotControllerBinder();
 
   private WifiDirectAssistant wifiDirect;
   private Robot robot;
@@ -74,19 +77,15 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
 
   private final ElapsedTime networkTimer = new ElapsedTime();
 
-  private final Lock networkLock = new ReentrantLock();
-  private final Condition networkChange = networkLock.newCondition();
-
   private Thread robotSetupThread = null;
 
-  private final FtcRobotController ftcRobotController;
-  private final Context context;
-  private volatile boolean sleepForUsbScan = true;
-
-  public FtcRobotControllerService(FtcRobotController ftcRobotController, Context context) {
-    this.ftcRobotController = ftcRobotController;
-    this.context = context;
+  /*AI
+  public class FtcRobotControllerBinder extends Binder {
+    FtcRobotControllerService getService() {
+      return FtcRobotControllerService.this;
+    }
   }
+  */
 
   private class EventLoopMonitor implements EventLoopManager.EventLoopMonitor {
 
@@ -110,6 +109,9 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
         case EMERGENCY_STOP:
           callback.robotUpdate("Robot Status: EMERGENCY STOP");
           break;
+        case DROPPED_CONNECTION:
+          callback.robotUpdate("Robot Status: dropped connection");
+          break;
       }
     }
   }
@@ -124,7 +126,7 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
           robot = null;
         }
 
-        if (sleepForUsbScan) {
+        if (!alreadySleptForUsbScan) {
           updateRobotStatus("Robot Status: scanning for USB devices");
 
           /*
@@ -141,7 +143,7 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
             updateRobotStatus("Robot Status: abort due to interrupt");
             return;
           }
-          sleepForUsbScan = false;
+          alreadySleptForUsbScan = true;
         }
 
         robot = RobotFactory.createRobot();
@@ -149,24 +151,18 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
         updateRobotStatus("Robot Status: waiting on network");
 
         // wait for network to come up
-        try {
-          networkTimer.reset();
-          networkLock.lock();
-          while (wifiDirect.isConnected() == false) {
-            try {
-              networkChange.await(1, TimeUnit.SECONDS);
-              if (networkTimer.time() > NETWORK_MAX_WAIT) {
-                updateRobotStatus("Robot Status: network timed out");
-                // finally block will release lock
-                return;
-              }
-            } catch (InterruptedException e) {
-              DbgLog.msg("interrupt waiting for network; aborting setup");
+        networkTimer.reset();
+        while (wifiDirect.isConnected() == false) {
+          try {
+            Thread.sleep(NETWORK_WAIT);
+            if (networkTimer.time() > NETWORK_MAX_WAIT) {
+              updateRobotStatus("Robot Status: network timed out");
               return;
             }
+          } catch (InterruptedException e) {
+            DbgLog.msg("interrupt waiting for network; aborting setup");
+            return;
           }
-        } finally {
-          networkLock.unlock();
         }
 
         // now that we have network, start up the robot
@@ -174,19 +170,20 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
         try {
           robot.eventLoopManager.setMonitor(eventLoopMonitor);
           InetAddress addr = wifiDirect.getGroupOwnerAddress();
-          robot.start(addr, addr, eventLoop);
+          robot.start(addr, eventLoop);
         } catch (RobotCoreException e) {
           updateRobotStatus("Robot Status: failed to start robot");
+          RobotLog.setGlobalErrorMsg(e.getMessage());
         }
       } catch (RobotCoreException e) {
         updateRobotStatus("Robot Status: Unable to create robot!");
-        e.printStackTrace();
+        RobotLog.setGlobalErrorMsg(e.getMessage());
       }
     }
   }
 
-  public String getDriverStationMac() {
-    return ftcRobotController.getDriverStationMac();
+  public WifiDirectAssistant getWifiDirectAssistant() {
+    return wifiDirect;
   }
 
   public WifiDirectAssistant.Event getWifiDirectStatus() {
@@ -197,24 +194,34 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
     return robotStatus;
   }
 
-  public void onBind() {
+  //AI @Override
+  public /*AI IBinder*/ void onBind(/*AI Intent intent*/) {
     DbgLog.msg("Starting FTC Controller Service");
 
-    wifiDirect = WifiDirectAssistant.getWifiDirectAssistant(context);
+    DbgLog.msg("Android device is " + Build.MANUFACTURER + ", " + Build.MODEL);
+
+    wifiDirect = WifiDirectAssistant.getWifiDirectAssistant(thisContext);
     wifiDirect.setCallback(this);
 
     wifiDirect.enable();
-
-    if (wifiDirect.isConnected() == false) {
+    if (Build.MODEL.equals(Device.MODEL_FOXDA_FL7007)) {
+      // wifi channel selection does not work on the FOXDA when running as group owner
       wifiDirect.discoverPeers();
+    } else {
+      wifiDirect.createGroup();
     }
+
+    //AI return binder;
   }
 
-  public void onUnbind() {
+  //AI @Override
+  public boolean onUnbind(/*AI Intent intent*/) {
     DbgLog.msg("Stopping FTC Controller Service");
 
     wifiDirect.disable();
     shutdownRobot();
+
+    return false; // don't have new clients call onRebind()
   }
 
   public synchronized void setCallback(FtcRobotControllerActivity.Callback callback) {
@@ -266,32 +273,17 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
   @Override
   public void onWifiDirectEvent(WifiDirectAssistant.Event event) {
     switch (event) {
-      case PEERS_AVAILABLE:
-        if (wifiDirect.getConnectStatus() == WifiDirectAssistant.ConnectStatus.CONNECTED ||
-            wifiDirect.getConnectStatus() == WifiDirectAssistant.ConnectStatus.CONNECTING) {
-          /*
-           * We get extra an extra PEER_AVAILABLE event when first connecting, and right after
-           * the connection is complete. Just ignore these events.
-           */
-          return;
-        }
-
-        // look for driver station
-        List<WifiP2pDevice> peers = wifiDirect.getPeers();
-        for (WifiP2pDevice peer : peers) {
-          if (peer.deviceAddress.equalsIgnoreCase(ftcRobotController.getDriverStationMac())) {
-            // driver station found; connect
-            wifiDirect.connect(peer);
-            break;
-          }
-        }
-        break;
-      case CONNECTING:
-      case CONNECTED_AS_PEER:
+      case CONNECTED_AS_GROUP_OWNER:
+        DbgLog.msg("Wifi Direct - Group Owner");
         wifiDirect.cancelDiscoverPeers();
         break;
-      case DISCONNECTED:
-        wifiDirect.discoverPeers();
+      case CONNECTED_AS_PEER:
+        DbgLog.error("Wifi Direct - connected as peer, was expecting Group Owner");
+        startActivity(new Intent(//AI getBaseContext(), ConfigWifiDirectActivity.class));
+            "com.qualcomm.ftcrobotcontroller.ConfigWifiDirectActivity"));
+        break;
+      case CONNECTION_INFO_AVAILABLE:
+        DbgLog.msg("Wifi Direct Passphrase: " + wifiDirect.getPassphrase());
         break;
       case ERROR:
         DbgLog.error("Wifi Direct Error: " + wifiDirect.getFailureReason());
@@ -301,14 +293,6 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
     }
 
     updateWifiDirectStatus(event);
-
-    // change has been processed, notify code waiting on networkChange
-    try {
-      networkLock.lock();
-      networkChange.signalAll();
-    } finally {
-      networkLock.unlock();
-    }
   }
 
   private void updateWifiDirectStatus(final WifiDirectAssistant.Event event) {
@@ -320,6 +304,25 @@ public class FtcRobotControllerService implements WifiDirectAssistantCallback {
     robotStatus = status;
     if (callback != null) {
       callback.robotUpdate(status);
+    }
+  }
+
+  // For App Inventor:
+
+  private final FtcRobotController ftcRobotController;
+  private final Context thisContext;
+  private volatile boolean alreadySleptForUsbScan;
+
+  public FtcRobotControllerService(FtcRobotController ftcRobotController, Context context) {
+    this.ftcRobotController = ftcRobotController;
+    thisContext = context;
+  }
+
+  private void startActivity(Intent intent) {
+    try {
+      thisContext.startActivity(intent);
+    } catch (Throwable e) {
+      e.printStackTrace();
     }
   }
 }

@@ -137,11 +137,8 @@ public class TranslationComponentEvents {
 
     // ========== FTC
     map.put("Loop", MESSAGES.LoopEvents());
-    map.put("RobotError", MESSAGES.RobotErrorEvents());
-    map.put("RobotStatus", MESSAGES.RobotStatusEvents());
     map.put("Start", MESSAGES.StartEvents());
     map.put("Stop", MESSAGES.StopEvents());
-    map.put("WifiDirectStatus", MESSAGES.WifiDirectStatusEvents());
 
 	/*
   //event helpstrings
@@ -176,11 +173,8 @@ public class TranslationComponentEvents {
 
 	// ========== FTC
 	map.put("Loop-helpstring", MESSAGES.LoopHelpStringEvents());
-	map.put("RobotError-helpstring", MESSAGES.RobotErrorHelpStringEvents());
-	map.put("RobotStatus-helpstring", MESSAGES.RobotStatusHelpStringEvents());
 	map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
 	map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
-	map.put("WifiDirectStatus-helpstring", MESSAGES.WifiDirectStatusHelpStringEvents());
 	*/
 
     return map;

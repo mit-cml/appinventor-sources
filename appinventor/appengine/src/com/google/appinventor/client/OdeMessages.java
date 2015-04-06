@@ -3108,9 +3108,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BackProperties();
 
-  @DefaultMessage("Configuration")
+  @DefaultMessage("CalibrationFailed")
   @Description("")
-  String ConfigurationProperties();
+  String CalibrationFailedProperties();
+
+  @DefaultMessage("ChannelMode")
+  @Description("")
+  String ChannelModeProperties();
+
+  @DefaultMessage("CurrentPosition")
+  @Description("")
+  String CurrentPositionProperties();
 
   @DefaultMessage("DeviceName")
   @Description("")
@@ -3147,10 +3155,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("DpadUp")
   @Description("")
   String DpadUpProperties();
-
-  @DefaultMessage("DriverStationAddress")
-  @Description("")
-  String DriverStationAddressProperties();
 
   @DefaultMessage("EnableLed")
   @Description("")
@@ -3196,14 +3200,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ModeProperties();
 
-  @DefaultMessage("CurrentPosition")
-  @Description("")
-  String CurrentPositionProperties();
-
-  @DefaultMessage("TargetPosition")
-  @Description("")
-  String TargetPositionProperties();
-
   @DefaultMessage("OpModeName")
   @Description("")
   String OpModeNameProperties();
@@ -3240,10 +3236,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RotationProperties();
 
-  @DefaultMessage("ChannelMode")
-  @Description("")
-  String ChannelModeProperties();
-
   @DefaultMessage("SignalDetected")
   @Description("")
   String SignalDetectedProperties();
@@ -3263,6 +3255,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Strength")
   @Description("")
   String StrengthProperties();
+
+  @DefaultMessage("TargetPosition")
+  @Description("")
+  String TargetPositionProperties();
 
   @DefaultMessage("UltrasonicLevel")
   @Description("")
@@ -3886,10 +3882,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String enableParams();
 
-  @DefaultMessage("error")
-  @Description("")
-  String errorParams();
-
   @DefaultMessage("i")
   @Description("")
   String iParams();
@@ -3937,14 +3929,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("physicalPort")
   @Description("")
   String physicalPortParams();
-
-  @DefaultMessage("scaleRangeMax")
-  @Description("")
-  String scaleRangeMaxParams();
-
-  @DefaultMessage("scaleRangeMin")
-  @Description("")
-  String scaleRangeMinParams();
 
   @DefaultMessage("set")
   @Description("")
@@ -4321,14 +4305,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LoopEvents();
 
-  @DefaultMessage("RobotError")
-  @Description("")
-  String RobotErrorEvents();
-
-  @DefaultMessage("RobotStatus")
-  @Description("")
-  String RobotStatusEvents();
-
   @DefaultMessage("Start")
   @Description("")
   String StartEvents();
@@ -4336,10 +4312,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Stop")
   @Description("")
   String StopEvents();
-
-  @DefaultMessage("WifiDirectStatus")
-  @Description("")
-  String WifiDirectStatusEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -5239,13 +5211,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RangeScaleMethods();
 
-  @DefaultMessage("ReadI2c")
-  @Description("")
-  String ReadI2cMethods();
-
   @DefaultMessage("ReadAnalog")
   @Description("")
   String ReadAnalogMethods();
+
+  @DefaultMessage("ReadLegacyModuleCache")
+  @Description("")
+  String ReadLegacyModuleCacheMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")
@@ -5267,9 +5239,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TelemetryAddTextDataMethods();
 
-  @DefaultMessage("WriteI2c")
+  @DefaultMessage("WriteLegacyModuleCache")
   @Description("")
-  String WriteI2cMethods();
+  String WriteLegacyModuleCacheMethods();
 
 
 

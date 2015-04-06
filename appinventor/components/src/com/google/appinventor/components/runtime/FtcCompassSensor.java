@@ -14,6 +14,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.CompassSensor;
+import com.qualcomm.robotcore.hardware.CompassSensor.CompassMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -31,6 +32,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public final class FtcCompassSensor extends FtcHardwareDevice {
 
   private volatile CompassSensor compassSensor;
+  private volatile CompassMode mode = CompassMode.MEASUREMENT_MODE;
 
   /**
    * Creates a new FtcCompassSensor component.
@@ -59,8 +61,58 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  // TODO(lizlooney): add property setter/getter for Mode
-  // TODO(lizlooney): add property getter for CalibrationFailed 
+  /**
+   * Mode property getter.
+   */
+  @SimpleProperty(description = "The mode: MEASUREMENT_MODE or CALIBRATION_MODE",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode() {
+    return mode.toString();
+  }
+
+  /**
+   * Mode property setter.
+   */
+  @SimpleProperty
+  public void Mode(String modeString) {
+    try {
+      for (CompassMode mode : CompassMode.values()) {
+        if (mode.toString().equalsIgnoreCase(modeString)) {
+          this.mode = mode;
+          if (compassSensor != null) {
+            compassSensor.setMode(mode);
+          }
+          return;
+        }
+      }
+
+      form.dispatchErrorOccurredEvent(this, "Mode",
+          ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Mode",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
+
+  /**
+   * CalibrationFailed property getter.
+   */
+  @SimpleProperty(description = "Whether calibration failed.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean CalibrationFailed() {
+    if (compassSensor != null) {
+      try {
+        return compassSensor.calibrationFailed();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "CalibrationFailed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
 
   /**
    * Status property getter.

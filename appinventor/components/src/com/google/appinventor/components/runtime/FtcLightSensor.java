@@ -58,7 +58,15 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty
   public void EnableLed(boolean enableLed) {
     this.enableLed = enableLed;
-    setEnableLed();
+    if (lightSensor != null) {
+      try {
+        lightSensor.enableLed(enableLed);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableLed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   /**
@@ -100,18 +108,6 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     return "";
   }
 
-  private void setEnableLed() {
-    if (lightSensor != null) {
-      try {
-        lightSensor.enableLed(enableLed);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableLed",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
   // FtcHardwareDevice implementation
 
   @Override
@@ -119,7 +115,6 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       lightSensor = hardwareMap.lightSensor.get(getDeviceName());
-      setEnableLed();
     }
   }
 

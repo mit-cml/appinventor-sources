@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Qualcomm Technologies Inc
+/* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
 
 All rights reserved.
 
@@ -37,6 +37,7 @@ package com.google.appinventor.components.runtime.ftc;
 
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.DbgLog;
+//AI import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
@@ -47,10 +48,15 @@ import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.Telemetry;
+import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Util;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static java.util.Map.Entry;
 
@@ -59,7 +65,7 @@ import com.google.appinventor.components.runtime.FtcRobotController;
 /**
  * Main event loop to control robot
  */
-public class FtcEventLoop implements EventLoop {
+public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
   // Event loop manager
   EventLoopManager eventLoopManager;
@@ -74,19 +80,17 @@ public class FtcEventLoop implements EventLoop {
   HardwareFactory hardwareFactory;
   HardwareMap hardwareMap = new HardwareMap();
 
-  OpModeManager opModeManager;
+  OpModeManager opModeManager /*AI = new OpModeManager(hardwareMap, new FtcOpModeRegister())*/;
 
-  // Gamepad UI Timer
-  ElapsedTime updateGamepadUi = new ElapsedTime();
+  private FtcRobotController ftcRobotController;
 
-  private final FtcRobotController ftcRobotController;
-
-  FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback,
-      FtcRobotController ftcRobotController) {
+  FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback) {
     this.hardwareFactory = hardwareFactory;
     this.callback = callback;
-    this.ftcRobotController = ftcRobotController;
-    opModeManager = new OpModeManager(hardwareMap, /* OpModeRegister */ ftcRobotController);
+  }
+
+  public OpModeManager getOpModeManager(){
+    return opModeManager;
   }
 
   /**
@@ -127,6 +131,7 @@ public class FtcEventLoop implements EventLoop {
 
     // Get access to gamepad 1 and 2
     Gamepad gamepads[] = eventLoopManager.getGamepads();
+
     callback.updateUi(opModeManager.getActiveOpModeName(), gamepads);
 
     opModeManager.runActiveOpMode(gamepads);
@@ -134,7 +139,10 @@ public class FtcEventLoop implements EventLoop {
     // send telemetry data
     if (telemetryTimer.time() > telemetryInterval) {
       telemetryTimer.reset();
+
       Telemetry telemetry = opModeManager.getActiveOpMode().telemetry;
+
+      getRobotBatteryInfo();
 
       if (telemetry.hasData()) eventLoopManager.sendTelemetryData(telemetry);
       telemetry.clearData();
@@ -195,7 +203,7 @@ public class FtcEventLoop implements EventLoop {
    */
   @Override
   public void processCommand(Command command) {
-    DbgLog.msg("Processing Command: " + command);
+    DbgLog.msg("Processing Command: " + command.getName() + " " + command.getExtra());
 
     String name = command.getName();
     String extra = command.getExtra();
@@ -206,8 +214,18 @@ public class FtcEventLoop implements EventLoop {
       handleCommandRequestOpModeList();
     } else if (name.equals(CommandList.CMD_SWITCH_OP_MODE)) {
       handleCommandSwitchOpMode(extra);
+    } else if (name.equals(CommandList.CMD_CANCEL_OP_RESTART)) {
+      handleCancelRestartOpMode(extra);
     } else {
       DbgLog.msg("Unknown command: " + name);
+    }
+  }
+
+  private void handleCancelRestartOpMode(String extra) {
+
+    if (eventLoopManager.state == EventLoopManager.State.DROPPED_CONNECTION) {
+      opModeManager.switchOpModes(OpModeManager.DEFAULT_OP_MODE_NAME);
+      eventLoopManager.restartOpMode(extra);
     }
   }
 
@@ -226,10 +244,57 @@ public class FtcEventLoop implements EventLoop {
 
   private void handleCommandSwitchOpMode(String extra) {
     String newOpMode = extra;
-    if (eventLoopManager.state != EventLoopManager.State.RUNNING){
+    if (eventLoopManager.state != EventLoopManager.State.RUNNING) {
       newOpMode = OpModeManager.DEFAULT_OP_MODE_NAME;
     }
     opModeManager.switchOpModes(newOpMode);
+
+    if (eventLoopManager.isWaitingForRestart()){
+      eventLoopManager.restartOpMode(newOpMode);
+    }
+
+    //eventLoopManager.restartOpMode(newOpMode);
     eventLoopManager.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
+  }
+
+  public void updateBatteryLevel(float percent) {
+    sendBatteryInfo(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController Battery Level Remaining: " + percent + "%");
+  }
+
+  private void getRobotBatteryInfo() {
+    double minBatteryLevel = Double.MAX_VALUE;
+
+    for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+      if (sensor.getVoltage() < minBatteryLevel){
+        minBatteryLevel = sensor.getVoltage();
+      }
+    }
+
+    String msg;
+    if (hardwareMap.voltageSensor.size() == 0) {
+      msg = "Robot Battery Level: " + "unknown";
+    } else {
+      BigDecimal rounded = new BigDecimal(minBatteryLevel).setScale(2, RoundingMode.HALF_UP);
+      msg = "Robot Battery Level: " + rounded.doubleValue();
+    }
+    sendBatteryInfo(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, msg);
+  }
+
+  private void sendBatteryInfo(String tag, String msg) {
+    Telemetry telemetry = new Telemetry();
+    telemetry.setTag(tag);
+    telemetry.addData(tag, msg);
+    if (eventLoopManager != null) {
+      eventLoopManager.sendTelemetryData(telemetry);
+    }
+  }
+
+  // For App Inventor:
+
+  FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback,
+      FtcRobotController ftcRobotController) {
+    this(hardwareFactory, callback);
+    this.ftcRobotController = ftcRobotController;
+    opModeManager = new OpModeManager(hardwareMap, /* OpModeRegister */ ftcRobotController);
   }
 }
