@@ -56,7 +56,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   // TODO: add these to OdeMessages.java
   private static final String PUBLISHBUTTONTEXT = "Publish to Gallery";
-  private static final String UPDATEBUTTONTEXT = "Update Gallery app";
+  private static final String UPDATEBUTTONTEXT = "Update Gallery App";
   private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
   private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
 

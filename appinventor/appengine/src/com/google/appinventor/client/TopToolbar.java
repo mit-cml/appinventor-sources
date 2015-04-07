@@ -519,8 +519,6 @@ public class TopToolbar extends Composite {
       }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
-        GalleryClient gallery = GalleryClient.getInstance();
-        gallery.appWasChanged();
       }
       // Make sure that we delete projects even if they are not open.
       doDeleteProject(projectId);
@@ -550,6 +548,8 @@ public class TopToolbar extends Composite {
             @Override
             public void onSuccess(Void result) {
               // need to update gallery list
+              GalleryClient gallery = GalleryClient.getInstance();
+              gallery.appWasChanged();
             }
           });
     }
