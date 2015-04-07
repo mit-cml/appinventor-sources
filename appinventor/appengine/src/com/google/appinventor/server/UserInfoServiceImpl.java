@@ -115,6 +115,15 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
+   * Stores the user's email notification frequency.
+   * @param emailFrequency  user's email frequency
+   */
+  @Override
+  public void storeUserEmailFrequency(int emailFrequency) {
+    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
+  }
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   @Override
