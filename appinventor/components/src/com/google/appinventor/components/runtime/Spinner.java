@@ -51,9 +51,10 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private boolean bold = false;
   private int fontTypeface = Component.TYPEFACE_DEFAULT;
   private boolean italic = false;
-  private int backgroundColor;
-  private int textColor;
-  private int textAlignment;
+  private int backgroundColor = Component.COLOR_DEFAULT;
+  private int textColor = Component.COLOR_BLACK;
+  private int textAlignment = Component.ALIGNMENT_CENTER;
+  private float fontSize = Component.FONT_DEFAULT_SIZE;
 
 
   public Spinner(ComponentContainer container) {
@@ -67,6 +68,13 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     view.setOnItemSelectedListener(this);
     //Aayush
     Enabled(true);
+      FontBold(bold);
+      FontTypeface(fontTypeface);
+      FontItalic(italic);
+      FontSize(fontSize);
+      BackgroundColor(backgroundColor);
+      TextColor(textColor);
+      TextAlignment(textAlignment);
 
     container.$add(this);
   }
@@ -98,7 +106,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
           "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-      //if you want to change only background of textbox color
+      //if you want to change only background of tesxtbox color
+    if(selectionIndex==0) return;
     TextView selectedTextView = (TextView) view.getSelectedView();
     TextViewUtil.setBackgroundColor(selectedTextView, argb);
   }
@@ -158,6 +167,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
           category = PropertyCategory.APPEARANCE)
   public void FontBold(boolean bold) {
     this.bold = bold;
+    if(selectionIndex==0) return;
     TextView selectedTextView = (TextView) view.getSelectedView();
     TextViewUtil.setFontTypeface(selectedTextView, fontTypeface, bold, italic);
   }
@@ -188,6 +198,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
           category = PropertyCategory.APPEARANCE)
   public void FontItalic(boolean italic) {
     this.italic = italic;
+      if(selectionIndex==0) return;
     TextView selectedTextView = (TextView) view.getSelectedView();
     TextViewUtil.setFontTypeface(selectedTextView, fontTypeface, bold, italic);
   }
@@ -201,8 +212,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
             category = PropertyCategory.APPEARANCE,
             description = "Point size for button text.")
     public float FontSize() {
-        TextView selectedTextView = (TextView) view.getSelectedView();
-        return TextViewUtil.getFontSize(selectedTextView);
+        return fontSize;
     }
 
     /**
@@ -215,6 +225,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     @SimpleProperty(
             category = PropertyCategory.APPEARANCE)
     public void FontSize(float size) {
+        fontSize = size;
+        if(selectionIndex==0) return;
         TextView selectedTextView = (TextView) view.getSelectedView();
         TextViewUtil.setFontSize(selectedTextView, size);
     }
@@ -251,6 +263,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
           userVisible = false)
   public void FontTypeface(int typeface) {
     fontTypeface = typeface;
+      if(selectionIndex==0) return;
     TextView selectedTextView = (TextView) view.getSelectedView();
     TextViewUtil.setFontTypeface(selectedTextView, typeface, bold, italic);
   }
@@ -286,6 +299,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     @SimpleProperty(userVisible = false)
     public void TextAlignment(int alignment) {
         this.textAlignment = alignment;
+        if (selectionIndex == 0) return;
         TextView selectedTextView = (TextView) view.getSelectedView();
         TextViewUtil.setAlignment(selectedTextView, alignment, true);
     }
@@ -314,6 +328,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     @SimpleProperty
     public void TextColor(int argb) {
         textColor = argb;
+        if(selectionIndex==0) return;
         TextView selectedTextView = (TextView) view.getSelectedView();
         TextViewUtil.setTextColor(selectedTextView, argb);
     }
@@ -396,6 +411,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   public void ElementsFromString(String itemstring){
     items = ElementsUtil.elementsFromString(itemstring);
     setAdapterData(itemstring.split(" *, *"));
+    SelectionIndex(1);
   }
 
   private void setAdapterData(String[] theItems) {
@@ -455,16 +471,24 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     //prevent AfterPicking triggering when component has just been instantiated.
     if (!isInitialized) {
-      isInitialized = true;
-      return;
+        isInitialized = true;
+        return;
     }
 
     SelectionIndex(position + 1); // AI lists are 1-based
     AfterSelecting(selection);
+      FontBold(bold);
+      FontSize(fontSize);
+      FontTypeface(fontTypeface);
+      FontItalic(italic);
+      BackgroundColor(backgroundColor);
+      TextColor(textColor);
+      TextAlignment(textAlignment);
   }
 
   public void onNothingSelected(AdapterView<?> parent){
     view.setSelection(0);
   }
+
 
 }
