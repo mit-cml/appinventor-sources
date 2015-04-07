@@ -423,6 +423,11 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
         pref_hardware_config_filename_key);
     String activeFilename = utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE);
         pref_hardware_config_filename_key, Utility.NO_FILE);
+    //HeyLiz remove this!
+    {
+      utility.saveToPreferences("Mac", pref_hardware_config_filename_key);
+    }
+    //HeyLiz
     if (!launched) {
       if (!hasConfigFile ||
           activeFilename.equalsIgnoreCase(Utility.NO_FILE) ||

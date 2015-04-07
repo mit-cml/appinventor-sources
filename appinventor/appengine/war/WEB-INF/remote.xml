@@ -60,6 +60,8 @@
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="false" />
 
+    <!-- Gallery Admin Email -->
+    <property name="gallery.admin.email" value="" />
 
 
     <!-- set to true if users need to accept a Terms of Service the first time
