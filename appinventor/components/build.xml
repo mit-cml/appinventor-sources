@@ -14,7 +14,7 @@
   <target name="all"
           depends="CommonConstants,AndroidRuntime,
                    JsonComponentDescription,XmlComponentDescription,
-                   ComponentList,Barcode">
+                   ComponentList,ComponentTranslation,Barcode">
   </target>
 
   <target name="tests"
@@ -356,6 +356,25 @@
           todir="${public.build.dir}"/>
     <copy file="${ComponentList-class.dir}/simple_components_build_info.json"
           todir="${public.build.dir}"/>
+  </target>
+
+  <!-- =====================================================================
+       ComponentTranslation: create ComponentsTranslation.java
+       ===================================================================== -->
+  <target name="ComponentTranslation"
+          description="Build ComponentsTranslation.java at build time
+                       from annotations"
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="ComponentTranslation-class.dir" location="${class.dir}/ComponentTranslation" />
+    <mkdir dir="${ComponentTranslation-class.dir}" />
+
+    <ai.apt apt-classdir="${ComponentTranslation-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.ComponentTranslationGenerator"
+            apt-target="${ComponentTranslation-class.dir}/ComponentsTranslation.java"/>
+
+    <copy file="${ComponentTranslation-class.dir}/ComponentsTranslation.java"
+          todir="${appinventor.dir}/appengine/build/src/com/google/appinventor/client/" />
+
   </target>
 
   <!-- =====================================================================

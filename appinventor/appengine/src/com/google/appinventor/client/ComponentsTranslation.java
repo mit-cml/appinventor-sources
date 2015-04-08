@@ -1,0 +1,1 @@
+../../../../../build/src/com/google/appinventor/client/ComponentsTranslation.java
