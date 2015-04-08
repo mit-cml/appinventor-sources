@@ -89,6 +89,8 @@ Blockly.Blocks.component_event = {
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
 
+    var isTopLevel = true;
+
     if(!this.isGeneric) {
       this.appendDummyInput('WHENTITLE')
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
@@ -97,9 +99,11 @@ Blockly.Blocks.component_event = {
       //for non-generic blocks, set the value of the component drop down
       this.componentDropDown.setValue(this.instanceName);
     } else {
+      var title = this.isMulti ? Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN : Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET;
       this.appendDummyInput('WHENTITLE')
-        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
+        .appendField(title + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
       if (!this.isMulti) {
+        isTopLevel = false;
         var compInput = this.appendValueInput("COMPONENT")
           .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
           .setAlign(Blockly.ALIGN_RIGHT);
@@ -108,8 +112,8 @@ Blockly.Blocks.component_event = {
 
     this.setParameterOrientation(horizParams);
     this.setTooltip(this.getEventTypeObject().description);
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
+    this.setPreviousStatement(!isTopLevel);
+    this.setNextStatement(!isTopLevel);
 
     // [lyn, 12/23/2013] checkIsInDefinition is bogus check that can never happen!
     // this.errors = [{name:"checkIsInDefinition"}];

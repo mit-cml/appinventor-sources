@@ -293,6 +293,21 @@ Blockly.Workspace.prototype.getAllBlocks = function() {
 };
 
 /**
+ * Find all event blocks in workspace.  No particular order.
+ * @return {!Array.<!Blockly.Block>} Array of blocks.
+ */
+Blockly.Workspace.prototype.getAllEventBlocks = function() {
+  var blocks = this.getAllBlocks();
+  var events = [];
+  for (var x = 0; x < blocks.length; x++) {
+    if (blocks[x].type == "component_event") {
+      events.push(blocks[x]);
+    }
+  }
+  return events;
+};
+
+/**
  * Dispose of all blocks in workspace.
  */
 Blockly.Workspace.prototype.clear = function() {

@@ -261,40 +261,53 @@ Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
 // quadratic, and based on empirical tests could significantly slow down error
 // checking for screens with lots (many dozens) of handlers.
 Blockly.WarningHandler.determineDuplicateComponentEventHandlers = function(){
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
-  var len = topBlocks.length;
+  var eventBlocks = Blockly.mainWorkspace.getAllEventBlocks();
+  var len = eventBlocks.length;
   var eventHandlers = {}; // Object for storing event handler info
+  var multiHandlers = {};
   for (var i = 0; i < len; i++) {
-    var topBlock = topBlocks[i];
-    if (topBlock.type == "component_event") {
-      topBlock.IAmADuplicate = false; // default value for this field; may be changed to true below
-      var typeName = topBlock.typeName;
-      if (topBlock.isGeneric && topBlock.getInputTargetBlock("COMPONENT") == null) {
-        continue;
+    var eventBlock = eventBlocks[i];
+    var typeName = eventBlock.typeName;
+    eventBlock.IAmADuplicate = false;
+    var genericPropertyName = typeName + ":" + eventBlock.eventName;
+    // If the instance is not yet determined, we will continue
+    if (eventBlock.isGeneric && !eventBlock.isMulti && eventBlock.getInputTargetBlock("COMPONENT") == null) {
+      continue;
+    }
+    var propertyName = null;
+    if (!eventBlock.isMulti) {
+      var instanceName = eventBlock.isGeneric ? eventBlock.getInputTargetBlock("COMPONENT").instanceName : eventBlock.instanceName;
+      propertyName = genericPropertyName + ":" + instanceName; 
+    }
+    if (multiHandlers[genericPropertyName] == null) {
+      multiHandlers[genericPropertyName] = []
+    }
+    multiHandlers[genericPropertyName].push(eventBlock);
+    if (propertyName != null) {
+      if (eventHandlers[propertyName] == null) {
+        eventHandlers[propertyName] = []
       }
-      var instanceName = topBlock.isGeneric ? topBlock.getInputTargetBlock("COMPONENT").instanceName : topBlock.instanceName;
-      var propertyName = typeName + ":" + topBlock.eventName + ":" + instanceName;
-      /* [lyn, 01/04/2013] Notion of singleton component is not well-defined. Must think more about this!
-         If adopt singleton component notion, will need the following code:
-            // if (! Blockly.WarningHandler.isSingletonComponentType(typeName)) {
-            //   propertyName = propertyName + ":" + topBlock.instanceName;
-            //   // At this point, propertyName is something like AccelerometerSensor:AccelerationChanged
-            //   // for singleton components.
-            // }
-            //
-            //
-      */
-      // At this point, propertyName is something like Button:Click:Button2 for nonsingleton components
-      var handler = eventHandlers[propertyName];
-      if (! handler) {
-        eventHandlers[propertyName] = {block: topBlock, isDuplicate: false};
-      } else {
-        if (!handler.isDuplicate) {
-          handler.isDuplicate = true;
-          handler.block.IAmADuplicate = true; // initial block is a duplicate, too
-        }
-        topBlock.IAmADuplicate = true; // this block is a duplicate
-      }
+      eventHandlers[propertyName].push(eventBlock);
+    }
+  }
+
+  var markDuplicate = function(block) {
+    block.IAmADuplicate = true;
+  }
+
+  var findMulti = function(block) {
+    return block.isMulti;
+  }
+  // If there are multiple handlers for propertyName, they are duplicates
+  for (var property in eventHandlers) {
+    if (eventHandlers.hasOwnProperty(property) && eventHandlers[property].length > 1) {
+      eventHandlers[property].forEach(markDuplicate);
+    }
+  }
+  for (var property in multiHandlers) {
+    // If there are multiple handlers for this genericPropertyName and at least one of them is a multi-generic block, they are duplicates
+    if (multiHandlers.hasOwnProperty(property) && multiHandlers[property].length > 1 && multiHandlers[property].filter(findMulti).length > 0) {
+      multiHandlers[property].forEach(markDuplicate);
     }
   }
 }

@@ -147,19 +147,12 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       if(block.blockType != "event") {
         continue;
       }
-      var instanceName;
-      // Multi events are not tied to specific instances, so we will find one of the same type, and bind it to that
+      // Multi events are not tied to specific instances, so we continue
       if (block.isMulti) {
-        instanceName = Blockly.ComponentInstances.getInstanceOfType(block.typeName);
-        // So we can use this later, when generating the yail for this block
-        block.instanceName = instanceName;
-        // This shouldn't ever happen as for a generic block to exist, there has to be at least one component of that type
-        if (instanceName == null) {
-          continue;
-        }
-      } else {
-        instanceName = block.isGeneric ? block.getInputTargetBlock("COMPONENT").instanceName : block.instanceName;
+        map.globals.push(block);
+        continue;
       }
+      var instanceName = block.isGeneric ? block.getInputTargetBlock("COMPONENT").instanceName : block.instanceName;
       
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];  // first block we've found for this component
