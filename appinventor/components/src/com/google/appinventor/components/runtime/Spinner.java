@@ -188,11 +188,11 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     //prevent AfterPicking triggering when component has just been instantiated.
     if (!isInitialized) {
       isInitialized = true;
-      return;
+    } else {
+      AfterSelecting(selection);
     }
 
     SelectionIndex(position + 1); // AI lists are 1-based
-    AfterSelecting(selection);
   }
 
   public void onNothingSelected(AdapterView<?> parent){
