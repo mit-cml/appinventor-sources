@@ -69,7 +69,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Returns the current selected item in the spinner ",
       category = PropertyCategory.BEHAVIOR)
   public String Selection(){
-    return (String) view.getSelectedItem();
+    return SelectionIndex() == 0 ? "" : (String) view.getItemAtPosition(SelectionIndex() - 1);
   }
 
   /**
