@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -42,6 +43,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private String selection;
   private int selectionIndex;
   private boolean isInitialized=false;
+
+  private static final String TAG = "Spinner";
 
   public Spinner(ComponentContainer container) {
     super(container);
