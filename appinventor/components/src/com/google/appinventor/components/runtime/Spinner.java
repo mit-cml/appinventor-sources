@@ -41,7 +41,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
   private int selectionIndex;
-  private boolean isInitialized=false;
+  private int adapterOldCount;
 
   private static final String TAG = "Spinner";
 
@@ -137,9 +137,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   private void setAdapterData(String[] theItems) {
-    //avoid firing off the AfterSelecting when component is initialized or data is changed
-    isInitialized = false;
-
+    adapterOldCount = adapter.getCount();
     adapter.clear();
     for (int i = 0; i < theItems.length; i++){
       adapter.add(theItems[i]);
@@ -185,9 +183,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     SelectionIndex(position + 1); // AI lists are 1-based
 
-    //prevent AfterSelecting triggering when component has just been instantiated.
-    if (!isInitialized) {
-      isInitialized = true;
+    if (adapterOldCount > adapter.getCount() || adapterOldCount == 0) {
+      adapterOldCount = adapter.getCount();
     } else {
       AfterSelecting(Selection());
     }
