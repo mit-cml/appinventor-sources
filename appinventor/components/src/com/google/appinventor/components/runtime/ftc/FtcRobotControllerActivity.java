@@ -284,7 +284,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     */
 
     utility.updateHeader(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-        pref_hardware_config_filename_key, textActiveFilename, headerLayout);
+        PREF_HARDWARE_CONFIG_FILENAME_KEY, textActiveFilename, headerLayout);
 
     callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
 
@@ -420,21 +420,16 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     if (controllerService == null) return;
 
     boolean hasConfigFile = preferences.contains(//AI getString(R.string.pref_hardware_config_filename));
-        pref_hardware_config_filename_key);
+        PREF_HARDWARE_CONFIG_FILENAME_KEY);
     String activeFilename = utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE);
-        pref_hardware_config_filename_key, Utility.NO_FILE);
-    //HeyLiz remove this!
-    {
-      utility.saveToPreferences("Mac", pref_hardware_config_filename_key);
-    }
-    //HeyLiz
+        PREF_HARDWARE_CONFIG_FILENAME_KEY, Utility.NO_FILE);
     if (!launched) {
       if (!hasConfigFile ||
           activeFilename.equalsIgnoreCase(Utility.NO_FILE) ||
           activeFilename.toLowerCase().contains(Utility.UNSAVED.toLowerCase())) {
         /*AI
         utility.saveToPreferences(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename);
-            pref_hardware_config_filename_key);
+            PREF_HARDWARE_CONFIG_FILENAME_KEY);
         DbgLog.msg("No default config file, so launching Hardware Wizard");
         launched = true;
         startActivity(new Intent(//AI getBaseContext(), FtcLoadFileActivity.class));
@@ -445,11 +440,11 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     }
 
     utility.updateHeader(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-        pref_hardware_config_filename_key, textActiveFilename, headerLayout);
+        PREF_HARDWARE_CONFIG_FILENAME_KEY, textActiveFilename, headerLayout);
 
     final String filename = Utility.CONFIG_FILES_DIR
         + utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
-        pref_hardware_config_filename_key, Utility.NO_FILE) + Utility.FILE_EXT;
+        PREF_HARDWARE_CONFIG_FILENAME_KEY, Utility.NO_FILE) + Utility.FILE_EXT;
 
     FileInputStream fis;
     try {
@@ -564,9 +559,9 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   }
 
   // For App Inventor:
+  public static final String PREF_HARDWARE_CONFIG_FILENAME_KEY = "pref_hardware_config_filename";
   private final FtcRobotController ftcRobotController;
   private final Activity thisActivity;
-  private final String pref_hardware_config_filename_key = "pref_hardware_config_filename";
   private final LinearLayout headerLayout;
   private final TextView textActiveFilename;
 

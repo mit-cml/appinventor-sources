@@ -126,24 +126,21 @@ public class FtcRobotControllerService /*AI extends Service*/ implements WifiDir
           robot = null;
         }
 
-        if (!alreadySleptForUsbScan) {
-          updateRobotStatus("Robot Status: scanning for USB devices");
+        updateRobotStatus("Robot Status: scanning for USB devices");
 
-          /*
-           * Give android a chance to finish scanning for USB devices before
-           * we create our robot object.
-           *
-           * It take Android up to ~300ms per USB device plugged into a hub.
-           * Higher quality hubs take less time.
-           */
-          try {
-            Thread.sleep(1000L * ftcRobotController.getUsbScanTimeInSeconds());
-          } catch (InterruptedException e) {
-            // we received an interrupt, abort
-            updateRobotStatus("Robot Status: abort due to interrupt");
-            return;
-          }
-          alreadySleptForUsbScan = true;
+        /*
+         * Give android a chance to finish scanning for USB devices before
+         * we create our robot object.
+         *
+         * It take Android up to ~300ms per USB device plugged into a hub.
+         * Higher quality hubs take less time.
+         */
+        try {
+          Thread.sleep(1000L * ftcRobotController.getUsbScanTimeInSeconds());
+        } catch (InterruptedException e) {
+          // we received an interrupt, abort
+          updateRobotStatus("Robot Status: abort due to interrupt");
+          return;
         }
 
         robot = RobotFactory.createRobot();
@@ -311,7 +308,6 @@ public class FtcRobotControllerService /*AI extends Service*/ implements WifiDir
 
   private final FtcRobotController ftcRobotController;
   private final Context thisContext;
-  private volatile boolean alreadySleptForUsbScan;
 
   public FtcRobotControllerService(FtcRobotController ftcRobotController, Context context) {
     this.ftcRobotController = ftcRobotController;

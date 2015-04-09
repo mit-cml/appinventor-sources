@@ -250,6 +250,7 @@ public class TranslationComponentProperty {
     map.put("Back", MESSAGES.BackProperties());
     map.put("CalibrationFailed", MESSAGES.CalibrationFailedProperties());
     map.put("ChannelMode", MESSAGES.ChannelModeProperties());
+    map.put("Configuration", MESSAGES.ConfigurationProperties());
     map.put("CurrentPosition", MESSAGES.CurrentPositionProperties());
     map.put("DeviceName", MESSAGES.DeviceNameProperties());
     map.put("DifferentialControlLoopCoefficientD",

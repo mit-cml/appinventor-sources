@@ -3149,6 +3149,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ChannelModeProperties();
 
+  @DefaultMessage("Configuration")
+  @Description("")
+  String ConfigurationProperties();
+
   @DefaultMessage("CurrentPosition")
   @Description("")
   String CurrentPositionProperties();

@@ -23,6 +23,7 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.ftc.FtcRobotControllerActivity;
 import com.google.appinventor.components.runtime.ftc.FtcRobotControllerService;
+import com.google.appinventor.components.runtime.ftc.Utility;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -39,6 +40,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -86,7 +88,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   private static final int NUM_GAMEPADS = 2;
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
-  private static final String DEFAULT_CONFIGURATION = "robot_config";
+  private static final String DEFAULT_CONFIGURATION = "";
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
   private static final Object hardwareDevicesLock = new Object();
@@ -108,6 +110,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   private final int requestCode;
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
+  private volatile String configuration = DEFAULT_CONFIGURATION;
 
   private volatile String robotError = "";
   private volatile String wifiDirectStatus = "";
@@ -348,6 +351,37 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   }
 
   // Properties
+
+  /**
+   * Configuration property getter.
+   * Not visible in blocks.
+   */
+  @SimpleProperty(description = "The name of the robot configuration.",
+      category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String Configuration() {
+    return configuration;
+  }
+
+  /**
+   * Configuration property setter.
+   * Can only be set in designer; not visible in blocks.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = DEFAULT_CONFIGURATION)
+  @SimpleProperty(userVisible = false)
+  public void Configuration(String configuration) {
+    if (!this.configuration.equals(configuration)) {
+      this.configuration = configuration;
+      if (!TextUtils.isEmpty(configuration)) {
+        Utility utility = new Utility(form);
+        utility.saveToPreferences(configuration,
+            FtcRobotControllerActivity.PREF_HARDWARE_CONFIG_FILENAME_KEY);
+      }
+      if (ftcRobotControllerActivity != null) {
+        ftcRobotControllerActivity.restartRobot();
+      }
+    }
+  }
 
   /**
    * UsbScanTimeInSeconds property getter.
