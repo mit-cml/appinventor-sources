@@ -76,9 +76,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Set the selected item in the spinner",
       category = PropertyCategory.BEHAVIOR)
   public void Selection(String value){
-    view.setSelection(adapter.getPosition(value));
-    // Now, we need to change SelectionIndex to correspond to Selection.
-    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
+    SelectionIndex(ElementsUtil.setSelectedIndexFromValue(value, items));
   }
 
   /**
