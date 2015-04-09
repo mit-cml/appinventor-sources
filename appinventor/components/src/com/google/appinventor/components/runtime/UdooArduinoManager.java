@@ -46,9 +46,9 @@ public class UdooArduinoManager
     
     public void digitalWrite(int pin, String value)
     {
-        int lowhigh = 1; //high
+        int lowhigh = HIGH;
         if (value.toUpperCase().charAt(0) == 'l') {
-            lowhigh = 0;
+            lowhigh = LOW;
         }
 
         JSONObject json = new JSONObject();
@@ -65,9 +65,9 @@ public class UdooArduinoManager
     
     public void pinMode(int pin, String value)
     {
-        int inout = 1; //out
+        int inout = OUTPUT;
         if (value.toUpperCase().charAt(0) == 'i') {
-            inout = 0;
+            inout = INPUT;
         }
             
         JSONObject json = new JSONObject();
