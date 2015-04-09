@@ -40,7 +40,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
-  private String selection;
   private int selectionIndex;
   private boolean isInitialized=false;
 
@@ -70,7 +69,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Returns the current selected item in the spinner ",
       category = PropertyCategory.BEHAVIOR)
   public String Selection(){
-    return selection;
+    return (String) view.getSelectedItem();
   }
 
   /**
@@ -80,7 +79,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Set the selected item in the spinner",
       category = PropertyCategory.BEHAVIOR)
   public void Selection(String value){
-    selection = value;
     view.setSelection(adapter.getPosition(value));
     // Now, we need to change SelectionIndex to correspond to Selection.
     selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
@@ -106,8 +104,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   public void SelectionIndex(int index){
     selectionIndex = ElementsUtil.selectionIndex(index, items);
     view.setSelection(selectionIndex - 1); // AI lists are 1-based
-    // Now, we need to change Selection to correspond to SelectionIndex.
-    selection = ElementsUtil.setSelectionFromIndex(index, items);
   }
 
   /**
@@ -191,7 +187,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     if (!isInitialized) {
       isInitialized = true;
     } else {
-      AfterSelecting(selection);
+      AfterSelecting(Selection());
     }
 
     SelectionIndex(position + 1); // AI lists are 1-based
