@@ -910,4 +910,5 @@ public class YaVersion {
   public static final int SPLASH_SURVEY = 1;
 
   public static final int UDOO_GPIO_COMPONENT_VERSION = 1;
+  public static final int UDOO_ARDUINO_COMPONENT_VERSION = 1;
 }
