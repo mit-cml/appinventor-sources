@@ -126,10 +126,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
     items = ElementsUtil.elements(itemList, "Spinner");
-
-    //avoid firing off the OnItemSelect when component is initialized or data is changed
-    isInitialized = false;
-
     setAdapterData(itemList.toStringArray());
   }
 
@@ -145,6 +141,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   private void setAdapterData(String[] theItems) {
+    //avoid firing off the AfterSelecting when component is initialized or data is changed
+    isInitialized = false;
+
     adapter.clear();
     for (int i = 0; i < theItems.length; i++){
       adapter.add(theItems[i]);
