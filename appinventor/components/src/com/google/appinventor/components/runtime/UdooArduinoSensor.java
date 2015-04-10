@@ -14,17 +14,17 @@ import com.google.appinventor.components.common.YaVersion;
 
 
 /**
- * A component that interfaces with GPIOs in UDOO boards.
+ * A component that interfaces with sensors connected to UDOO boards.
  *
  * @author francesco.monte@gmail.com
  */
-@DesignerComponent(version = YaVersion.UDOO_ARDUINO_COMPONENT_VERSION,
-    description = "A component that interfaces with the Arduino CPU in UDOO boards.",
+@DesignerComponent(version = YaVersion.UDOO_ARDUINO_SENSOR_COMPONENT_VERSION,
+    description = "A component that interfaces with sensors connected to UDOO boards.",
     category = ComponentCategory.UDOO,
     nonVisible = true,
     iconName = "images/udoo.png")
 @SimpleObject
-public class UdooArduino extends AndroidNonvisibleComponent
+public class UdooArduinoSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
     private String TAG = "UDOOUsbActivity";
@@ -41,7 +41,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         return isc;
     }
 
-    public UdooArduino(Form form)
+    public UdooArduinoSensor(Form form)
     {
         super(form);
         
@@ -75,66 +75,20 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
 
     @SimpleFunction
-    public void pinMode(int pin, String mode)
+    public int GetTemperature(int pin) throws Exception
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.pinMode(pin, mode);
-        }
-    }
-    
-    @SimpleFunction
-    public void digitalWrite(int pin, String value)
-    {
-        if (this.isConnected()) {
-            usbReceiver.arduino.digitalWrite(pin, value);
-        }
-    }
-    
-    @SimpleFunction
-    public int digitalRead(int pin) throws Exception
-    {
-        if (this.isConnected()) {
-            return usbReceiver.arduino.digitalRead(pin);
+            return usbReceiver.arduino.sensor(pin, "dht11", "temperature");
         }
         
         throw new Exception("Not connected");
     }
     
     @SimpleFunction
-    public void analogWrite(int pin, int value)
+    public float GetHumidity(int pin) throws Exception
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.analogWrite(pin, value);
-        }
-    }
-    
-    @SimpleFunction
-    public int analogRead(int pin) throws Exception
-    {
-        Log.d(TAG, "chiamata analog read");
-        if (this.isConnected()) {
-            Log.d(TAG, "chiamo metodo");
-            return usbReceiver.arduino.analogRead(pin);
-        }
-        
-        Log.d(TAG, "non connesso..");
-        
-        throw new Exception("Not connected");
-    }
-    
-    @SimpleFunction
-    public void delay(int ms) throws Exception
-    {
-        if (this.isConnected()) {
-            usbReceiver.arduino.delay(ms);
-        }
-    }
-    
-    @SimpleFunction
-    public int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
-    {
-        if (this.isConnected()) {
-            return usbReceiver.arduino.map(value, fromLow, fromHigh, toLow, toHigh);
+            return usbReceiver.arduino.sensor(pin, "dht11", "humidity");
         }
         
         throw new Exception("Not connected");

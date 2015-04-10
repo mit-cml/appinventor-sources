@@ -33,7 +33,7 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     private FileOutputStream outputStream_;
     public UdooArduinoManager arduino;
     private boolean connected = false;
-    private UdooArduino component;
+    private UdooConnectedInterface component;
     private boolean waitForResponse = false;
 
     public void onCreate(ContextWrapper wrapper)
@@ -206,7 +206,7 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
         return this.connected;
     }
 
-    public void setComponent(UdooArduino component)
+    public void setComponent(UdooConnectedInterface component)
     {
         this.component = component;
     }

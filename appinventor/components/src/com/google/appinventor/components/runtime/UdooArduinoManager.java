@@ -13,8 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UdooArduinoManager
 {    
@@ -186,6 +184,33 @@ public class UdooArduinoManager
             
             if (success) {
                 return (Integer) response.get("value");
+            }
+            
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        throw new Exception("Invalid response from ADK");
+    }
+    
+    public int sensor(int pin, String sensorName, String returnKey) throws Exception
+    {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sensor", sensorName);
+            json.put("pin", pin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        JSONObject response = sendJson(json);
+        
+        try {
+            boolean success = ((Boolean) response.get("success")).booleanValue();
+            int value = (Integer) response.get(returnKey);
+            
+            if (success) {
+                return value;
             }
             
         } catch (JSONException e) {
