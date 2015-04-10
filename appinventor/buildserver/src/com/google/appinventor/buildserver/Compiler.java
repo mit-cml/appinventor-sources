@@ -171,6 +171,7 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForCompanion;
+  private static boolean isUdoo = true;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
@@ -359,7 +360,11 @@ public final class Compiler {
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
-      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+      int minSdkVersion = 3;
+      if (isUdoo) {
+        minSdkVersion = 12;
+      }
+      out.write("  <uses-sdk android:minSdkVersion=\""+ minSdkVersion +"\" />\n");
 
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
@@ -370,6 +375,10 @@ public final class Compiler {
       // this problem, but images and buttons are still an unsolved problem. We'll have to solve
       // that before we can set the targetSdkVersion to 4 here.
       // out.write("  <uses-sdk android:targetSdkVersion=\"4\" />\n");
+
+      if (isUdoo) {
+        out.write("<uses-feature android:name=\"android.hardware.usb.accessory\" />");
+      }
 
       out.write("  <application ");
 
@@ -424,6 +433,14 @@ public final class Compiler {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
+
+        if (isUdoo) {
+          out.write("<intent-filter>");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_DEVICE_DETACHED\" />");
+          out.write("</intent-filter>");
+          out.write("<meta-data android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" android:resource=\"@xml/accessory_filter\"/>");
+        }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
@@ -537,6 +554,21 @@ public final class Compiler {
       return false;
     }
     setProgress(10);
+
+
+    if (isUdoo) {
+      File xmlDir = createDirectory(resDir, "xml");
+      File file = new File(xmlDir, "accessory_filter.xml");
+      String usbRes = "<?xml version=\"1.0\" encoding=\"utf-8\"?><resources><usb-accessory manufacturer=\"UDOO\" model=\"AppInventor\" version=\"1.0\" /></resources>";
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(usbRes);
+        writer.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+      }
+    }
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");
