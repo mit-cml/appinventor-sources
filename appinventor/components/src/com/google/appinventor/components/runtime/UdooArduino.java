@@ -6,6 +6,7 @@ package com.google.appinventor.components.runtime;
 
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -29,7 +30,7 @@ implements OnResumeListener, OnDestroyListener
     private String TAG = "UDOOUsbActivity";
     private UdooBroadcastReceiver usbReceiver = new UdooBroadcastReceiver();
 
-    public boolean isConnected()
+    public synchronized boolean isConnected()
     {
         boolean isc = usbReceiver.isConnected();
         if (!isc) {
@@ -49,6 +50,7 @@ implements OnResumeListener, OnDestroyListener
         form.registerForOnResume(this);
         form.registerForOnDestroy(this);
         
+        usbReceiver.setComponent(this);
         usbReceiver.onCreate(form);
     }
     
@@ -57,9 +59,7 @@ implements OnResumeListener, OnDestroyListener
     {
         Log.d("UDOOLIFECYCLE", "onResume");
         
-        if (!this.isConnected()) {
-            usbReceiver.connect();
-        }
+        this.isConnected(); //connects, if disconnected
     }
 
     @Override
@@ -101,11 +101,23 @@ implements OnResumeListener, OnDestroyListener
     }
     
     @SimpleFunction
-    public int analogRead(int pin) throws Exception
+    public void analogWrite(int pin, int value)
     {
         if (this.isConnected()) {
+            usbReceiver.arduino.analogWrite(pin, value);
+        }
+    }
+    
+    @SimpleFunction
+    public int analogRead(int pin) throws Exception
+    {
+        Log.d(TAG, "chiamata analog read");
+        if (this.isConnected()) {
+            Log.d(TAG, "chiamo metodo");
             return usbReceiver.arduino.analogRead(pin);
         }
+        
+        Log.d(TAG, "non connesso..");
         
         throw new Exception("Not connected");
     }
@@ -118,4 +130,20 @@ implements OnResumeListener, OnDestroyListener
         }
     }
     
+    @SimpleFunction
+    public int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
+    {
+        if (this.isConnected()) {
+            return usbReceiver.arduino.map(value, fromLow, fromHigh, toLow, toHigh);
+        }
+        
+        throw new Exception("Not connected");
+    }
+    
+    @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
+    public void Connected()
+    {
+        Log.d(TAG, "Connected EVENT");
+        EventDispatcher.dispatchEvent(this, "Connected");
+    }
 }

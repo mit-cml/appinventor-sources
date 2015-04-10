@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UdooArduinoManager
 {    
@@ -47,7 +49,7 @@ public class UdooArduinoManager
     public void digitalWrite(int pin, String value)
     {
         int lowhigh = HIGH;
-        if (value.toUpperCase().charAt(0) == 'l') {
+        if (value.toUpperCase().charAt(0) == 'L') {
             lowhigh = LOW;
         }
 
@@ -63,10 +65,24 @@ public class UdooArduinoManager
         sendJson(json);
     }
     
+    public void analogWrite(int pin, int value)
+    {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("method", "analogWrite");
+            json.put("pin", pin);
+            json.put("value", value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        sendJson(json);
+    }
+    
     public void pinMode(int pin, String value)
     {
         int inout = OUTPUT;
-        if (value.toUpperCase().charAt(0) == 'i') {
+        if (value.toUpperCase().charAt(0) == 'I') {
             inout = INPUT;
         }
             
@@ -149,6 +165,37 @@ public class UdooArduinoManager
         throw new Exception("Invalid response from ADK");
     }
     
+    int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
+    {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("method", "map");
+            json.put("value", value);
+            json.put("fromLow", fromLow);
+            json.put("fromHigh", fromHigh);
+            json.put("toLow", toLow);
+            json.put("toHigh", toHigh);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        JSONObject response = sendJson(json);
+        
+        try {
+            boolean success = ((Boolean) response.get("success")).booleanValue();
+            
+            if (success) {
+                return (Integer) response.get("value");
+            }
+            
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        throw new Exception("Invalid response from ADK");
+    }
+    
+    
     private JSONObject sendJson(JSONObject json)
     {
         try {
@@ -156,13 +203,18 @@ public class UdooArduinoManager
             this.outputStream.flush();
             
             String readResponse = this.read().trim();
-            Log.d("RESPONSEEE", readResponse);
+            Log.d("REQUEST", json.toString());
+            Log.d("RESPONSE", readResponse);
             JSONObject response = new JSONObject(readResponse);
             
             return response;
         } catch (IOException e) {
             
             this.udooBroadcastReceiver.disconnect();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+            }
             this.udooBroadcastReceiver.connect();
             
             e.printStackTrace();

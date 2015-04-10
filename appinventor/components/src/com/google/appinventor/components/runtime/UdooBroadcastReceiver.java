@@ -33,6 +33,8 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     private FileOutputStream outputStream_;
     public UdooArduinoManager arduino;
     private boolean connected = false;
+    private UdooArduino component;
+    private boolean waitForResponse = false;
 
     public void onCreate(ContextWrapper wrapper)
     {
@@ -82,15 +84,18 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     
     public synchronized void connect()
     {
-        this.connected = false;
-        tryOpen();
-        if (this.connected) {
-            arduino.hi();
+        Log.d(TAG, "-- connect");
+        
+        if (!this.waitForResponse) {
+            this.connected = false;
+            tryOpen();
         }
     }
 
     public boolean tryOpen()
     {
+        Log.d(TAG, "-- tryOpen");
+        
         UsbAccessory[] accessories = usbManager_.getAccessoryList();
         UsbAccessory accessory = null;
         for (UsbAccessory iaccessory : accessories) {
@@ -127,21 +132,33 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
                 FileDescriptor fd = fileDescriptor_.getFileDescriptor();
                 inputStream_ = new FileInputStream(fd);
                 outputStream_ = new FileOutputStream(fd);
-                outputStream_.flush();
-//
-//                // We're going to block now. We're counting on the IOIO to
-//                // write back a byte, or otherwise we're locked until
-//                // physical disconnection. This is a known OpenAccessory
-//                // bug:
-//                // http://code.google.com/p/android/issues/detail?id=20545
-//                while (inputStream_.read() != 1) {
-//                    trySleep(1000);
-//                }
                 
-                Log.d(TAG, "CONNECTED!!!");
+                
+                this.waitForResponse = true;
+                
+                outputStream_.write('H');
+                outputStream_.flush();
+                
+                Log.d(TAG, "Connecting...");
+
+                // We're going to block now. We're counting on the IOIO to
+                // write back a byte, or otherwise we're locked until
+                // physical disconnection. This is a known OpenAccessory
+                // bug:
+                // http://code.google.com/p/android/issues/detail?id=20545
+                while (inputStream_.read() < 0) {
+                    trySleep(500);
+                }
+                
+                this.waitForResponse = false;
+                
+                Log.d(TAG, "CONNECTED!");
+                
                 this.arduino = new UdooArduinoManager(outputStream_, inputStream_, this);
                 this.connected = true;
 
+                this.component.Connected();
+                
                 success = true;
                 return true;
             } catch (IOException e) {
@@ -165,6 +182,15 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
             }
         }
     }
+    
+    private void trySleep(long time) {
+        synchronized (UdooBroadcastReceiver.this) {
+            try {
+                UdooBroadcastReceiver.this.wait(time);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 
     private void registerReceiver() {
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -178,5 +204,10 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     public boolean isConnected()
     {
         return this.connected;
+    }
+
+    public void setComponent(UdooArduino component)
+    {
+        this.component = component;
     }
 }
