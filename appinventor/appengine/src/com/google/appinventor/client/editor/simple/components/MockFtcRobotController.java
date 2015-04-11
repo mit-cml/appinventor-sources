@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015 MIT, All rights reserved
+// Copyright 2011-2015 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -23,9 +22,6 @@ public final class MockFtcRobotController extends MockVisibleComponent {
    */
   public static final String TYPE = "FtcRobotController";
 
-  // GWT panel widget used to mock a Simple FtcRobotController
-  private final SimplePanel panelWidget;
-
   /**
    * Creates a new MockFtcRobotController component.
    *
@@ -35,12 +31,11 @@ public final class MockFtcRobotController extends MockVisibleComponent {
     super(editor, TYPE, images.ftc());
 
     // Initialize mock FtcRobotController UI
-    panelWidget = new SimplePanel();
+    VerticalPanel panelWidget = new VerticalPanel();
     panelWidget.setStylePrimaryName("ode-SimpleMockComponent");
 
     VerticalPanel verticalPanel = new VerticalPanel();
-    verticalPanel.setWidth("100%");
-    verticalPanel.setHeight("100%");
+    verticalPanel.setSize("100%", "100%");
     DOM.setStyleAttribute(verticalPanel.getElement(), "border", "1px solid #000000");
     verticalPanel.add(makeLabel("Device Name: ..........", "#C1E2E4"));
     verticalPanel.add(makeLabel("Active Configuration File: ..........", "#309EA4"));
@@ -60,6 +55,7 @@ public final class MockFtcRobotController extends MockVisibleComponent {
   private Label makeLabel(String text, String color) {
     Label label = new Label(text);
     DOM.setStyleAttribute(label.getElement(), "backgroundColor", color);
+    label.setWidth("100%");
     return label;
   }
 }
