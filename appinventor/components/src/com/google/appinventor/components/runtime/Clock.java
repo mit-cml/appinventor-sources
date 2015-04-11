@@ -202,7 +202,7 @@ public final class Clock extends AndroidNonvisibleComponent
       return Dates.DateValue(from);
     } catch (IllegalArgumentException e) {
       throw new YailRuntimeError(
-          "Argument to MakeInstant should have form MM/DD/YYYY, hh:mm:ss, or MM/DD/YYYY or hh:mm",
+          "Argument to MakeInstant should have form MM/DD/YYYY hh:mm:ss, or MM/DD/YYYY or hh:mm",
           "Sorry to be so picky.");
     }
   }
