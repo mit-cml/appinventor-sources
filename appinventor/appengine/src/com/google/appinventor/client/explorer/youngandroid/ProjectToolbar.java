@@ -16,6 +16,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -78,11 +79,13 @@ public class ProjectToolbar extends Toolbar {
 
     private boolean deleteConfirmation(List<Project> projects) {
       String message;
+      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
-        if (projects.get(0).isPublished())
+        if (projects.get(0).isPublished()) {
           message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
-        else
+        } else {
           message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+        }
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
@@ -91,7 +94,11 @@ public class ProjectToolbar extends Toolbar {
           separator = ", ";
         }
         String projectNames = sb.toString();
-        message = MESSAGES.confirmDeleteManyProjects(projectNames);
+        if(!gallerySettings.galleryEnabled()){
+          message = MESSAGES.confirmDeleteManyProjects(projectNames);
+        } else {
+          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+        }
       }
       return Window.confirm(message);
     }
@@ -112,8 +119,6 @@ public class ProjectToolbar extends Toolbar {
       }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
-        GalleryClient gallery = GalleryClient.getInstance();
-        gallery.appWasChanged();
       }
       // Make sure that we delete projects even if they are not open.
       doDeleteProject(projectId);
@@ -143,6 +148,8 @@ public class ProjectToolbar extends Toolbar {
             @Override
             public void onSuccess(Void result) {
               // need to update gallery list
+              GalleryClient gallery = GalleryClient.getInstance();
+              gallery.appWasChanged();
             }
           });
     }

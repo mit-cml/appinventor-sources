@@ -32,6 +32,7 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.project.Email;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
@@ -39,7 +40,6 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
-import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
@@ -64,7 +64,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     String bucket = Flag.createFlag("gallery.bucket", "").get();
     boolean galleryEnabled = Flag.createFlag("use.gallery",false).get();
     String envirnment = SystemProperty.environment.value().toString();
-    GallerySettings settings = new GallerySettings(galleryEnabled, bucket, envirnment);
+    String adminEmail = Flag.createFlag("gallery.admin.email", "").get();
+    GallerySettings settings = new GallerySettings(galleryEnabled, bucket, envirnment, adminEmail);
     return settings;
   }
 
@@ -248,7 +249,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // remove its image/aia from cloud
     deleteAIA(galleryId);
     deleteImage(galleryId);
-    // change its associated AI project so that its galleryId is reset to -1
 
   }
   /**
@@ -257,6 +257,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public void appWasDownloaded(long galleryId) {
+    GallerySettings settings = loadGallerySettings();
     galleryStorageIo.incrementDownloads(galleryId);
   }
   /**
@@ -583,75 +584,50 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
 
   /**
-   * Send a system message to user
-   * @param senderId id of user sending this message
-   * @param receiverId id of user receiving this message
-   * @param message body of message
+   * Send an email to user
+   * @param senderId id of user sending this email
+   * @param receiverId id of user receiving this email
+   * @param receiverEmail receiver of email
+   * @param title title of email
+   * @param body body of email
    */
   @Override
-  public long sendMessageFromSystem(String senderId, String receiverId, String message) {
-    LOG.info("### SEND MSG FROM SYSTEM");
-//    final String userId = userInfoProvider.getUserId(); // gets current userId
-    return galleryStorageIo.sendMessage(senderId, receiverId, message);
+  public long sendEmail(String senderId, String receiverId, String receiverEmail, String title, String body) {
+    GallerySettings settings = loadGallerySettings();
+    return galleryStorageIo.sendEmail(senderId, receiverId, settings.getAdminEmail(), receiverEmail, title, body);
   }
 
   /**
-   * Get messages of current user
-   * @return List<Message>   list of message
+   * Get email based on emailId
+   * @param emailId id of the email
+   * @return Email email
    */
   @Override
-  public List<Message> getMessages() {
-    final String userId = userInfoProvider.getUserId();
-    return galleryStorageIo.getMessages(userId);
+  public Email getEmail(long emailId) {
+    return galleryStorageIo.getEmail(emailId);
   }
 
   /**
-   * Get message based on msgId
-   * @param msgid    id of the message
-   * @return Message  message
+   * check if ready to send app stats to user
+   * @param userId
+   * @param galleryId
+   * @param adminEmail
+   * @param currentHost
    */
-  @Override
-  public Message getMessage(long msgId) {
-    return galleryStorageIo.getMessage(msgId);
-  }
-
-  /**
-   * Tell the system to mark a specific message as deleted
-   * @param msgId   the id serves as the key to identify message
-   */
-  @Override
-  public void deleteMessage(long msgId) {
-    galleryStorageIo.deleteMessage(msgId);
-  }
-
-  /**
-   * Tell the system to mark a specific message as read
-   * @param msgId   the id serves as the key to identify message
-   */
-  @Override
-  public void readMessage(long msgId) {
-    galleryStorageIo.readMessage(msgId);
-  }
-
-  /**
-   * Tell the system to mark a specific app's stats as read
-   * @param appId   the id serves as the key to identify the app
-   */
-  @Override
-  public void appStatsWasRead(long appId) {
-    galleryStorageIo.appStatsWasRead(appId);
+  public boolean checkIfSendAppStats(String userId, long galleryId, String adminEmail, String currentHost){
+    return galleryStorageIo.checkIfSendAppStats(userId, galleryId, adminEmail, currentHost);
   }
 
   /**
    * Store moderation actions based on actionType
    * @param reportId
    * @param galleryId
-   * @param messageId
+   * @param emailId
    * @param moderatorId
    * @param actionType
    */
-  public void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview){
-    galleryStorageIo.storeModerationAction(reportId, galleryId, messageId, moderatorId, actionType, moderatorName, messagePreview);
+  public void storeModerationAction(long reportId, long galleryId, long emailId, String moderatorId, int actionType, String moderatorName, String emailPreview){
+    galleryStorageIo.storeModerationAction(reportId, galleryId, emailId, moderatorId, actionType, moderatorName, emailPreview);
   }
 
   /**

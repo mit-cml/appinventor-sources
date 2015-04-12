@@ -157,7 +157,7 @@ public class YailEvalTest extends TestCase {
 
   public void testTypedCoercions() throws Throwable {
     String schemeString = "(coerce-arg (Float 5) 'text)";
-    assertEquals("5.0", scheme.eval(schemeString).toString());
+    assertEquals("5", scheme.eval(schemeString).toString());
     schemeString = "(coerce-arg (Double 3.33333) 'number)";
     assertEquals("3.33333", scheme.eval(schemeString).toString());
     schemeString = "(coerce-arg (Integer 10453) 'text)";
@@ -1163,9 +1163,14 @@ public class YailEvalTest extends TestCase {
      testBinaryDoubleFunction("atan2-degrees", args1, args2, vals);
    }
 
+   public void testIntegerDivison() throws Throwable {
+     // Check that integer division does not produce rationals
+     assertFalse((Boolean) scheme.eval("(exact? (yail-divide 2 3))"));
+   }
+
    public void testConvertToStrings() throws Throwable {
-     String schemeInputString = "(convert-to-strings (make-yail-list \"abc\" 123 (list 4 5 6)))";
-     String schemeExpectedResultString = "(abc 123 (4 5 6))";
+     String schemeInputString = "(convert-to-strings (make-yail-list (/ 10 5) 2.0 \"abc\" 123 (list 4 5 6)))";
+     String schemeExpectedResultString = "(2 2 abc 123 (4 5 6))";
      String schemeActualResult = scheme.eval(schemeInputString).toString();
      assertEquals(schemeExpectedResultString, schemeActualResult);
    }
@@ -1220,8 +1225,8 @@ public class YailEvalTest extends TestCase {
     // This tests the bug where passing a double property value to expt caused
     // java.lang.ClassCastException: java.lang.Double cannot be cast to gnu.math.Numeric
     String schemeString = "(define five :: java.lang.Double (java.lang.Double 5)) " +
-        "(expt (sanitize-component-data five) 2)";
-    assertEquals("25.0", scheme.eval(schemeString).toString());
+        "(coerce-to-string (expt (sanitize-component-data five) 2))";
+    assertEquals("25", scheme.eval(schemeString).toString());
   }
 
   public void testCoerceToStringWithSanitizedFloatZero() throws Throwable {
@@ -1229,7 +1234,7 @@ public class YailEvalTest extends TestCase {
     // incorrect result "OEO".
     String schemeString = "(define zero :: java.lang.Float (java.lang.Float 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
-    assertEquals("0.0", scheme.eval(schemeString).toString());
+    assertEquals("0", scheme.eval(schemeString).toString());
   }
 
   public void testCoerceToStringWithSanitizedDoubleZero() throws Throwable {
@@ -1237,6 +1242,6 @@ public class YailEvalTest extends TestCase {
     // incorrect result "OEO".
     String schemeString = "(define zero :: java.lang.Double (java.lang.Double 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
-    assertEquals("0.0", scheme.eval(schemeString).toString());
+    assertEquals("0", scheme.eval(schemeString).toString());
   }
 }

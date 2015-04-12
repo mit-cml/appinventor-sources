@@ -1289,9 +1289,16 @@
 ;;; exact complex numbers seems incomplete, e.g. (exact->inexact +1i) gives an error
 (define (appinventor-number->string n)
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
-        ((integer? n) (call-with-output-string (lambda (port) (display n port))))
+        ;; In Scheme (integer? 2.0) is true, but (display 2.0) is 2.0
+        ;; so we make sure to display the exact integer
+        ;; note that if we divide 4 by 2, we get an inexact 2 internally, but this
+        ;; will display as 2 rather than 2.0
+        ;; Note that we could have used *format* inexact here, too, since YailNumberToString
+        ;; checks for integers EXCEPT FOR the fact that the integer n might be a bignum, in which case
+        ;; the conversion to a java double will produce a wrong answer
+        ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
         ;; if it's a rational then format it as a decimal
-        ;; Note that rationals are still exact rationals -- they just print
+        ;; Note that Kawa rationals are still exact rationals -- they just print
         ;; as decimals.  That is, 7*(1/7) equals 1 exactly
         ((exact? n) (appinventor-number->string (exact->inexact n)))
         (else (*format-inexact* n))))
@@ -1461,7 +1468,14 @@
 (define (yail-divide n d)
   (if (= d 0)
       (/ n 0.0)
-      (/ n d)))
+      ;; force inexactness so that integer division does not produce
+      ;; rationals, which is simpler for App Inventor users.
+      ;; In most cases, rationals are converted to decimals anyway at higher levels
+      ;; of the system, so that the forcing to inexact would be unnecessary.  But
+      ;; there are places where the conversion doesn't happen.  For example, if we
+      ;; inserted the result of dividing 2 by 3 into a ListView or a picker,
+      ;; which would appear as the string "2/3" if the division produced a rational.
+      (exact->inexact (/ n d))))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
