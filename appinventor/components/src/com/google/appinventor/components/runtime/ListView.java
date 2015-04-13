@@ -89,7 +89,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     items = YailList.makeEmptyList();
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
-    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_MULTIPLE);
+    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
     view.setSelector(new ColorDrawable(DEFAULT_HIGHLIGHT_COLOR));
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
