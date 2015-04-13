@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -73,6 +74,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
+  private static final int DEFAULT_HIGHLIGHT_COLOR = Component.COLOR_LTGRAY;
+
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
 
@@ -86,6 +89,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     items = YailList.makeEmptyList();
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_MULTIPLE);
+    view.setSelector(new ColorDrawable(DEFAULT_HIGHLIGHT_COLOR));
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -328,7 +333,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    view.requestFocusFromTouch();
     this.selection = parent.getAdapter().getItem(position).toString();
     this.selectionIndex = position + 1; // AI lists are 1-based
     AfterPicking();
