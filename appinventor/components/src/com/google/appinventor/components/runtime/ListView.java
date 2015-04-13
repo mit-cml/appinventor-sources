@@ -74,6 +74,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
+  private int highlightColor;
   private static final int DEFAULT_HIGHLIGHT_COLOR = Component.COLOR_LTGRAY;
 
   private int textSize;
@@ -90,7 +91,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
-    view.setSelector(new ColorDrawable(DEFAULT_HIGHLIGHT_COLOR));
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -133,6 +133,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    HighlightColor(DEFAULT_HIGHLIGHT_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
@@ -390,6 +391,35 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void BackgroundColor(int argb) {
       backgroundColor = argb;
       setBackgroundColor(backgroundColor);
+  }
+
+  /**
+   * Returns the listview's highlight color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @return highlight color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(description = "The color of the item when it is selected.")
+  public int HighlightColor() {
+    return highlightColor;
+  }
+
+  /**
+   * Specifies the ListView's highlight color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   *
+   * @param argb highlight color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void HighlightColor(int argb) {
+    highlightColor = argb;
+    view.setSelector(new ColorDrawable(argb));
   }
 
   /**
