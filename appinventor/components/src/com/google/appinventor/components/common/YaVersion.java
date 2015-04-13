@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -660,7 +662,9 @@ public class YaVersion {
   // - Added TextColor Property
   // For LISTVIEW_COMPONENT_VERSION 4:
   // - Added TextSize Property
-  public static final int LISTVIEW_COMPONENT_VERSION = 4;
+  // For LISTVIEW_COMPONENT_VERSION 5:
+  // - Added HighlightColor Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 5;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

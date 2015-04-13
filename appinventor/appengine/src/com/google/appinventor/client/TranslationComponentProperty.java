@@ -233,6 +233,7 @@ public class TranslationComponentProperty {
     map.put("Hour", MESSAGES.HourProperties());
     map.put("Minute", MESSAGES.MinuteProperties());
     map.put("HasMargins", MESSAGES.HasMarginsProperties());
+    map.put("HighlightColor", MESSAGES.HighlightColorProperties());
 
     // =========== ProximitySensor
     map.put("MaximumRange", MESSAGES.MaximumRangeProperties());
