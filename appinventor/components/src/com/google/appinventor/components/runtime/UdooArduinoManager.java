@@ -193,7 +193,7 @@ public class UdooArduinoManager
         throw new Exception("Invalid response from ADK");
     }
     
-    public int sensor(int pin, String sensorName, String returnKey) throws Exception
+    public JSONObject sensor(int pin, String sensorName) throws Exception
     {
         JSONObject json = new JSONObject();
         try {
@@ -207,10 +207,9 @@ public class UdooArduinoManager
         
         try {
             boolean success = ((Boolean) response.get("success")).booleanValue();
-            int value = (Integer) response.get(returnKey);
             
             if (success) {
-                return value;
+                return response;
             }
             
         } catch (JSONException e) {

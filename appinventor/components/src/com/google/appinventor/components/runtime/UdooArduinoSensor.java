@@ -11,6 +11,10 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -75,23 +79,16 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
 
     @SimpleFunction
-    public int GetTemperature(int pin) throws Exception
+    public void ReadSensor(int pin)
     {
         if (this.isConnected()) {
-            return usbReceiver.arduino.sensor(pin, "dht11", "temperature");
+            try {
+                JSONObject response = usbReceiver.arduino.sensor(pin, "dht11");
+                this.DataReady(response.getInt("temperature"), response.getInt("humidity"));
+            } catch (Exception ex) {
+                Log.d(TAG, "Invalid JSON");
+            }
         }
-        
-        throw new Exception("Not connected");
-    }
-    
-    @SimpleFunction
-    public float GetHumidity(int pin) throws Exception
-    {
-        if (this.isConnected()) {
-            return usbReceiver.arduino.sensor(pin, "dht11", "humidity");
-        }
-        
-        throw new Exception("Not connected");
     }
     
     @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
@@ -99,5 +96,13 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     {
         Log.d(TAG, "Connected EVENT");
         EventDispatcher.dispatchEvent(this, "Connected");
+    }
+    
+    @SimpleEvent(description = "Fires when the Arduino returns the temperature and humidity.")
+    public void DataReady(int temperature, int humidity)
+    {
+        Log.d(TAG, "Data ready");
+        
+        EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
     }
 }
