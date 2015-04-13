@@ -5342,8 +5342,8 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FusionTablesStandardErrorMessage();
 
-  @DefaultMessage("HighlightColor")
+  @DefaultMessage("SelectionColor")
   @Description("")
-  String HighlightColorProperties();
+  String SelectionColorProperties();
 
 }

@@ -663,7 +663,7 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 4:
   // - Added TextSize Property
   // For LISTVIEW_COMPONENT_VERSION 5:
-  // - Added HighlightColor Property
+  // - Added SelectionColor Property
   public static final int LISTVIEW_COMPONENT_VERSION = 5;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:

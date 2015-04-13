@@ -74,8 +74,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
-  private int highlightColor;
-  private static final int DEFAULT_HIGHLIGHT_COLOR = Component.COLOR_LTGRAY;
+  private int selectionColor;
+  private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
 
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
@@ -133,7 +133,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    HighlightColor(DEFAULT_HIGHLIGHT_COLOR);
+    SelectionColor(DEFAULT_SELECTION_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
@@ -394,31 +394,31 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Returns the listview's highlight color as an alpha-red-green-blue
+   * Returns the listview's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    *
-   * @return highlight color in the format 0xAARRGGBB, which includes
+   * @return selection color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
   @SimpleProperty(description = "The color of the item when it is selected.")
-  public int HighlightColor() {
-    return highlightColor;
+  public int SelectionColor() {
+    return selectionColor;
   }
 
   /**
-   * Specifies the ListView's highlight color as an alpha-red-green-blue
+   * Specifies the ListView's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    *
-   * @param argb highlight color in the format 0xAARRGGBB, which
+   * @param argb selection color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
-  public void HighlightColor(int argb) {
-    highlightColor = argb;
+  public void SelectionColor(int argb) {
+    selectionColor = argb;
     view.setSelector(new ColorDrawable(argb));
   }
 

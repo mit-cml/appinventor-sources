@@ -932,7 +932,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
-      // Added the HighlightColor property
+      // Added the SelectionColor property
       srcCompVersion = 5;
     }
     return srcCompVersion;
