@@ -87,9 +87,15 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     OpMode getOpMode();
   }
 
-  private static final int NUM_GAMEPADS = 2;
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
   private static final String DEFAULT_CONFIGURATION = "";
+
+  private static final int NUM_GAMEPADS = 2;
+  private static final int COLOR_TRANSPARENT = 0x00FFFFFF;
+  private static final int COLOR_BLACK = 0xFF000000;
+  private static final int COLOR_DEVICE_NAME = 0xFFC1E2E4;
+  private static final int COLOR_HEADER = 0xFF309EA4;
+  private static final int COLOR_ERROR = 0xFF990000;
 
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
   private static final Object hardwareDevicesLock = new Object();
@@ -109,21 +115,20 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   public final TextView textOpMode;
   public final TextView textErrorMessage;
 
+  // The request code for launching other activities.
   private final int requestCode;
+
+  // Backing for properties.
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
   private volatile String configuration = DEFAULT_CONFIGURATION;
 
-  private volatile String robotError = "";
-  private volatile String wifiDirectStatus = "";
-  private volatile String robotStatus = "";
-
   /*
-   * wakeLock is set in onInitialize, if the device version is Ice Cream Sandwich or later.
+   * wakeLock, ftcRobotControllerService, and ftcRobotControllerActivity are set in onInitialize,
+   * if the device version is Ice Cream Sandwich or later.
    */
   private PowerManager.WakeLock wakeLock;
-
-  private FtcRobotControllerService ftcRobotControllerService; // set in onInitialize
-  private FtcRobotControllerActivity ftcRobotControllerActivity; // set in onInitialize
+  private FtcRobotControllerService ftcRobotControllerService;
+  private FtcRobotControllerActivity ftcRobotControllerActivity;
 
   public FtcRobotController(ComponentContainer container) {
     super(container.$form());
@@ -173,6 +178,10 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       ftcRobotControllerActivity.onCreate();
       ftcRobotControllerActivity.onServiceBind(ftcRobotControllerService);
       ftcRobotControllerActivity.onStart();
+    } else {
+      textErrorMessage.setText("Wi-Fi peer-to-peer connectivity is not supported on this device.");
+      form.dispatchErrorOccurredEvent(this, "FtcRobotController",
+          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT);
     }
   }
 
@@ -438,41 +447,49 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     entireScreenLayout.setOrientation(LinearLayout.VERTICAL);
     LinearLayout deviceNameLayout = new LinearLayout(context);
     deviceNameLayout.setOrientation(LinearLayout.HORIZONTAL);
-    deviceNameLayout.setBackgroundColor(0xC1E2E4);
+    deviceNameLayout.setBackgroundColor(COLOR_DEVICE_NAME);
 
     TextView label = new TextView(context);
-    label.setTextColor(0xFF000000);
+    label.setBackgroundColor(COLOR_TRANSPARENT);
+    label.setTextColor(COLOR_BLACK);
     label.setText("Device Name:");
     deviceNameLayout.addView(label,
         new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1));
-    textDeviceName.setTextColor(0xFF000000);
+    textDeviceName.setBackgroundColor(COLOR_TRANSPARENT);
+    textDeviceName.setTextColor(COLOR_BLACK);
     deviceNameLayout.addView(textDeviceName,
         new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
     entireScreenLayout.addView(deviceNameLayout,
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
     headerLayout.setOrientation(LinearLayout.HORIZONTAL);
-    headerLayout.setBackgroundColor(0x309EA4);
+    headerLayout.setBackgroundColor(COLOR_HEADER);
     label = new TextView(context);
-    label.setTextColor(0xFF000000);
+    label.setBackgroundColor(COLOR_TRANSPARENT);
+    label.setTextColor(COLOR_BLACK);
     label.setText("Active Configuration File:");
     headerLayout.addView(label,
         new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1));
-    textActiveFilename.setTextColor(0xFF000000);
+    textActiveFilename.setBackgroundColor(COLOR_TRANSPARENT);
+    textActiveFilename.setTextColor(COLOR_BLACK);
     headerLayout.addView(textActiveFilename,
         new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
     entireScreenLayout.addView(headerLayout,
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-    textWifiDirectStatus.setTextColor(0xFF000000);
+    textWifiDirectStatus.setBackgroundColor(COLOR_TRANSPARENT);
+    textWifiDirectStatus.setTextColor(COLOR_BLACK);
     entireScreenLayout.addView(textWifiDirectStatus,
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-    textRobotStatus.setTextColor(0xFF000000);
+    textRobotStatus.setBackgroundColor(COLOR_TRANSPARENT);
+    textRobotStatus.setTextColor(COLOR_BLACK);
     entireScreenLayout.addView(textRobotStatus,
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-    textOpMode.setTextColor(0xFF000000);
+    textOpMode.setBackgroundColor(COLOR_TRANSPARENT);
+    textOpMode.setTextColor(COLOR_BLACK);
     entireScreenLayout.addView(textOpMode,
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-    textErrorMessage.setTextColor(0xFF990000);
+    textErrorMessage.setBackgroundColor(COLOR_TRANSPARENT);
+    textErrorMessage.setTextColor(COLOR_ERROR);
     textErrorMessage.setTypeface(
         Typeface.create(textErrorMessage.getTypeface(), Typeface.BOLD));
     textErrorMessage.setMinLines(2);
@@ -482,10 +499,12 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     // Add a spacer that takes the full width and all the remaining weight.
     entireScreenLayout.addView(new TextView(context),
         new LinearLayout.LayoutParams(MATCH_PARENT, 0, 1));
-    textGamepad[0].setTextColor(0xFF000000);
+    textGamepad[0].setBackgroundColor(COLOR_TRANSPARENT);
+    textGamepad[0].setTextColor(COLOR_BLACK);
     entireScreenLayout.addView(textGamepad[0],
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-    textGamepad[1].setTextColor(0xFF000000);
+    textGamepad[1].setBackgroundColor(COLOR_TRANSPARENT);
+    textGamepad[1].setTextColor(COLOR_BLACK);
     entireScreenLayout.addView(textGamepad[1],
         new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
   }
@@ -493,10 +512,16 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private void prepareToDie() {
     form.unregisterForActivityResult(this);
 
-    ftcRobotControllerService.onUnbind();
-    ftcRobotControllerActivity.onStop();
+    if (ftcRobotControllerService != null) {
+      ftcRobotControllerService.onUnbind();
+    }
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onStop();
+    }
 
-    wakeLock.release();
-    wakeLock = null;
+    if (wakeLock != null) {
+      wakeLock.release();
+      wakeLock = null;
+    }
   }
 }

@@ -1442,6 +1442,18 @@ public class Form extends Activity
   }
 
   public void deleteComponent(Object component) {
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
+      }
+    }
+    if (component instanceof OnNewIntentListener) {
+      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
+      if (onNewIntentListeners.contains(onNewIntentListener)) {
+        onNewIntentListeners.remove(onNewIntentListener);
+      }
+    }
     if (component instanceof OnStopListener) {
       OnStopListener onStopListener = (OnStopListener) component;
       if (onStopListeners.contains(onStopListener)) {

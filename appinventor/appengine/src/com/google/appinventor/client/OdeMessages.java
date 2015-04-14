@@ -1907,7 +1907,7 @@ public interface OdeMessages extends Messages {
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
 
-  // Used in client/editor/simple/components/MockHVarrangement.java
+  // Used in client/editor/simple/components/MockHVArrangement.java
 
   @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
