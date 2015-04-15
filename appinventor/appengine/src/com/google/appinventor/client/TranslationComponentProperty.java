@@ -243,57 +243,6 @@ public class TranslationComponentProperty {
     map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
     map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
 
-    // ========== FTC
-    map.put("A", MESSAGES.AProperties());
-    map.put("AtRest", MESSAGES.AtRestProperties());
-    map.put("B", MESSAGES.BProperties());
-    map.put("Back", MESSAGES.BackProperties());
-    map.put("CalibrationFailed", MESSAGES.CalibrationFailedProperties());
-    map.put("ChannelMode", MESSAGES.ChannelModeProperties());
-    map.put("Configuration", MESSAGES.ConfigurationProperties());
-    map.put("CurrentPosition", MESSAGES.CurrentPositionProperties());
-    map.put("DeviceName", MESSAGES.DeviceNameProperties());
-    map.put("DifferentialControlLoopCoefficientD",
-        MESSAGES.DifferentialControlLoopCoefficientDProperties());
-    map.put("DifferentialControlLoopCoefficientI",
-        MESSAGES.DifferentialControlLoopCoefficientIProperties());
-    map.put("DifferentialControlLoopCoefficientP",
-        MESSAGES.DifferentialControlLoopCoefficientPProperties());
-    map.put("Direction", MESSAGES.DirectionProperties());
-    map.put("DpadDown", MESSAGES.DpadDownProperties());
-    map.put("DpadLeft", MESSAGES.DpadLeftProperties());
-    map.put("DpadRight", MESSAGES.DpadRightProperties());
-    map.put("DpadUp", MESSAGES.DpadUpProperties());
-    map.put("EnableLed", MESSAGES.EnableLedProperties());
-    map.put("GamepadNumber", MESSAGES.GamepadNumberProperties());
-    map.put("GearRatio", MESSAGES.GearRatioProperties());
-    map.put("Guide", MESSAGES.GuideProperties());
-    map.put("JoystickDeadzone", MESSAGES.JoystickDeadzoneProperties());
-    map.put("LeftBumper", MESSAGES.LeftBumperProperties());
-    map.put("LeftStickX", MESSAGES.LeftStickXProperties());
-    map.put("LeftStickY", MESSAGES.LeftStickYProperties());
-    map.put("LeftTrigger", MESSAGES.LeftTriggerProperties());
-    map.put("LightLevel", MESSAGES.LightLevelProperties());
-    map.put("Mode", MESSAGES.ModeProperties());
-    map.put("OpModeName", MESSAGES.OpModeNameProperties());
-    map.put("Position", MESSAGES.PositionProperties());
-    map.put("Power", MESSAGES.PowerProperties());
-    map.put("PowerFloat", MESSAGES.PowerFloatProperties());
-    map.put("RightBumper", MESSAGES.RightBumperProperties());
-    map.put("RightStickX", MESSAGES.RightStickXProperties());
-    map.put("RightStickY", MESSAGES.RightStickYProperties());
-    map.put("RightTrigger", MESSAGES.RightTriggerProperties());
-    map.put("Rotation", MESSAGES.RotationProperties());
-    map.put("SignalDetected", MESSAGES.SignalDetectedProperties());
-    map.put("Start", MESSAGES.StartProperties());
-    map.put("State", MESSAGES.StateProperties());
-    map.put("Status", MESSAGES.StatusProperties());
-    map.put("Strength", MESSAGES.StrengthProperties());
-    map.put("TargetPosition", MESSAGES.TargetPositionProperties());
-    map.put("UltrasonicLevel", MESSAGES.UltrasonicLevelProperties());
-    map.put("UsbScanTimeInSeconds", MESSAGES.UsbScanTimeInSecondsProperties());
-    map.put("Voltage", MESSAGES.VoltageProperties());
-
     return map;
   }
 }

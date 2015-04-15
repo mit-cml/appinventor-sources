@@ -263,35 +263,6 @@ public class TranslationComponentMethods {
     map.put("GetRows", MESSAGES.GetRowsMethods());
     map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
 
-    // ========== FTC
-    map.put("Convert1ByteNumberToByteArray", MESSAGES.Convert1ByteNumberToByteArrayMethods());
-    map.put("Convert2ByteNumberToByteArray", MESSAGES.Convert2ByteNumberToByteArrayMethods());
-    map.put("Convert4ByteNumberToByteArray", MESSAGES.Convert4ByteNumberToByteArrayMethods());
-    map.put("Convert8ByteNumberToByteArray", MESSAGES.Convert8ByteNumberToByteArrayMethods());
-    map.put("ConvertByteArrayToUnsigned1ByteNumber", MESSAGES.ConvertByteArrayToUnsigned1ByteNumberMethods());
-    map.put("ConvertByteArrayToSigned1ByteNumber", MESSAGES.ConvertByteArrayToSigned1ByteNumberMethods());
-    map.put("ConvertByteArrayTo2ByteNumber", MESSAGES.ConvertByteArrayTo2ByteNumberMethods());
-    map.put("ConvertByteArrayTo4ByteNumber", MESSAGES.ConvertByteArrayTo4ByteNumberMethods());
-    map.put("ConvertByteArrayTo8ByteNumber", MESSAGES.ConvertByteArrayTo8ByteNumberMethods());
-    map.put("EnableAnalogReadMode", MESSAGES.EnableAnalogReadModeMethods());
-    map.put("EnableNxtI2cReadMode", MESSAGES.EnableNxtI2cReadModeMethods());
-    map.put("EnableNxtI2cWriteMode", MESSAGES.EnableNxtI2cWriteModeMethods());
-    map.put("Enable9v", MESSAGES.Enable9vMethods());
-    map.put("Float", MESSAGES.FloatMethods());
-    map.put("GetRuntime", MESSAGES.GetRuntimeMethods());
-    map.put("IsPortReady", MESSAGES.IsPortReadyMethods());
-    map.put("RangeClip", MESSAGES.RangeClipMethods());
-    map.put("RangeScale", MESSAGES.RangeScaleMethods());
-    map.put("ReadAnalog", MESSAGES.ReadAnalogMethods());
-    map.put("ReadLegacyModuleCache", MESSAGES.ReadLegacyModuleCacheMethods());
-    map.put("ScaleRange", MESSAGES.ScaleRangeMethods());
-    map.put("SetDifferentialControlLoopCoefficients",
-        MESSAGES.SetDifferentialControlLoopCoefficientsMethods());
-    map.put("SetDigitalLine", MESSAGES.SetDigitalLineMethods());
-    map.put("TelemetryAddNumericData", MESSAGES.TelemetryAddNumericDataMethods());
-    map.put("TelemetryAddTextData", MESSAGES.TelemetryAddTextDataMethods());
-    map.put("WriteLegacyModuleCache", MESSAGES.WriteLegacyModuleCacheMethods());
-
     return map;
   }
 }

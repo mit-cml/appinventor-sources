@@ -135,11 +135,6 @@ public class TranslationComponentEvents {
     map.put("GotTranslation", MESSAGES.GotTranslationEvents());
     map.put("Shaking", MESSAGES.ShakingEvents());
 
-    // ========== FTC
-    map.put("Loop", MESSAGES.LoopEvents());
-    map.put("Start", MESSAGES.StartEvents());
-    map.put("Stop", MESSAGES.StopEvents());
-
 	/*
   //event helpstrings
 	map.put("AccelerationChanged-helpstring", MESSAGES.AccelerationChangedHelpStringEvents());
@@ -170,11 +165,6 @@ public class TranslationComponentEvents {
 	map.put("StatusChanged-helpstring", MESSAGES.StatusChangedHelpStringEvents());
 	map.put("AfterChoosing-helpstring", MESSAGES.AfterChoosingHelpStringEvents());
 	map.put("AfterTextInput-helpstring", MESSAGES.AfterTextInputHelpStringEvents());
-
-	// ========== FTC
-	map.put("Loop-helpstring", MESSAGES.LoopHelpStringEvents());
-	map.put("Start-helpstring", MESSAGES.StartHelpStringEvents());
-	map.put("Stop-helpstring", MESSAGES.StopHelpStringEvents());
 	*/
 
     return map;
