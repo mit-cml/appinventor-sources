@@ -244,6 +244,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         hardwareDevices.put(form, hardwareDevicesForForm);
       }
       hardwareDevicesForForm.add(hardwareDevice);
+      // TODO(lizlooney): if onEventLoopInit has already been called, we should call
+      // hardwareDevice.setHardwareMap() now.
     }
   }
 
@@ -270,6 +272,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         gamepadDevices.put(form, gamepadDevicesForForm);
       }
       gamepadDevicesForForm.add(gamepadDevice);
+      // TODO(lizlooney): if onEventLoopInit has already been called, we should call
+      // gamepadDevice.setEventLoopManager() now.
     }
   }
 
@@ -298,6 +302,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         opModeWrappers.put(form, opModeWrappersForForm);
       }
       opModeWrappersForForm.add(opModeWrapper);
+      // TODO(lizlooney): if register has already been called, we should call
+      // opModeManager.register() now.
     }
   }
 
