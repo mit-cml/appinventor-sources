@@ -2279,6 +2279,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ApiKeyProperties();
 
+  @DefaultMessage("AppName")
+  @Description("")
+  String AppNameProperties();
+
   @DefaultMessage("AvailableCountries")
   @Description("")
   String AvailableCountriesProperties();

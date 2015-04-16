@@ -25,7 +25,7 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("\n\n/* Properties */\n\n");
     for (Property prop : component.properties.values()) {
       String propertyName = prop.name;
-      if (prop.isUserVisible()) {
+      if (prop.isUserVisible() || component.designerProperties.containsKey(propertyName)) {
         sb.append("    map.put(\"PROPERTY-" + propertyName + "\", MESSAGES." + propertyName + "Properties());\n");
       }
     }
