@@ -52,7 +52,7 @@ public final class MockFtcRobotController extends MockVisibleComponent {
     DOM.setStyleAttribute(verticalPanel.getElement(), "border", "1px solid #000000");
     verticalPanel.add(makeLabel(LABEL_DEVICE_NAME, "backgroundColor", "#C1E2E4"));
     HorizontalPanel header = new HorizontalPanel();
-    DOM.setStyleAttribute(header.getElement(), "backgroundPanel", "#309EA4");
+    DOM.setStyleAttribute(header.getElement(), "backgroundColor", "#309EA4");
     header.setSize("100%", "100%");
     header.add(new Label(LABEL_CONFIGURATION));
     configuration = new Label();
