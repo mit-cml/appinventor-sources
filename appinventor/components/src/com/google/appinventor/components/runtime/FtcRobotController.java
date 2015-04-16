@@ -43,6 +43,9 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -72,7 +75,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
                  "android.permission.WAKE_LOCK")
 @UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,ModernRobotics.jar,WirelessP2p.jar,d2xx.jar")
 public final class FtcRobotController extends AndroidViewComponent implements OnInitializeListener,
-    ActivityResultListener, OnNewIntentListener, OnDestroyListener, Deleteable, OpModeRegister {
+    ActivityResultListener, OnNewIntentListener, OnCreateOptionsMenuListener, OnDestroyListener,
+    Deleteable, OpModeRegister {
 
   interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
@@ -152,6 +156,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     form.registerForOnInitialize(this);
     requestCode = form.registerForActivityResult(this);
     form.registerForOnNewIntent(this);
+    form.registerForOnCreateOptionsMenu(this);
     form.registerForOnDestroy(this);
   }
 
@@ -203,6 +208,22 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     if (ftcRobotControllerActivity != null) {
       ftcRobotControllerActivity.onNewIntent(intent);
     }
+  }
+
+  // OnCreateOptionsMenuListener implementation
+
+  @Override
+  public void onCreateOptionsMenu(Menu menu) {
+    MenuItem restartRobot = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "Restart Robot")
+        .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      @Override
+      public boolean onMenuItemClick(MenuItem item) {
+        if (ftcRobotControllerActivity != null) {
+          ftcRobotControllerActivity.restartRobot();
+        }
+        return true;
+      }
+    });
   }
   
   // OnDestroyListener implementation

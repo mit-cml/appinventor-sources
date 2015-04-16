@@ -147,6 +147,9 @@ public class Form extends Activity
   // AppInventor lifecycle: listeners for the Initialize Event
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
 
+  // Listeners for options menu.
+  private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
+
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
   protected String startupValue = "";
@@ -436,6 +439,10 @@ public class Form extends Activity
 
   public void registerForOnDestroy(OnDestroyListener component) {
     onDestroyListeners.add(component);
+  }
+
+  public void registerForOnCreateOptionsMenu(OnCreateOptionsMenuListener component) {
+    onCreateOptionsMenuListeners.add(component);
   }
 
   public Dialog onCreateDialog(int id) {
@@ -1368,6 +1375,9 @@ public class Form extends Activity
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
     addAboutInfoToMenu(menu);
+    for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
+      onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
+    }
     return true;
   }
 
@@ -1442,22 +1452,16 @@ public class Form extends Activity
   }
 
   public void deleteComponent(Object component) {
-    if (component instanceof OnInitializeListener) {
-      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
-      if (onInitializeListeners.contains(onInitializeListener)) {
-        onInitializeListeners.remove(onInitializeListener);
+    if (component instanceof OnStopListener) {
+      OnStopListener onStopListener = (OnStopListener) component;
+      if (onStopListeners.contains(onStopListener)) {
+        onStopListeners.remove(onStopListener);
       }
     }
     if (component instanceof OnNewIntentListener) {
       OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
       if (onNewIntentListeners.contains(onNewIntentListener)) {
         onNewIntentListeners.remove(onNewIntentListener);
-      }
-    }
-    if (component instanceof OnStopListener) {
-      OnStopListener onStopListener = (OnStopListener) component;
-      if (onStopListeners.contains(onStopListener)) {
-        onStopListeners.remove(onStopListener);
       }
     }
     if (component instanceof OnResumeListener) {
@@ -1476,6 +1480,18 @@ public class Form extends Activity
       OnDestroyListener onDestroyListener = (OnDestroyListener) component;
       if (onDestroyListeners.contains(onDestroyListener)) {
         onDestroyListeners.remove(onDestroyListener);
+      }
+    }
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
+      }
+    }
+    if (component instanceof OnCreateOptionsMenuListener) {
+      OnCreateOptionsMenuListener onCreateOptionsMenuListener = (OnCreateOptionsMenuListener) component;
+      if (onCreateOptionsMenuListeners.contains(onCreateOptionsMenuListener)) {
+        onCreateOptionsMenuListeners.remove(onCreateOptionsMenuListener);
       }
     }
     if (component instanceof Deleteable) {

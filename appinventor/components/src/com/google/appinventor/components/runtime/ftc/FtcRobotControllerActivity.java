@@ -53,7 +53,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Gravity;
 //AI import android.view.Menu;
-import android.view.MenuItem;
+//AI import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -335,8 +335,9 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       immersion.cancelSystemUIHide();
     }
   }
+  */
 
-
+  /*AI
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
@@ -344,50 +345,45 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   }
   */
 
-//AI  @Override
-//AI  public boolean onOptionsItemSelected(MenuItem item) {
-//AI    switch (item.getItemId()) {
-//AI      case R.id.action_restart_robot:
-//AI        dimmer.handleDimTimer();
-//AI        Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-//AI        requestRobotRestart();
-//AI        return true;
-//AI      case R.id.action_wifi_channel_selector:
-//AI        if (Build.MODEL.equals(Device.MODEL_FOXDA_FL7007)) {
-//AI          startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-//AI        } else {
-//AI          startActivityForResult(new Intent(//AI getBaseContext(), FtcWifiChannelSelectorActivity.class),
-//AI              "com.qualcomm.ftcrobotcontroller.FtcWifiChannelSelectorActivity",
-//AI              REQUEST_CONFIG_WIFI_CHANNEL));
-//AI        }
-//AI        return true;
-//AI      case R.id.action_settings:
-//AI        startActivity(new Intent(//AI getBaseContext(), FtcRobotControllerSettingsActivity.class));
-//AI            "com.qualcomm.ftcrobotcontroller.FtcRobotControllerSettingsActivity"));
-//AI        return true;
-//AI      /*AI
-//AI      case R.id.action_about:
-//AI        startActivity(new Intent(getBaseContext(), AboutActivity.class));
-//AI        return true;
-//AI      case R.id.action_exit_app:
-//AI        finish();
-//AI        return true;
-//AI      */
-//AI      case R.id.action_configuration:
-//AI        startActivity(new Intent(//AI getBaseContext(), FtcConfigurationActivity.class));
-//AI            "com.qualcomm.ftcrobotcontroller.FtcConfigurationActivity"));
-//AI        return true;
-//AI      case R.id.action_load:
-//AI        startActivity(new Intent(//AI getBaseContext(), FtcLoadFileActivity.class));
-//AI            "com.qualcomm.ftcrobotcontroller.FtcLoadFileActivity"));
-//AI        return true;
-//AI      case R.id.action_autoconfigure:
-//AI        startActivity(new Intent(//AI getBaseContext(), AutoConfigureActivity.class));
-//AI            "com.qualcomm.ftcrobotcontroller.AutoConfigureActivity"));
-//AI      default:
-//AI        return super.onOptionsItemSelected(item);
-//AI    }
-//AI  }
+  /*AI
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_restart_robot:
+        dimmer.handleDimTimer();
+        Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
+        requestRobotRestart();
+        return true;
+      case R.id.action_wifi_channel_selector:
+        if (Build.MODEL.equals(Device.MODEL_FOXDA_FL7007)) {
+          startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+        } else {
+          startActivityForResult(new Intent(getBaseContext(), FtcWifiChannelSelectorActivity.class), REQUEST_CONFIG_WIFI_CHANNEL);
+        }
+        return true;
+      case R.id.action_settings:
+        startActivity(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class));
+        return true;
+      case R.id.action_about:
+        startActivity(new Intent(getBaseContext(), AboutActivity.class));
+        return true;
+      case R.id.action_exit_app:
+        finish();
+        return true;
+      case R.id.action_configuration:
+        startActivity(new Intent(getBaseContext(), FtcConfigurationActivity.class));
+        return true;
+      case R.id.action_load:
+        startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
+        return true;
+      case R.id.action_autoconfigure:
+        startActivity(new Intent(getBaseContext(), AutoConfigureActivity.class));
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+  */
 
   /*AI
   @Override
@@ -400,7 +396,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   /*AI @Override
   protected */ public void onActivityResult(int request, int result, Intent intent) {
     if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
-      if (result == Activity.RESULT_OK) {
+      if (result == RESULT_OK) {
         Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         showToast(toast);
@@ -429,12 +425,10 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
           activeFilename.equalsIgnoreCase(Utility.NO_FILE) ||
           activeFilename.toLowerCase().contains(Utility.UNSAVED.toLowerCase())) {
         /*AI
-        utility.saveToPreferences(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename);
-            PREF_HARDWARE_CONFIG_FILENAME_KEY);
+        utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
         DbgLog.msg("No default config file, so launching Hardware Wizard");
         launched = true;
-        startActivity(new Intent(//AI getBaseContext(), FtcLoadFileActivity.class));
-            "com.qualcomm.ftcrobotcontroller.FtcLoadFileActivity"));
+        startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
         return;
         */
       }
@@ -504,7 +498,9 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   private void requestRobotShutdown() {
     if (controllerService == null) return;
     controllerService.shutdownRobot();
-    batteryChecker.endBatteryMonitoring();
+    if (batteryChecker != null) {
+      batteryChecker.endBatteryMonitoring();
+    }
   }
 
   private void requestRobotRestart() {
@@ -561,6 +557,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
 
   // For App Inventor:
   public static final String PREF_HARDWARE_CONFIG_FILENAME_KEY = "pref_hardware_config_filename";
+  private static final int RESULT_OK = Activity.RESULT_OK;
   private final FtcRobotController ftcRobotController;
   private final Activity thisActivity;
   private final LinearLayout headerLayout;
