@@ -54,7 +54,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
       }
 
       @Override
-      public void run() {
+      public void loop() {
         Loop();
       }
 

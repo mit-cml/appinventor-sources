@@ -23,7 +23,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.ftc.FtcRobotControllerActivity;
-import com.google.appinventor.components.runtime.ftc.FtcRobotControllerService;
 import com.google.appinventor.components.runtime.ftc.Utility;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -127,11 +126,10 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private volatile String configuration = DEFAULT_CONFIGURATION;
 
   /*
-   * wakeLock, ftcRobotControllerService, and ftcRobotControllerActivity are set in onInitialize,
+   * wakeLock and ftcRobotControllerActivity are set in onInitialize,
    * if the device version is Ice Cream Sandwich or later.
    */
   private PowerManager.WakeLock wakeLock;
-  private FtcRobotControllerService ftcRobotControllerService;
   private FtcRobotControllerActivity ftcRobotControllerActivity;
 
   public FtcRobotController(ComponentContainer container) {
@@ -176,13 +174,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
       wakeLock.acquire();
 
-      ftcRobotControllerService = new FtcRobotControllerService(this, form);
       ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form);
-
-      ftcRobotControllerService.onBind();
-      ftcRobotControllerActivity.onCreate();
-      ftcRobotControllerActivity.onServiceBind(ftcRobotControllerService);
-      ftcRobotControllerActivity.onStart();
     } else {
       textErrorMessage.setText("Wi-Fi peer-to-peer connectivity is not supported on this device.");
       form.dispatchErrorOccurredEvent(this, "FtcRobotController",
@@ -196,7 +188,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == this.requestCode) {
       if (ftcRobotControllerActivity != null) {
-        ftcRobotControllerActivity.onActivityResult(requestCode, resultCode, data);
+        ftcRobotControllerActivity.onActivityResultAI(requestCode, resultCode, data);
       }
     }
   }
@@ -206,7 +198,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void onNewIntent(Intent intent) {
     if (ftcRobotControllerActivity != null) {
-      ftcRobotControllerActivity.onNewIntent(intent);
+      ftcRobotControllerActivity.onNewIntentAI(intent);
     }
   }
 
@@ -342,9 +334,14 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     }
   }
 
-  // Called from FtcFtcRobotControllerService
-  public int getUsbScanTimeInSeconds() {
-    return usbScanTimeInSeconds;
+  // Called from FtcRobotControllerActivity.requestRobotSetup
+  public void beforeSetupRobot() {
+    if (usbScanTimeInSeconds > 2) {
+      try {
+        Thread.sleep((usbScanTimeInSeconds - 2) * 1000);
+      } catch (InterruptedException e) {
+      }
+    }
   }
 
   // Called from FtcEventLoop.init
@@ -539,11 +536,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private void prepareToDie() {
     form.unregisterForActivityResult(this);
 
-    if (ftcRobotControllerService != null) {
-      ftcRobotControllerService.onUnbind();
-    }
     if (ftcRobotControllerActivity != null) {
-      ftcRobotControllerActivity.onStop();
+      ftcRobotControllerActivity.onStopAI();
     }
 
     if (wakeLock != null) {

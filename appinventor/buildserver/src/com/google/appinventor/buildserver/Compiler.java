@@ -99,6 +99,12 @@ public final class Compiler {
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
 
+  private static final String[] FTC_FILES = {
+    "res/xml/device_filter.xml",
+    "res/layout/activity_config_wifi_direct.xml",
+    "res/values/values.xml",
+  };
+
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
    * To get the real file paths, call getResource() with one of these constants.
@@ -479,6 +485,19 @@ public final class Compiler {
         out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
       }
 
+      // Add FTC related activities to the manifest only if an FtcRobotController component is used in the app
+      if (componentTypes.contains("FtcRobotController")) {
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
+        out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
+      }
+
+      if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+        out.write("    <service\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
+        out.write("      android:enabled=\"true\" />\n");
+      }
+
       // BroadcastReceiver for Texting Component
       if (componentTypes.contains("Texting")) {
         System.out.println("Android Manifest: including <receiver> tag");
@@ -556,16 +575,16 @@ public final class Compiler {
       return false;
     }
 
-    if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
-      out.println("________Creating device_filter.xml");
-      File xmlDir = createDirectory(resDir, "xml");
-      File deviceFilterFile = new File(xmlDir, "device_filter.xml");
-      String deviceFilterXml = "\n" +
-          "<resources>\n" +
-          "   <usb-device vendor-id=\"1027\" product-id=\"24577\" /> <!-- FT232 Modern Robotics -->\n" +
-          "</resources>\n";
-      if (!compiler.writeXmlFile(deviceFilterFile, deviceFilterXml)) {
-        return false;
+    if (componentTypes.contains("FtcRobotController")) {
+      for (String ftcFile : FTC_FILES) {
+        out.println("________Copying " + ftcFile);
+
+        String source = getResource(RUNTIME_FILES_DIR + ftcFile);
+        File destFile = new File(buildDir, ftcFile.replace('/', File.separatorChar));
+        destFile.getParentFile().mkdirs();
+        if (!copyFile(source, destFile.getAbsolutePath())) {
+          return false;
+        }
       }
     }
 

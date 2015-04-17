@@ -38,17 +38,18 @@ package com.google.appinventor.components.runtime.ftc;
 
 import android.app.ActionBar;
 import android.app.Activity;
-//AI import android.content.ComponentName;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-//AI import android.content.ServiceConnection;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 //AI import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 
 //AI import android.os.Build;
 //AI import android.os.Bundle;
-//AI import android.os.IBinder;
+//AI import android.os.Environment;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -62,13 +63,15 @@ import android.widget.Toast;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.Device;
-//AI import com.qualcomm.ftcrobotcontroller.FtcRobotControllerService.FtcRobotControllerBinder;
+import com.qualcomm.ftccommon.FtcRobotControllerService;
+import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
+import com.qualcomm.ftccommon.Restarter;
+import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceManager;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -94,103 +97,11 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   private static final boolean USE_MOCK_HARDWARE_FACTORY = false;
   private static final int NUM_GAMEPADS = 2;
 
-  /**
-   * Callback methods
-   */
-  public class Callback {
-
-    /**
-     * callback method to restart the robot
-     */
-    public void restartRobot() {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-        }
-      });
-
-      // this call might be coming from the event loop, so we need to start
-      // switch contexts before proceeding
-      Thread t = new Thread() {
-        @Override
-        public void run() {
-          try { Thread.sleep(1500); } catch (InterruptedException ignored) { }
-          runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              requestRobotRestart();
-            }
-          });
-
-        }
-      };
-      t.start();
-    }
-
-    public void updateUi(final String opModeName, final Gamepad[] gamepads) {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          for (int i = 0; (i < textGamepad.length) && (i < gamepads.length); i++) {
-            if (gamepads[i].id == Gamepad.ID_UNASSOCIATED) {
-              textGamepad[i].setText(" "); // for some reason "" isn't working, android won't redraw the UI element
-            } else {
-              textGamepad[i].setText(gamepads[i].toString());
-            }
-          }
-
-          textOpMode.setText("Op Mode: " + opModeName);
-
-          // if there are no global error messages, getGlobalErrorMsg will return an empty string
-          textErrorMessage.setText(RobotLog.getGlobalErrorMsg());
-        }
-      });
-    }
-
-    public void wifiDirectUpdate(final WifiDirectAssistant.Event event) {
-      final String status = "Wifi Direct - ";
-
-      switch (event) {
-        case DISCONNECTED:
-          updateWifiDirectStatus(status + "disconnected");
-          break;
-        case CONNECTED_AS_GROUP_OWNER:
-          updateWifiDirectStatus(status + "enabled");
-          break;
-        case ERROR:
-          updateWifiDirectStatus(status + "ERROR");
-          break;
-        case CONNECTION_INFO_AVAILABLE:
-          WifiDirectAssistant wifiDirectAssistant = controllerService.getWifiDirectAssistant();
-          displayDeviceName(wifiDirectAssistant.getDeviceName());
-        default:
-          break;
-      }
-    }
-
-    public void robotUpdate(final String status) {
-      DbgLog.msg(status);
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          textRobotStatus.setText(status);
-
-
-          // if there are no global error messages, getGlobalErrorMsg will return an empty string
-          textErrorMessage.setText(RobotLog.getGlobalErrorMsg());
-          if (RobotLog.hasGlobalErrorMsg()) {
-            dimmer.longBright();
-          }
-        }
-      });
-    }
-
-  }
+  protected static final String VIEW_LOGS_ACTION = "com.qualcomm.ftcrobotcontroller.VIEW_LOGS";
 
   protected SharedPreferences preferences;
 
-  protected Callback callback = new Callback();
+  protected UpdateUI.Callback callback;
   protected Context context;
   private Utility utility;
   private boolean launched;
@@ -203,6 +114,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   protected TextView textErrorMessage;
   //AI protected ImmersiveMode immersion;
 
+  protected UpdateUI updateUI;
   protected BatteryChecker batteryChecker;
   protected Dimmer dimmer;
   protected LinearLayout entireScreenLayout;
@@ -211,7 +123,14 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
 
   protected FtcEventLoop eventLoop;
 
-  /*AI
+  protected class RobotRestarter implements Restarter {
+
+    public void requestRestart() {
+      requestRobotRestart();
+    }
+
+  }
+
   protected ServiceConnection connection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
@@ -224,10 +143,9 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       controllerService = null;
     }
   };
-  */
 
-  /*AI @Override
-  protected */ public void onNewIntent(Intent intent) {
+  //AI @Override
+  protected void onNewIntent(Intent intent) {
     //AI super.onNewIntent(intent);
     if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
       // a new USB device has been attached
@@ -235,34 +153,35 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     }
   }
 
-  /*AI @Override
-  protected */ public void onCreate(/*AI Bundle savedInstanceState*/) {
+  //AI @Override
+  protected void onCreate(/*AI Bundle savedInstanceState*/) {
     //AI super.onCreate(savedInstanceState);
 
     //AI setContentView(R.layout.activity_ftc_controller);
 
     context = thisActivity;
     utility = new Utility(thisActivity);
-    entireScreenLayout = //AI (LinearLayout) findViewById(R.id.entire_screen)
-        ftcRobotController.entireScreenLayout;
+    /*AI
+    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
 
-    textDeviceName = //AI (TextView) findViewById(R.id.textDeviceName)
-        ftcRobotController.textDeviceName;
-    textWifiDirectStatus = //AI (TextView) findViewById(R.id.textWifiDirectStatus)
-        ftcRobotController.textWifiDirectStatus;
-    textRobotStatus = //AI (TextView) findViewById(R.id.textRobotStatus)
-        ftcRobotController.textRobotStatus;
-    textOpMode = //AI (TextView) findViewById(R.id.textOpMode)
-        ftcRobotController.textOpMode;
-    textErrorMessage = //AI (TextView) findViewById(R.id.textErrorMessage)
-        ftcRobotController.textErrorMessage;
-    textGamepad[0] = //AI (TextView) findViewById(R.id.textGamepad1)
-        ftcRobotController.textGamepad[0];
-    textGamepad[1] = //AI (TextView) findViewById(R.id.textGamepad2)
-        ftcRobotController.textGamepad[1];
-    //AI immersion = new ImmersiveMode(getWindow().getDecorView());
+    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
+    textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
+    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
+    textOpMode = (TextView) findViewById(R.id.textOpMode);
+    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
+    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
+    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
+    immersion = new ImmersiveMode(getWindow().getDecorView());
+    */
     dimmer = new Dimmer(thisActivity);
     dimmer.longBright();
+    Restarter restarter = new RobotRestarter();
+
+    updateUI = new UpdateUI(thisActivity, dimmer);
+    updateUI.setRestarter(restarter);
+    updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
+        textGamepad, textOpMode, textErrorMessage, textDeviceName);
+    callback = updateUI.new Callback();
 
     //AI PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     preferences = PreferenceManager.getDefaultSharedPreferences(thisActivity);
@@ -272,17 +191,15 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     hittingMenuButtonBrightensScreen();
   }
 
-  /*AI @Override
-  protected */ public void onStart() {
+  //AI @Override
+  protected void onStart() {
     //AI super.onStart();
 
     // save 4MB of logcat to the SD card
     RobotLog.writeLogcatToDisk(thisActivity, 4 * 1024);
 
-    /*AI
-    Intent intent = new Intent(this, FtcRobotControllerService.class);
+    Intent intent = new Intent(thisActivity, FtcRobotControllerService.class);
     bindService(intent, connection, Context.BIND_AUTO_CREATE);
-    */
 
     utility.updateHeader(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
         PREF_HARDWARE_CONFIG_FILENAME_KEY, textActiveFilename, headerLayout);
@@ -310,11 +227,11 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   }
   */
 
-  /*AI @Override
-  protected */ public void onStop() {
+  //AI @Override
+  protected void onStop() {
     //AI super.onStop();
 
-    if (controllerService != null) unbindService(/*AI connection */);
+    if (controllerService != null) unbindService(connection);
 
     RobotLog.cancelWriteLogcatToDisk(thisActivity);
   }
@@ -335,17 +252,14 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       immersion.cancelSystemUIHide();
     }
   }
-  */
 
-  /*AI
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
     return true;
   }
-  */
 
-  /*AI
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
@@ -374,18 +288,19 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
         startActivity(new Intent(getBaseContext(), FtcConfigurationActivity.class));
         return true;
       case R.id.action_load:
-        startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
-        return true;
+          startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
+          return true;
       case R.id.action_autoconfigure:
         startActivity(new Intent(getBaseContext(), AutoConfigureActivity.class));
-        return true;
+      case R.id.action_view_logs:
+        Intent viewLogsIntent = new Intent(VIEW_LOGS_ACTION);
+        viewLogsIntent.putExtra(ViewLogsActivity.FILENAME, RobotLog.getLogFilename(this));
+        startActivity(viewLogsIntent);
       default:
         return super.onOptionsItemSelected(item);
     }
   }
-  */
 
-  /*AI
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
@@ -393,8 +308,8 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   }
   */
 
-  /*AI @Override
-  protected */ public void onActivityResult(int request, int result, Intent intent) {
+  //AI @Override
+  protected void onActivityResult(int request, int result, Intent intent) {
     if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
       if (result == RESULT_OK) {
         Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
@@ -407,6 +322,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   public void onServiceBind(FtcRobotControllerService service) {
     DbgLog.msg("Bound to Ftc Controller Service");
     controllerService = service;
+    updateUI.setControllerService(controllerService);
 
     callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
     callback.robotUpdate(controllerService.getRobotStatus());
@@ -416,6 +332,44 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   private void requestRobotSetup() {
     if (controllerService == null) return;
 
+    FileInputStream fis = fileSetup();
+    // if we can't find the file, don't try and build the robot.
+    if (fis == null) { return; }
+
+    HardwareFactory factory;
+
+    if (USE_MOCK_HARDWARE_FACTORY) {
+      // TODO: temp testing code. This will be removed in a future release
+      try {
+        factory = buildMockHardware();
+      } catch (RobotCoreException e) {
+        DbgLog.logStacktrace(e);
+        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
+        return;
+      } catch (InterruptedException e) {
+        DbgLog.logStacktrace(e);
+        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
+        return;
+      }
+  } else {
+      // Modern Robotics Factory for use with Modern Robotics hardware
+      ModernRoboticsHardwareFactory modernroboticsFactory = new ModernRoboticsHardwareFactory(context);
+      modernroboticsFactory.setXmlInputStream(fis);
+      factory = modernroboticsFactory;
+    }
+
+    eventLoop = new FtcEventLoop(factory, callback, aiFtcRobotController);
+
+    controllerService.setCallback(callback);
+    aiFtcRobotController.beforeSetupRobot();
+    controllerService.setupRobot(eventLoop);
+
+    long fiveMinutes = 300000; //milliseconds
+    batteryChecker = new BatteryChecker(thisActivity, eventLoop, fiveMinutes);
+    batteryChecker.startBatteryMonitoring();
+  }
+
+  private FileInputStream fileSetup() {
     boolean hasConfigFile = preferences.contains(//AI getString(R.string.pref_hardware_config_filename));
         PREF_HARDWARE_CONFIG_FILENAME_KEY);
     String activeFilename = utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE);
@@ -429,7 +383,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
         DbgLog.msg("No default config file, so launching Hardware Wizard");
         launched = true;
         startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
-        return;
+        return null;
         */
       }
     }
@@ -448,51 +402,27 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       String msg = "Cannot open robot configuration file - " + filename;
       utility.complainToast(msg, context);
       DbgLog.msg(msg);
-      return;
+      return null;
     }
+    return fis;
+  }
 
-    HardwareFactory factory;
+  // TODO: temp testing code. This will be removed in a future release
+  private MockHardwareFactory buildMockHardware() throws RobotCoreException, InterruptedException{
+    DeviceManager dm = new MockDeviceManager(null, null);
+    DcMotorController mc = dm.createUsbDcMotorController(new SerialNumber("MC"));
+    DcMotorController mc2 = dm.createUsbDcMotorController(new SerialNumber("MC2"));
+    ServoController sc = dm.createUsbServoController(new SerialNumber("SC"));
 
-    if (USE_MOCK_HARDWARE_FACTORY) {
-      // TODO: temp testing code. This will be removed in a future release
-      try {
-        DeviceManager dm = new MockDeviceManager(null, null);
-        DcMotorController mc = dm.createUsbDcMotorController(new SerialNumber("MC"));
-        DcMotorController mc2 = dm.createUsbDcMotorController(new SerialNumber("MC2"));
-        ServoController sc = dm.createUsbServoController(new SerialNumber("SC"));
+    HardwareMap hwMap = new HardwareMap();
+    hwMap.dcMotor.put("left", new DcMotor(mc, 1));
+    hwMap.dcMotor.put("right", new DcMotor(mc, 2));
+    hwMap.dcMotor.put("flag", new DcMotor(mc2, 1));
+    hwMap.dcMotor.put("arm", new DcMotor(mc2, 2));
+    hwMap.servo.put("a", new Servo(sc, 1));
+    hwMap.servo.put("b", new Servo(sc, 6));
 
-        HardwareMap hwMap = new HardwareMap();
-        hwMap.dcMotor.put("left", new DcMotor(mc, 1));
-        hwMap.dcMotor.put("right", new DcMotor(mc, 2));
-        hwMap.dcMotor.put("flag", new DcMotor(mc2, 1));
-        hwMap.dcMotor.put("arm", new DcMotor(mc2, 2));
-        hwMap.servo.put("a", new Servo(sc, 1));
-        hwMap.servo.put("b", new Servo(sc, 6));
-        factory = new MockHardwareFactory(hwMap);
-      } catch (RobotCoreException e) {
-        DbgLog.logStacktrace(e);
-        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
-        return;
-      } catch (InterruptedException e) {
-        DbgLog.logStacktrace(e);
-        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
-        return;
-      }
-  } else {
-      // Modern Robotics Factory for use with Modern Robotics hardware
-      ModernRoboticsHardwareFactory modernroboticsFactory = new ModernRoboticsHardwareFactory(context);
-      modernroboticsFactory.setXmlInputStream(fis);
-      factory = modernroboticsFactory;
-    }
-
-    eventLoop = new FtcEventLoop(factory, callback, ftcRobotController);
-
-    controllerService.setCallback(callback);
-    controllerService.setupRobot(eventLoop);
-
-    long fiveMinutes = 300000; //milliseconds
-    batteryChecker = new BatteryChecker(thisActivity, eventLoop, fiveMinutes);
-    batteryChecker.startBatteryMonitoring();
+    return new MockHardwareFactory(hwMap);
   }
 
   private void requestRobotShutdown() {
@@ -508,27 +438,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     requestRobotSetup();
   }
 
-  private void updateWifiDirectStatus(String status) {
-    DbgLog.msg(status);
-    final String finalStatus = status;
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        textWifiDirectStatus.setText(finalStatus);
-      }
-    });
-  }
-
-  private void displayDeviceName(final String name) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        textDeviceName.setText(name);
-      }
-    });
-  }
-
-  protected void hittingMenuButtonBrightensScreen(){
+  protected void hittingMenuButtonBrightensScreen() {
     ActionBar actionBar = getActionBar();
     if (actionBar != null) {
       actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
@@ -540,10 +450,6 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
         }
       });
     }
-  }
-
-  public void showToast(final String msg, final int duration) {
-    showToast(Toast.makeText(context, msg, duration));
   }
 
   public void showToast(final Toast toast) {
@@ -558,21 +464,47 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   // For App Inventor:
   public static final String PREF_HARDWARE_CONFIG_FILENAME_KEY = "pref_hardware_config_filename";
   private static final int RESULT_OK = Activity.RESULT_OK;
-  private final FtcRobotController ftcRobotController;
+  private final FtcRobotController aiFtcRobotController;
   private final Activity thisActivity;
-  private final LinearLayout headerLayout;
   private final TextView textActiveFilename;
+  private final LinearLayout headerLayout;
 
-  public FtcRobotControllerActivity(FtcRobotController ftcRobotController, Activity activity) {
-    this.ftcRobotController = ftcRobotController;
+  public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity) {
+    this.aiFtcRobotController = aiFtcRobotController;
     thisActivity = activity;
-    headerLayout = ftcRobotController.headerLayout;
-    textActiveFilename = ftcRobotController.textActiveFilename;
+    textActiveFilename = aiFtcRobotController.textActiveFilename;
+    headerLayout = aiFtcRobotController.headerLayout;
+    entireScreenLayout = aiFtcRobotController.entireScreenLayout;
+    textDeviceName = aiFtcRobotController.textDeviceName;
+    textWifiDirectStatus = aiFtcRobotController.textWifiDirectStatus;
+    textRobotStatus = aiFtcRobotController.textRobotStatus;
+    textOpMode = aiFtcRobotController.textOpMode;
+    textErrorMessage = aiFtcRobotController.textErrorMessage;
+    textGamepad[0] = aiFtcRobotController.textGamepad[0];
+    textGamepad[1] = aiFtcRobotController.textGamepad[1];
+
+    onCreate();
+    onStart();
   }
 
-  private void unbindService() {
-    controllerService = null;
+  // Called from FtcRobotController.
+  public void restartRobot() {
+    callback.restartRobot();
   }
+
+  public void onNewIntentAI(Intent intent) {
+    onNewIntent(intent);
+  }
+
+  public void onActivityResultAI(int request, int result, Intent intent) {
+    onActivityResultAI(request, result, intent);
+  }
+
+  public void onStopAI() {
+    onStop();
+  }
+
+  // Activity methods.
 
   private void runOnUiThread(Runnable runnable) {
     thisActivity.runOnUiThread(runnable);
@@ -598,7 +530,11 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     }
   }
 
-  public void restartRobot() {
-    callback.restartRobot();
+  private void bindService(Intent intent, ServiceConnection connection, int flags) {
+    thisActivity.bindService(intent, connection, flags);
+  }
+
+  private void unbindService(ServiceConnection connection) {
+    thisActivity.unbindService(connection);
   }
 }

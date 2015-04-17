@@ -38,28 +38,19 @@ package com.google.appinventor.components.runtime.ftc;
 
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.FtcEventLoopHandler;
+import com.qualcomm.ftccommon.UpdateUI;
 //AI import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LegacyModule;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.robocol.Command;
-import com.qualcomm.robotcore.robocol.Telemetry;
 import com.qualcomm.robotcore.util.BatteryChecker;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Util;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import static java.util.Map.Entry;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
 
@@ -68,29 +59,15 @@ import com.google.appinventor.components.runtime.FtcRobotController;
  */
 public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
-  // Event loop manager
-  EventLoopManager eventLoopManager;
+  FtcEventLoopHandler ftcEventLoopHandler;
 
-  // Telemetry
-  ElapsedTime telemetryTimer = new ElapsedTime();
-  double telemetryInterval = 0.250; // in seconds
+  OpModeManager opModeManager /*AI = new OpModeManager(new HardwareMap(), new FtcOpModeRegister())*/;
 
-  FtcRobotControllerActivity.Callback callback;
-
-  // Hardware Factory and Map
-  HardwareFactory hardwareFactory;
-  HardwareMap hardwareMap = new HardwareMap();
-
-  OpModeManager opModeManager /*AI = new OpModeManager(hardwareMap, new FtcOpModeRegister())*/;
-
-  private FtcRobotController ftcRobotController;
-
-  FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback) {
-    this.hardwareFactory = hardwareFactory;
-    this.callback = callback;
+  public FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback) {
+    this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback);
   }
 
-  public OpModeManager getOpModeManager(){
+  public OpModeManager getOpModeManager() {
     return opModeManager;
   }
 
@@ -110,15 +87,15 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   @Override
   public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException {
     DbgLog.msg("======= INIT START =======");
-    this.eventLoopManager = eventLoopManager;
 
-    // reset the hardware mappings
-    hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
+    ftcEventLoopHandler.init(eventLoopManager);
+
+    HardwareMap hardwareMap = ftcEventLoopHandler.getHardwareMap();
 
     // Start up the op mode manager
     opModeManager.setHardwareMap(hardwareMap);
 
-    ftcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
+    aiFtcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
     DbgLog.msg("======= INIT FINISH =======");
   }
 
@@ -130,24 +107,14 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   @Override
   public void loop() throws RobotCoreException {
 
-    // Get access to gamepad 1 and 2
-    Gamepad gamepads[] = eventLoopManager.getGamepads();
-
-    callback.updateUi(opModeManager.getActiveOpModeName(), gamepads);
+    ftcEventLoopHandler.displayGamePadInfo(opModeManager.getActiveOpModeName());
+    Gamepad gamepads[] = ftcEventLoopHandler.getGamepads();
 
     opModeManager.runActiveOpMode(gamepads);
 
     // send telemetry data
-    if (telemetryTimer.time() > telemetryInterval) {
-      telemetryTimer.reset();
+    ftcEventLoopHandler.sendTelemetryData(opModeManager.getActiveOpMode().telemetry);
 
-      Telemetry telemetry = opModeManager.getActiveOpMode().telemetry;
-
-      getRobotBatteryInfo();
-
-      if (telemetry.hasData()) eventLoopManager.sendTelemetryData(telemetry);
-      telemetry.clearData();
-    }
   }
 
   /**
@@ -169,32 +136,17 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
     opModeManager.stopActiveOpMode();
 
     // power down and close the DC motor controllers
-    for (Entry<String, DcMotorController> mc : hardwareMap.dcMotorController.entrySet()) {
-      String name = mc.getKey();
-      DcMotorController controller = mc.getValue();
-      DbgLog.msg("Stopping DC Motor Controller " + name);
-      controller.close();
-    }
+    ftcEventLoopHandler.shutdownMotorControllers();
 
     // power down and close the servo controllers
-    for (Entry<String, ServoController> sc : hardwareMap.servoController.entrySet()) {
-      String name = sc.getKey();
-      ServoController controller = sc.getValue();
-      DbgLog.msg("Stopping Servo Controller " + name);
-      controller.close();
-    }
+    ftcEventLoopHandler.shutdownServoControllers();
 
     // power down and close the legacy modules
     // this should be after the servo and motor controllers, since some of them
     // may be connected through this device
-    for (Entry<String, LegacyModule> lm : hardwareMap.legacyModule.entrySet()) {
-      String name = lm.getKey();
-      LegacyModule module = lm.getValue();
-      DbgLog.msg("Stopping Legacy Module" + name);
-      module.close();
-    }
+    ftcEventLoopHandler.shutdownLegacyModules();
 
-    ftcRobotController.onEventLoopTeardown();
+    aiFtcRobotController.onEventLoopTeardown();
     DbgLog.msg("======= TEARDOWN COMPLETE =======");
   }
 
@@ -223,15 +175,14 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   }
 
   private void handleCancelRestartOpMode(String extra) {
-
-    if (eventLoopManager.state == EventLoopManager.State.DROPPED_CONNECTION) {
+    if (ftcEventLoopHandler.droppedConnection()) {
       opModeManager.switchOpModes(OpModeManager.DEFAULT_OP_MODE_NAME);
-      eventLoopManager.restartOpMode(extra);
+      ftcEventLoopHandler.restartOpMode(extra);
     }
   }
 
   private void handleCommandRestartRobot() {
-    callback.restartRobot();
+    ftcEventLoopHandler.restartRobot();
   }
 
   private void handleCommandRequestOpModeList() {
@@ -240,62 +191,35 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
       if (opModeList.isEmpty() == false) opModeList += Util.ASCII_RECORD_SEPARATOR;
       opModeList += opModeName;
     }
-    eventLoopManager.sendCommand(new Command(CommandList.CMD_REQUEST_OP_MODE_LIST_RESP, opModeList));
+    ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_REQUEST_OP_MODE_LIST_RESP, opModeList));
   }
 
   private void handleCommandSwitchOpMode(String extra) {
-    String newOpMode = extra;
-    if (eventLoopManager.state != EventLoopManager.State.RUNNING) {
-      newOpMode = OpModeManager.DEFAULT_OP_MODE_NAME;
-    }
+
+    // if the event loop isn't running, switch to stop op
+    String newOpMode = ftcEventLoopHandler.getOpMode(extra);
+
     opModeManager.switchOpModes(newOpMode);
 
-    if (eventLoopManager.isWaitingForRestart()){
-      eventLoopManager.restartOpMode(newOpMode);
-    }
+    // If we're resuming an op mode from a dropped-connection, handle that case.
+    ftcEventLoopHandler.handleResumeOpMode(newOpMode);
 
-    //eventLoopManager.restartOpMode(newOpMode);
-    eventLoopManager.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
+    //send response
+    ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
   }
 
   public void updateBatteryLevel(float percent) {
-    sendBatteryInfo(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController Battery Level Remaining: " + percent + "%");
+    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController Battery Level Remaining: " + percent + "%");
   }
 
-  private void getRobotBatteryInfo() {
-    double minBatteryLevel = Double.MAX_VALUE;
-
-    for (VoltageSensor sensor : hardwareMap.voltageSensor) {
-      if (sensor.getVoltage() < minBatteryLevel){
-        minBatteryLevel = sensor.getVoltage();
-      }
-    }
-
-    String msg;
-    if (hardwareMap.voltageSensor.size() == 0) {
-      msg = "Robot Battery Level: " + "unknown";
-    } else {
-      BigDecimal rounded = new BigDecimal(minBatteryLevel).setScale(2, RoundingMode.HALF_UP);
-      msg = "Robot Battery Level: " + rounded.doubleValue();
-    }
-    sendBatteryInfo(EventLoopManager.ROBOT_BATTERY_LEVEL_KEY, msg);
-  }
-
-  private void sendBatteryInfo(String tag, String msg) {
-    Telemetry telemetry = new Telemetry();
-    telemetry.setTag(tag);
-    telemetry.addData(tag, msg);
-    if (eventLoopManager != null) {
-      eventLoopManager.sendTelemetryData(telemetry);
-    }
-  }
 
   // For App Inventor:
+  private FtcRobotController aiFtcRobotController;
 
-  FtcEventLoop(HardwareFactory hardwareFactory, FtcRobotControllerActivity.Callback callback,
-      FtcRobotController ftcRobotController) {
+  FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback,
+      FtcRobotController aiFtcRobotController) {
     this(hardwareFactory, callback);
-    this.ftcRobotController = ftcRobotController;
-    opModeManager = new OpModeManager(hardwareMap, /* OpModeRegister */ ftcRobotController);
+    this.aiFtcRobotController = aiFtcRobotController;
+    opModeManager = new OpModeManager(new HardwareMap(), /* OpModeRegister */ aiFtcRobotController);
   }
 }

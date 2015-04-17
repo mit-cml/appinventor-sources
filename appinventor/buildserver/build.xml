@@ -47,7 +47,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_ComponentList">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList,components_FtcCommon,components_RobotCore">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -69,11 +69,17 @@
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${classes.files.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
-    <copy toFile="${classes.files.dir}/FtcCommon.jar" file="${lib.dir}/ftc/FtcCommon.jar" />
-    <copy toFile="${classes.files.dir}/RobotCore.jar" file="${lib.dir}/ftc/RobotCore.jar" />
-    <copy toFile="${classes.files.dir}/ModernRobotics.jar" file="${lib.dir}/ftc/ModernRobotics.jar" />
-    <copy toFile="${classes.files.dir}/WirelessP2p.jar" file="${lib.dir}/ftc/WirelessP2p.jar" />
-    <copy toFile="${classes.files.dir}/d2xx.jar" file="${lib.dir}/ftc/d2xx.jar" />
+    <copy toFile="${classes.files.dir}/RobotCore.jar" file="${build.dir}/components/RobotCore/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcCommon.jar" file="${build.dir}/components/FtcCommon/classes.jar" />
+    <copy toFile="${classes.files.dir}/ModernRobotics.jar" file="${build.dir}/components/FtcCommon/libs/ModernRobotics.jar" />
+    <copy toFile="${classes.files.dir}/WirelessP2p.jar" file="${build.dir}/components/FtcCommon/libs/WirelessP2p.jar" />
+    <copy toFile="${classes.files.dir}/d2xx.jar" file="${build.dir}/components/FtcCommon/libs/d2xx.jar" />
+    <mkdir dir="${classes.files.dir}/res" />
+    <copy todir="${classes.files.dir}/res" flatten="false">
+      <fileset dir="${build.dir}/components/FtcCommon/res" includes="**/*" />
+    </copy>
+    <copy toFile="${classes.files.dir}/res/xml/device_filter.xml" file="${lib.dir}/ftc/res/xml/device_filter.xml" />
+
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />

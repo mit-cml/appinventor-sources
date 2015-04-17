@@ -368,6 +368,16 @@
   </target>
 
   <!-- ====================================================================
+       components_Barcode builds:
+       - build/components/Barcode.jar
+       ==================================================================== -->
+  
+  <target name="components_Barcode">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="Barcode"/>
+  </target>
+
+  <!-- ====================================================================
        components_CommonConstants builds:
        - build/components/CommonConstants.jar
        - build/components/CommonConstants-gwt.jar
@@ -397,6 +407,30 @@
   <target name="components_JsonComponentDescription">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="JsonComponentDescription"/>
+  </target>
+
+  <!-- ====================================================================
+       components_RobotCore builds:
+       - build/components/RobotCore/classes.jar
+       ==================================================================== -->
+
+  <target name="components_RobotCore">
+    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
+         target="RobotCore"/>
+  </target>
+
+  <!-- ====================================================================
+       components_FtcCommon builds:
+       - build/components/FtcCommon/classes.jar
+       - build/components/FtcCommon/libs/ModernRobotics.jar
+       - build/components/FtcCommon/libs/WirelessP2p.jar
+       - build/components/FtcCommon/libs/d2xx.jar
+       - build/components/FtcCommon/res/layout/activity_config_wifi_direct.xml
+       ==================================================================== -->
+
+  <target name="components_FtcCommon">
+    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
+         target="FtcCommon"/>
   </target>
 
   <!-- ====================================================================

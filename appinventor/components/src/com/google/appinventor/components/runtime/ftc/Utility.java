@@ -68,8 +68,8 @@ public class Utility {
   public static final String DEFAULT_ROBOT_CONFIG = "robot_config";
   public static final String FILE_EXT = ".xml";
   public static final String DEFAULT_ROBOT_CONFIG_FILENAME = DEFAULT_ROBOT_CONFIG + FILE_EXT;
-  public static final String NO_FILE = "No current file!"; //todo remove
-  public static final String UNSAVED = "Unsaved"; //todo remove
+  public static final String NO_FILE = "No current file!";
+  public static final String UNSAVED = "Unsaved";
 
   private Activity activity;
   private SharedPreferences preferences;
@@ -250,12 +250,10 @@ public class Utility {
     return modules;
   }
 
-  public void updateHeader(String default_name,
-      /*AI int pref_hardware_config_filename_id */ String pref_hardware_config_filename_key,
-      /*AI int fileTextView */ TextView activeFile,
-      /*AI int header_id */ LinearLayout header){
-    String fullFilename = preferences.getString(
-        /*AI activity.getString( */pref_hardware_config_filename_key /*AI ) */, default_name);
+  public void updateHeader(String default_name, //AI int pref_hardware_config_filename_id, int fileTextView, int header_id){
+      String pref_hardware_config_filename_key, TextView activeFile, LinearLayout header) {
+    String fullFilename = preferences.getString(//AI activity.getString(pref_hardware_config_filename_id), default_name);
+        pref_hardware_config_filename_key, default_name);
     String activeFilename = fullFilename.replaceFirst("[.][^.]+$", "");
     //AI TextView activeFile = (TextView) activity.findViewById(fileTextView);
     activeFile.setText(activeFilename);
@@ -263,34 +261,39 @@ public class Utility {
     if (activeFilename.equalsIgnoreCase(NO_FILE)) {
       // from the Qualcomm logo
       int color = Color.parseColor("#5DBCD2");
-      changeBackground(color, /*AI header_id */ header);
+      changeBackground(color, //AI header_id);
+          header);
     } else if (activeFilename.toLowerCase().contains(UNSAVED.toLowerCase())){
-      changeBackground(Color.YELLOW, /*AI header_id */ header);
+      changeBackground(Color.YELLOW, //AI header_id);
+          header);
     } else {
       // lightest part of the Qualcomm logo
       int color = Color.parseColor("#309EA4");
-      changeBackground(color, /*AI header_id */ header);
+      changeBackground(color, //AI header_id);
+          header);
     }
   }
 
   //takes in a file name and updates the filename stored in the preferences.
-  public void saveToPreferences(String filename,
-      /*AI int pref_hardware_config_filename_id */ String pref_hardware_config_filename_key){
+  public void saveToPreferences(String filename, //AI int pref_hardware_config_filename_id){
+      String pref_hardware_config_filename_key) {
     filename = filename.replaceFirst("[.][^.]+$", "");
     SharedPreferences.Editor edit = preferences.edit();
-    edit.putString(/*AI activity.getString( */ pref_hardware_config_filename_key /*AI ) */, filename);
+    edit.putString(//AI activity.getString(pref_hardware_config_filename_id), filename);
+        pref_hardware_config_filename_key, filename);
     edit.apply();
   }
 
-  public void changeBackground(int color, /*AI int header_id */ LinearLayout header){
+  public void changeBackground(int color, //AI int header_id){
+      LinearLayout header) {
     //AI LinearLayout header = (LinearLayout) activity.findViewById(header_id);
     header.setBackgroundColor(color);
   }
 
-  public String getFilenameFromPrefs(
-      /*AI int pref_hardware_config_filename_id */ String pref_hardware_config_filename_key,
-      String default_name){
-    return preferences.getString(/*AI activity.getString( */ pref_hardware_config_filename_key /*AI ) */, default_name);
+  public String getFilenameFromPrefs(//AI int pref_hardware_config_filename_id, String default_name){
+      String pref_hardware_config_filename_key, String default_name) {
+    return preferences.getString(//AI activity.getString(pref_hardware_config_filename_id), default_name);
+        pref_hardware_config_filename_key, default_name);
   }
 
   public void resetCount(){
