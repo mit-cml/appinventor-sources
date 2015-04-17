@@ -33,11 +33,19 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
+  var header;
+  var eventName = (this.isMulti) ? ("MultiGeneric-" + this.typeName + "-" + this.eventName) : this.eventName
+  if (this.isMulti) {
+    header = Blockly.Yail.YAIL_DEFINE_MULTI_EVENT + eventName;
+  } else {
+    var instanceName = this.isGeneric ? this.getInputTargetBlock("COMPONENT").instanceName : this.instanceName;
+    header = Blockly.Yail.YAIL_DEFINE_EVENT
+            + instanceName
+            + Blockly.Yail.YAIL_SPACER
+            + eventName;
+  }
 
-  var code = Blockly.Yail.YAIL_DEFINE_EVENT
-    + this.getFieldValue("COMPONENT_SELECTOR")
-    + Blockly.Yail.YAIL_SPACER
-    + this.eventName
+  var code = header
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     + this.declaredNames()
@@ -48,6 +56,7 @@ Blockly.Yail.component_event = function() {
     + Blockly.Yail.YAIL_SPACER
     + body
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  console.log(code);
   return code;
 }
 
