@@ -44,6 +44,7 @@
   <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" />
 
   <!-- srcs -->
+  <source path="" includes="simple_components.json" />
   <source path="client"/>
   <source path="client/boxes"/>
   <source path="client/editor"/>
@@ -73,6 +74,7 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>
   <source path="shared/settings"/>
