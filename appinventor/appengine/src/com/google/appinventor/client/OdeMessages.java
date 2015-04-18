@@ -1907,7 +1907,7 @@ public interface OdeMessages extends Messages {
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
 
-  // Used in client/editor/simple/components/MockHVarrangement.java
+  // Used in client/editor/simple/components/MockHVArrangement.java
 
   @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
@@ -2241,6 +2241,59 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewer")
   @Description("")
   String webViewerComponentPallette();
+
+  // FIRST Tech Challenge components
+  @DefaultMessage("FtcAccelerationSensor")
+  @Description("")
+  String ftcAccelerationSensorComponentPallette();
+
+  @DefaultMessage("FtcCompassSensor")
+  @Description("")
+  String ftcCompassSensorComponentPallette();
+
+  @DefaultMessage("FtcDcMotor")
+  @Description("")
+  String ftcDcMotorComponentPallette();
+
+  @DefaultMessage("FtcGamepad")
+  @Description("")
+  String ftcGamepadComponentPallette();
+
+  @DefaultMessage("FtcGyroSensor")
+  @Description("")
+  String ftcGyroSensorComponentPallette();
+
+  @DefaultMessage("FtcIrSeekerSensor")
+  @Description("")
+  String ftcIrSeekerSensorComponentPallette();
+
+  @DefaultMessage("FtcLegacyModule")
+  @Description("")
+  String ftcLegacyModuleComponentPallette();
+
+  @DefaultMessage("FtcLightSensor")
+  @Description("")
+  String ftcLightSensorComponentPallette();
+
+  @DefaultMessage("FtcOpMode")
+  @Description("")
+  String ftcOpModeComponentPallette();
+
+  @DefaultMessage("FtcRobotController")
+  @Description("")
+  String ftcRobotControllerComponentPallette();
+
+  @DefaultMessage("FtcServo")
+  @Description("")
+  String ftcServoComponentPallette();
+
+  @DefaultMessage("FtcUltrasonicSensor")
+  @Description("")
+  String ftcUltrasonicSensorComponentPallette();
+
+  @DefaultMessage("FtcVoltageSensor")
+  @Description("")
+  String ftcVoltageSensorComponentPallette();
 
   // Component Properties
   @DefaultMessage("AboutScreen")
@@ -3075,6 +3128,191 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebViewStringProperties();
 
+  // FIRST Tech Challenge properties
+  @DefaultMessage("A")
+  @Description("")
+  String AProperties();
+
+  @DefaultMessage("AtRest")
+  @Description("")
+  String AtRestProperties();
+
+  @DefaultMessage("B")
+  @Description("")
+  String BProperties();
+
+  @DefaultMessage("Back")
+  @Description("")
+  String BackProperties();
+
+  @DefaultMessage("CalibrationFailed")
+  @Description("")
+  String CalibrationFailedProperties();
+
+  @DefaultMessage("ChannelMode")
+  @Description("")
+  String ChannelModeProperties();
+
+  @DefaultMessage("Configuration")
+  @Description("")
+  String ConfigurationProperties();
+
+  @DefaultMessage("CurrentPosition")
+  @Description("")
+  String CurrentPositionProperties();
+
+  @DefaultMessage("DeviceName")
+  @Description("")
+  String DeviceNameProperties();
+
+  @DefaultMessage("DifferentialControlLoopCoefficientD")
+  @Description("")
+  String DifferentialControlLoopCoefficientDProperties();
+
+  @DefaultMessage("DifferentialControlLoopCoefficientI")
+  @Description("")
+  String DifferentialControlLoopCoefficientIProperties();
+
+  @DefaultMessage("DifferentialControlLoopCoefficientP")
+  @Description("")
+  String DifferentialControlLoopCoefficientPProperties();
+
+  @DefaultMessage("Direction")
+  @Description("")
+  String DirectionProperties();
+
+  @DefaultMessage("DpadDown")
+  @Description("")
+  String DpadDownProperties();
+
+  @DefaultMessage("DpadLeft")
+  @Description("")
+  String DpadLeftProperties();
+
+  @DefaultMessage("DpadRight")
+  @Description("")
+  String DpadRightProperties();
+
+  @DefaultMessage("DpadUp")
+  @Description("")
+  String DpadUpProperties();
+
+  @DefaultMessage("EnableLed")
+  @Description("")
+  String EnableLedProperties();
+
+  @DefaultMessage("GamepadNumber")
+  @Description("")
+  String GamepadNumberProperties();
+
+  @DefaultMessage("GearRatio")
+  @Description("")
+  String GearRatioProperties();
+
+  @DefaultMessage("Guide")
+  @Description("")
+  String GuideProperties();
+
+  @DefaultMessage("JoystickDeadzone")
+  @Description("")
+  String JoystickDeadzoneProperties();
+
+  @DefaultMessage("LeftBumper")
+  @Description("")
+  String LeftBumperProperties();
+
+  @DefaultMessage("LeftStickX")
+  @Description("")
+  String LeftStickXProperties();
+
+  @DefaultMessage("LeftStickY")
+  @Description("")
+  String LeftStickYProperties();
+
+  @DefaultMessage("LeftTrigger")
+  @Description("")
+  String LeftTriggerProperties();
+
+  @DefaultMessage("LightLevel")
+  @Description("")
+  String LightLevelProperties();
+
+  @DefaultMessage("Mode")
+  @Description("")
+  String ModeProperties();
+
+  @DefaultMessage("OpModeName")
+  @Description("")
+  String OpModeNameProperties();
+
+  @DefaultMessage("Position")
+  @Description("")
+  String PositionProperties();
+
+  @DefaultMessage("Power")
+  @Description("")
+  String PowerProperties();
+
+  @DefaultMessage("PowerFloat")
+  @Description("")
+  String PowerFloatProperties();
+
+  @DefaultMessage("RightBumper")
+  @Description("")
+  String RightBumperProperties();
+
+  @DefaultMessage("RightStickX")
+  @Description("")
+  String RightStickXProperties();
+
+  @DefaultMessage("RightStickY")
+  @Description("")
+  String RightStickYProperties();
+
+  @DefaultMessage("RightTrigger")
+  @Description("")
+  String RightTriggerProperties();
+
+  @DefaultMessage("Rotation")
+  @Description("")
+  String RotationProperties();
+
+  @DefaultMessage("SignalDetected")
+  @Description("")
+  String SignalDetectedProperties();
+
+  @DefaultMessage("Start")
+  @Description("")
+  String StartProperties();
+
+  @DefaultMessage("State")
+  @Description("")
+  String StateProperties();
+
+  @DefaultMessage("Status")
+  @Description("")
+  String StatusProperties();
+
+  @DefaultMessage("Strength")
+  @Description("")
+  String StrengthProperties();
+
+  @DefaultMessage("TargetPosition")
+  @Description("")
+  String TargetPositionProperties();
+
+  @DefaultMessage("UltrasonicLevel")
+  @Description("")
+  String UltrasonicLevelProperties();
+
+  @DefaultMessage("UsbScanTimeInSeconds")
+  @Description("")
+  String UsbScanTimeInSecondsProperties();
+
+  @DefaultMessage("Voltage")
+  @Description("")
+  String VoltageProperties();
+
   //Params
   @DefaultMessage("xAccel")
   @Description("")
@@ -3672,6 +3910,72 @@ public interface OdeMessages extends Messages {
   @Description("")
   String textToTranslateParams();
 
+  // FIRST Tech Challenge parameters
+  @DefaultMessage("d")
+  @Description("")
+  String dParams();
+
+  @DefaultMessage("data")
+  @Description("")
+  String dataParams();
+
+  @DefaultMessage("enable")
+  @Description("")
+  String enableParams();
+
+  @DefaultMessage("i")
+  @Description("")
+  String iParams();
+
+  @DefaultMessage("initialValue")
+  @Description("")
+  String initialValueParams();
+
+  @DefaultMessage("initialValues")
+  @Description("")
+  String initialValuesParams();
+
+  @DefaultMessage("i2cAddress")
+  @Description("")
+  String i2cAddressParams();
+
+  @DefaultMessage("key")
+  @Description("")
+  String keyParams();
+
+  @DefaultMessage("line")
+  @Description("")
+  String lineParams();
+
+  @DefaultMessage("max")
+  @Description("")
+  String maxParams();
+
+  @DefaultMessage("memAddress")
+  @Description("")
+  String memAddressParams();
+
+  @DefaultMessage("memLength")
+  @Description("")
+  String memLengthParams();
+
+  @DefaultMessage("min")
+  @Description("")
+  String minParams();
+
+  @DefaultMessage("p")
+  @Description("")
+  String pParams();
+
+  @DefaultMessage("physicalPort")
+  @Description("")
+  String physicalPortParams();
+
+  @DefaultMessage("set")
+  @Description("")
+  String setParams();
+
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -4036,6 +4340,19 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Shaking")
   @Description("")
   String ShakingEvents();
+
+  // FIRST Tech Challenge events
+  @DefaultMessage("Loop")
+  @Description("")
+  String LoopEvents();
+
+  @DefaultMessage("Start")
+  @Description("")
+  String StartEvents();
+
+  @DefaultMessage("Stop")
+  @Description("")
+  String StopEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -4862,6 +5179,111 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RequestTranslationMethods();
 
+  // FIRST Tech Challenge methods
+  @DefaultMessage("Convert1ByteNumberToByteArray")
+  @Description("")
+  String Convert1ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert2ByteNumberToByteArray")
+  @Description("")
+  String Convert2ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert4ByteNumberToByteArray")
+  @Description("")
+  String Convert4ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("Convert8ByteNumberToByteArray")
+  @Description("")
+  String Convert8ByteNumberToByteArrayMethods();
+
+  @DefaultMessage("ConvertByteArrayToUnsigned1ByteNumber")
+  @Description("")
+  String ConvertByteArrayToUnsigned1ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayToSigned1ByteNumber")
+  @Description("")
+  String ConvertByteArrayToSigned1ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo2ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo2ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo4ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo4ByteNumberMethods();
+
+  @DefaultMessage("ConvertByteArrayTo8ByteNumber")
+  @Description("")
+  String ConvertByteArrayTo8ByteNumberMethods();
+
+  @DefaultMessage("EnableAnalogReadMode")
+  @Description("")
+  String EnableAnalogReadModeMethods();
+
+  @DefaultMessage("EnableNxtI2cReadMode")
+  @Description("")
+  String EnableNxtI2cReadModeMethods();
+
+  @DefaultMessage("EnableNxtI2cWriteMode")
+  @Description("")
+  String EnableNxtI2cWriteModeMethods();
+
+  @DefaultMessage("Enable9v")
+  @Description("")
+  String Enable9vMethods();
+
+  @DefaultMessage("Float")
+  @Description("")
+  String FloatMethods();
+
+  @DefaultMessage("GetRuntime")
+  @Description("")
+  String GetRuntimeMethods();
+
+  @DefaultMessage("IsPortReady")
+  @Description("")
+  String IsPortReadyMethods();
+
+  @DefaultMessage("RangeClip")
+  @Description("")
+  String RangeClipMethods();
+
+  @DefaultMessage("RangeScale")
+  @Description("")
+  String RangeScaleMethods();
+
+  @DefaultMessage("ReadAnalog")
+  @Description("")
+  String ReadAnalogMethods();
+
+  @DefaultMessage("ReadLegacyModuleCache")
+  @Description("")
+  String ReadLegacyModuleCacheMethods();
+
+  @DefaultMessage("ScaleRange")
+  @Description("")
+  String ScaleRangeMethods();
+
+  @DefaultMessage("SetDifferentialControlLoopCoefficients")
+  @Description("")
+  String SetDifferentialControlLoopCoefficientsMethods();
+
+  @DefaultMessage("SetDigitalLine")
+  @Description("")
+  String SetDigitalLineMethods();
+
+  @DefaultMessage("TelemetryAddNumericData")
+  @Description("")
+  String TelemetryAddNumericDataMethods();
+
+  @DefaultMessage("TelemetryAddTextData")
+  @Description("")
+  String TelemetryAddTextDataMethods();
+
+  @DefaultMessage("WriteLegacyModuleCache")
+  @Description("")
+  String WriteLegacyModuleCacheMethods();
+
 
   //Mock Components
   @DefaultMessage("add items...")
@@ -5124,6 +5546,59 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So\"en-es\" will translate from English to Spanish while \"es-ru\" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just \"es\" will attempt to detect the source language and translate it to Spanish.<p /> This component is powered by the Yandex translation service.  See http://api.yandex.com/translate/ for more information, including the list of available languages and the meanings of the language codes and status codes. <p />Note: Translation happens asynchronously in the background. When the translation is complete, the \"GotTranslation\" event is triggered.")
   @Description("")
   String YandexTranslateHelpStringComponentPallette();
+
+  // FIRST Tech Challenge component help strings
+  @DefaultMessage("A component for an acceleration sensor of an FTC robot.")
+  @Description("")
+  String FtcAccelerationSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a compass sensor of an FTC robot.")
+  @Description("")
+  String FtcCompassSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a DC motor of an FTC robot.")
+  @Description("")
+  String FtcDcMotorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a gamepad of an FTC robot.")
+  @Description("")
+  String FtcGamepadHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a gyro sensor of an FTC robot.")
+  @Description("")
+  String FtcGyroSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
+  @Description("")
+  String FtcIrSeekerSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a legacy module of an FTC robot.")
+  @Description("")
+  String FtcLegacyModuleHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a light sensor of an FTC robot.")
+  @Description("")
+  String FtcLightSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an Op Mode for an FTC robot.")
+  @Description("")
+  String FtcOpModeHelpStringComponentPallette();
+
+  @DefaultMessage("The primary FTC Robot Controller component.")
+  @Description("")
+  String FtcRobotControllerHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a servo of an FTC robot.")
+  @Description("")
+  String FtcServoHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an ultrasonic sensor of an FTC robot.")
+  @Description("")
+  String FtcUltrasonicSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a voltage sensor of an FTC robot.")
+  @Description("")
+  String FtcVoltageSensorHelpStringComponentPallette();
 
 
   //Ode.java messages
