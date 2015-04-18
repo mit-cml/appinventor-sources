@@ -17,4 +17,6 @@ public interface HandlesEventDispatching {
 
   public boolean dispatchEvent(Component component, String componentName, String eventName,
       Object[] args);
+  
+  public boolean dispatchMultiEvent(String eventName, Object[] args);
 }

@@ -79,6 +79,9 @@ public class EventDispatcher {
 
   private static final Map<HandlesEventDispatching, EventRegistry>
       mapDispatchDelegateToEventRegistry = new HashMap<HandlesEventDispatching, EventRegistry>();
+  
+  private static final Map<HandlesEventDispatching, EventRegistry>
+      mapDispatchDelegateToMultiEventRegistry = new HashMap<HandlesEventDispatching, EventRegistry>();
 
   private EventDispatcher() {
   }
@@ -88,6 +91,15 @@ public class EventDispatcher {
     if (er == null) {
       er = new EventRegistry(dispatchDelegate);
       mapDispatchDelegateToEventRegistry.put(dispatchDelegate, er);
+    }
+    return er;
+  }
+  
+  private static EventRegistry getMultiEventRegistry(HandlesEventDispatching dispatchDelegate) {
+    EventRegistry er = mapDispatchDelegateToMultiEventRegistry.get(dispatchDelegate);
+    if (er == null) {
+      er = new EventRegistry(dispatchDelegate);
+      mapDispatchDelegateToMultiEventRegistry.put(dispatchDelegate, er);
     }
     return er;
   }
@@ -114,13 +126,28 @@ public class EventDispatcher {
       eventClosures = new HashSet<EventClosure>();
       er.eventClosuresMap.put(eventName, eventClosures);
     }
-
+    System.out.println("EventDispatcher: " + "Registered event closure for " +
+            componentId + "." + eventName);
     eventClosures.add(new EventClosure(componentId, eventName));
     if (DEBUG) {
       Log.i("EventDispatcher", "Registered event closure for " +
           componentId + "." + eventName);
     }
   }
+  
+  public static void registerMultiEventForDelegation(HandlesEventDispatching dispatchDelegate, String eventName) {
+	  EventRegistry er = getEventRegistry(dispatchDelegate);
+	  Set<EventClosure> eventClosures = er.eventClosuresMap.get(eventName);
+	  if (eventClosures == null) {
+	    eventClosures = new HashSet<EventClosure>();
+	    er.eventClosuresMap.put(eventName, eventClosures);
+	  }
+	  System.out.println("EventDispatcher: " + "Registered multi event closure for " + eventName);
+	  eventClosures.add(new EventClosure("MultiEvent", eventName));
+	  if (DEBUG) {
+	    Log.i("EventDispatcher", "Registered multi event closure for " + eventName);
+	  }
+  }  
 
   /**
    * Unregisters a dispatchDelegate for handling event dispatching for the event with the specified
@@ -190,6 +217,7 @@ public class EventDispatcher {
       Log.i("EventDispatcher", "Trying to dispatch event " + eventName);
     }
     boolean dispatched = false;
+    boolean multiDispatched = false;
     HandlesEventDispatching dispatchDelegate = component.getDispatchDelegate();
     if (dispatchDelegate.canDispatchEvent(component, eventName)) {
       EventRegistry er = getEventRegistry(dispatchDelegate);
@@ -197,8 +225,16 @@ public class EventDispatcher {
       if (eventClosures != null && eventClosures.size() > 0) {
         dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
       }
+      er = getMultiEventRegistry(dispatchDelegate);
+      eventClosures = er.eventClosuresMap.get(eventName);
+      Object[] newArgs = new Object[args.length + 1];
+      newArgs[0] = component;
+      System.arraycopy(args, 0, newArgs, 1, args.length);
+      if (eventClosures != null && eventClosures.size() > 0) {
+    	multiDispatched = delegateDispatchMultiEvent(dispatchDelegate, eventClosures, newArgs);
+      }
     }
-    return dispatched;
+    return (dispatched || multiDispatched);
   }
 
   /**
@@ -221,6 +257,32 @@ public class EventDispatcher {
                                          eventClosure.componentId,
                                          eventClosure.eventName,
                                          args)) {
+        if (DEBUG) {
+          Log.i("EventDispatcher", "Successfully dispatched event " +
+              eventClosure.componentId + "." + eventClosure.eventName);
+        }
+        dispatched = true;  // break here or keep iterating through loop?
+      }
+    }
+    return dispatched;
+  }
+  
+  /**
+   * Delegates the dispatch of a multi event to the dispatch delegate.
+   *
+   * @param eventClosures set of event closures matching the event name
+   * @param component the component that generated the event
+   * @param args  arguments to event handler
+   */
+  private static boolean delegateDispatchMultiEvent(HandlesEventDispatching dispatchDelegate,
+                                               Set<EventClosure> eventClosures, Object... args) {
+    // The event closures set will contain all event closures matching the event name.
+    // We depend on the delegate's dispatchEvent method to check the registered event closure and
+    // only dispatch the event if the registered component matches the component that generated the
+    // event.  This should only be true for one (or zero) of the closures.
+    boolean dispatched = false;
+    for (EventClosure eventClosure : eventClosures) {
+      if (dispatchDelegate.dispatchMultiEvent(eventClosure.eventName, args)) {
         if (DEBUG) {
           Log.i("EventDispatcher", "Successfully dispatched event " +
               eventClosure.componentId + "." + eventClosure.eventName);

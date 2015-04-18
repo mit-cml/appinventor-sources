@@ -49,8 +49,20 @@ Blockly.Blocks.component_event = {
 
     var container = document.createElement('mutation');
     container.setAttribute('component_type', this.typeName);
-    container.setAttribute('instance_name', this.instanceName);//instance name not needed
     container.setAttribute('event_name', this.eventName);
+    var isGenericString = "false";
+    if(this.isGeneric){
+      isGenericString = "true";
+    }
+    container.setAttribute('is_generic', isGenericString);
+    var isMultiString = "false";
+    if (this.isMulti) {
+      isMultiString = "true";
+    }
+    container.setAttribute('is_multi', isMultiString);
+    if(!this.isGeneric) {
+      container.setAttribute('instance_name', this.instanceName);//instance name not needed
+    }
     if (!this.horizontalParameters) {
       container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
                                                              // The absence of this attribute means horizontal.
@@ -61,21 +73,39 @@ Blockly.Blocks.component_event = {
   domToMutation : function(xmlElement) {
 
     this.typeName = xmlElement.getAttribute('component_type');
-    this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
     this.eventName = xmlElement.getAttribute('event_name');
     var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
+    var isGenericString = xmlElement.getAttribute('is_generic');
+    var isMultiString = xmlElement.getAttribute('is_multi');
+    this.isGeneric = (isGenericString == "true" ? true : false);
+    this.isMulti = (isMultiString == "true" ? true : false);
+    if(!this.isGeneric) {
+      this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
+    }
 
      // Orient parameters horizontally by default
 
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
+    if(!this.isGeneric) {
+      this.appendDummyInput('WHENTITLE')
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
         .appendField('.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
-    this.componentDropDown.setValue(this.instanceName);
+      //for non-generic blocks, set the value of the component drop down
+      this.componentDropDown.setValue(this.instanceName);
+    } else {
+      this.appendDummyInput('WHENTITLE')
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
+      if (!this.isMulti) {
+        var compInput = this.appendValueInput("COMPONENT")
+          .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
+          .setAlign(Blockly.ALIGN_RIGHT);
+      }
+    }
+
     this.setParameterOrientation(horizParams);
     this.setTooltip(this.getEventTypeObject().description);
     this.setPreviousStatement(false);
@@ -163,7 +193,7 @@ Blockly.Blocks.component_event = {
   },
   // Return a list of parameter names
   getParameters: function () {
-    return this.getEventTypeObject().params;
+    return this.isMulti ? this.getMultiEventTypeObject().params : this.getEventTypeObject().params;
   },
   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
   rename : function(oldname, newname) {
@@ -222,6 +252,11 @@ Blockly.Blocks.component_event = {
   getEventTypeObject : function() {
     return Blockly.ComponentTypes[this.typeName].eventDictionary[this.eventName];
   },
+
+  getMultiEventTypeObject : function() {
+    return Blockly.ComponentTypes[this.typeName].multiEventDictionary[this.eventName];
+  },
+
   typeblock : function(){
     var tb = [];
     var instanceNames = Blockly.ComponentInstances.getInstanceNames();
