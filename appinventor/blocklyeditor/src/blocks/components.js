@@ -340,9 +340,6 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
   getMethodTypeObject : function() {
@@ -565,9 +562,6 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
   typeblock : function(){
@@ -679,9 +673,6 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
 

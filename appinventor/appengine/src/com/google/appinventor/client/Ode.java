@@ -65,7 +65,6 @@ import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
-import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
@@ -149,9 +148,6 @@ public class Ode implements EntryPoint {
 
   // User information
   private User user;
-
-  // Unread message count, global
-  private final int[] msgCount = {0};
 
   // Template path if set by /?repo=
   private String templatePath;
@@ -325,28 +321,6 @@ public class Ode implements EntryPoint {
           }
           topPanel.updateAccountMessageButton();
           PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
-
-          final String userInfo = user.getUserName();
-          // Get the message count to display right next to user
-          final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
-              // failure message
-              MESSAGES.galleryError()) {
-                @Override
-                public void onSuccess(List<Message> msgs) {
-                  msgCount[0] = 0;
-                  // get the new comment list so gui updates
-                  for (Message m : msgs) {
-                    if (m.getStatus().equalsIgnoreCase("1")) {
-                      msgCount[0]++;
-                    }
-                  }
-                  String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
-                  OdeLog.log("### MSG final = " + u);
-                  // Reset message count for further use
-                  topPanel.showUserEmail(u);
-                }
-            };
-          Ode.getInstance().getGalleryService().getMessages(messagesCallback);
 
         }else{
           topPanel.showModerationLink(false);

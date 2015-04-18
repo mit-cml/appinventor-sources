@@ -1088,9 +1088,21 @@
                     (show-arglist-no-parens arglist))
      (string-append "Bad arguments to " string-name))))
 
+;;; show a string that is the elements in arglist, with the individual
+;;; elements delimited by brackets to make error messages more readable
 (define (show-arglist-no-parens args)
-  (let ((s (get-display-representation args)))
-    (substring s 1 (- (string-length s) 1))))
+  (let* ((elements (map get-display-representation args))
+         (bracketed (map (lambda (s) (string-append "[" s "]")) elements)))
+    (let loop ((result "") (rest-elements bracketed))
+      (if (null? rest-elements)
+          result
+          (loop (string-append result " " (car rest-elements))
+                (cdr rest-elements))))))
+
+
+;;(define (show-arglist-no-parens args)
+;;  (let ((s (get-display-representation args)))
+;;    (substring s 1 (- (string-length s) 1))))
 
 ;;; Coerce the list of args to the corresponding list of types
 
@@ -1277,9 +1289,16 @@
 ;;; exact complex numbers seems incomplete, e.g. (exact->inexact +1i) gives an error
 (define (appinventor-number->string n)
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
-        ((integer? n) (call-with-output-string (lambda (port) (display n port))))
+        ;; In Scheme (integer? 2.0) is true, but (display 2.0) is 2.0
+        ;; so we make sure to display the exact integer
+        ;; note that if we divide 4 by 2, we get an inexact 2 internally, but this
+        ;; will display as 2 rather than 2.0
+        ;; Note that we could have used *format* inexact here, too, since YailNumberToString
+        ;; checks for integers EXCEPT FOR the fact that the integer n might be a bignum, in which case
+        ;; the conversion to a java double will produce a wrong answer
+        ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
         ;; if it's a rational then format it as a decimal
-        ;; Note that rationals are still exact rationals -- they just print
+        ;; Note that Kawa rationals are still exact rationals -- they just print
         ;; as decimals.  That is, 7*(1/7) equals 1 exactly
         ((exact? n) (appinventor-number->string (exact->inexact n)))
         (else (*format-inexact* n))))
@@ -1298,17 +1317,30 @@
          (yail-equal? (cdr x1) (cdr x2))))))
 
 (define (yail-atomic-equal? x1 x2)
-  (or (equal? x1 x2)
-      ;; equal? covers the case where x1 and x2 are equal objects
-      ;; or equal strings.
-      ;; if that fails, try comparing x1 and x2 numerically
-      ;; Note that equal? is not sufficient for numbers
-      ;; because in Scheme (= 1 1.0) is true while
-      ;; (equal? 1 1.0) is false.
-      (let ((nx1 (as-number x1)))
-        (and nx1
-             (let ((nx2 (as-number x2)))
-               (and nx2 (= nx1 nx2)))))))
+  (cond
+   ;; equal? covers the case where x1 and x2 are equal objects or equal strings.
+   ((equal? x1 x2) #t)
+   ;; This implementation says that "0" is equal to "00" since
+   ;; both convert to 0.
+
+   ;; We could change this to require that
+   ;; two strings are string=, but then equality would not be transitive
+   ;; since "0" and "00" are both equal to 0, but would not be equal to
+   ;; each other
+   ;; Uncomment these two lines to use string=? on strings
+   ;; ((and (string? x1) (string? x2))
+   ;;  (equal? x1 x2))
+
+   ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
+   ;; and comparing them numerically
+   ;; Note that equal? is not sufficient for numbers
+   ;; because in Scheme (= 1 1.0) is true while
+   ;; (equal? 1 1.0) is false.
+   (else
+    (let ((nx1 (as-number x1)))
+      (and nx1
+           (let ((nx2 (as-number x2)))
+             (and nx2 (= nx1 nx2))))))))
 
 ;;; Return the number, converting from a string if necessary
 ;;; Return #f if not a number
@@ -1436,7 +1468,14 @@
 (define (yail-divide n d)
   (if (= d 0)
       (/ n 0.0)
-      (/ n d)))
+      ;; force inexactness so that integer division does not produce
+      ;; rationals, which is simpler for App Inventor users.
+      ;; In most cases, rationals are converted to decimals anyway at higher levels
+      ;; of the system, so that the forcing to inexact would be unnecessary.  But
+      ;; there are places where the conversion doesn't happen.  For example, if we
+      ;; inserted the result of dividing 2 by 3 into a ListView or a picker,
+      ;; which would appear as the string "2/3" if the division produced a rational.
+      (exact->inexact (/ n d))))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
@@ -1939,7 +1978,8 @@ list, use the make-yail-list constructor with no arguments.
 ;;; Yail-alist lookup looks up the key in a list of pairs and returns resulting match.
 ;;; It returns the default if the key is not in the table.
 ;;; Note that we can't simply use kawa assoc here, because we are
-;;; dealing with Yail lists
+;;; dealing with Yail lists.  We also need to ccompare with yail-equal?
+;;; rather than equal? to  allow for yail's implicit conversion between strings and numbers
 
 ;;; TODO(hal):  Implement dictionaries and
 ;;; integrate these with get JSON from web services.  Probably need to
@@ -1959,14 +1999,17 @@ list, use the make-yail-list constructor with no arguments.
             (format #f "Lookup in pairs: the list ~A is not a well-formed list of pairs"
                     (get-display-representation yail-list-of-pairs))
             "Invalid list of pairs"))
-          ((equal? key (car (yail-list-contents (car pairs-to-check))))
+          ((yail-equal? key (car (yail-list-contents (car pairs-to-check))))
            (cadr (yail-list-contents (car pairs-to-check))))
           (else (loop (cdr pairs-to-check))))))
+
 
 
 (define (pair-ok? candidate-pair)
   (and (yail-list? candidate-pair)
        (= (length (yail-list-contents candidate-pair)) 2)))
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

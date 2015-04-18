@@ -177,7 +177,10 @@ public final class ErrorMessages {
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
-  // Please start the next group of error numbers at 2701.
+  //TextToSpeech errors
+  public static final int ERROR_TTS_NOT_READY = 2701;
+
+  // Please start the next group of error numbers at 2801.
 
 
   // Mapping of error numbers to error message format strings.
@@ -443,9 +446,12 @@ public final class ErrorMessages {
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
-    // FusiontablesControl error
+    // FusiontablesControl errors
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
+    // TextToSpeech errors
+    errorMessages.put(ERROR_TTS_NOT_READY,
+       "TextToSpeech is not yet ready to perform this operation");
   }
 
   private ErrorMessages() {

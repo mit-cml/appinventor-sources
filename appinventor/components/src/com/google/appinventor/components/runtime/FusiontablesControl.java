@@ -373,8 +373,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   }
 
 //Deprecated  -- Won't work after 12/2012
-  @SimpleFunction(description = "DEPRECATED. This block " +
-       "is deprecated as of the end of 2012.  Use SendQuery.")
+  @SimpleFunction(userVisible = false,
+      description = "DEPRECATED. This block is deprecated as of the end of 2012.  Use SendQuery.")
   public void DoQuery() {
     if (requestHelper != null) {
       new QueryProcessor().execute(query);
@@ -520,6 +520,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    * @return the HttpResponse if the request succeeded, or null
    */
   public com.google.api.client.http.HttpResponse sendQuery(String query, String authToken) {
+    errorMessage = standardErrorMessage; // In case we get an error without a message
     Log.i(LOG_TAG, "executing " + query);
     com.google.api.client.http.HttpResponse response = null;
 
@@ -824,8 +825,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
             queryResultStr = httpResponseToString(response);
             Log.i(TAG, "Query = " + query + "\nResultStr = " + queryResultStr);
           } else {
-            queryResultStr = standardErrorMessage;
-            Log.i(TAG, "Error:  " + standardErrorMessage);
+            queryResultStr = errorMessage;
+            Log.i(TAG, "Error:  " + errorMessage);
           }
           return queryResultStr;
         }
@@ -837,6 +838,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     private String serviceAuthRequest(String query) {
 
       queryResultStr = "";
+      errorMessage = standardErrorMessage;
 
       final HttpTransport TRANSPORT = AndroidHttp.newCompatibleTransport();
       final JsonFactory JSON_FACTORY = new GsonFactory();
@@ -883,7 +885,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
           // TODO(hal): In principle, we would parse the exception message to show a good user message.
           // But for now parseJsonResponseException is a stub that returns the raw message
           // Make the parser more intelligent
-          signalJsonResponseError(query, parseJsonResponseException(e.getMessage()));
+          errorMessage = parseJsonResponseException(e.getMessage());
+          signalJsonResponseError(query, errorMessage);
 
         } catch (Exception e) {
           // Maybe there could be some other kind of exception thrown?
@@ -896,7 +899,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
           // In the case of an unknown exception, we just show the user the exception message.
           // If we knew the type of exception, we might be able to do something more useful
-          signalJsonResponseError(query, e.getMessage());
+          errorMessage = e.getMessage();
+          signalJsonResponseError(query, errorMessage);
 
         }
 
@@ -909,8 +913,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
           // the response will be null if sql.executeUnparsed threw an error.  In that
           // case, the catch took care of signaling a form error to the user, and make
           // the FusionTablesControl.query method return a standard error message.
-          queryResultStr = standardErrorMessage;
-          Log.i(STAG, "Error with null response:  " + standardErrorMessage);
+          queryResultStr = errorMessage;
+          Log.i(STAG, "Error with null response:  " + errorMessage);
         }
 
         Log.i(STAG, "executed sql query");

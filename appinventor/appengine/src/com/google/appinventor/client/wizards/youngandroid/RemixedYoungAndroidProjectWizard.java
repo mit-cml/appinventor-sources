@@ -18,6 +18,10 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -44,6 +48,7 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
     setStylePrimaryName("ode-DialogBox");
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
+    projectNameTextBox.setText(replaceNonTextChar(app.getTitle()));
     projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
@@ -64,9 +69,17 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
       @Override
       public void execute() {
         String projectName = projectNameTextBox.getText();
-        boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText());
+        final PopupPanel popup = new PopupPanel(true);
+        final FlowPanel content = new FlowPanel();
+        popup.setWidget(content);
+        Label loading = new Label();
+        loading.setText(MESSAGES.loadingAppIndicatorText());
+        // loading indicator will be hided or forced to be hided in gallery.loadSourceFile
+        content.add(loading);
+        popup.center();
+        boolean success = gallery.loadSourceFile(app, projectNameTextBox.getText(), popup);
         if(success){
-          gallery.appWasDownloaded(app.getGalleryAppId());
+          gallery.appWasDownloaded(app.getGalleryAppId(), app.getDeveloperId());
         }
         else {
           show();
@@ -101,5 +114,9 @@ public final class RemixedYoungAndroidProjectWizard extends NewProjectWizard { /
   @Override
   protected void onHide() {
     actionButton.setEnabled(true);
+  }
+
+  private String replaceNonTextChar(String s){
+    return s.replaceAll("[^A-Za-z0-9]", "");
   }
 }

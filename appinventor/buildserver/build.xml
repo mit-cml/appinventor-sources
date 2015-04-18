@@ -121,18 +121,41 @@
     </copy>
   </target>
 
+
+  <!-- =====================================================================
+       Checks to see if a debug.keystore file exists in the invoker's
+       home directory (in the .appinventor subdirectory)
+       ===================================================================== -->
+  <target name="CheckKeystore"
+          depends="init">
+    <available file="${user.home}/.appinventor/debug.keystore"
+               property="keystore.exists" />
+  </target>
+
+  <!-- =====================================================================
+       Creates a personal DEBUG keystore in the invoker's .appinventor
+       subdirectory.
+       ===================================================================== -->
+
+  <target name="MakeKeyStore"
+          depends="init,CheckKeystore" unless="${keystore.exists}">
+    <mkdir dir="${user.home}/.appinventor" />
+    <genkey alias="androidkey" dname="CN=Android Debug, O=Android, C=US" storepass="android"
+            keystore="${user.home}/.appinventor/debug.keystore" keyalg="rsa"
+            validity="10000" />
+  </target>
+
   <!-- =====================================================================
        GenPlayAppSrcZip Version for the Google Play Store works over WiFi
        ===================================================================== -->
   <target name="GenPlayAppSrcZip"
-          depends="init">
-    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
-         AppInventorDebugApp.apk (i.e. the stem cell app) you should put that file in the
-         ${appinventor.dir}/aiplayapp directory and add 'android.keystore' to the includes
-         list below.
-      -->
+          depends="init,MakeKeyStore">
+    <copy tofile="${appinventor.dir}/aiplayapp/android.keystore" file="${user.home}/.appinventor/debug.keystore" />
     <zip destfile="${local.build.dir}/aiplayapp.zip" basedir="${appinventor.dir}/aiplayapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*,assets/*" />
+         includes="src/**/*,youngandroidproject/*,assets/*,android.keystore" />
+    <!-- We delete the keyfile below so as to not leave it laying around the source
+         tree -->
+    <delete file="${appinventor.dir}/aiplayapp/android.keystore" failonerror="true" />
   </target>
 
   <!-- =====================================================================
