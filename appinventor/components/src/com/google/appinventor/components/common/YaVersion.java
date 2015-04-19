@@ -314,9 +314,18 @@ public class YaVersion {
   // - TEXTBOX_COMPONENT_VERSION was incremented to 5
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 6
   // For YOUNG_ANDROID_VERSION 120:
+  // - SLIDER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 121:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 122:
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 3
+  // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 123:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
   // - FORM_COMPONENT_VERSION was incremented to 15.
 
-  public static final int YOUNG_ANDROID_VERSION = 119;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -401,10 +410,6 @@ public class YaVersion {
   //         @defaultMessage("Foo")
   //         @description(""
   //         String FooProperties();
-
-  //   You then have to add a mapping to
-  //   TranslationComponentProperties.java (or ..Methods or ..Events
-  //   etc).
 
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
@@ -539,7 +544,9 @@ public class YaVersion {
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int EMAILPICKER_COMPONENT_VERSION = 2;
+  // For EMAILPICKER_COMPONENT_VERSION 3:
+  // - RequestFocus function was added (via TextBoxBase)
+  public static final int EMAILPICKER_COMPONENT_VERSION = 3;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;
@@ -667,7 +674,9 @@ public class YaVersion {
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
   // For NOTIFIER_COMPONENT_VERSION 3:
   // - Added NotifierColor, TextColor and NotifierLength options
-  public static final int NOTIFIER_COMPONENT_VERSION = 3;
+  // For NOTIFIER_COMPONENT_VERSION 4:
+  // - Added a ShowProgressDialog method, and a DismissProgressDialog method
+  public static final int NOTIFIER_COMPONENT_VERSION = 4;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 
@@ -690,7 +699,9 @@ public class YaVersion {
 
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 2;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 3:
+  // - Added RequestFocus Function (via TextBoxBase)
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
 
   public static final int PEDOMETER_COMPONENT_VERSION = 1;
 
@@ -731,7 +742,9 @@ public class YaVersion {
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
-  public static final int SLIDER_COMPONENT_VERSION = 1;
+  // For SLIDER_COMPONENT_VERSION 2:
+  // - Added the property to allow for the removal of the Thumb Slider
+  public static final int SLIDER_COMPONENT_VERSION = 2;
 
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;
@@ -772,8 +785,12 @@ public class YaVersion {
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
 
-  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 2:
+  // - added speech pitch and rate
+  // For TEXTTOSPEECH_COMPONENT_VERSION 3:
+  // - the AvailableLanguages property was added
+  // - the AvailableCountries property was added
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 3;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -885,10 +902,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.24";
+  public static final String PREFERRED_COMPANION = "2.26";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.23ai2", "2.23ai2zx1", "2.24"};
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.26" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

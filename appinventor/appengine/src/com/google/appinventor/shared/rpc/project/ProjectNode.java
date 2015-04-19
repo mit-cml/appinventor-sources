@@ -6,6 +6,8 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import com.google.common.base.Preconditions;
 
 import java.io.Serializable;
@@ -26,7 +28,7 @@ import java.util.List;
  * that cannot be serialized, they must be marked as transient.
  *
  */
-public abstract class ProjectNode implements Serializable {
+public abstract class ProjectNode implements Serializable, IsSerializable {
 
   // For serialization
   private static final long serialVersionUID = -6903337206811923033L;

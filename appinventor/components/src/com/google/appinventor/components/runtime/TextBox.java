@@ -154,15 +154,6 @@ public final class TextBox extends TextBoxBase {
   }
 
   /**
-   * Request focus to current textbox.
-   */
-  @SimpleFunction(
-    description = "Sets the textbox active.")
-  public void RequestFocus() {
-    view.requestFocus();
-  }
-
-  /**
    * Multi line property getter method.
    *
    * @return {@code true} indicates that the textbox accepts multiple lines

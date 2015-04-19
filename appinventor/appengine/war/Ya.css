@@ -635,8 +635,8 @@ select {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.ode-TextButton[disabled],
-.gwt-Button[disabled] {
+.ode-TextButton-up-disabled,
+.gwt-Button-up-disabled {
   color: #333333;
   background-color: #e6e6e6;
   *background-color: #d9d9d9;
@@ -1492,6 +1492,22 @@ textarea::-webkit-input-placeholder {
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
+}
+.ode-UserProfileWrapper .profile-textbox-small {
+  display: inline-block;
+  width: 5%;
+  height: 22px;
+  font-size: 12px;
+  line-height: 100%;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  margin-right: 8px;
+}
+.profile-textlabel-emaildescription {
+  width: 385px;
+  color: #999;
+  margin-bottom: 6px;
 }
 
 

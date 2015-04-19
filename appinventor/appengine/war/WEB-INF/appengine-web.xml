@@ -60,6 +60,8 @@
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="false" />
 
+    <!-- Gallery Admin Email -->
+    <property name="gallery.admin.email" value="" />
 
 
     <!-- set to true if users need to accept a Terms of Service the first time
@@ -69,14 +71,19 @@
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
 
+    <!-- host[:port] to tell build server the app host url to callback
+         when deploy AppInventor on other GAE implementation such as
+         AppScale.Keep it blank when deploy on GAE -->
+    <property name="appengine.host" value="" />
+
     <!-- Interval is seconds between checking for a message of the day.
          Set set to 0 to disable checking for a MOTD.  If you do enable
          MOTD checking, make the interval long, because this check is
          resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
-    
+
     <!-- Set this to false if we should not send the Git build version with build requests.
-         This is useful when testing new servers where we don't want to require the 
+         This is useful when testing new servers where we don't want to require the
          buildserver to match -->
     <property name="build.send.git.version" value="true" />
 

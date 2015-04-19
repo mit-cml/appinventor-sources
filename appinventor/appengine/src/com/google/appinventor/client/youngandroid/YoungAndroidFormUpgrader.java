@@ -500,7 +500,10 @@ public final class YoungAndroidFormUpgrader {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
     }
-
+    if (srcCompVersion < 2) {
+      // Added the property to allow for the removal of the Thumb Slider
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -510,7 +513,12 @@ public final class YoungAndroidFormUpgrader {
       // Added speech pitch and rate
       srcCompVersion = 2;
     }
-
+    if (srcCompVersion < 3) {
+      // The AvailableLanguages property was added
+      // The AvailableCountires property was added
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -663,6 +671,10 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // RequestFocus function was added (via TextBoxBase)
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -956,6 +968,10 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Added RequestFocus Function (via TextBoxBase)
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1092,6 +1108,11 @@ public final class YoungAndroidFormUpgrader {
       // The BackgroundColor, NotifierLength, and TextColor options were added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // A new type of dialog was created, a ProgressDialog, and a method to
+      // dismiss the dialog was also added.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

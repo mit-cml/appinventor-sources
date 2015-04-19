@@ -150,8 +150,9 @@ public final class ProjectManager {
    * @param galleryId gallery ID
    */
   public void publishProject (long projectId, long galleryId){
-    Project project =getProject(projectId);
+    Project project = getProject(projectId);
     project.setGalleryId(galleryId);
+    projectsMap.put(projectId, project);
     fireProjectPublishedOrUnpublished();
   }
     /**
@@ -162,7 +163,8 @@ public final class ProjectManager {
    */
   public void UnpublishProject (long projectId) {
     Project project = getProject(projectId);
-    project.setGalleryId(-1);
+    project.setGalleryId(UserProject.NOTPUBLISHED);
+    projectsMap.put(projectId, project);
     fireProjectPublishedOrUnpublished();
   }
 
