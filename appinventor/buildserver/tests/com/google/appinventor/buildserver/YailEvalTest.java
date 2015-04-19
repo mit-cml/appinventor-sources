@@ -1044,6 +1044,16 @@ public class YailEvalTest extends TestCase {
     assertFalse((Boolean) scheme.eval("(string-empty? \"foo\")"));
   }
 
+  public void testMathsConvert() throws Throwable {
+    // we have to make the test inputs strings, because in the running system,
+    // the ocnvert lobcks force a conversion to string before calling thse
+    // Yail procedures
+    assertEquals("3E8", scheme.eval("(math-convert-dec-hex \"1000\")").toString());
+    assertEquals("1000", scheme.eval("(math-convert-hex-dec \"3E8\")").toString());
+    assertEquals("1010", scheme.eval("(math-convert-dec-bin \"10\")").toString());
+    assertEquals("10", scheme.eval("(math-convert-bin-dec \"1010\")").toString());
+  }
+
   public void roundToIntegerGroup() throws Throwable {
     assertEquals("10", scheme.eval("(yail-round 10.48)").toString());
     assertEquals("10", scheme.eval("(yail-floor 10.48)").toString());
@@ -1064,6 +1074,12 @@ public class YailEvalTest extends TestCase {
     scheme.eval("(random-integer (- (expt 2 40)) 10)");
   }
 
+  public void mathConvert() throws Throwable {
+    assertEquals("1B", scheme.eval("(convert-dec-hex 18)").toString());
+    assertEquals("18", scheme.eval("(convert-hex-dec \"1B\")").toString());
+    assertEquals("10", scheme.eval("(convert-dec-bin 1010)").toString());
+    assertEquals("4", scheme.eval("(convert-bin-dec \"100\")").toString());
+  }
 
   private static final double DELTA = .0001;
 
@@ -1167,6 +1183,7 @@ public class YailEvalTest extends TestCase {
      // Check that integer division does not produce rationals
      assertFalse((Boolean) scheme.eval("(exact? (yail-divide 2 3))"));
    }
+
 
    public void testConvertToStrings() throws Throwable {
      String schemeInputString = "(convert-to-strings (make-yail-list (/ 10 5) 2.0 \"abc\" 123 (list 4 5 6)))";
