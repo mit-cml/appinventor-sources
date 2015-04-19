@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -419,7 +419,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void SelectionColor(int argb) {
     selectionColor = argb;
-    view.setSelector(new ColorDrawable(argb));
+    view.setSelector(new GradientDrawable(
+      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
+    ));
   }
 
   /**
