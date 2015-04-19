@@ -772,12 +772,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 13;
     }
     if (srcCompVersion < 14) {
-      // The ShowTitleBar property was added.
       // The AppName property was added.
       srcCompVersion = 14;
     }
     if (srcCompVersion < 15) {
-      // The ShowTitleBar property was added.
+      // The TitleVisible property was added.
       srcCompVersion = 15;
     }
     return srcCompVersion;

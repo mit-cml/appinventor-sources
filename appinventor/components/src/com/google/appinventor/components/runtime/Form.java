@@ -115,7 +115,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
-  private boolean showTitleBar = true;
+  private boolean showTitle = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -216,7 +216,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
-    ShowTitleBar(true);
+    TitleVisible(true);
   }
 
   @Override
@@ -787,26 +787,26 @@ public class Form extends Activity
   }
  
   /**
-   * ShowTitleBar property getter method.
+   * TitleVisible property getter method.
    *
-   * @return  showTitleBar boolean
+   * @return  showTitle boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
-  public boolean ShowTitleBar() {
-    return showTitleBar;
+  public boolean TitleVisible() {
+    return showTitle;
   }
   
   /**
-   * ShowTitleBar property setter method.
+   * TitleVisible property setter method.
    *
    * @param show boolean
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public void ShowTitleBar(boolean show) {
-    if (show != showTitleBar) {
+  public void TitleVisible(boolean show) {
+    if (show != showTitle) {
       View v = (View)findViewById(android.R.id.title).getParent();
       if (v != null) {
         if (show) {
@@ -814,7 +814,7 @@ public class Form extends Activity
         } else {
           v.setVisibility(View.GONE);
         }    
-        showTitleBar = show;		
+        showTitle = show;		
       }
     }
   }
