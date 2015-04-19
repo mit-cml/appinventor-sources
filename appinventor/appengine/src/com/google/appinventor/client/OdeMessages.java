@@ -155,30 +155,6 @@ public interface OdeMessages extends Messages {
 //  @DefaultMessage("Vietnamese")
 //  @Description("Label of the button for switching language to Vietnamese")
 //  String switchLanguageVietnameseButton();
-  //Used in TopPanel.java
-  @DefaultMessage("\" has been liked ")
-  @Description("Label of has been liked")
-  String messageHasBeenLiked();
-
-  @DefaultMessage("\" has been downloaded ")
-  @Description("Label of has been downloaded")
-  String messageHasBeenDownloaded();
-
-  @DefaultMessage(" times ")
-  @Description("Label of times")
-  String messageTimes();
-
-  @DefaultMessage("  times since the last time you check it. Keep up the good work!")
-  @Description("Label of suffix of message app stats 1")
-  String messageAppStats1();
-
-  @DefaultMessage("  since the last time you check it. Keep up the good work!")
-  @Description("Label of suffix of message app stats 2")
-  String messageAppStats2();
-
-  @DefaultMessage(" times and downloaded ")
-  @Description("Label of times and downloaded")
-  String messageTimesAndDownloaded();
 
   //Used in ModerationPage.java
   @DefaultMessage("...")
@@ -207,44 +183,44 @@ public interface OdeMessages extends Messages {
 
   // Used in ReportList.java
   @DefaultMessage("Inappropriate App Content: Remove")
-  @Description("Label of the Inappropriate App Content Remove on message template of reportlist")
+  @Description("Label of the Inappropriate App Content Remove on reportlist")
   String inappropriateAppContentRemoveTitle();
 
   @DefaultMessage("Inappropriate App Content")
-  @Description("Label of the Inappropriate App Content on message template of reportlist")
+  @Description("Label of the Inappropriate App Content on reportlist")
   String inappropriateAppContentTitle();
 
   @DefaultMessage("Inappropriate User Profile Content")
-  @Description("Label of the Inappropriate User Profile Content on message template of reportlist")
+  @Description("Label of the Inappropriate User Profile Content on reportlist")
   String inappropriateUserProfileContentTitle();
 
   @DefaultMessage("Choose Template")
-  @Description("Label of the Choose Template Label on message template of reportlist")
+  @Description("Label of the Choose Template Label on reportlist")
   String labelChooseTemplate();
 
   @DefaultMessage("Sent From: ")
-  @Description("Label of the Sent From on message of reportlist")
-  String messageSentFrom();
+  @Description("Label of the Sent From on reportlist")
+  String emailSentFrom();
 
   @DefaultMessage("Sent To: ")
-  @Description("Label of the Sent To on message of reportlist")
-  String messageSentTo();
+  @Description("Label of the Sent To on reportlist")
+  String emailSentTo();
 
-  @DefaultMessage("Send Message")
-  @Description("Label of the Send Message of reportlist")
-  String buttonSendMessage();
+  @DefaultMessage("Send Email")
+  @Description("Label of the Send Email of reportlist")
+  String buttonSendEmail();
 
   @DefaultMessage("Deactivate App")
-  @Description("Label of the Deactivate App on message of reportlist")
+  @Description("Label of the Deactivate App on reportlist")
   String labelDeactivateApp();
 
   @DefaultMessage("Reactivate App")
-  @Description("Label of the Reactivate App on message of reportlist")
+  @Description("Label of the Reactivate App on reportlist")
   String labelReactivateApp();
 
-  @DefaultMessage("Deactivate App & Send Message")
-  @Description("Label of the Deactivate App & Send Message on message of reportlist")
-  String labelDeactivateAppAndSendMessage();
+  @DefaultMessage("Deactivate App & Send Email")
+  @Description("Label of the Deactivate App & Send Email on reportlist")
+  String labelDeactivateAppAndSendEmail();
 
   @DefaultMessage("Mark As Resolved")
   @Description("Label of the Mark As Resolved of reportlist")
@@ -267,33 +243,29 @@ public interface OdeMessages extends Messages {
   String symbolX();
 
   @DefaultMessage("Cancel")
-  @Description("Label of the Cancel Action on message of reportlist")
+  @Description("Label of the Cancel Action on reportlist")
   String labelCancel();
 
   @DefaultMessage("Confirm")
-  @Description("Label of the Confirm Action on message of reportlist")
+  @Description("Label of the Confirm Action on reportlist")
   String labelConfirm();
 
-  @DefaultMessage("Your App \"")
-  @Description("Label of the Text of Your App of reportlist")
-  String yourAppMessage();
-
-  @DefaultMessage("\" has been removed from the gallery due to inappropriate content. "
+  @DefaultMessage("Your app \"{0}\" has been removed from the gallery due to inappropriate content. "
           + "Please review the guidelines at ..."
           + "If you feel this action has been taken in error, or you would like to discuss the issue, "
           + "please use the App Inventor forum at: \n")
   @Description("Label of the Text of Template 1 of reportlist")
-  String inappropriateAppContentRemoveMessage();
+  String inappropriateAppContentRemoveEmail(String title);
 
-  @DefaultMessage("\" has inappropriate content. "
+  @DefaultMessage("Your app \"{0}\" has inappropriate content. "
           + "Please review the guidelines at ..."
           + "and modify your app accordingly. ")
   @Description("Label of the Text of Template 2 of reportlist")
-  String inappropriateAppContentMessage();
+  String inappropriateAppContentEmail(String title);
 
   @DefaultMessage("Your profile contains inappropriate content. Please modify your profile.\n")
   @Description("Label of the Text of Template 3 of reportlist")
-  String inappropriateUserProfileContentMessage();
+  String inappropriateUserProfileContentEmail();
 
   @DefaultMessage("see more ...")
   @Description("Label of the Text of seeing more of reportlist")
@@ -303,13 +275,13 @@ public interface OdeMessages extends Messages {
   @Description("Label of the Text of hiding of reportlist")
   String hideLink();
 
-  @DefaultMessage("sends a message: ")
-  @Description("Label of the Text of sending a message of reportlist")
-  String moderationActionSendAMessage();
+  @DefaultMessage("sends an email: ")
+  @Description("Label of the Text of sending an email of reportlist")
+  String moderationActionSendAnEmail();
 
-  @DefaultMessage("deativates this app with message: ")
-  @Description("Label of the Text of deativating this app with message of reportlist")
-  String moderationActionDeactivateThisAppWithMessage();
+  @DefaultMessage("deativates this app with email: ")
+  @Description("Label of the Text of deativating this app with email of reportlist")
+  String moderationActionDeactivateThisAppWithEmail();
 
   @DefaultMessage("reactivates this app")
   @Description("Label of the Text of reactivating this app of reportlist")
@@ -326,6 +298,27 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Show resolved reports")
   @Description("Label of the Text of showing resolved reports of reportlist")
   String moderationShowResolvedReports();
+
+  @DefaultMessage("An Email from App Inventor Gallery")
+  @Description("Title of the email when moderator sends out an email")
+  String moderationSendEmailTitle();
+
+  @DefaultMessage("App Inventor Gallery: App Activated")
+  @Description("Title of the email when app was activated")
+  String moderationAppReactivatedTitle();
+
+  @DefaultMessage("Your app \"{0}\" has been reactivated.")
+  @Description("Body of the email when app was activated")
+  String moderationAppReactivateBody(String title);
+
+  @DefaultMessage("App Inventor Gallery: App Deactivated")
+  @Description("Title of the email when app was deactivated")
+  String moderationAppDeactivatedTitle();
+
+  @DefaultMessage("Fail to send out the email, please try again later")
+  @Description("error message when fail to send to user from moderator")
+  String moderationErrorFailToSendEmail();
+
 
   // Used in MotdFetcher.java
 
@@ -417,12 +410,12 @@ public interface OdeMessages extends Messages {
   String privacyTermsLink();
 
   // Used in TopPanel.java
-  
+
   //Project
   @DefaultMessage("Projects")
   @Description("Name of Projects tab")
   String projectsTabName();
-  
+
   @DefaultMessage("My projects")
   @Description("Name of My projects menuitem")
   String projectMenuItem();
@@ -430,15 +423,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Start new project")
   @Description("Label of the menu item for creating a new project")
   String newProjectMenuItem();
-  
+
   @DefaultMessage("Import project (.aia) from my computer ...")
   @Description("Name of Import Project menuitem")
   String importProjectMenuItem();
-  
+
   @DefaultMessage("Delete project")
   @Description("Name of Delete project menuitem")
   String deleteProjectMenuItem();
-  
+
   @DefaultMessage("Save project")
   @Description("Name of Save menuitem")
   String saveMenuItem();
@@ -446,7 +439,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Save project as ...")
   @Description("Name of Save as ... menuitem")
   String saveAsMenuItem();
-  
+
   @DefaultMessage("Checkpoint")
   @Description("Name of Checkpoint menuitem")
   String checkpointMenuItem();
@@ -462,7 +455,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Export all projects")
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsMenuItem();
-  
+
   @DefaultMessage("Export keystore")
   @Description("Label of the button for export keystore")
   String downloadKeystoreMenuItem();
@@ -479,7 +472,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
   String connectTabName();
-  
+
   @DefaultMessage("AI Companion")
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
@@ -499,10 +492,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Moderation")
   @Description("Name of moderation tab")
   String tabNameModeration();
-
-  @DefaultMessage("Messages")
-  @Description("Label of the link for user messages")
-  String messagesLink();
 
   @DefaultMessage("Profile")
   @Description("Label of the link for private user profile")
@@ -528,7 +517,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")
   String buildTabName();
-  
+
   @DefaultMessage("App ( provide QR code for .apk )")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
@@ -540,7 +529,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Generate YAIL")
   @Description("Label of the cascade item for generating YAIL for a project")
   String generateYailMenuItem();
-  
+
   //Help
   @DefaultMessage("Help")
   @Description("Label for the Help menu")
@@ -549,7 +538,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("About")
   @Description("Label of the link for About")
   String aboutMenuItem();
-  
+
   @DefaultMessage("Companion Information")
   @Description("Information about the Companion")
   String companionInformation();
@@ -573,16 +562,16 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Forums")
   @Description("Name of Forums link")
   String forumsMenuItem();
-  
+
   @DefaultMessage("Report an Issue")
   @Description("Link for Report an Issue form")
   String feedbackMenuItem();
-  
+
   //Admin
   @DefaultMessage("Admin")
   @Description("Label of the button leading to admin functionality")
   String adminTabName();
-  
+
   @DefaultMessage("Download User Source")
   @Description("Label of the button for admins to download a user's project source")
   String downloadUserSourceMenuItem();
@@ -590,16 +579,16 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Switch To Debug Panel")
   @Description("Label of the button for admins to switch to the debug panel without an explicit error")
   String switchToDebugMenuItem();
-  
+
   //Tabs
   @DefaultMessage("My Projects")
   @Description("Name of My Projects tab")
   String myProjectsTabName();
-  
+
   @DefaultMessage("Guide")
   @Description("Name of Guide link")
   String guideTabName();
-  
+
   @DefaultMessage("Report an Issue")
   @Description("Link for Report an Issue form")
   String feedbackTabName();
@@ -607,12 +596,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Gallery")
   @Description("Link for Gallery")
   String galleryTabName();
-  
+
   //User email dropdown
   @DefaultMessage("Sign out")
   @Description("Label of the link for signing out")
   String signOutLink();
-  
+
   //
 
   @DefaultMessage("Design")
@@ -627,13 +616,13 @@ public interface OdeMessages extends Messages {
   @Description("Message shown when there is no current file editor to switch to")
   String chooseProject();
 
-  @DefaultMessage("Messages")
-  @Description("Title for user's message inbox")
-  String messageInboxTitle();
+  @DefaultMessage("Emails")
+  @Description("Title for user's email inbox")
+  String emailInboxTitle();
 
-  @DefaultMessage("Send a Message")
-  @Description("Title for moderator send message dialog")
-  String messageSendTitle();
+  @DefaultMessage("Send an Email")
+  @Description("Title for moderator send email dialog")
+  String emailSendTitle();
 
   // Used in boxes/AssetListBox.java
 
@@ -732,35 +721,35 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Control")
   @Description("Label on built-in-Control-blocks branch of block selector tree")
   String builtinControlLabel();
-  
+
   @DefaultMessage("Logic")
   @Description("Label on built-in-Logic-blocks branch of block selector tree")
   String builtinLogicLabel();
-  
+
   @DefaultMessage("Text")
   @Description("Label on built-in-Text-blocks branch of block selector tree")
   String builtinTextLabel();
-  
+
   @DefaultMessage("Lists")
   @Description("Label on built-in-Lists-blocks branch of block selector tree")
   String builtinListsLabel();
-  
+
   @DefaultMessage("Colors")
   @Description("Label on built-in-Colors-blocks branch of block selector tree")
   String builtinColorsLabel();
-  
+
   @DefaultMessage("Variables")
   @Description("Label on built-in-Variables-blocks branch of block selector tree")
   String builtinVariablesLabel();
-  
+
   @DefaultMessage("Procedures")
   @Description("Label on built-in-Procedures-blocks branch of block selector tree")
   String builtinProceduresLabel();
-  
+
   @DefaultMessage("Any component")
   @Description("Label on any-component branch of block selector tree")
   String anyComponentLabel();
-  
+
   @DefaultMessage("Any ")
   @Description("None")
   String textAnyComponentLabel();
@@ -1340,14 +1329,18 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Are you really sure you want to delete this project: {0}?"+
       " Note that the published copy of this project will be removed from the gallery as well.")
-  @Description("Confirmation message for selecting a single project and clicking delete")
+  @Description("Confirmation message for selecting a single project and clicking delete when gallery is on")
   String confirmDeleteSinglePublishedProject(String projectName);
 
-  @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
-      " Note that  if any of the projects have been published, the published version in"+
-      " the gallery will be removed as well.")
+  @DefaultMessage("Are you really sure you want to delete these projects: {0}?")
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
+
+  @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
+      " Note that if any of the projects have been published, the published version in"+
+      " the gallery will be removed as well.")
+  @Description("Confirmation message for selecting multiple projects and clicking delete when gallery is on")
+  String confirmDeleteManyProjectsWithGalleryOn(String projectNames);
 
   @DefaultMessage("Server error: could not delete project. Please try again later!")
   @Description("Error message reported when deleting a project failed on the server.")
@@ -1700,6 +1693,10 @@ public interface OdeMessages extends Messages {
   @Description("redirect action of galleryId")
   String galleryGalleryIdAction();
 
+  @DefaultMessage("\n\nVisit your app: {0}/?galleryId={1}")
+  @Description("gallery app link label")
+  String galleryVisitGalleryAppLinkLabel(String host, long galleryId);
+
   @DefaultMessage("Submit report")
   @Description("Text for the gallery app report button.")
   String galleryReportButton();
@@ -1757,10 +1754,50 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
+  // Used in RemixedYoungAndroidProjectWizard.java
+  @DefaultMessage("Loading App ...")
+  @Description("loading indicator when opening the app")
+  String loadingAppIndicatorText();
+
   // Used in ProfilePage.java
   @DefaultMessage("Edit Profile")
   @Description("Edit Profile Button, only seen by profile owner")
   String buttonEditProfile();
+
+  @DefaultMessage("Update Profile")
+  @Description("Update Profile Button, only seen by profile owner")
+  String buttonUpdateProfile();
+
+  @DefaultMessage("Edit your profile")
+  @Description("label of editing your profile")
+  String labelEditYourProfile();
+
+  @DefaultMessage("Your display name")
+  @Description("label of your display name")
+  String labelYourDisplayName();
+
+  @DefaultMessage("More info link")
+  @Description("label of more info link")
+  String labelMoreInfoLink();
+
+  @DefaultMessage("App Inventor will send you a notification "
+      + "when the apps you have posted are liked or downloaded. "
+      + "Below, you can enable/disable this feature and you can "
+      + "specify how often you want to be notified")
+  @Description("label of email description")
+  String labelEmailDescription();
+
+  @DefaultMessage("Get email for every ")
+  @Description("label of email frequency prefix")
+  String labelEmailFrequencyPrefix();
+
+  @DefaultMessage(" new Likes + Downloads")
+  @Description("label of email frequency suffix")
+  String labelEmailFrequencySuffix();
+
+  @DefaultMessage("Invalid Email Frequency: Must be an numeric and greater than 0")
+  @Description("error message of wrong email frequency")
+  String errorEmailFrequency();
 
   // Used in GalleryList.java
   @DefaultMessage("Search for Apps")
@@ -1919,7 +1956,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Sensors")
   @Description("")
   String sensorsComponentPallette();
-  
+
   @DefaultMessage("Social")
   @Description("")
   String socialComponentPallette();
@@ -1927,7 +1964,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Storage")
   @Description("")
   String storageComponentPallette();
-  
+
   @DefaultMessage("Form")
   @Description("")
   String FormComponentPallette();
@@ -1939,7 +1976,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Connectivity")
   @Description("")
   String connectivityComponentPallette();
-  
+
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
@@ -1960,416 +1997,428 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Button")
   @Description("")
   String buttonComponentPallette();
-  
+
   @DefaultMessage("Canvas")
   @Description("")
   String canvasComponentPallette();
-  
+
   @DefaultMessage("CheckBox")
   @Description("")
   String checkBoxComponentPallette();
-  
+
   @DefaultMessage("Clock")
   @Description("")
   String clockComponentPallette();
-  
+
   @DefaultMessage("DatePicker")
   @Description("")
   String datePickerComponentPallette();
-  
+
   @DefaultMessage("Image")
   @Description("")
   String imageComponentPallette();
-  
+
   @DefaultMessage("Label")
   @Description("")
   String labelComponentPallette();
-  
+
   @DefaultMessage("ListPicker")
   @Description("")
   String listPickerComponentPallette();
-  
+
   @DefaultMessage("ListView")
   @Description("")
   String listViewComponentPallette();
-  
+
   @DefaultMessage("PasswordTextBox")
   @Description("")
   String passwordTextBoxComponentPallette();
-  
+
   @DefaultMessage("Slider")
   @Description("")
   String sliderComponentPallette();
-  
+
   @DefaultMessage("Spinner")
   @Description("")
   String spinnerComponentPallette();
-  
+
   @DefaultMessage("TextBox")
   @Description("")
   String textBoxComponentPallette();
-  
+
   @DefaultMessage("TimePicker")
   @Description("")
   String timePickerComponentPallette();
-  
+
   @DefaultMessage("TinyDB")
   @Description("")
   String tinyDBComponentPallette();
-  
+
   // Media Pallette
   @DefaultMessage("Camcorder")
   @Description("")
   String camcorderComponentPallette();
-  
+
   @DefaultMessage("Camera")
   @Description("")
   String cameraComponentPallette();
-  
+
   @DefaultMessage("ImagePicker")
   @Description("")
   String imagePickerComponentPallette();
-  
+
   @DefaultMessage("Player")
   @Description("")
   String playerComponentPallette();
-  
+
   @DefaultMessage("Sound")
   @Description("")
   String soundComponentPallette();
-  
+
   @DefaultMessage("VideoPlayer")
   @Description("")
   String videoPlayerComponentPallette();
-  
+
   @DefaultMessage("YandexTranslate")
   @Description("")
   String yandexTranslateComponentPallette();
-  
+
   // Animation
   @DefaultMessage("Ball")
   @Description("")
   String ballComponentPallette();
-  
+
   @DefaultMessage("ImageSprite")
   @Description("")
   String imageSpriteComponentPallette();
-  
+
   // Social
   @DefaultMessage("ContactPicker")
   @Description("")
   String contactPickerComponentPallette();
-  
+
   @DefaultMessage("EmailPicker")
   @Description("")
   String emailPickerComponentPallette();
-  
+
   @DefaultMessage("PhoneCall")
   @Description("")
   String phoneCallComponentPallette();
-  
+
   @DefaultMessage("PhoneNumberPicker")
   @Description("")
   String phoneNumberPickerComponentPallette();
-  
+
   @DefaultMessage("Sharing")
   @Description("")
   String sharingComponentPallette();
-  
+
   @DefaultMessage("Texting")
   @Description("")
   String textingComponentPallette();
-  
+
   @DefaultMessage("Twitter")
   @Description("")
   String twitterComponentPallette();
-  
+
   // Sensor
   @DefaultMessage("AccelerometerSensor")
   @Description("")
   String accelerometerSensorComponentPallette();
-  
+
   @DefaultMessage("BarcodeScanner")
   @Description("")
   String barcodeScannerComponentPallette();
-  
+
   @DefaultMessage("LocationSensor")
   @Description("")
   String locationSensorComponentPallette();
-  
+
   @DefaultMessage("NearField")
   @Description("")
   String nearFieldComponentPallette();
-  
+
   @DefaultMessage("OrientationSensor")
   @Description("")
   String orientationSensorComponentPallette();
- 
+
   // Screen Arrangement
   @DefaultMessage("HorizontalArrangement")
   @Description("")
   String horizontalArrangementComponentPallette();
-  
+
   @DefaultMessage("TableArrangement")
   @Description("")
   String tableArrangementComponentPallette();
-  
+
   @DefaultMessage("VerticalArrangement")
   @Description("")
   String verticalArrangementComponentPallette();
-  
+
   // Lego Mindstorms
   @DefaultMessage("NxtColorSensor")
   @Description("")
   String nxtColorSensorComponentPallette();
-  
+
   @DefaultMessage("NxtDirectCommands")
   @Description("")
   String nxtDirectCommandsComponentPallette();
-  
+
   @DefaultMessage("NxtDrive")
   @Description("")
   String nxtDriveComponentPallette();
- 
+
   @DefaultMessage("NxtLightSensor")
   @Description("")
   String nxtLightSensorComponentPallette();
-  
+
   @DefaultMessage("NxtSoundSensor")
   @Description("")
   String nxtSoundSensorComponentPallette();
-  
+
   @DefaultMessage("NxtTouchSensor")
   @Description("")
   String nxtTouchSensorComponentPallette();
-  
+
   @DefaultMessage("NxtUltrasonicSensor")
   @Description("")
   String nxtUltrasonicSensorComponentPallette();
-  
+
   // Storage
   @DefaultMessage("ActivityStarter")
   @Description("")
   String activityStarterComponentPallette();
-  
+
   @DefaultMessage("BluetoothClient")
   @Description("")
   String bluetoothClientComponentPallette();
- 
+
   @DefaultMessage("BluetoothServer")
   @Description("")
   String bluetoothServerComponentPallette();
-  
+
   @DefaultMessage("Notifier")
   @Description("")
   String notifierComponentPallette();
-  
+
   @DefaultMessage("SpeechRecognizer")
   @Description("")
   String speechRecognizerComponentPallette();
-  
+
   @DefaultMessage("TextToSpeech")
   @Description("")
   String textToSpeechComponentPallette();
-  
+
   @DefaultMessage("TinyWebDB")
   @Description("")
   String tinyWebDBComponentPallette();
-  
+
   @DefaultMessage("Web")
   @Description("")
   String webComponentPallette();
-  
+
   // Connectivity
   @DefaultMessage("File")
   @Description("")
   String fileComponentPallette();
-  
+
   @DefaultMessage("FusiontablesControl")
   @Description("")
   String fusiontablesControlComponentPallette();
-  
+
   @DefaultMessage("GameClient")
   @Description("")
   String gameClientComponentPallette();
-  
+
   @DefaultMessage("SoundRecorder")
   @Description("")
   String soundRecorderComponentPallette();
- 
+
   @DefaultMessage("Voting")
   @Description("")
   String votingComponentPallette();
-  
+
   @DefaultMessage("WebViewer")
   @Description("")
   String webViewerComponentPallette();
-  
-  // Component Properties 
+
+  // Component Properties
   @DefaultMessage("AboutScreen")
   @Description("")
   String AboutScreenProperties();
-  
+
   @DefaultMessage("AboveRangeEventEnabled")
   @Description("")
   String AboveRangeEventEnabledProperties();
-  
+
   @DefaultMessage("Action")
   @Description("")
   String ActionProperties();
-  
+
   @DefaultMessage("ActivityClass")
   @Description("")
   String ActivityClassProperties();
- 
+
   @DefaultMessage("ActivityPackage")
   @Description("")
   String ActivityPackageProperties();
-  
+
   @DefaultMessage("AlignHorizontal")
   @Description("")
   String AlignHorizontalProperties();
-  
+
   @DefaultMessage("AlignVertical")
   @Description("")
   String AlignVerticalProperties();
-  
+
   @DefaultMessage("AllowCookies")
   @Description("")
   String AllowCookiesProperties();
-  
+
   @DefaultMessage("ApiKey")
   @Description("")
   String ApiKeyProperties();
- 
+
+  @DefaultMessage("AppName")
+  @Description("")
+  String AppNameProperties();
+
+  @DefaultMessage("AvailableCountries")
+  @Description("")
+  String AvailableCountriesProperties();
+
+  @DefaultMessage("AvailableLanguages")
+  @Description("")
+  String AvailableLanguagesProperties();
+
   @DefaultMessage("BackgroundColor")
   @Description("")
   String BackgroundColorProperties();
-  
+
   @DefaultMessage("BackgroundImage")
   @Description("")
   String BackgroundImageProperties();
-  
+
   @DefaultMessage("BelowRangeEventEnabled")
   @Description("")
   String BelowRangeEventEnabledProperties();
-  
+
   @DefaultMessage("BluetoothClient")
   @Description("")
   String BluetoothClientProperties();
-  
+
   @DefaultMessage("BottomOfRange")
   @Description("")
   String BottomOfRangeProperties();
- 
+
   @DefaultMessage("CalibrateStrideLength")
   @Description("")
   String CalibrateStrideLengthProperties();
-  
+
   @DefaultMessage("CharacterEncoding")
   @Description("")
   String CharacterEncodingProperties();
-  
+
   @DefaultMessage("Checked")
   @Description("")
   String CheckedProperties();
-  
+
   @DefaultMessage("CloseScreenAnimation")
   @Description("")
   String CloseScreenAnimationProperties();
-  
+
   @DefaultMessage("ColorChangedEventEnabled")
   @Description("")
   String ColorChangedEventEnabledProperties();
- 
+
   @DefaultMessage("Columns")
   @Description("")
   String ColumnsProperties();
-  
+
   @DefaultMessage("ConsumerKey")
   @Description("")
   String ConsumerKeyProperties();
-  
+
   @DefaultMessage("ConsumerSecret")
   @Description("")
   String ConsumerSecretProperties();
-  
+
   @DefaultMessage("Country")
   @Description("")
   String CountryProperties();
-  
+
   @DefaultMessage("DataType")
   @Description("")
   String DataTypeProperties();
-  
+
   @DefaultMessage("DataUri")
   @Description("")
   String DataUriProperties();
- 
+
   @DefaultMessage("DelimiterByte")
   @Description("")
   String DelimiterByteProperties();
-  
+
   @DefaultMessage("DetectColor")
   @Description("")
   String DetectColorProperties();
-  
+
   @DefaultMessage("DistanceInterval")
   @Description("")
   String DistanceIntervalProperties();
-  
+
   @DefaultMessage("DriveMotors")
   @Description("")
   String DriveMotorsProperties();
-  
+
   @DefaultMessage("Enabled")
   @Description("")
   String EnabledProperties();
- 
+
   @DefaultMessage("ExtraKey")
   @Description("")
   String ExtraKeyProperties();
-  
+
   @DefaultMessage("ExtraValue")
   @Description("")
   String ExtraValueProperties();
-  
+
   @DefaultMessage("FollowLinks")
   @Description("")
   String FollowLinksProperties();
-  
+
   @DefaultMessage("FontBold")
   @Description("")
   String FontBoldProperties();
-  
+
   @DefaultMessage("FontItalic")
   @Description("")
   String FontItalicProperties();
-  
+
   @DefaultMessage("FontSize")
   @Description("")
   String FontSizeProperties();
- 
+
   @DefaultMessage("FontTypeface")
   @Description("")
   String FontTypefaceProperties();
-  
+
   @DefaultMessage("GameId")
   @Description("")
   String GameIdProperties();
-  
+
   @DefaultMessage("GenerateColor")
   @Description("")
   String GenerateColorProperties();
-  
+
   @DefaultMessage("GenerateLight")
   @Description("")
   String GenerateLightProperties();
-  
+
   @DefaultMessage("GoogleVoiceEnabled")
   @Description("")
   String GoogleVoiceEnabledProperties();
-  
+
   @DefaultMessage("HasMargins")
   @Description("")
   String HasMarginsProperties();
@@ -2377,39 +2426,39 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Heading")
   @Description("")
   String HeadingProperties();
- 
+
   @DefaultMessage("HighByteFirst")
   @Description("")
   String HighByteFirstProperties();
-  
+
   @DefaultMessage("Hint")
   @Description("")
   String HintProperties();
-  
+
   @DefaultMessage("HomeUrl")
   @Description("")
   String HomeUrlProperties();
-  
+
   @DefaultMessage("Icon")
   @Description("")
   String IconProperties();
-  
+
   @DefaultMessage("IgnoreSslErrors")
   @Description("")
   String IgnoreSslErrorsProperties();
- 
+
   @DefaultMessage("Image")
   @Description("")
   String ImageProperties();
- 
+
   @DefaultMessage("Interval")
   @Description("")
   String IntervalProperties();
-  
+
   @DefaultMessage("IsLooping")
   @Description("")
   String IsLoopingProperties();
-  
+
   @DefaultMessage("KeyFile")
   @Description("")
   String KeyFileProperties();
@@ -2417,91 +2466,95 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Language")
   @Description("")
   String LanguageProperties();
-  
+
   @DefaultMessage("LineWidth")
   @Description("")
   String LineWidthProperties();
-  
+
   @DefaultMessage("Message")
   @Description("")
   String MessageProperties();
-  
+
   @DefaultMessage("MinimumInterval")
   @Description("")
   String MinimumIntervalProperties();
- 
+
   @DefaultMessage("MultiLine")
   @Description("")
   String MultiLineProperties();
-  
+
   @DefaultMessage("NumbersOnly")
   @Description("")
   String NumbersOnlyProperties();
-  
+
   @DefaultMessage("OpenScreenAnimation")
   @Description("")
   String OpenScreenAnimationProperties();
-  
+
   @DefaultMessage("PaintColor")
   @Description("")
   String PaintColorProperties();
-  
+
   @DefaultMessage("PhoneNumber")
   @Description("")
   String PhoneNumberProperties();
-  
+
   @DefaultMessage("PhoneNumberList")
   @Description("")
   String PhoneNumberListProperties();
-  
+
   @DefaultMessage("Picture")
   @Description("")
   String PictureProperties();
- 
+
   @DefaultMessage("PressedEventEnabled")
   @Description("")
   String PressedEventEnabledProperties();
-  
+
   @DefaultMessage("PromptforPermission")
   @Description("")
   String PromptforPermissionProperties();
-  
+
   @DefaultMessage("Query")
   @Description("")
   String QueryProperties();
-  
+
   @DefaultMessage("Radius")
   @Description("")
   String RadiusProperties();
-  
+
   @DefaultMessage("ReadMode")
   @Description("")
   String ReadModeProperties();
-  
+
   @DefaultMessage("ReceivingEnabled")
   @Description("")
   String ReceivingEnabledProperties();
- 
+
   @DefaultMessage("ReleasedEventEnabled")
   @Description("")
   String ReleasedEventEnabledProperties();
-  
+
   @DefaultMessage("ResponseFileName")
   @Description("")
   String ResponseFileNameProperties();
-  
+
   @DefaultMessage("ResultName")
   @Description("")
   String ResultNameProperties();
-  
+
   @DefaultMessage("Rows")
   @Description("")
   String RowsProperties();
-  
+
+  @DefaultMessage("SavedRecording")
+  @Description("")
+  String SavedRecordingProperties();
+
   @DefaultMessage("SaveResponse")
   @Description("")
   String SaveResponseProperties();
-  
+
   @DefaultMessage("ScalePictureToFit")
   @Description("")
   String ScalePictureToFitProperties();
@@ -2509,15 +2562,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SensorPort")
   @Description("")
   String SensorPortProperties();
-  
+
   @DefaultMessage("ScreenOrientation")
   @Description("")
   String ScreenOrientationProperties();
-  
+
   @DefaultMessage("Secure")
   @Description("")
   String SecureProperties();
- 
+
   @DefaultMessage("ServiceAccountEmail")
   @Description("")
   String ServiceAccountEmailProperties();
@@ -2525,87 +2578,87 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ServiceURL")
   @Description("")
   String ServiceURLProperties();
-  
+
   @DefaultMessage("Scrollable")
   @Description("")
   String ScrollableProperties();
-  
+
   @DefaultMessage("Shape")
   @Description("")
   String ShapeProperties();
-  
+
   @DefaultMessage("ShowFeedback")
   @Description("")
   String ShowFeedbackProperties();
-  
+
   @DefaultMessage("show tables")
   @Description("")
   String ShowTablesProperties();
-  
+
   @DefaultMessage("Source")
   @Description("")
   String SourceProperties();
-  
+
   @DefaultMessage("Speed")
   @Description("")
   String SpeedProperties();
-  
+
   @DefaultMessage("StopBeforeDisconnect")
   @Description("")
   String StopBeforeDisconnectProperties();
- 
+
   @DefaultMessage("StopDetectionTimeout")
   @Description("")
   String StopDetectionTimeoutProperties();
-  
+
   @DefaultMessage("StrideLength")
   @Description("")
   String StrideLengthProperties();
-  
+
   @DefaultMessage("Text")
   @Description("")
   String TextProperties();
-  
+
   @DefaultMessage("TextAlignment")
   @Description("")
   String TextAlignmentProperties();
-  
+
   @DefaultMessage("TextColor")
   @Description("")
   String TextColorProperties();
- 
+
   @DefaultMessage("TimerAlwaysFires")
   @Description("")
   String TimerAlwaysFiresProperties();
-  
+
   @DefaultMessage("TimerEnabled")
   @Description("")
   String TimerEnabledProperties();
-  
+
   @DefaultMessage("TimerInterval")
   @Description("")
   String TimerIntervalProperties();
-  
+
   @DefaultMessage("Title")
   @Description("")
   String TitleProperties();
-  
+
   @DefaultMessage("TopOfRange")
   @Description("")
   String TopOfRangeProperties();
-  
+
   @DefaultMessage("Url")
   @Description("")
   String UrlProperties();
-  
+
   @DefaultMessage("UseFront")
   @Description("")
   String UseFrontProperties();
-  
+
   @DefaultMessage("UseGPS")
   @Description("")
   String UseGPSProperties();
-  
+
   @DefaultMessage("UseServiceAuthentication")
   @Description("")
   String UseServiceAuthenticationProperties();
@@ -2613,39 +2666,39 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UsesLocationVisible")
   @Description("")
   String UsesLocationVisibleProperties();
- 
+
   @DefaultMessage("VersionCode")
   @Description("")
   String VersionCodeProperties();
-  
+
   @DefaultMessage("VersionName")
   @Description("")
   String VersionNameProperties();
-  
+
   @DefaultMessage("Visible")
   @Description("")
   String VisibleProperties();
-  
+
   @DefaultMessage("Volume")
   @Description("")
   String VolumeProperties();
-  
+
   @DefaultMessage("WheelDiameter")
   @Description("")
   String WheelDiameterProperties();
-  
+
   @DefaultMessage("WithinRangeEventEnabled")
   @Description("")
   String WithinRangeEventEnabledProperties();
- 
+
   @DefaultMessage("X")
   @Description("")
   String XProperties();
-  
+
   @DefaultMessage("Y")
   @Description("")
   String YProperties();
-  
+
   @DefaultMessage("Z")
   @Description("")
   String ZProperties();
@@ -2657,11 +2710,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("hidden")
   @Description("")
   String VisibilityHiddenProperties();
-  
+
   @DefaultMessage("ElementsFromString")
   @Description("")
   String ElementsFromStringProperties();
-  
+
   @DefaultMessage("Rotates")
   @Description("")
   String RotatesProperties();
@@ -2669,95 +2722,103 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Selection")
   @Description("")
   String SelectionProperties();
-  
+
   @DefaultMessage("TimeInterval")
   @Description("")
   String TimeIntervalProperties();
-  
+
   @DefaultMessage("UsesLocation")
   @Description("")
   String UsesLocationProperties();
-  
+
   @DefaultMessage("ShowFilterBar")
   @Description("")
   String ShowFilterBarProperties();
-  
+
+  @DefaultMessage("TextSize")
+  @Description("")
+  String TextSizeProperties();
+
   @DefaultMessage("NotifierLength")
   @Description("")
   String NotifierLengthProperties();
-  
+
   @DefaultMessage("Loop")
   @Description("")
   String LoopProperties();
-  
+
   @DefaultMessage("Pitch")
   @Description("")
   String PitchProperties();
-  
+
   @DefaultMessage("SpeechRate")
   @Description("")
   String SpeechRateProperties();
-  
+
   @DefaultMessage("Sensitivity")
   @Description("")
   String SensitivityProperties();
-  
+
   @DefaultMessage("TwitPic_API_Key")
   @Description("")
   String TwitPic_API_KeyProperties();
-  
+
   @DefaultMessage("Prompt")
   @Description("")
   String PromptProperties();
-  
+
   @DefaultMessage("ColorLeft")
   @Description("")
   String ColorLeftProperties();
-  
+
   @DefaultMessage("ColorRight")
   @Description("")
   String ColorRightProperties();
-  
+
   @DefaultMessage("MaxValue")
   @Description("")
   String MaxValueProperties();
-  
+
   @DefaultMessage("MinValue")
   @Description("")
   String MinValueProperties();
-  
+
   @DefaultMessage("ThumbPosition")
   @Description("")
   String ThumbPositionProperties();
-  
+
+  @DefaultMessage("ThumbEnabled")
+  @Description("")
+  String ThumbEnabled();
+
   @DefaultMessage("Day")
   @Description("")
   String DayProperties();
-  
+
   @DefaultMessage("Month")
   @Description("")
   String MonthProperties();
-  
+
   @DefaultMessage("MonthInText")
   @Description("")
   String MonthInTextProperties();
-  
+
   @DefaultMessage("Year")
   @Description("")
   String YearProperties();
-  
+
   @DefaultMessage("LastMessage")
   @Description("")
   String LastMessageProperties();
-  
+
   @DefaultMessage("TextToWrite")
   @Description("")
   String TextToWriteProperties();
-  
+
   @DefaultMessage("WriteType")
   @Description("")
   String WriteTypeProperties();
-  
+
   @DefaultMessage("ElapsedTime")
   @Description("")
   String ElapsedTimeProperties();
@@ -2769,15 +2830,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Hour")
   @Description("")
   String HourProperties();
-  
+
   @DefaultMessage("Minute")
   @Description("")
   String MinuteProperties();
-  
+
   @DefaultMessage("Distance")
   @Description("")
   String DistanceProperties();
-  
+
   @DefaultMessage("DirectMessages")
   @Description("")
   String DirectMessagesProperties();
@@ -3013,7 +3074,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewString")
   @Description("")
   String WebViewStringProperties();
-  
+
   //Params
   @DefaultMessage("xAccel")
   @Description("")
@@ -3610,7 +3671,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("textToTranslate")
   @Description("")
   String textToTranslateParams();
-  
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -3671,6 +3732,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LongClick")
   @Description("")
   String LongClickEvents();
+
+  @DefaultMessage("RequestFocus")
+  @Description("")
+  String RequestFocusMethods();
 
   @DefaultMessage("LostFocus")
   @Description("")
@@ -4337,6 +4402,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShowTextDialogMethods();
 
+  @DefaultMessage("ShowProgressDialog")
+  @Description("")
+  String ShowProgressDialogMethods();
+
+  @DefaultMessage("DismissProgressDialog")
+  @Description("")
+  String DismissProgressDialogMethods();
+
   @DefaultMessage("GetColor")
   @Description("")
   String GetColorMethods();
@@ -4669,6 +4742,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ClearLocationsMethods();
 
+  @DefaultMessage("ClearCaches")
+  @Description("")
+  String ClearCachesMethods();
+
   @DefaultMessage("GoBack")
   @Description("")
   String GoBackMethods();
@@ -4784,13 +4861,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("RequestTranslation")
   @Description("")
   String RequestTranslationMethods();
-  
-  
+
+
   //Mock Components
   @DefaultMessage("add items...")
   @Description("")
   String MockSpinnerAddItems();
-  
+
   //help strings
   @DefaultMessage("Non-visible component that can detect shaking and measure acceleration approximately in three dimensions using SI units (m/s<sup>2</sup>).  The components are: <ul>\n<li> <strong>xAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when the phone is tilted to the right (i.e.,      its left side is raised), and negative when the phone is tilted      to the left (i.e., its right size is raised).</li>\n <li> <strong>yAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when its bottom is raised, and negative when      its top is raised. </li>\n <li> <strong>zAccel</strong>: Equal to -9.8 (earth\"s gravity in meters per      second per second when the device is at rest parallel to the ground      with the display facing up,      0 when perpindicular to the ground, and +9.8 when facing down.       The value can also be affected by accelerating it with or against      gravity. </li></ul>")
   @Description("")
@@ -4908,7 +4985,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String NearFieldHelpStringComponentPallette();
 
-  @DefaultMessage("The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul>")
+  @DefaultMessage("The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by the user. It can only be dismissed by using the DismissProgressDialog block.</li><li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul>")
   @Description("")
   String NotifierHelpStringComponentPallette();
 
@@ -5047,13 +5124,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So\"en-es\" will translate from English to Spanish while \"es-ru\" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just \"es\" will attempt to detect the source language and translate it to Spanish.<p /> This component is powered by the Yandex translation service.  See http://api.yandex.com/translate/ for more information, including the list of available languages and the meanings of the language codes and status codes. <p />Note: Translation happens asynchronously in the background. When the translation is complete, the \"GotTranslation\" event is triggered.")
   @Description("")
   String YandexTranslateHelpStringComponentPallette();
-  
-  
+
+
   //Ode.java messages
   @DefaultMessage("Welcome to App Inventor 2!")
   @Description("")
   String createNoProjectsDialogText();
-  
+
   @DefaultMessage("<p>You don\"t have any projects in App Inventor 2 yet. " +
       "To learn how to use App Inventor, click the \"Guide\" " +
       "link at the upper right of the window; or to start your first project, " +
@@ -5065,132 +5142,132 @@ public interface OdeMessages extends Messages {
       "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
   @Description("")
   String createNoProjectsDialogMessage1();
-  
+
   @DefaultMessage("Happy Inventing!")
   @Description("")
   String createNoprojectsDialogMessage2();
 
   @DefaultMessage("Welcome to App Inventor!")
   @Description("")
-  String createWelcomeDialogText(); 
-  
+  String createWelcomeDialogText();
+
   @DefaultMessage("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>")
   @Description("")
-  String createWelcomeDialogMessage(); 
-  
+  String createWelcomeDialogMessage();
+
   @DefaultMessage("Continue")
   @Description("")
-  String createWelcomeDialogButton(); 
-  
+  String createWelcomeDialogButton();
+
   @DefaultMessage("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>")
   @Description("")
-  String showSurveySplashMessage(); 
-  
+  String showSurveySplashMessage();
+
   @DefaultMessage("Take Survey Now")
   @Description("")
-  String showSurveySplashButtonNow(); 
-  
+  String showSurveySplashButtonNow();
+
   @DefaultMessage("Take Survey Later")
   @Description("")
-  String showSurveySplashButtonLater(); 
-  
+  String showSurveySplashButtonLater();
+
   @DefaultMessage("Never Take Survey")
   @Description("")
-  String showSurveySplashButtonNever(); 
-  
+  String showSurveySplashButtonNever();
+
   @DefaultMessage("This Session Is Out of Date")
   @Description("")
-  String invalidSessionDialogText(); 
-  
+  String invalidSessionDialogText();
+
   @DefaultMessage("<p><font color=red>Warning:</font> This session is out of date.</p>" +
-	        "<p>This App Inventor account has been opened from another location. " +
-	        "Using a single account from more than one location at the same time " +
-	        "can damage your projects.</p>" +
-	        "<p>Choose one of the buttons below to:" +
-	        "<ul>" +
-	        "<li>End this session here.</li>" +
-	        "<li>Make this the current session and make the other sessions out of date.</li>" +
-	        "<li>Continue with both sessions.</li>" +
-	        "</ul>" +
-	        "</p>")
+                "<p>This App Inventor account has been opened from another location. " +
+                "Using a single account from more than one location at the same time " +
+                "can damage your projects.</p>" +
+                "<p>Choose one of the buttons below to:" +
+                "<ul>" +
+                "<li>End this session here.</li>" +
+                "<li>Make this the current session and make the other sessions out of date.</li>" +
+                "<li>Continue with both sessions.</li>" +
+                "</ul>" +
+                "</p>")
   @Description("")
-  String invalidSessionDialogMessage(); 
-  
+  String invalidSessionDialogMessage();
+
   @DefaultMessage("End This Session")
   @Description("")
-  String invalidSessionDialogButtonEnd(); 
-  
+  String invalidSessionDialogButtonEnd();
+
   @DefaultMessage("Make this the current session")
   @Description("")
-  String invalidSessionDialogButtonCurrent(); 
-  
+  String invalidSessionDialogButtonCurrent();
+
   @DefaultMessage("Continue with Both Sessions")
   @Description("")
-  String invalidSessionDialogButtonContinue(); 
-  
+  String invalidSessionDialogButtonContinue();
+
   @DefaultMessage("Do you want to continue with multiple sessions?")
   @Description("")
-  String bashWarningDialogText(); 
-  
+  String bashWarningDialogText();
+
   @DefaultMessage("<p><font color=red>WARNING:</font> A second App " +
-	        "Inventor session has been opened for this account. You may choose to " +
-	        "continue with both sessions, but working with App Inventor from more " +
-	        "than one session simultaneously can cause blocks to be lost in ways " +
-	        "that cannot be recovered from the App Inventor server.</p><p>" +
-	        "We recommend that people not open multiple sessions on the same " +
-	        "account. But if you do need to work in this way, then you should " +
-	        "regularly export your project to your local computer, so you will " +
-	        "have a backup copy independent of the App Inventor server. Use " +
-	        "\"Export\" from the Projects menu to export the project.</p>")
+                "Inventor session has been opened for this account. You may choose to " +
+                "continue with both sessions, but working with App Inventor from more " +
+                "than one session simultaneously can cause blocks to be lost in ways " +
+                "that cannot be recovered from the App Inventor server.</p><p>" +
+                "We recommend that people not open multiple sessions on the same " +
+                "account. But if you do need to work in this way, then you should " +
+                "regularly export your project to your local computer, so you will " +
+                "have a backup copy independent of the App Inventor server. Use " +
+                "\"Export\" from the Projects menu to export the project.</p>")
   @Description("")
-  String bashWarningDialogMessage(); 
-  
+  String bashWarningDialogMessage();
+
   @DefaultMessage("Continue with Multiple Sessions")
   @Description("")
-  String bashWarningDialogButtonContinue(); 
-  
+  String bashWarningDialogButtonContinue();
+
   @DefaultMessage("Do not use multiple Sessions")
   @Description("")
-  String bashWarningDialogButtonNo(); 
-  
+  String bashWarningDialogButtonNo();
+
   @DefaultMessage("Your Session is Finished")
   @Description("")
-  String finalDialogText(); 
-  
+  String finalDialogText();
+
   @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
   @Description("")
-  String finalDialogMessage(); 
-  
+  String finalDialogMessage();
+
   @DefaultMessage("Project Read Error")
   @Description("")
-  String corruptionDialogText(); 
-  
+  String corruptionDialogText();
+
   @DefaultMessage("<p><b>We detected errors while reading in your project</b></p>" +
-	        "<p>To protect your project from damage, we have ended this session. You may close this " +
-	        "window.</p>")
+                "<p>To protect your project from damage, we have ended this session. You may close this " +
+                "window.</p>")
   @Description("")
-  String corruptionDialogMessage(); 
-  
+  String corruptionDialogMessage();
+
   @DefaultMessage("Blocks Workspace is Empty")
   @Description("")
-  String blocksTruncatedDialogText(); 
-  
+  String blocksTruncatedDialogText();
+
   @DefaultMessage("<p>It appears that <b>" + "%1" +
-	        "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
-	        "the result of a bug in our system.</p><p>" +
-	        "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
-	        "<li>Select \"No, Don\"t Save\" below to restore the previously saved version</li></ul></p>")
+                "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
+                "the result of a bug in our system.</p><p>" +
+                "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
+                "<li>Select \"No, Don\"t Save\" below to restore the previously saved version</li></ul></p>")
   @Description("")
-  String blocksTruncatedDialogMessage(); 
-  
+  String blocksTruncatedDialogMessage();
+
   @DefaultMessage("OK, save the empty screen")
   @Description("")
-  String blocksTruncatedDialogButtonSave(); 
-  
+  String blocksTruncatedDialogButtonSave();
+
   @DefaultMessage("No, Don\"t Save")
   @Description("")
   String blocksTruncatedDialogButtonNoSave();
-  
+
   @DefaultMessage("Please wait " + "%1" + " seconds...")
   @Description("")
   String blocksTruncatedDialogButtonHTML();
@@ -5218,7 +5295,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Español")
   @Description("")
   String SwitchToSpanish();
-  
+
+  @DefaultMessage("Italiano")
+  @Description("")
+  String SwitchToItalian();
+
   @DefaultMessage("Progress Bar")
   @Description("")
   String ProgressBarFor();
@@ -5251,5 +5332,64 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MaximumRangeMethods")
   @Description("")
   String MaximumRangeMethods();
+
+  // =========== ListPicker
+  @DefaultMessage("ItemTextColor")
+  @Description("")
+  String ItemTextColorProperties();
+
+  @DefaultMessage("ItemBackgroundColor")
+  @Description("")
+  String ItemBackgroundColorProperties();
+
+  @DefaultMessage("Error on Fusion Tables query")
+  @Description("")
+  String FusionTablesStandardErrorMessage();
+
+  // Missing translations from 4/8/2015 -- Should sort into appropriate place
+
+  @DefaultMessage("LaunchPicker")
+  @Description("")
+  String LaunchPickerMethods();
+
+  @DefaultMessage("SetDateToDisplay")
+  @Description("")
+  String SetDateToDisplayMethods();
+
+  @DefaultMessage("IncomingCallAnswered")
+  @Description("")
+  String IncomingCallAnsweredEvents();
+
+  @DefaultMessage("PhoneCallEnded")
+  @Description("")
+  String PhoneCallEndedEvents();
+
+  @DefaultMessage("PhoneCallStarted")
+  @Description("")
+  String PhoneCallStartedEvents();
+
+  @DefaultMessage("OnSettings")
+  @Description("")
+  String OnSettingsEvents();
+
+  @DefaultMessage("OtherPlayerStarted")
+  @Description("")
+  String OtherPlayerStartedEvents();
+
+  @DefaultMessage("ProximityChanged")
+  @Description("")
+  String ProximityChangedEvents();
+
+  @DefaultMessage("ThumbEnabled")
+  @Description("")
+  String ThumbEnabledProperties();
+
+  @DefaultMessage("SetTimeToDisplay")
+  @Description("")
+  String SetTimeToDisplayMethods();
+
+  @DefaultMessage("XMLTextDecode")
+  @Description("")
+  String XMLTextDecodeMethods();
 
 }

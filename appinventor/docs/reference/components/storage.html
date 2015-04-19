@@ -14,6 +14,10 @@
 
 
   <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
 
 <!-- Title ----------------------- -->
   <title>Storage - App Inventor for Android</title>
@@ -109,14 +113,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -127,7 +133,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -416,26 +422,34 @@
 
     </style>
 </head><body>
-<div id="page" class="container"> <header class="clearfix" role="banner"> </header>
-<div id="top_bar">
-<div id="branding">
-<div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
-</div>
-<div id="menu-bar" class="nav clearfix"> <nav role="navigation"> </nav>
-<ul>
-  <li><a href="http://appinventor.mit.edu">Home</a></li>
-  <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-  <li><a href="http://appinventor.mit.edu/explore/library">Support
-▾</a></li>
-</ul>
-</div>
-<div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-</div>
-</div>
-<div id="columns" class="no-menu-bar" style="margin-top: 15px;">
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+          <div id="menu-bar" class="nav clearfix">
+            <nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+              <ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+            </nav>
+          </div>
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+<div id="columns" class="no-menu-bar" style="margin-top:15px;">
 <div class="columns-inner clearfix">
 <div id="content-column">
-<div class="content-inner"> <section id="main-content" role="main"> </section>
+<div class="content-inner"> <section id="main-content" role="main"></section>
 <div id="content">
 <div class="region region-content"><!-- Content ----------------------- -->
 <h1>Storage - App Inventor for Android</h1>
@@ -449,7 +463,7 @@
 
 <h2 id="File">File</h2>
 
-<p>Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.</p>
+<p>Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behavior is to write files to the private data directory associated with your App. The Companion writes files to /sdcard/AppInventor/data for easy debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example, writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.</p>
 
 <h3>Properties</h3>
 none
@@ -463,16 +477,15 @@ none
 <h3>Methods</h3>
 <dl>
   <dt><code>AppendToFile(text text, text fileName)</code></dt>
-  <dd>Appends text to the end of a file storage, creating the file if it does not exist. See the help text under SaveFile for information about where files are written.</dd>
+  <dd>Appends text to the end of a file. Creates the file if it does not already exist. See the help text under SaveFile for information about where files are written.</dd>
   <dt><code>Delete(text fileName)</code></dt>
-  <dd>Deletes a file from storage. Prefix the filename with / to delete a specific file in the SD card, for instance /myFile.txt. will delete the file /sdcard/myFile.txt. If the file does not begin with a /, then the file located in the programs private storage will be deleted. Starting the file with // is an error because assets files cannot be deleted.</dd>
+  <dd>Deletes a file from storage. Prefix the filename with / to delete a specific file in the SD card (for example, /myFile.txt will delete the file /sdcard/myFile.txt). If the filename does not begin with a /, then the file located in the program's private storage will be deleted. Starting the file with // is an error because asset files cannot be deleted.</dd>
   <dt><code>ReadFrom(text fileName)</code></dt>
-  <dd>Reads text from a file in storage. Prefix the filename with / to read from a specific file on the SD card. for instance /myFile.txt will read the file /sdcard/myFile.txt. To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the applications private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.</dd>
+  <dd>Reads text from a file in storage. Prefix the filename with / to read from a specific file on the SD card (for example, /myFile.txt will read the file /sdcard/myFile.txt). To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the application's private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.</dd>
   <dt><code>SaveFile(text text, text fileName)</code></dt>
-  <dd>Saves text to a file. If the filename begins with a slash (/) the file is written to the sdcard. For example writing to /myFile.txt will write the file to /sdcard/myFile.txt. If the filename does not start with a slash, it will be written in the programs private data directory where it will not be accessible to other programs on the phone. There is a special exception for the AI Companion where these files are written to /sdcard/AppInventor/data to facilitate debugging. Note that this block will overwrite a file if it already exists.
-If you want to add content to a file use the append block.</dd>
+  <dd>Saves text to a file. If the filename begins with a slash (/) the file is written to the sdcard (for example, writing to /myFile.txt will write the file to /sdcard/myFile.txt). If the filename does not start with a slash, it will be written in the program's private data directory where it will not be accessible to other programs on the phone. There is a special exception for the AI Companion where these files are written to /sdcard/AppInventor/data to facilitate debugging. Note that this block will overwrite a file if it already exists. If you want to add content to a file use the append block.</dd>
 </dl>
-<h2 id="FusiontablesControl">FusiontablesControl</h2>
+<h2 id="FusionTablesControl">FusionTablesControl</h2>
 
 <p>A non-visible component that communicates with Google Fusion
   Tables. Fusion Tables let you store, share, query and visualize data
@@ -482,20 +495,12 @@ If you want to add content to a file use the append block.</dd>
 <p>This component uses
   the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started"
          target="_blank">Fusion Tables API V1.0</a>. <p>Applications using
-  Fusion Tables must authentication to Google's servers. There are two
-  ways this can be done. The first way uses an API Key which you the
-  developer obtain (see below). With this approach end-users must also
-  login to access a Fusion Table. The second approach is to use a
-  Service Account. With this approach you create credentials and a
-  special "Service Account Email Address" which you obtain from
-  the <a href="https://code.google.com/apis/console/"
-         target="_blank">Google APIs Console</a>. You then tell the Fusion
-  Table Control the name of the Service Account Email address and
-  upload the secret key as an asset to your application and set the
-  KeyFile property to point at this file. Finally you check the
-  "UseServiceAuthentication" checkbox in the designer. When using a
-  Service Account, end-users do not need to login to use Fusion Tables,
-  your service account authenticates all access.</p>
+  Fusion Tables must authenticate with Google's servers. There are two
+  ways this can be done. The first way only uses an API Key which you (the
+  developer) obtain. With this approach end-users must also
+  login to access a Fusion Table.
+  <p> The second approach is to use Service Authentication. With this approach you create credentials and a
+  special "Service Account Email Address" which allows end-users to use your Fusion Tables without logging in; your service account authenticates all access.</p>
 
 <h3> Using the FusiontablesControl Component </h3>
 <h4>Creating Fusion Tables</h4>
@@ -505,18 +510,17 @@ If you want to add content to a file use the append block.</dd>
   are the steps:</p>
 <ol>
   <li>On the web, login to your Gmail account or any other Google
-    service (e.g., Drive, YouTube).</li>
-  <li>Select the <i>More &gt; Even more</i> menu and scroll to the
-    bottom of the page of Google services where you will find the <i>Fusion
-      Tables</i> service.</li>
+    service (e.g., Drive, YouTube). Navigate to Google Drive.</li>
+  <li>Click the <i>New</i> button and navigate to <i>More</i>. If you do not see a Google Fusion Tables option, select <i>Connect more apps</i> and scroll through the
+    page of Google services to find the <i>Fusion Tables</i> service and connect it to your Google Drive.</li>
   <li>You may want to view some of the examples and work through a
-    tutorial to learn the basics.</li>
+    tutorial (e.g. <a href="http://appinventor.mit.edu/explore/ai2/pizzaparty.html">  Pizza Party Tutorial</a>) to learn the basics.</li>
   <li>Click the <i>See my tables</i> button (top right of the page).
     This will bring you to your own page.</li>
   <li>You should see a list of your own tables or tables that have been
     shared with you (possibly none). </li>
   <li>Use the <i>Create</i> button to create a new table. Give it some
-    column names. And save it. </li>
+    column names and save it. </li>
   <li>Click on the <i>Share</i> button (top right) to modify the
     table's permissions. </li>
 </ol>
@@ -526,27 +530,27 @@ If you want to add content to a file use the append block.</dd>
   Designer, don't forget to set its <i>ApiKey</i> property, which is
   initially blank. You should copy this from
   your <a href="https://code.google.com/apis/console/"
-          target="_blank">Google APIs Console</a> and paste it into the property
+          target="_blank">Google Developers Console</a> and paste it into the property
   field. </p>
 
-<p>To get an API key, follow these instructions.</p>
+<p>To get an <b>API key</b>, follow these instructions.</p>
 <ol>
-  <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a> and login if necessary.</li>
-  <li>Select the <i>Services</i> item from the menu on the left.</li>
-  <li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>
-  <li>Go back to the main menu and select the <i>API Access</i> item. </li>
+  <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google Developers Console</a> and login if necessary.</li>
+  <li>Under <i>APIs &amp; auth</i> select the <i>APIs</i> item from the menu on the left.</li>
+  <li>Choose the <i>Fusion Tables API</i> from the list provided and turn it on.</li>
+  <li>On the left bar, select the <i>Credentials</i> item.</li>
+  <li>Under <i>Public API access</i> click <i>Create new Key</i>, choose <i>Android key</i> and click <i>Create</i> to generate an API key. </li>
 </ol>
-<p>Your API Key will be near the bottom of that pane in the section
-  called "Simple API Access".You will have to provide that key as the
-  value for the <i>ApiKey</i> property in your Fusiontables app.</p>
-<p>Once you have an API key, set the value of the <i>Query</i>
+<p>Your API key(s) will appear in the pane next to "Public API access". You must provide that key as the
+  value for the <i>ApiKey</i> property in your Fusion Tables app.</p>
+  <p>Once you have an API key, set the value of the <i>Query</i>
   property to a valid Fusiontables SQL query and call <i>SendQuery</i>
-  to execute the query.  App Inventor will send the query to the
+  to execute the query. App Inventor will send the query to the
   Fusion Tables server and the <i>GotResult</i> block will fire when a
-  result is returned from the server.Query results will be returned in
+  result is returned from the server. Query results will be returned in
   CSV format, and can be converted to list format using the "list from
   csv table" or "list from csv row" blocks.</p>
-<p>Note that you do not need to worry about UTF-encoding the
+  <p>Note that you do not need to worry about UTF-encoding the
   query. But you do need to make sure the query follows the syntax
   described
   in <a href="https://developers.google.com/fusiontables/docs/v1/getting_started"
@@ -554,48 +558,58 @@ If you want to add content to a file use the append block.</dd>
   things like capitalization for names of columns matters, and that
   single quotes must be used around column names if there are spaces
   in them.</p>
+<p>To set up <b>Service Authentication</b> for your Fusion Table, follow these additional steps:</p>
+<ol>
+  <li>In the <a href="https://code.google.com/apis/console/"
+          target="_blank">Google APIs Console</a> under <i>APIs &amp; auth</i> select the <i>APIs</i> item from the menu on the left. </li>
+  <li>Click the <i>Create new Client ID</i> button. Select the <i>Service account</i> option, and click <i>Create Client ID</i>. </li>
+  <li>A file called the <i>KeyFile</i> (ends in extension .p12) will automatically download onto your computer. Save it in a place you will remember. Once the creation is complete, you will get a table with your Service Account information. </li>
+  <li>In the designer window of App Inventor, select the FusionTablesControl. In the properties pane, add the <i>ServiceAccountEmail</i> (from the table on the console), upload the KeyFile, and check the <i>UseServiceAuthentication</i> box. </li>
+  <li>Share the Fusion Table with your ServiceAccountEmail, and give it editing permissions, just like you would share any other Google Doc with an email address.</li>
+</ol>
+
 
 
 
 <h3>Properties</h3>
 <dl>
   <dt><code>ApiKey</code></dt>
-  <dd>Your Google API Key. For help, click on the questionmark (?) next to the FusiontablesControl component in the Palette. </dd>
+  <dd>Your Google API Key. See above for details on obtaining an API key. </dd>
   <dt><code>KeyFile</code></dt>
-  <dd>Specifies the path of the private key file.  This key file is used to get access to the FusionTables API.</dd>
+  <dd>Specifies the path of the private key file. This key file is used to get access to the FusionTables API through Service Authentication.</dd>
   <dt><code>Query</code></dt>
-  <dd>The query to send to the Fusion Tables API. <p>For legal query formats and examples, see the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API v1.0 reference manual</a>.</p> <p>Note that you do not need to worry about UTF-encoding the query. But you do need to make sure it follows the syntax described in the reference manual, which means that things like capitalization for names of columns matters, and that single quotes need to be used around column names if there are spaces in them.</p> </dd>
+  <dd>The query to send to the Fusion Tables API. <p>For legal query formats and examples, see the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API v1.0 reference manual</a>.</p> <p>Note that you do not need to worry about UTF-encoding the query. You must make sure the query follows the syntax described in the reference manual. Note that capitalization for names of columns is necessary and that single quotes must be used around column names if there are spaces in them.</p> </dd>
   <dt><code>ServiceAccountEmail</code></dt>
-  <dd>The Service Account Email Address when service account authentication is in use.</dd>
+  <dd>The Service Account Email Address used for Service Authentication.</dd>
   <dt><code>UseServiceAuthentication</code></dt>
-  <dd>Indicates whether a service account should be used for authentication</dd>
+  <dd>Indicates whether a service account should be used for authentication.</dd>
 </dl>
 
 <h3>Events</h3>
 <dl>
   <dt><code>GotResult(text result)</code></dt>
-  <dd>Indicates that the Fusion Tables query has finished processing, with a result.  The result of the query will generally be returned in CSV format, and can be converted to list format using the "list from csv table" or "list from csv row" blocks.</dd>
+  <dd>Indicates that the Fusion Tables query has finished processing and returned with a result. The result of the query will generally be returned in CSV format, and can be converted to list format using the "list from csv table" or "list from csv row" blocks.</dd>
 </dl>
 
 <h3>Methods</h3>
 <dl>
   <dt><code>DoQuery()</code></dt>
-  <dd>DEPRECATED. This block is deprecated as of the end of 2012.  Use SendQuery.</dd>
+  <dd>DEPRECATED. This block is deprecated as of the end of 2012. Use SendQuery instead.</dd>
   <dt><code>ForgetLogin()</code></dt>
-  <dd>Forget end-users login credentials. Has no effect on service authentication</dd>
+  <dd>Forget the end-user's login credentials. Has no effect on Service Authentication.</dd>
   <dt><code>GetRows(text tableId, text columns)</code></dt>
-  <dd>Gets all the rows from a specified fusion table. The tableId field is the id of therequired fusion table. The columns field is a comma-separeted list of the columns to retrieve.</dd>
+  <dd>Gets all the rows from a specified Fusion Table. The tableId field (required) is the id of the Fusion Table. The columns field is a comma-separated list of the columns to retrieve.</dd>
   <dt><code>GetRowsWithConditions(text tableId, text columns, text conditions)</code></dt>
-  <dd>Gets all the rows from a fusion table that meet certain conditions. The tableId field isthe id of the required fusion table. The columns field is a comma-separeted list of the columns toretrieve. The conditions field specifies what rows to retrieve from the table, for example the rows in whicha particular column value is not null.</dd>
+  <dd>Gets all the rows from a Fusion Table that meet certain conditions. The tableId field (required) is the id of the Fusion Table. The columns field is a comma-separated list of the columns to retrieve. The conditions field specifies what rows to retrieve from the table (for example, the rows in which a particular column value is not null).</dd>
   <dt><code>InsertRow(text tableId, text columns, text values)</code></dt>
-  <dd>Inserts a row into the specified fusion table. The tableId field is the id of thefusion table. The columns is a comma-separated list of the columns to insert values into. The values field specifies what values to insert into each column.</dd>
+  <dd>Inserts a row into the specified Fusion Table. The tableId field is the id of the Fusion Table. The columns field is a comma-separated list of the columns into which to insert values. The values field specifies what values to insert into each column.</dd>
   <dt><code>SendQuery()</code></dt>
-  <dd>Send the query to the Fusiontables server.</dd>
+  <dd>Send the query to the Fusion Tables server.</dd>
 </dl>
 
 <h2 id="TinyDB">TinyDB</h2>
 
-<p>TinyDB is a non-visible component that stores data for an app. <p> Apps created with App Inventor are initialized each time they run: If an app sets the value of a variable and the user then quits the app, the value of that variable will not be remembered the next time the app is run. In contrast, TinyDB is a <em> persistent </em> data store for the app, that is, the data stored there will be available each time the app is run. An example might be a game that saves the high score and retrieves it each time the game is played. </<p> <p> Data items are strings stored under <em>tags</em> . To store a data item, you specify the tag it should be stored under.  Subsequently, you can retrieve the data that was stored under a given tag. </p><p> There is only one data store per app. Even if you have multiple TinyDB components, they will use the same data store. To get the effect of separate stores, use different keys. Also each app has its own data store. You cannot use TinyDB to pass data between two different apps on the phone, although you <em>can</em> use TinyDb to shares data between the different screens of a multi-screen app. </p> <p>When you are developing apps using the AI Companion, all the apps using that companion will share the same TinyDb.  That sharing will disappear once the apps are packaged.  But, during development, you should be careful to clear the TinyDb each time you start working on a new app.</p></p>
+<p>TinyDB is a non-visible component that stores data for an app. <p> Apps created with App Inventor are initialized each time they run. This means that if an app sets the value of a variable and the user then quits the app, the value of that variable will not be remembered the next time the app is run. In contrast, TinyDB is a <em> persistent </em> data store for the app. The data stored in a TinyDB will be available each time the app is run. An example might be a game that saves the high score and retrieves it each time the game is played. </p> <p> Data items are strings stored under <em>tags</em>. To store a data item, you specify the tag it should be stored under. Subsequently, you can retrieve the data that was stored under a given tag. </p><p> Each app has its own data store. There is only one data store per app. Even if you have multiple TinyDB components, they will use the same data store. To get the effect of separate stores, use different keys. You cannot use the TinyDB to pass data between two different apps on the phone, although you <em>can</em> use the TinyDB to share data between the different screens of a multi-screen app. </p> <p>When you are developing apps using the AI Companion, all the apps using that Companion will share the same TinyDB. That sharing will disappear once the apps are packaged and installed on the phone. During development you should be careful to clear the Companion app's data each time you start working on a new app.</p></p>
 
 <h3>Properties</h3>
 none
@@ -606,20 +620,18 @@ none
 <h3>Methods</h3>
 <dl>
   <dt><code>ClearAll()</code></dt>
-  <dd>Clear the entire data store</dd>
+  <dd>Clear the entire data store in the TinyDB.</dd>
   <dt><code>ClearTag(text tag)</code></dt>
-  <dd>Clear the entry with the given tag</dd>
+  <dd>Clear the entry with the given tag.</dd>
   <dt><code>any GetTags()</code></dt>
-  <dd>Return a list of all the tags in the data store</dd>
+  <dd>Return a list of all the tags in the TinyDB.</dd>
   <dt><code>any GetValue(text tag, any valueIfTagNotThere)</code></dt>
-  <dd>Retrieve the value stored under the given tag.  If there's no such tag, then return valueIfTagNotThere.</dd>
+  <dd>Retrieve the value stored under the given tag. If there's no such tag, then return valueIfTagNotThere.</dd>
   <dt><code>StoreValue(text tag, any valueToStore)</code></dt>
-  <dd>Store the given value under the given tag.  The storage persists on the
- phone when the app is restarted.</dd>
+  <dd>Store the value under the given tag. The storage persists on the phone when the app is restarted.</dd>
 </dl>
 
 <h2 id="TinyWebDB"> TinyWebDB </h2>
-<img alt="Picture of Tiny Web Database component" src="images/tinywebdb.png">
 <p> Non-visible component that communicates with a Web service to store
 and retrieve information. </p>
 See <a href="/reference/other/tinywebdb.html"> Creating a Custom
@@ -627,29 +639,29 @@ TinyWebDB Service. </a>
 <h3> Properties </h3>
 <dl>
   <dt> <code> ServiceURL </code> </dt>
+  <dd>The URL to the database with which the component should communicate.</dd>
 </dl>
 <h3> Events </h3>
 <dl>
   <dt> <code> GotValue(text tagFromWebDB, any valueFromWebDB) </code>
   </dt>
-  <dd> Indicates that a GetValue server request has succeeded. </dd>
+  <dd> Indicates that a GetValue server request has succeeded.</dd>
   <dt> <code> ValueStored() </code> </dt>
   <dd> Event indicating that a StoreValue server request has succeeded.
   </dd>
   <dt> <code> WebServiceError(text message) </code> </dt>
   <dd> Indicates that the communication with the Web service signaled
-an error </dd>
+an error. </dd>
 </dl>
 <h3> Methods </h3>
 <dl>
   <dt> <code> GetValue(text tag) </code> </dt>
-  <dd> GetValue asks the Web service to get the value stored under the
-given tag. It is up to the Web service what to return if there is no
-value stored under the tag. This component just accepts whatever is
-returned. </dd>
+  <dd> Sends a request to the Web service to get the value stored under the
+given tag. The Web service must decide what to return if there is no
+value stored under the tag. This component accepts whatever is returned. </dd>
   <dt> <code> StoreValue(text tag, any valueToStore) </code> </dt>
-  <dd> Asks the Web service to store the given value under the given
-tag </dd>
+  <dd> Sends a request to the Web service to store the given value under the given
+tag. </dd>
 </dl>
 
 <!-- Content ----------------------- -->

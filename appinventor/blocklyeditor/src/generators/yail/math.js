@@ -122,7 +122,7 @@ Blockly.Yail.math_arithmetic.OPERATORS = {
   ADD: ['+', Blockly.Yail.ORDER_NONE],
   MINUS: ['-', Blockly.Yail.ORDER_NONE],
   MULTIPLY: ['*', Blockly.Yail.ORDER_NONE],
-  DIVIDE: ['/', Blockly.Yail.ORDER_NONE],
+  DIVIDE: ['yail-divide', Blockly.Yail.ORDER_NONE],
   POWER: ['expt', Blockly.Yail.ORDER_NONE]
 };
 

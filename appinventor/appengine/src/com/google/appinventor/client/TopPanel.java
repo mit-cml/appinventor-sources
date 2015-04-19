@@ -15,7 +15,6 @@ import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
-import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -194,24 +193,16 @@ public class TopPanel extends Composite {
     String[] localeNames = LocaleInfo.getAvailableLocaleNames();
     String nativeName;
     for (String localeName : localeNames) {
-      nativeName = LocaleInfo.getLocaleNativeDisplayName(localeName);
       if (!localeName.equals("default")) {
         SelectLanguage lang = new SelectLanguage();
         lang.setLocale(localeName);
-        if (localeName == "zh_CN") {
-          nativeName = MESSAGES.SwitchToSimplifiedChinese();
-        } else if (localeName == "zh_TW") {
-          nativeName = MESSAGES.SwitchToTraditionalChinese();
-        } else if (localeName == "es_ES") {
-          nativeName = MESSAGES.SwitchToSpanish();
-        }
+        nativeName = getDisplayName(localeName);
         languageItems.add(new DropDownItem(WIDGET_NAME_LANGUAGE, nativeName, lang));
       }
     }
-    Image languageIcon = new Image(LANGUAGES_IMAGE_URL + "?t=" + System.currentTimeMillis());
-    languageIcon.setSize("20px", "20px");
-
-    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, languageIcon, languageItems, true);
+    String currentLang = LocaleInfo.getCurrentLocale().getLocaleName();
+    String nativeDisplayName = getDisplayName(currentLang);
+    languageDropDown = new DropDownButton(WIDGET_NAME_LANGUAGE, nativeDisplayName, languageItems, true);
     languageDropDown.setStyleName("ode-TopPanelButton");
 
     account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
@@ -235,6 +226,20 @@ public class TopPanel extends Composite {
     setWidth("100%");
   }
 
+  private String getDisplayName(String localeName){
+    String nativeName=LocaleInfo.getLocaleNativeDisplayName(localeName);
+    if (localeName == "zh_CN") {
+      nativeName = MESSAGES.SwitchToSimplifiedChinese();
+    } else if (localeName == "zh_TW") {
+      nativeName = MESSAGES.SwitchToTraditionalChinese();
+    } else if (localeName == "es_ES") {
+      nativeName = MESSAGES.SwitchToSpanish();
+    }else if (localeName == "it_IT") {
+      nativeName = MESSAGES.SwitchToItalian();
+    }
+    return nativeName;
+  }
+  
   public void updateAccountMessageButton(){
     // Since we want to insert "Messages" before "Sign Out", we need to clear first.
     accountButton.clearAllItems();
@@ -242,9 +247,7 @@ public class TopPanel extends Composite {
     // Gallery Items
     // (1)Private User Profile
     accountButton.addItem(new DropDownItem(WIDGET_NAME_PRIVATE_USER_PROFILE, MESSAGES.privateProfileLink(), new PrivateProfileAction()));
-    // (2)Messages
-    accountButton.addItem(new DropDownItem(WIDGET_NAME_MESSAGES, MESSAGES.messagesLink(), new MessageAction()));
-    // Sign Out
+    // (2)Sign Out
     accountButton.addItem(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
   }
 
@@ -344,6 +347,7 @@ public class TopPanel extends Composite {
     public void setLocale(String nativeName) {
       localeName = nativeName;
     }
+
   }
 
   private class SaveAction implements Command {
@@ -362,205 +366,6 @@ public class TopPanel extends Composite {
     public void execute() {
       Ode.getInstance().switchToPrivateUserProfileView();
     }
-  }
-
-  private static class MessageAction implements Command {
-    @Override
-    public void execute() {
-      final int[] msgCount = {0};
-      final boolean[] noMsgsDetected = {false};
-      // Create a PopUpPanel with a button to close it
-      final PopupPanel popup = new PopupPanel(true);
-      popup.setStyleName("ode-InboxContainer");
-      final FlowPanel content = new FlowPanel();
-      content.addStyleName("ode-Inbox");
-      Label title = new Label(MESSAGES.messageInboxTitle());
-      title.addStyleName("InboxTitle");
-      content.add(title);
-
-      Button closeButton = new Button(MESSAGES.symbolX());
-      closeButton.addStyleName("CloseButton");
-      closeButton.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          popup.hide();
-        }
-      });
-      content.add(closeButton);
-
-      final FlowPanel msgList = new FlowPanel();
-      msgList.addStyleName("MsgList");
-      ScrollPanel msgPanel = new ScrollPanel(msgList);
-      msgPanel.addStyleName("MsgListWrapper");
-      content.add(msgPanel);
-
-      // Retrieve list of unread dl and likes from this user's apps
-      final OdeAsyncCallback<GalleryAppListResult> appUnreadCallback =
-          new OdeAsyncCallback<GalleryAppListResult>(
-          // failure message
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(GalleryAppListResult appsResult) {
-              // get the new unread list so gui updates
-              for (final GalleryApp app : appsResult.getApps()) {
-                // Only add if this app actually has unread data
-                if (app.getUnreadDownloads() + app.getUnreadLikes() > 0) {
-                  msgCount[0]++;
-                  generateUnreadStatsMessage(app,
-                      app.getUnreadDownloads(), app.getUnreadLikes(), msgList);
-                }
-              }
-            }
-        };
-      Ode.getInstance().getGalleryService().getDeveloperApps(
-          Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
-
-      // Retrieve list of messages of this user
-      final OdeAsyncCallback<List<Message>> mCallback = new OdeAsyncCallback<List<Message>>(
-          // failure message
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(List<Message> msgs) {
-              msgCount[0] += msgs.size();
-              Collections.sort(msgs, new Comparator<Message>() {
-                @Override
-                public int compare(Message o1, Message o2) {
-                  return Long.valueOf(o2.getTimetamp()).compareTo(Long.valueOf(o1.getTimetamp()));
-                }
-              });
-              // get the new comment list so gui updates
-              for (final Message m : msgs) {
-                generateMessage(m, msgList);
-              }
-              if (msgCount[0] == 0 && !noMsgsDetected[0]) {
-                noMsgsDetected[0] = true;
-                Label noMsgPrompt = new Label("You have no messages at this moment.");
-                noMsgPrompt.addStyleName("MsgNoPrompt");
-                msgList.add(noMsgPrompt);
-              }
-            }
-        };
-      Ode.getInstance().getGalleryService().getMessages(mCallback);
-
-      popup.setWidget(content);
-      // Center and show the popup
-      popup.center();
-    }
-  }
-
-  /**
-   * Helper method to generate the UI for a single regular message.
-   * @param app   the app for the unread statistics
-   * @param dls   the number of unread downloads of the app
-   * @param likes   the number of unread likes of the app
-   * @param container   the parent container that this message resides in
-   */
-  private static void generateMessage(final Message m, FlowPanel container) {
-    final FlowPanel msg = new FlowPanel();
-    if (m.isUnread()) {
-      msg.addStyleName("MsgEntry-highlighted");
-    } else if (m.getStatus().equalsIgnoreCase("2")) {
-      // read
-      msg.addStyleName("MsgEntry");
-    } else {
-      // deleted already
-    }
-    Label msgBody = new Label(m.getMessage());
-    msgBody.setStyleName("MsgBody");
-    msg.add(msgBody);
-    FlowPanel msgMeta = new FlowPanel();
-    msgMeta.addStyleName("MsgMeta");
-    msgMeta.addStyleName("clearfix");
-    Label actionRead = new Label("Mark as read");
-    actionRead.addStyleName("primary-link");
-    Label actionDelete = new Label(" x ");
-    actionDelete.addStyleName("primary-link");
-    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm");
-    Label msgTime = new Label();
-    msgTime.setText(dateFormat.format(new Date(m.getTimetamp())));
-    msgTime.addStyleName("MsgSender");
-    Label msgSender = new Label("from App Inventor team ");
-    msgSender.addStyleName("MsgSender");
-    msgMeta.add(actionDelete);
-    msgMeta.add(msgTime);
-    msgMeta.add(msgSender);
-    msg.add(msgMeta);
-    container.add(msg);
-
-    // Once the inbox is opened by user, mark this message as read...
-    if (m.isUnread()) {
-      final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(Void result) {
-
-            }
-        };
-      Ode.getInstance().getGalleryService().readMessage(m.getId(), mCallback);
-    }
-
-    // Event handler for deleting message
-    actionDelete.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void result) {
-                msg.removeFromParent();
-              }
-          };
-        Ode.getInstance().getGalleryService().deleteMessage(m.getId(), mCallback);
-      }
-    });
-  }
-  /**
-   * Helper method to generate the UI for a single "unread app stats" message.
-   * @param app   the app for the unread statistics
-   * @param dls   the number of unread downloads of the app
-   * @param likes   the number of unread likes of the app
-   * @param container   the parent container that this message resides in
-   */
-  private static void generateUnreadStatsMessage(final GalleryApp app, int dls, int likes, FlowPanel container) {
-    Boolean hasDls = true;
-    Boolean hasLikes = true;
-    if (dls == 0) {
-      hasDls = false;
-    } else if ( likes == 0) {
-      hasLikes = false;
-    }
-    final FlowPanel msg = new FlowPanel();
-    msg.addStyleName("MsgEntry-highlighted");
-    Label msgBody = new Label(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenLiked()
-        + likes + MESSAGES.messageTimesAndDownloaded() + dls + MESSAGES.messageAppStats1());
-    if (hasDls && !hasLikes) {
-      msgBody.setText(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenDownloaded()
-          + dls + MESSAGES.messageTimes() + MESSAGES.messageAppStats2());
-    } else if (!hasDls && hasLikes) {
-      msgBody.setText(MESSAGES.yourAppMessage() + app.getTitle() + MESSAGES.messageHasBeenLiked()
-          + likes + MESSAGES.messageTimes() + MESSAGES.messageAppStats2());
-    }
-    msgBody.setStyleName("MsgBody");
-    msg.add(msgBody);
-    FlowPanel msgMeta = new FlowPanel();
-    msgMeta.addStyleName("MsgMeta");
-    msgMeta.addStyleName("clearfix");
-    Label actionRead = new Label("Mark as read");
-    actionRead.addStyleName("primary-link");
-    Label actionDelete = new Label("Delete message");
-    actionDelete.addStyleName("primary-link");
-    Label msgSender = new Label("Sent from System");
-    msgSender.addStyleName("MsgSender");
-    msg.add(msgMeta);
-    container.add(msg);
-
-    // Once the inbox is opened by user, mark this message as read
-    final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(Void result) {
-
-          }
-      };
-    Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), mCallback);
   }
 }
 

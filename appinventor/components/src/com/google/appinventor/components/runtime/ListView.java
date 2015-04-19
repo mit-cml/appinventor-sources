@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
@@ -72,6 +73,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
+  private int textSize;
+  private static final int DEFAULT_TEXT_SIZE = 22;
+
   /**
    * Creates a new ListView component.
    * @param container  container that the component will be placed in
@@ -127,6 +131,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
+    textSize = DEFAULT_TEXT_SIZE;
+    TextSize(textSize);
     ElementsFromString("");
 
     listViewLayout.addView(txtSearchBox);
@@ -248,11 +254,16 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     int size = items.size();
     Spannable [] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
-      String itemString = items.get(i).toString();
-      // Is there a more efficient way to do this that does not
+      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
+      // YailList.ToStringArray.
+      // ListView however, does the string conversion via the adapter, so we must ensure
+      // that the adapter uses YailListElementToSring
+      String itemString = YailList.YailListElementToString(items.get(i));
+      // Is there a more efficient way to do conversion to spannable strings that does not
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
+      chars.setSpan(new AbsoluteSizeSpan(textSize),0,chars.length(),0);
       objects[i - 1] = chars;
     }
     return objects;
@@ -317,7 +328,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    SelectionIndex(position + 1); // AI lists are 1-based
+    this.selection = parent.getAdapter().getItem(position).toString();
+    this.selectionIndex = position + 1; // AI lists are 1-based
     AfterPicking();
   }
 
@@ -403,6 +415,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @SimpleProperty
   public void TextColor(int argb) {
       textColor = argb;
+      setAdapterData();
+  }
+
+  /**
+   * Returns the listview's text font Size
+   *
+   * @return text size as an float
+   */
+  @SimpleProperty(
+      description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextSize() {
+    return textSize;
+  }
+
+  /**
+   * Specifies the ListView item's text font size
+   *
+   * @param integer value for font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SimpleProperty
+  public void TextSize(int fontSize) {
+      if(fontSize>1000)
+        textSize = 999;
+      else
+        textSize = fontSize;
       setAdapterData();
   }
 

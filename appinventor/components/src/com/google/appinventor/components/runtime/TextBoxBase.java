@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -437,6 +438,15 @@ public abstract class TextBoxBase extends AndroidViewComponent
     } else {
       TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
     }
+  }
+
+  /**
+   * Request focus to current textbox.
+   */
+  @SimpleFunction(
+    description = "Sets the textbox active.")
+  public void RequestFocus() {
+    view.requestFocus();
   }
 
   // OnFocusChangeListener implementation

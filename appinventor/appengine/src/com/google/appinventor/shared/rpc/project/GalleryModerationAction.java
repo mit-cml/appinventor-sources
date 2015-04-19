@@ -14,7 +14,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GalleryModerationAction implements IsSerializable {
   public final static long NOTAVAILABLE = -1L;
 
-  private long messageId;
+  private long emailId;
   private long reportId;
   private long galleryId;
   private String moderatorId;
@@ -22,9 +22,9 @@ public class GalleryModerationAction implements IsSerializable {
   private long date;
 
   private String moderatorName;
-  private String messagePreview;
+  private String emailPreview;
 
-  public final static int SENDMESSAGE = 1;
+  public final static int SENDEMAIL = 1;
   public final static int DEACTIVATEAPP = 2;
   public final static int REACTIVATEAPP = 3;
   public final static int MARKASRESOLVED = 4;
@@ -41,22 +41,22 @@ public class GalleryModerationAction implements IsSerializable {
    * Constructor of GalleryModerationAction
    * @param reportId report id
    * @param galleryId gallery id
-   * @param messageId message id
+   * @param emailId email id
    * @param moderatorId moderator id
    * @param actionType action type
-   * @param moderatorName modeator name
-   * @param messagePreview message preview
+   * @param moderatorName moderator name
+   * @param emailPreview email preview
    * @param date creation date
    */
-  public GalleryModerationAction(long reportId, long galleryId, long messageId, String moderatorId,
-      int actionType, String moderatorName, String messagePreview, long date) {
+  public GalleryModerationAction(long reportId, long galleryId, long emailId, String moderatorId,
+      int actionType, String moderatorName, String emailPreview, long date) {
     this.reportId = reportId;
     this.galleryId = galleryId;
-    this.messageId = messageId;
+    this.emailId = emailId;
     this.moderatorId = moderatorId;
     this.actionType = actionType;
     this.moderatorName = moderatorName;
-    this.messagePreview = messagePreview;
+    this.emailPreview = emailPreview;
     this.date = date;
   }
 
@@ -106,18 +106,18 @@ public class GalleryModerationAction implements IsSerializable {
   }
 
   /**
-   * set message id as given id
-   * @param messageId message id
+   * set email id as given id
+   * @param emailId email id
    */
-  public void setMesaageId(long messageId){
-    this.messageId = messageId;
+  public void setEmailId(long emailId){
+    this.emailId = emailId;
   }
 
   /**
-   * @return messageId message id
+   * @return emailId email id
    */
   public long getMesaageId(){
-    return messageId;
+    return emailId;
   }
 
   /**
@@ -166,17 +166,17 @@ public class GalleryModerationAction implements IsSerializable {
   }
 
   /**
-   * set message preview as given preview
-   * @param messagePreview message preview
+   * set email preview as given preview
+   * @param emailPreview email preview
    */
-  public void setMessagePreview(String messagePreview){
-    this.messagePreview = messagePreview;
+  public void setMessagePreview(String emailPreview){
+    this.emailPreview = emailPreview;
   }
 
   /**
-   * @return messagePreview message preview
+   * @return emailPreview email preview
    */
-  public String getMessagePreview(){
-    return messagePreview;
+  public String getEmailPreview(){
+    return emailPreview;
   }
 }

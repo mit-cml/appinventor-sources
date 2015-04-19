@@ -11,6 +11,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 
 import java.util.Locale;
 
@@ -93,4 +94,14 @@ public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListen
     }
   }
 
+  // External TextToSpeech is obsolete, so we'll just report that no languages are available
+  // In reality, we won't call this from TextToSpeech in pre-Gingerbread systems
+  public int isLanguageAvailable(Locale loc) {
+    return TextToSpeech.LANG_MISSING_DATA;
+  }
+
+// this is a dummy.  We'll never use this for external TTS engines
+  public boolean isInitialized() {
+    return true;
+  }
 }

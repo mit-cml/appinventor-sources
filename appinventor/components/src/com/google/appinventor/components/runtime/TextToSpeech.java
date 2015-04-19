@@ -6,6 +6,16 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+
+import android.media.AudioManager;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -17,17 +27,12 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ExternalTextToSpeech;
 import com.google.appinventor.components.runtime.util.ITextToSpeech;
 import com.google.appinventor.components.runtime.util.InternalTextToSpeech;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.media.AudioManager;
-import android.util.Log;
-
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
+import com.google.appinventor.components.runtime.util.YailList;
 
 /**
  * Component for converting text to speech using either the built-in TTS library or the
@@ -36,14 +41,25 @@ import java.util.MissingResourceException;
  *
  * @author markf@google.com (Mark Friedman)
  */
+// TODO(hal): This language and country code method using strings as abbreviations was
+// deprecated in API level 21.
 @DesignerComponent(version = YaVersion.TEXTTOSPEECH_COMPONENT_VERSION,
-    description = "Component for using TextToSpeech to speak a message",
+description = "The TestToSpeech component speaks a given text aloud.  You can set " +
+    "the pitch and the rate of speech. " +
+    "<p>You can also set a language by supplying a language code.  This changes the pronounciation " +
+    "of words, not the actual language spoken.  For example, setting the language to French " +
+    "and speaking English text will sound like someone speaking English (en) with a French accent.</p> " +
+    "<p>You can also specify a country by supplying a country code. This can affect the " +
+    "pronounciation.  For example, British English (GBR) will sound different from US English " +
+    "(USA).  Not every country code will affect every language.</p> " +
+    "<p>The languages and countries available depend on the particular device, and can be listed " +
+    "with the AvailableLanguages and AvailableCountries properties.</p>",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener, OnDestroyListener {
+implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, ActivityResultListener  */{
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
@@ -55,6 +71,17 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     initLocaleMaps();
   }
 
+  // List of available languages for the TTS
+  private ArrayList<String> languageList;
+
+  // List of available ISO3 country codes for the TTS
+  // the might be more countries than this, but we should update TTS control
+  // to use voices and clarify the use of countries with TTS
+  private ArrayList<String> countryList;
+
+  private YailList allLanguages;
+  private YailList allCountries;
+
   private boolean result;
   private String language;
   private String country;
@@ -62,6 +89,8 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   private final ITextToSpeech tts;
   private String iso2Language;
   private String iso2Country;
+
+  private boolean isTtsPrepared;
 
   private static void initLocaleMaps() {
     Locale[] locales = Locale.getAvailableLocales();
@@ -117,9 +146,15 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     form.registerForOnStop(this);
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
-
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+    isTtsPrepared = false;
+    languageList = new ArrayList<String>();
+    countryList = new ArrayList<String>();
+    allLanguages = YailList.makeList(languageList);
+    allCountries = YailList.makeList(countryList);
+
   }
 
   /**
@@ -138,22 +173,25 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * TextToSpeech component to.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the language for TextToSpeech")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+  description = "Sets the language for TextToSpeech. This changes the way that words are " +
+      "pronounced, not the actual language that is spoken.  For example setting the language to " +
+      "and speaking English text with sound like someone speaking English with a Frernch accent.")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {
-      case 3:
-        locale = iso3LanguageToLocale(language);
-        this.language = locale.getISO3Language();
-        break;
-      case 2:
-        locale = new Locale(language);
-        this.language = locale.getLanguage();
-        break;
-      default:
-        locale = Locale.getDefault();
-        this.language = locale.getLanguage();
-        break;
+    case 3:
+      locale = iso3LanguageToLocale(language);
+      this.language = locale.getISO3Language();
+      break;
+    case 2:
+      locale = new Locale(language);
+      this.language = locale.getLanguage();
+      break;
+    default:
+      locale = Locale.getDefault();
+      this.language = locale.getLanguage();
+      break;
     }
     iso2Language = locale.getLanguage();
   }
@@ -173,10 +211,11 @@ public class TextToSpeech extends AndroidNonvisibleComponent
      *
      * @param pitch a pitch level between 0 and 2
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the Pitch for tts. The values should " +
-            "be between 0 and 2 where lower values lower the tone of synthesized voice and greater values " +
-            "increases it")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the Pitch for " +
+      "TextToSpeech The values should " +
+      "be between 0 and 2 where lower values lower the tone of synthesized voice and greater values " +
+      "raise it.")
     public void Pitch(float pitch) {
         if (pitch < 0 || pitch > 2) {
             Log.i(LOG_TAG, "Pitch value should be between 0 and 2, but user specified: " + pitch);
@@ -207,9 +246,9 @@ public class TextToSpeech extends AndroidNonvisibleComponent
      *                   accelerate it (2.0 is twice the normal speech rate).
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the SpeechRate for tts. " +
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the SpeechRate for TextToSpeech. " +
             "The values should be between 0 and 2 where lower values slow down the pitch and greater values " +
-            "accelerate it")
+            "accelerate it.")
     public void SpeechRate(float speechRate) {
         if (speechRate < 0 || speechRate > 2) {
             Log.i(LOG_TAG, "speechRate value should be between 0 and 2, but user specified: " + speechRate);
@@ -250,22 +289,25 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * TextToSpeech component to.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description = "Country code to use for speech generation.  This can affect the " +
+      "pronounciation.  For example, British English (GBR) will sound different from US English " +
+      "(USA).  Not every country code will affect every language.",
+      category = PropertyCategory.BEHAVIOR)
   public void Country(String country) {
     Locale locale;
     switch (country.length()) {
-      case 3:
-        locale = iso3CountryToLocale(country);
-        this.country = locale.getISO3Country();
-        break;
-      case 2:
-        locale = new Locale(country);
-        this.country = locale.getCountry();
-        break;
-      default:
-        locale = Locale.getDefault();
-        this.country = locale.getCountry();
-        break;
+    case 3:
+      locale = iso3CountryToLocale(country);
+      this.country = locale.getISO3Country();
+      break;
+    case 2:
+      locale = new Locale(country);
+      this.country = locale.getCountry();
+      break;
+    default:
+      locale = Locale.getDefault();
+      this.country = locale.getCountry();
+      break;
     }
     iso2Country = locale.getCountry();
   }
@@ -290,6 +332,76 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     return country;
   }
 
+
+  @SimpleProperty(description = "List of the languages available on this device " +
+      "for use with TextToSpeech.  Check the Android developer documentation under supported " +
+      "languages to find the meanings of these abbreviations.")
+  public YailList AvailableLanguages() {
+    prepareLanguageAndCountryProperties();
+    return allLanguages;
+  }
+
+  @SimpleProperty(description = "List of the country codes available on this device " +
+      "for use with TextToSpeech.  Check the Android developer documentation under supported " +
+      "languages to find the meanings of these abbreviations.")
+  public YailList AvailableCountries() {
+    prepareLanguageAndCountryProperties();
+    return allCountries;
+  }
+
+  public void prepareLanguageAndCountryProperties() {
+    if (!isTtsPrepared) {
+      if (!tts.isInitialized()) {
+        form.dispatchErrorOccurredEvent(this, "TextToSpeech",
+            ErrorMessages.ERROR_TTS_NOT_READY);
+        // Force the TTS engine to initialize by making it speak.
+        // If it's not ready the user will have to try again.
+        // Should we put a retry wait here?
+        Speak("");
+      } else {
+        getLanguageAndCountryLists();
+        isTtsPrepared = true;
+      }
+    }
+  }
+
+  /**
+   * Get list of available languages for TextToSpeech.  Do not call unless the TTS
+   * engine is initialized.
+   *
+   */
+  private void getLanguageAndCountryLists() {
+    // We do compute these lists pre-Donut.  We probably could
+    // arrange to also do this in earlier releases, but that would be
+    // relying on the use of an external textToSpeech application and those
+    // old releases are obsolete anyway.
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_DONUT) {
+      String tempLang;
+      String tempCountry;
+      for (Locale locale : Locale.getAvailableLocales()) {
+        // isLanguageAvailable requires tts to be initialized
+        int res = tts.isLanguageAvailable(locale);
+        if (!(res == android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED)){
+          tempLang = locale.getLanguage();
+          // We record only the ISO3 country codes for now.  We should update the TTS control
+          // to use voices, and then we can straighten this out, maybe getting rid of
+          // country modifiers in TTS altogether.
+          tempCountry = locale.getISO3Country();
+          if (!tempLang.equals("") && (!languageList.contains(tempLang))){
+            languageList.add(tempLang);
+          }
+          if (!tempCountry.equals("") && (!countryList.contains(tempCountry))){
+            countryList.add(tempCountry);
+          }
+        }
+      }
+      Collections.sort(languageList);
+      Collections.sort(countryList);
+      allLanguages = YailList.makeList(languageList);
+      allCountries = YailList.makeList(countryList);
+    }
+  }
+
   /**
    * Speaks the given message.
    */
@@ -308,7 +420,6 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   public void BeforeSpeaking() {
     EventDispatcher.dispatchEvent(this, "BeforeSpeaking");
   }
-
 
   /**
    * Event to raise after the message is spoken.

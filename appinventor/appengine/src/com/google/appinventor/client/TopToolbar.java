@@ -34,6 +34,7 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -479,6 +480,7 @@ public class TopToolbar extends Composite {
 
     private boolean deleteConfirmation(List<Project> projects) {
       String message;
+      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
       if (projects.size() == 1) {
         if (projects.get(0).isPublished())
           message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
@@ -492,7 +494,11 @@ public class TopToolbar extends Composite {
           separator = ", ";
         }
         String projectNames = sb.toString();
-        message = MESSAGES.confirmDeleteManyProjects(projectNames);
+        if(!gallerySettings.galleryEnabled()){
+          message = MESSAGES.confirmDeleteManyProjects(projectNames);
+        } else {
+          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
+        }
       }
       return Window.confirm(message);
     }
@@ -513,8 +519,6 @@ public class TopToolbar extends Composite {
       }
       if (project.isPublished()) {
         doDeleteGalleryApp(project.getGalleryId());
-        GalleryClient gallery = GalleryClient.getInstance();
-        gallery.appWasChanged();
       }
       // Make sure that we delete projects even if they are not open.
       doDeleteProject(projectId);
@@ -544,6 +548,8 @@ public class TopToolbar extends Composite {
             @Override
             public void onSuccess(Void result) {
               // need to update gallery list
+              GalleryClient gallery = GalleryClient.getInstance();
+              gallery.appWasChanged();
             }
           });
     }
