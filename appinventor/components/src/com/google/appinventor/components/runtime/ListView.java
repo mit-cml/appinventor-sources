@@ -91,6 +91,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
+    view.setScrollingCacheEnabled(false);
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
