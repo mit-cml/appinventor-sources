@@ -1,0 +1,241 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="component_event" id="1" x="100" y="25">
+    <mutation component_type="Button" instance_name="BTN_calc_dec_to_hex" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">BTN_calc_dec_to_hex</field>
+    <statement name="DO">
+      <block type="component_set_get" id="2" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="LBL_result_dec_to_hex"></mutation>
+        <field name="COMPONENT_SELECTOR">LBL_result_dec_to_hex</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="controls_choose" id="3" inline="false">
+            <value name="TEST">
+              <block type="math_is_a_number" id="4" inline="false">
+                <field name="OP">DECIMAL</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="5">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_dec_to_hex"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_dec_to_hex</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="THENRETURN">
+              <block type="math_convert_number" id="6" inline="false">
+                <field name="OP">DEC_TO_HEX</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="7">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_dec_to_hex"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_dec_to_hex</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ELSERETURN">
+              <block type="text" id="8">
+                <field name="TEXT">Error: not a decimal</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_eval_but_ignore" id="9" inline="false">
+            <value name="VALUE">
+              <block type="math_convert_number" id="10" inline="false">
+                <field name="OP">DEC_TO_HEX</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="11">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_dec_to_hex"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_dec_to_hex</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="12" x="98" y="193">
+    <mutation component_type="Button" instance_name="BTN_calc_hex_to_dec" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">BTN_calc_hex_to_dec</field>
+    <statement name="DO">
+      <block type="component_set_get" id="13" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="LBL_result_hex_to_dec"></mutation>
+        <field name="COMPONENT_SELECTOR">LBL_result_hex_to_dec</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="controls_choose" id="14" inline="false">
+            <value name="TEST">
+              <block type="math_is_a_number" id="15" inline="false">
+                <field name="OP">HEXADECIMAL</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="16">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_hex_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_hex_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="THENRETURN">
+              <block type="math_convert_number" id="17" inline="false">
+                <field name="OP">HEX_TO_DEC</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="18">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_hex_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_hex_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ELSERETURN">
+              <block type="text" id="19">
+                <field name="TEXT">Error: not a hexadecimal</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_eval_but_ignore" id="20" inline="false">
+            <value name="VALUE">
+              <block type="math_convert_number" id="21" inline="false">
+                <field name="OP">HEX_TO_DEC</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="22">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_hex_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_hex_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="23" x="101" y="364">
+    <mutation component_type="Button" instance_name="BTN_calc_dec_to_bin" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">BTN_calc_dec_to_bin</field>
+    <statement name="DO">
+      <block type="component_set_get" id="24" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="LBL_result_dec_to_bin"></mutation>
+        <field name="COMPONENT_SELECTOR">LBL_result_dec_to_bin</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="controls_choose" id="25" inline="false">
+            <value name="TEST">
+              <block type="math_is_a_number" id="26" inline="false">
+                <field name="OP">DECIMAL</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="27">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_dec_to_bin"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_dec_to_bin</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="THENRETURN">
+              <block type="math_convert_number" id="28" inline="false">
+                <field name="OP">DEC_TO_BIN</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="29">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_dec_to_bin"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_dec_to_bin</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ELSERETURN">
+              <block type="text" id="30">
+                <field name="TEXT">Error: not a decimal</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_eval_but_ignore" id="31" inline="false">
+            <value name="VALUE">
+              <block type="math_convert_number" id="32" inline="false">
+                <field name="OP">DEC_TO_BIN</field>
+                <value name="NUM">
+                  <block type="math_number" id="33">
+                    <field name="NUM">0</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="component_event" id="34" x="103" y="526">
+    <mutation component_type="Button" instance_name="BTN_calc_bin_to_dec" event_name="Click"></mutation>
+    <field name="COMPONENT_SELECTOR">BTN_calc_bin_to_dec</field>
+    <statement name="DO">
+      <block type="component_set_get" id="35" inline="false">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="LBL_result_bin_to_dec"></mutation>
+        <field name="COMPONENT_SELECTOR">LBL_result_bin_to_dec</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+          <block type="controls_choose" id="36" inline="false">
+            <value name="TEST">
+              <block type="math_is_a_number" id="37" inline="false">
+                <field name="OP">BINARY</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="38">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_bin_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_bin_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="THENRETURN">
+              <block type="math_convert_number" id="39" inline="false">
+                <field name="OP">BIN_TO_DEC</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="40">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_bin_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_bin_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ELSERETURN">
+              <block type="text" id="41">
+                <field name="TEXT">Error: not a binary</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_eval_but_ignore" id="42" inline="false">
+            <value name="VALUE">
+              <block type="math_convert_number" id="43" inline="false">
+                <field name="OP">BIN_TO_DEC</field>
+                <value name="NUM">
+                  <block type="component_set_get" id="44">
+                    <mutation component_type="TextBox" set_or_get="get" property_name="Text" is_generic="false" instance_name="TXT_input_bin_to_dec"></mutation>
+                    <field name="COMPONENT_SELECTOR">TXT_input_bin_to_dec</field>
+                    <field name="PROP">Text</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <yacodeblocks ya-version="113" language-version="18"></yacodeblocks>
+</xml>
