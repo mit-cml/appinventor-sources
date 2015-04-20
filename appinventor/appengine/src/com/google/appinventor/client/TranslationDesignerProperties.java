@@ -10,11 +10,11 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class TranslationDesignerProperties {
 
-  /**
-   *  there should also be a corresponding entry in OdeMessages_xx_XX.properties
-   *  for translation to take effect
-   */
   public static String getCorrespondingString(String key) {
+    /**
+     *  there should also be a corresponding entry in OdeMessages_xx_XX.properties
+     *  for translation to take effect
+     */
     String value = key;
 
     // Properties

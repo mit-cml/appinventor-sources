@@ -38,6 +38,11 @@ public class TranslationComponentMethods {
    * @return map
    */
   public static HashMap<String, String> map() {
+    /**
+     *  there should also be a corresponding entry in OdeMessages_xx_XX.properties
+     *  for translation to take effect
+     */
+
     // TODO: Some methods may have different descriptions depending on which components
     // they are associated to; need to change the event name to be component type specific
     HashMap<String, String> map = new HashMap<String, String>();

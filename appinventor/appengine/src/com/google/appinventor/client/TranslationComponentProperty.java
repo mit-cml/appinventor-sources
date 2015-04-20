@@ -39,6 +39,10 @@ public class TranslationComponentProperty {
    * @return map
    */
   public static HashMap<String, String> map() {
+    /**
+     *  there should also be a corresponding entry in OdeMessages_xx_XX.properties
+     *  for translation to take effect
+     */
     HashMap<String, String> map = new HashMap<String, String>();
     // Properties
     map.put("DirectMessages", MESSAGES.DirectMessagesProperties());
