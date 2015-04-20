@@ -192,6 +192,11 @@ public class TranslationComponentParams {
     map.put("translation", MESSAGES.translationParams());
     map.put("languageToTranslateTo", MESSAGES.languageToTranslateToParams());
     map.put("textToTranslate", MESSAGES.textToTranslateParams());
+    map.put("tableId", MESSAGES.tableIdParams());
+    map.put("columns", MESSAGES.columnsParams());
+    map.put("conditions", MESSAGES.conditionsParams());
+    map.put("values", MESSAGES.valuesParams());
+    map.put("XmlText", MESSAGES.XmlTextParams());
     return map;
   }
 }

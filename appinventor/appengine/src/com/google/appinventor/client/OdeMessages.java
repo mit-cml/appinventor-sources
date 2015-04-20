@@ -3668,6 +3668,26 @@ public interface OdeMessages extends Messages {
   @Description("")
   String textToTranslateParams();
 
+  @DefaultMessage("tableId")
+  @Description("")
+  String tableIdParams();
+
+  @DefaultMessage("columns")
+  @Description("")
+  String columnsParams();
+
+  @DefaultMessage("conditions")
+  @Description("")
+  String conditionsParams();
+
+  @DefaultMessage("values")
+  @Description("")
+  String valuesParams();
+
+  @DefaultMessage("XmlText")
+  @Description("")
+  String XmlTextParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -4032,6 +4052,22 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Shaking")
   @Description("")
   String ShakingEvents();
+
+  @DefaultMessage("OtherPlayerStarted")
+  @Description("")
+  String OtherPlayerStartedEvents();
+
+  @DefaultMessage("IncomingCallAnswered")
+  @Description("")
+  String IncomingCallAnsweredEvents();
+
+  @DefaultMessage("PhoneCallEnded")
+  @Description("")
+  String PhoneCallEndedEvents();
+
+  @DefaultMessage("PhoneCallStarted")
+  @Description("")
+  String PhoneCallStartedEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -4858,6 +4894,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RequestTranslationMethods();
 
+  @DefaultMessage("LaunchPicker")
+  @Description("")
+  String LaunchPickerMethods();
+
+  @DefaultMessage("SetDateToDisplay")
+  @Description("")
+  String SetDateToDisplayMethods();
 
   //Mock Components
   @DefaultMessage("add items...")

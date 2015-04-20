@@ -262,6 +262,8 @@ public class TranslationComponentMethods {
     map.put("InsertRow", MESSAGES.InsertRowMethods());
     map.put("GetRows", MESSAGES.GetRowsMethods());
     map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
+    map.put("LaunchPicker", MESSAGES.LaunchPickerMethods());
+    map.put("SetDateToDisplay", MESSAGES.SetDateToDisplayMethods());
 
     return map;
   }

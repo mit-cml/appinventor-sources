@@ -134,6 +134,10 @@ public class TranslationComponentEvents {
     map.put("AfterTimeSet", MESSAGES.AfterTimeSetEvents());
     map.put("GotTranslation", MESSAGES.GotTranslationEvents());
     map.put("Shaking", MESSAGES.ShakingEvents());
+    map.put("OtherPlayerStarted", MESSAGES.OtherPlayerStartedEvents());
+    map.put("IncomingCallAnswered", MESSAGES.IncomingCallAnsweredEvents());
+    map.put("PhoneCallEnded", MESSAGES.PhoneCallEndedEvents());
+    map.put("PhoneCallStarted", MESSAGES.PhoneCallStartedEvents());
 
 	/*
   //event helpstrings
