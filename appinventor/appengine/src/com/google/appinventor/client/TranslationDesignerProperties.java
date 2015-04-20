@@ -308,6 +308,28 @@ public class TranslationDesignerProperties {
       value = MESSAGES.HourProperties();
     } else if (key.equals("Minute")) {
       value = MESSAGES.MinuteProperties();
+    } else if (key.equals("ItemBackgroundColor")) {
+      value = MESSAGES.ItemBackgroundColorProperties();
+    } else if (key.equals("ItemTextColor")) {
+      value = MESSAGES.ItemTextColorProperties();
+    } else if (key.equals("TextSize")) {
+      value = MESSAGES.TextSizeProperties();
+    } else if (key.equals("IgnoreSslErrors")) {
+      value = MESSAGES.IgnoreSslErrorsProperties();
+    } else if (key.equals("PlayOnlyInForeground")) {
+      value = MESSAGES.PlayOnlyInForegroundProperties();
+    } else if (key.equals("SavedRecording")) {
+      value = MESSAGES.SavedRecordingProperties();
+    } else if (key.equals("UseExternalScanner")) {
+      value = MESSAGES.UseExternalScannerProperties();
+    } else if (key.equals("KeepRunningWhenOnPause")) {
+      value = MESSAGES.KeepRunningWhenOnPauseProperties();
+    } else if (key.equals("KeyFile")) {
+      value = MESSAGES.KeyFileProperties();
+    } else if (key.equals("ServiceAccountEmail")) {
+      value = MESSAGES.ServiceAccountEmailProperties();
+    } else if (key.equals("UseServiceAuthentication")) {
+      value = MESSAGES.UseServiceAuthenticationProperties();
     }
     return value;
   }
