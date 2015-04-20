@@ -142,6 +142,7 @@ public class TranslationComponentEvents {
     map.put("IncomingCallAnswered", MESSAGES.IncomingCallAnsweredEvents());
     map.put("PhoneCallEnded", MESSAGES.PhoneCallEndedEvents());
     map.put("PhoneCallStarted", MESSAGES.PhoneCallStartedEvents());
+    map.put("ProximityChanged", MESSAGES.ProximityChangedEvents());
 
 	/*
   //event helpstrings

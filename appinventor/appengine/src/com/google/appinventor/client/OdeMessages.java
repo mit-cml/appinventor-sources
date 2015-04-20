@@ -4069,6 +4069,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PhoneCallStartedEvents();
 
+  @DefaultMessage("ProximityChanged")
+  @Description("")
+  String ProximityChangedEvents();
+
   //Methods
   @DefaultMessage("ResolveActivity")
   @Description("")
@@ -5363,10 +5367,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ProximityChangedProperties")
   @Description("")
   String ProximityChangedPropertiesProperties();
-
-  @DefaultMessage("ProximityChanged")
-  @Description("")
-  String ProximityChangedMethods();
 
   @DefaultMessage("MaximumRangeMethods")
   @Description("")
