@@ -218,7 +218,7 @@ public class EventDispatcher {
       if (eventClosures != null && eventClosures.size() > 0) {
         dispatched = delegateDispatchEvent(dispatchDelegate, eventClosures, component, args);
       }
-      String multiEventName = MULTI_GENERIC_PREFIX + "Button-" + eventName;
+      String multiEventName = MULTI_GENERIC_PREFIX + component.getClass().getSimpleName() + "-" + eventName;
       boolean doesMultiEventExist = er.multiEventClosuresMap.contains(multiEventName);
       if (doesMultiEventExist) {
         Object[] newArgs = new Object[args.length + 1];

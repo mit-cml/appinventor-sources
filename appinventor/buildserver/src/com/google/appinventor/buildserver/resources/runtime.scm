@@ -471,8 +471,8 @@
            (com.google.appinventor.components.runtime.EventDispatcher:makeFullEventName
             componentName eventName))))
 
-        (define (lookup-multi-handler eventName)
-         (lookup-in-form-environment eventName))
+       (define (lookup-multi-handler eventName)
+         (lookup-in-form-environment (string->symbol eventName)))
 
        ;; This defines the Simple Form's abstract $define method. The Simple Form
        ;; implementation will call this to cause initialization.
