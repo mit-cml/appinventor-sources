@@ -14,6 +14,7 @@
 
     <TextView
         android:id="@+id/textView1"
+        android:textColor="#000000"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Active Configuration File:"
@@ -22,6 +23,7 @@
 
     <TextView
         android:id="@+id/active_filename"
+        android:textColor="#000000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall" />
