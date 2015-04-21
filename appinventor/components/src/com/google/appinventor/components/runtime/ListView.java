@@ -398,6 +398,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Returns the listview's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Gingerbread or earlier
    *
    * @return selection color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
@@ -411,6 +412,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Specifies the ListView's selection color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Gingerbread or earlier
    *
    * @param argb selection color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
