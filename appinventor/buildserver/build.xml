@@ -78,7 +78,9 @@
     <copy todir="${classes.files.dir}/res" flatten="false">
       <fileset dir="${build.dir}/components/FtcCommon/res" includes="**/*" />
     </copy>
-    <copy toFile="${classes.files.dir}/res/xml/device_filter.xml" file="${lib.dir}/ftc/res/xml/device_filter.xml" />
+    <copy todir="${classes.files.dir}/res" flatten="false">
+      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
+    </copy>
 
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />

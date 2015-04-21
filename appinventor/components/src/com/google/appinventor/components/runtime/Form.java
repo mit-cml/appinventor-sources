@@ -149,6 +149,7 @@ public class Form extends Activity
 
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
+  private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
@@ -443,6 +444,10 @@ public class Form extends Activity
 
   public void registerForOnCreateOptionsMenu(OnCreateOptionsMenuListener component) {
     onCreateOptionsMenuListeners.add(component);
+  }
+
+  public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
+    onOptionsItemSelectedListeners.add(component);
   }
 
   public Dialog onCreateDialog(int id) {
@@ -1405,6 +1410,16 @@ public class Form extends Activity
     aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
+      if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void showExitApplicationNotification() {
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
@@ -1492,6 +1507,12 @@ public class Form extends Activity
       OnCreateOptionsMenuListener onCreateOptionsMenuListener = (OnCreateOptionsMenuListener) component;
       if (onCreateOptionsMenuListeners.contains(onCreateOptionsMenuListener)) {
         onCreateOptionsMenuListeners.remove(onCreateOptionsMenuListener);
+      }
+    }
+    if (component instanceof OnOptionsItemSelectedListener) {
+      OnOptionsItemSelectedListener onOptionsItemSelectedListener = (OnOptionsItemSelectedListener) component;
+      if (onOptionsItemSelectedListeners.contains(onOptionsItemSelectedListener)) {
+        onOptionsItemSelectedListeners.remove(onOptionsItemSelectedListener);
       }
     }
     if (component instanceof Deleteable) {

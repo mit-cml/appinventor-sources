@@ -44,6 +44,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 //AI import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.hardware.usb.UsbManager;
 
 //AI import android.os.Build;
@@ -53,8 +54,9 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Gravity;
-//AI import android.view.Menu;
-//AI import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -76,7 +78,7 @@ import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
-//AI import com.qualcomm.robotcore.hardware.configuration.Utility;
+import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.hardware.mock.MockDeviceManager;
 import com.qualcomm.robotcore.hardware.mock.MockHardwareFactory;
 import com.qualcomm.robotcore.util.BatteryChecker;
@@ -157,11 +159,10 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   protected void onCreate(/*AI Bundle savedInstanceState*/) {
     //AI super.onCreate(savedInstanceState);
 
-    //AI setContentView(R.layout.activity_ftc_controller);
+    setContentView(R.layout.activity_ftc_controller);
 
     context = thisActivity;
     utility = new Utility(thisActivity);
-    /*AI
     entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
 
     textDeviceName = (TextView) findViewById(R.id.textDeviceName);
@@ -171,8 +172,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
     textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-    immersion = new ImmersiveMode(getWindow().getDecorView());
-    */
+    //AI immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(thisActivity);
     dimmer.longBright();
     Restarter restarter = new RobotRestarter();
@@ -183,7 +183,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
         textGamepad, textOpMode, textErrorMessage, textDeviceName);
     callback = updateUI.new Callback();
 
-    //AI PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+    PreferenceManager.setDefaultValues(thisActivity, R.xml.preferences, false);
     preferences = PreferenceManager.getDefaultSharedPreferences(thisActivity);
 
     launched = false;
@@ -201,8 +201,7 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     Intent intent = new Intent(thisActivity, FtcRobotControllerService.class);
     bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
-    utility.updateHeader(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-        PREF_HARDWARE_CONFIG_FILENAME_KEY, textActiveFilename, headerLayout);
+    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
     callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
 
@@ -252,16 +251,25 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       immersion.cancelSystemUIHide();
     }
   }
+*/
 
-
-  @Override
+  //AI @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
     return true;
   }
 
-  @Override
+  //AI @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    int itemId = item.getItemId();
+    if (itemId == R.id.action_restart_robot) {
+      dimmer.handleDimTimer();
+      Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
+      requestRobotRestart();
+      return true;
+    }
+    return false;
+    /*AI
     switch (item.getItemId()) {
       case R.id.action_restart_robot:
         dimmer.handleDimTimer();
@@ -299,8 +307,10 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       default:
         return super.onOptionsItemSelected(item);
     }
+    */
   }
 
+  /*AI
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
@@ -370,10 +380,8 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
   }
 
   private FileInputStream fileSetup() {
-    boolean hasConfigFile = preferences.contains(//AI getString(R.string.pref_hardware_config_filename));
-        PREF_HARDWARE_CONFIG_FILENAME_KEY);
-    String activeFilename = utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE);
-        PREF_HARDWARE_CONFIG_FILENAME_KEY, Utility.NO_FILE);
+    boolean hasConfigFile = preferences.contains(getString(R.string.pref_hardware_config_filename));
+    String activeFilename = utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE);
     if (!launched) {
       if (!hasConfigFile ||
           activeFilename.equalsIgnoreCase(Utility.NO_FILE) ||
@@ -388,12 +396,10 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
       }
     }
 
-    utility.updateHeader(Utility.NO_FILE, //AI R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-        PREF_HARDWARE_CONFIG_FILENAME_KEY, textActiveFilename, headerLayout);
+    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
     final String filename = Utility.CONFIG_FILES_DIR
-        + utility.getFilenameFromPrefs(//AI R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
-        PREF_HARDWARE_CONFIG_FILENAME_KEY, Utility.NO_FILE) + Utility.FILE_EXT;
+        + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
 
     FileInputStream fis;
     try {
@@ -461,17 +467,146 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     });
   }
 
-  // For App Inventor:
-  public static final String PREF_HARDWARE_CONFIG_FILENAME_KEY = "pref_hardware_config_filename";
+  // Code for App Inventor
+
+  class ResourceIds {
+    class RId {
+      // from menu/ftc_robot_controller.xml
+      final int action_restart_robot;
+      final int action_wifi_channel_selector;
+      final int action_settings;
+      final int action_configuration;
+      final int action_load;
+      final int action_autoconfigure;
+      final int action_view_logs;
+      final int action_about;
+      final int action_exit_app;
+      // from layout/activity_ftc_controller.xml
+      final int entire_screen;
+      final int included_header;
+      final int textWifiDirectStatus;
+      final int textRobotStatus;
+      final int textOpMode;
+      final int textErrorMessage;
+      final int textGamepad1;
+      final int textGamepad2;
+      // from layout/device_name.xml
+      final int textDeviceName;
+      // from layout/header.xml
+      final int active_filename;
+
+      RId(Context context) {
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        action_restart_robot =
+            resources.getIdentifier("action_restart_robot", "id", packageName);
+        action_wifi_channel_selector =
+            resources.getIdentifier("action_wifi_channel_selector", "id", packageName);
+        action_settings =
+            resources.getIdentifier("action_settings", "id", packageName);
+        action_configuration =
+            resources.getIdentifier("action_configuration", "id", packageName);
+        action_load =
+            resources.getIdentifier("action_load", "id", packageName);
+        action_autoconfigure =
+            resources.getIdentifier("action_autoconfigure", "id", packageName);
+        action_view_logs =
+            resources.getIdentifier("action_view_logs", "id", packageName);
+        action_about =
+            resources.getIdentifier("action_about", "id", packageName);
+        action_exit_app =
+            resources.getIdentifier("action_exit_app", "id", packageName);
+        entire_screen =
+            resources.getIdentifier("entire_screen", "id", packageName);
+        included_header =
+            resources.getIdentifier("included_header", "id", packageName);
+        textWifiDirectStatus =
+            resources.getIdentifier("textWifiDirectStatus", "id", packageName);
+        textRobotStatus =
+            resources.getIdentifier("textRobotStatus", "id", packageName);
+        textOpMode =
+            resources.getIdentifier("textOpMode", "id", packageName);
+        textErrorMessage =
+            resources.getIdentifier("textErrorMessage", "id", packageName);
+        textGamepad1 =
+            resources.getIdentifier("textGamepad1", "id", packageName);
+        textGamepad2 =
+            resources.getIdentifier("textGamepad2", "id", packageName);
+        textDeviceName =
+            resources.getIdentifier("textDeviceName", "id", packageName);
+        active_filename =
+            resources.getIdentifier("active_filename", "id", packageName);
+      }
+    }
+    class RLayout {
+      final int activity_ftc_controller;
+
+      RLayout(Context context) {
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        activity_ftc_controller = 
+            resources.getIdentifier("activity_ftc_controller", "layout", packageName);
+      }
+    }
+    class RMenu {
+      final int ftc_robot_controller;
+
+      RMenu(Context context) {
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        ftc_robot_controller =
+            resources.getIdentifier("ftc_robot_controller", "menu", packageName);
+      }
+    }
+    class RString {
+      final int pref_hardware_config_filename;
+
+      RString(Context context) {
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        pref_hardware_config_filename = 
+            resources.getIdentifier("pref_hardware_config_filename", "string", packageName);
+      }
+    }
+    class RXml {
+      final int preferences;
+
+      RXml(Context context) {
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        preferences = 
+            resources.getIdentifier("preferences", "xml", packageName);
+      }
+    }
+
+    private final RId id;
+    private final RLayout layout;
+    private final RMenu menu;
+    private final RString string;
+    private final RXml xml;
+
+    private ResourceIds(Context context) {
+      id = new RId(context);
+      layout = new RLayout(context);
+      menu = new RMenu(context);
+      string = new RString(context);
+      xml = new RXml(context);
+    }
+  }
+
+  private static ResourceIds R;
   private static final int RESULT_OK = Activity.RESULT_OK;
   private final FtcRobotController aiFtcRobotController;
   private final Activity thisActivity;
+  /*
   private final TextView textActiveFilename;
   private final LinearLayout headerLayout;
+  */
 
   public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity) {
     this.aiFtcRobotController = aiFtcRobotController;
     thisActivity = activity;
+    /*
     textActiveFilename = aiFtcRobotController.textActiveFilename;
     headerLayout = aiFtcRobotController.headerLayout;
     entireScreenLayout = aiFtcRobotController.entireScreenLayout;
@@ -482,13 +617,21 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
     textErrorMessage = aiFtcRobotController.textErrorMessage;
     textGamepad[0] = aiFtcRobotController.textGamepad[0];
     textGamepad[1] = aiFtcRobotController.textGamepad[1];
+    */
+
+    R = new ResourceIds(activity);
 
     onCreate();
     onStart();
   }
 
   // Called from FtcRobotController.
-  public void restartRobot() {
+  public void onConfigurationPropertyChangedAI(String configuration) {
+    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
+    restartRobot();
+  }
+
+  public void restartRobot() { // HeyLiz - delete this if it isn't used.
     callback.restartRobot();
   }
 
@@ -536,5 +679,25 @@ public class FtcRobotControllerActivity /*AI extends Activity */ {
 
   private void unbindService(ServiceConnection connection) {
     thisActivity.unbindService(connection);
+  }
+
+  private MenuInflater getMenuInflater() {
+    return thisActivity.getMenuInflater();
+  }
+
+  private void setContentView(int layoutId) {
+    thisActivity.getLayoutInflater().inflate(layoutId, aiFtcRobotController.view, true);
+  }
+
+  private View findViewById(int id) {
+    return thisActivity.findViewById(id);
+  }
+
+  private String getString(int id) {
+    return thisActivity.getString(id);
+  }
+
+  private void finish() {
+    thisActivity.finish();
   }
 }

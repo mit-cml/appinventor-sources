@@ -99,12 +99,6 @@ public final class Compiler {
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
 
-  private static final String[] FTC_FILES = {
-    "res/xml/device_filter.xml",
-    "res/layout/activity_config_wifi_direct.xml",
-    "res/values/values.xml",
-  };
-
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
    * To get the real file paths, call getResource() with one of these constants.
@@ -485,14 +479,12 @@ public final class Compiler {
         out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
       }
 
-      // Add FTC related activities to the manifest only if an FtcRobotController component is used in the app
+      // Add FTC related activities and service to the manifest only if an FtcRobotController
+      // component is used in the app.
       if (componentTypes.contains("FtcRobotController")) {
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
         out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
-      }
-
-      if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
         out.write("    <service\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
         out.write("      android:enabled=\"true\" />\n");
@@ -576,15 +568,8 @@ public final class Compiler {
     }
 
     if (componentTypes.contains("FtcRobotController")) {
-      for (String ftcFile : FTC_FILES) {
-        out.println("________Copying " + ftcFile);
-
-        String source = getResource(RUNTIME_FILES_DIR + ftcFile);
-        File destFile = new File(buildDir, ftcFile.replace('/', File.separatorChar));
-        destFile.getParentFile().mkdirs();
-        if (!copyFile(source, destFile.getAbsolutePath())) {
-          return false;
-        }
+      if (!compiler.createFtcResources(resDir)) {
+        return false;
       }
     }
 
@@ -714,6 +699,36 @@ public final class Compiler {
     for (String filename : files.keySet()) {
       File file = new File(animDir, filename);
       if (!writeXmlFile(file, files.get(filename))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Creates the resources used by FTC.
+   */
+  private boolean createFtcResources(File resDir) {
+    String[] FTC_FILES = {
+      "layout/activity_ftc_controller.xml",
+      "layout/device_name.xml",
+      "layout/header.xml",
+      "menu/ftc_robot_controller.xml",
+      "values/colors.xml",
+      "values/strings.xml",
+      "xml/device_filter.xml",
+      "xml/preferences.xml",
+      // From FtcCommon.aar
+      "layout/activity_config_wifi_direct.xml",
+      "values/values.xml",
+    };
+
+    for (String ftcFile : FTC_FILES) {
+      out.println("________Copying " + ftcFile);
+      String source = getResource(RUNTIME_FILES_DIR + "res/" + ftcFile);
+      File destFile = new File(resDir, ftcFile.replace('/', File.separatorChar));
+      destFile.getParentFile().mkdirs();
+      if (!copyFile(source, destFile.getAbsolutePath())) {
         return false;
       }
     }
