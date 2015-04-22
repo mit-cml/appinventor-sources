@@ -163,7 +163,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == this.requestCode) {
       if (ftcRobotControllerActivity != null) {
-        ftcRobotControllerActivity.onActivityResultAI(requestCode, resultCode, data);
+        ftcRobotControllerActivity.resultReturned(requestCode, resultCode, data);
       }
     }
   }
@@ -386,7 +386,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       this.configuration = configuration;
       if (!TextUtils.isEmpty(configuration)) {
         if (ftcRobotControllerActivity != null) {
-          ftcRobotControllerActivity.onConfigurationPropertyChangedAI(configuration);
+          ftcRobotControllerActivity.onConfigurationPropertyChanged(configuration);
         }
       }
     }
@@ -446,7 +446,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     form.unregisterForActivityResult(this);
 
     if (ftcRobotControllerActivity != null) {
-      ftcRobotControllerActivity.onStopAI();
+      ftcRobotControllerActivity.prepareToDie();
     }
 
     if (wakeLock != null) {
