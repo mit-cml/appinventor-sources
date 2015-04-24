@@ -52,7 +52,7 @@
        ===================================================================== -->
   <import file="../build-common.xml" />
 
-  <property name="gwt.sdk" location="${lib.dir}/gwt/2.5.1" />
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.7" />
   <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.17" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
@@ -350,7 +350,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription">
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"

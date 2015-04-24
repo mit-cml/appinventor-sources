@@ -409,10 +409,6 @@ public class YaVersion {
   //         @description(""
   //         String FooProperties();
 
-  //   You then have to add a mapping to
-  //   TranslationComponentProperties.java (or ..Methods or ..Events
-  //   etc).
-
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java

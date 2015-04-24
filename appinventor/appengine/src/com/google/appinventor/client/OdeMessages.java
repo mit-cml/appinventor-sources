@@ -2279,6 +2279,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ApiKeyProperties();
 
+  @DefaultMessage("AppName")
+  @Description("")
+  String AppNameProperties();
+
   @DefaultMessage("AvailableCountries")
   @Description("")
   String AvailableCountriesProperties();
@@ -5350,5 +5354,51 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Direction")
   @Description("")
   String DirectionProperties();
+
+  // Missing translations from 4/8/2015 -- Should sort into appropriate place
+
+  @DefaultMessage("LaunchPicker")
+  @Description("")
+  String LaunchPickerMethods();
+
+  @DefaultMessage("SetDateToDisplay")
+  @Description("")
+  String SetDateToDisplayMethods();
+
+  @DefaultMessage("IncomingCallAnswered")
+  @Description("")
+  String IncomingCallAnsweredEvents();
+
+  @DefaultMessage("PhoneCallEnded")
+  @Description("")
+  String PhoneCallEndedEvents();
+
+  @DefaultMessage("PhoneCallStarted")
+  @Description("")
+  String PhoneCallStartedEvents();
+
+  @DefaultMessage("OnSettings")
+  @Description("")
+  String OnSettingsEvents();
+
+  @DefaultMessage("OtherPlayerStarted")
+  @Description("")
+  String OtherPlayerStartedEvents();
+
+  @DefaultMessage("ProximityChanged")
+  @Description("")
+  String ProximityChangedEvents();
+
+  @DefaultMessage("ThumbEnabled")
+  @Description("")
+  String ThumbEnabledProperties();
+
+  @DefaultMessage("SetTimeToDisplay")
+  @Description("")
+  String SetTimeToDisplayMethods();
+
+  @DefaultMessage("XMLTextDecode")
+  @Description("")
+  String XMLTextDecodeMethods();
 
 }
