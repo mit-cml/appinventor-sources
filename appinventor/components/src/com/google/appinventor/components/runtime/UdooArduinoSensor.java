@@ -32,7 +32,7 @@ public class UdooArduinoSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
     private String TAG = "UDOOUsbActivity";
-    private UdooBroadcastReceiver usbReceiver = new UdooBroadcastReceiver();
+    private UdooBroadcastReceiver usbReceiver = UdooBroadcastReceiver.getInstance();
 
     public synchronized boolean isConnected()
     {

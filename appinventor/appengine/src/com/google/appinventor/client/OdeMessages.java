@@ -5400,5 +5400,49 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("XMLTextDecode")
   @Description("")
   String XMLTextDecodeMethods();
+  
+  @DefaultMessage("UDOO Connected")
+  @Description("")
+  String ConnectedEvents();
+  
+  @DefaultMessage("analogRead")
+  @Description("")
+  String analogReadMethods();
+  
+  @DefaultMessage("analogWrite")
+  @Description("")
+  String analogWriteMethods();
+  
+  @DefaultMessage("delay")
+  @Description("")
+  String delayMethods();
+
+  @DefaultMessage("digitalRead")
+  @Description("")
+  String digitalReadMethods();
+  
+  @DefaultMessage("digitalWrite")
+  @Description("")
+  String digitalWriteMethods();
+  
+  @DefaultMessage("map")
+  @Description("")
+  String mapMethods();
+  
+  @DefaultMessage("pinMode")
+  @Description("")
+  String pinModeMethods();
+  
+  @DefaultMessage("DataReady")
+  @Description("")
+  String DataReadyEvents();
+  
+  @DefaultMessage("ReadSensor")
+  @Description("")
+  String ReadSensorMethods();
+  
+  @DefaultMessage("SetValue")
+  @Description("")
+  String SetValueMethods();
 
 }

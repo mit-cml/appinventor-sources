@@ -36,6 +36,16 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     private UdooConnectedInterface component;
     private boolean waitForResponse = false;
 
+    private static UdooBroadcastReceiver instance = null;
+    protected UdooBroadcastReceiver() {
+    }
+    public static UdooBroadcastReceiver getInstance() {
+       if (instance == null) {
+          instance = new UdooBroadcastReceiver();
+       }
+       return instance;
+    }
+    
     public void onCreate(ContextWrapper wrapper)
     {
         activity_ = wrapper;
