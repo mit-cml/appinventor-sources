@@ -764,11 +764,12 @@
 <h3>Events</h3>
 <dl>
   <dt><code>AfterPicking()</code></dt>
-  <dd>Simple event to be raised after the picker activity returns its
+  <dd>Event to be raised after the picker activity returns its
  result and the properties have been filled in.</dd>
   <dt><code>BeforePicking()</code></dt>
-  <dd>Simple event to raise when the component is clicked but before the
- picker activity is started.</dd>
+  <dd>Event to raise when the button of the component is clicked or the list is shown
+ using the Open block.  This event occurs before the list of items is displayed, and 
+ can be used to prepare the list before it is shown.</dd>
   <dt><code>GotFocus()</code></dt>
   <dd>Indicates the cursor moved over the button so it is now possible
  to click it.</dd>
@@ -952,7 +953,7 @@ none
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
   <dt><code>ScreenOrientation</code></dt>
-  <dd>The requested screen orientation. Commonly used values are unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
+  <dd>The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
   <dt><code>Scrollable</code></dt>
   <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.</dd>
   <dt><code>Title</code></dt>

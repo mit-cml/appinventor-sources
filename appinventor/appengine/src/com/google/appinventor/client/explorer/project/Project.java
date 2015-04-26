@@ -144,7 +144,10 @@ public final class Project {
   }
 
   public boolean isPublished() {
-    if (projectInfo.getGalleryId()== UserProject.NOTPUBLISHED) {
+    if (projectInfo.getGalleryId() <= UserProject.NOTPUBLISHED) {
+      /* The current unpublished project has galleryId == 0, but some old
+       * unpublished projects in database may still have -1 as unpublished value.
+       * Therefore, we use <= 0 to make sure this check.*/
       return false;
     }
     return true;

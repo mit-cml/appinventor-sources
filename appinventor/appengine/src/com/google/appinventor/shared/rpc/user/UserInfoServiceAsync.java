@@ -52,6 +52,11 @@ public interface UserInfoServiceAsync {
   void storeUserLink(String link, AsyncCallback<Void> callback);
 
   /**
+   * @see UserInfoService#storeUserEmailFrequency(int)
+   */
+  void storeUserEmailFrequency(int emailFrequency, AsyncCallback<Void> callback);
+
+  /**
    * @see UserInfoService#hasUserFile(String)
    */
   void hasUserFile(String fileName, AsyncCallback<Boolean> callback);

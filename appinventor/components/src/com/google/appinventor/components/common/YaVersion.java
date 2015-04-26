@@ -409,10 +409,6 @@ public class YaVersion {
   //         @description(""
   //         String FooProperties();
 
-  //   You then have to add a mapping to
-  //   TranslationComponentProperties.java (or ..Methods or ..Events
-  //   etc).
-
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
@@ -901,10 +897,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.24";
+  public static final String PREFERRED_COMPANION = "2.26";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.23ai2", "2.23ai2zx1", "2.24"};
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.26" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
