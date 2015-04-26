@@ -1620,7 +1620,13 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery page more info link hint")
   String galleryMoreInfoHint();
 
-  @DefaultMessage("Are you remixing code of another app? Credit them here.")
+  @DefaultMessage("By submitting an app in the gallery, you are publishing " +
+    "it under a Creative Commons Attribution License, and affirming that you " +
+    "have the authority to do so.")
+  @Description("Reference to the Creative Commons License")
+  String galleryCcLicenseRef();
+
+  @DefaultMessage("Are you remixing code from other apps? Credit them here.")
   @Description("Text for gallery page credit hint")
   String galleryCreditHint();
 

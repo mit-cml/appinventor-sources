@@ -1846,6 +1846,10 @@ textarea::-webkit-input-placeholder {
 .app-header .app-action-button {
   width: 130px;
 }
+.gallery-app-details .app-action-label {
+  width: 130px;
+}
+
 .ode-Inbox .ActionButton,
 .gallery-app-details .app-action-button,
 .gallery-app-details .app-comments-submit,
@@ -1880,7 +1884,7 @@ textarea::-webkit-input-placeholder {
 }
 .app-title-container .app-desc-textarea,
 .app-meta .app-desc-textarea {
-  height: 20px;
+/*  height: 20px; */
 }
 .gallery-app-details .app-comments-textarea,
 .app-desc-textarea {

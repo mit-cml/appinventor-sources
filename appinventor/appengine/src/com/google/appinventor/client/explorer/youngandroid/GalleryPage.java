@@ -130,6 +130,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Button removeButton;
   private Button editButton;
 
+  private Label ccLicenseRef;
+
+
 /* Here is the organization of this page:
 panel
  galleryGUI
@@ -186,6 +189,10 @@ panel
     // Now let's add the button for publishing, updating, or trying
     appHeader.add(appAction);
     initActionButton();
+    if (editStatus==NEWAPP) {
+      /* Add Creative Commons Publishing Reference */
+      appAction.add(ccLicenseRef);
+    }
     if (editStatus==UPDATEAPP) {
       initRemoveButton();
     }
@@ -312,6 +319,8 @@ panel
     titleText = new TextArea();
     moreInfoText = new TextArea();
     creditText = new TextArea();
+    ccLicenseRef = new Label(MESSAGES.galleryCcLicenseRef());
+    ccLicenseRef.addStyleName("app-action-label");
   }
 
 
