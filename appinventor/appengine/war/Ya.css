@@ -1846,7 +1846,7 @@ textarea::-webkit-input-placeholder {
 .app-header .app-action-button {
   width: 130px;
 }
-.gallery-app-details .app-action-label {
+.gallery-app-details .app-action-html {
   width: 130px;
 }
 

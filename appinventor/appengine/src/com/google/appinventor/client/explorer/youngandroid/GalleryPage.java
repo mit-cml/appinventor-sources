@@ -130,7 +130,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Button removeButton;
   private Button editButton;
 
-  private Label ccLicenseRef;
+  private HTML ccLicenseRef;
 
 
 /* Here is the organization of this page:
@@ -319,8 +319,8 @@ panel
     titleText = new TextArea();
     moreInfoText = new TextArea();
     creditText = new TextArea();
-    ccLicenseRef = new Label(MESSAGES.galleryCcLicenseRef());
-    ccLicenseRef.addStyleName("app-action-label");
+    ccLicenseRef = new HTML(MESSAGES.galleryCcLicenseRef());
+    ccLicenseRef.addStyleName("app-action-html");
   }
 
 

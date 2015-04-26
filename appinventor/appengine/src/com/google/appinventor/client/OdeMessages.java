@@ -1621,8 +1621,9 @@ public interface OdeMessages extends Messages {
   String galleryMoreInfoHint();
 
   @DefaultMessage("By submitting an app in the gallery, you are publishing " +
-    "it under a Creative Commons Attribution License, and affirming that you " +
-    "have the authority to do so.")
+    "it under a <a href=\"https://creativecommons.org/licenses/by/4.0/\" " +
+    "target=\"_blank\">Creative Commons Attribution License</a>, and " +
+    "affirming that you have the authority to do so.")
   @Description("Reference to the Creative Commons License")
   String galleryCcLicenseRef();
 
