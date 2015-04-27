@@ -39,7 +39,8 @@ Blockly.Yail.component_event = function() {
     header = Blockly.Yail.YAIL_DEFINE_MULTI_EVENT + eventName;
   } else {
     var instanceName = this.isGeneric ? this.getInputTargetBlock("COMPONENT").instanceName : this.instanceName;
-    header = Blockly.Yail.YAIL_DEFINE_EVENT
+    var defineType = this.isGeneric ? Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT : Blockly.Yail.YAIL_DEFINE_EVENT;
+    header = defineType
             + instanceName
             + Blockly.Yail.YAIL_SPACER
             + eventName;

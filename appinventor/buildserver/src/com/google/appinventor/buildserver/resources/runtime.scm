@@ -182,7 +182,6 @@
         verified
         *non-coercible-value*)))
 
-
 ;;; Call a component's property setter method with argument coercion
 ;;; Ex: (set-and-coerce-property! 'Button3 'FontSize 14 'number)
 ;;; Note: see also %set-expanded-property below
@@ -681,6 +680,14 @@
                 'event-name)
                ;; If it's not the REPL the form's $define() method will do the registration
                (add-to-events 'component-name 'event-name)))))))
+
+(define (define-generic-event component-name event-name args . body)
+  (let ((event-func-name (gen-event-name #`component-name #`event-name)))
+    (define-event-helper event-func-name args body)
+    (com.google.appinventor.components.runtime.EventDispatcher:registerEventForDelegation
+                (as com.google.appinventor.components.runtime.HandlesEventDispatching *this-form*)
+                'component-name
+                'event-name)))
 
 (define-syntax define-multi-event
   (lambda (stx)
