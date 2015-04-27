@@ -42,8 +42,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that displays a list of text elements." +
         " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. <br> Warning: This component will" +
-        " not work correctly on Screens that are scrollable.</p>",
+        " or using the Elements block in the blocks editor. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -208,7 +207,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
   @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
-  		"signal an error if the elements are not text strings.",
+                "signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     items = ElementsUtil.elements(itemsList, "Listview");
