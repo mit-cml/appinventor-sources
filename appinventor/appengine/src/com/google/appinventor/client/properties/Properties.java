@@ -12,7 +12,7 @@ import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,7 +29,12 @@ public class Properties<T extends Property> implements Iterable<T> {
    * Creates a new properties instance.
    */
   public Properties() {
-    propertiesMap = new HashMap<String, T>();
+    // Note: We used to use a HashMap here. However when we iterate over its
+    //       contents we get the keys in an arbitrary order based on the hash
+    //       implementation. We have had at least one case where an update of
+    //       the GWT library changed the order which triggered unanticipated
+    //       bugs. By using a TreeMap we will get the keys in a consistent order
+    propertiesMap = new TreeMap<String, T>();
   }
 
   /**
