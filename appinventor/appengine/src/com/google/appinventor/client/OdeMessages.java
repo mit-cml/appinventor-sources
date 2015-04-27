@@ -1596,6 +1596,18 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery page edit button")
   String galleryEditText();
 
+  @DefaultMessage("Cancel")
+  @Description("Text for gallery page cancel button")
+  String galleryCancelText();
+
+  @DefaultMessage("Please submit a screenshot or some other representative image before publishing your app")
+  @Description("Error messgage for when submitting galleryapp")
+  String galleryNoScreenShotMessage();
+
+  @DefaultMessage("please provide a longer description before publishing your app")
+  @Description("Error messgage for when submitting galleryapp")
+  String galleryNotEnoughDescriptionMessage();
+
   @DefaultMessage("By ")
   @Description("Text for gallery app developer prefix text label")
   String galleryByDeveloperPrefixedText();

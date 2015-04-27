@@ -49,6 +49,7 @@ import com.google.appinventor.shared.rpc.project.GallerySettings;
 public class GalleryServlet extends OdeServlet {
 
   private static int BUFFER_SIZE = 1024 * 1024 * 10;
+  private static int MAX_IMAGE_FILE_SIZE = 1024 * 1024 * 5;
 
   /*
    * URIs for upload requests are structured as follows:
@@ -105,38 +106,42 @@ public class GalleryServlet extends OdeServlet {
       }
       InputStream uploadedStream;
       try {
-        uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+        if(req.getContentLength() < MAX_IMAGE_FILE_SIZE){
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
 
-        // Converts the input stream to byte array
-        byte[] buffer = new byte[8000];
-        int bytesRead = 0;
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        while ((bytesRead = uploadedStream.read(buffer)) != -1) {
-          bao.write(buffer, 0, bytesRead);
+          // Converts the input stream to byte array
+          byte[] buffer = new byte[8000];
+          int bytesRead = 0;
+          ByteArrayOutputStream bao = new ByteArrayOutputStream();
+          while ((bytesRead = uploadedStream.read(buffer)) != -1) {
+            bao.write(buffer, 0, bytesRead);
+          }
+          // Set up the cloud file (options)
+          String key = "";
+          GallerySettings settings = galleryService.loadGallerySettings();
+          if (requestType.equalsIgnoreCase("apps")) {
+            key = settings.getProjectImageKey(project_Id);
+          } else if (requestType.equalsIgnoreCase("user")) {
+            key =  settings.getUserImageKey(user_Id);
+          }
+
+          // setup cloud
+          GcsService gcsService = GcsServiceFactory.createGcsService();
+          GcsFilename filename = new GcsFilename(settings.getBucket(), key);
+          GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
+                  .acl("public-read").cacheControl("no-cache").build();
+          GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
+          writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+
+          // Now finalize
+          writeChannel.close();
+
+          uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+        }else{
+          /*file exceeds size of MAX_IMAGE_FILE_SIZE*/
+          uploadResponse = new UploadResponse(UploadResponse.Status.FILE_TOO_LARGE);
         }
-        // Set up the cloud file (options)
-        String key = "";
-        GallerySettings settings = galleryService.loadGallerySettings();
-        if (requestType.equalsIgnoreCase("apps")) {
-          key = settings.getProjectImageKey(project_Id);
-          LOG.info("######## THIS IS A GALLERY REQUEST");
-        } else if (requestType.equalsIgnoreCase("user")) {
-          key =  settings.getUserImageKey(user_Id);
-          LOG.info("######## THIS IS A USER REQUEST");
-        }
 
-        // setup cloud
-        GcsService gcsService = GcsServiceFactory.createGcsService();
-        GcsFilename filename = new GcsFilename(settings.getBucket(), key);
-        GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
-                .acl("public-read").cacheControl("no-cache").build();
-        GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
-        writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
-
-        // Now finalize
-        writeChannel.close();
-
-        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
         // Now, get the PrintWriter for the servlet response and print the UploadResponse.
         // On the client side, in the onSubmitComplete method in ode/client/utils/Uploader.java, the
         // UploadResponse value will be retrieved as a String via the
