@@ -21,12 +21,16 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -195,4 +199,46 @@ public class Camera extends AndroidNonvisibleComponent
   public void AfterPicture(String image) {
     EventDispatcher.dispatchEvent(this, "AfterPicture", image);
   }
+  
+  /**
+   * Takes a picture without user action, then raises the AfterPicture event.
+   */
+  @SimpleFunction
+  public void SelfPicture() {
+    SurfaceTexture surfaceTexture = new SurfaceTexture(10);
+    android.hardware.Camera camera = android.hardware.Camera.open(0);
+    try {
+        camera.setPreviewTexture(surfaceTexture);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    camera.startPreview();
+    camera.takePicture(null,null,jpegCallback);
+  }
+  
+  android.hardware.Camera.PictureCallback jpegCallback = new android.hardware.Camera.PictureCallback() {
+    public void onPictureTaken(byte[] data, android.hardware.Camera camera) 
+    {
+      FileOutputStream outStream = null;
+      try {
+        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "/UDOO");
+        imagesFolder.mkdirs(); 
+        String fileName = "selftrigger.jpg";
+        File output = new File(imagesFolder, fileName);
+        outStream = new FileOutputStream(output);    
+        outStream.write(data);
+        outStream.close();
+        Log.d("XXX", "onPictureTaken - wrote bytes: " + data.length);
+        AfterPicture(output.getAbsolutePath());
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } finally {
+        camera.stopPreview();
+        camera.release();
+        camera = null;
+      }
+    }
+  };
 }

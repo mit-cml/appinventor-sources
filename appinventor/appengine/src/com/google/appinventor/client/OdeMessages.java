@@ -5445,4 +5445,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetValueMethods();
 
+  @DefaultMessage("SelfPicture")
+  @Description("")
+  String SelfPictureMethods();
 }
