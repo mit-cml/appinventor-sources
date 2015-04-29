@@ -28,7 +28,6 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -115,6 +114,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showStatusBar = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -215,6 +215,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowStatusBar(true);
   }
 
   @Override
@@ -782,6 +783,38 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+  
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowStatusBar(boolean show) {
+    if (show != showStatusBar) {
+      if (show) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }    
+      showStatusBar = show;		
+    }
   }
 
   /**
