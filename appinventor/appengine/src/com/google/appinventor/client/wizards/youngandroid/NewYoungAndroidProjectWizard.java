@@ -6,16 +6,8 @@
 
 package com.google.appinventor.client.wizards.youngandroid;
 
-
-
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.appinventor.client.Ode;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
@@ -28,11 +20,12 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 
 /**
  * Wizard for creating new Young Android projects.
@@ -51,22 +44,36 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
 
     // Initialize the UI
     setStylePrimaryName("ode-DialogBox");
-    
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
     projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
-        
         if (keyCode == KeyCodes.KEY_ENTER) {
           handleOkClick();
         } else if (keyCode == KeyCodes.KEY_ESCAPE) {
           handleCancelClick();
-        } else if(!projectNameTextBox.getText().matches("[A-Za-z][A-Za-z0-9_]*") && keyCode != KeyCodes.KEY_BACKSPACE && keyCode != KeyCodes.KEY_DELETE && !projectNameTextBox.getTextBox().getText().isEmpty()) {
-        	Window.alert(MESSAGES.malformedProjectNameError());
         }
       }
+    });
+    
+    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        String textBoxValue = projectNameTextBox.getText();
+        if(!textBoxValue.matches("[A-Za-z][A-Za-z0-9_]*") && keyCode != KeyCodes.KEY_BACKSPACE && keyCode != KeyCodes.KEY_DELETE) {
+          String firstCharacterLetter = "^[a-zA-Z].*";
+          if(!textBoxValue.matches(firstCharacterLetter)) { //Check to make sure that this project name begins with a letter.
+            Window.alert("Project names must begin with a letter");
+          } else if (!textBoxValue.matches("[\\S]+")) { //Check to make sure that this project name doesn't contain any whitespace.
+            Window.alert("Project names cannot contain spaces");
+          } else { //If we received any other sort of error, it will be because of an invalid character
+            Window.alert("Invalid character. Project names can only contain letters, numbers, and underscores");
+          }
+        }
+      }  
     });
 
     VerticalPanel page = new VerticalPanel();
@@ -74,7 +81,6 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     page.add(projectNameTextBox);
     addPage(page);
 
-    
     // Create finish command (create a new Young Android project)
     initFinishCommand(new Command() {
       @Override
