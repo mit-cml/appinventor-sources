@@ -439,8 +439,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     return 0.0;
   }
 
-  // TODO(lizlooney): Consider adding support for other com.qualcomm.robotcore.util classes:
-  // BatteryChecker, CurvedWheelMotion, RollingAverage
+  // TODO(lizlooney): Consider adding support for com.qualcomm.robotcore.uti.RollingAverage
 
   private void prepareToDie() {
     form.unregisterForActivityResult(this);

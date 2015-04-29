@@ -43,6 +43,8 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   // Functions
+  // TODO(lizlooney): These needs to be reviewed by Steve Barker. Some of the parameters are
+  // obsolete.
 
   @SimpleFunction(description = "Enable a physical port in NXT I2C read mode.")
   public void EnableNxtI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int memLength) {

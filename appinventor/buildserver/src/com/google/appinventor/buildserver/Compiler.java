@@ -568,6 +568,7 @@ public final class Compiler {
     }
 
     if (componentTypes.contains("FtcRobotController")) {
+      // Copy resources used in FTC libraries and components.
       if (!compiler.createFtcResources(resDir)) {
         return false;
       }
@@ -608,6 +609,29 @@ public final class Compiler {
       return false;
     }
     setProgress(35);
+
+    if (componentTypes.contains("FtcRobotController")) {
+      // Generate R.java files used in FTC libraries.
+      out.println("________Generating R.java files");
+      File genDir = createDirectory(buildDir, "gen");
+      String[] packages = {
+        "com.qualcomm.ftccommon",
+        "com.qualcomm.robotcore"
+      };
+      List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
+      for (String customPackage : packages) {
+        if (!compiler.runAaptPackage(manifestFile, resDir, genDir, customPackage)) {
+          return false;
+        }
+        genFileNames.add(genDir.getAbsolutePath() + File.separatorChar + 
+            customPackage.replace('.', File.separatorChar) + File.separatorChar + "R.java");
+      }
+      // Compile the generated R.java files.
+      out.println("________Compiling R.java files");
+      if (!compiler.runJavac(classesDir, genFileNames)) {
+        return false;
+      }
+    }
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -921,6 +945,94 @@ public final class Compiler {
     return true;
   }
 
+  /**
+   * Runs aapt package to generate R.java files.
+   */
+  private boolean runAaptPackage(File manifestFile, File resDir, File genDir, String customPackage) {
+    String aaptTool;
+    String osName = System.getProperty("os.name");
+    if (osName.equals("Mac OS X")) {
+      aaptTool = MAC_AAPT_TOOL;
+    } else if (osName.equals("Linux")) {
+      aaptTool = LINUX_AAPT_TOOL;
+    } else if (osName.startsWith("Windows")) {
+      aaptTool = WINDOWS_AAPT_TOOL;
+    } else {
+      LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
+      err.println("YAIL compiler - cannot run AAPT on OS " + osName);
+      userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
+      return false;
+    }
+    String[] aaptPackageCommandLine = {
+        getResource(aaptTool),
+        "package",
+        "-f",
+        "-m",
+        "-I", getResource(ANDROID_RUNTIME),
+        "-S", resDir.getAbsolutePath(),
+        "-M", manifestFile.getAbsolutePath(),
+        "-J", genDir.getAbsolutePath(),
+        "--custom-package", customPackage
+    };
+    long startAapt = System.currentTimeMillis();
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
+    // tools output
+    if (!Execution.execute(null, aaptPackageCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - AAPT execution failed.");
+      err.println("YAIL compiler - AAPT execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
+      return false;
+    }
+    String aaptTimeMessage = "AAPT time: " +
+        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+    out.println(aaptTimeMessage);
+    LOG.info(aaptTimeMessage);
+
+    return true;
+  }
+
+  /**
+   * Runs javac to compiler generated .java files.
+   */
+  private boolean runJavac(File classesDir, List<String> genFileNames) {
+    String javaHome = System.getProperty("java.home");
+    // This works on Mac OS X.
+    File javacFile = new File(javaHome + File.separator + "bin" +
+        File.separator + "javac");
+    if (!javacFile.exists()) {
+      // This works when a JDK is installed with the JRE.
+      javacFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+          File.separator + "javac");
+      if (System.getProperty("os.name").startsWith("Windows")) {
+        javacFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+            File.separator + "javac.exe");
+      }
+      if (!javacFile.exists()) {
+        LOG.warning("YAIL compiler - could not find javac.");
+        err.println("YAIL compiler - could not find javac.");
+        userErrors.print(String.format(ERROR_IN_STAGE, "Javac"));
+        return false;
+      }
+    }
+
+    List<String> javacCommandArgs = Lists.newArrayList();
+    Collections.addAll(javacCommandArgs,
+        javacFile.getAbsolutePath(),
+        "-d", classesDir.getAbsolutePath(),
+        "-source", "5",
+        "-target", "5");
+    javacCommandArgs.addAll(genFileNames);
+    String[] javacCommandLine = javacCommandArgs.toArray(new String[javacCommandArgs.size()]);
+    if (!Execution.execute(null, javacCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - javac execution failed.");
+      err.println("YAIL compiler - javac execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "Javac"));
+      return false;
+    }
+
+    return true;
+  }
+
   private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
     // TODO(user): maybe make a command line flag for the jarsigner location
     String javaHome = System.getProperty("java.home");
@@ -990,7 +1102,7 @@ public final class Compiler {
         apkAbsolutePath,
         zipAlignedPath
     };
-    long startAapt = System.currentTimeMillis();
+    long startZipAlign = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
@@ -1006,7 +1118,7 @@ public final class Compiler {
       return false;
     }
     String zipALignTimeMessage = "ZIPALIGN time: " +
-        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+        ((System.currentTimeMillis() - startZipAlign) / 1000.0) + " seconds";
     out.println(zipALignTimeMessage);
     LOG.info(zipALignTimeMessage);
     return true;

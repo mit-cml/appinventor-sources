@@ -32,49 +32,7 @@
   <property name="components.pkg" value="com/google/appinventor/components" />
 
   <!-- =====================================================================
-       Definition for running aapt package to produce R.java file.
-       ===================================================================== -->
-  <macrodef name="aapt">
-    <attribute name="resdir"/>
-    <attribute name="manifest"/>
-    <attribute name="gendir"/>
-    <sequential>
-      <mkdir dir="@{gendir}" />
-      <exec osfamily="unix"
-            executable="${lib.dir}/android/tools/linux/aapt">
-        <arg value="package" />
-        <arg value="-f" />
-        <arg value="-m" />
-        <arg line="-I ${lib.dir}/android/4.2.2/android.jar" />
-        <arg line="-S @{resdir}" />
-        <arg line="-M @{manifest}" />
-        <arg line="-J @{gendir}" />
-      </exec>
-      <exec osfamily="mac"
-            executable="${lib.dir}/android/tools/mac/aapt">
-        <arg value="package" />
-        <arg value="-f" />
-        <arg value="-m" />
-        <arg line="-I ${lib.dir}/android/4.2.2/android.jar" />
-        <arg line="-S @{resdir}" />
-        <arg line="-M @{manifest}" />
-        <arg line="-J @{gendir}" />
-      </exec>
-      <exec osfamily="windows"
-            executable="${lib.dir}/android/tools/windows/aapt">
-        <arg value="package" />
-        <arg value="-f" />
-        <arg value="-m" />
-        <arg line="-I ${lib.dir}/android/4.2.2/android.jar" />
-        <arg line="-S @{resdir}" />
-        <arg line="-M @{manifest}" />
-        <arg line="-J @{gendir}" />
-      </exec>
-    </sequential>
-  </macrodef>
-  
-  <!-- =====================================================================
-       Unzip lib/ftc/RobotCore.aar and run aapt on the res directory.
+       Unzip lib/ftc/RobotCore.aar
        ===================================================================== -->
   <target name="CheckRobotCore"
           depends="init">
@@ -90,13 +48,10 @@
     <touch>
       <fileset dir="${public.build.dir}/RobotCore" />
     </touch>
-    <aapt resdir="${public.build.dir}/RobotCore/res"
-          manifest="${public.build.dir}/RobotCore/AndroidManifest.xml"
-          gendir="${local.build.dir}/generated" />
   </target>
 
   <!-- =====================================================================
-       Unzip lib/ftc/FtcCommon.aar and run aapt on the res directory.
+       Unzip lib/ftc/FtcCommon.aar
        ===================================================================== -->
   <target name="CheckFtcCommon"
           depends="init">
@@ -112,9 +67,6 @@
     <touch>
       <fileset dir="${public.build.dir}/FtcCommon" />
     </touch>
-    <aapt resdir="${public.build.dir}/FtcCommon/res"
-          manifest="${public.build.dir}/FtcCommon/AndroidManifest.xml"
-          gendir="${local.build.dir}/generated" />
   </target>
 
   <!-- =====================================================================
@@ -196,8 +148,7 @@
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
-    <ai.javac5 destdir="${AndroidRuntime-class.dir}"
-               srcdir="${src.dir};${local.build.dir}/generated">
+    <ai.javac5 destdir="${AndroidRuntime-class.dir}">
       <include name="${components.pkg}/annotations/*.java" />
       <include name="${components.pkg}/runtime/**/*.java" />
       <classpath>
