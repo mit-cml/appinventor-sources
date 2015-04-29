@@ -4973,7 +4973,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ListPickerHelpStringComponentPallette();
 
-  @DefaultMessage("<p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. <br> Warning: This component will not work correctly on Screens that are scrollable.</p>")
+  @DefaultMessage("<p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor.</p>")
   @Description("")
   String ListViewHelpStringComponentPallette();
 
