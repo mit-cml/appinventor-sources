@@ -193,9 +193,9 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * TargetPosition property getter.
    */
-  @SimpleProperty(description = "The motor target position, where 1.0 is one full rotation.",
+  @SimpleProperty(description = "The motor target position.",
       category = PropertyCategory.BEHAVIOR)
-  public double TargetPosition() {
+  public int TargetPosition() {
     if (dcMotor != null) {
       try {
         return dcMotor.getTargetPosition();
@@ -205,14 +205,14 @@ public final class FtcDcMotor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0.0;
+    return 0;
   }
 
   /**
    * TargetPosition property setter.
    */
   @SimpleProperty
-  public void TargetPosition(double position) {
+  public void TargetPosition(int position) {
     if (dcMotor != null) {
       try {
         dcMotor.setTargetPosition(position);
@@ -227,9 +227,9 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * CurrentPosition property getter.
    */
-  @SimpleProperty(description = "The current motor position, where 1.0 is one full rotation.",
+  @SimpleProperty(description = "The current motor position.",
       category = PropertyCategory.BEHAVIOR)
-  public double CurrentPosition() {
+  public int CurrentPosition() {
     if (dcMotor != null) {
       try {
         return dcMotor.getCurrentPosition();
@@ -239,7 +239,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0.0;
+    return 0;
   }
 
   /**

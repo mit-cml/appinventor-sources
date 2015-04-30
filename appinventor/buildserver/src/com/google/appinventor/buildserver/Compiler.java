@@ -741,7 +741,6 @@ public final class Compiler {
       "values/colors.xml",
       "values/strings.xml",
       "xml/device_filter.xml",
-      "xml/preferences.xml",
       // From FtcCommon.aar
       "layout/activity_config_wifi_direct.xml",
       "values/values.xml",

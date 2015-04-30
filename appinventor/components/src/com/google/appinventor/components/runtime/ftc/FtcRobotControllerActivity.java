@@ -45,13 +45,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
-
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,7 +58,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.ftccommon.Device;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
 import com.qualcomm.ftccommon.Restarter;
@@ -181,7 +176,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         textGamepad, textOpMode, textErrorMessage, textDeviceName);
     callback = updateUI.new Callback();
 
-    PreferenceManager.setDefaultValues(thisActivity, R.xml.preferences, false);
+    //AI PreferenceManager.setDefaultValues(thisActivity, R.xml.preferences, false);
     preferences = PreferenceManager.getDefaultSharedPreferences(thisActivity);
 
     launched = false;
@@ -273,13 +268,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
         requestRobotRestart();
         return true;
-      case R.id.action_wifi_channel_selector:
-        if (Build.MODEL.equals(Device.MODEL_FOXDA_FL7007)) {
-          startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-        } else {
-          startActivityForResult(new Intent(getBaseContext(), FtcWifiChannelSelectorActivity.class), REQUEST_CONFIG_WIFI_CHANNEL);
-        }
-        return true;
       case R.id.action_settings:
         startActivity(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class));
         return true;
@@ -289,18 +277,11 @@ public class FtcRobotControllerActivity extends ActivityGlue {
       case R.id.action_exit_app:
         finish();
         return true;
-      case R.id.action_configuration:
-        startActivity(new Intent(getBaseContext(), FtcConfigurationActivity.class));
-        return true;
-      case R.id.action_load:
-          startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
-          return true;
-      case R.id.action_autoconfigure:
-        startActivity(new Intent(getBaseContext(), AutoConfigureActivity.class));
       case R.id.action_view_logs:
         Intent viewLogsIntent = new Intent(VIEW_LOGS_ACTION);
         viewLogsIntent.putExtra(ViewLogsActivity.FILENAME, RobotLog.getLogFilename(this));
         startActivity(viewLogsIntent);
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }

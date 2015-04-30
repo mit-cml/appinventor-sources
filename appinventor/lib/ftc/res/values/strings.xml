@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <!-- Preference keys -->
   <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
 
   <!-- Options menu items -->
-  <string name="restart_robot_menu_item">Restart Robot</string>
-  <string name="action_wifi_channel_selector">Wifi Channel Selection</string>
+  <!--
   <string name="settings_menu_item">Settings</string>
-  <string name="configure_menu_item">Configure Robot</string>
-  <string name="load_menu_item">Load Configuration File</string>
-  <string name="autoconfigure_menu_item">AutoConfigure</string>
+  -->
+  <string name="restart_robot_menu_item">Restart Robot</string>
+  <!--
   <string name="view_logs_menu_item">View logs</string>
   <string name="about_menu_item">About</string>
   <string name="action_exit_app">Exit</string>
+  -->
 
 </resources>

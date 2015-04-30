@@ -1,58 +1,30 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools" >
-
-  <item
-      android:id="@+id/action_restart_robot"
-      android:orderInCategory="100"
-      android:showAsAction="never"
-      android:title="@string/restart_robot_menu_item"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
   <!--
   <item
-    android:id="@+id/action_wifi_channel_selector"
-    android:orderInCategory="101"
+    android:id="@+id/action_settings"
+    android:orderInCategory="99"
     android:showAsAction="never"
-    android:title="@string/action_wifi_channel_selector"/>
+    android:title="@string/settings_menu_item"/>
   -->
-
-  <!-- this item is disabled -->
-  <!--
   <item
-      android:id="@+id/action_settings"
-      android:enabled="false"
-      android:orderInCategory="102"
-      android:showAsAction="never"
-      android:title="@string/settings_menu_item"/>
-
-  <item
-      android:id="@+id/action_configuration"
-      android:orderInCategory="104"
-      android:showAsAction="never"
-      android:title="@string/configure_menu_item"/>
-
-  <item
-      android:id="@+id/action_load"
-      android:orderInCategory="105"
-      android:showAsAction="never"
-      android:title="@string/load_menu_item"/>
-
-  <item
-    android:id="@+id/action_autoconfigure"
-    android:orderInCategory="105"
+    android:id="@+id/action_restart_robot"
+    android:orderInCategory="100"
     android:showAsAction="never"
-    android:title="@string/autoconfigure_menu_item"/>
+    android:title="@string/restart_robot_menu_item"/>
 
+  <!--
   <item
     android:id="@+id/action_view_logs"
-    android:orderInCategory="106"
+    android:orderInCategory="101"
     android:showAsAction="never"
     android:title="@string/view_logs_menu_item"/>
 
   <item
-      android:id="@+id/action_about"
-      android:orderInCategory="999"
-      android:icon="@android:drawable/ic_menu_info_details"
-      android:title="@string/about_menu_item"/>
+    android:id="@+id/action_about"
+    android:orderInCategory="999"
+    android:icon="@android:drawable/ic_menu_info_details"
+    android:title="@string/about_menu_item"/>
 
   <item
     android:id="@+id/action_exit_app"
