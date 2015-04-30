@@ -51,6 +51,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
+  private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
   // Use this class to define the work of a job that can be retried. The
   // "datastore" argument to run() is the Objectify object for this job
@@ -137,6 +138,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.projectId = projectId;
           appData.userId = userId;
           appData.active = true;
+          appData.lastEmailNotificationTimeStamp = Email.NO_LAST_EMAIL_NOTIFICATION_ACTIVITY;
           datastore.put(appData); // put the appData in the db so that it gets assigned an id
 
           assert appData.id != null;
@@ -1310,27 +1312,37 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   public boolean checkIfSendAppStats(final String userId, final long galleryId, final String adminEmail, final String currentHost) {
     final Result<Boolean> send = new Result<Boolean>();
+    final long currentTime = System.currentTimeMillis();
     try {
       final User user = storageIo.getUser(userId);
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
-          if(galleryAppData.unreadDownloads + galleryAppData.unreadLikes >= user.getUserEmailFrequency()){
-            String title = prepareAppStatsEmailTitle(galleryAppData.title);
-            String body = prepareAppStatsEmailBody(galleryAppData.title, galleryAppData.numDownloads,
-                getNumLikes(galleryId), currentHost, galleryId);
-            boolean success = new GalleryEmail().sendEmail(adminEmail, user.getUserEmail(), title, body);
-            if(success){
-              send.t = true;
-              //clear unread stats
-              galleryAppData.unreadDownloads = 0;
-              galleryAppData.unreadLikes = 0;
-              datastore.put(galleryAppData);
+          if(currentTime - galleryAppData.lastEmailNotificationTimeStamp > TWENTYFOURHOURS){
+            if(galleryAppData.unreadDownloads + galleryAppData.unreadLikes >= user.getUserEmailFrequency()){
+              String title = prepareAppStatsEmailTitle(galleryAppData.title);
+              String body = prepareAppStatsEmailBody(galleryAppData.title, galleryAppData.numDownloads,
+                  getNumLikes(galleryId), currentHost, galleryId);
+              boolean success = new GalleryEmail().sendEmail(adminEmail, user.getUserEmail(), title, body);
+              if(success){
+                send.t = true;
+                //clear unread stats
+                galleryAppData.unreadDownloads = 0;
+                galleryAppData.unreadLikes = 0;
+                //update last eamil notification timestamp
+                galleryAppData.lastEmailNotificationTimeStamp = currentTime;
+                datastore.put(galleryAppData);
+              }else{
+                /*send email fail*/
+                send.t = false;
+              }
             }else{
+              /*num of (unreaddownloads+unreadlikes) hasn't reach the threshold */
               send.t = false;
             }
           }else{
+            /*less than 24 hours of last email notification on this app*/
             send.t = false;
           }
         }
@@ -1362,8 +1374,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   private String prepareAppStatsEmailBody(String title, int numDownloads, int numLikes, String currentHost, long galleryId){
     return "Congratulations, your app \"" + title + "\" has been recently downloaded/liked."
-        + " You are up to " + numDownloads + " downloads and " + numLikes + " likes. Keep up the good work!\n"
-        + "Visit your app: " + currentHost + "/?galleryId=" + galleryId + "\n\n"
+        + " You are up to " + numDownloads + " downloads and " + numLikes + " likes. Keep up the good work!\n\n\n"
+        + "You can visit your app at " + currentHost + "/?galleryId=" + galleryId
+        + " App Inventor will send you an email notification when the apps you have posted are liked or downloaded. "
+        + "At most, one notification will be sent every 24 hours for each of your apps. "
         + "To modify the frequency of this notification email, please visit your profile page at "
         + currentHost;
   }
