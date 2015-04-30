@@ -4,8 +4,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import android.os.AsyncTask;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -13,18 +12,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UdooArduinoManager
-{    
-    private FileOutputStream outputStream;
-    private FileInputStream inputStream;
-    private UdooBroadcastReceiver udooBroadcastReceiver;
+{
+    private OutputStream outputStream;
+    private InputStream inputStream;
+    private UdooConnectionInterface udooConnection;
 
-    public UdooArduinoManager(FileOutputStream outputStream, FileInputStream inputStream, UdooBroadcastReceiver udooBroadcastReceiver)
+    public UdooArduinoManager(OutputStream outputStream, InputStream inputStream, UdooConnectionInterface udooConnection)
     {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
-        this.udooBroadcastReceiver = udooBroadcastReceiver;
+        this.udooConnection = udooConnection;
     }
 
     public static final int HIGH = 1;
@@ -223,51 +230,77 @@ public class UdooArduinoManager
     private JSONObject sendJson(JSONObject json)
     {
         try {
-            this.outputStream.write(json.toString().getBytes());
-            this.outputStream.flush();
-            
-            String readResponse = this.read().trim();
-            Log.d("REQUEST", json.toString());
-            Log.d("RESPONSE", readResponse);
-            JSONObject response = new JSONObject(readResponse);
-            
-            return response;
-        } catch (IOException e) {
-            
-            this.udooBroadcastReceiver.disconnect();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-            }
-            this.udooBroadcastReceiver.connect();
-            
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return new JsonWriterTask().execute(json.toString()+'\n').get(5000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (TimeoutException ex) {
+            Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return null;
     }
-    
-    private String read()
+
+    private class JsonWriterTask extends AsyncTask<String, Void, JSONObject>
     {
-        byte[] buffer = new byte[256];
-        byte[] response;
-        String message;
+        protected JSONObject doInBackground(String... args)
+        {
+            try {
+                outputStream.write(args[0].getBytes());
+                outputStream.flush();
 
-        try {
-            int mByteRead = inputStream.read(buffer, 0, buffer.length);
-            if (mByteRead != -1) {
-                response = Arrays.copyOfRange(buffer, 0, mByteRead);
-                message = new String(response);
-            } else {
-                message = new String();
+                String readResponse = this.read().trim();
+                Log.d("REQUEST", args[0]);
+                Log.d("RESPONSE", readResponse);
+                return new JSONObject(readResponse);
+                
+            } catch (IOException e) {
+                udooConnection.disconnect();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                }
+                udooConnection.connect();
+
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            Log.e("ARDUINO IO Exception", e.getMessage());
-            message = null;
+            
+            return null;
         }
+        
+        private String read()
+        {
+            byte[] buffer = new byte[256];
+            byte[] response;
+            String message = "";
+            int mByteRead = -1;
 
-        return message;
+            try {
+                if (inputStream instanceof FileInputStream) {
+                    Log.d("XXXX", "Leggo per ADK");
+                    mByteRead = inputStream.read(buffer, 0, buffer.length);
+                    if (mByteRead != -1) {
+                        response = Arrays.copyOfRange(buffer, 0, mByteRead);
+                        message = new String(response);
+                    } else {
+                        message = new String();
+                    }                
+                } else {
+                    do {
+                        mByteRead = inputStream.read(buffer, 0, buffer.length);
+                        message += new String(Arrays.copyOfRange(buffer, 0, mByteRead));
+                    } while (!message.contains("\n"));
+                }
+
+            } catch (IOException e) {
+                Log.e("ARDUINO IO Exception", e.getMessage());
+                message = null;
+            }
+
+            return message;
+        }
     }
 }

@@ -6,10 +6,13 @@ package com.google.appinventor.components.runtime;
 
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 
@@ -28,15 +31,93 @@ public class UdooArduino extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
     private String TAG = "UDOOUsbActivity";
-    private UdooBroadcastReceiver usbReceiver = UdooBroadcastReceiver.getInstance();
 
+    private String transport = "local";
+
+    /**
+     * Local or remote Arduino
+     *
+     * @return String
+     */
+    @SimpleProperty(description = "Connect to a local or remote Arduino")
+    public String Transport() {
+        return this.transport;
+    }
+
+    /**
+     * Sets the transport property
+     *
+     * @param transport
+     */
+    @DesignerProperty(
+        editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS,
+        defaultValue = "local")
+    @SimpleProperty
+    public void Transport(String transport) {
+        Log.d(TAG, "Transport set");
+        if (transport.equals("local") || transport.equals("remote")) {
+            this.transport = transport;
+            RemoteAddress(this.remoteAddress);
+            RemotePort(this.remotePort);
+        }
+    }
+    
+    private String remoteAddress;
+
+    /**
+     * Sets the remote IP address
+     *
+     * @param remoteAddress
+     */
+    @DesignerProperty()
+    @SimpleProperty
+    public void RemoteAddress(String remoteAddress) {
+        Log.d(TAG, "Address set");
+        this.remoteAddress = remoteAddress;
+        UdooConnectionInterface transport = getTransport();
+        if (transport instanceof UdooTcpRedirector) {
+            ((UdooTcpRedirector)transport).setAddress(remoteAddress);
+        }
+    }
+    
+    private String remotePort;
+
+    /**
+     * Sets the remote TCP port number
+     *
+     * @param remotePort
+     */
+    @DesignerProperty()
+    @SimpleProperty
+    public void RemotePort(String remotePort) {
+        Log.d(TAG, "Port set");
+        this.remotePort = remotePort;
+        UdooConnectionInterface transport = getTransport();
+        if (transport instanceof UdooTcpRedirector) {
+            ((UdooTcpRedirector)transport).setPort(remotePort);
+        }
+    }
+    
+    private String remoteSecret;
+
+    /**
+     * Sets the remote secret string for authentication
+     *
+     * @param remoteSecret
+     */
+    @DesignerProperty()
+    @SimpleProperty
+    public void RemoteSecret(String remoteSecret) {
+        this.remoteSecret = remoteSecret;
+    }
+    
     public synchronized boolean isConnected()
     {
-        boolean isc = usbReceiver.isConnected();
+        boolean isc = getTransport().isConnected();
         if (!isc) {
             Log.d(TAG, "isConnected called, but disconnected!");
-            usbReceiver.disconnect();
-            usbReceiver.connect();
+            getTransport().disconnect();
+            getTransport().connect();
         }
         return isc;
     }
@@ -50,8 +131,8 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         form.registerForOnResume(this);
         form.registerForOnDestroy(this);
         
-        usbReceiver.setComponent(this);
-        usbReceiver.onCreate(form);
+        getTransport().registerComponent(this);
+        getTransport().onCreate(form);
     }
     
     @Override
@@ -67,8 +148,8 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     {
         Log.d("UDOOLIFECYCLE", "onDestroy");
         
-        usbReceiver.disconnect();
-        usbReceiver.onDestroy();
+        getTransport().disconnect();
+        getTransport().onDestroy();
     }
 
     
@@ -78,7 +159,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public void pinMode(int pin, String mode)
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.pinMode(pin, mode);
+            getTransport().arduino().pinMode(pin, mode);
         }
     }
     
@@ -86,7 +167,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public void digitalWrite(int pin, String value)
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.digitalWrite(pin, value);
+            getTransport().arduino().digitalWrite(pin, value);
         }
     }
     
@@ -94,7 +175,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public int digitalRead(int pin) throws Exception
     {
         if (this.isConnected()) {
-            return usbReceiver.arduino.digitalRead(pin);
+            return getTransport().arduino().digitalRead(pin);
         }
         
         throw new Exception("Not connected");
@@ -104,7 +185,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public void analogWrite(int pin, int value)
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.analogWrite(pin, value);
+            getTransport().arduino().analogWrite(pin, value);
         }
     }
     
@@ -114,7 +195,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         Log.d(TAG, "chiamata analog read");
         if (this.isConnected()) {
             Log.d(TAG, "chiamo metodo");
-            return usbReceiver.arduino.analogRead(pin);
+            return getTransport().arduino().analogRead(pin);
         }
         
         Log.d(TAG, "non connesso..");
@@ -126,7 +207,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public void delay(int ms) throws Exception
     {
         if (this.isConnected()) {
-            usbReceiver.arduino.delay(ms);
+            getTransport().arduino().delay(ms);
         }
     }
     
@@ -134,7 +215,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     public int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
     {
         if (this.isConnected()) {
-            return usbReceiver.arduino.map(value, fromLow, fromHigh, toLow, toHigh);
+            return getTransport().arduino().map(value, fromLow, fromHigh, toLow, toHigh);
         }
         
         throw new Exception("Not connected");
@@ -145,5 +226,14 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     {
         Log.d(TAG, "Connected EVENT");
         EventDispatcher.dispatchEvent(this, "Connected");
+    }
+    
+    private UdooConnectionInterface getTransport()
+    {
+        if (this.transport.equals("local")) {
+            return UdooAdkBroadcastReceiver.getInstance();
+        } else {
+            return UdooTcpRedirector.getInstance();
+        }
     }
 }

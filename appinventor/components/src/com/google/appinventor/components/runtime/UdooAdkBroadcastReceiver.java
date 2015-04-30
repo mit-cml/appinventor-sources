@@ -19,8 +19,10 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UdooBroadcastReceiver extends BroadcastReceiver
+public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooConnectionInterface
 {
     private static final String TAG = "UDOOBroadcastReceiver";
     private static final String ACTION_USB_PERMISSION = "com.google.appinventor.components.runtime.action.USB_PERMISSION";
@@ -31,17 +33,17 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     private ParcelFileDescriptor fileDescriptor_;
     private FileInputStream inputStream_;
     private FileOutputStream outputStream_;
-    public UdooArduinoManager arduino;
+    private UdooArduinoManager arduino;
     private boolean connected = false;
-    private UdooConnectedInterface component;
+    List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
     private boolean waitForResponse = false;
 
-    private static UdooBroadcastReceiver instance = null;
-    protected UdooBroadcastReceiver() {
+    private static UdooAdkBroadcastReceiver instance = null;
+    protected UdooAdkBroadcastReceiver() {
     }
-    public static UdooBroadcastReceiver getInstance() {
+    public static UdooAdkBroadcastReceiver getInstance() {
        if (instance == null) {
-          instance = new UdooBroadcastReceiver();
+          instance = new UdooAdkBroadcastReceiver();
        }
        return instance;
     }
@@ -167,7 +169,9 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
                 this.arduino = new UdooArduinoManager(outputStream_, inputStream_, this);
                 this.connected = true;
 
-                this.component.Connected();
+                for (UdooConnectedInterface c : connectedComponents) {
+                    c.Connected();
+                }
                 
                 success = true;
                 return true;
@@ -194,9 +198,9 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
     }
     
     private void trySleep(long time) {
-        synchronized (UdooBroadcastReceiver.this) {
+        synchronized (UdooAdkBroadcastReceiver.this) {
             try {
-                UdooBroadcastReceiver.this.wait(time);
+                UdooAdkBroadcastReceiver.this.wait(time);
             } catch (InterruptedException e) {
             }
         }
@@ -216,8 +220,13 @@ public class UdooBroadcastReceiver extends BroadcastReceiver
         return this.connected;
     }
 
-    public void setComponent(UdooConnectedInterface component)
+    public void registerComponent(UdooConnectedInterface component)
     {
-        this.component = component;
+        this.connectedComponents.add(component);
+    }
+
+    @Override
+    public UdooArduinoManager arduino() {
+        return this.arduino;
     }
 }

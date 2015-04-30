@@ -101,6 +101,13 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGpioDirectionsChoicePropertyEditor#directions
    */
   public static final String PROPERTY_TYPE_GPIO_DIRECTIONS = "gpio_directions";
+  
+  /**
+   * UDOO transports
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTransportsChoicePropertyEditor#transports
+   */
+  public static final String PROPERTY_TYPE_UDOO_TRANSPORTS = "udoo_transports";
 
   /**
    * Non-negative (positive or zero) floating-point values.

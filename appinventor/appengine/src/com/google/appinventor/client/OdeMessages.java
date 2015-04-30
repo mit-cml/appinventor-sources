@@ -5448,4 +5448,20 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SelfPicture")
   @Description("")
   String SelfPictureMethods();
+
+  @DefaultMessage("Transport")
+  @Description("")
+  String TransportProperties();
+
+  @DefaultMessage("RemoteAddress")
+  @Description("")
+  String RemoteAddressProperties();
+
+  @DefaultMessage("RemotePort")
+  @Description("")
+  String RemotePortProperties();
+
+  @DefaultMessage("RemoteSecret")
+  @Description("")
+  String RemoteSecretProperties();
 }
