@@ -30,7 +30,7 @@ import com.google.appinventor.components.common.YaVersion;
 public class UdooArduino extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-    private String TAG = "UDOOUsbActivity";
+    private String TAG = "UDOOArduinoCmp";
 
     private String transport = "local";
 
@@ -54,9 +54,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         defaultValue = "local")
     @SimpleProperty
     public void Transport(String transport) {
-        Log.d(TAG, "Transport set");
         if (transport.equals("local") || transport.equals("remote")) {
             this.transport = transport;
+            getTransport().registerComponent(this);
             RemoteAddress(this.remoteAddress);
             RemotePort(this.remotePort);
         }
@@ -72,7 +72,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     @DesignerProperty()
     @SimpleProperty
     public void RemoteAddress(String remoteAddress) {
-        Log.d(TAG, "Address set");
         this.remoteAddress = remoteAddress;
         UdooConnectionInterface transport = getTransport();
         if (transport instanceof UdooTcpRedirector) {
@@ -90,7 +89,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     @DesignerProperty()
     @SimpleProperty
     public void RemotePort(String remotePort) {
-        Log.d(TAG, "Port set");
         this.remotePort = remotePort;
         UdooConnectionInterface transport = getTransport();
         if (transport instanceof UdooTcpRedirector) {
@@ -131,7 +129,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         form.registerForOnResume(this);
         form.registerForOnDestroy(this);
         
-        getTransport().registerComponent(this);
         getTransport().onCreate(form);
     }
     

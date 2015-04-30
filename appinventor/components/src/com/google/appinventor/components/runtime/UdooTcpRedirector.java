@@ -28,7 +28,6 @@ public class UdooTcpRedirector implements UdooConnectionInterface
     private boolean connected = false;
     public UdooArduinoManager arduino;
     List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
-    private boolean waitForResponse = false;
 
     protected UdooTcpRedirector() {
     }
@@ -63,10 +62,8 @@ public class UdooTcpRedirector implements UdooConnectionInterface
 
     @Override
     public void connect() {
-        if (!this.waitForResponse) {
-            Log.d(TAG, "connect() called " + this.address+ ":" + this.port);
-            new CreateSocketTask().execute(this.address, this.port);
-        }
+        Log.d(TAG, "connect() called " + this.address+ ":" + this.port);
+        new CreateSocketTask().execute(this.address, this.port);
     }
 
     @Override
@@ -92,7 +89,7 @@ public class UdooTcpRedirector implements UdooConnectionInterface
     }
     
     void setPort(String port) {
-        boolean changed = !address.equals(this.address);
+        boolean changed = !port.equals(this.port);
         this.port = port;
         if (this.address != null && this.port != null && changed) {
             connect();
@@ -116,9 +113,6 @@ public class UdooTcpRedirector implements UdooConnectionInterface
                 OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
                 setArduino(in, out);
-
-                Log.d(TAG, "Looks connected");
-                waitForResponse = false;
 
                 for (UdooConnectedInterface c : connectedComponents) {
                     Log.d(TAG, "notify " + c.toString());

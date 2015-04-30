@@ -110,6 +110,9 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         
         UsbAccessory[] accessories = usbManager_.getAccessoryList();
         UsbAccessory accessory = null;
+        if (accessories == null) {
+            return false;
+        }
         for (UsbAccessory iaccessory : accessories) {
             if (iaccessory != null && iaccessory.getManufacturer().equals("UDOO")) {
                 accessory = iaccessory;
