@@ -27,6 +27,8 @@ public class Email implements IsSerializable{
 
   public static final long NOTRECORDED = 0;
 
+  public static final long NO_LAST_EMAIL_NOTIFICATION_ACTIVITY = 0;
+
   /**
    * Default constructor. This constructor is required by GWT.
    */

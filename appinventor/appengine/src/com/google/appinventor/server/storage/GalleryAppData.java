@@ -33,6 +33,7 @@ public class GalleryAppData {
   @Indexed public int unreadDownloads;
   long projectId;
   int status;
+  long lastEmailNotificationTimeStamp;
 
   @Indexed
   String userId;
