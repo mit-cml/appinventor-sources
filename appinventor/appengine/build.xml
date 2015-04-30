@@ -354,6 +354,7 @@
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
+              srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
               source="1.5" target="1.5" nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
@@ -405,6 +406,7 @@
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
         <pathelement location="src"/>
+        <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
         <pathelement location="${build.war.dir}/WEB-INF/classes"/>
         <pathelement location="${local.build.dir}/AiRebindLib.jar" />
         <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
