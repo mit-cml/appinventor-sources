@@ -271,7 +271,7 @@ Blockly.WarningHandler.determineDuplicateComponentEventHandlers = function(){
     eventBlock.IAmADuplicate = false;
     var genericPropertyName = typeName + ":" + eventBlock.eventName;
     // If the instance is not yet determined, we will continue
-    if (eventBlock.isGeneric && !eventBlock.isMulti && eventBlock.getInputTargetBlock("COMPONENT") == null) {
+    if (eventBlock.isGeneric && !eventBlock.isMulti) {
       continue;
     }
     var propertyName = null;
