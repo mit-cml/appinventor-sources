@@ -1374,11 +1374,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   private String prepareAppStatsEmailBody(String title, int numDownloads, int numLikes, String currentHost, long galleryId){
     return "Congratulations, your app \"" + title + "\" has been recently downloaded/liked."
-        + " You are up to " + numDownloads + " downloads and " + numLikes + " likes. Keep up the good work!\n"
-        + "Visit your app: " + currentHost + "/?galleryId=" + galleryId + "\n\n"
-        + "App Inventor will send you an email notification when the apps you have posted are liked or downloaded. "
+        + " You are up to " + numDownloads + " downloads and " + numLikes + " likes. Keep up the good work!\n\n\n"
+        + "You can visit your app at " + currentHost + "/?galleryId=" + galleryId
+        + " App Inventor will send you an email notification when the apps you have posted are liked or downloaded. "
         + "At most, one notification will be sent every 24 hours for each of your apps. "
-        + "Below, you can disable this feature or limit it so that a notification is only sent after a certain amount of activity.\n"
         + "To modify the frequency of this notification email, please visit your profile page at "
         + currentHost;
   }
