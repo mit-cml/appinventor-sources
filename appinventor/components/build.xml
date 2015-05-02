@@ -373,7 +373,7 @@
             apt-target="${ComponentTranslation-class.dir}/ComponentsTranslation.java"/>
 
     <copy file="${ComponentTranslation-class.dir}/ComponentsTranslation.java"
-          todir="${appinventor.dir}/appengine/build/src/com/google/appinventor/client/" />
+          todir="${public.build.dir}/ComponentTranslation/src/com/google/appinventor/client/" />
 
   </target>
 
