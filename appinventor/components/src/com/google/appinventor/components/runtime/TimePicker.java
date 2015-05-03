@@ -18,6 +18,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.text.format.DateFormat;
 import android.os.Handler;
 
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public class TimePicker extends ButtonBase {
     hour = c.get(Calendar.HOUR_OF_DAY);
     minute = c.get(Calendar.MINUTE);
     time = new TimePickerDialog(this.container.$context(),
-        timePickerListener, hour, minute, false);
+        timePickerListener, hour, minute, DateFormat.is24HourFormat(this.container.$context()));
 
     androidUIHandler = new Handler();
 
