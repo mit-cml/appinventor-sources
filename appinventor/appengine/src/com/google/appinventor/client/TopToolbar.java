@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -461,20 +462,31 @@ public class TopToolbar extends Composite {
   private static class DeleteAction implements Command {
     @Override
     public void execute() {
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() > 0) {
-        // Show one confirmation window for selected projects.
-        if (deleteConfirmation(selectedProjects)) {
-          for (Project project : selectedProjects) {
-            deleteProject(project);
+      Ode ode = Ode.getInstance();
+      if (ode.getCurrentView() == Ode.PROJECTS) { 
+        List<Project> selectedProjects =
+            ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        if (selectedProjects.size() > 0) {
+          // Show one confirmation window for selected projects.
+          if (deleteConfirmation(selectedProjects)) {
+            for (Project project : selectedProjects) {
+              deleteProject(project);
+            }
           }
+        } else {
+          // The user can select a project to resolve the
+          // error.
+          ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
         }
-
-      } else {
-        // The user can select a project to resolve the
-        // error.
-        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+      } else { //We are deleting a project in the designer view
+        List<Project> selectedProjects = new ArrayList<Project>();
+        Project currentProject = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
+        selectedProjects.add(currentProject);
+        if (deleteConfirmation(selectedProjects)) {
+          deleteProject(currentProject);
+          //Add the command to stop this current project from saving
+          ode.switchToProjectsView();
+        }
       }
     }
 
@@ -846,7 +858,7 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
