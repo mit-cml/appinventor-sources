@@ -448,8 +448,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity,
       String configuration) {
     super(aiFtcRobotController, activity);
-    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
     onCreate(null);
+    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
     onStart();
   }
 
