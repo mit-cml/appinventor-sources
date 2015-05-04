@@ -94,7 +94,15 @@ public interface StorageIo {
    */
   void setUserName(String userId, String name);
 
-   /**
+  /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserName(String userId);
+
+  /**
    * Returns a string with the user's name.
    *
    * @param userId user id
@@ -108,13 +116,19 @@ public interface StorageIo {
    */
   void setUserLink(String userId, String link);
 
-   /**
-   * Returns a string with the user's name.
+  /**
+   * Returns the email notification frequency
    *
    * @param userId user id
-   * @return name
+   * @return emailFrequency email frequency
    */
-  String getUserName(String userId);
+  int getUserEmailFrequency(String userId);
+
+  /**
+   * Sets the stored email notification frequency for user with id userId
+   *
+   */
+  void setUserEmailFrequency(String userId, int emailFrequency);
 
   /**
    * Stores a string with the user's settings.

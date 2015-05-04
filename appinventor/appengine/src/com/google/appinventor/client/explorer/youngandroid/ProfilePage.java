@@ -16,8 +16,6 @@ import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
-import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -32,6 +30,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -54,6 +53,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
      userNameBox
      userLinkLabel
      userLinkBox
+     userEmailFrequencyBox
+     userEmailFrequencyPrefixLabel
+     userEmailFrequencySuffixLabel
 
    appCardWrapper
      imageUploadBox
@@ -109,12 +111,16 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   Label userContentHeader = new Label();
   Label usernameLabel = new Label();
   Label userLinkLabel = new Label();
+  Label userEmailDescriptionLabel = new Label();
+  Label userEmailFrequencyPrefixLabel = new Label();
+  Label userEmailFrequencySuffixLabel = new Label();
   Button editProfile = new Button(MESSAGES.buttonEditProfile());
   final TextBox userNameBox = new TextBox();
   final TextBox userLinkBox = new TextBox();
+  final TextBox userEmailFrequencyBox = new TextBox();
   final Label userNameDisplay = new Label();
   Anchor userLinkDisplay = new Anchor();
-  final Button profileSummit = new Button("Update Profile");
+  final Button profileSubmit = new Button(MESSAGES.buttonUpdateProfile());
 
   private static final Logger LOG = Logger.getLogger(ProfilePage.class.getName());
   private static final Ode ode = Ode.getInstance();
@@ -151,22 +157,31 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     }
 
     if (editStatus == PRIVATE) {
-      userContentHeader.setText("Edit your profile");
-      usernameLabel.setText("Your display name");
-      userLinkLabel.setText("More info link");
+      userContentHeader.setText(MESSAGES.labelEditYourProfile());
+      usernameLabel.setText(MESSAGES.labelYourDisplayName());
+      userLinkLabel.setText(MESSAGES.labelMoreInfoLink());
+      userEmailDescriptionLabel.setText(MESSAGES.labelEmailDescription());
+      userEmailFrequencyPrefixLabel.setText(MESSAGES.labelEmailFrequencyPrefix());
+      userEmailFrequencySuffixLabel.setText(MESSAGES.labelEmailFrequencySuffix());
       editProfile.setVisible(false);
 
-      profileSummit.addClickHandler(new ClickHandler() {
+      profileSubmit.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          profileSummit.setEnabled(false);
+          profileSubmit.setEnabled(false);
+          if(!validEmailFrequency(userEmailFrequencyBox.getText())){
+            Window.alert(MESSAGES.errorEmailFrequency());
+            profileSubmit.setEnabled(true);
+            return;
+          }
+
           // Store the name value of user, modify database
           final OdeAsyncCallback<Void> userNameUpdateCallback = new OdeAsyncCallback<Void>(
               // failure message
               MESSAGES.galleryError()) {
                 @Override
                 public void onSuccess(Void arg0) {
-                  profileSummit.setEnabled(true);
+                  profileSubmit.setEnabled(true);
                 }
             };
            ode.getUserInfoService().storeUserName(userNameBox.getText(), userNameUpdateCallback);
@@ -187,6 +202,17 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
                 userLinkBox.getText(), userLinkUpdateCallback);
           }
 
+          // Store the email notification frequency value of user, modofy database
+          final OdeAsyncCallback<Void> userEmailFrequencyUpdateCallback = new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void arg0) {
+                }
+            };
+            Ode.getInstance().getUserInfoService().storeUserEmailFrequency(
+                Integer.valueOf(userEmailFrequencyBox.getText()), userEmailFrequencyUpdateCallback);
+
         }
       });
 
@@ -195,7 +221,11 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       profileInfo.add(userNameBox);
       profileInfo.add(userLinkLabel);
       profileInfo.add(userLinkBox);
-      profileInfo.add(profileSummit);
+      profileInfo.add(userEmailDescriptionLabel);
+      profileInfo.add(userEmailFrequencyPrefixLabel);
+      profileInfo.add(userEmailFrequencyBox);
+      profileInfo.add(userEmailFrequencySuffixLabel);
+      profileInfo.add(profileSubmit);
 
     } else {
       profileSingle.addStyleName("ode-Public");
@@ -226,9 +256,13 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     userLinkLabel.addStyleName("profile-textlabel");
     userLinkBox.addStyleName("profile-textbox");
     userLinkDisplay.addStyleName("profile-textdisplay");
+    userEmailDescriptionLabel.addStyleName("profile-textlabel-emaildescription");
+    userEmailFrequencyPrefixLabel.addStyleName("profile-textlabel");
+    userEmailFrequencySuffixLabel.addStyleName("profile-textlabel");
+    userEmailFrequencyBox.addStyleName("profile-textbox-small");
     editProfile.addStyleName("profile-submit");
 
-    profileSummit.addStyleName("profile-submit");
+    profileSubmit.addStyleName("profile-submit");
     imageUpload.addStyleName("app-image-upload");
 
     // Add sidebar
@@ -264,6 +298,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
             // In this case it'll return the user of [userId]
             userContentHeader.setText(user.getUserName());
             makeValidLink(userLinkDisplay, user.getUserLink());
+            userEmailFrequencyBox.setText(String.valueOf(user.getUserEmailFrequency()));
          }
     };
     if (editStatus == PRIVATE) {
@@ -272,6 +307,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       userId = currentUser.getUserId();
       userNameBox.setText(currentUser.getUserName());
       userLinkBox.setText(currentUser.getUserLink());
+      userEmailFrequencyBox.setText(String.valueOf(currentUser.getUserEmailFrequency()));
     } else {
       // Public state
       Ode.getInstance().getUserInfoService().getUserInformationByUserId(userId, userInformationCallback);
@@ -475,5 +511,17 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 
   public void loadImage(){
     initImageComponents(userId);
+  }
+
+  private boolean validEmailFrequency(String emailFrequencyString){
+    int emailFrequency = 0;
+    try {
+      emailFrequency = Integer.valueOf(emailFrequencyString);
+      if(emailFrequency < 1) return false;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+
+    return true;
   }
 }

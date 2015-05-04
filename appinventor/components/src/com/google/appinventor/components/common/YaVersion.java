@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - CAMERA_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -409,10 +411,6 @@ public class YaVersion {
   //         @description(""
   //         String FooProperties();
 
-  //   You then have to add a mapping to
-  //   TranslationComponentProperties.java (or ..Methods or ..Events
-  //   etc).
-
   //   If you edit the description of a component (but not yet a
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
@@ -491,7 +489,9 @@ public class YaVersion {
 
   // For CAMERA_COMPONENT_VERSION 2:
   // - The UseFront property was added.
-   public static final int CAMERA_COMPONENT_VERSION = 2;
+  // For CAMERA_COMPONENT_VERSION 3:
+  // - The UseFront property was deprecated.
+   public static final int CAMERA_COMPONENT_VERSION = 3;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.

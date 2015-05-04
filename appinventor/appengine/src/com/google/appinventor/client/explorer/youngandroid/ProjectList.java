@@ -48,6 +48,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     NAME,
     DATE_CREATED,
     DATE_MODIFIED,
+    PUBLISHED,
   }
   private enum SortOrder {
     ASCENDING,
@@ -55,8 +56,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   // TODO: add these to OdeMessages.java
-  private static final String PUBLISHBUTTONTEXT = "Publish to Gallery";
-  private static final String UPDATEBUTTONTEXT = "Update Gallery app";
+  private static final String NOT_PUBLISHED = "No";
+  private static final String PUBLISHED = "Yes";
   private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
   private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
 
@@ -72,6 +73,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private final Label nameSortIndicator;
   private final Label dateCreatedSortIndicator;
   private final Label dateModifiedSortIndicator;
+  private final Label publishedSortIndicator;
 
   GalleryClient gallery = null;
 
@@ -87,13 +89,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
-    table = new Grid(1, 4); // The table initially contains just the header row.
+    table = new Grid(1, 5); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
     nameSortIndicator = new Label("");
     dateCreatedSortIndicator = new Label("");
     dateModifiedSortIndicator = new Label("");
+    publishedSortIndicator = new Label("");
     refreshSortIndicators();
     setHeaderRow();
 
@@ -140,6 +143,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateModifiedHeader.add(dateModifiedSortIndicator);
     table.setWidget(0, 3, dateModifiedHeader);
 
+    HorizontalPanel publishedHeader = new HorizontalPanel();
+    final Label publishedHeaderLabel = new Label(MESSAGES.projectPublishedHeader());
+    publishedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    publishedHeader.add(publishedHeaderLabel);
+    publishedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
+    publishedHeader.add(publishedSortIndicator);
+    table.setWidget(0, 4, publishedHeader);
+
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
       public void onMouseDown(MouseDownEvent e) {
@@ -148,8 +159,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           clickedSortField = SortField.NAME;
         } else if (e.getSource() == dateCreatedHeaderLabel || e.getSource() == dateCreatedSortIndicator) {
           clickedSortField = SortField.DATE_CREATED;
-        } else {
+        } else if (e.getSource() == dateModifiedHeaderLabel || e.getSource() == dateModifiedSortIndicator){
           clickedSortField = SortField.DATE_MODIFIED;
+        }else{
+          clickedSortField = SortField.PUBLISHED;
         }
         changeSortOrder(clickedSortField);
       }
@@ -160,6 +173,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateCreatedSortIndicator.addMouseDownHandler(mouseDownHandler);
     dateModifiedHeaderLabel.addMouseDownHandler(mouseDownHandler);
     dateModifiedSortIndicator.addMouseDownHandler(mouseDownHandler);
+    publishedHeaderLabel.addMouseDownHandler(mouseDownHandler);
+    publishedSortIndicator.addMouseDownHandler(mouseDownHandler);
   }
 
   private void changeSortOrder(SortField clickedSortField) {
@@ -196,6 +211,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         dateCreatedSortIndicator.setText("");
         nameSortIndicator.setText("");
         break;
+      case PUBLISHED:
+        publishedSortIndicator.setText(text);
+        nameSortIndicator.setText("");
+        dateCreatedSortIndicator.setText("");
+        dateModifiedSortIndicator.setText("");
     }
   }
 
@@ -204,7 +224,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label nameLabel;
     final Label dateCreatedLabel;
     final Label dateModifiedLabel;
-    final Label editButton;
+    final Label publishedLabel;
 
     private ProjectWidgets(final Project project) {
       checkBox = new CheckBox();
@@ -244,7 +264,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
-      editButton = new Label();
+
+      publishedLabel = new Label();
     }
   }
 
@@ -269,6 +290,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
               : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
           break;
+        case PUBLISHED:
+          comparator = (sortOrder == SortOrder.ASCENDING)
+              ? ProjectComparators.COMPARE_BY_PUBLISHED_ASCENDING
+              : ProjectComparators.COMPARE_BY_PUBLISHED_DESCENDING;
+          break;
       }
       Collections.sort(projects, comparator);
     }
@@ -291,59 +317,20 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 1, pw.nameLabel);
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
-      table.setWidget(row, 4, pw.editButton);
+      table.setWidget(row, 4, pw.publishedLabel);
       if(Ode.getGallerySettings().galleryEnabled()){
-        preparePublishApp(project, pw);
+        if (project.isPublished()) {
+          pw.publishedLabel.setText(PUBLISHED);
+        }
+        else {
+          pw.publishedLabel.setText(NOT_PUBLISHED);
+        }
       }
 
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
-  }
-
-  /**
-   * Prepares the app publish/update process for each project button. If the project has never
-   * been published, we create a gallery app with default title
-   * If it has been published, we get the gallery app and send it
-   */
-  private void preparePublishApp(final Project p, final ProjectWidgets pw) {
-    pw.editButton.addStyleName("ode-ProjectGalleryLink");
-    if (p.isPublished()) {
-      pw.editButton.setText(UPDATEBUTTONTEXT);
-      pw.editButton.setTitle(UPDATEBUTTONTITLE);
-    }
-    else {
-      pw.editButton.setText(PUBLISHBUTTONTEXT);
-      pw.editButton.setTitle(PUBLISHBUTTONTITLE);
-    }
-    pw.editButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        final Ode ode = Ode.getInstance();
-        if (p.isPublished()) {
-          // setup what happens when we load the app in
-          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-              MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(GalleryApp app) {
-              // the server has returned us something
-              int editStatus=GalleryPage.UPDATEAPP;
-              Ode.getInstance().switchToGalleryAppView(app, editStatus);
-            }
-          };
-          // ok, this is below the call back, but of course it is done first
-          ode.getGalleryService().getApp(p.getGalleryId(),callback);
-        }
-        else {
-          // app is not yet published
-          // first create an app object with default data
-          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(),
-              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
-          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
-        }
-      }
-    });
   }
 
   /**
@@ -400,4 +387,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshTable(false);
   }
 
+  public void setPublishedHeaderVisible(boolean visible){
+    table.getWidget(0, 4).setVisible(visible);
+  }
 }

@@ -285,6 +285,16 @@
   </target>
 
   <!-- ====================================================================
+       components_ComponentTranslation builds:
+       common/build/src/com/google/appinventor/ComponentsTranslation.java
+       ==================================================================== -->
+
+  <target name="components_ComponentTranslation">
+    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
+         target="ComponentTranslation"/>
+  </target>
+
+  <!-- ====================================================================
        buildserver_StarterApp builds:
        - build/buildserver/AppInventorPhoneApp.apk
        ==================================================================== -->
