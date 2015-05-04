@@ -445,11 +445,10 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   /*
    * Constructor for App Inventor.
    */
-  public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity) {
+  public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity,
+      String configuration) {
     super(aiFtcRobotController, activity);
-
-    DbgLog.msg("HeyLiz - textGamepad is " + textGamepad);
-    DbgLog.msg("HeyLiz - calling onCreate");
+    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
     onCreate(null);
     onStart();
   }

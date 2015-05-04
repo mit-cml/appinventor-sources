@@ -150,7 +150,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
       wakeLock.acquire();
 
-      ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form);
+      ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form, configuration);
     } else {
       form.dispatchErrorOccurredEvent(this, "FtcRobotController",
           ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT);
