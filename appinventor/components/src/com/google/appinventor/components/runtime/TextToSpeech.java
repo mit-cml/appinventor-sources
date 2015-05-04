@@ -332,6 +332,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     return country;
   }
 
+  /**
+   * This property is for display only
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_LANGUAGES, defaultValue = "")
+  @SimpleProperty
+  public void AvailableLanguages(YailList languages) {
+    // no-opt
+  }
 
   @SimpleProperty(description = "List of the languages available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +
@@ -339,6 +347,15 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   public YailList AvailableLanguages() {
     prepareLanguageAndCountryProperties();
     return allLanguages;
+  }
+
+  /**
+   * This property is for display only
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_COUNTRIES, defaultValue = "")
+  @SimpleProperty
+  public void AvailableCountries(YailList countries) {
+    // no-opt
   }
 
   @SimpleProperty(description = "List of the country codes available on this device " +
