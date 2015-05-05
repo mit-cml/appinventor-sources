@@ -81,6 +81,15 @@ public interface GalleryStorageIo {
   GalleryAppListResult getMostDownloadedApps(int start, int count);
 
   /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
+   */
+  GalleryAppListResult getMostLikedApps(int start, int count);
+
+  /**
    *Returns a wrapped class which contains a list of featured gallery app
    * @param start start index
    * @param count count number
@@ -161,6 +170,18 @@ public interface GalleryStorageIo {
    * @return true if relation exists
    */
   boolean isLikedByUser(long galleryId,String userId);
+
+  /**
+   * salvage the gallery app by given galleryId
+   * @param galleryId id of gallery app
+   */
+  void salvageGalleryApp(long galleryId);
+
+  /**
+   * salvage all gallery app
+   */
+  void salvageAllGalleryApps();
+
   /**
    * save AttributionId
    * @param galleryId id of gallery app that was like
