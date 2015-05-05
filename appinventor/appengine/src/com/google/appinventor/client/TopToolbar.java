@@ -480,11 +480,13 @@ public class TopToolbar extends Composite {
         }
       } else { //We are deleting a project in the designer view
         List<Project> selectedProjects = new ArrayList<Project>();
-        Project currentProject = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
+        Long currentProjectID = ode.getCurrentYoungAndroidProjectId();
+        Project currentProject = ode.getProjectManager().getProject(currentProjectID);
         selectedProjects.add(currentProject);
         if (deleteConfirmation(selectedProjects)) {
+          ode.getEditorManager().closeProjectEditor(currentProjectID);
           deleteProject(currentProject);
-          //Add the command to stop this current project from saving
+
           ode.switchToProjectsView();
         }
       }
