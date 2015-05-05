@@ -91,6 +91,16 @@ public class Toolbar extends Composite {
   }
 
   /**
+   * Sets text for button
+   *
+   * @param widgetName name of button
+   * @param text text of button
+   */
+  public void setButtonText(String widgetName, String text) {
+    buttonMap.get(widgetName).setText(text);
+  }
+
+  /**
    * Sets button visibility
    *
    * @param widgetName name of button

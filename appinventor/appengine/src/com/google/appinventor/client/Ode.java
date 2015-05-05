@@ -312,6 +312,8 @@ public class Ode implements EntryPoint {
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
         if(gallerySettings.galleryEnabled() == true){
+          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(true);
           GalleryClient.getInstance().setSystemEnvironmet(settings.getEnvironment());
           GalleryListBox.loadGalleryList();
           topPanel.showGalleryLink(true);
@@ -321,10 +323,11 @@ public class Ode implements EntryPoint {
           }
           topPanel.updateAccountMessageButton();
           PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
-
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
+          projectToolbar.setPublishOrUpdateButtonVisible(false);
+          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
         }
       }
     };
