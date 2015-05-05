@@ -484,9 +484,7 @@ public class TopToolbar extends Composite {
         Project currentProject = ode.getProjectManager().getProject(currentProjectID);
         selectedProjects.add(currentProject);
         if (deleteConfirmation(selectedProjects)) {
-          ode.getEditorManager().closeProjectEditor(currentProjectID);
           deleteProject(currentProject);
-
           ode.switchToProjectsView();
         }
       }
