@@ -782,7 +782,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
     @Override
     protected void onPreExecute() {
-      dialog.setMessage("Fusiontables...");
+      dialog.setMessage("Please wait loading...");
       dialog.show();
     }
 
