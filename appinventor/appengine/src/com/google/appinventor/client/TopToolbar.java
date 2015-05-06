@@ -847,6 +847,7 @@ public class TopToolbar extends Composite {
    */
   public void updateFileMenuButtons(int view) {
     if (view == 0) {  // We are in the Projects view
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
