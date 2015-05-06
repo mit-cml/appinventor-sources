@@ -269,7 +269,7 @@ Blockly.WarningHandler.determineDuplicateComponentEventHandlers = function(){
     if (topBlock.type == "component_event") {
       topBlock.IAmADuplicate = false; // default value for this field; may be changed to true below
       var typeName = topBlock.typeName;
-      var propertyName = typeName + ":" + topBlock.eventName + ":" + topBlock.instanceName;
+      var propertyName = typeName + ":" + topBlock.eventName + ":" + topBlock.instanceName + ":" + topBlock.disabled;
       /* [lyn, 01/04/2013] Notion of singleton component is not well-defined. Must think more about this!
          If adopt singleton component notion, will need the following code:
             // if (! Blockly.WarningHandler.isSingletonComponentType(typeName)) {

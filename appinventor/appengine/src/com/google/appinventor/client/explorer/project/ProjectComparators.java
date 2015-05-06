@@ -71,4 +71,22 @@ public final class ProjectComparators {
       return Long.signum(date2 - date1); // descending
     }
   };
+
+  public static final Comparator<Project> COMPARE_BY_PUBLISHED_ASCENDING = new Comparator<Project>() {
+    @Override
+    public int compare(Project proj1, Project proj2) {
+      Boolean b1 = proj1.isPublished();
+      Boolean b2 = proj2.isPublished();
+      return b1.compareTo(b2);
+    }
+  };
+
+  public static final Comparator<Project> COMPARE_BY_PUBLISHED_DESCENDING = new Comparator<Project>() {
+    @Override
+    public int compare(Project proj1, Project proj2) {
+      Boolean b1 = proj1.isPublished();
+      Boolean b2 = proj2.isPublished();
+      return b2.compareTo(b1);
+    }
+  };
 }

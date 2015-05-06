@@ -109,6 +109,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   public static final int NEWAPP = 1;
   public static final int UPDATEAPP = 2;
   private int editStatus;
+  private static final int MIN_DESC_LENGTH = 40;
 
   /* Publish & edit state components */
   private FlowPanel imageUploadBox;
@@ -129,6 +130,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Button actionButton;
   private Button removeButton;
   private Button editButton;
+  private Button cancelButton;
+
+  private HTML ccLicenseRef;
+
 
 /* Here is the organization of this page:
 panel
@@ -186,8 +191,16 @@ panel
     // Now let's add the button for publishing, updating, or trying
     appHeader.add(appAction);
     initActionButton();
+    if (editStatus==NEWAPP) {
+      initCancelButton();
+      /* Add Creative Commons Publishing Reference */
+      appAction.add(ccLicenseRef);
+    }
     if (editStatus==UPDATEAPP) {
       initRemoveButton();
+      initCancelButton();
+      /* Add Creative Commons Updating Reference */
+      appAction.add(ccLicenseRef);
     }
 
     // App details - app title
@@ -312,6 +325,8 @@ panel
     titleText = new TextArea();
     moreInfoText = new TextArea();
     creditText = new TextArea();
+    ccLicenseRef = new HTML(MESSAGES.galleryCcLicenseRef());
+    ccLicenseRef.addStyleName("app-action-html");
   }
 
 
@@ -964,7 +979,15 @@ panel
               @Override
               public void onSuccess(Integer num) {
                 // TODO: deal with/discuss server data sync later; now is updating locally.
-                // Bin you need to finish this man - Vincent 03/27/14
+                final OdeAsyncCallback<Boolean> checkCallback = new OdeAsyncCallback<Boolean>(
+                    MESSAGES.galleryError()) {
+                      @Override
+                      public void onSuccess(Boolean b) {
+                        //email will be send automatically if condition matches (in ObjectifyGalleryStorageIo)
+                      }
+                };
+                Ode.getInstance().getGalleryService().checkIfSendAppStats(app.getDeveloperId(), app.getGalleryAppId(),
+                    gallery.getGallerySettings().getAdminEmail(), Window.Location.getHost(), checkCallback);
               }
           };
         final OdeAsyncCallback<Boolean> isLikedByUserCallback = new OdeAsyncCallback<Boolean>(
@@ -1065,6 +1088,8 @@ panel
                 } else {    // otherwise show as featured
                   featurePrompt.setText(MESSAGES.galleryFeaturedText());
                 }
+                //update gallery list
+                gallery.appWasChanged();
               }
           };
         Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(),
@@ -1122,6 +1147,9 @@ panel
     actionButton = new Button(MESSAGES.galleryPublishText());
     actionButton.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
+         if(!checkIfReadyToPublishOrUpdateApp(app)){
+           return;
+         }
          actionButton.setEnabled(false);
          actionButton.setText(MESSAGES.galleryAppPublishing());
          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
@@ -1185,6 +1213,9 @@ panel
     actionButton = new Button(MESSAGES.galleryUpdateText());
     actionButton.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
+         if(!checkIfReadyToPublishOrUpdateApp(app)){
+           return;
+         }
          actionButton.setEnabled(false);
          actionButton.setText(MESSAGES.galleryAppUpdating());
          final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
@@ -1209,6 +1240,26 @@ panel
   }
 
   /**
+   * check if it is ready to publish or update GalleryApp
+   * 1.The minimum length of Desc must be at least MIN_DESC_LENGTH
+   * 2.User must upload an image first, in order to publish GaleryApp
+   * @param app
+   * @return
+   */
+  private boolean checkIfReadyToPublishOrUpdateApp(GalleryApp app){
+    if(app.getDescription().length() < MIN_DESC_LENGTH){
+      Window.alert(MESSAGES.galleryNotEnoughDescriptionMessage());
+      return false;
+    }
+    if(!imageUploaded && editStatus==NEWAPP){
+        /*we only need to check the image on the publish status*/
+        Window.alert(MESSAGES.galleryNoScreenShotMessage());
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Helper method called by constructor to initialize the remove button
    */
   private void initRemoveButton() {
@@ -1225,7 +1276,7 @@ panel
             MESSAGES.galleryDeleteError()) {
             @Override
             public void onSuccess(Void result) {
-              // once we have deleted, set the project id back to -1
+              // once we have deleted, set the project id back to not published
               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
                   MESSAGES.gallerySetProjectIdError()) {
                 @Override
@@ -1244,7 +1295,7 @@ panel
               GalleryClient client = GalleryClient.getInstance();
               client.appWasChanged();  // tell views to update
               Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(),
-                  -1, projectCallback);
+                  UserProject.NOTPUBLISHED, projectCallback);
             }
             @Override
             public void onFailure(Throwable caught) {
@@ -1258,6 +1309,25 @@ panel
     });
     removeButton.addStyleName("app-action-button");
     appAction.add(removeButton);
+  }
+
+  /**
+   * Helper method called by constructor to initialize the cancel button
+   */
+  private void initCancelButton() {
+    cancelButton = new Button(MESSAGES.galleryCancelText());
+    cancelButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (editStatus==NEWAPP) {
+          Ode.getInstance().switchToProjectsView();
+        }else if(editStatus==UPDATEAPP){
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+        }
+      }
+    });
+    cancelButton.addStyleName("app-action-button");
+    appAction.add(cancelButton);
   }
 
   /**

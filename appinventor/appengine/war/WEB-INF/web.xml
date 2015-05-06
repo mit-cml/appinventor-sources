@@ -48,6 +48,7 @@
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/ode2/*</url-pattern>
+      <url-pattern>/companions/*</url-pattern>
       <url-pattern>/reference/*</url-pattern>
       <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
