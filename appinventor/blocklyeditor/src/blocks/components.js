@@ -390,7 +390,7 @@ Blockly.Blocks.component_method = {
       }
     }
     return tb;
-  },
+  }
 };
 
 
@@ -640,7 +640,7 @@ Blockly.Blocks.component_set_get = {
     }
 
     return tb;
-  },
+  }
 };
 
 /**
@@ -707,7 +707,7 @@ Blockly.Blocks.component_component_block = {
       });
     }
     return tb;
-  },
+  }
 };
 
 
