@@ -337,7 +337,7 @@ public class YaVersion {
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 124;
+  public static final int YOUNG_ANDROID_VERSION = 100124;
 
   // ............................... Blocks Language Version Number ...............................
 
