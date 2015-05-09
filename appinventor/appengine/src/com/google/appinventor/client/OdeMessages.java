@@ -5369,6 +5369,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FusionTablesStandardErrorMessage();
 
+  @DefaultMessage("SelectionColor")
+  @Description("")
+  String SelectionColorProperties();
+
   // Missing translations from 4/8/2015 -- Should sort into appropriate place
 
   @DefaultMessage("LaunchPicker")
