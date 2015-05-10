@@ -180,6 +180,29 @@ public class GalleryClient {
     ode.getGalleryService().getRecentApps(start, count, callback);
   }
   /**
+  * GetMostLiked gets the most liked apps then tells listeners
+  * @param start staring index
+  * @param count number of results
+  */
+  public void GetMostLiked(int start, int count, final boolean refreshable) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
+    // failure message
+    MESSAGES.galleryLikedAppsError()) {
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, refreshable);
+        }
+      }
+    };
+
+    // ok, this is below the call back, but of course it is done first
+    ode.getGalleryService().getMostLikedApps(start,count,callback);
+  }
+  /**
   * GetMostDownloaded gets the most downloaded apps then tells listeners
   * @param start staring index
   * @param count number of results
@@ -291,7 +314,7 @@ public class GalleryClient {
   public void appWasChanged() {
     // for now, let's update the recent list, the popular list and feature list (in case one was deleted)
     GetMostRecent(0,GalleryList.NUMAPPSTOSHOW, true);
-    GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW, true);
+    GetMostLiked(0,GalleryList.NUMAPPSTOSHOW, true);
     GetFeatured(0, GalleryList.NUMAPPSTOSHOW, 0, true);
   }
 
