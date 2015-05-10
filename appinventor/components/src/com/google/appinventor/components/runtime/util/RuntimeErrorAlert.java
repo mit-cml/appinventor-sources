@@ -22,6 +22,8 @@ public final class RuntimeErrorAlert {
   public static void alert(final Object context,
       final String message, final String title,final String buttonText) {
     Log.i("RuntimeErrorAlert", "in alert");
+    // Make sure the alert dialog is run on the UI thread. In most cases it already is, but the
+    // FtcOpMode events are run on the robot thread.
     final Activity activity = (Activity) context;
     activity.runOnUiThread(new Runnable() {
       public void run() {

@@ -430,6 +430,7 @@ public final class Compiler {
           out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
         }
         out.write("      </intent-filter>\n");
+
         if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
           out.write("      <meta-data\n");
           out.write("        android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"\n");
@@ -748,7 +749,7 @@ public final class Compiler {
 
     for (String ftcFile : FTC_FILES) {
       out.println("________Copying " + ftcFile);
-      String source = getResource(RUNTIME_FILES_DIR + "res/" + ftcFile);
+      String source = getResource(RUNTIME_FILES_DIR + "ftcres/" + ftcFile);
       File destFile = new File(resDir, ftcFile.replace('/', File.separatorChar));
       destFile.getParentFile().mkdirs();
       if (!copyFile(source, destFile.getAbsolutePath())) {
@@ -963,15 +964,15 @@ public final class Compiler {
       return false;
     }
     String[] aaptPackageCommandLine = {
-        getResource(aaptTool),
-        "package",
-        "-f",
-        "-m",
-        "-I", getResource(ANDROID_RUNTIME),
-        "-S", resDir.getAbsolutePath(),
-        "-M", manifestFile.getAbsolutePath(),
-        "-J", genDir.getAbsolutePath(),
-        "--custom-package", customPackage
+      getResource(aaptTool),
+      "package",
+      "-f",
+      "-m",
+      "-I", getResource(ANDROID_RUNTIME),
+      "-S", resDir.getAbsolutePath(),
+      "-M", manifestFile.getAbsolutePath(),
+      "-J", genDir.getAbsolutePath(),
+      "--custom-package", customPackage
     };
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with

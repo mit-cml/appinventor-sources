@@ -285,8 +285,6 @@ public final class SimpleComponentDescriptor {
       return new MockContactPicker(editor);
     } else if (name.equals(MockPhoneNumberPicker.TYPE)) {
       return new MockPhoneNumberPicker(editor);
-    } else if (name.equals(MockFtcRobotController.TYPE)) {
-      return new MockFtcRobotController(editor);
     } else if (name.equals(MockEmailPicker.TYPE)) {
       return new MockEmailPicker(editor);
     } else if (name.equals(MockListPicker.TYPE)) {
@@ -313,6 +311,8 @@ public final class SimpleComponentDescriptor {
       return new MockWebViewer(editor);
     } else if (name.equals(MockSpinner.TYPE)) {
       return new MockSpinner(editor);
+    } else if (name.equals(MockFtcRobotController.TYPE)) {
+      return new MockFtcRobotController(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

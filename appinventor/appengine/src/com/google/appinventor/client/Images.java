@@ -496,5 +496,4 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/ftc.png")
   ImageResource ftc();
-
 }

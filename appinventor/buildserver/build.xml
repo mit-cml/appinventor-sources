@@ -65,6 +65,14 @@
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
+    <mkdir dir="${classes.files.dir}/ftcres" />
+    <copy todir="${classes.files.dir}/ftcres" flatten="false">
+      <fileset dir="${build.dir}/components/FtcCommon/res" includes="**/*" />
+    </copy>
+    <copy todir="${classes.files.dir}/ftcres" flatten="false">
+      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
+    </copy>
+    <!-- Copy jars -->
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
@@ -74,14 +82,6 @@
     <copy toFile="${classes.files.dir}/ModernRobotics.jar" file="${build.dir}/components/FtcCommon/libs/ModernRobotics.jar" />
     <copy toFile="${classes.files.dir}/WirelessP2p.jar" file="${build.dir}/components/FtcCommon/libs/WirelessP2p.jar" />
     <copy toFile="${classes.files.dir}/d2xx.jar" file="${build.dir}/components/FtcCommon/libs/d2xx.jar" />
-    <mkdir dir="${classes.files.dir}/res" />
-    <copy todir="${classes.files.dir}/res" flatten="false">
-      <fileset dir="${build.dir}/components/FtcCommon/res" includes="**/*" />
-    </copy>
-    <copy todir="${classes.files.dir}/res" flatten="false">
-      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
-    </copy>
-
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
