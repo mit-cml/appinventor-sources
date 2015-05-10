@@ -237,7 +237,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
     // of not using transactions (run with) so i grabbed
 
-    final List<GalleryApp> tmpApps = new ArrayList<GalleryApp>();
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData : datastore.query(GalleryAppData.class)
            .filter("active", true)
@@ -246,13 +245,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
            .offset(start).limit(count)) {
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
-      tmpApps.add(gApp);
-    }
-
-    //get from start, limited by count
-    int end = (start + count) < tmpApps.size() ? (start + count) : tmpApps.size();
-    for(int i = start; i < end; i++){
-      apps.add(tmpApps.get(i));
+      apps.add(gApp);
     }
 
     // The line below is a PROBLEM. It is *very expensive*
