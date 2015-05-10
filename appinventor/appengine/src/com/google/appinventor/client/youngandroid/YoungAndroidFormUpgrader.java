@@ -520,8 +520,8 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // The AvailableLanguages designer property was added
-      // The AvailableCountires designer property was added
+      // The AvailableLanguages setter was added
+      // The AvailableCountires setter was added
       srcCompVersion = 4;
     }
     return srcCompVersion;

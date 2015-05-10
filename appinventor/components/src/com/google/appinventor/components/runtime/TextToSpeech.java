@@ -333,12 +333,13 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * This property is for display only
+   * To-do: make this a designer property with
+   * PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_LANGUAGES and
+   * AvailableLanguagesChoicePropertyEditor
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_LANGUAGES, defaultValue = "")
   @SimpleProperty
   public void AvailableLanguages(YailList languages) {
-    // no-opt
+    // not yet implemented
   }
 
   @SimpleProperty(description = "List of the languages available on this device " +
@@ -350,12 +351,13 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * This property is for display only
+   * To-do: make this a designer property with
+   * PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_COUNTRIES and
+   * AvailableCountriesChoicePropertyEditor
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_COUNTRIES, defaultValue = "")
   @SimpleProperty
   public void AvailableCountries(YailList countries) {
-    // no-opt
+    // not yet implemented
   }
 
   @SimpleProperty(description = "List of the country codes available on this device " +
