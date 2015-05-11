@@ -788,8 +788,8 @@ public class YaVersion {
   // - the AvailableLanguages property was added
   // - the AvailableCountries property was added
   // For TEXTTOSPEECH_COMPONENT_VERSION 4:
-  // - the AvailableLanguages setter was added
-  // - the AvailableCountries setter was added
+  // - the Language designer property was removed
+  // - the Country designer property was removed
   public static final int TEXTTOSPEECH_COMPONENT_VERSION = 4;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:

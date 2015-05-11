@@ -172,7 +172,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param language is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) language code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
@@ -288,7 +287,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param country is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) country code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "Country code to use for speech generation.  This can affect the " +
       "pronounciation.  For example, British English (GBR) will sound different from US English " +
       "(USA).  Not every country code will affect every language.",
@@ -332,32 +330,12 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     return country;
   }
 
-  /**
-   * To-do: make this a designer property with
-   * PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_LANGUAGES and
-   * AvailableLanguagesChoicePropertyEditor
-   */
-  @SimpleProperty
-  public void AvailableLanguages(YailList languages) {
-    // not yet implemented
-  }
-
   @SimpleProperty(description = "List of the languages available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +
       "languages to find the meanings of these abbreviations.")
   public YailList AvailableLanguages() {
     prepareLanguageAndCountryProperties();
     return allLanguages;
-  }
-
-  /**
-   * To-do: make this a designer property with
-   * PropertyTypeConstants.PROPERTY_TYPE_AVAILABLE_COUNTRIES and
-   * AvailableCountriesChoicePropertyEditor
-   */
-  @SimpleProperty
-  public void AvailableCountries(YailList countries) {
-    // not yet implemented
   }
 
   @SimpleProperty(description = "List of the country codes available on this device " +
