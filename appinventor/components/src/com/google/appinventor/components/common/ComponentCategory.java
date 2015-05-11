@@ -23,6 +23,7 @@ import java.util.Map;
 //  STORAGE(MESSAGES.storageComponentPallette()),
 //  CONNECTIVITY(MESSAGES.connectivityComponentPallette()),
 //  LEGOMINDSTORMS(MESSAGES.legoComponentPallette()),
+//  FIRSTTECHCHALLENGE(MESSAGES.ftcComponentPallette()),
 //  //EXPERIMENTAL(MESSAGES.experimentalComponentPallette()),
 //  INTERNAL(MESSAGES.internalUseComponentPallette()),
 //  // UNINITIALIZED is used as a default value so Swing libraries can still compile
@@ -42,6 +43,7 @@ import java.util.Map;
 //    DOC_MAP.put(MESSAGES.storageComponentPallette(), "storage");
 //    DOC_MAP.put(MESSAGES.connectivityComponentPallette(), "connectivity");
 //    DOC_MAP.put(MESSAGES.legoComponentPallette(), "legomindstorms");
+//    DOC_MAP.put(MESSAGES.ftcComponentPallette(), "firsttechchallenge");
 //    //DOC_MAP.put(MESSAGES.experimentalComponentPallette(), "experimental");
 //  }
 
@@ -56,6 +58,7 @@ import java.util.Map;
     STORAGE("Storage"),
     CONNECTIVITY("Connectivity"),
     LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
+    FIRSTTECHCHALLENGE("FIRST\u00AE Tech Challenge"),
     //EXPERIMENTAL("Experimental"),
     INTERNAL("For internal use only"),
     // UNINITIALIZED is used as a default value so Swing libraries can still compile
@@ -75,6 +78,7 @@ import java.util.Map;
       DOC_MAP.put("Storage", "storage");
       DOC_MAP.put("Connectivity", "connectivity");
       DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
+      DOC_MAP.put("FIRST\u00AE Tech Challenge", "firsttechchallenge");
       //DOC_MAP.put("Experimental", "experimental");
     }
 

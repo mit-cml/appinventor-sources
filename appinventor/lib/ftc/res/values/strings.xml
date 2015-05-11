@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
+
+  <!-- Options menu items -->
+  <!--
+  <string name="settings_menu_item">Settings</string>
+  -->
+  <string name="restart_robot_menu_item">Restart Robot</string>
+  <!--
+  <string name="view_logs_menu_item">View logs</string>
+  <string name="about_menu_item">About</string>
+  <string name="action_exit_app">Exit</string>
+  -->
+
+</resources>

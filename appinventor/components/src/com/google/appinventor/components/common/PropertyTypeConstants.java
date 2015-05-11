@@ -76,6 +76,13 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_FLOAT = "float";
 
   /**
+   * FTC gamepad number choices (1 or 2)
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFtcGamepadNumberChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_FTC_GAMEPAD_NUMBER = "FtcGamepadNumber";
+
+  /**
    * Integer values.
    * @see com.google.appinventor.client.widgets.properties.IntegerPropertyEditor
    */

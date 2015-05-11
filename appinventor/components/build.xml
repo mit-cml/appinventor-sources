@@ -32,6 +32,44 @@
   <property name="components.pkg" value="com/google/appinventor/components" />
 
   <!-- =====================================================================
+       Unzip lib/ftc/RobotCore.aar
+       ===================================================================== -->
+  <target name="CheckRobotCore"
+          depends="init">
+    <uptodate property="RobotCore.uptodate"
+              srcfile="${lib.dir}/ftc/RobotCore-release.aar"
+              targetfile="${public.build.dir}/RobotCore/classes.jar" />
+  </target>
+  <target name="RobotCore"
+          depends="init,CheckRobotCore" unless="RobotCore.uptodate">
+    <mkdir dir="${public.build.dir}/RobotCore" />
+    <unzip src="${lib.dir}/ftc/RobotCore-release.aar"
+           dest="${public.build.dir}/RobotCore" />
+    <touch>
+      <fileset dir="${public.build.dir}/RobotCore" />
+    </touch>
+  </target>
+
+  <!-- =====================================================================
+       Unzip lib/ftc/FtcCommon.aar
+       ===================================================================== -->
+  <target name="CheckFtcCommon"
+          depends="init">
+    <uptodate property="FtcCommon.uptodate"
+              srcfile="${lib.dir}/ftc/FtcCommon-release.aar"
+              targetfile="${public.build.dir}/FtcCommon/classes.jar" />
+  </target>
+  <target name="FtcCommon"
+          depends="init,CheckFtcCommon" unless="FtcCommon.uptodate">
+    <mkdir dir="${public.build.dir}/FtcCommon" />
+    <unzip src="${lib.dir}/ftc/FtcCommon-release.aar"
+           dest="${public.build.dir}/FtcCommon" />
+    <touch>
+      <fileset dir="${public.build.dir}/FtcCommon" />
+    </touch>
+  </target>
+
+  <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
        ===================================================================== -->
   <target name="CommonConstants"
@@ -106,7 +144,7 @@
        ===================================================================== -->
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities,common_CommonVersion">
+          depends="CommonConstants,HtmlEntities,FtcCommon,RobotCore,common_CommonVersion">
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
@@ -124,6 +162,11 @@
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+        <pathelement location="${public.build.dir}/FtcCommon/classes.jar" />
+        <pathelement location="${public.build.dir}/FtcCommon/libs/ModernRobotics.jar" />
+        <pathelement location="${public.build.dir}/FtcCommon/libs/WirelessP2p.jar" />
+        <pathelement location="${public.build.dir}/FtcCommon/libs/d2xx.jar" />
+        <pathelement location="${public.build.dir}/RobotCore/classes.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -152,6 +195,7 @@
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
     <pathelement location="${public.build.dir}/CommonConstants.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${public.build.dir}/RobotCore/classes.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
@@ -225,6 +269,11 @@
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+          <pathelement location="${public.build.dir}/FtcCommon/classes.jar" />
+          <pathelement location="${public.build.dir}/FtcCommon/libs/ModernRobotics.jar" />
+          <pathelement location="${public.build.dir}/FtcCommon/libs/WirelessP2p.jar" />
+          <pathelement location="${public.build.dir}/FtcCommon/libs/d2xx.jar" />
+          <pathelement location="${public.build.dir}/RobotCore/classes.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />

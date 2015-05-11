@@ -322,8 +322,22 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - The FtcAccelerationSensor component was added.
+  // - The FtcCompassSensor component was added.
+  // - The FtcDcMotor component was added.
+  // - The FtcGamepad component was added.
+  // - The FtcGyroSensor component was added.
+  // - The FtcIrSeekerSensor component was added.
+  // - The FtcLegacyModule component was added.
+  // - The FtcLightSensor component was added.
+  // - The FtcOpMode component was added.
+  // - The FtcRobotController component was added.
+  // - The FtcServo component was added.
+  // - The FtcUltrasonicSensor component was added.
+  // - The FtcVoltageSensor component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -579,6 +593,34 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 14:
   // - The Screen1.AppName was added and no block need to be changed.
   public static final int FORM_COMPONENT_VERSION = 14;
+
+  public static final int FTC_ACCELERATION_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
+
+  public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
+
+  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 1;
+
+  public static final int FTC_LIGHT_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_OP_MODE_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 1;
+
+  public static final int FTC_SERVO_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ULTRASONIC_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_VOLTAGE_SENSOR_COMPONENT_VERSION = 1;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
