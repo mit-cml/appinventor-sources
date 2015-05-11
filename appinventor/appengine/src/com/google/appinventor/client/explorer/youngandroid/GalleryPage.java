@@ -1056,8 +1056,7 @@ panel
    * @param container   The container that salvage label reside
    */
   private void initSalvageAllSection(Panel container) { //TODO: Update the location of this button
-    final User currentUser = Ode.getInstance().getUser();
-    if(currentUser.getType() != User.MODERATOR){     //not admin
+    if(!canSalvage()){                                   // Permitted to Salvage Apps?
       return;
     }
 
@@ -1085,8 +1084,7 @@ panel
    * @param container   The container that salvage label reside
    */
   private void initSalvageSection(Panel container) { //TODO: Update the location of this button
-    final User currentUser = Ode.getInstance().getUser();
-    if(currentUser.getType() != User.MODERATOR){     //not admin
+    if (!canSalvage()) {                              // Permitted to salvage?
       return;
     }
 
@@ -1436,6 +1434,22 @@ panel
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
 
+  }
+
+  /**
+   * Routine to determine if this user can salvage likes on a Gallery App
+   * Verifies that they are a Gallery Moderator AND a site Admin.
+   *
+   * @return boolean true if permitted
+   */
+  private boolean canSalvage() {
+    User currentUser = Ode.getInstance().getUser();
+    if ((currentUser.getType() == User.MODERATOR)
+      && currentUser.getIsAdmin()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
