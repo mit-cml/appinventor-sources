@@ -7,6 +7,8 @@
 package com.google.appinventor.server.storage;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.logging.Level;
@@ -219,6 +221,40 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     int totalCount = datastore.query(GalleryAppData.class).order("-numDownloads").filter("active", true).count();
     return new GalleryAppListResult(apps, totalCount);
+  }
+
+  /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
+   */
+  @Override
+  public GalleryAppListResult getMostLikedApps(int start, final int count) {
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppData appData : datastore.query(GalleryAppData.class)
+           .filter("active", true)
+           .order("-numLikes")
+           .order("-numDownloads")
+           .offset(start).limit(count)) {
+      GalleryApp gApp = new GalleryApp();
+      makeGalleryApp(appData, gApp);
+      apps.add(gApp);
+    }
+
+    // The line below is a PROBLEM. It is *very expensive*
+    // We either need to keep separate track of the number of apps in the
+    // Gallery, or we need to cache this value somewhere so we are
+    // not computing it all the time!
+    int totalCount = datastore.query(GalleryAppData.class).filter("active", true).count();
+    return new GalleryAppListResult(apps, totalCount);
+
   }
 
   /**
@@ -532,7 +568,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
             // Retrieve the current number of likes
             numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
 
-            // Increase app's unread like count
+            // Increase app's like/unread like count
+            galleryAppData.numLikes = galleryAppData.numLikes + 1;
             galleryAppData.unreadLikes = galleryAppData.unreadLikes + 1;
             datastore.put(galleryAppData);
           }
@@ -569,7 +606,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
             }
             numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
 
-            // Increase app's unread like count
+            // Increase app's like/unread like count
+            if(galleryAppData.numLikes > 0){
+              galleryAppData.numLikes = galleryAppData.numLikes - 1;
+            }
+
             if (galleryAppData.unreadLikes > 0) {
               galleryAppData.unreadLikes = galleryAppData.unreadLikes - 1;
               datastore.put(galleryAppData);
@@ -598,7 +639,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          num.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          //num.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          GalleryAppData galleryAppData = datastore.find(galleryKey);
+          num.t = galleryAppData.numLikes;
         }
       });
     } catch (ObjectifyException e) {
@@ -643,6 +686,55 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return bool.t;
   }
 
+  /**
+   * salvage the gallery app by given galleryId
+   */
+  @Override
+  public void salvageGalleryApp(final long galleryId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          int num = 0;
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          num = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          GalleryAppData galleryAppData = datastore.find(galleryKey);
+          galleryAppData.numLikes = num;
+          datastore.put(galleryAppData);
+          LOG.info("salvage on gallerId:" + galleryId + ", total likes:" + galleryAppData.numLikes);
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.salvageGalleryApp", e);
+    }
+  }
+
+  /**
+   * salvage all gallery app
+   */
+  @Override
+  public void salvageAllGalleryApps() {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore = ObjectifyService.begin();
+          int num = 0;
+          for (GalleryAppData appData : datastore.query(GalleryAppData.class).list()) {
+            Key<GalleryAppData> galleryKey = galleryKey(appData.id);
+            num = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+            appData.numLikes = num;
+            datastore.put(appData);
+            LOG.info("salvage on gallerId:" + appData.id + ", total likes:" + appData.numLikes);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.salvageAllGalleryApps", e);
+    }
+  }
   /**
    * save the attribution of a gallery app
    *

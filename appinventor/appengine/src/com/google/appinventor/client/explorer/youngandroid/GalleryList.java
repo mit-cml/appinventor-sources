@@ -124,7 +124,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appFeaturedTab = new GalleryAppTab(appFeatured, appFeaturedContent, REQUEST_FEATURED);
     appRecentTab = new GalleryAppTab(appRecent, appRecentContent, REQUEST_RECENT);
     appSearchTab = new GalleryAppTab(appSearch, appSearchContent, REQUEST_SEARCH);
-    appPopularTab = new GalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTDOWNLOADED);
+    appPopularTab = new GalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTLIKED);
 
     // don't think we need because in regular addgallerytab below
 
@@ -252,10 +252,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
         gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW, false);
-      } else if (request == REQUEST_MOSTDOWNLOADED) {
+      } else if (request == REQUEST_MOSTLIKED) {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
-        gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW, false);
+        gallery.GetMostLiked(appPopularCounter, NUMAPPSTOSHOW, false);
       } else if (request == REQUEST_FEATURED){
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
@@ -300,11 +300,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
                 gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0, false);
               }
               break;
-            case REQUEST_MOSTDOWNLOADED:
+            case REQUEST_MOSTLIKED:
               if (!appPopularExhausted) {
                 // If the next page still has apps to retrieve, do it
                 appPopularCounter += NUMAPPSTOSHOW;
-                gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW, false);
+                gallery.GetMostLiked(appPopularCounter, NUMAPPSTOSHOW, false);
               }
               break;
           }
@@ -405,7 +405,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         }
         galleryGF.generateHorizontalAppList(appsResult.getApps(), appSearchContent, refreshable);
         break;
-      case REQUEST_MOSTDOWNLOADED:
+      case REQUEST_MOSTLIKED:
         appPopularTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
         if(appsResult.getTotalCount() < NUMAPPSTOSHOW || appPopularCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appPopularTab.getButtonNext().setVisible(false);
