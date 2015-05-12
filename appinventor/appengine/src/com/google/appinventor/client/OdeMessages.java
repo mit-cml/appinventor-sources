@@ -2613,6 +2613,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ServiceURL")
   @Description("")
   String ServiceURLProperties();
+  
+  @DefaultMessage("FirebaseURL")
+  @Description("")
+  String FirebaseURLProperties();
+  
+  @DefaultMessage("ProjectPath")
+  @Description("")
+  String ProjectPathProperties();
 
   @DefaultMessage("Scrollable")
   @Description("")
@@ -3875,6 +3883,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebServiceError")
   @Description("")
   String WebServiceErrorEvents();
+  
+  @DefaultMessage("FirebaseError")
+  @Description("")
+  String FirebaseErrorEvents();
 
   @DefaultMessage("LocationChanged")
   @Description("")
@@ -3995,6 +4007,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ValueStored")
   @Description("")
   String ValueStoredEvents();
+  
+  @DefaultMessage("DataChanged")
+  @Description("")
+  String DataChangedEvents();
 
   @DefaultMessage("DirectMessagesReceived")
   @Description("")
@@ -4656,6 +4672,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("StoreValue")
   @Description("")
   String StoreValueMethods();
+  
+  @DefaultMessage("InitializeValue")
+  @Description("")
+  String InitializeValueMethods();
 
   @DefaultMessage("Authorize")
   @Description("")
