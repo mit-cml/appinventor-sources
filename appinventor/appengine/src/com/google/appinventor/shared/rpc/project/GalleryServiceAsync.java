@@ -90,6 +90,11 @@ public interface GalleryServiceAsync {
   void getMostDownloadedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
   /**
+  * @see @link{@link GalleryService#getMostLikedApps(int, int)
+  */
+ void getMostLikedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
+
+  /**
    * @see @link{@link GalleryService#getDeveloperApps(String, int, int)
    */
   void getDeveloperApps(String userId, int start, int count, AsyncCallback<GalleryAppListResult> callback);
@@ -127,6 +132,16 @@ public interface GalleryServiceAsync {
    * @see @link{@link GalleryService#getNumLikes(long)
    */
   void getNumLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
+
+  /**
+   * salvage the gallery app by given galleryId
+   */
+  void salvageGalleryApp(long galleryId, AsyncCallback<java.lang.Void> callback);
+
+  /**
+   * salvage all gallery apps
+   */
+  void salvageAllGalleryApps(AsyncCallback<java.lang.Void> callback);
 
   /**
    * @see @link{@link GalleryService#isLikedByUser(long)

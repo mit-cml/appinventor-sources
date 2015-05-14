@@ -237,6 +237,18 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  @Override
+  public GalleryAppListResult getMostLikedApps(int start, int count) {
+    return galleryStorageIo.getMostLikedApps(start,count);
+  }
+
+  /**
    * Deletes a new gallery app
    * @param galleryId id of app to delete
    */
@@ -323,6 +335,22 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public boolean isLikedByUser(long galleryId) {
     final String userId = userInfoProvider.getUserId();
     return galleryStorageIo.isLikedByUser(galleryId, userId);
+  }
+
+  /**
+   * salvage the gallery app by given galleryId
+   */
+  @Override
+  public void salvageGalleryApp(long galleryId) {
+    galleryStorageIo.salvageGalleryApp(galleryId);
+  }
+
+  /**
+   * salvage all gallery app
+   */
+  @Override
+  public void salvageAllGalleryApps() {
+    galleryStorageIo.salvageAllGalleryApps();
   }
 
   /**

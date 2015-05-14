@@ -597,6 +597,10 @@ panel
     initLikeSection(container);
     // Adds dynamic feature
     initFeatureSection(container);
+    // Adds dynamic salvage
+    initSalvageSection(container);
+    // Adds dynamic salvage
+    initSalvageAllSection(container);
 
     // We are not using views and comments at initial launch
     /*
@@ -1048,12 +1052,69 @@ panel
   }
 
   /**
+   * Helper method called by constructor to initialize the salvage all section
+   * @param container   The container that salvage label reside
+   */
+  private void initSalvageAllSection(Panel container) { //TODO: Update the location of this button
+    if(!canSalvage()){                                   // Permitted to Salvage Apps?
+      return;
+    }
+
+    final Label salvagePrompt = new Label("salvageAll");
+    salvagePrompt.addStyleName("primary-link");
+    container.add(salvagePrompt);
+
+    salvagePrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void bool) {
+                salvagePrompt.setText("done");
+              }
+          };
+        Ode.getInstance().getGalleryService().salvageAllGalleryApps(callback);
+      }
+    });
+  }
+
+  /**
+   * Helper method called by constructor to initialize the salvage section
+   * @param container   The container that salvage label reside
+   */
+  private void initSalvageSection(Panel container) { //TODO: Update the location of this button
+    if (!canSalvage()) {                              // Permitted to salvage?
+      return;
+    }
+
+    final Label salvagePrompt = new Label("salvage");
+    salvagePrompt.addStyleName("primary-link");
+    container.add(salvagePrompt);
+
+    salvagePrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void bool) {
+                salvagePrompt.setText("done");
+              }
+          };
+        Ode.getInstance().getGalleryService().salvageGalleryApp(app.getGalleryAppId(), callback);
+      }
+    });
+  }
+
+
+  /**
    * Helper method called by constructor to initialize the feature section
    * @param container   The container that feature label reside
    */
   private void initFeatureSection(Panel container) { //TODO: Update the location of this button
     final User currentUser = Ode.getInstance().getUser();
-    if(currentUser.getType() != 1){     //not admin
+    if(currentUser.getType() != User.MODERATOR){     //not admin
       return;
     }
 
@@ -1373,6 +1434,22 @@ panel
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
 
+  }
+
+  /**
+   * Routine to determine if this user can salvage likes on a Gallery App
+   * Verifies that they are a Gallery Moderator AND a site Admin.
+   *
+   * @return boolean true if permitted
+   */
+  private boolean canSalvage() {
+    User currentUser = Ode.getInstance().getUser();
+    if ((currentUser.getType() == User.MODERATOR)
+      && currentUser.getIsAdmin()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

@@ -1772,6 +1772,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when can't get most downloaded apps server.")
   String galleryDownloadedAppsError();
 
+  @DefaultMessage("Server error: could not get most liked apps from gallery")
+  @Description("Error message reported when can't get most liked apps server.")
+  String galleryLikedAppsError();
+
   @DefaultMessage("Server error: gallery deletion error")
   @Description("Error message reported when the gallery delete breaks")
   String galleryDeleteError();
