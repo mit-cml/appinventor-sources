@@ -5619,7 +5619,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcLightSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component for an Op Mode for an FTC robot.")
+  @DefaultMessage("A component for an Operational Mode for an FTC robot.")
   @Description("")
   String FtcOpModeHelpStringComponentPallette();
 
