@@ -121,7 +121,8 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
   // Events
 
-  @SimpleEvent(description = "This event is triggered when the user hits the start button on the driver station.")
+  @SimpleEvent(description =
+      "This event is triggered when the user hits the start button on the driver station.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }
@@ -131,7 +132,8 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Loop");
   }
 
-  @SimpleEvent(description = "This event is triggered when the user hits the stop button on the driver stations, or when .")
+  @SimpleEvent(description = "This event is triggered when the user hits the stop button on the " +
+      "driver stations, or right before the user switches to another Op Mode.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
