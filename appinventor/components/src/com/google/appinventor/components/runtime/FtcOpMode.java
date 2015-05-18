@@ -21,12 +21,12 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
- * A component for an Op Mode for an FTC robot.
+ * A component for an Operational Mode for an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_OP_MODE_COMPONENT_VERSION,
-    description = "A component for an Op Mode for an FTC robot.",
+    description = "A component for an Operational Mode for an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
@@ -121,17 +121,17 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
   // Events
 
-  @SimpleEvent(description = "This event is triggered when this op mode is starting.")
+  @SimpleEvent(description = "This event is triggered when the user hits the start button on the driver station.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }
 
-  @SimpleEvent(description = "This event is triggered repeatedly while this op mode is active.")
+  @SimpleEvent(description = "This event is triggered repeatedly while this op mode is running.")
   public void Loop() {
     EventDispatcher.dispatchEvent(this, "Loop");
   }
 
-  @SimpleEvent(description = "This event is triggered when this op mode is stopping.")
+  @SimpleEvent(description = "This event is triggered when the user hits the stop button on the driver stations, or when .")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
