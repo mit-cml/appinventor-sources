@@ -12,6 +12,12 @@ import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.capabilities.CapabilitiesService;
+import com.google.appengine.api.capabilities.CapabilitiesServiceFactory;
+import com.google.appengine.api.capabilities.Capability;
+import com.google.appengine.api.capabilities.CapabilityState;
+import com.google.appengine.api.capabilities.CapabilityStatus;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
@@ -20,6 +26,10 @@ import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
@@ -114,6 +124,18 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
   private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
+
+  private static class LockFailedException extends Exception {
+    LockFailedException(String message) {
+      super(message);
+    }
+  }
+
+  private static class UpgradeFailedException extends Exception {
+    UpgradeFailedException(String message) {
+      super(message);
+    }
+  }
 
   // Use this class to define the work of a job that can be
   // retried. The "datastore" argument to run() is the Objectify
@@ -1453,97 +1475,108 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws ObjectifyException {
           Key<FileData> key = projectFileKey(projectKey(projectId), fileName);
-          fd = (FileData) memcache.get(key.getString());
+          boolean needsUnlock = true;
+          try {
+            fd = fetchFileDatafromMemcache(key.getString());
+          } catch (LockFailedException e) {
+            needsUnlock = false;
+            LOG.log(Level.WARNING, "Lock Failed", e);
+          }
           if (fd == null) {
             fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
           } else {
             LOG.log(Level.INFO, "Fetched " + key.getString() + " from memcache.");
           }
+          try {
 
-          // <Screen>.yail files are missing when user converts AI1 project to AI2
-          // instead of blowing up, just create a <Screen>.yail file
-          if (fd == null && fileName.endsWith(".yail")){
-            fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
-          }
-
-          Preconditions.checkState(fd != null);
-
-          if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
-            if (!force) {            // force is true if we *really* want to save it!
-              checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
+            // <Screen>.yail files are missing when user converts AI1 project to AI2
+            // instead of blowing up, just create a <Screen>.yail file
+            if (fd == null && fileName.endsWith(".yail")){
+              fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
             }
-          }
 
-          if (fd.isBlob) {
-            // mark the old blobstore blob for deletion
-           oldBlobstorePath.t = fd.blobstorePath;
-          }
-          if (useGCS) {
-            fd.isGCS = true;
-            fd.gcsName = makeGCSfileName(fileName, projectId);
-            try {
-              GcsOutputChannel outputChannel =
-                gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName), GcsFileOptions.getDefaultInstance());
-              outputChannel.write(ByteBuffer.wrap(content));
-              outputChannel.close();
-            } catch (IOException e) {
-              throw CrashReport.createAndLogError(LOG, null,
-                collectProjectErrorInfo(userId, projectId, fileName), e);
-            }
-            // If the content was previously stored in the datastore, clear it out.
-            fd.content = null;
-            fd.isBlob = false;  // in case we are converting from a blob
-            fd.blobstorePath = null;
-          } else if (useBlobstore) {
-            try {
-              fd.blobstorePath = uploadToBlobstore(content, makeBlobName(projectId, fileName));
-            } catch (BlobWriteException e) {
-              // Note that this makes the BlobWriteException fatal. The job will
-              // not be retried if we get this exception.
-              throw CrashReport.createAndLogError(LOG, null,
-                  collectProjectErrorInfo(userId, projectId, fileName), e);
-            }
-            // If the content was previously stored in the datastore or GCS, clear it out.
-            fd.isBlob = true;
-            fd.isGCS = false;
-            fd.gcsName = null;
-            fd.content = null;
-          } else {
-            if (fd.isGCS) {     // Was a GCS file, must have gotten smaller
-              try {             // and is now stored in the data store
-                gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
-              } catch (IOException e) {
-                throw CrashReport.createAndLogError(LOG, null,
-                  collectProjectErrorInfo(userId, projectId, fileName), e);
+            Preconditions.checkState(fd != null);
+
+            if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
+              if (!force) {            // force is true if we *really* want to save it!
+                checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
               }
-              fd.isGCS = false;
-              fd.gcsName = null;
             }
-            // Note, Don't have to do anything if the file was in the
-            // Blobstore and shrank because the code above (3 lines
-            // into the function) already handles removing the old
-            // contents from the Blobstore.
-            fd.isBlob = false;
-            fd.blobstorePath = null;
-            fd.content = content;
-          }
-          if (considerBackup) {
-            if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
+
+            if (fd.isBlob) {
+              // mark the old blobstore blob for deletion
+              oldBlobstorePath.t = fd.blobstorePath;
+            }
+            if (useGCS) {
+              fd.isGCS = true;
+              fd.gcsName = makeGCSfileName(fileName, projectId);
               try {
-                String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
                 GcsOutputChannel outputChannel =
-                    gcsService.createOrReplace((new GcsFilename(GCS_BUCKET_NAME, gcsName)), GcsFileOptions.getDefaultInstance());
+                  gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName), GcsFileOptions.getDefaultInstance());
                 outputChannel.write(ByteBuffer.wrap(content));
                 outputChannel.close();
-                fd.lastBackup = System.currentTimeMillis();
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
+                  collectProjectErrorInfo(userId, projectId, fileName), e);
+              }
+              // If the content was previously stored in the datastore, clear it out.
+              fd.content = null;
+              fd.isBlob = false;  // in case we are converting from a blob
+              fd.blobstorePath = null;
+            } else if (useBlobstore) {
+              try {
+                fd.blobstorePath = uploadToBlobstore(content, makeBlobName(projectId, fileName));
+              } catch (BlobWriteException e) {
+                // Note that this makes the BlobWriteException fatal. The job will
+                // not be retried if we get this exception.
+                throw CrashReport.createAndLogError(LOG, null,
+                  collectProjectErrorInfo(userId, projectId, fileName), e);
+              }
+              // If the content was previously stored in the datastore or GCS, clear it out.
+              fd.isBlob = true;
+              fd.isGCS = false;
+              fd.gcsName = null;
+              fd.content = null;
+            } else {
+              if (fd.isGCS) {     // Was a GCS file, must have gotten smaller
+                try {             // and is now stored in the data store
+                  gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
+                } catch (IOException e) {
+                  throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+                }
+                fd.isGCS = false;
+                fd.gcsName = null;
+              }
+              // Note, Don't have to do anything if the file was in the
+              // Blobstore and shrank because the code above (3 lines
+              // into the function) already handles removing the old
+              // contents from the Blobstore.
+              fd.isBlob = false;
+              fd.blobstorePath = null;
+              fd.content = content;
+            }
+            if (considerBackup) {
+              if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
+                try {
+                  String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
+                  GcsOutputChannel outputChannel =
+                    gcsService.createOrReplace((new GcsFilename(GCS_BUCKET_NAME, gcsName)), GcsFileOptions.getDefaultInstance());
+                  outputChannel.write(ByteBuffer.wrap(content));
+                  outputChannel.close();
+                  fd.lastBackup = System.currentTimeMillis();
+                } catch (IOException e) {
+                  throw CrashReport.createAndLogError(LOG, null,
                     collectProjectErrorInfo(userId, projectId, fileName + "(backup)"), e);
+                }
               }
             }
+            datastore.put(fd);
+            memcache.put(key.getString(), fd); // Store the updated data in memcache
+          } finally {
+            if (needsUnlock)
+              unlockFileDataMemcache(key.getString());
           }
-          datastore.put(fd);
-          memcache.put(key.getString(), fd); // Store the updated data in memcache
           modTime.t = updateProjectModDate(datastore, projectId);
         }
 
@@ -1737,97 +1770,112 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId),
           new UnauthorizedAccessException(userId, projectId, null));
     }
+    final Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();
+    boolean needsUnlock = true;
     try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
-          fd.t = (FileData) memcache.get(fileKey.getString());
-          if (fd.t == null) {
-            fd.t = datastore.find(fileKey);
-          }
-        }
-      }, false); // Transaction not needed
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(userId, projectId, fileName), e);
+      fd.t = fetchFileDatafromMemcache(fileKey.getString());
+    } catch (LockFailedException e) {
+      needsUnlock = false;
+      LOG.log(Level.WARNING, "Lock Filed", e);
     }
-    // read the blob/GCS File outside of the job
-    FileData fileData = fd.t;
-    if (fileData != null) {
-      if (fileData.isGCS) {     // It's in the Cloud Store
-        try {
-          int count;
-          boolean npfHappened = false;
-          boolean recovered = false;
-          for (count = 0; count < 5; count++) {
-            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
-            int bytesRead = 0;
-            int fileSize = 0;
-            ByteBuffer resultBuffer;
-            try {
-              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-              resultBuffer = ByteBuffer.allocate(fileSize);
-              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-              try {
-                while (bytesRead < fileSize) {
-                  bytesRead += readChannel.read(resultBuffer);
-                  if (bytesRead < fileSize) {
-                    LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
-                  }
-                }
-                recovered = true;
-                result.t = resultBuffer.array();
-                break;          // We got the data, break out of the loop!
-              } finally {
-                readChannel.close();
+    if (fd.t != null) {
+      LOG.log(Level.INFO, "Fetch from memcache: fileKey = " + fileKey.getString());
+    }
+    try {
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+            @Override
+            public void run(Objectify datastore) {
+              if (fd.t == null) {
+                fd.t = datastore.find(fileKey);
               }
-            } catch (NullPointerException e) {
-              // This happens if the object in GCS is non-existent, which would happen
-              // when people uploaded a zero length object. As of this change, we now
-              // store zero length objects into GCS, but there are plenty of older objects
-              // that are missing in GCS.
-              LOG.log(Level.WARNING, "downloadrawfile: NPF recorded for " + fileData.gcsName);
-              npfHappened = true;
-              resultBuffer = ByteBuffer.allocate(0);
-              result.t = resultBuffer.array();
             }
-          }
-
-          // report out on how things went above
-          if (npfHappened) {    // We lost at least once
-            if (recovered) {
-              LOG.log(Level.WARNING, "recovered from NPF in downloadrawfile filename = " + fileData.gcsName +
-                " count = " + count);
-            } else {
-              LOG.log(Level.WARNING, "FATAL NPF in downloadrawfile filename = " + fileData.gcsName);
+          }, false); // Transaction not needed
+      } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+          collectProjectErrorInfo(userId, projectId, fileName), e);
+      }
+      // read the blob/GCS File outside of the job
+      FileData fileData = fd.t;
+      if (fileData != null) {
+        if (fileData.isGCS) {     // It's in the Cloud Store
+          try {
+            int count;
+            boolean npfHappened = false;
+            boolean recovered = false;
+            for (count = 0; count < 5; count++) {
+              GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
+              int bytesRead = 0;
+              int fileSize = 0;
+              ByteBuffer resultBuffer;
+              try {
+                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+                resultBuffer = ByteBuffer.allocate(fileSize);
+                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+                try {
+                  while (bytesRead < fileSize) {
+                    bytesRead += readChannel.read(resultBuffer);
+                    if (bytesRead < fileSize) {
+                      LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                    }
+                  }
+                  recovered = true;
+                  result.t = resultBuffer.array();
+                  break;          // We got the data, break out of the loop!
+                } finally {
+                  readChannel.close();
+                }
+              } catch (NullPointerException e) {
+                // This happens if the object in GCS is non-existent, which would happen
+                // when people uploaded a zero length object. As of this change, we now
+                // store zero length objects into GCS, but there are plenty of older objects
+                // that are missing in GCS.
+                LOG.log(Level.WARNING, "downloadrawfile: NPF recorded for " + fileData.gcsName);
+                npfHappened = true;
+                resultBuffer = ByteBuffer.allocate(0);
+                result.t = resultBuffer.array();
+              }
             }
-          }
 
-        } catch (IOException e) {
-          throw CrashReport.createAndLogError(LOG, null,
+            // report out on how things went above
+            if (npfHappened) {    // We lost at least once
+              if (recovered) {
+                LOG.log(Level.WARNING, "recovered from NPF in downloadrawfile filename = " + fileData.gcsName +
+                  " count = " + count);
+              } else {
+                LOG.log(Level.WARNING, "FATAL NPF in downloadrawfile filename = " + fileData.gcsName);
+              }
+            }
+
+          } catch (IOException e) {
+            throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
-        }
-      } else if (fileData.isBlob) {
-        try {
-          result.t = getBlobstoreBytes(fileData.blobstorePath);
-        } catch (BlobReadException e) {
-          throw CrashReport.createAndLogError(LOG, null,
+          }
+        } else if (fileData.isBlob) {
+          try {
+            result.t = getBlobstoreBytes(fileData.blobstorePath);
+          } catch (BlobReadException e) {
+            throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
+          }
+        } else {
+          if (fileData.content == null) {
+            result.t = new byte[0];
+          } else {
+            result.t = fileData.content;
+          }
         }
       } else {
-        if (fileData.content == null) {
-          result.t = new byte[0];
-        } else {
-          result.t = fileData.content;
-        }
-      }
-    } else {
-      throw CrashReport.createAndLogError(LOG, null,
+        throw CrashReport.createAndLogError(LOG, null,
           collectProjectErrorInfo(userId, projectId, fileName),
           new FileNotFoundException("No data for " + fileName));
+      }
+    } finally {
+      memcache.put(fileKey.getString(), fd.t);
+      if (needsUnlock)
+        unlockFileDataMemcache(fileKey.getString());
     }
     return result.t;
   }
@@ -2248,6 +2296,70 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   }
 
+  // Convert a file from the BlobStore to GCS
+  public void upgradeFile(String stringFileKey) throws UpgradeFailedException {
+    if (!useGcs)
+      throw new UpgradeFailedException("GCS Unavailable");
+    final Key<FileData> fileKey = new Key(KeyFactory.stringToKey(stringFileKey));
+    final List<String> blobsToDelete = new ArrayList<String>();
+    boolean needsUnlock = true;
+    try {
+      try {
+        fetchFileDatafromMemcache(fileKey.getString()); // Ignore return -- want fetch from datastore
+                                                        // to ensure a transaction
+      } catch (LockFailedException e) {
+        needsUnlock = false;    // Didn't get lock, don't unlock!
+        throw new UpgradeFailedException("lock contention");
+      }
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) throws ObjectifyException {
+            FileData fileData = datastore.find(fileKey);
+            memcache.delete(fileKey.getString()); // Make sure it isn't laying around in the cache!
+            if (fileData == null) {   // Maybe it was deleted...
+              return;
+            }
+            if (!fileData.isBlob) {   // Maybe someone beat us to it...
+              return;
+            }
+            byte [] fileContent;
+            try {
+              fileContent = getBlobstoreBytes(fileData.blobstorePath);
+            } catch (BlobReadException e) {
+              LOG.log(Level.WARNING, "BlobReadException during upgrade", e);
+              throw new ObjectifyException("BlobReadException: " + e.toString());
+            }
+            String oldBlobstorePath = fileData.blobstorePath;
+            fileData.blobstorePath = null;
+            fileData.isBlob = false;
+            fileData.isGCS = true;
+            fileData.gcsName = makeGCSfileName(fileData.fileName, fileData.projectKey.getId());
+            try {
+              GcsOutputChannel outputChannel =
+                gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName),
+                  GcsFileOptions.getDefaultInstance());
+              outputChannel.write(ByteBuffer.wrap(fileContent));
+              outputChannel.close();
+            } catch (IOException e) {
+              LOG.log(Level.SEVERE, "Cannot store to GCS during upgrade", e);
+              throw new ObjectifyException("GCS Exception: " + e.toString());
+              // NOTE: This operation will be retried
+            }
+            datastore.put(fileData);
+            blobsToDelete.add(oldBlobstorePath);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    } finally {
+      if (needsUnlock)
+        unlockFileDataMemcache(fileKey.getString());
+      for (String blobToDelete: blobsToDelete) { // There really should only be one...
+        deleteBlobstoreFile(blobToDelete);
+      }
+    }
+  }
+
   // Create a name for a blob from a project id and file name. This is mostly
   // to help with debugging and viewing the blobstore via the admin console.
   // We don't currently use these blob names anywhere else.
@@ -2423,6 +2535,101 @@ public class ObjectifyStorageIo implements  StorageIo {
         throw CrashReport.createAndLogError(LOG, null, null, e);
       }
     }
+  }
+
+  // See if this person needs to have their projects upgraded and if so
+  // add a task to the task queue to take care of it
+  public void checkUpgrade(String userId) {
+    if (!useGcs)                // No GCS, nothing to do
+      return;
+    Objectify datastore = ObjectifyService.begin();
+    UserData userData = datastore.find(userKey(userId));
+    if (userData.upgradedGCS)
+      return;                   // All done.
+    Queue queue = QueueFactory.getQueue("blobupgrade");
+    queue.add(TaskOptions.Builder.withUrl("/convert").param("user", userId));
+    return;
+  }
+
+  public void doUpgrade(String userId) {
+    if (!useGcs)                // No GCS, nothing to do
+      return;                   // shouldn't really ever happen but...
+    Objectify datastore = ObjectifyService.begin();
+    UserData userData = datastore.find(userKey(userId));
+    if (userData.upgradedGCS)
+      return;                   // All done, another task did it!
+    List<Long> projectIds = getProjects(userId);
+    boolean anyFailed = false;
+    for (long projectId : projectIds) {
+      for (FileData fd : datastore.query(FileData.class).ancestor(projectKey(projectId))) {
+        if (fd.isBlob) {
+          Key<FileData> fileKey = projectFileKey(projectKey(projectId), fd.fileName);
+          try {
+            upgradeFile(fileKey.getString());
+          } catch (UpgradeFailedException e) {
+            anyFailed = true;
+            LOG.log(Level.WARNING, "Upgrade Failed for projectId = " +
+              projectId + " fileName = " + fd.fileName, e);
+          }
+        }
+      }
+    }
+    if (!anyFailed) {
+      datastore = ObjectifyService.beginTransaction();
+      userData = datastore.find(userKey(userId));
+      userData.upgradedGCS = true;
+      datastore.put(userData);
+      datastore.getTxn().commit();
+    }
+  }
+
+  // Fetch FileData from memcache. We do this using some interesting locking.
+  // When we are upgrading projects from Blobstore to GCS, there is a race going
+  // on because at the same time the user is loading their initial project.
+  // The conversion process will update the FileData of any file that was previously
+  // stored in the Blobstore. But the project load may use a cached version that
+  // doesn't reflect the update. So we have to implement a mutex lock on the
+  // FileData stored in cache while it is being actively referenced and/or updated
+  // by the upgrader code.
+  private FileData fetchFileDatafromMemcache(String cacheKey) throws LockFailedException {
+    // Make a lock object by appending '-lock' to the cacheKey
+    String lockKey = cacheKey + "-lock";
+    int count = 0;
+    boolean warned = false;
+    Long LL;
+    while (!memcache.put(lockKey, true, Expiration.byDeltaMillis(5000), SetPolicy.ADD_ONLY_IF_NOT_PRESENT)) {
+      if (!warned) {
+        warned = true;
+        LOG.log(Level.INFO, "fetchFileDatafromMemcache: lock contention lockKey = " + lockKey);
+      }
+      // We didn't get the lock
+      try {
+        Thread.sleep(10);         // Sleep 10 milliseconds and try again
+      } catch (InterruptedException e) {
+        // Nothing really to do here
+      }
+      count += 1;
+      if (count > 2) {          // Hmmm. Maybe memcache service is down, check on it
+        CapabilitiesService caps = CapabilitiesServiceFactory.getCapabilitiesService();
+        CapabilityState cstat = caps.getStatus(Capability.MEMCACHE);
+        CapabilityStatus cstatus = cstat.getStatus();
+        if (cstatus != CapabilityStatus.ENABLED)
+          throw new LockFailedException("Memcache Service Down, cannot lock");
+      }
+      if (count > 100) {        // Likely something is wrong
+        LOG.log(Level.WARNING, "fetchFileDatafromMemcache timeout! lockKey = " + lockKey);
+        throw new LockFailedException("Failed to lock: " + lockKey);
+      }
+    }
+    LOG.log(Level.INFO, "fetchFileDatafromMemcache: Got Lock! lockKey = " + lockKey);
+    // Should have the lock now.
+    return (FileData) memcache.get(cacheKey);
+  }
+
+  private void unlockFileDataMemcache(String cacheKey) {
+    String lockKey = cacheKey + "-lock";
+    LOG.log(Level.INFO, "unlockFileDataMemcache: Unlocking " + lockKey);
+    memcache.delete(lockKey);
   }
 
 }
