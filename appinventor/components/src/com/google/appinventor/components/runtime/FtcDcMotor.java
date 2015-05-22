@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDcMotor extends FtcHardwareDevice {
 
   private volatile DcMotor dcMotor;

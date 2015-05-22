@@ -28,7 +28,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcVoltageSensor extends FtcHardwareDevice {
 
   private volatile VoltageSensor voltageSensor;

@@ -1,17 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
+  <!-- removed for App Inventor
+  <string name="app_name">FTC Robot Controller</string>
+  <string name="ok">OK</string>
 
-  <!-- Options menu items -->
-  <!--
-  <string name="settings_menu_item">Settings</string>
-  -->
-  <string name="restart_robot_menu_item">Restart Robot</string>
-  <!--
-  <string name="view_logs_menu_item">View logs</string>
-  <string name="about_menu_item">About</string>
+  ____ Wifi Channel Selector ___
+  <string-array name="wifi_direct_channels">
+    <item>Auto - device selects channel</item>
+    <item>2.4GHz, Channel 1</item>
+    <item>2.4GHz, Channel 6</item>
+    <item>2.4GHz, Channel 11</item>
+    ____
+    <item>5GHz, Channel 36</item>
+    <item>5GHz, Channel 40</item>
+    <item>5GHz, Channel 44</item>
+    <item>5GHz, Channel 48</item>
+    ___
+    <item>5GHz, Channel 149</item>
+    <item>5GHz, Channel 153</item>
+    <item>5GHz, Channel 157</item>
+    <item>5GHz, Channel 161</item>
+  </string-array>
+
+  <string name="action_intent_wifi_channel_selector">ActionWifiChannelSelection</string>
+  <string name="action_wifi_channel_selector">Wifi Channel Selection</string>
+  <string name="configure_settings">Configure</string>
+  <string name="launch_wifi_settings">Launch WiFi Settings</string>
+  <string name="restore_settings">Restore Saved WiFi Settings</string>
+  <string name="pref_wifi_channel_selection_title">Wifi Channel Selection</string>
+
+  ____ Configuration stuff ___
+  <string name="pref_configure_robot_title">Robot Configuration Settings</string>
+  <string name="add_motor_controller_menu_item">Add Motor Controller</string>
+  <string name="add_servo_controller_menu_item">Add Servo Controller</string>
+  <string name="edit_motor_controller_menu_item">Edit Motor Controller</string>
+  <string name="edit_motor_controller_activity">Edit Motor Controller</string>
+  <string name="edit_servo_controller_activity">Edit Servo Controller</string>
+  <string name="edit_legacy_module_controller_activity">Edit Legacy Module Controller</string>
+  <string name="configure_activity">Configure Robot</string>
+  <string name="action_configuration">Configure Robot</string>
   <string name="action_exit_app">Exit</string>
-  -->
+  <string name="configure_menu_item">Configure Robot</string>
+  <string name="load_menu_item">Load Configuration File</string>
+  <string name="device_type">Device Types</string>
+  <string name="scan">Scan</string>
+  <string name="scanButton_text">Press this button to scan for attached devices</string>
+  <string name="save_button">Save</string>
+  <string name="cancel">Cancel</string>
+  <string name="done_button">Done</string>
+  <string name="name_prompt_text">Enter name</string>
+  <string name="name_prompt_undertext">Enter the name for this device here</string>
+  <string name="file_prompt">Choose Configuration File</string>
+  <string name="save_configuration">Save Configuration</string>
+  <string name="writeXML_text">Press this button to write the current configuration to an XML file</string>
+  <string name="writeXML_prompt">Select an XML file to instantiate a Robot from that file</string>
+  <string name="readXML_text">Select an XML file to instantiate a Robot from that file</string>
+
+  ____ Autoconfigure ___
+  <string name="filename_editText">Filename</string>
+  <string name="file_edit_button">Edit</string>
+  <string name="file_activate_button">Activate</string>
+  <string name="file_delete_button">Delete</string>
+  <string name="autoconfigure">AutoConfigure</string>
+  <string name="autoconfigure_menu_item">AutoConfigure</string>
+  <string name="autoconfigureLaunch_text">Press this button to use the AutoConfigure tool</string>
+  <string name="autoconfigureButton_text">Press this button to attempt to AutoConfigure your robot</string>
+
+  ____ Legacy Module options ___
+  <string name="choice_prompt">Which sensor is attached?</string>
+
+  <string-array name="choice_array">
+      <item>GYRO</item>
+      <item>COMPASS</item>
+      <item>IR_SEEKER</item>
+      <item>LIGHT_SENSOR</item>
+      <item>ACCELEROMETER</item>
+      <item>MOTOR_CONTROLLER</item>
+      <item>SERVO_CONTROLLER</item>
+      <item>NOTHING</item>
+  </string-array>
+
+  <string name="default_port">0</string>
+  <string name="titleText_view">Select the type of connected device here</string>
+  <string name="edit_controller">Edit Controller</string>
+  <string name="legacy_controller_name">Enter the name for this legacy module here</string>
+  <string name="device_info">Device Info</string>
+
+  ____ Motor Controller strings ___
+  <string name="motor_controller_name">Motor Controller</string>
+  <string name="motor_controller_name_text">Enter the name for this motor controller here</string>
+  <string name="port">Port</string>
+  <string name="attached">Attached</string>
+  <string name="motor_port1">1</string>
+  <string name="motor_port2">2</string>
+  <string name="motor_name">Enter motor name</string>
+  <string name="motor_name_prompt">Enter the name for this motor here</string>
+
+  ____ Servo Controller strings ___
+  <string name="servo_controller_name">Servo Controller</string>
+  <string name="servo_controller_name_prompt">Enter the name for this servo controller here</string>
+  <string name="servo_name_prompt">Enter the name for this servo here</string>
+  <string name="row_port0">0</string>
+  <string name="row_port1">1</string>
+  <string name="row_port2">2</string>
+  <string name="row_port3">3</string>
+  <string name="row_port4">4</string>
+  <string name="row_port5">5</string>
+  <string name="row_port6">6</string>
+  removed for App Inventor -->
+  <string name="restart_robot_menu_item">Restart Robot</string>
+  <!-- removed for App Inventor
+  <string name="about_activity">About</string>
+  <string name="about_menu_item">About</string>
+  <string name="settings_activity">Settings</string>
+  <string name="settings_menu_item">Settings</string>
+  removed for App Inventor -->
+  <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
+  <!-- removed for App Inventor
+  <string name="title_activity_load">Load Configuration File</string>
+  <string name="hello_world">Hello world!</string>
+  <string name="action_settings">Settings</string>
+  <string name="title_activity_autoconfigure">Autoconfigure Robot</string>
+
+  ____ Fix Misconfigured Wifi Direct ___
+  <string name="title_activity_config_wifi_direct">Configure Wifi Direct</string>
+  <string name="wifi_direct_update_settings">
+    Please wait while we update the Wifi Direct settings on this device.
+  </string>
+
+  ____ View Logs ___
+  <string name="view_logs_menu_item">View logs</string>
+  <string name="action_view_logs">View logs</string>
+  <string name="title_activity_view_logs">View Logs</string>
+  <string name="button_text_clear_logs">Clear Logs</string>
+
+  ____ Preferences ___
+  <string name="pref_launch_settings">pref_launch_settings</string>
+  removed for App Inventor -->
 
 </resources>

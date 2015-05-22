@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcIrSeekerSensor extends FtcHardwareDevice {
 
   private volatile Mode mode = Mode.MODE_600HZ_DC;

@@ -44,12 +44,14 @@ import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.BatteryChecker;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.Util;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
@@ -61,7 +63,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
   FtcEventLoopHandler ftcEventLoopHandler;
 
-  OpModeManager opModeManager /*AI = new OpModeManager(new HardwareMap(), new FtcOpModeRegister())*/;
+  OpModeManager opModeManager = new OpModeManager(new HardwareMap());
 
   public FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback) {
     this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback);
@@ -87,6 +89,8 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   @Override
   public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException {
     DbgLog.msg("======= INIT START =======");
+
+    opModeManager.registerOpModes(new FtcOpModeRegister());
 
     ftcEventLoopHandler.init(eventLoopManager);
 
@@ -167,17 +171,29 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
       handleCommandRequestOpModeList();
     } else if (name.equals(CommandList.CMD_SWITCH_OP_MODE)) {
       handleCommandSwitchOpMode(extra);
-    } else if (name.equals(CommandList.CMD_CANCEL_OP_RESTART)) {
-      handleCancelRestartOpMode(extra);
+    } else if (name.equals(CommandList.CMD_RESUME_OP_MODE)) {
+      handleResumeOpMode(extra);
+    } else if (name.equals(CommandList.CMD_CANCEL_RESUME)) {
+      handleCancelResume();
     } else {
       DbgLog.msg("Unknown command: " + name);
     }
   }
 
-  private void handleCancelRestartOpMode(String extra) {
-    if (ftcEventLoopHandler.droppedConnection()) {
-      opModeManager.switchOpModes(OpModeManager.DEFAULT_OP_MODE_NAME);
-      ftcEventLoopHandler.restartOpMode(extra);
+  private void handleCancelResume() {
+    if (ftcEventLoopHandler.waitingForRestart()) {
+      opModeManager.cancelResume();
+      ftcEventLoopHandler.finishRestart(OpModeManager.DEFAULT_OP_MODE_NAME);
+    }
+  }
+
+  private void handleResumeOpMode(String extra) {
+    if (ftcEventLoopHandler.waitingForRestart()) {
+      opModeManager.resumeOpMode();
+      ftcEventLoopHandler.finishRestart(extra);
+
+      //send response
+      ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_RESUME_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
     }
   }
 
@@ -201,15 +217,14 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
     opModeManager.switchOpModes(newOpMode);
 
-    // If we're resuming an op mode from a dropped-connection, handle that case.
-    ftcEventLoopHandler.handleResumeOpMode(newOpMode);
+    RobotLog.clearGlobalErrorMsg();
 
     //send response
     ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
   }
 
   public void updateBatteryLevel(float percent) {
-    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController Battery Level Remaining: " + percent + "%");
+    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController battery level: " + percent + "%");
   }
 
 
@@ -220,6 +235,11 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
       FtcRobotController aiFtcRobotController) {
     this(hardwareFactory, callback);
     this.aiFtcRobotController = aiFtcRobotController;
-    opModeManager = new OpModeManager(new HardwareMap(), /* OpModeRegister */ aiFtcRobotController);
+  }
+
+  class FtcOpModeRegister implements OpModeRegister {
+    public void register(OpModeManager manager) {
+      aiFtcRobotController.register(manager);
+    }
   }
 }
