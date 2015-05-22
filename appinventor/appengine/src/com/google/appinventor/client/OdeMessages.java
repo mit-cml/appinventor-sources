@@ -480,6 +480,31 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
 
+  //Component
+  @DefaultMessage("Components")
+  @Description("Name of Components tab")
+  String componentsTabName();
+
+  @DefaultMessage("My components")
+  @Description("Name of My components menuitem")
+  String myComponentsMenuItem();
+
+  @DefaultMessage("Start new component")
+  @Description("Name of Start new component menuitem")
+  String startNewComponentMenuItem();
+
+  @DefaultMessage("Import component")
+  @Description("Name of Import component menuitem")
+  String importComponentMenuItem();
+
+  @DefaultMessage("Build component")
+  @Description("Name of Build component menuitem")
+  String buildComponentMenuItem();
+
+  @DefaultMessage("Install component")
+  @Description("Name of Install component menuitem")
+  String installComponentMenuItem();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")

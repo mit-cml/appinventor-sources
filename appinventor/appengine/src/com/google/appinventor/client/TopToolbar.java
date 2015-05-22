@@ -107,12 +107,19 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
+  private static final String WIDGET_NAME_COMPONENTS = "Components";
+  private static final String WIDGET_NAME_MY_COMPONENTS = "MyComponents";
+  private static final String WIDGET_NAME_START_NEW_COMPONENT = "StartNewComponent";
+  private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
+  private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
+  private static final String WIDGET_NAME_INSTALL_COMPONENT = "InstallComponent";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
 
   public DropDownButton fileDropDown;
+  public DropDownButton componentsDropDown;
   public DropDownButton connectDropDown;
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
@@ -121,14 +128,15 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +--------------------------------------------------------------+
+     * +-----------------------------------------------------------------+
+     * | Project ▾ | Components ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
+     * +-----------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
     List<DropDownItem> fileItems = Lists.newArrayList();
+    List<DropDownItem> componentItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
@@ -162,8 +170,21 @@ public class TopToolbar extends Composite {
         new UploadKeystoreAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),
         new DownloadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_INSTALL_COMPONENT, MESSAGES.deleteKeystoreMenuItem(),
         new DeleteKeystoreAction()));
+
+    // Components -> {My components; Start new component; Import component; Build component; Install component}
+    componentItems.add(new DropDownItem(WIDGET_NAME_MY_COMPONENTS, MESSAGES.myComponentsMenuItem(),
+        new MyComponentsAction()));
+    componentItems.add(null);
+    componentItems.add(new DropDownItem(WIDGET_NAME_START_NEW_COMPONENT, MESSAGES.startNewComponentMenuItem(),
+        new StartNewComponentAction()));
+    componentItems.add(new DropDownItem(WIDGET_NAME_IMPORT_COMPONENT, MESSAGES.importComponentMenuItem(),
+        new ImportComponentAction()));
+    componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
+        new BuildComponentAction()));
+    componentItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.installComponentMenuItem(),
+        new InstallComponentAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
@@ -213,6 +234,8 @@ public class TopToolbar extends Composite {
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
         fileItems, false);
+    componentsDropDown = new DropDownButton(WIDGET_NAME_COMPONENTS, MESSAGES.componentsTabName(),
+        componentItems, false);
     connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectTabName(),
         connectItems, false);
     buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName(),
@@ -222,12 +245,14 @@ public class TopToolbar extends Composite {
 
     // Set the DropDown Styles
     fileDropDown.setStyleName("ode-TopPanelButton");
+    componentsDropDown.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
+    toolbar.add(componentsDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
 
@@ -759,6 +784,41 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Window.open("http://something.example.com", "_blank", "scrollbars=1");
+    }
+  }
+
+  private static class MyComponentsAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class StartNewComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class ImportComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class BuildComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class InstallComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
     }
   }
 
