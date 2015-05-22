@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.Servo.Direction;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcServo extends FtcHardwareDevice {
 
   private volatile Servo servo;

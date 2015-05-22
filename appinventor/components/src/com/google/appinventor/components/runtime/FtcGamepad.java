@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcGamepad extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.GamepadDevice {
 

@@ -30,7 +30,7 @@ import java.nio.ByteOrder;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "RobotCore.jar")
+@UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcLegacyModule extends FtcHardwareDevice {
 
   private volatile LegacyModule legacyModule;

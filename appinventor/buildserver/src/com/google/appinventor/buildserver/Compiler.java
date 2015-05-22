@@ -483,9 +483,12 @@ public final class Compiler {
       // Add FTC related activities and service to the manifest only if an FtcRobotController
       // component is used in the app.
       if (componentTypes.contains("FtcRobotController")) {
+        // TODO(lizlooney): what activities should be bundled into the user's app?
+        /*
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
         out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
+        */
         out.write("    <service\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
         out.write("      android:enabled=\"true\" />\n");
@@ -616,7 +619,6 @@ public final class Compiler {
       out.println("________Generating R.java files");
       File genDir = createDirectory(buildDir, "gen");
       String[] packages = {
-        "com.qualcomm.ftccommon",
         "com.qualcomm.robotcore"
       };
       List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
@@ -740,11 +742,13 @@ public final class Compiler {
       "layout/header.xml",
       "menu/ftc_robot_controller.xml",
       "values/colors.xml",
+      "values/dimens.xml",
       "values/strings.xml",
       "xml/device_filter.xml",
-      // From FtcCommon.aar
-      "layout/activity_config_wifi_direct.xml",
+      // From RobotCore.aar
       "values/values.xml",
+      "values-v11/values.xml",
+      "values-v14/values.xml",
     };
 
     for (String ftcFile : FTC_FILES) {

@@ -65,7 +65,13 @@ import java.util.Map;
                  "android.permission.READ_EXTERNAL_STORAGE, " +
                  "android.permission.WRITE_SETTINGS, " +
                  "android.permission.WAKE_LOCK")
-@UsesLibraries(libraries = "RobotCore.jar,FtcCommon.jar,ModernRobotics.jar,WirelessP2p.jar,d2xx.jar")
+@UsesLibraries(libraries =
+  "FtcAnalytics.jar," +
+  "FtcCommon.jar," +
+  "FtcModernRobotics.jar," +
+  "FtcRobotCore.jar," +
+  "FtcWirelessP2p.jar," +
+  "d2xx.jar")
 public final class FtcRobotController extends AndroidViewComponent implements OnInitializeListener,
     ActivityResultListener, OnNewIntentListener, OnCreateOptionsMenuListener,
     OnOptionsItemSelectedListener, OnDestroyListener, Deleteable, OpModeRegister {

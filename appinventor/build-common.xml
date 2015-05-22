@@ -410,27 +410,17 @@
   </target>
 
   <!-- ====================================================================
-       components_RobotCore builds:
-       - build/components/RobotCore/classes.jar
+       components_FtcJars builds:
+       - build/components/ftc/Analytics/classes.jar
+       - build/components/ftc/FtcCommon/classes.jar
+       - build/components/ftc/ModernRobotics/classes.jar
+       - build/components/ftc/RobotCore/classes.jar
+       - build/components/ftc/WirelessP2p/classes.jar
        ==================================================================== -->
 
-  <target name="components_RobotCore">
+  <target name="components_FtcJars">
     <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
-         target="RobotCore"/>
-  </target>
-
-  <!-- ====================================================================
-       components_FtcCommon builds:
-       - build/components/FtcCommon/classes.jar
-       - build/components/FtcCommon/libs/ModernRobotics.jar
-       - build/components/FtcCommon/libs/WirelessP2p.jar
-       - build/components/FtcCommon/libs/d2xx.jar
-       - build/components/FtcCommon/res/layout/activity_config_wifi_direct.xml
-       ==================================================================== -->
-
-  <target name="components_FtcCommon">
-    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
-         target="FtcCommon"/>
+         target="FtcJars"/>
   </target>
 
   <!-- ====================================================================

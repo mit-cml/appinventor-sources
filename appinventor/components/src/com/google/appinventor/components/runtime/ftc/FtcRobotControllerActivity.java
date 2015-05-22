@@ -57,6 +57,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qualcomm.analytics.Analytics;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
@@ -169,6 +170,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     dimmer = new Dimmer(thisActivity);
     dimmer.longBright();
     Restarter restarter = new RobotRestarter();
+    Analytics analytics = new Analytics(thisActivity);
 
     updateUI = new UpdateUI(thisActivity, dimmer);
     updateUI.setRestarter(restarter);
@@ -349,8 +351,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     aiFtcRobotController.beforeSetupRobot();
     controllerService.setupRobot(eventLoop);
 
-    long fiveMinutes = 300000; //milliseconds
-    batteryChecker = new BatteryChecker(thisActivity, eventLoop, fiveMinutes);
+    long milliseconds = 180000; //milliseconds
+    batteryChecker = new BatteryChecker(thisActivity, eventLoop, milliseconds);
     batteryChecker.startBatteryMonitoring();
   }
 
@@ -402,6 +404,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     hwMap.dcMotor.put("arm", new DcMotor(mc2, 2));
     hwMap.servo.put("a", new Servo(sc, 1));
     hwMap.servo.put("b", new Servo(sc, 6));
+
+    hwMap.appContext = thisActivity;
 
     return new MockHardwareFactory(hwMap);
   }
