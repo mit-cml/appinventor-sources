@@ -394,26 +394,42 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats the given instant into a string.   *
+   * Converts and formats the given instant into a string with the given pattern.   *
    *
    * @param instant  instant to format
+   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm 
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date and time of an"
       + " instant")
-  public static String FormatDateTime(Calendar instant) {
-    return Dates.FormatDateTime(instant);
+  public static String FormatDateTime(Calendar instant, String pattern) {
+    try {
+	  return Dates.FormatDateTime(instant, pattern);
+	} catch (IllegalArgumentException e){ 
+	  throw new YailRuntimeError(
+	    "Specify the date and time pattern (e.g. MM/dd/YYYY hh:mm:ss a or MMM d, yyyy hh:mm) or "
+	    + "have an empty string for a default pattern. See the docummentation for more details.",
+	    "Sorry to be so picky.");
+	  }    
   }
 
   /**
-   * Converts and formats the given instant into a string.
+   * Converts and formats the given instant into a string with the given pattern.
    *
    * @param instant  instant to format
+   * @param pattern format of the date e.g. MM/DD/YYYY or MMM d, yyyy
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date of an instant")
-  public static String FormatDate(Calendar instant) {
-    return Dates.FormatDate(instant);
+  public static String FormatDate(Calendar instant, String pattern) {
+	try {
+      return Dates.FormatDate(instant, pattern);
+    } catch (IllegalArgumentException e){ 
+        throw new YailRuntimeError(
+        "Specify the date pattern (e.g. MM/dd/YYYY or MMM d, yyyy) or have an empty string "
+        + "for the default pattern. See the docummentation for more details.",
+        "Sorry to be so picky.");
+      }
   }
 
   /**

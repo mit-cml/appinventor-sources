@@ -141,30 +141,41 @@ public final class Dates {
   }
 
   /**
-   * Converts and formats the given date into a date and time string.
+   * Converts and formats the given date into a date and time string with the given pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
+   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM dd, yyyy HH:mm 
    * @return  formatted date
    */
   @SimpleFunction
-  public static String FormatDateTime(Calendar date) {
-    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
-        .format(date.getTime());
+  public static String FormatDateTime(Calendar date, String pattern) {
+	SimpleDateFormat formatdate = new SimpleDateFormat();
+    if (pattern.length() == 0) 
+      formatdate.applyPattern("MMM d, yyyy HH:mm:ss a");
+    else 
+      formatdate.applyPattern(pattern);
+    return formatdate.format(date.getTime());
   }
 
   /**
-   * Converts and formats the given date into a date string.
+   * Converts and formats the given date into a date string with the given pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
+   * @param pattern format of the date e.g. MM/DD/YYYY or MMM dd, yyyy
    * @return  formatted date
    */
   @SimpleFunction
-  public static String FormatDate(Calendar date) {
-    return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date.getTime());
+  public static String FormatDate(Calendar date, String pattern) {
+    SimpleDateFormat formatdate = new SimpleDateFormat();
+      if (pattern.length() == 0) 
+        formatdate.applyPattern("MMM d, yyyy");
+      else 
+    	formatdate.applyPattern(pattern);	 
+      return formatdate.format(date.getTime());
   }
 
   /**
