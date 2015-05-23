@@ -669,6 +669,10 @@ public interface OdeMessages extends Messages {
   @Description("Title for moderator send email dialog")
   String emailSendTitle();
 
+  @DefaultMessage("My Components")
+  @Description("Caption for component list box.")
+  String componentListBoxCaption();
+
   // Used in boxes/AssetListBox.java
 
   @DefaultMessage("Media")

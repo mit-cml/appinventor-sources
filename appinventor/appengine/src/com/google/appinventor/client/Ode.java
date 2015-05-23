@@ -19,6 +19,7 @@ import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.ComponentListBox;
 import com.google.appinventor.client.boxes.ModerationPageBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
@@ -39,6 +40,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.explorer.youngandroid.ComponentToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
@@ -209,6 +211,7 @@ public class Ode implements EntryPoint {
   private int userProfileTabIndex;
   private int privateUserProfileIndex;
   private int moderationPageTabIndex;
+  private int componentsTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -218,6 +221,7 @@ public class Ode implements EntryPoint {
   private GalleryToolbar galleryPageToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+  private ComponentToolbar componentToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -365,6 +369,15 @@ public class Ode implements EntryPoint {
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
+  }
+
+  /**
+   * Switch to the Projects tab
+   */
+  public void switchToComponentsView() {
+    currentView = PROJECTS;
+    getTopToolbar().updateFileMenuButtons(currentView);
+    deckPanel.showWidget(componentsTabIndex);
   }
 
   /**
@@ -788,6 +801,19 @@ public class Ode implements EntryPoint {
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(pVertPanel);
+
+    // Components tab
+    VerticalPanel componentOuterPanel = new VerticalPanel();
+    componentOuterPanel.setWidth("100%");
+    componentOuterPanel.setSpacing(0);
+    HorizontalPanel componentInnerPanel = new HorizontalPanel();
+    componentInnerPanel.setWidth("100%");
+    componentToolbar = new ComponentToolbar();
+    componentInnerPanel.add(ComponentListBox.getComponentListBox());
+    componentOuterPanel.add(componentToolbar);
+    componentOuterPanel.add(componentInnerPanel);
+    componentsTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(componentOuterPanel);
 
     // Design tab
     VerticalPanel dVertPanel = new VerticalPanel();
@@ -1313,7 +1339,7 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
-    
+
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
 
