@@ -483,12 +483,7 @@ public final class Compiler {
       // Add FTC related activities and service to the manifest only if an FtcRobotController
       // component is used in the app.
       if (componentTypes.contains("FtcRobotController")) {
-        // TODO(lizlooney): what activities should be bundled into the user's app?
-        /*
-        out.write("    <activity\n");
-        out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
-        out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
-        */
+        // TODO(lizlooney): what activities (if any) should be bundled into the user's app?
         out.write("    <service\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
         out.write("      android:enabled=\"true\" />\n");
