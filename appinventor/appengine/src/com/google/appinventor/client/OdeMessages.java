@@ -1928,6 +1928,18 @@ public interface OdeMessages extends Messages {
   @Description("Alert message displayed when upgrading a project without version numbers")
   String veryOldProject();
 
+  @DefaultMessage("The Country designer property of TextToSpeech is removed.\n" +
+    "It was set to a non-default value in your project.\n" +
+    "You may change to set the value in Blocks instead.")
+  @Description("Alert message displayed when the project contains non-default value of Country designer property")
+  String countryRemoved();
+
+  @DefaultMessage("The Country designer property of TextToSpeech is removed.\n" +
+    "It was set to a non-default value in your project.\n" +
+    "You may change to set the value in Blocks instead.")
+  @Description("Alert message displayed when the project contains non-default value of Language designer property")
+  String languageRemoved();
+
   @DefaultMessage("The Logger component named {0} was changed to a Notifier component.\n")
   @Description("Message providing details about a project upgrade involving a Logger component")
   String upgradeDetailLoggerReplacedWithNotifier(String name);
