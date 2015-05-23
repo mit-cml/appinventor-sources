@@ -201,7 +201,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
         return dcMotor.getTargetPosition();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "MotorTargetPosition",
+        form.dispatchErrorOccurredEvent(this, "TargetPosition",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -218,7 +218,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
         dcMotor.setTargetPosition(position);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "MotorTargetPosition",
+        form.dispatchErrorOccurredEvent(this, "TargetPosition",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -235,7 +235,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
         return dcMotor.getCurrentPosition();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "MotorCurrentPosition",
+        form.dispatchErrorOccurredEvent(this, "CurrentPosition",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
