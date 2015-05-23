@@ -2057,6 +2057,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String legoComponentPallette();
 
+  @DefaultMessage("External Components")
+  @Description("")
+  String externalComponentPalette();
+
   @DefaultMessage("Experimental")
   @Description("")
   String experimentalComponentPallette();
