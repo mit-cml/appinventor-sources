@@ -149,6 +149,14 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching language")
   String switchLanguageButton();
 
+  @DefaultMessage("Delete component")
+  @Description("Text on \"Delete component\" button")
+  String deleteComponentButton();
+
+  @DefaultMessage("Publish")
+  @Description("Text on \"Publish\" button")
+  String publishButton();
+
   // Not used anymore it is now dynamically created and translated at compile time depending on what
   //languages are translated and available.
 
