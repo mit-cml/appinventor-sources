@@ -114,6 +114,13 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "adds the passed text element to the Spinner list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
+    // The following conditional handles special cases for the fact that
+    // spinners automatically select an item when non-empty data is fed
+    if (itemList.size() == 0) {
+      SelectionIndex(0);
+    } else if (itemList.size() < items.size() && SelectionIndex() == items.size()) {
+      SelectionIndex(itemList.size());
+    }
     items = ElementsUtil.elements(itemList, "Spinner");
     setAdapterData(itemList.toStringArray());
   }
