@@ -132,8 +132,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "sets the Spinner list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring){
-    items = ElementsUtil.elementsFromString(itemstring);
-    setAdapterData(itemstring.split(" *, *"));
+    Elements(ElementsUtil.elementsFromString(itemstring));
   }
 
   private void setAdapterData(String[] theItems) {
