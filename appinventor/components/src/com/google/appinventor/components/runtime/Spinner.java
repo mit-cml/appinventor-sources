@@ -39,7 +39,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
-  private int selectionIndex;
   private int adapterOldCount;
 
   public Spinner(ComponentContainer container) {
@@ -85,7 +84,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "The index of the currently selected item, starting at 1. If no " +
       "item is selected, the value will be 0.", category = PropertyCategory.BEHAVIOR)
   public int SelectionIndex(){
-    return selectionIndex;
+    return ElementsUtil.selectionIndex(view.getSelectedItemPosition() + 1, items);
   }
 
   /**
@@ -97,8 +96,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       "items in the Spinner, SelectionIndex will be set to 0, and Selection will be set to empty.",
       category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index){
-    selectionIndex = ElementsUtil.selectionIndex(index, items);
-    view.setSelection(selectionIndex - 1); // AI lists are 1-based
+    view.setSelection(ElementsUtil.selectionIndex(index, items) - 1); // AI lists are 1-based
   }
 
   /**
