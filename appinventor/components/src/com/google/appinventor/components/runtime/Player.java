@@ -75,7 +75,6 @@ public final class Player extends AndroidNonvisibleComponent
   private MediaPlayer player;
   private final Vibrator vibe;
 
-  //public int playerState;
   public State playerState;
   public enum State { INITIAL, PREPARED, PLAYING, PAUSED_BY_USER, PAUSED_BY_EVENT; }
   private String sourcePath;
