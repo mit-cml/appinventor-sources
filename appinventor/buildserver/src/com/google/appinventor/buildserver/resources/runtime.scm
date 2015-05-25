@@ -248,7 +248,12 @@
 (define-syntax lexical-value
   (syntax-rules ()
     ((_ var-name)
-     var-name)))
+     (if (instance? var-name <java.lang.Package>)
+         (signal-runtime-error
+          (string-append "The variable " (get-display-representation `var-name)
+                         " is not bound in the current context")
+          "Unbound Variable")
+         var-name))))
 
 ;;; Lexical Set Variable
 ;;; (set-lexical! var 10)
