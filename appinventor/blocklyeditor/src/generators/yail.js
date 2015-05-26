@@ -165,6 +165,7 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
     // 
     // finalCode = code.join('\n').replace(/\\(set-property.*\"\"\\)\\n*/mg, "");
   }
+  console.log(code.join('\n'));
   return code.join('\n');  // Blank line between each section.
 };
 

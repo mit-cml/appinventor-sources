@@ -682,15 +682,49 @@
                (add-to-events 'component-name 'event-name)))))))
 
 (define-syntax define-generic-event
-  (lambda (stx)
-    (syntax-case stx ()
-      ((_ component-name event-name args . body)
-       #`(begin
-           (define-event-helper ,(gen-event-name #`component-name #`event-name) args body)
-           (com.google.appinventor.components.runtime.EventDispatcher:registerEventForDelegation
-             (as com.google.appinventor.components.runtime.HandlesEventDispatching *this-form*)
-             'component-name
-             'event-name))))))
+  (syntax-rules ()
+   ((_ component event-name (arg ...) expr ...)
+    (begin
+     (let ((component-name (reverse-lookup-in-current-form-environment component))
+       (event-handler
+        (lambda (arg ...)
+          ;; The arguments to the handler come from the components and
+          ;; need to be sanitized before we can operate on them in Yail.  See
+          ;; the comments on sanitize below
+          (let ((arg (sanitize-component-data arg)) ...)
+        (begin
+         expr ...)))))
+       (if *this-is-the-repl*
+           (add-to-current-form-environment (gen-event-name component-name 'event-name) event-handler)
+         (add-to-form-environment (gen-event-name component-name 'event-name) event-handler))
+       (com.google.appinventor.components.runtime.EventDispatcher:registerEventForDelegation
+        (as com.google.appinventor.components.runtime.HandlesEventDispatching *this-form*)
+        component-name
+        'event-name)
+       (list
+        component-name
+        'event-name))))))
+
+;;; Environments are a map from names to values.  This procedure does a reverse lookup.
+;;; I.e. it returns a name (or #f if none is found) given a value.
+(define (reverse-lookup-in-environment value environment :: gnu.mapping.Environment)
+  (let ((locations :: java.util.Iterator (*:enumerateAllLocations environment))
+    (name-to-return #f))
+    (let loop ()
+     (if (*:hasNext locations)
+         (let ((location :: gnu.mapping.Location (*:next locations)))
+           (if (eqv? (*:get location) value)
+           (set! name-to-return (*:getKeySymbol location))
+         (loop)))))
+    name-to-return))
+
+;; This procedure finds the name associated with the provided value in the current form environment
+(define (reverse-lookup-in-current-form-environment value)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (*:.form-environment *this-form*)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+           *test-environment*)))
+    (reverse-lookup-in-environment value env)))
 
 (define-syntax define-multi-event
   (lambda (stx)
