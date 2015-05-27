@@ -1578,21 +1578,28 @@ textarea::-webkit-input-placeholder {
 .gallery-nav-next .gwt-Label  {
   margin-left: 5px;
 }
+.gallery-report-next .gwt-Label{
+  width:100px;
+}
 .gallery-nav-prev .active,
-.gallery-nav-next .active {
+.gallery-nav-next .active,
+.gallery-report-next .active {
   color: #777;
 }
 .gallery-nav-prev .disabled,
-.gallery-nav-next .disabled {
+.gallery-nav-next .disabled,
+.gallery-report-next .disabled {
   color: #ddd;
 }
 .gallery-nav-prev .active:hover,
-.gallery-nav-next .active:hover {
+.gallery-nav-next .active:hover,
+.gallery-report-next .active:hover {
   cursor: pointer;
   background-color: #FFF;
 }
 .gallery-nav-prev .disabled:hover,
-.gallery-nav-next .disabled:hover {
+.gallery-nav-next .disabled:hover,
+.gallery-report-next .disabled:hover  {
   cursor: default;
   background: none;
 }
