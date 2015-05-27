@@ -156,11 +156,11 @@ public interface GalleryServiceAsync {
   /**
    * @see @link{@link GalleryService#getRecentReports(int, int)
    */
-  void getRecentReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
+  void getRecentReports(int start, int count, AsyncCallback<GalleryReportListResult> callback);
   /**
    * @see @link{@link GalleryService#getAllAppReports(int, int)
    */
-  void getAllAppReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
+  void getAllAppReports(int start, int count, AsyncCallback<GalleryReportListResult> callback);
 
   /**
    * @see @link{@link GalleryService#isReportedByUser(long)
