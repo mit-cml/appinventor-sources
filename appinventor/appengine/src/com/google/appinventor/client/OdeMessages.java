@@ -250,6 +250,10 @@ public interface OdeMessages extends Messages {
   @Description("Title of the Previous Actions Popup of reportlist")
   String titleSeeAllActionsPopup();
 
+  @DefaultMessage("More Reports")
+  @Description("text for more reports")
+  String galleryMoreReports();
+
   @DefaultMessage("X")
   @Description("Symbol X")
   String symbolX();

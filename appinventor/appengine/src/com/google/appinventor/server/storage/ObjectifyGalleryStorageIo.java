@@ -27,6 +27,7 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.Email;
+import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.annotations.VisibleForTesting;
@@ -928,19 +929,19 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     } catch (ObjectifyException e) {
         throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getAppReports", e);
     }
-
     return reports;
   }
 
   /**
-   * Returns a list of reports (flags) for all app(not including the resolved ones)
+   * Returns a wrapped class which contains a list of reports (flags) for unresolved app
+   * and total number of results in database
    * @param start start index
    * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
   @Override
-  public List<GalleryAppReport> getAppReports(final int start, final int count) {
-   final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
+  public GalleryReportListResult getAppReports(final int start, final int count) {
+    final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -959,38 +960,41 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     } catch (ObjectifyException e) {
         throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getAppReports (all)", e);
     }
-
-    return reports;
+    Objectify datastore = ObjectifyService.begin();
+    int totalCount = datastore.query(GalleryAppReportData.class).filter("resolved", false).count();
+    return new GalleryReportListResult(reports, totalCount);
   }
   /**
-  * gets existing reports, including both resolved and unresloved reports.
+  * Returns a wrapped class which contains a list of reports (flags) for resolved and unresolved app
+  * and total number of results in database
   * @param start start index
   * @param count number to retrieve
   * @return the list of reports
   */
   @Override
-  public List<GalleryAppReport> getAllAppReports(final int start, final int count){
+  public GalleryReportListResult getAllAppReports(final int start, final int count){
     final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
-      try {
-        runJobWithRetries(new JobRetryHelper() {
-          @Override
-          public void run(Objectify datastore) {
-            datastore = ObjectifyService.begin();
-            for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).order("-dateCreated").offset(start).limit(count)) {
-              User reporter = storageIo.getUser(reportData.reporterId);
-              User offender = storageIo.getUser(reportData.offenderId);
-              GalleryApp app = getGalleryApp(reportData.galleryKey.getId());
-              GalleryAppReport galleryReport = new GalleryAppReport(reportData.id,reportData.reportText, app, offender, reporter,
-                reportData.dateCreated, reportData.resolved);
-              reports.add(galleryReport);
-            }
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore = ObjectifyService.begin();
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).order("-dateCreated").offset(start).limit(count)) {
+            User reporter = storageIo.getUser(reportData.reporterId);
+            User offender = storageIo.getUser(reportData.offenderId);
+            GalleryApp app = getGalleryApp(reportData.galleryKey.getId());
+            GalleryAppReport galleryReport = new GalleryAppReport(reportData.id,reportData.reportText, app, offender, reporter,
+              reportData.dateCreated, reportData.resolved);
+            reports.add(galleryReport);
           }
-        });
-      } catch (ObjectifyException e) {
-        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getExistingAppReports (all)", e);
-      }
-
-    return reports;
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getExistingAppReports (all)", e);
+    }
+    Objectify datastore = ObjectifyService.begin();
+    int totalCount = datastore.query(GalleryAppReportData.class).count();
+    return new GalleryReportListResult(reports, totalCount);
   }
   /**
    * mark an report as resolved
