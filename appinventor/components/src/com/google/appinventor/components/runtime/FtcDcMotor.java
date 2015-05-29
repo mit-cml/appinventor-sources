@@ -121,6 +121,20 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public void Direction(String directionString) {
     if (dcMotor != null) {
       try {
+        try {
+          int n = Integer.decode(directionString);
+          if (n == 1) {
+            dcMotor.setDirection(Direction.FORWARD);
+            return;
+          }
+          if (n == -1) {
+            dcMotor.setDirection(Direction.REVERSE);
+            return;
+          }
+        } catch (NumberFormatException e) {
+          // Code below will try to interpret directionString as a Direction enum string.
+        }
+        
         for (Direction direction : Direction.values()) {
           if (direction.toString().equalsIgnoreCase(directionString)) {
             dcMotor.setDirection(direction);

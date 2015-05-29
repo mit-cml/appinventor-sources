@@ -469,11 +469,14 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
         "An unexpected error occurred: %s");
     errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
-        "The specified run mode is not valid: %s");
+        "The specified run mode \"%s\" is not valid. The valid modes are RUN_USING_ENCODERS, " +
+        "RUN_WITHOUT_ENCODERS, RUN_TO_POSITION, and RESET_ENCODERS.");
     errorMessages.put(ERROR_FTC_INVALID_DIRECTION,
-        "The specified direction is not valid: %s");
+        "The specified direction \"%s\" is not valid. The valid directions are FORWARD (or 1) and " +
+        "REVERSE (or -1).");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
-        "The specified IR seeker sensor mode is not valid: %s");
+        "The specified IR seeker sensor mode \"%s\" is not valid. The valid modes are " +
+        "MODE_600HZ_DC and MODE_1200HZ_AC.");
     errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE,
         "The specified scale range is not valid: %s %s");
     errorMessages.put(ERROR_FTC_INVALID_NUMBER,
