@@ -269,7 +269,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
   }
 
-  private void refreshTable(boolean needToSort) {
+  public void refreshTable(boolean needToSort) {
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
