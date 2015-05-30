@@ -153,7 +153,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
 
     @SimpleFunction
-    public void pinMode(int pin, String mode)
+    public void pinMode(String pin, String mode)
     {
         if (this.isConnected()) {
             getTransport().arduino().pinMode(pin, mode);
@@ -161,7 +161,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     }
     
     @SimpleFunction
-    public void digitalWrite(int pin, String value)
+    public void digitalWrite(String pin, String value)
     {
         if (this.isConnected()) {
             getTransport().arduino().digitalWrite(pin, value);
@@ -169,7 +169,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     }
     
     @SimpleFunction
-    public int digitalRead(int pin) throws Exception
+    public int digitalRead(String pin) throws Exception
     {
         if (this.isConnected()) {
             return getTransport().arduino().digitalRead(pin);
@@ -179,7 +179,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     }
     
     @SimpleFunction
-    public void analogWrite(int pin, int value)
+    public void analogWrite(String pin, int value)
     {
         if (this.isConnected()) {
             getTransport().arduino().analogWrite(pin, value);
@@ -187,7 +187,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     }
     
     @SimpleFunction
-    public int analogRead(int pin) throws Exception
+    public int analogRead(String pin) throws Exception
     {
         Log.d(TAG, "chiamata analog read");
         if (this.isConnected()) {

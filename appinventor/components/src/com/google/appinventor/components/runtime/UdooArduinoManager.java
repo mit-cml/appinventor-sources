@@ -51,7 +51,7 @@ public class UdooArduinoManager
         sendJson(json);
     }
     
-    public void digitalWrite(int pin, String value)
+    public void digitalWrite(String pin, String value)
     {
         int lowhigh = HIGH;
         if (value.toUpperCase().charAt(0) == 'L') {
@@ -61,7 +61,7 @@ public class UdooArduinoManager
         JSONObject json = new JSONObject();
         try {
             json.put("method", "digitalWrite");
-            json.put("pin", pin);
+            json.put("pin", pinNameToInt(pin));
             json.put("value", lowhigh);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -70,12 +70,12 @@ public class UdooArduinoManager
         sendJson(json);
     }
     
-    public void analogWrite(int pin, int value)
+    public void analogWrite(String pin, int value)
     {
         JSONObject json = new JSONObject();
         try {
             json.put("method", "analogWrite");
-            json.put("pin", pin);
+            json.put("pin", pinNameToInt(pin));
             json.put("value", value);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -84,7 +84,7 @@ public class UdooArduinoManager
         sendJson(json);
     }
     
-    public void pinMode(int pin, String value)
+    public void pinMode(String pin, String value)
     {
         int inout = OUTPUT;
         if (value.toUpperCase().charAt(0) == 'I') {
@@ -94,7 +94,7 @@ public class UdooArduinoManager
         JSONObject json = new JSONObject();
         try {
             json.put("method", "pinMode");
-            json.put("pin", pin);
+            json.put("pin", pinNameToInt(pin));
             json.put("value", inout);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -116,12 +116,12 @@ public class UdooArduinoManager
         sendJson(json);
     }
     
-    public int digitalRead(int pin) throws Exception
+    public int digitalRead(String pin) throws Exception
     {
         JSONObject json = new JSONObject();
         try {
             json.put("method", "digitalRead");
-            json.put("pin", pin);
+            json.put("pin", pinNameToInt(pin));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -143,12 +143,12 @@ public class UdooArduinoManager
         throw new Exception("Invalid response from ADK");
     }
     
-    public int analogRead(int pin) throws Exception
+    public int analogRead(String pin) throws Exception
     {
         JSONObject json = new JSONObject();
         try {
             json.put("method", "analogRead");
-            json.put("pin", pin);
+            json.put("pin", pinNameToInt(pin));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -200,7 +200,7 @@ public class UdooArduinoManager
         throw new Exception("Invalid response from ADK");
     }
     
-    public JSONObject sensor(int pin, String sensorName) throws Exception
+    public JSONObject sensor(String pin, String sensorName) throws Exception
     {
         JSONObject json = new JSONObject();
         try {
@@ -301,6 +301,31 @@ public class UdooArduinoManager
             }
 
             return message;
+        }
+    }
+    
+    private int pinNameToInt(String name)
+    {
+        name = name.trim().toUpperCase();
+        
+        if (name.equals("A0")) {
+            return 54;
+        } else if (name.equals("A1")) {
+            return 55;
+        } else if (name.equals("A2")) {
+            return 56;
+        } else if (name.equals("A3")) {
+            return 57;
+        } else if (name.equals("A4")) {
+            return 58;
+        } else if (name.equals("A5")) {
+            return 59;
+        } else if (name.equals("A6")) {
+            return 60;
+        } else if (name.equals("A7")) {
+            return 61;
+        } else {
+            return Integer.parseInt(name);
         }
     }
 }

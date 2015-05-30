@@ -455,6 +455,32 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
-         '</xml>';}}
+         '</xml>';}},
+
+    // UdooArduino.pinMode has mode default to INPUT
+    {matchingMutatorAttributes:{component_type:"UdooArduino", method_name:"pinMode"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_pinout"><title name="UDOO_PINOUT">0</title></block></value>' +
+        '<value name="ARG1"><block type="arduino_pin_mode"><title name="ARDUINO_PIN_MODE">INPUT</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+        
+    // UdooArduino.digitalWrite has pin value default to LOW
+    {matchingMutatorAttributes:{component_type:"UdooArduino", method_name:"digitalWrite"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_pinout"><title name="UDOO_PINOUT">0</title></block></value>' +
+        '<value name="ARG1"><block type="arduino_pin_value"><title name="ARDUINO_PIN_VALUE">LOW</title></block></value>' +
+        '</block>' +
+        '</xml>';}}
   ]
 };

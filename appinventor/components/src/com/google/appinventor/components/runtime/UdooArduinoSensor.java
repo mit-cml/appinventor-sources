@@ -154,7 +154,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
 
     @SimpleFunction
-    public void ReadSensor(int pin)
+    public void ReadSensor(String pin)
     {
         if (this.isConnected()) {
             try {
