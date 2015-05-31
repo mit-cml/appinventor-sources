@@ -53,7 +53,7 @@
     <!-- Name of storage bucket in Google Cloud Store -->
     <property name="gcs.bucket" value="" />
     <!-- Whether or not to use GCS for storage -->
-    <property name="use.gcs" value="false" />
+    <property name="use.gcs" value="true" />
 
     <!-- Name of gallery bucket in Google Cloud Store -->
     <property name="gallery.bucket" value="" />

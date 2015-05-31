@@ -269,7 +269,14 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     }
   }
 
-  private void refreshTable(boolean needToSort) {
+  // TODO(user): This method was made public so it can be called
+  // directly from from Ode when the Project List View is selected
+  // from another view.  Ode now clears any selected projects and
+  // calls this to refresh the table as a result. Not sure this is
+  // correct thing do to. The alternative is to add a call to the
+  // ProjectManagerEventListener interface that this is the
+  // implementation of.
+  public void refreshTable(boolean needToSort) {
     if (needToSort) {
       // Sort the projects.
       Comparator<Project> comparator;
