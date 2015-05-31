@@ -73,6 +73,20 @@ public final class FtcServo extends FtcHardwareDevice {
   public void Direction(String directionString) {
     if (servo != null) {
       try {
+        try {
+          int n = Integer.decode(directionString);
+          if (n == 1) {
+            servo.setDirection(Direction.FORWARD);
+            return;
+          }
+          if (n == -1) {
+            servo.setDirection(Direction.REVERSE);
+            return;
+          }
+        } catch (NumberFormatException e) {
+          // Code below will try to interpret directionString as a Direction enum string.
+        }
+        
         for (Direction direction : Direction.values()) {
           if (direction.toString().equalsIgnoreCase(directionString)) {
             servo.setDirection(direction);
