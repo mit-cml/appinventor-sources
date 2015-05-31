@@ -472,8 +472,8 @@ public final class ErrorMessages {
         "The specified run mode \"%s\" is not valid. The valid modes are RUN_USING_ENCODERS, " +
         "RUN_WITHOUT_ENCODERS, RUN_TO_POSITION, and RESET_ENCODERS.");
     errorMessages.put(ERROR_FTC_INVALID_DIRECTION,
-        "The specified direction \"%s\" is not valid. The valid directions are FORWARD (or 1) and " +
-        "REVERSE (or -1).");
+        "The specified direction \"%s\" is not valid. The valid directions are FORWARD (or 1) " +
+        "and REVERSE (or -1).");
     errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
         "The specified IR seeker sensor mode \"%s\" is not valid. The valid modes are " +
         "MODE_600HZ_DC and MODE_1200HZ_AC.");
