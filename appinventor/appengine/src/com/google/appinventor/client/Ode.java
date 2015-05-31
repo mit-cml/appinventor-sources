@@ -362,6 +362,10 @@ public class Ode implements EntryPoint {
    * Switch to the Projects tab
    */
   public void switchToProjectsView() {
+    if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+      ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
+      ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+    }
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
