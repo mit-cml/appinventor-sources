@@ -138,6 +138,9 @@ public class ImageSprite extends Sprite {
             // to get the other right and bottom edges
             xinit + w / 2 + rotatedBitmap.getWidth() / 2,
             yinit + h / 2 + rotatedBitmap.getHeight() / 2);
+        // The value of alpha is hardcoded to 254 to avoid the black Background that occurs
+        // after a rotation ref: issue #400
+        rotatedDrawable.setAlpha(254);
         rotatedDrawable.draw(canvas);
       }
     }
