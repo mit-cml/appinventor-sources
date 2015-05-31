@@ -5422,7 +5422,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ImageHelpStringComponentPallette();
 
-  @DefaultMessage("A special-purpose button. When the user taps an image picker, the device\"s image gallery appears, and the user can choose an image. After an image is picked, it is saved on the SD card and the <code>ImageFile</code> property will be the name of the file where the image is stored. In order to not fill up storage, a maximum of 10 images will be stored.  Picking more images will delete previous images, in order from oldest to newest.")
+  @DefaultMessage("A special-purpose button. When the user taps an image picker, the device\"s image gallery appears, and the user can choose an image. After an image is picked, it is saved, and the <code>Selected</code> property will be the name of the file where the image is stored. In order to not fill up storage, a maximum of 10 images will be stored.  Picking more images will delete previous images, in order from oldest to newest.")
   @Description("")
   String ImagePickerHelpStringComponentPallette();
 
