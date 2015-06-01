@@ -932,7 +932,7 @@ public final class Compiler {
         apkAbsolutePath,
         zipAlignedPath
     };
-    long startAapt = System.currentTimeMillis();
+    long startZipAlign = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
@@ -948,7 +948,7 @@ public final class Compiler {
       return false;
     }
     String zipALignTimeMessage = "ZIPALIGN time: " +
-        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+        ((System.currentTimeMillis() - startZipAlign) / 1000.0) + " seconds";
     out.println(zipALignTimeMessage);
     LOG.info(zipALignTimeMessage);
     return true;

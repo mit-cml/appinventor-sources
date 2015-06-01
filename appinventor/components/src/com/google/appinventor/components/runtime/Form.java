@@ -1,4 +1,4 @@
- // -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -1448,6 +1448,12 @@ public class Form extends Activity
         onStopListeners.remove(onStopListener);
       }
     }
+    if (component instanceof OnNewIntentListener) {
+      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
+      if (onNewIntentListeners.contains(onNewIntentListener)) {
+        onNewIntentListeners.remove(onNewIntentListener);
+      }
+    }
     if (component instanceof OnResumeListener) {
       OnResumeListener onResumeListener = (OnResumeListener) component;
       if (onResumeListeners.contains(onResumeListener)) {
@@ -1464,6 +1470,12 @@ public class Form extends Activity
       OnDestroyListener onDestroyListener = (OnDestroyListener) component;
       if (onDestroyListeners.contains(onDestroyListener)) {
         onDestroyListeners.remove(onDestroyListener);
+      }
+    }
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
       }
     }
     if (component instanceof Deleteable) {
