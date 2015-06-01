@@ -265,6 +265,8 @@ public class ReportList extends Composite  {
 
       reportTextLabel = new Label(report.getReportText());
       reportTextLabel.addStyleName("ode-ProjectNameLabel");
+      reportTextLabel.setWordWrap(true);
+      reportTextLabel.setWidth("200px");
 
       appLabel = new Label(report.getApp().getTitle());
       appLabel.addStyleName("primary-link");
