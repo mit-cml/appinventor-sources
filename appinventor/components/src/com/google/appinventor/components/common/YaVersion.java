@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -385,6 +387,7 @@ public class YaVersion {
   // NOTE(lizlooney,user) - when a new component is added:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Add the version number for the new component below
+  // 3. Add documentation to the appropriate html file in docs/reference/components.
 
   // NOTE(lizlooney,user) - when a component changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
@@ -394,6 +397,7 @@ public class YaVersion {
   // *** OBSOLETE 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
   // *** OBSOLETE upgrade the .blk file contents (not used in AI 2)
   // 4. For AI2, update the table in blocklyeditor/src/versioning.js
+  // 5. Update documentation in the appropriate html file in docs/reference/components.
 
 
   // Note added after internationalization (8/25/2014)
@@ -433,7 +437,9 @@ public class YaVersion {
   // For ACTIVITYSTARTER_COMPONENT_VERSION 4:
   // - The ActivityStarter.StartActivity was edited to use the parent Form's open screen
   //   animation to transition to next activity.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
+  // - The ActivityStarter.ActivityCanceled event was added.
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
