@@ -141,12 +141,12 @@ public final class Dates {
   }
 
   /**
-   * Converts and formats the given date into a date and time string with the given pattern.
+   * Converts and formats an instant into a string of date and time with the specified pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
-   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM dd, yyyy HH:mm 
+   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm 
    * @return  formatted date
    */
   @SimpleFunction
@@ -160,12 +160,12 @@ public final class Dates {
   }
 
   /**
-   * Converts and formats the given date into a date string with the given pattern.
+   * Converts and formats an instant into a string of date with the specified pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
-   * @param pattern format of the date e.g. MM/DD/YYYY or MMM dd, yyyy
+   * @param pattern format of the date e.g. MM/DD/YYYY or MMM d, yyyy
    * @return  formatted date
    */
   @SimpleFunction
