@@ -3700,6 +3700,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AccelerationChangedEvents();
 
+  @DefaultMessage("ActivityCanceled")
+  @Description("")
+  String ActivityCanceledEvents();
+
   @DefaultMessage("AfterActivity")
   @Description("")
   String AfterActivityEvents();
