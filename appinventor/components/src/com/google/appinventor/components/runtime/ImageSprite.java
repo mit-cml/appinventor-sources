@@ -118,6 +118,7 @@ public class ImageSprite extends Sprite {
               0, 0,
               scaledBitmap.getWidth(), scaledBitmap.getHeight(),
               mat, true);
+          rotatedBitmap.setHasAlpha(true);
           // make a drawable for the rotated image and cache the heading
           rotatedDrawable = new BitmapDrawable(rotatedBitmap);
           cachedRotationHeading = Heading();
