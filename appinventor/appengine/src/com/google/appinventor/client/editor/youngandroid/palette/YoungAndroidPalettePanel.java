@@ -102,8 +102,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return false;
     }
     /*
-    if (category == ComponentCategory.FIRSTTECHCHALLENGE &&
-        !Ode.isUserRegisteredForFTC()) {
+    if (category == ComponentCategory.FIRSTTECHCHALLENGE) {
       return false;
     }
     */

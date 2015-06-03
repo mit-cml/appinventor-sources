@@ -290,14 +290,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns true if the user is registered for FTC, false otherwise.
-   */
-  public static boolean isUserRegisteredForFTC() {
-    return Boolean.parseBoolean(userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-        getPropertyValue(SettingsConstants.USER_REGISTERED_FOR_FTC));
-  }
-
-  /**
    * Returns the gallery settings.
    *
    * @return  gallery settings
