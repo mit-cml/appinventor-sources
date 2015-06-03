@@ -170,6 +170,13 @@ Blockly.Blocks.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
+      if (this.isCollapsed())
+      {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';     
+        this.removeInput(COLLAPSED_INPUT_NAME);        
+        var text = this.toString(Blockly.COLLAPSE_CHARS);   
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
   renameVar: function(oldName, newName) {
@@ -340,6 +347,13 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
+      if (this.isCollapsed())
+      {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';     
+        this.removeInput(COLLAPSED_INPUT_NAME);        
+        var text = this.toString(Blockly.COLLAPSE_CHARS);   
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
   getMethodTypeObject : function() {
@@ -562,6 +576,13 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
+      if (this.isCollapsed())
+      {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';     
+        this.removeInput(COLLAPSED_INPUT_NAME);        
+        var text = this.toString(Blockly.COLLAPSE_CHARS);   
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
   typeblock : function(){
@@ -673,6 +694,13 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
+      if (this.isCollapsed())
+      {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';     
+        this.removeInput(COLLAPSED_INPUT_NAME);        
+        var text = this.toString(Blockly.COLLAPSE_CHARS);   
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
 
