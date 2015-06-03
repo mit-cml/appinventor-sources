@@ -118,10 +118,10 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
 
   @SimpleFunction(description = "Enable a physical port in analog read mode.")
-  public void EnableAnalogReadMode(int physicalPort, int i2cAddress) {
+  public void EnableAnalogReadMode(int physicalPort) {
     if (legacyModule != null) {
       try {
-        legacyModule.enableAnalogReadMode(physicalPort, i2cAddress);
+        legacyModule.enableAnalogReadMode(physicalPort, 0);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableAnalogReadMode",
