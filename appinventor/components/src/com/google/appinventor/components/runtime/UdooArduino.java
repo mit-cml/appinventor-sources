@@ -35,16 +35,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   private String transport = "local";
 
   /**
-   * Local or remote Arduino
-   *
-   * @return String
-   */
-  @SimpleProperty(description = "Connect to a local or remote Arduino")
-  public String Transport() {
-    return this.transport;
-  }
-
-  /**
    * Sets the transport property
    *
    * @param transport
@@ -52,7 +42,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS,
       defaultValue = "local")
-  @SimpleProperty
+  @SimpleProperty(
+      description = "Connect to a local (via ADK) or remote (via TCP) board.",
+      userVisible = false)
   public void Transport(String transport) {
     if (transport.equals("local") || transport.equals("remote")) {
       this.transport = transport;
@@ -70,7 +62,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
    * @param remoteAddress
    */
   @DesignerProperty()
-  @SimpleProperty
+  @SimpleProperty(
+      description = "If transport=remote, the IP address of the remote board.",
+      userVisible = false)
   public void RemoteAddress(String remoteAddress) {
     this.remoteAddress = remoteAddress;
     UdooConnectionInterface transport = getTransport();
@@ -87,7 +81,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
    * @param remotePort
    */
   @DesignerProperty()
-  @SimpleProperty
+  @SimpleProperty(
+      description = "If transport=remote, the TCP port of the remote board.",
+      userVisible = false)
   public void RemotePort(String remotePort) {
     this.remotePort = remotePort;
     UdooConnectionInterface transport = getTransport();
@@ -104,7 +100,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
    * @param remoteSecret
    */
   @DesignerProperty()
-  @SimpleProperty
+  @SimpleProperty(
+      description = "If transport=remote, the secret key to connect to the remote board.",
+      userVisible = false)
   public void RemoteSecret(String remoteSecret) {
     this.remoteSecret = remoteSecret;
   }
