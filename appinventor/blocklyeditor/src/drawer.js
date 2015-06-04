@@ -465,7 +465,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<block type="component_method">' +
         //mutator generator
         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-        '<value name="ARG0"><block type="udoo_pinout"><title name="UDOO_PINOUT">0</title></block></value>' +
+        '<value name="ARG0"><block type="udoo_digital_pinout"><title name="UDOO_DIGITAL_PINOUT">0</title></block></value>' +
         '<value name="ARG1"><block type="arduino_pin_mode"><title name="ARDUINO_PIN_MODE">INPUT</title></block></value>' +
         '</block>' +
         '</xml>';}},
@@ -478,8 +478,44 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '<block type="component_method">' +
         //mutator generator
         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-        '<value name="ARG0"><block type="udoo_pinout"><title name="UDOO_PINOUT">0</title></block></value>' +
+        '<value name="ARG0"><block type="udoo_digital_pinout"><title name="UDOO_DIGITAL_PINOUT">0</title></block></value>' +
         '<value name="ARG1"><block type="arduino_pin_value"><title name="ARDUINO_PIN_VALUE">LOW</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+        
+    // UdooArduino.digitalRead has default pinout
+    {matchingMutatorAttributes:{component_type:"UdooArduino", method_name:"digitalRead"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_digital_pinout"><title name="UDOO_DIGITAL_PINOUT">0</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+        
+    // UdooArduino.analogWrite has default digital pinout
+    {matchingMutatorAttributes:{component_type:"UdooArduino", method_name:"analogWrite"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_analog_pinout"><title name="UDOO_ANALOG_PINOUT">A0</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+        
+    // UdooArduino.analogRead has default digital pinout
+    {matchingMutatorAttributes:{component_type:"UdooArduino", method_name:"analogRead"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_analog_pinout"><title name="UDOO_ANALOG_PINOUT">A0</title></block></value>' +
         '</block>' +
         '</xml>';}}
   ]

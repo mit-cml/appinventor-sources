@@ -18,7 +18,12 @@ Blockly.Yail['arduino_pin_value'] = function() {
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail['udoo_pinout'] = function() {
-  var code = Blockly.Yail.quote_(this.getFieldValue('UDOO_PINOUT'));
+Blockly.Yail['udoo_analog_pinout'] = function() {
+  var code = Blockly.Yail.quote_(this.getFieldValue('UDOO_ANALOG_PINOUT'));
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
+Blockly.Yail['udoo_digital_pinout'] = function() {
+  var code = Blockly.Yail.quote_(this.getFieldValue('UDOO_DIGITAL_PINOUT'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
