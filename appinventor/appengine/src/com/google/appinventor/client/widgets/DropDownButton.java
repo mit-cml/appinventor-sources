@@ -3,6 +3,7 @@ package com.google.appinventor.client.widgets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -56,7 +57,9 @@ public class DropDownButton extends TextButton {
         menu.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
           @Override
           public void setPosition(int offsetWidth, int offsetHeight) {
-            int left = getAbsoluteLeft();
+            int left = Window.Navigator.getUserAgent().contains("Chrome")
+                    ? getAbsoluteLeft() - Window.getScrollLeft()
+                    : getAbsoluteLeft();
             if (rightAlign) {
               left += getOffsetWidth() - offsetWidth;
             }
@@ -78,7 +81,7 @@ public class DropDownButton extends TextButton {
     this.items = new ArrayList<MenuItem>();
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
-        this.items.add(menu.addItem(item.caption, true, item.command));
+        addItem(item);
       } else {
         menu.addSeparator();
       }
@@ -89,7 +92,9 @@ public class DropDownButton extends TextButton {
         menu.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
           @Override
           public void setPosition(int offsetWidth, int offsetHeight) {
-            int left = getAbsoluteLeft();
+            int left = Window.Navigator.getUserAgent().contains("Chrome")
+                    ? getAbsoluteLeft() - Window.getScrollLeft()
+                    : getAbsoluteLeft();
             if (rightAlign) {
               left += getOffsetWidth() - offsetWidth;
             }
