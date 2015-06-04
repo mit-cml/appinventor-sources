@@ -32,6 +32,7 @@ public class UdooArduinoSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
   private String TAG = "UDOOArduinoSensorCmp";
+  private UdooConnectionInterface connection = null;
 
   private String transport = "local";
 
@@ -47,12 +48,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
       description = "Connect to a local (via ADK) or remote (via TCP) board.",
       userVisible = false)
   public void Transport(String transport) {
-    if (transport.equals("local") || transport.equals("remote")) {
-      this.transport = transport;
-      getTransport().registerComponent(this);
-      RemoteAddress(this.remoteAddress);
-      RemotePort(this.remotePort);
-    }
+    this.transport = transport;
   }
   
   private String remoteAddress;
@@ -68,10 +64,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
       userVisible = false)
   public void RemoteAddress(String remoteAddress) {
     this.remoteAddress = remoteAddress;
-    UdooConnectionInterface transport = getTransport();
-    if (transport instanceof UdooTcpRedirector) {
-      ((UdooTcpRedirector)transport).setAddress(remoteAddress);
-    }
   }
   
   private String remotePort;
@@ -87,10 +79,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
       userVisible = false)
   public void RemotePort(String remotePort) {
     this.remotePort = remotePort;
-    UdooConnectionInterface transport = getTransport();
-    if (transport instanceof UdooTcpRedirector) {
-      ((UdooTcpRedirector)transport).setPort(remotePort);
-    }
   }
   
   private String remoteSecret;
@@ -178,10 +166,10 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   
   private UdooConnectionInterface getTransport()
   {
-    if (this.transport.equals("local")) {
-      return UdooAdkBroadcastReceiver.getInstance();
-    } else {
-      return UdooTcpRedirector.getInstance();
+    if (this.connection == null) {
+      this.connection = UdooConnectionFactory.getConnection(this.transport, this.remoteAddress, this.remotePort, this.remoteSecret);
+      this.connection.registerComponent(this);
     }
+    return this.connection;
   }
 }

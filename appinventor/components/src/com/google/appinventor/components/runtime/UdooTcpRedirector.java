@@ -21,23 +21,20 @@ import java.util.logging.Logger;
 public class UdooTcpRedirector implements UdooConnectionInterface
 {
   private static final String TAG = "UdooTcpRedirector";
-  private static UdooTcpRedirector instance = null;
   private Socket socket;
   private String address = null;
   private String port = null;
+  private String secret = null;
   private boolean connected = false;
   public UdooArduinoManager arduino;
   List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
-
-  protected UdooTcpRedirector() {
-  }
-  public static UdooTcpRedirector getInstance() {
-     if (instance == null) {
-      instance = new UdooTcpRedirector();
-     }
-     return instance;
-  }
   
+  UdooTcpRedirector(String address, String port, String secret) {
+    this.address = address;
+    this.port = port;
+    this.secret = secret;
+  }
+
   @Override
   public boolean isConnected() {
     return this.connected;
