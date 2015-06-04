@@ -8,11 +8,11 @@ import android.content.ContextWrapper;
 
 public interface UdooConnectionInterface
 {
-    public boolean isConnected();
-    public void disconnect();
-    public UdooArduinoManager arduino();
-    public void connect();
-    public void registerComponent(UdooConnectedInterface component);
-    public void onCreate(ContextWrapper ctx);
-    public void onDestroy();
+  public boolean isConnected();
+  public void disconnect();
+  public UdooArduinoManager arduino();
+  public void connect();
+  public void registerComponent(UdooConnectedInterface component);
+  public void onCreate(ContextWrapper ctx);
+  public void onDestroy();
 }

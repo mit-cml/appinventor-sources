@@ -5,5 +5,5 @@ package com.google.appinventor.components.runtime;
 
 public interface UdooConnectedInterface
 {
-    public void Connected();
+  public void Connected();
 }

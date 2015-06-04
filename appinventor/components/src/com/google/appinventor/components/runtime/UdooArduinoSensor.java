@@ -31,162 +31,159 @@ import org.json.JSONObject;
 public class UdooArduinoSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-    private String TAG = "UDOOArduinoSensorCmp";
+  private String TAG = "UDOOArduinoSensorCmp";
 
-    private String transport = "local";
+  private String transport = "local";
 
-    /**
-     * Local or remote Arduino
-     *
-     * @return String
-     */
-    @SimpleProperty(description = "Connect to a local or remote Arduino")
-    public String Transport() {
-        return this.transport;
-    }
+  /**
+   * Local or remote Arduino
+   *
+   * @return String
+   */
+  @SimpleProperty(description = "Connect to a local or remote Arduino")
+  public String Transport() {
+    return this.transport;
+  }
 
-    /**
-     * Sets the transport property
-     *
-     * @param transport
-     */
-    @DesignerProperty(
-        editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS,
-        defaultValue = "local")
-    @SimpleProperty
-    public void Transport(String transport) {
-        if (transport.equals("local") || transport.equals("remote")) {
-            this.transport = transport;
-            getTransport().registerComponent(this);
-            RemoteAddress(this.remoteAddress);
-            RemotePort(this.remotePort);
-        }
+  /**
+   * Sets the transport property
+   *
+   * @param transport
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS,
+      defaultValue = "local")
+  @SimpleProperty
+  public void Transport(String transport) {
+    if (transport.equals("local") || transport.equals("remote")) {
+      this.transport = transport;
+      getTransport().registerComponent(this);
+      RemoteAddress(this.remoteAddress);
+      RemotePort(this.remotePort);
     }
-    
-    private String remoteAddress;
+  }
+  
+  private String remoteAddress;
 
-    /**
-     * Sets the remote IP address
-     *
-     * @param remoteAddress
-     */
-    @DesignerProperty()
-    @SimpleProperty
-    public void RemoteAddress(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
-        UdooConnectionInterface transport = getTransport();
-        if (transport instanceof UdooTcpRedirector) {
-            ((UdooTcpRedirector)transport).setAddress(remoteAddress);
-        }
+  /**
+   * Sets the remote IP address
+   *
+   * @param remoteAddress
+   */
+  @DesignerProperty()
+  @SimpleProperty
+  public void RemoteAddress(String remoteAddress) {
+    this.remoteAddress = remoteAddress;
+    UdooConnectionInterface transport = getTransport();
+    if (transport instanceof UdooTcpRedirector) {
+      ((UdooTcpRedirector)transport).setAddress(remoteAddress);
     }
-    
-    private String remotePort;
+  }
+  
+  private String remotePort;
 
-    /**
-     * Sets the remote TCP port number
-     *
-     * @param remotePort
-     */
-    @DesignerProperty()
-    @SimpleProperty
-    public void RemotePort(String remotePort) {
-        this.remotePort = remotePort;
-        UdooConnectionInterface transport = getTransport();
-        if (transport instanceof UdooTcpRedirector) {
-            ((UdooTcpRedirector)transport).setPort(remotePort);
-        }
+  /**
+   * Sets the remote TCP port number
+   *
+   * @param remotePort
+   */
+  @DesignerProperty()
+  @SimpleProperty
+  public void RemotePort(String remotePort) {
+    this.remotePort = remotePort;
+    UdooConnectionInterface transport = getTransport();
+    if (transport instanceof UdooTcpRedirector) {
+      ((UdooTcpRedirector)transport).setPort(remotePort);
     }
-    
-    private String remoteSecret;
+  }
+  
+  private String remoteSecret;
 
-    /**
-     * Sets the remote secret string for authentication
-     *
-     * @param remoteSecret
-     */
-    @DesignerProperty()
-    @SimpleProperty
-    public void RemoteSecret(String remoteSecret) {
-        this.remoteSecret = remoteSecret;
+  /**
+   * Sets the remote secret string for authentication
+   *
+   * @param remoteSecret
+   */
+  @DesignerProperty()
+  @SimpleProperty
+  public void RemoteSecret(String remoteSecret) {
+    this.remoteSecret = remoteSecret;
+  }
+  
+  public synchronized boolean isConnected()
+  {
+    boolean isc = getTransport().isConnected();
+    if (!isc) {
+      Log.d(TAG, "isConnected called, but disconnected!");
+      getTransport().disconnect();
+      getTransport().connect();
     }
-    
-    public synchronized boolean isConnected()
-    {
-        boolean isc = getTransport().isConnected();
-        if (!isc) {
-            Log.d(TAG, "isConnected called, but disconnected!");
-            getTransport().disconnect();
-            getTransport().connect();
-        }
-        return isc;
-    }
+    return isc;
+  }
 
-    public UdooArduinoSensor(Form form)
-    {
-        super(form);
-        
-        Log.d("UDOOLIFECYCLE", "UdooArduino");
-        
-        form.registerForOnResume(this);
-        form.registerForOnDestroy(this);
-        
-        getTransport().onCreate(form);
-    }
+  public UdooArduinoSensor(Form form)
+  {
+    super(form);
     
-    @Override
-    public void onResume()
-    {
-        Log.d("UDOOLIFECYCLE", "onResume");
-        
-        this.isConnected(); //connects, if disconnected
-    }
+    Log.d("UDOOLIFECYCLE", "UdooArduino");
+    
+    form.registerForOnResume(this);
+    form.registerForOnDestroy(this);
+    
+    getTransport().onCreate(form);
+  }
+  
+  @Override
+  public void onResume()
+  {
+    Log.d("UDOOLIFECYCLE", "onResume");
+    
+    this.isConnected(); //connects, if disconnected
+  }
 
-    @Override
-    public void onDestroy()
-    {
-        Log.d("UDOOLIFECYCLE", "onDestroy");
-        
-        getTransport().disconnect();
-        getTransport().onDestroy();
-    }
+  @Override
+  public void onDestroy()
+  {
+    Log.d("UDOOLIFECYCLE", "onDestroy");
+    
+    getTransport().disconnect();
+    getTransport().onDestroy();
+  }
 
-    
-    
-
-    @SimpleFunction
-    public void ReadSensor(String pin)
-    {
-        if (this.isConnected()) {
-            try {
-                JSONObject response = getTransport().arduino().sensor(pin, "dht11");
-                this.DataReady(response.getInt("temperature"), response.getInt("humidity"));
-            } catch (Exception ex) {
-                Log.d(TAG, "Invalid JSON");
-            }
-        }
+  @SimpleFunction
+  public void ReadSensor(String pin)
+  {
+    if (this.isConnected()) {
+      try {
+        JSONObject response = getTransport().arduino().sensor(pin, "dht11");
+        this.DataReady(response.getInt("temperature"), response.getInt("humidity"));
+      } catch (Exception ex) {
+        Log.d(TAG, "Invalid JSON");
+      }
     }
+  }
+  
+  @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
+  public void Connected()
+  {
+    Log.d(TAG, "Connected EVENT");
+    EventDispatcher.dispatchEvent(this, "Connected");
+  }
+  
+  @SimpleEvent(description = "Fires when the Arduino returns the temperature and humidity.")
+  public void DataReady(int temperature, int humidity)
+  {
+    Log.d(TAG, "Data ready");
     
-    @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
-    public void Connected()
-    {
-        Log.d(TAG, "Connected EVENT");
-        EventDispatcher.dispatchEvent(this, "Connected");
+    EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
+  }
+  
+  private UdooConnectionInterface getTransport()
+  {
+    if (this.transport.equals("local")) {
+      return UdooAdkBroadcastReceiver.getInstance();
+    } else {
+      return UdooTcpRedirector.getInstance();
     }
-    
-    @SimpleEvent(description = "Fires when the Arduino returns the temperature and humidity.")
-    public void DataReady(int temperature, int humidity)
-    {
-        Log.d(TAG, "Data ready");
-        
-        EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
-    }
-    
-    private UdooConnectionInterface getTransport()
-    {
-        if (this.transport.equals("local")) {
-            return UdooAdkBroadcastReceiver.getInstance();
-        } else {
-            return UdooTcpRedirector.getInstance();
-        }
-    }
+  }
 }
