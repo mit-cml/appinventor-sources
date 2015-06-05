@@ -205,7 +205,7 @@ public class UdooArduinoManager
     JSONObject json = new JSONObject();
     try {
       json.put("sensor", sensorName);
-      json.put("pin", pin);
+      json.put("pin", pinNameToInt(pin));
     } catch (JSONException e) {
       e.printStackTrace();
     }
