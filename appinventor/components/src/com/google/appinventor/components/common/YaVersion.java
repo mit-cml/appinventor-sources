@@ -905,7 +905,6 @@ public class YaVersion {
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
 
-  public static final int UDOO_GPIO_COMPONENT_VERSION = 1;
   public static final int UDOO_ARDUINO_COMPONENT_VERSION = 1;
-  public static final int UDOO_ARDUINO_SENSOR_COMPONENT_VERSION = 1;
+  public static final int UDOO_TEMPERATURE_HUMIDITY_SENSOR_COMPONENT_VERSION = 1;
 }

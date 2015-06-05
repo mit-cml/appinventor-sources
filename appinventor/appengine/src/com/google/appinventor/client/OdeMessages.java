@@ -5499,4 +5499,8 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("RemoteSecret")
   @Description("")
   String RemoteSecretProperties();
+
+  @DefaultMessage("SensorType")
+  @Description("")
+  String SensorProperties();
 }

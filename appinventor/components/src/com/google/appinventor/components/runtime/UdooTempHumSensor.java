@@ -22,17 +22,18 @@ import org.json.JSONObject;
  *
  * @author francesco.monte@gmail.com
  */
-@DesignerComponent(version = YaVersion.UDOO_ARDUINO_SENSOR_COMPONENT_VERSION,
-    description = "A component that interfaces with sensors connected to UDOO boards.",
+@DesignerComponent(version = YaVersion.UDOO_TEMPERATURE_HUMIDITY_SENSOR_COMPONENT_VERSION,
+    description = "A component that interfaces with temperature/humidity sensors connected to UDOO boards.",
     category = ComponentCategory.UDOO,
     nonVisible = true,
     iconName = "images/udoo.png")
 @SimpleObject
-public class UdooArduinoSensor extends AndroidNonvisibleComponent
+public class UdooTempHumSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-  private String TAG = "UDOOArduinoSensorCmp";
+  private String TAG = "UdooTemperatureHumiditySensor";
   private UdooConnectionInterface connection = null;
+  private final String SENSOR_TYPE_DHT11 = "dht11";
 
   private String transport = "local";
 
@@ -96,6 +97,23 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.remoteSecret = remoteSecret;
   }
   
+  private String sensor = SENSOR_TYPE_DHT11;
+
+  /**
+   * Sets the transport property
+   *
+   * @param transport
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS,
+      defaultValue = SENSOR_TYPE_DHT11)
+  @SimpleProperty(
+      description = "Select the temperature/humidity sensor connected to your board.",
+      userVisible = false)
+  public void Sensor(String sensor) {
+    this.sensor = sensor;
+  }
+  
   public synchronized boolean isConnected()
   {
     boolean isc = getTransport().isConnected();
@@ -107,7 +125,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     return isc;
   }
 
-  public UdooArduinoSensor(Form form)
+  public UdooTempHumSensor(Form form)
   {
     super(form);
     
@@ -141,7 +159,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     if (this.isConnected()) {
       try {
-        JSONObject response = getTransport().arduino().sensor(pin, "dht11");
+        JSONObject response = getTransport().arduino().sensor(pin, this.sensor);
         this.DataReady(response.getInt("temperature"), response.getInt("humidity"));
       } catch (Exception ex) {
         Log.d(TAG, "Invalid JSON");

@@ -517,6 +517,18 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
         '<value name="ARG0"><block type="udoo_analog_pinout"><title name="UDOO_ANALOG_PINOUT">A0</title></block></value>' +
         '</block>' +
+        '</xml>';}},
+        
+    // UdooTempHumSensor.ReadSensor has default digital pinout
+    {matchingMutatorAttributes:{component_type:"UdooTempHumSensor", method_name:"ReadSensor"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+        Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+        '<value name="ARG0"><block type="udoo_digital_pinout"><title name="UDOO_DIGITAL_PINOUT">0</title></block></value>' +
+        '</block>' +
         '</xml>';}}
   ]
 };
