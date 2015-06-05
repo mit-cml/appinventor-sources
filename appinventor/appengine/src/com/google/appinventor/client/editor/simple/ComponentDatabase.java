@@ -100,6 +100,18 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     componentsJSONString = array.toJson();
   }
 
+  public void addComponent(JSONValue component) {
+    initComponent(component.asObject());
+
+    // append the String form of component to componentsJSONString
+    // which is the String form of a JSONArray
+    componentsJSONString =
+      componentsJSONString.subString(0, componentsJSONString.lastIndexOf(']'))
+      + ','
+      + component.asString()
+      + ']';
+  }
+
   @Override
   public Set<String> getComponentNames() {
     return components.keySet();
