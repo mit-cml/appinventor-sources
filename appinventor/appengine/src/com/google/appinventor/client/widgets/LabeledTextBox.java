@@ -70,7 +70,7 @@ public class LabeledTextBox extends Composite {
     VerticalPanel vp = new VerticalPanel();
     vp.add(panel);
     vp.add(errorPanel);
-    vp.setHeight("80px");
+    vp.setHeight("85px");
     
     initWidget(vp);
     

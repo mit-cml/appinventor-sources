@@ -141,11 +141,11 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     super.show();
     // Wizard size (having it resize between page changes is quite annoying)
     int width = 340;
-    int height = 85;
+    int height = 40;
     this.center();
 
     setPixelSize(width, height);
-    super.setPagePanelHeight(85);
+    super.setPagePanelHeight(95);
 
     DeferredCommand.addCommand(new Command() {
       public void execute() {
