@@ -71,7 +71,7 @@ public class FroyoUtil {
           case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
           case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
             // Focus loss transient: Pause playback
-            if (player != null && player.playerState == 2) {
+            if (player != null && player.playerState == Player.State.PLAYING) {
               player.pause();
               playbackFlag = true;
             }
@@ -83,7 +83,7 @@ public class FroyoUtil {
             break;
           case AudioManager.AUDIOFOCUS_GAIN:
             // Focus gain: Resume playback
-            if (player != null && playbackFlag && player.playerState == 4) {
+            if (player != null && playbackFlag && player.playerState == Player.State.PAUSED_BY_EVENT) {
               player.Start();
               playbackFlag = false;
             }
