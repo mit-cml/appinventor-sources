@@ -80,10 +80,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   // Maps component names to component descriptors
-  private final Map<String, Component> components;
+  private Map<String, Component> components;
 
   // Maps component names to component descriptors
-  private final String componentsJSONString;
+  private String componentsJSONString;
 
 
   /**
@@ -106,7 +106,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     // append the String form of component to componentsJSONString
     // which is the String form of a JSONArray
     componentsJSONString =
-      componentsJSONString.subString(0, componentsJSONString.lastIndexOf(']'))
+      componentsJSONString.substring(0, componentsJSONString.lastIndexOf(']'))
       + ','
       + component.asString()
       + ']';
