@@ -660,6 +660,7 @@ public class TopToolbar extends Composite {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       HTML message = new HTML(
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
+              "<BR/>With support for FIRST\u00AE Tech Challenge" + 
               "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
               "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
               "<BR/><BR/>" + termsOfServiceText
