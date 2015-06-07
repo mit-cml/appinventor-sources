@@ -57,6 +57,11 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+
 
 /**
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
@@ -804,7 +809,16 @@ public class TopToolbar extends Composite {
   private static class ImportComponentAction implements Command {
     @Override
     public void execute() {
-      // to be added
+      long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+      Ode.getInstance().getProjectService().load(currentProjectId, "ClockDotJson.json", new OdeAsyncCallback<String>() {
+        @Override
+        public void onSuccess(String result) {
+          SimpleComponentDatabase.getInstance().addComponent(new ClientJsonParser().parse(result));
+          YaProjectEditor editor = (YaProjectEditor) Ode.getInstance().getCurrentFileEditor().getProjectEditor();
+          YoungAndroidFormNode formNode = (YoungAndroidFormNode) Ode.getInstance().getCurrentYoungAndroidSourceNode();
+          editor.getFormFileEditor(formNode.getFormName()).getComponentPalettePanel().addComponent("Clock");
+        }
+      });
     }
   }
 
