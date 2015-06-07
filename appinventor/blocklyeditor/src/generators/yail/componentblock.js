@@ -38,19 +38,18 @@ Blockly.Yail.component_event = function() {
   if (this.isMulti) {
     header = Blockly.Yail.YAIL_DEFINE_MULTI_EVENT + eventName;
   } else {
-    var instanceName;
+    var instance;
     if (this.isGeneric) {
       var selector = this.getInputTargetBlock("COMPONENT");
-      console.log(selector);
-      instanceName = callPrefix = Blockly.Yail.YAIL_SPACER
+      instance = callPrefix = Blockly.Yail.YAIL_SPACER
         + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
         + Blockly.Yail.YAIL_SPACER;
     } else {
-      instanceName = this.instanceName;
+      instance = this.instanceName;
     }
-    var defineType = this.isGeneric ? Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT : Blockly.Yail.YAIL_DEFINE_EVENT;
+    var defineType = this.isGeneric ? Blockly.Yail.YAIL_SET_GENERIC_EVENT : Blockly.Yail.YAIL_DEFINE_EVENT;
     header = defineType
-      + instanceName
+      + instance
       + Blockly.Yail.YAIL_SPACER
       + eventName;
   }

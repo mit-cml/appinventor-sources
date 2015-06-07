@@ -681,7 +681,7 @@
                ;; If it's not the REPL the form's $define() method will do the registration
                (add-to-events 'component-name 'event-name)))))))
 
-(define-syntax define-generic-event
+(define-syntax set-generic-event!
   (syntax-rules ()
    ((_ component event-name (arg ...) expr ...)
     (begin
