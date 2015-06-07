@@ -56,7 +56,7 @@
     <property name="use.gcs" value="true" />
 
     <!-- Name of gallery bucket in Google Cloud Store -->
-    <property name="gallery.bucket" value="ftc-ai-1" />
+    <property name="gallery.bucket" value="" />
     <!-- Whether or not to use the gallery -->
     <property name="use.gallery" value="false" />
 
