@@ -24,6 +24,7 @@ import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
@@ -118,11 +119,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
   private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
-
-  private final long BIG_FILE = 5*1024*1024; // > 5MB is "big" used to determine if
-                                             // we can do a file upgrade during a normal
-                                             // user request or if we should only do it
-                                             // from the taskqueue
 
   private final boolean conversionEnabled = true; // We are converting GCS <=> Blobstore
 
@@ -1748,15 +1744,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
-
-
   @Override
   public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
-    return downloadRawFileInternal(userId, projectId, fileName, false);
-  }
-
-  public byte[] downloadRawFileInternal(final String userId, final long projectId,
-    final String fileName, final boolean fromTaskQueue) {
     validateGCS();
     if (!getProjects(userId).contains(projectId)) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -1807,12 +1796,16 @@ public class ObjectifyStorageIo implements  StorageIo {
                 recovered = true;
                 result.t = resultBuffer.array();
                 // Should we downgrade to the blobstore (for debugging)?
+                // Note: We only run if we have at least 5 seconds of runtime left in the request
+                long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
                 if (conversionEnabled && !useGcs &&
-                  (result.t.length < BIG_FILE || fromTaskQueue)) {
+                  (timeRemaining > 5000)) {
                   // Garf, Let's downgrade this file to the blobstore!
                   // This is used for debugging -- so we can retry upgrading by
                   // first downgrading!
                   // Note: uploadRawFile will do the work!
+                  LOG.log(Level.INFO, "Downgrading " + fileName + " with " +
+                    timeRemaining + " left on the clock.");
                   try {
                     uploadRawFile(projectId, fileName, userId, true /* force */,
                       result.t);
@@ -1854,10 +1847,15 @@ public class ObjectifyStorageIo implements  StorageIo {
       } else if (fileData.isBlob) {
         try {
           result.t = getBlobstoreBytes(fileData.blobstorePath);
+          // Time to consider upgrading this file if we are moving to GCS
+          // Note: We only run if we have at least 5 seconds of runtime left in the request
+          long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
           if (conversionEnabled && useGcs &&
-            ((result.t.length < BIG_FILE) || fromTaskQueue)) {
+            (timeRemaining > 5000)) {
             // Upgrade the file to use GCS
             // Note: uploadRawFile does the work for us!
+            LOG.log(Level.INFO, "Upgrading " + fileName + " with " +
+              timeRemaining + " left on the clock.");
             try {
               uploadRawFile(projectId, fileName, userId, true /* force */,
                 result.t);
@@ -2488,7 +2486,8 @@ public class ObjectifyStorageIo implements  StorageIo {
       (!userData.upgradedGCS && !useGcs))
       return;                   // All done.
     Queue queue = QueueFactory.getQueue("blobupgrade");
-    queue.add(TaskOptions.Builder.withUrl("/convert").param("user", userId));
+    queue.add(TaskOptions.Builder.withUrl("/convert").param("user", userId)
+      .etaMillis(System.currentTimeMillis() + 60000));
     return;
   }
 
@@ -2506,22 +2505,32 @@ public class ObjectifyStorageIo implements  StorageIo {
       for (FileData fd : datastore.query(FileData.class).ancestor(projectKey(projectId))) {
         if (fd.isBlob) {
           if (useGcs) {         // Let's convert by just reading it!
-            downloadRawFileInternal(userId, projectId, fd.fileName, true /* fromTaskQueue */);
+            downloadRawFile(userId, projectId, fd.fileName);
           }
         } else if (fd.isGCS) {
           if (!useGcs) {        // Let's downgrade by just reading it!
-            downloadRawFileInternal(userId, projectId, fd.fileName, true /* fromTaskQueue */);
+            downloadRawFile(userId, projectId, fd.fileName);
           }
         }
       }
     }
-    if (!anyFailed) {
-      datastore = ObjectifyService.beginTransaction();
-      userData = datastore.find(userKey(userId));
-      userData.upgradedGCS = useGcs;
-      datastore.put(userData);
-      datastore.getTxn().commit();
-    }
+
+    /*
+     * If we are running low on time, we may have not moved all files
+     * so exit now without marking the user as having been finished
+     */
+    if (ApiProxy.getCurrentEnvironment().getRemainingMillis() <= 5000)
+      return;
+
+    /* If anything failed, also return without marking user */
+    if (anyFailed)
+      return;
+
+    datastore = ObjectifyService.beginTransaction();
+    userData = datastore.find(userKey(userId));
+    userData.upgradedGCS = useGcs;
+    datastore.put(userData);
+    datastore.getTxn().commit();
   }
 
 }
