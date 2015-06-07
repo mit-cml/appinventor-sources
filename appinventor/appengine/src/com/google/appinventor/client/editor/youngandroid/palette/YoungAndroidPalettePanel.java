@@ -70,6 +70,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
 
+  private DropTargetProvider dropTargetProvider;
+
   /**
    * Creates a new component palette panel.
    *
@@ -136,6 +138,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           category);
       }
     }
+    this.dropTargetProvider = dropTargetProvider;
   }
 
   @Override
@@ -149,6 +152,23 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           createPropertyEditor(property.getEditorType()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
+    }
+  }
+
+  @Override
+  public void addComponent(String componentTypeName) {
+    String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
+    String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
+    Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
+    Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentTypeName);
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    ComponentCategory category = ComponentCategory.valueOf(categoryString);
+    if (showOnPalette && showCategory(category)) {
+      addPaletteItem(new SimplePaletteItem(
+        new SimpleComponentDescriptor(componentTypeName, editor, helpString,
+          categoryDocUrlString, showOnPalette, nonVisible),
+        dropTargetProvider),
+      category);
     }
   }
 

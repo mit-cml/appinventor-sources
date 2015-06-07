@@ -29,4 +29,6 @@ public interface SimplePalettePanel {
    * @param mockComponent  mock component to configure
    */
   void configureComponent(MockComponent mockComponent);
+
+  void addComponent(String componentTypeName);
 }
