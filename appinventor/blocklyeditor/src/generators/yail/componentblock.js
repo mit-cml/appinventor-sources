@@ -42,21 +42,17 @@ Blockly.Yail.component_event = function() {
     if (this.isGeneric) {
       var selector = this.getInputTargetBlock("COMPONENT");
       console.log(selector);
-      if (selector.type == "component_component_block") {
-        instanceName = selector.instanceName;
-      } else {
-        instanceName = callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD 
-                        + Blockly.Yail.valueToCode(selector, 'COMPONENT', Blockly.Yail.ORDER_NONE)
-                        + Blockly.Yail.YAIL_SPACER;
-      }
+      instanceName = callPrefix = Blockly.Yail.YAIL_SPACER
+        + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
+        + Blockly.Yail.YAIL_SPACER;
     } else {
       instanceName = this.instanceName;
     }
     var defineType = this.isGeneric ? Blockly.Yail.YAIL_DEFINE_GENERIC_EVENT : Blockly.Yail.YAIL_DEFINE_EVENT;
     header = defineType
-            + instanceName
-            + Blockly.Yail.YAIL_SPACER
-            + eventName;
+      + instanceName
+      + Blockly.Yail.YAIL_SPACER
+      + eventName;
   }
 
   var code = header
