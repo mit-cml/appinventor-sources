@@ -1310,6 +1310,7 @@ Blockly.Msg.en.switch_language_to_english = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generate Yail";
     Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Clear Error";
     Blockly.Msg.CAN_NOT_DO_IT = "Cannot Do it";
     Blockly.Msg.CONNECT_TO_DO_IT = 'You must be connected to the companion or emulator to use "Do It"';
   }
