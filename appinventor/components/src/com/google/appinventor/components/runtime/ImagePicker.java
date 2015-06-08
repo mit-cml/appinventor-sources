@@ -27,8 +27,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @DesignerComponent(version = YaVersion.IMAGEPICKER_COMPONENT_VERSION,
     description = "A special-purpose button. When the user taps an image picker, the " +
           "device's image gallery appears, and the user can choose an image. After an image is " +
-          "picked,the <code>Selected</code> property will be the path to the file containing the image that was selected" +
-          "the image that was selected",
+          "picked,the <code>Selected</code> property will be the path to the file containing the image that was selected",
     category = ComponentCategory.MEDIA)
 
 @SimpleObject
