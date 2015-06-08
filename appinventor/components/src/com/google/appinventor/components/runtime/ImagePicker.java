@@ -58,9 +58,8 @@ public class ImagePicker extends Picker implements ActivityResultListener {
 
   @Override
   protected Intent getIntent() {
-    Intent intent = new Intent(Intent.ACTION_PICK);
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     intent.setType("image/*");
-    intent.setAction(Intent.ACTION_GET_CONTENT);
     return intent;
   }
 
