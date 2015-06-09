@@ -1254,7 +1254,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     datastore.put(addedFiles); // batch put
     if (changeModDate) {
-      updateProjectModDate(datastore, projectId);
+      updateProjectModDate(datastore, projectId, false);
     }
   }
 
@@ -1327,7 +1327,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     datastore.delete(filesToRemove);  // batch delete
     if (changeModDate) {
-      updateProjectModDate(datastore, projectId);
+      updateProjectModDate(datastore, projectId, false);
     }
   }
 
@@ -1409,13 +1409,15 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
-  private long updateProjectModDate(Objectify datastore, long projectId) {
+  private long updateProjectModDate(Objectify datastore, long projectId, boolean doingConversion) {
     long modDate = System.currentTimeMillis();
     ProjectData pd = datastore.find(projectKey(projectId));
     if (pd != null) {
       // Only update the ProjectData dateModified if it is more then a minute
-      // in the future. Do this to avoid unnecessary datastore puts
-      if (modDate > (pd.dateModified + 1000*60)) {
+      // in the future. Do this to avoid unnecessary datastore puts.
+      // Also do not update modification time when doing conversion from
+      // blobstore to GCS
+      if ((modDate > (pd.dateModified + 1000*60)) && !doingConversion) {
         pd.dateModified = modDate;
         datastore.put(pd);
       } else {
@@ -1443,6 +1445,11 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public long uploadRawFile(final long projectId, final String fileName, final String userId,
       final boolean force, final byte[] content) throws BlocksTruncatedException {
+    return uploadRawFile(projectId, fileName, userId, force, content, false);
+  }
+
+  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+      final boolean force, final byte[] content, final boolean doingConversion) throws BlocksTruncatedException {
     validateGCS();
     final Result<Long> modTime = new Result<Long>();
     final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
@@ -1542,7 +1549,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.blobstorePath = null;
             fd.content = content;
           }
-          if (considerBackup) {
+          if (considerBackup && !doingConversion) {
             if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
               try {
                 String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
@@ -1559,7 +1566,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           datastore.put(fd);
           memcache.put(key.getString(), fd); // Store the updated data in memcache
-          modTime.t = updateProjectModDate(datastore, projectId);
+          modTime.t = updateProjectModDate(datastore, projectId, doingConversion);
         }
 
         @Override
@@ -1688,7 +1695,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
           }
           datastore.delete(fileKey);
-          modTime.t = updateProjectModDate(datastore, projectId);
+          modTime.t = updateProjectModDate(datastore, projectId, false);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1808,7 +1815,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                     timeRemaining + " left on the clock.");
                   try {
                     uploadRawFile(projectId, fileName, userId, true /* force */,
-                      result.t);
+                      result.t, true /* no project timestamp update */);
                   } catch (BlocksTruncatedException e) {
                     /* will never happen because force is true */
                   }
@@ -1858,7 +1865,7 @@ public class ObjectifyStorageIo implements  StorageIo {
               timeRemaining + " left on the clock.");
             try {
               uploadRawFile(projectId, fileName, userId, true /* force */,
-                result.t);
+                result.t, true /* no project timestamp update */);
             } catch (BlocksTruncatedException e) {
               /* will never happen because force is true */
             }
