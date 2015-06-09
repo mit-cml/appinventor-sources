@@ -522,17 +522,6 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // The Language designer property was removed
       // The Country designer property was removed
-      for (String property : new String[]{"Country", "Language"}) {
-        if (componentProperties.containsKey(property)){
-          String value = ((ClientJsonString)componentProperties.get(property)).getString();
-          String defaultValue = "";
-          if (value.equals(defaultValue)){
-            componentProperties.remove(property);
-          } else {
-            Window.alert(property.equals("Country") ? MESSAGES.countryRemoved() : MESSAGES.languageRemoved());
-          }
-        }
-      }
       srcCompVersion = 4;
     }
     return srcCompVersion;
