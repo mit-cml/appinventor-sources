@@ -155,6 +155,9 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     allLanguages = YailList.makeList(languageList);
     allCountries = YailList.makeList(countryList);
 
+    Log.d("TTS", Locale.getDefault().getCountry());
+    Log.d("TTS", Locale.getDefault().getLanguage());
+
   }
 
   /**
@@ -172,7 +175,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param language is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) language code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES,
+    defaultValue = Component.DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
@@ -288,7 +292,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param country is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) country code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_COUNTRIES)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_COUNTRIES,
+    defaultValue = Component.DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY)
   @SimpleProperty(description = "Country code to use for speech generation.  This can affect the " +
       "pronounciation.  For example, British English (GBR) will sound different from US English " +
       "(USA).  Not every country code will affect every language.",
