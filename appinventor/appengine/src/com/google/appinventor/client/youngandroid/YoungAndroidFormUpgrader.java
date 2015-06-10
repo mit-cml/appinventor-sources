@@ -520,8 +520,8 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 3;
     }
     if (srcCompVersion < 4) {
-      // The Language designer property was removed
-      // The Country designer property was removed
+      // the Country designer property was changed to use a ChoicePropertyEditor
+      // the Language designer property was changed to use a ChoicePropertyEditor
       srcCompVersion = 4;
     }
     return srcCompVersion;

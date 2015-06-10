@@ -1894,7 +1894,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // the AvailableCountries property was added
     3: "noUpgrade",
 
-    // The Country and Language designer properties were removed
+    // the Country designer property was changed to use a ChoicePropertyEditor
+    // the Language designer property was changed to use a ChoicePropertyEditor
     4: "noUpgrade"
 
   }, // End TextToSpeech upgraders
