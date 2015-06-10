@@ -3964,6 +3964,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotTextEvents();
 
+  @DefaultMessage("SetText")
+  @Description("")
+  String SetTextEvents();
+
   @DefaultMessage("AfterDateSet")
   @Description("")
   String AfterDateSetEvents();

@@ -125,6 +125,7 @@ public class TranslationComponentEvents {
     map.put("NoOpenPoll", MESSAGES.NoOpenPollEvents());
     map.put("GotFile", MESSAGES.GotFileEvents());
     map.put("GotText", MESSAGES.GotTextEvents());
+    map.put("SetText", MESSAGES.SetTextEvents());
     map.put("LongClick", MESSAGES.LongClickEvents());
     map.put("AfterDateSet", MESSAGES.AfterDateSetEvents());
     map.put("TagRead", MESSAGES.TagReadEvents());
