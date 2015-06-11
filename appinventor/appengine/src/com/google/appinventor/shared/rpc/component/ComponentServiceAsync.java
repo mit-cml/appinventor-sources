@@ -15,6 +15,6 @@ public interface ComponentServiceAsync {
   /**
    * @see ComponentService#getComponentRecords()
    */
-  void getComponentRecords(AsyncCallback<ComponentRecord> callback);
+  void getComponentRecords(AsyncCallback<List<ComponentRecord>> callback);
 
 }
