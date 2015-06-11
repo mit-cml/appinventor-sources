@@ -54,6 +54,8 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -243,6 +245,9 @@ public class Ode implements EntryPoint {
 
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
+
+  // Web service for component related operations
+  private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
 
   private boolean windowClosing;
 
@@ -1167,6 +1172,15 @@ public class Ode implements EntryPoint {
    */
   public LaunchServiceAsync getLaunchService() {
     return launchService;
+  }
+
+  /**
+   * Get an instance of the component web service.
+   *
+   * @return component web service instance
+   */
+  public ComponentServiceAsync getComponentService() {
+    return componentService;
   }
 
   /**
