@@ -227,11 +227,11 @@ public class File extends AndroidNonvisibleComponent implements Component {
           out.flush();
           out.close();
           fileWriter.close();
-          
+
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              SetText(text);
+              AfterText(text);
             }
           });
         } catch (IOException e) {
@@ -330,9 +330,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param text write to the file
    */
   @SimpleEvent (description = "Event indicating that the contents of the file have been written.")
-  public void SetText(String text) {
-    // invoke the application's "SetText" event handler.
-    EventDispatcher.dispatchEvent(this, "SetText", text);
+  public void AfterText(String text) {
+    // invoke the application's "AfterText" event handler.
+    EventDispatcher.dispatchEvent(this, "AfterText", text);
   }
 
   /**
