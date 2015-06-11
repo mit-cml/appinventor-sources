@@ -2415,7 +2415,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   // explains how.
 
   private void validateGCS() {
-    if (GCS_BUCKET_NAME.equals("")) {
+    if (useGcs && GCS_BUCKET_NAME.equals("")) {
       try {
         throw new RuntimeException("You need to configure the default GCS Bucket for your App. " +
           "Follow instructions in the App Engine Developer's Documentation");
