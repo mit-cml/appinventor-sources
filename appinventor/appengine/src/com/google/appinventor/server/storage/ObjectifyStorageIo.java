@@ -1448,7 +1448,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     return uploadRawFile(projectId, fileName, userId, force, content, false);
   }
 
-  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+  private long uploadRawFile(final long projectId, final String fileName, final String userId,
       final boolean force, final byte[] content, final boolean doingConversion) throws BlocksTruncatedException {
     validateGCS();
     final Result<Long> modTime = new Result<Long>();
@@ -1524,8 +1524,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                 try {
                   gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
                 } catch (IOException e) {
-                throw CrashReport.createAndLogError(LOG, null,
-                  collectProjectErrorInfo(userId, projectId, fileName), e);
+                  throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
                 }
               fd.gcsName = null;
               fd.isGCS = false;
