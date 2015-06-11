@@ -1520,13 +1520,14 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.isBlob = true;
             fd.content = null;
             if (fd.isGCS) { // If the content was previously stored in GCS, clear it out.
-              if (fd.gcsName != null)
+              if (fd.gcsName != null) {
                 try {
                   gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
                 } catch (IOException e) {
                   throw CrashReport.createAndLogError(LOG, null,
                     collectProjectErrorInfo(userId, projectId, fileName), e);
                 }
+              }
               fd.gcsName = null;
               fd.isGCS = false;
             }
@@ -1805,8 +1806,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                 // Should we downgrade to the blobstore (for debugging)?
                 // Note: We only run if we have at least 5 seconds of runtime left in the request
                 long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
-                if (conversionEnabled && !useGcs &&
-                  (timeRemaining > 5000)) {
+                if (conversionEnabled && !useGcs && (timeRemaining > 5000)) {
                   // Garf, Let's downgrade this file to the blobstore!
                   // This is used for debugging -- so we can retry upgrading by
                   // first downgrading!
@@ -1857,8 +1857,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           // Time to consider upgrading this file if we are moving to GCS
           // Note: We only run if we have at least 5 seconds of runtime left in the request
           long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
-          if (conversionEnabled && useGcs &&
-            (timeRemaining > 5000)) {
+          if (conversionEnabled && useGcs && (timeRemaining > 5000)) {
             // Upgrade the file to use GCS
             // Note: uploadRawFile does the work for us!
             LOG.log(Level.INFO, "Upgrading " + fileName + " with " +

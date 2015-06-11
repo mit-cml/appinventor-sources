@@ -576,6 +576,6 @@ public interface StorageIo {
   // if so, add task to task queue
   void checkUpgrade(String userId);
 
-  // Called by the task queue to actually upgrade a project
+  // Called by the task queue to actually upgrade user's projects
   void doUpgrade(String userId);
 }
