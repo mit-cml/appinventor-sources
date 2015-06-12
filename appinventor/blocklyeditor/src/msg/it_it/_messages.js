@@ -579,7 +579,6 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE = 'Trasforma in minuscolo.';
     Blockly.Msg.LANG_TEXT_CHANGECASE_HELPURL_DOWNCASE = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#downcase';
 
-
     Blockly.Msg.LANG_TEXT_TRIM_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#trim';
     Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM = 'taglia';
     Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP = 'Restituisce una copia del testo con tutti\n'
@@ -599,6 +598,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_PIECE = 'segmento';
     Blockly.Msg.LANG_TEXT_CONTAINS_INPUT = 'contiene il testo %1 segmento %2';
     Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP = 'Controlla se il segmento è contenuto nel testo.';
+
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL = '';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT = 'testo';
     Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT = 'a';
@@ -615,8 +615,6 @@ Blockly.Msg.it_it.switch_language_to_italian = {
         + '"banana,ciliegia,cibo per gatti". \n'
         + 'da notare che la virgola dopo "mela" non apparirà nel risultato, \n'
         + 'perchè rappresenta il punto di divisione.';
-
-
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divide il testo in due elementi di una lista, usando la prima ricorrenza di ogni elemento \n'
         + 'nella lista \'lista\' come punto di divisione. \n\n'
@@ -627,7 +625,6 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divide il testo un più pezzi usando il testo \'ogni\' come punto di divisione e produce una lista con i risultati. \n'
         + 'Dividendo "uno,due,tre,quattro" ogni "," (virgola) risulterà una lista “(uno due tre quattro)”. \n'
         + 'Dividendo "una-patata,due-patate,tre-patate,quattro" ogni "-patata", verrà prodotta la lista “(uno due tre quattro)”.'
-
     Blockly.Msg.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
     Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divide il testo in una lista, usando ogni elemento della lista \'lista\' come \n'
         + 'punto di divisione, e riporta una lista con i risultati. \n'
@@ -669,6 +666,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = 'sostituisce tutto il testo %1 segmento %2 rimpiazzo %3';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Riporta un nuovo testo ottenuto dalla sostituzione\n'
         + 'del segmento con il rimpiazzo.';
+
 // Lists Blocks.
     Blockly.Msg.LANG_CATEGORY_LISTS = 'Liste';
 //Blockly.Msg.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list#Empty_lists';
@@ -684,6 +682,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
 
     Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TITLE = 'elemento';
     Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP = 'Aggiungi un elemento alla lista.';
+
     Blockly.Msg.LANG_LISTS_ADD_ITEM_TITLE = 'elemento';
     Blockly.Msg.LANG_LISTS_ADD_ITEM_TOOLTIP = 'Aggiungi un elemento alla lista.';
     Blockly.Msg.LANG_LISTS_ADD_ITEM_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#additems';
@@ -702,6 +701,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT = 'è nella lista? contenuto %1 lista %2'
     Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = 'Riporta vero se il contenuto è un elemento della lista, e '
         + 'falso se non lo è.';
+
    Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#indexinlist';
     Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'indice nella lista';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_THING = 'contenuto';
@@ -846,7 +846,6 @@ Blockly.Msg.it_it.switch_language_to_italian = {
      Blockly.Msg.LANG_LISTS_SET_INDEX_INPUT_IN_LIST = 'nella lista';
      Blockly.Msg.LANG_LISTS_SET_INDEX_INPUT_TO = 'a';
      Blockly.Msg.LANG_LISTS_SET_INDEX_TOOLTIP = 'Imposta il valore nella posizione specificata in una lista.';*/
-
 
  // Variables Blocks.
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#global';
@@ -1247,8 +1246,6 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.MISSING_SOCKETS_WARNINGS = "Devi inserire un blocco in ogni slot";
     Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS = "Questo blocco può essere connesso solamente ad un blocco evento o ad una procedura definita";
 
-
-
 // Messages from replmgr.js
     Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Errore dall\'app Companion";
     Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR = "Errore di connessione rete";
@@ -1281,7 +1278,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.REPL_CANCEL = "Annulla";
     Blockly.Msg.REPL_GIVE_UP = "Abbandona";
     Blockly.Msg.REPL_KEEP_TRYING = "Continua a provare";
-    Blockly.Msg.REPL_CONNECTION_FAILURE1 = "Connwssione fallita";
+    Blockly.Msg.REPL_CONNECTION_FAILURE1 = "Connessione fallita";
     Blockly.Msg.REPL_NO_START_EMULATOR = "Non è stato possibile avviare l\'app Companion dall\'emulatore";
     Blockly.Msg.REPL_PLUGGED_IN_Q = "Siete collegati?";
     Blockly.Msg.REPL_AI_NO_SEE_DEVICE = "AI2 non rileva il tuo dispositivo, controlla che il cavo sia collegato ed i driver siano quelli corretti.";
@@ -1306,6 +1303,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "Generazione Yail";
     Blockly.Msg.DO_IT = "Esegui";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Rimuovi Errore";
     Blockly.Msg.CAN_NOT_DO_IT = "Impossibile eseguire";
     Blockly.Msg.CONNECT_TO_DO_IT = 'Devi essere connesso all\'app companion o all\'emulatore per usare "Esegui"';
 
