@@ -36,6 +36,13 @@ public class ServerLayout {
 
   /**
    * Relative path of the
+   * {@link com.google.appinventor.server.component.ComponentService} within
+   * the ODE GWT module.
+   */
+  public static final String COMPONENT_SERVICE = "components";
+
+  /**
+   * Relative path of the
    * {@link com.google.appinventor.shared.rpc.project.ProjectService} within
    * the ODE GWT module.
    */
