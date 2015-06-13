@@ -113,6 +113,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
   private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
   private static final String WIDGET_NAME_INSTALL_COMPONENT = "InstallComponent";
+  private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
@@ -185,6 +186,8 @@ public class TopToolbar extends Composite {
         new BuildComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_INSTALL_COMPONENT, MESSAGES.installComponentMenuItem(),
         new InstallComponentAction()));
+    componentItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_COMPONENT, MESSAGES.uploadComponentMenuItem(),
+        new UploadComponentAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
@@ -816,6 +819,13 @@ public class TopToolbar extends Composite {
   }
 
   private static class InstallComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class UploadComponentAction implements Command {
     @Override
     public void execute() {
       // to be added

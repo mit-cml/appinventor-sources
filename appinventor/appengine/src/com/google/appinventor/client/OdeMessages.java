@@ -513,6 +513,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Install component menuitem")
   String installComponentMenuItem();
 
+  @DefaultMessage("Upload component")
+  @Description("Name of Upload component menuitem")
+  String uploadComponentMenuItem();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
