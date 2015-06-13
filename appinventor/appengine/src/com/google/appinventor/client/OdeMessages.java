@@ -501,7 +501,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of Start new component menuitem")
   String startNewComponentMenuItem();
 
-  @DefaultMessage("Import component")
+  @DefaultMessage("Import component (.aix) to project ...")
   @Description("Name of Import component menuitem")
   String importComponentMenuItem();
 
