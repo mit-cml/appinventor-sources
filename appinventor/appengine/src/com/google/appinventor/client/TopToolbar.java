@@ -183,7 +183,7 @@ public class TopToolbar extends Composite {
         new ImportComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
         new BuildComponentAction()));
-    componentItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.installComponentMenuItem(),
+    componentItems.add(new DropDownItem(WIDGET_NAME_INSTALL_COMPONENT, MESSAGES.installComponentMenuItem(),
         new InstallComponentAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
