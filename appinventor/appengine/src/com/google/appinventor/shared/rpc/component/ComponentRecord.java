@@ -6,14 +6,20 @@
 
 package com.google.appinventor.shared.rpc.component;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * The representation of database records
  * for .aix files uploaded to the author's directory
  */
-public class ComponentRecord {
+public class ComponentRecord implements IsSerializable {
 
     private String name;
     private int version;
+
+    private ComponentRecord() {
+      // no-op
+    }
 
     public ComponentRecord(String name, int version) {
       this.name = name;
@@ -27,4 +33,4 @@ public class ComponentRecord {
     public int getVersion() {
       return version;
     }
-  }
+}
