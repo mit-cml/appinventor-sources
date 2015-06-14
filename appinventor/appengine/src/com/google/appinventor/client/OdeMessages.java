@@ -5174,12 +5174,12 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("<p>You don\"t have any projects in App Inventor 2 yet. " +
+  @DefaultMessage("<p>You do not have any projects in App Inventor 2 yet. " +
       "To learn how to use App Inventor, click the \"Guide\" " +
       "link at the upper right of the window; or to start your first project, " +
       "click the \"New\" button at the upper left of the window.</p>\n<p>" +
       "<strong>Where did my projects go?</strong> " +
-      "If you had projects but now they\"re missing, " +
+      "If you had projects but now they are missing, " +
       "you are probably looking for App Inventor version 1. " +
       "It\"s still available here: " +
       "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
@@ -5299,7 +5299,7 @@ public interface OdeMessages extends Messages {
                 "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
                 "the result of a bug in our system.</p><p>" +
                 "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
-                "<li>Select \"No, Don\"t Save\" below to restore the previously saved version</li></ul></p>")
+                "<li>Select \"No, Do Not Save\" below to restore the previously saved version</li></ul></p>")
   @Description("")
   String blocksTruncatedDialogMessage();
 
@@ -5307,7 +5307,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String blocksTruncatedDialogButtonSave();
 
-  @DefaultMessage("No, Don\"t Save")
+  @DefaultMessage("No, Do Not Save")
   @Description("")
   String blocksTruncatedDialogButtonNoSave();
 
