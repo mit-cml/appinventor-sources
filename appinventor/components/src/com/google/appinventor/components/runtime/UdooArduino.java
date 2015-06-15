@@ -14,6 +14,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 
 /**
@@ -207,7 +208,13 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   private UdooConnectionInterface getTransport()
   {
     if (this.connection == null) {
-      this.connection = UdooConnectionFactory.getConnection(this.transport, this.remoteAddress, this.remotePort, this.remoteSecret);
+      try {
+        this.connection = UdooConnectionFactory.getConnection(this.transport, this.remoteAddress, this.remotePort, this.remoteSecret);
+      } catch (Exception ex) {
+        if (ex.getMessage().equals("ADK unavailable")) {
+          form.dispatchErrorOccurredEvent(this, "getTransport", ErrorMessages.ERROR_UDOO_ADK_UNAVAILABLE);
+        }
+      }
       this.connection.registerComponent(this);
     }
     return this.connection;

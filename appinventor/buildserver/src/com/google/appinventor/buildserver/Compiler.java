@@ -360,12 +360,8 @@ public final class Compiler {
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
-      int minSdkVersion = 3;
-      if (isUdoo) {
-        minSdkVersion = 12;
-      }
-      out.write("  <uses-sdk android:minSdkVersion=\""+ minSdkVersion +"\" />\n");
-
+      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+      
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
       // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
@@ -434,12 +430,12 @@ public final class Compiler {
         }
         out.write("      </intent-filter>\n");
 
-        if (isUdoo) {
+        if (isMain && isUdoo) {
           out.write("<intent-filter>");
-          out.write("  <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />");
-          out.write("  <action android:name=\"android.hardware.usb.action.USB_DEVICE_DETACHED\" />");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_ACCESSORY_ATTACHED\" />");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_ACCESSORY_DETACHED\" />");
           out.write("</intent-filter>");
-          out.write("<meta-data android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" android:resource=\"@xml/accessory_filter\"/>");
+          out.write("<meta-data android:name=\"android.hardware.usb.action.USB_ACCESSORY_ATTACHED\" android:resource=\"@xml/accessory_filter\"/>");
         }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {

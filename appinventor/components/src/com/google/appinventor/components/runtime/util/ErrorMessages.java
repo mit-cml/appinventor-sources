@@ -61,6 +61,8 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_COLOR = 417;
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
+  // UDOO errors
+  public static final int ERROR_UDOO_ADK_UNAVAILABLE = 450;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
