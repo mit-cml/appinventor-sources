@@ -1286,6 +1286,7 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "生成 Yail";
     Blockly.Msg.DO_IT = "预览代码块功能";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "清除錯誤";
     Blockly.Msg.CAN_NOT_DO_IT = "不能预览代码块功能";
     Blockly.Msg.CONNECT_TO_DO_IT = '你必须要连接AI伴侣或者模拟器才能使用"预览代码块功能"';
   }
