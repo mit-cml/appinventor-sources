@@ -94,6 +94,15 @@ public interface GalleryService extends RemoteService {
   GalleryAppListResult getMostDownloadedApps(int start, int count);
 
   /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  GalleryAppListResult getMostLikedApps(int start, int count);
+
+  /**
    * Returns a wrapped class which contains a list of featured gallery app
    * @param start start index
    * @param count count number
@@ -191,6 +200,16 @@ public interface GalleryService extends RemoteService {
   boolean isLikedByUser(long galleryId);
 
   /**
+   * salvage the gallery app by given galleryId
+   */
+  void salvageGalleryApp(long galleryId);
+
+  /**
+   * salvage all gallery app
+   */
+  void salvageAllGalleryApps();
+
+  /**
   * adds a report (flag) to a gallery app
   * @param app app that is being reported
   * @param reportText the report
@@ -204,7 +223,7 @@ public interface GalleryService extends RemoteService {
   * @param count number to retrieve
   * @return the list of reports
   */
-  List<GalleryAppReport> getRecentReports(int start, int count);
+  GalleryReportListResult getRecentReports(int start, int count);
 
   /**
   * gets existing reports
@@ -212,7 +231,7 @@ public interface GalleryService extends RemoteService {
   * @param count number to retrieve
   * @return the list of reports
   */
-  List<GalleryAppReport> getAllAppReports(int start, int count);
+  GalleryReportListResult getAllAppReports(int start, int count);
 
   /**
   * check if an app is reported by a user

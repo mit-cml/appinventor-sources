@@ -38,6 +38,7 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
+import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -237,6 +238,18 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  @Override
+  public GalleryAppListResult getMostLikedApps(int start, int count) {
+    return galleryStorageIo.getMostLikedApps(start,count);
+  }
+
+  /**
    * Deletes a new gallery app
    * @param galleryId id of app to delete
    */
@@ -326,6 +339,22 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * salvage the gallery app by given galleryId
+   */
+  @Override
+  public void salvageGalleryApp(long galleryId) {
+    galleryStorageIo.salvageGalleryApp(galleryId);
+  }
+
+  /**
+   * salvage all gallery app
+   */
+  @Override
+  public void salvageAllGalleryApps() {
+    galleryStorageIo.salvageAllGalleryApps();
+  }
+
+  /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
    * @param report report
@@ -345,7 +374,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   * @return the list of reports
   */
   @Override
-  public List<GalleryAppReport> getRecentReports(int start, int count) {
+  public GalleryReportListResult getRecentReports(int start, int count) {
     return galleryStorageIo.getAppReports(start,count);
 
   }
@@ -356,7 +385,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   * @return the list of reports
   */
   @Override
-  public List<GalleryAppReport> getAllAppReports(int start, int count){
+  public GalleryReportListResult getAllAppReports(int start, int count){
     return galleryStorageIo.getAllAppReports(start,count);
   }
 

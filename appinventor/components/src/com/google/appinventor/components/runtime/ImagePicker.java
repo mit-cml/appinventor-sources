@@ -42,7 +42,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @DesignerComponent(version = YaVersion.IMAGEPICKER_COMPONENT_VERSION,
     description = "A special-purpose button. When the user taps an image picker, the " +
           "device's image gallery appears, and the user can choose an image. After an image is " +
-          "picked, it is saved on the SD card and the <code>ImageFile</code> " +
+          "picked, it is saved, and the <code>Selected</code> " +
           "property will be the name of the file where the image is stored. In order to not " +
           "fill up storage, a maximum of 10 images will be stored.  Picking more images " +
           "will delete previous images, in order from oldest to newest.",
@@ -53,19 +53,19 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 public class ImagePicker extends Picker implements ActivityResultListener {
 
   private static final String LOG_TAG = "ImagePicker";
-  
+
   // directory on external storage for storing the files for the saved images
   private static final String imagePickerDirectoryName = "/Pictures/_app_inventor_image_picker";
-  
+
   // prefix for image file names
   private static final String FILE_PREFIX = "picked_image";
-  
+
  // max number of files to save in image directory
   private static int maxSavedFiles = 10;
-  
+
   // The media path (URI) for the selected image file created by MediaUtil
   private String selectionURI;
-  
+
   // The path to the saved image
   private String selectionSavedImage = "";
 
@@ -86,7 +86,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   public String Selection() {
     return selectionSavedImage;
   }
-  
+
   @Override
   protected Intent getIntent() {
     return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
@@ -105,20 +105,20 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       Uri selectedImage = data.getData();
       selectionURI = selectedImage.toString();
       Log.i(LOG_TAG, "selectionURI = " + selectionURI);
-      
+
       // get the file type extension from the intent data Uri
       ContentResolver cR = container.$context().getContentResolver();
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String extension = "." + mime.getExtensionFromMimeType(cR.getType(selectedImage));
       Log.i(LOG_TAG, "extension = " + extension);
-      
-      // save the image to a temp file in external storage, using a name 
+
+      // save the image to a temp file in external storage, using a name
       // that includes the extension
       saveSelectedImageToExternalStorage(extension);
       AfterPicking();
     }
   }
-  
+
   private void saveSelectedImageToExternalStorage(String extension) {
     // clear imageFile for new save attempt
     // This will be the stored picture
@@ -126,7 +126,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
     // create a temp file for holding the image that was picked
     // This is not the external stored file: This is in the internal directory used by MediaUtil
     File tempFile = null;
-    
+
     // copy the picture at the image URI to the temp file
     try {
       tempFile = MediaUtil.copyMediaToTempFile(container.$form(), selectionURI);
@@ -136,7 +136,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
           ErrorMessages.ERROR_CANNOT_COPY_MEDIA, e.getMessage());
       return;
     }
-    
+
     // copy the temp file to external storage
     Log.i(LOG_TAG, "temp file path is: " + tempFile.getPath());
     // Copy file will signal a screen error if the copy fails.
@@ -160,7 +160,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       // Uncomment this to delete imageFile when the application stops
       // dest.deleteOnExit();
       Log.i(LOG_TAG, "saved file path is: " + selectionSavedImage);
-      
+
       inStream = new FileInputStream(source);
       outStream = new FileOutputStream(dest);
 
@@ -187,13 +187,13 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       selectionSavedImage = "";
       dest.delete();
     }
-    
+
     // clean up the temp file.  This isn't critical because MudiaUtil.copyMediaToTempFile
     // marks this with deleteOnExit, but it's nice to clean up here.
     source.delete();
     trimDirectory(maxSavedFiles, destDirectory);
   }
-  
+
   // keep only the last N files, where N = maxSavedFiles
   private void trimDirectory(int maxSavedFiles, File directory) {
 
@@ -204,12 +204,12 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       {
         return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
       } });
-    
+
     int excess = files.length - maxSavedFiles;
     for (int i = 0; i < excess; i++) {
       files[i].delete();
     }
 
   }
-  
+
 }

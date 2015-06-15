@@ -6,6 +6,9 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appengine.api.appidentity.AppIdentityService;
+import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
+import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
@@ -17,6 +20,11 @@ import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
@@ -106,12 +114,13 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   private final GcsService gcsService;
 
-  private final String GCS_BUCKET_NAME = Flag.createFlag("gcs.bucket", "").get();
+  private static final String GCS_BUCKET_NAME;
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
   private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
 
+  private final boolean conversionEnabled = true; // We are converting GCS <=> Blobstore
 
   // Use this class to define the work of a job that can be
   // retried. The "datastore" argument to run() is the Objectify
@@ -166,6 +175,27 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
     ObjectifyService.register(CorruptionRecord.class);
+
+    // Learn GCS Bucket from App Configuration or App Engine Default
+    String gcsBucket = Flag.createFlag("gcs.bucket", "").get();
+    if (gcsBucket.equals("")) { // Attempt to get default bucket
+                                // from AppIdentity Service
+      AppIdentityService appIdentity = AppIdentityServiceFactory.getAppIdentityService();
+      try {
+        gcsBucket = appIdentity.getDefaultGcsBucketName();
+      } catch (AppIdentityServiceFailureException e) {
+        // We get this exception when we are running on an App Engine instance
+        // created before App Engine version 1.9.0 and we have neither configured
+        // the GCS bucket in appengine-web.xml or used the App Engine console to
+        // create the default bucket. The Default Bucket is a better approach for
+        // personal instances because they have a default free quota of 5 Gb (as
+        // of 5/29/2015 when this code was written).
+        gcsBucket = ""; // This will cause a RunTimeException in the RPC code later
+                        // which will log a better message
+      }
+      LOG.log(Level.INFO, "Default GCS Bucket Configured from App Identity: " + gcsBucket);
+    }
+    GCS_BUCKET_NAME = gcsBucket;
   }
 
   ObjectifyStorageIo() {
@@ -625,6 +655,7 @@ public class ObjectifyStorageIo implements  StorageIo {
    */
   private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
     String fileName, byte[] content) throws BlobWriteException, ObjectifyException, IOException {
+    validateGCS();
     FileData file = new FileData();
     file.fileName = fileName;
     file.projectKey = projectKey;
@@ -647,6 +678,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void deleteProject(final String userId, final long projectId) {
+    validateGCS();
     // blobs associated with the project
     final List<String> blobPaths = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
@@ -1222,7 +1254,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     datastore.put(addedFiles); // batch put
     if (changeModDate) {
-      updateProjectModDate(datastore, projectId);
+      updateProjectModDate(datastore, projectId, false);
     }
   }
 
@@ -1295,7 +1327,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     datastore.delete(filesToRemove);  // batch delete
     if (changeModDate) {
-      updateProjectModDate(datastore, projectId);
+      updateProjectModDate(datastore, projectId, false);
     }
   }
 
@@ -1377,13 +1409,15 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
-  private long updateProjectModDate(Objectify datastore, long projectId) {
+  private long updateProjectModDate(Objectify datastore, long projectId, boolean doingConversion) {
     long modDate = System.currentTimeMillis();
     ProjectData pd = datastore.find(projectKey(projectId));
     if (pd != null) {
       // Only update the ProjectData dateModified if it is more then a minute
-      // in the future. Do this to avoid unnecessary datastore puts
-      if (modDate > (pd.dateModified + 1000*60)) {
+      // in the future. Do this to avoid unnecessary datastore puts.
+      // Also do not update modification time when doing conversion from
+      // blobstore to GCS
+      if ((modDate > (pd.dateModified + 1000*60)) && !doingConversion) {
         pd.dateModified = modDate;
         datastore.put(pd);
       } else {
@@ -1411,6 +1445,12 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public long uploadRawFile(final long projectId, final String fileName, final String userId,
       final boolean force, final byte[] content) throws BlocksTruncatedException {
+    return uploadRawFile(projectId, fileName, userId, force, content, false);
+  }
+
+  private long uploadRawFile(final long projectId, final String fileName, final String userId,
+      final boolean force, final byte[] content, final boolean doingConversion) throws BlocksTruncatedException {
+    validateGCS();
     final Result<Long> modTime = new Result<Long>();
     final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
     final boolean useGCS = useGCSforFile(fileName, content.length);
@@ -1477,11 +1517,20 @@ public class ObjectifyStorageIo implements  StorageIo {
               throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId, fileName), e);
             }
-            // If the content was previously stored in the datastore or GCS, clear it out.
             fd.isBlob = true;
-            fd.isGCS = false;
-            fd.gcsName = null;
             fd.content = null;
+            if (fd.isGCS) { // If the content was previously stored in GCS, clear it out.
+              if (fd.gcsName != null) {
+                try {
+                  gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
+                } catch (IOException e) {
+                  throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+                }
+              }
+              fd.gcsName = null;
+              fd.isGCS = false;
+            }
           } else {
             if (fd.isGCS) {     // Was a GCS file, must have gotten smaller
               try {             // and is now stored in the data store
@@ -1501,7 +1550,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.blobstorePath = null;
             fd.content = content;
           }
-          if (considerBackup) {
+          if (considerBackup && !doingConversion) {
             if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
               try {
                 String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
@@ -1518,7 +1567,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           datastore.put(fd);
           memcache.put(key.getString(), fd); // Store the updated data in memcache
-          modTime.t = updateProjectModDate(datastore, projectId);
+          modTime.t = updateProjectModDate(datastore, projectId, doingConversion);
         }
 
         @Override
@@ -1624,6 +1673,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public long deleteFile(final String userId, final long projectId, final String fileName) {
+    validateGCS();
     if (!getProjects(userId).contains(projectId)) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId),
@@ -1646,7 +1696,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
           }
           datastore.delete(fileKey);
-          modTime.t = updateProjectModDate(datastore, projectId);
+          modTime.t = updateProjectModDate(datastore, projectId, false);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1704,6 +1754,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
+    validateGCS();
     if (!getProjects(userId).contains(projectId)) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId),
@@ -1752,6 +1803,24 @@ public class ObjectifyStorageIo implements  StorageIo {
                 }
                 recovered = true;
                 result.t = resultBuffer.array();
+                // Should we downgrade to the blobstore (for debugging)?
+                // Note: We only run if we have at least 5 seconds of runtime left in the request
+                long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
+                if (conversionEnabled && !useGcs && (timeRemaining > 5000)) {
+                  // Garf, Let's downgrade this file to the blobstore!
+                  // This is used for debugging -- so we can retry upgrading by
+                  // first downgrading!
+                  // Note: uploadRawFile will do the work!
+                  LOG.log(Level.INFO, "Downgrading " + fileName + " with " +
+                    timeRemaining + " left on the clock.");
+                  try {
+                    uploadRawFile(projectId, fileName, userId, true /* force */,
+                      result.t, true /* no project timestamp update */);
+                  } catch (BlocksTruncatedException e) {
+                    /* will never happen because force is true */
+                  }
+                }
+
                 break;          // We got the data, break out of the loop!
               } finally {
                 readChannel.close();
@@ -1785,6 +1854,21 @@ public class ObjectifyStorageIo implements  StorageIo {
       } else if (fileData.isBlob) {
         try {
           result.t = getBlobstoreBytes(fileData.blobstorePath);
+          // Time to consider upgrading this file if we are moving to GCS
+          // Note: We only run if we have at least 5 seconds of runtime left in the request
+          long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
+          if (conversionEnabled && useGcs && (timeRemaining > 5000)) {
+            // Upgrade the file to use GCS
+            // Note: uploadRawFile does the work for us!
+            LOG.log(Level.INFO, "Upgrading " + fileName + " with " +
+              timeRemaining + " left on the clock.");
+            try {
+              uploadRawFile(projectId, fileName, userId, true /* force */,
+                result.t, true /* no project timestamp update */);
+            } catch (BlocksTruncatedException e) {
+              /* will never happen because force is true */
+            }
+          }
         } catch (BlobReadException e) {
           throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1838,6 +1922,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                                                  final boolean includeAndroidKeystore,
                                                  @Nullable String zipName,
                                                  final boolean fatalError) throws IOException {
+    validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
     final Result<String> projectHistory = new Result<String>();
@@ -2373,6 +2458,85 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw new ObjectifyException("BlocksTruncated"); // Hack
     // I'm avoiding having to modify every use of runJobWithRetries to handle a new
     // exception, so we use this dodge.
+  }
+
+  // Make sure we throw an exception if the GCS bucket isn't defined. This hopefully
+  // will prompt the person deploying App Inventor to check the server logs and see
+  // the message below.
+  //
+  // This only happens when deploying code that uses GCS but doesn't specify a bucket
+  // name in appengine-web.xml *AND* the instance was created before App Engine version
+  // 1.9.0. Apps created after 1.9.0 automatically have a default bucket created for
+  // them. Older Apps can configure a default bucket. The App Engine documentation
+  // explains how.
+
+  private void validateGCS() {
+    if (useGcs && GCS_BUCKET_NAME.equals("")) {
+      try {
+        throw new RuntimeException("You need to configure the default GCS Bucket for your App. " +
+          "Follow instructions in the App Engine Developer's Documentation");
+      } catch (RuntimeException e) {
+        throw CrashReport.createAndLogError(LOG, null, null, e);
+      }
+    }
+  }
+
+  // See if this person needs to have their projects upgraded and if so
+  // add a task to the task queue to take care of it
+  public void checkUpgrade(String userId) {
+    if (!conversionEnabled)     // Unless conversion is enabled...
+      return;
+    Objectify datastore = ObjectifyService.begin();
+    UserData userData = datastore.find(userKey(userId));
+    if ((userData.upgradedGCS && useGcs) ||
+      (!userData.upgradedGCS && !useGcs))
+      return;                   // All done.
+    Queue queue = QueueFactory.getQueue("blobupgrade");
+    queue.add(TaskOptions.Builder.withUrl("/convert").param("user", userId)
+      .etaMillis(System.currentTimeMillis() + 60000));
+    return;
+  }
+
+  public void doUpgrade(String userId) {
+    if (!conversionEnabled)     // Unless conversion is enabled...
+      return;                   // shouldn't really ever happen but...
+    Objectify datastore = ObjectifyService.begin();
+    UserData userData = datastore.find(userKey(userId));
+    if ((userData.upgradedGCS && useGcs) ||
+      (!userData.upgradedGCS && !useGcs))
+      return;                   // All done, another task did it!
+    List<Long> projectIds = getProjects(userId);
+    boolean anyFailed = false;
+    for (long projectId : projectIds) {
+      for (FileData fd : datastore.query(FileData.class).ancestor(projectKey(projectId))) {
+        if (fd.isBlob) {
+          if (useGcs) {         // Let's convert by just reading it!
+            downloadRawFile(userId, projectId, fd.fileName);
+          }
+        } else if (fd.isGCS) {
+          if (!useGcs) {        // Let's downgrade by just reading it!
+            downloadRawFile(userId, projectId, fd.fileName);
+          }
+        }
+      }
+    }
+
+    /*
+     * If we are running low on time, we may have not moved all files
+     * so exit now without marking the user as having been finished
+     */
+    if (ApiProxy.getCurrentEnvironment().getRemainingMillis() <= 5000)
+      return;
+
+    /* If anything failed, also return without marking user */
+    if (anyFailed)
+      return;
+
+    datastore = ObjectifyService.beginTransaction();
+    userData = datastore.find(userKey(userId));
+    userData.upgradedGCS = useGcs;
+    datastore.put(userData);
+    datastore.getTxn().commit();
   }
 
 }
