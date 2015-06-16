@@ -6,8 +6,12 @@
 
 package com.google.appinventor.client.wizards.youngandroid;
 
+import java.util.regex.Pattern;
+
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
@@ -50,7 +54,10 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
       @Override
       public boolean validate(String value) {
+        //Pattern validText = Pattern.compile("[\\p{L}][\\p{L}0-9_]*", Pattern.UNICODE_CHARACTER_CLASS);
+        //String newString = validText.toString();
         if(!value.matches("[A-Za-z][A-Za-z0-9_]*") && value.length() > 0) {
+          disableOkButton();
           String noWhitespace = "[\\S]+";
           String firstCharacterLetter = "[A-Za-z].*";
           if(!value.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
@@ -62,6 +69,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
           }
           return false;
         } else { //this is valid text, return true
+          enableOkButton();
           errorMessage = "";
           return true;
         }
@@ -145,7 +153,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     this.center();
 
     setPixelSize(width, height);
-    super.setPagePanelHeight(95);
+    super.setPagePanelHeight(85);
 
     DeferredCommand.addCommand(new Command() {
       public void execute() {
