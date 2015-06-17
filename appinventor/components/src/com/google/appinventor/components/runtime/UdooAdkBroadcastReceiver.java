@@ -19,6 +19,7 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +28,16 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   private static final String TAG = "UDOOBroadcastReceiver";
   private static final String ACTION_USB_PERMISSION = "com.google.appinventor.components.runtime.action.USB_PERMISSION";
 
-  private ContextWrapper activity_;
-  private UsbManager usbManager_;
-  private PendingIntent pendingIntent_;
-  private ParcelFileDescriptor fileDescriptor_;
-  private FileInputStream inputStream_;
-  private FileOutputStream outputStream_;
+  private ContextWrapper activity;
+  private UsbManager usbManager;
+  private PendingIntent pendingIntent;
+  private ParcelFileDescriptor fileDescriptor;
+  private FileInputStream inputStream;
+  private FileOutputStream outputStream;
   private UdooArduinoManager arduino;
   private boolean connected = false;
   List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
+  Form form;
   private boolean waitForResponse = false;
 
   private static UdooAdkBroadcastReceiver instance = null;
@@ -50,8 +52,8 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
   public void onCreate(ContextWrapper wrapper)
   {
-    activity_ = wrapper;
-    usbManager_ = (UsbManager)activity_.getSystemService(Context.USB_SERVICE);
+    activity = wrapper;
+    usbManager = (UsbManager)activity.getSystemService(Context.USB_SERVICE);
     registerReceiver();
   }
 
@@ -65,12 +67,13 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   {
     final String action = intent.getAction();
     if (ACTION_USB_PERMISSION.equals(action)) {
-      pendingIntent_ = null;
-      if (intent.getBooleanExtra(usbManager_.EXTRA_PERMISSION_GRANTED, false)) {
+      pendingIntent = null;
+      if (intent.getBooleanExtra(usbManager.EXTRA_PERMISSION_GRANTED, false)) {
         notifyAll();
         connect();
       } else {
         Log.e(TAG, "Permission denied");
+        form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "onReceive", ErrorMessages.ERROR_UDOO_ADK_NO_PERMISSIONS);
       }
     }
   }
@@ -80,24 +83,24 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     this.connected = false;
     notifyAll();
 
-    if (fileDescriptor_ != null) {
+    if (fileDescriptor != null) {
       try {
-        fileDescriptor_.close();
+        fileDescriptor.close();
       } catch (IOException e) {
         Log.e(TAG, "Failed to close file descriptor.", e);
       }
-      fileDescriptor_ = null;
+      fileDescriptor = null;
     }
 
-    if (pendingIntent_ != null) {
-      pendingIntent_.cancel();
-      pendingIntent_ = null;
+    if (pendingIntent != null) {
+      pendingIntent.cancel();
+      pendingIntent = null;
     }
   }
 
   public synchronized void connect()
   {
-    Log.d(TAG, "-- connect");
+    Log.d(TAG, "[UdooAdkBroadcastReceiver] Connect");
 
     if (!this.waitForResponse) {
       this.connected = false;
@@ -107,12 +110,11 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
   private boolean tryOpen()
   {
-    Log.d(TAG, "-- tryOpen");
-
-    UsbAccessory[] accessories = usbManager_.getAccessoryList();
+    UsbAccessory[] accessories = usbManager.getAccessoryList();
     UsbAccessory accessory = null;
     if (accessories == null) {
       Log.v(TAG, "No accessories found!");
+      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
       return false;
     }
     for (UsbAccessory iaccessory : accessories) {
@@ -123,15 +125,16 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
     if (accessory == null) {
       Log.v(TAG, "No accessory found.");
+      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
       return false;
     }
     
-    if (!usbManager_.hasPermission(accessory)) {
+    if (!usbManager.hasPermission(accessory)) {
       Log.v(TAG, "No permissions, requesting");
-      if (pendingIntent_ == null) {
+      if (pendingIntent == null) {
         Log.v(TAG, "Requesting permission.");
-        pendingIntent_ = PendingIntent.getBroadcast(activity_, 0, new Intent(ACTION_USB_PERMISSION), 0);
-        usbManager_.requestPermission(accessory, pendingIntent_);
+        pendingIntent = PendingIntent.getBroadcast(activity, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        usbManager.requestPermission(accessory, pendingIntent);
       }
       return false;
     }
@@ -139,21 +142,21 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     boolean success = false;
 
     try {
-      fileDescriptor_ = usbManager_.openAccessory(accessory);
-      if (fileDescriptor_ == null) {
+      fileDescriptor = usbManager.openAccessory(accessory);
+      if (fileDescriptor == null) {
         Log.v(TAG, "Failed to open file descriptor.");
         return false;
       }
 
       try {
-        FileDescriptor fd = fileDescriptor_.getFileDescriptor();
-        inputStream_ = new FileInputStream(fd);
-        outputStream_ = new FileOutputStream(fd);
+        FileDescriptor fd = fileDescriptor.getFileDescriptor();
+        inputStream = new FileInputStream(fd);
+        outputStream = new FileOutputStream(fd);
 
         this.waitForResponse = true;
 
-        outputStream_.write('H');
-        outputStream_.flush();
+        outputStream.write('H');
+        outputStream.flush();
 
         Log.d(TAG, "Connecting...");
 
@@ -162,15 +165,16 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         // physical disconnection. This is a known OpenAccessory
         // bug:
         // http://code.google.com/p/android/issues/detail?id=20545
-        while (inputStream_.read() < 0) {
+        while (inputStream.read() < 0) {
           trySleep(500);
         }
 
         this.waitForResponse = false;
 
-        Log.d(TAG, "CONNECTED!");
+        Log.d(TAG, "Connected!");
 
-        this.arduino = new UdooArduinoManager(outputStream_, inputStream_, this);
+        this.arduino = new UdooArduinoManager(outputStream, inputStream, this);
+        this.arduino.hi();
         this.connected = true;
 
         for (UdooConnectedInterface c : connectedComponents) {
@@ -186,17 +190,17 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       } finally {
         if (!success) {
           try {
-            fileDescriptor_.close();
+            fileDescriptor.close();
           } catch (IOException e) {
             Log.e(TAG, "Failed to close file descriptor.", e);
           }
-          fileDescriptor_ = null;
+          fileDescriptor = null;
         }
       }
     } finally {
-      if (!success && pendingIntent_ != null) {
-        pendingIntent_.cancel();
-        pendingIntent_ = null;
+      if (!success && pendingIntent != null) {
+        pendingIntent.cancel();
+        pendingIntent = null;
       }
     }
   }
@@ -212,12 +216,12 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
   private void registerReceiver() {
     IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-    activity_.registerReceiver(this, filter);
+    activity.registerReceiver(this, filter);
   }
 
   private void unregisterReceiver() {
     try {
-      activity_.unregisterReceiver(this);
+      activity.unregisterReceiver(this);
     }
     catch (IllegalArgumentException e) {
     }
@@ -228,9 +232,10 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     return this.connected;
   }
 
-  public void registerComponent(UdooConnectedInterface component)
+  public void registerComponent(UdooConnectedInterface component, Form form)
   {
     this.connectedComponents.add(component);
+    this.form = form;
   }
 
   @Override

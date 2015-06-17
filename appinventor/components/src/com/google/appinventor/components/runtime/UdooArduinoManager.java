@@ -26,6 +26,8 @@ public class UdooArduinoManager
   private OutputStream outputStream;
   private InputStream inputStream;
   private UdooConnectionInterface udooConnection;
+  
+  public final int MIN_SKETCH_VERSION = 1;
 
   public UdooArduinoManager(OutputStream outputStream, InputStream inputStream, UdooConnectionInterface udooConnection)
   {
@@ -48,7 +50,24 @@ public class UdooArduinoManager
       e.printStackTrace();
     }
     
-    sendJson(json);
+    JSONObject response = sendJson(json);
+    
+    try {
+      boolean success = ((Boolean) response.get("success")).booleanValue();
+      int version = (Integer) response.get("version");
+      
+      if (success) {
+        if (version < MIN_SKETCH_VERSION) {
+          throw new RuntimeException("Arduino sketch too old.");
+        }
+        return;
+      }
+      
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    
+    throw new RuntimeException("Invalid response from ADK");
   }
   
   public void digitalWrite(String pin, String value)

@@ -6,4 +6,9 @@ package com.google.appinventor.components.runtime;
 public interface UdooConnectedInterface
 {
   public void Connected();
+
+  public boolean isLocal();
+  public String getRemoteAddress();
+  public String getRemotePort();
+  public String getRemoteSecret();
 }

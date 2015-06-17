@@ -4,6 +4,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
@@ -11,15 +12,15 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  */
 class UdooConnectionFactory
 {
-  static UdooConnectionInterface getConnection(String transport, String remoteAddress, String remotePort, String remoteSecret) throws Exception
+  static UdooConnectionInterface getConnection(UdooConnectedInterface component, Form form)
   {
-    if (transport.equals("local")) {
+    if (component.isLocal()) {
       if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
-        throw new Exception("ADK unavailable");
+        form.dispatchErrorOccurredEvent((Component)component, "getTransport", ErrorMessages.ERROR_UDOO_ADK_UNAVAILABLE);
       }
       return UdooAdkBroadcastReceiver.getInstance();
     } else {
-      return new UdooTcpRedirector(remoteAddress, remotePort, remoteSecret);
+      return new UdooTcpRedirector(component.getRemoteAddress(), component.getRemotePort(), component.getRemoteSecret());
     }
   }
 }

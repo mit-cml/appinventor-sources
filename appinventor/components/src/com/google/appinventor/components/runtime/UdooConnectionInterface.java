@@ -12,7 +12,7 @@ public interface UdooConnectionInterface
   public void disconnect();
   public UdooArduinoManager arduino();
   public void connect();
-  public void registerComponent(UdooConnectedInterface component);
+  public void registerComponent(UdooConnectedInterface component, Form form);
   public void onCreate(ContextWrapper ctx);
   public void onDestroy();
 }

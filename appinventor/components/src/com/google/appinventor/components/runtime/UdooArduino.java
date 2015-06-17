@@ -14,7 +14,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 
 /**
@@ -51,8 +50,12 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.transport = transport;
   }
   
+  public boolean isLocal() {
+    return this.transport.equals("local");
+  }
+  
   private String remoteAddress;
-
+  
   /**
    * Sets the remote IP address
    *
@@ -65,9 +68,13 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   public void RemoteAddress(String remoteAddress) {
     this.remoteAddress = remoteAddress;
   }
-  
-  private String remotePort;
+ 
+  public String getRemoteAddress() {
+    return this.remoteAddress;
+  }
 
+  private String remotePort;
+  
   /**
    * Sets the remote TCP port number
    *
@@ -81,8 +88,12 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.remotePort = remotePort;
   }
   
-  private String remoteSecret;
+  public String getRemotePort() {
+    return this.remotePort;
+  }
 
+  private String remoteSecret;
+  
   /**
    * Sets the remote secret string for authentication
    *
@@ -95,12 +106,16 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   public void RemoteSecret(String remoteSecret) {
     this.remoteSecret = remoteSecret;
   }
-  
+
+  public String getRemoteSecret() {
+    return this.remoteSecret;
+  }
+
   public synchronized boolean isConnected()
   {
     boolean isc = getTransport().isConnected();
     if (!isc) {
-      Log.d(TAG, "isConnected called, but disconnected!");
+      Log.d(TAG, "[isConnected] not connected, try to reconnect");
       getTransport().disconnect();
       getTransport().connect();
     }
@@ -157,9 +172,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     if (this.isConnected()) {
       return getTransport().arduino().digitalRead(pin);
+    } else {
+      throw new Exception("Not connected");
     }
-    
-    throw new Exception("Not connected");
   }
   
   @SimpleFunction
@@ -175,9 +190,9 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     if (this.isConnected()) {
       return getTransport().arduino().analogRead(pin);
+    } else {
+      throw new Exception("Not connected");
     }
-    
-    throw new Exception("Not connected");
   }
   
   @SimpleFunction
@@ -208,14 +223,8 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   private UdooConnectionInterface getTransport()
   {
     if (this.connection == null) {
-      try {
-        this.connection = UdooConnectionFactory.getConnection(this.transport, this.remoteAddress, this.remotePort, this.remoteSecret);
-      } catch (Exception ex) {
-        if (ex.getMessage().equals("ADK unavailable")) {
-          form.dispatchErrorOccurredEvent(this, "getTransport", ErrorMessages.ERROR_UDOO_ADK_UNAVAILABLE);
-        }
-      }
-      this.connection.registerComponent(this);
+      this.connection = UdooConnectionFactory.getConnection(this, form);
+      this.connection.registerComponent(this, form);
     }
     return this.connection;
   }

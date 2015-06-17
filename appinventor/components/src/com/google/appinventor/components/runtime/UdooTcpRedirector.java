@@ -28,6 +28,7 @@ public class UdooTcpRedirector implements UdooConnectionInterface
   private boolean connected = false;
   public UdooArduinoManager arduino;
   List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
+  Form form;
   
   UdooTcpRedirector(String address, String port, String secret) {
     this.address = address;
@@ -59,13 +60,14 @@ public class UdooTcpRedirector implements UdooConnectionInterface
 
   @Override
   public void connect() {
-    Log.d(TAG, "connect() called " + this.address+ ":" + this.port);
+    Log.d(TAG, "[UdooTcpRedirector] Connect(" + this.address+ ":" + this.port + ")");
     new CreateSocketTask().execute(this.address, this.port);
   }
 
   @Override
-  public void registerComponent(UdooConnectedInterface component) {
+  public void registerComponent(UdooConnectedInterface component, Form form) {
     this.connectedComponents.add(component);
+    this.form = form;
   }
 
   @Override
@@ -95,6 +97,7 @@ public class UdooTcpRedirector implements UdooConnectionInterface
   
   void setArduino(InputStream in, OutputStream out) {
     this.arduino = new UdooArduinoManager(out, in, this);
+    this.arduino.hi();
     this.connected = true;
   }
   
