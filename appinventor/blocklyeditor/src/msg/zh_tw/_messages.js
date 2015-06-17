@@ -1288,6 +1288,7 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "產生 Yail";
     Blockly.Msg.DO_IT = "實現功能";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "清除錯誤";
     Blockly.Msg.CAN_NOT_DO_IT = "不能實現功能";
     Blockly.Msg.CONNECT_TO_DO_IT = '你必須要連接AIAI Companion或者模擬器才能使用"實現功能"';
   }
