@@ -13,8 +13,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Command;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
