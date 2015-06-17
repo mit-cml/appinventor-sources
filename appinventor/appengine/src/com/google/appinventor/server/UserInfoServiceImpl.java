@@ -43,6 +43,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
+    // Check to see if we need to upgrade this user's project to GCS
+    storageIo.checkUpgrade(userInfoProvider.getUserId());
     return config;
   }
 
