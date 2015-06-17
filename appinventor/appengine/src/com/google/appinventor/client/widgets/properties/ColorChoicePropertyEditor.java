@@ -6,9 +6,12 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
+
+import java.util.List;
 
 /**
  * Property editor for color properties.
@@ -74,16 +77,19 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
   }
 
-  // UI for the list of colors will be represented by a PopupPanel
-  private final MenuBar selectedColorMenu;
-  private final MenuBar colorPanel;
-  private MenuItem selectedColor;
+  // UI for the list of colors will be represented by a ContextMenu
+  private final DropDownButton selectedColorMenu;
+  //private final MenuBar colorPanel;
+  //private Color selectedColor;
 
   // Prefix for hex numbers
   private final String hexPrefix;
 
   // Colors
   private final Color[] colors;
+
+  // Widget Name
+  private static final String WIDGET_NAME = "Color Choice Property Editor";
 
   /**
    * Creates a new instance of the property editor.
@@ -97,23 +103,18 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     this.colors = colors;
 
     // Initialize UI
-    colorPanel = new MenuBar(true);
-    colorPanel.setStylePrimaryName("ode-ContextMenu");
+    List<DropDownItem> choices = Lists.newArrayList();
     for (final Color color : colors) {
-      MenuItem item = colorPanel.addItem(color.getHtmlDescription(), true, new Command() {
+      choices.add(new DropDownItem(WIDGET_NAME, color.getHtmlDescription(), new Command() {
         @Override
         public void execute() {
           property.setValue(hexPrefix + color.alphaString + color.rgbString);
         }
-      });
-      item.setStylePrimaryName("ode-ContextMenuItem");
+      }));
     }
+    selectedColorMenu = new DropDownButton(WIDGET_NAME, colors[0].getHtmlDescription(), choices, false,  true, false);
 
-    selectedColorMenu = new MenuBar();
-    selectedColorMenu.setFocusOnHoverEnabled(false);
     selectedColorMenu.setStylePrimaryName("ode-ColorChoicePropertyEditor");
-    selectedColor = selectedColorMenu.addItem(colors[0].getHtmlDescription(), true, colorPanel);
-    selectedColor.setStylePrimaryName("ode-CurrentColor");
 
     initWidget(selectedColorMenu);
   }
@@ -130,11 +131,9 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     long argbValue = Long.valueOf(propertyValue, radix) & 0xFFFFFFFFL;
-    for (Color color : colors) {
+    for (final Color color : colors) {
       if (color.argbValue == argbValue) {
-        selectedColorMenu.removeItem(selectedColor);
-        selectedColor = selectedColorMenu.addItem(color.getHtmlDescription(), true, colorPanel);
-        selectedColor.setStylePrimaryName("ode-CurrentColor");
+        selectedColorMenu.setHTML(color.getHtmlDescription());
         break;
       }
     }

@@ -11,6 +11,7 @@ import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -87,22 +88,28 @@ public final class ComponentHelpWidget extends Image {
           }
         });
 
-      setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-          @Override
-          public void setPosition(int offsetWidth, int offsetHeight) {
-            // Position the upper-left of the panel just to the right of the
-            // question-mark icon, unless that would make it too low.
-            final int X_OFFSET = 20;
-            final int Y_OFFSET = -5;
+      // Use a Pinch Zoom aware PopupPanel.PositionCallback to handle positioning to
+      // avoid the Google Chrome Pinch Zoom bug.
+      setPopupPositionAndShow(new PZAwarePositionCallback(sender.getElement()) {
+        @Override
+        public void setPosition(int offsetWidth, int offsetHeight) {
+          // Position the upper-left of the panel just to the right of the
+          // question-mark icon, unless that would make it too low.
+          final int X_OFFSET = 20;
+          final int Y_OFFSET = -5;
+          if(Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()) {
+            setPopupPosition(getTrueAbsoluteLeft() + 1 + X_OFFSET,
+                Math.min(getTrueAbsoluteTop() + 1 + Y_OFFSET,
+                    Math.max(0, Window.getClientHeight()
+                        - offsetHeight + Y_OFFSET)));
+          } else {
             setPopupPosition(sender.getAbsoluteLeft() + X_OFFSET,
-                             Math.min(
-                                 sender.getAbsoluteTop() + Y_OFFSET,
-                                 Math.max(
-                                     0,
-                                     Window.getClientHeight() - offsetHeight
-                                     + Y_OFFSET)));
+                Math.min(sender.getAbsoluteTop() + Y_OFFSET,
+                    Math.max(0, Window.getClientHeight()
+                        - offsetHeight + Y_OFFSET)));
           }
-        });
+        }
+      });
     }
   }
 
