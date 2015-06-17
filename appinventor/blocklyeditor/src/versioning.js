@@ -1186,8 +1186,8 @@ Blockly.Versioning.AllUpgradeMaps =
     2: 
       [  // Set the default argument for parameter to be an empty string. 
          Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDateTime", 1, 
-         '<block type=“text">' +
-         '  <field name=“TEXT">MMM d, yyyy HH:mm:ss a</field>' +
+         '<block type="text">' +
+         '  <field name="TEXT">MMM d, yyyy HH:mm:ss a</field>' +
          '</block>'),
          Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDate", 1, 
          '<block type="text">' +
