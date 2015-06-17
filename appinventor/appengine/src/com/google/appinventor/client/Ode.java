@@ -993,10 +993,10 @@ public class Ode implements EntryPoint {
       @Override
       public void onMouseWheel(MouseWheelEvent event) {
         if(event.isControlKeyDown()) {
-          // Trip the appropriate flag in position when the page is Pinch Zoomed.
-          // Note that this flag does not need to be removed when the browser is
-          // un-zoomed because the patched function for determining absolute
-          // position works in all circumstances.
+          // Trip the appropriate flag in PZAwarePositionCallback when the page
+          // is Pinch Zoomed. Note that this flag does not need to be removed when
+          // the browser is un-zoomed because the patched function for determining
+          // absolute position works in all circumstances.
           PZAwarePositionCallback.setPinchZoomed(true);
         }
       }
