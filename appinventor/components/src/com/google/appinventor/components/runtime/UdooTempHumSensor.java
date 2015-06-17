@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.json.JSONObject;
 
 
@@ -31,7 +33,7 @@ import org.json.JSONObject;
 public class UdooTempHumSensor extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-  private String TAG = "UdooTemperatureHumiditySensor";
+  private String TAG = "UdooTempHumSensor";
   private UdooConnectionInterface connection = null;
   private final String SENSOR_TYPE_DHT11 = "dht11";
 
@@ -141,22 +143,32 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     return isc;
   }
 
-  public UdooTempHumSensor(Form form)
+  public UdooTempHumSensor(final Form form)
   {
     super(form);
     
-    Log.d("UDOOLIFECYCLE", "UdooArduino");
+    Log.d(TAG, "UdooArduino");
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
     
-    getTransport().onCreate(form);
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        new Timer().schedule(new TimerTask() {          
+          @Override
+          public void run() {
+            getTransport().onCreate(form);
+          }
+        }, 500);
+      }
+    }).start();
   }
   
   @Override
   public void onResume()
   {
-    Log.d("UDOOLIFECYCLE", "onResume");
+    Log.d(TAG, "onResume");
     
     this.isConnected(); //connects, if disconnected
   }
@@ -164,7 +176,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   @Override
   public void onDestroy()
   {
-    Log.d("UDOOLIFECYCLE", "onDestroy");
+    Log.d(TAG, "onDestroy");
     
     getTransport().disconnect();
     getTransport().onDestroy();

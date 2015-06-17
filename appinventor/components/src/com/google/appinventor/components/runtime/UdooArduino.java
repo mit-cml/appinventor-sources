@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -30,7 +32,7 @@ import com.google.appinventor.components.common.YaVersion;
 public class UdooArduino extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-  private String TAG = "UDOOArduinoCmp";
+  private String TAG = "UdooArduino";
   private UdooConnectionInterface connection = null;
   
   private String transport = "local";
@@ -122,22 +124,32 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     return isc;
   }
 
-  public UdooArduino(Form form)
+  public UdooArduino(final Form form)
   {
     super(form);
     
-    Log.d("UDOOLIFECYCLE", "UdooArduino");
+    Log.d(TAG, "UdooArduino");
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
     
-    getTransport().onCreate(form);
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        new Timer().schedule(new TimerTask() {          
+          @Override
+          public void run() {
+            getTransport().onCreate(form);
+          }
+        }, 500);
+      }
+    }).start();
   }
   
   @Override
   public void onResume()
   {
-    Log.d("UDOOLIFECYCLE", "onResume");
+    Log.d(TAG, "onResume");
     
     this.isConnected(); //connects, if disconnected
   }
@@ -145,7 +157,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   @Override
   public void onDestroy()
   {
-    Log.d("UDOOLIFECYCLE", "onDestroy");
+    Log.d(TAG, "onDestroy");
     
     getTransport().disconnect();
     getTransport().onDestroy();

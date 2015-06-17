@@ -266,12 +266,12 @@ public class UdooArduinoManager
     protected JSONObject doInBackground(String... args)
     {
       try {
+        Log.d("UdooREQUEST", args[0]);
         outputStream.write(args[0].getBytes());
         outputStream.flush();
 
         String readResponse = this.read().trim();
-        Log.d("REQUEST", args[0]);
-        Log.d("RESPONSE", readResponse);
+        Log.d("UdooRESPONSE", readResponse);
         return new JSONObject(readResponse);
         
       } catch (IOException e) {

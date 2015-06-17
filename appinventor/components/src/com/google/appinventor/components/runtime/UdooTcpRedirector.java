@@ -7,9 +7,11 @@ package com.google.appinventor.components.runtime;
 import android.content.ContextWrapper;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -121,7 +123,8 @@ public class UdooTcpRedirector implements UdooConnectionInterface
 
         Log.d(TAG, "Components notified");
 
-      } catch (UnknownHostException ex) {
+      } catch (ConnectException ex) {
+        form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "doInBackground", ErrorMessages.ERROR_UDOO_TCP_NO_CONNECTION);
         Logger.getLogger(UdooTcpRedirector.class.getName()).log(Level.SEVERE, null, ex);
       } catch (IOException ex) {
         Logger.getLogger(UdooTcpRedirector.class.getName()).log(Level.SEVERE, null, ex);
