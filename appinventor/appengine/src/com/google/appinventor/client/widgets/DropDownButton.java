@@ -2,7 +2,8 @@ package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;

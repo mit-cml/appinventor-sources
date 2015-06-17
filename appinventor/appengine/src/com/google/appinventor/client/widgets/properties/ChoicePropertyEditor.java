@@ -10,7 +10,6 @@ import com.google.appinventor.client.widgets.DropDownButton;
 import static com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Command;
 
 import java.util.List;
