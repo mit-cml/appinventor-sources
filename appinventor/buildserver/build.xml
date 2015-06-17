@@ -47,7 +47,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_ComponentList">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 

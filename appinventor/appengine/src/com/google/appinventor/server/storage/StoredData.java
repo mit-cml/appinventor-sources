@@ -58,7 +58,7 @@ public class StoredData {
 
     // Path to template project passed as GET parameter
     String templatePath;
-
+    boolean upgradedGCS;
   }
 
   // Project properties
