@@ -158,34 +158,10 @@ Blockly.BlocklyEditor.render = function() {
   Blockly.Instrument.displayStats("Blockly.BlocklyEditor.render");
 }
 
-/**
- * Add a "Do It" option to the context menu for every block. If the user is an admin also
- * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
- * the block's comment (if it has one) for now.
- * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
- * the bubble for "do it" output once we hook up to the REPL.
- */
-Blockly.Block.prototype.customContextMenu = function(options) {
+Blockly.Block.prototype.addDoItOption = function(options) {
   var myBlock = this;
   var doitOption = { enabled: this.disabled?false : true};
-  if (window.parent.BlocklyPanel_checkIsAdmin()) {
-    var yailOption = {enabled: this.disabled?false : true};
-    yailOption.text = Blockly.Msg.GENERATE_YAIL;
-    yailOption.callback = function() {
-      var yailText;
-      //Blockly.Yail.blockToCode1 returns a string if the block is a statement
-      //and an array if the block is a value
-      var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-      if(yailTextOrArray instanceof Array){
-        yailText = yailTextOrArray[0];
-      } else {
-        yailText = yailTextOrArray;
-      }
-      myBlock.setCommentText(yailText);
-    };
-    options.push(yailOption);
-  }
-  doitOption.text = Blockly.Msg.DO_IT;
+    doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
     var yailText;
     //Blockly.Yail.blockToCode1 returns a string if the block is a statement
@@ -210,6 +186,36 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     }
   };
   options.push(doitOption);
+  return options;
+}
+
+/**
+ * Add a "Do It" option to the context menu for every block. If the user is an admin also
+ * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
+ * the block's comment (if it has one) for now.
+ * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
+ * the bubble for "do it" output once we hook up to the REPL.
+ */
+Blockly.Block.prototype.customContextMenu = function(options) {
+  var myBlock = this;
+  if (window.parent.BlocklyPanel_checkIsAdmin()) {
+    var yailOption = {enabled: this.disabled?false : true};
+    yailOption.text = Blockly.Msg.GENERATE_YAIL;
+    yailOption.callback = function() {
+      var yailText;
+      //Blockly.Yail.blockToCode1 returns a string if the block is a statement
+      //and an array if the block is a value
+      var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
+      if(yailTextOrArray instanceof Array){
+        yailText = yailTextOrArray[0];
+      } else {
+        yailText = yailTextOrArray;
+      }
+      myBlock.setCommentText(yailText);
+    };
+    options.push(yailOption);
+  }
+  this.addDoItOption(options);
   if(myBlock.procCustomContextMenu){
     myBlock.procCustomContextMenu(options);
   }

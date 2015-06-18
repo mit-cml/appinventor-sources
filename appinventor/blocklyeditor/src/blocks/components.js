@@ -287,6 +287,9 @@ Blockly.Blocks.component_event = {
     return tb;
   },
   customContextMenu: function (options) {
+    if (this.isGeneric) {
+      this.addDoItOption(options);
+    }
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   },
   // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
