@@ -121,9 +121,9 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
-  private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
+  private final boolean useGcs = Flag.createFlag("use.gcs", true).get();
 
-  private final boolean conversionEnabled = true; // We are converting GCS <=> Blobstore
+  private final boolean conversionEnabled = false; // We are converting GCS <=> Blobstore
 
   // Use this class to define the work of a job that can be
   // retried. The "datastore" argument to run() is the Objectify
@@ -1857,7 +1857,10 @@ public class ObjectifyStorageIo implements  StorageIo {
         }
       } else if (fileData.isBlob) {
         try {
-          result.t = getBlobstoreBytes(fileData.blobstorePath);
+          if (fileData.blobKey == null) {
+            throw new BlobReadException("blobKey is null");
+          }
+          result.t = getBlobstoreBytes(fileData.blobKey);
           // Time to consider upgrading this file if we are moving to GCS
           // Note: We only run if we have at least 5 seconds of runtime left in the request
           long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
@@ -1895,18 +1898,16 @@ public class ObjectifyStorageIo implements  StorageIo {
   // Note: this must be called outside of any transaction, since getBlobKey()
   // uses the current transaction and it will most likely have the wrong
   // entity group!
-  private byte[] getBlobstoreBytes(String blobstorePath) throws BlobReadException {
-    AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
-    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);
+  private byte[] getBlobstoreBytes(String blobKeyString) throws BlobReadException {
+    BlobKey blobKey = new BlobKey(blobKeyString);
     if (blobKey == null) {
-      throw new BlobReadException("getBlobKey() returned null for " + blobstorePath);
+      throw new BlobReadException("Could not find BlobKey for " + blobKeyString);
     }
     try {
       InputStream blobInputStream = new BlobstoreInputStream(blobKey);
       return ByteStreams.toByteArray(blobInputStream);
     } catch (IOException e) {
-      throw new BlobReadException(e, "Error trying to read blob from " + blobstorePath
-          + ", blobkey = " + blobKey);
+      throw new BlobReadException(e, "Error trying to read blob from " + blobKey);
     }
   }
 
@@ -1977,7 +1978,10 @@ public class ObjectifyStorageIo implements  StorageIo {
         byte[] data = null;
         if (fd.isBlob) {
           try {
-            data = getBlobstoreBytes(fd.blobstorePath);
+            if (fd.blobKey == null) {
+              throw new BlobReadException("blobKey is null");
+            }
+            data = getBlobstoreBytes(fd.blobKey);
           } catch (BlobReadException e) {
             throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -2426,7 +2430,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @VisibleForTesting
-  boolean isBlobFile(long projectId, String fileName) {
+  boolean isGcsFile(long projectId, String fileName) {
     Objectify datastore = ObjectifyService.begin();
     Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
     FileData fd;
@@ -2435,7 +2439,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       fd = datastore.find(fileKey);
     }
     if (fd != null) {
-      return fd.isBlob;
+      return fd.isGCS;
     } else {
       return false;
     }
