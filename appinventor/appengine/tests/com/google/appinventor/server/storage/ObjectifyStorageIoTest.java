@@ -434,7 +434,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   public void testOldBlockFilesInDatastoreStillWork() throws BlocksTruncatedException {
     // Create new storage object that forces storage in the datastore
     ObjectifyStorageIo oldStyleStorage = new ObjectifyStorageIo() {
-      @Override
+
       boolean useBlobstoreForFile(String fileName, int length) {
         return false;
       }
