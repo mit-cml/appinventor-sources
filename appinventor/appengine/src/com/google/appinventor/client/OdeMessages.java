@@ -2023,6 +2023,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
+  
+  @DefaultMessage("External")
+  @Description("")
+  String externalComponentPallette();
 
   @DefaultMessage("Experimental")
   @Description("")

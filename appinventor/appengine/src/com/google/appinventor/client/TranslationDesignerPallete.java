@@ -38,6 +38,9 @@ public class TranslationDesignerPallete {
       value = MESSAGES.legoComponentPallette();
     } else if (key.equals("Experimental")) {
       value = MESSAGES.experimentalComponentPallette();
+    } else if (key.equals("External")) {
+       value = MESSAGES.externalComponentPallette();
+     
 
 //     } else if (key.equals("Not ready for prime time")) {
 //       value = MESSAGES.notReadyForPrimeTimeComponentPallette();
