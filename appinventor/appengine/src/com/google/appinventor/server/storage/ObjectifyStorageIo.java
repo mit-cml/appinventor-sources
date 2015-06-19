@@ -875,7 +875,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-    if (projectData == null) {
+    if (projectData.t == null) {
       return null;
     } else {
       return new UserProject(projectId, projectData.t.name,
