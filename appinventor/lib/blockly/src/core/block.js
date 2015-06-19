@@ -859,6 +859,18 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
     this.customContextMenu(options);
   }
 
+  //Add Copy
+
+  var copyOption = {
+    text: Blockly.Msg.COPY,
+    enabled: true,
+    callback: function() {
+      Blockly.copy_(block) ;
+    }
+  };
+
+  options.push(copyOption)
+
   Blockly.ContextMenu.show(e, options);
   Blockly.ContextMenu.currentBlock = this;
 };
@@ -1259,6 +1271,7 @@ Blockly.Block.prototype.isMovable = function() {
 Blockly.Block.prototype.setMovable = function(movable) {
   this.movable_ = movable;
 };
+
 
 /**
  * Get whether this block is editable or not.

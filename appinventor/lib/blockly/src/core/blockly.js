@@ -250,13 +250,6 @@ Blockly.COLLAPSE_CHARS = 30;
 Blockly.mainWorkspace = null;
 
 /**
- * Contents of the local clipboard.
- * @type {Element}
- * @private
- */
-Blockly.clipboard_ = null;
-
-/**
  * Wrapper function called when a touch mouseUp occurs during a drag operation.
  * @type {Array.<!Array>}
  * @private
@@ -453,8 +446,8 @@ Blockly.onKeyDown_ = function(e) {
     }
     if (e.keyCode == 86) {
       // 'v' for paste.
-      if (Blockly.clipboard_) {
-        Blockly.mainWorkspace.paste(Blockly.clipboard_);
+      if (window.parent.Blocklies.clipboard_) {
+        Blockly.mainWorkspace.paste(window.parent.Blocklies.clipboard_);
       }
     }
   }
@@ -481,7 +474,7 @@ Blockly.copy_ = function(block) {
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
   xmlBlock.setAttribute('y', xy.y);
-  Blockly.clipboard_ = xmlBlock;
+  window.parent.Blocklies.clipboard_ = xmlBlock;
 };
 
 /**
@@ -575,6 +568,7 @@ Blockly.showContextMenu_ = function(e) {
     Blockly.workspace_arranged_latest_position = Blockly.BLKS_VERTICAL;
     arrangeBlocks(Blockly.BLKS_VERTICAL);
   };
+
   options.push(arrangeOptionV);
 
   /**
@@ -692,6 +686,23 @@ Blockly.showContextMenu_ = function(e) {
   helpOption.text = Blockly.Msg.HELP;
   helpOption.callback = function() {};
   options.push(helpOption);
+
+  var pasteOption = {
+    enabled: !!window.parent.Blocklies.clipboard_,
+    text: Blockly.Msg.PASTE = 'Paste',
+    callback: function() {
+      //Note (evan): this if statement shouldn't be necessary.
+      //if !window.parent.Blocklies.clipboard_ then the enabled option should be false.
+      //the if statement is just in case some wierdness happens.
+      if (window.parent.Blocklies.clipboard_) {
+        Blockly.mainWorkspace.paste(window.parent.Blocklies.clipboard_);
+        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+      }
+    }
+  };
+  options.push(pasteOption);
+
+
 
   Blockly.ContextMenu.show(e, options);
 };

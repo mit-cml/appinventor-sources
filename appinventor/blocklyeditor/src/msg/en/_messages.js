@@ -40,6 +40,8 @@ Blockly.Msg.en.switch_language_to_english = {
   init: function() {
 // Context menus.
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
+    Blockly.Msg.COPY = 'Copy';
+    Blockly.Msg.PASTE = 'Paste';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
     Blockly.Msg.EXTERNAL_INPUTS = 'External Inputs';
@@ -77,6 +79,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
     Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
     Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
+    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component Does not exist";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';
