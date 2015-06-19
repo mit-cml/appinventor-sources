@@ -61,6 +61,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Appinventor fusiontables control.
@@ -219,7 +220,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   */
   private String serviceAccountEmail = "";
 
-  private String scope = "https://www.googleapis.com/auth/fusiontables";
+  private String[] scope = {"https://www.googleapis.com/auth/fusiontables"};
 
   public FusiontablesControl(ComponentContainer componentContainer) {
     super(componentContainer.$form());
@@ -856,7 +857,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
             .setTransport(TRANSPORT)
             .setJsonFactory(JSON_FACTORY)
             .setServiceAccountId(serviceAccountEmail)
-            .setServiceAccountScopes(scope)
+            .setServiceAccountScopes(Arrays.asList(scope))
             .setServiceAccountPrivateKeyFromP12File(cachedServiceCredentials)
             .build();
 
