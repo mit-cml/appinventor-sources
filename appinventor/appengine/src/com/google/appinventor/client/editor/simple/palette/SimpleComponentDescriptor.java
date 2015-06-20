@@ -58,8 +58,11 @@ public final class SimpleComponentDescriptor {
 
   // Help information to display for component
   private final String helpString;
-
-  // Goro documentation category URL piece
+  
+  // Whether External Component
+  private final boolean external;
+  
+  // Goto documentation category URL piece
   private final String categoryDocUrlString;
 
   // Whether to show the component on the palette
@@ -137,13 +140,15 @@ public final class SimpleComponentDescriptor {
                                    String helpString,
                                    String categoryDocUrlString,
                                    boolean showOnPalette,
-                                   boolean nonVisible) {
+                                   boolean nonVisible,
+                                   boolean external) {
     this.name = name;
     this.editor = editor;
     this.helpString = helpString;
     this.categoryDocUrlString = categoryDocUrlString;
     this.showOnPalette = showOnPalette;
     this.nonVisible = nonVisible;
+    this.external = external; 
   }
 
   /**
@@ -165,7 +170,14 @@ public final class SimpleComponentDescriptor {
   public String getHelpString() {
     return helpString;
   }
-
+  
+  /**
+   * Returns the origin of the component
+   * @return true if component is external
+   */
+  public boolean getExternal() {
+    return external;
+  }
   /**
    * Returns the categoryDocUrl string for the component.  For more detail, see
    * javadoc for

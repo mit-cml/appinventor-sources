@@ -123,7 +123,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
     
-    String extraComponent = "[{ \"name\": \"Camera\","
+    String extraComponent = "[{ \"name\": \"MysteryComponent\","
   +"\"version\": \"1\","
   +"\"package\": \"com.google.appinventor.components.runtime\","
   +"\"external\": \"true\","
@@ -146,11 +146,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(component);
       Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(component);
       Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(component);
+      Boolean external = COMPONENT_DATABASE.getComponentExternal(component);
       ComponentCategory category = ComponentCategory.valueOf(categoryString);
       if (showOnPalette && showCategory(category)) {
         addPaletteItem(new SimplePaletteItem(
             new SimpleComponentDescriptor(component, editor, helpString,
-              categoryDocUrlString, showOnPalette, nonVisible),
+              categoryDocUrlString, showOnPalette, nonVisible, external),
             dropTargetProvider),
           category);
       }

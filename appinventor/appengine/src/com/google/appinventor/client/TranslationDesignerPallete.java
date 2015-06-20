@@ -311,7 +311,7 @@ public class TranslationDesignerPallete {
       value = MESSAGES.WebViewerHelpStringComponentPallette();
     } else if (key.equals("YandexTranslate-helpString")) {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
-    }
+    } else value = key; //for External Components
     return value;
   }
 }
