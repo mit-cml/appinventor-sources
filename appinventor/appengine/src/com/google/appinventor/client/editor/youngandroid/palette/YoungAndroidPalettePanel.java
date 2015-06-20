@@ -32,6 +32,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor;
@@ -121,6 +122,23 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
+    
+    String extraComponent = "[{ \"name\": \"Camera\","
+  +"\"version\": \"1\","
+  +"\"package\": \"com.google.appinventor.components.runtime\","
+  +"\"categoryString\": \"EXTERNAL\","
+  +"\"helpString\": \"A component to take a picture using the device's camera. After the picture is taken, the name of the file on the phone containing the picture is available as an argument to the AfterPicture event. The file name can be used, for example, to set the Picture property of an Image component.\","
+  +"\"showOnPalette\": \"true\","
+  +"\"nonVisible\": \"true\","
+  +"\"iconName\": \"images/externalComponent.png\","
+  +"\"properties\": [{ \"name\": \"UseFront\", \"editorType\": \"boolean\", \"defaultValue\": \"False\"}],"
+  +"\"blockProperties\": [{ \"name\": \"UseFront\", \"description\": \"Specifies whether the front-facing camera should be used (when available). If the device does not have a front-facing camera, this option will be ignored and the camera will open normally.\", \"type\": \"boolean\", \"rw\": \"read-write\"}],"
+  +"\"events\": [{ \"name\": \"AfterPicture\", \"description\": \"Indicates that a photo was taken with the camera and provides the path to\\n the stored picture.\", \"deprecated\": \"false\", \"params\": [{ \"name\": \"image\", \"type\": \"text\"}]}"
+  +"],"
+  +"\"methods\": [{ \"name\": \"TakePicture\", \"description\": \"Takes a picture, then raises the AfterPicture event.\\n If useFront is true, adds an extra to the intent that requests the front-facing camera.\", \"deprecated\": \"false\", \"params\": []}]}]";
+    
+        
+    COMPONENT_DATABASE.addComponents(new ClientJsonParser().parse(extraComponent).asArray());
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       String categoryString = COMPONENT_DATABASE.getCategoryString(component);
       String helpString = COMPONENT_DATABASE.getHelpString(component);

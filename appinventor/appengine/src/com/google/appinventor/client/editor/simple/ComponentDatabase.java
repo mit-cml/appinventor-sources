@@ -86,8 +86,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   // Maps component names to component descriptors
   private Map<String, Component> components;
 
-  // Maps component names to component descriptors
-  private final String componentsJSONString;
+  
+  // Components in JSON String generated from components
+  private String componentsJSONString;
 
 
   /**
@@ -99,9 +100,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   ComponentDatabase(JSONArray array) {
     components = new HashMap<String, Component>();
     for (JSONValue component : array.getElements()) {
-      initComponent(component.asObject());
+      initComponent(component.asObject()); 
     }
-    componentsJSONString = array.toJson();
+    
+    componentsJSONString = generateComponentsJSON();
   }
 
   public int addComponents(JSONArray array) {
@@ -109,8 +111,11 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     for ( JSONValue component : array.getElements()){
       if(initComponent(component.asObject())) ++compsAdded;
     }
+    
+    componentsJSONString = generateComponentsJSON();
     return compsAdded;
   }
+  
   
   @Override
   public Set<String> getComponentNames() {
@@ -366,6 +371,18 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     }
   }
 
+  private String generateComponentsJSON(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    String separator = "";
+    for(Map.Entry<String, Component> comp : components.entrySet()){
+      sb.append(separator).append(comp.getValue().typeDescription);
+      separator=",";
+    }
+    sb.append("]");
+    return sb.toString();
+  }
+  
   @Override
   public boolean isComponent(String componentTypeName) {
     Component component = components.get(componentTypeName);
