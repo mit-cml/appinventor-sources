@@ -2399,6 +2399,27 @@ public class ObjectifyStorageIo implements  StorageIo {
     return ObjectifyService.begin().find(projectKey(projectId));
   }
 
+  @VisibleForTesting
+  List<ComponentData> getCompDataList(String userId, String name) {
+    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
+    return query.filter("userId", userId).filter("name", name).list();
+  }
+
+  @VisibleForTesting
+  byte[] getGcsContent(String gcsPath) {
+    try {
+      GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
+      int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+      ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+      GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+      readChannel.read(resultBuffer);
+
+      return resultBuffer.array();
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
   // Return time in ISO_8660 format
   private static String formattedTime() {
     java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
