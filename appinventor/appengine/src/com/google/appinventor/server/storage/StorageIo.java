@@ -458,6 +458,8 @@ public interface StorageIo {
    */
   long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
 
+  void uploadComponentFile(final String userId, final String fileName, final byte[] content);
+
   /**
    * Deletes a file.
    * @param userId a user Id (the request is made on behalf of this user)
