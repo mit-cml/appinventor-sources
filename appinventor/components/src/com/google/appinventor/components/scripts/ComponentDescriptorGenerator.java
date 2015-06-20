@@ -68,8 +68,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
   private static final String OUTPUT_FILE_NAME = "simple_components.json";
 
   private void outputComponent(ComponentInfo component, StringBuilder sb) {
-    sb.append("{ \"name\": \"");
+    sb.append("{ \"package\": \"");
+    sb.append(component.type);
+    sb.append("\",\n  \"name\": \"");
     sb.append(component.name);
+    sb.append("\",\n  \"external\": \"");
+    sb.append(Boolean.toString(component.external));
     sb.append("\",\n  \"version\": \"");
     sb.append(component.getVersion());
     sb.append("\",\n  \"categoryString\": \"");

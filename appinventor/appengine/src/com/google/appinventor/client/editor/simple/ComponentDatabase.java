@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -284,8 +285,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     if(components.containsKey(name))  return false;
     Component component = new Component(name,
         Integer.parseInt(properties.get("version").asString().getString()), 
-        "com.google.appinventor.components.runtime",//properties.get("package").asString().getString(), 
-        false ,//Boolean.valueOf(properties.get("external").asString().getString()),
+        properties.get("package").asString().getString(), 
+        Boolean.valueOf(properties.get("external").asString().getString()),
         properties.get("categoryString").asString().getString(), 
         properties.get("helpString").asString().getString(), 
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),

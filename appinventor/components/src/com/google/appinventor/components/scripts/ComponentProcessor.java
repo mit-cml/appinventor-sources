@@ -176,6 +176,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   protected abstract static class Feature {
     protected final String name;
+    protected final String type = "com.google.appinventor.components.runtime";
+    protected final boolean external = false;
     protected String description;
 
     protected Feature(String name, String description, String featureType) {
@@ -561,7 +563,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected String getCategory() {
       return category;
     }
-
+    
     /**
      * Returns the String representation of the EnumConstant corresponding to this
      * component's category within the Designer (for example, "ARRANGEMENTS").
