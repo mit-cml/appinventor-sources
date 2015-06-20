@@ -1550,11 +1550,77 @@
             " as the number of decimal places.  This number must be a non-negative integer.")
            (string-append "Bad number of decimal places for format as decimal")))))
 
+
+;;; We need to explicitly return #t ar #f because the value
+;;; gets passed to the blocks
 (define (is-number? arg)
   (if (or (number? arg)
           (and (string? arg) (padded-string->number arg)))
       #t
       #f))
+
+;;; We can call Pattern:matches because arg will be a string,
+;;; since these functions are called only from
+;;; the convert blocks, which coerce their arguments to strings
+(define (is-decimal? arg)
+  (and (Pattern:matches "[0123456789]*" arg) (not (string-empty? arg))))
+
+
+(define (is-hexadecimal? arg)
+  (and (Pattern:matches "[0-9a-fA-F]*" arg) (not (string-empty? arg))))
+
+
+(define (is-binary? arg)
+  (and (Pattern:matches "[01]*" arg) (not (string-empty? arg))))
+
+;; Block added to base convert numbers
+(define (math-convert-dec-hex x)
+  (if (is-decimal? x)
+    (string-to-upper-case (number->string (string->number x) 16))
+    (signal-runtime-error
+      (format #f "Convert dec to hex: The string '~A' is not a valid decimal number"
+       (get-display-representation x)
+      )
+      "Invalid decimal number"
+    )
+  )
+)
+
+(define (math-convert-hex-dec x)
+  (if (is-hexadecimal? x)
+    (string->number (string-to-upper-case x) 16)
+    (signal-runtime-error
+      (format #f "Convert hex to dec: The string '~A' is not a valid hexadecimal number"
+       (get-display-representation x)
+      )
+      "Invalid hexadecimal number"
+    )
+  )
+)
+
+(define (math-convert-dec-bin x)
+  (if (is-decimal? x)
+    (number->string (string->number x) 2)
+    (signal-runtime-error
+      (format #f "Convert dec to bin: The string '~A' is not a valid decimal number"
+       (get-display-representation x)
+      )
+      "Invalid decimal number"
+    )
+  )
+)
+
+(define (math-convert-bin-dec x)
+  (if (is-binary? x)
+    (string->number x 2)
+    (signal-runtime-error
+      (format #f "Convert bin to dec: The string '~A' is not a valid binary number"
+       (get-display-representation x)
+      )
+      "Invalid binary number"
+    )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation
