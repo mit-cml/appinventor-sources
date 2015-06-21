@@ -1455,9 +1455,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 19
     // is-number?, was extended with a dropdown to include base10, bin, and hex
-    // Hal decided not to do any upgrade here.  Without it, old projects simply won't
-    // have those oprions in their existing is-number blocks.
+    // The existing block from an old project apparently does not need to be modified to
+    // see these new options.  (Hal is not sure why not, but it seems to work.)
     // The math convert block was added
+    // No language blocks need to be modified to upgrade to version 16.
     19: "noUpgrade"    // AI2: Jeff Schiller's new Obfuscate Text block added
 
   }, // End Language upgraders
