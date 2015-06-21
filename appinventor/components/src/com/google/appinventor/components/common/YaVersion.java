@@ -322,8 +322,9 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  // For YOUNG_ANDROID_VERSION 124:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 19.
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -378,8 +379,11 @@ public class YaVersion {
   // - Added close-screen-with-plain-text
   // For BLOCKS_LANGUAGE_VERSION 18:
   // - New Obsfucate Text Block was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 18;
-
+  // For BLOCKS_LANGUAGE_VERSION 19:
+  // The is-number block was modified to include dropdowns for base10, hex, and binary
+  // The number-convert blocks was added
+  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:

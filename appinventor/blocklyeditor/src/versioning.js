@@ -1415,7 +1415,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // In BLOCKS_LANGUAGE_VERSION 12, we changed the multiply
     // symbol from * star to times, and the subtract symbol
-    // from hypen to minus
+    // from hyphen to minus
     /* From BlockSaveFile.java:
         changeStarAndHyphenToTimesAndMinusForMultiplyAndSubtractBlocks();
         // Blocks have now been upgraded to language version 12.
@@ -1451,7 +1451,14 @@ Blockly.Versioning.AllUpgradeMaps =
     17: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // AI2: Jeff Schiller's new Obfuscate Text block added
-    18: "noUpgrade"
+    18: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 19
+    // is-number?, was extended with a dropdown to include base10, bin, and hex
+    // Hal decided not to do any upgrade here.  Without it, old projects simply won't
+    // have those oprions in their existing is-number blocks.
+    // The math convert block was added
+    19: "noUpgrade"    // AI2: Jeff Schiller's new Obfuscate Text block added
 
   }, // End Language upgraders
 
