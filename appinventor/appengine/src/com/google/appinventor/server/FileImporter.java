@@ -79,6 +79,17 @@ public interface FileImporter {
       throws IOException;
 
   /**
+   * Adds component archive on the server and imports its content.
+   *
+   * @param userId the userId
+   * @param fileName file name
+   * @param uploadedFileStream uploaded file
+   * @throws IOException if any file operation fails
+   */
+  void importComponentArchive(String userId, String fileName,
+      InputStream uploadedFileStream) throws IOException;
+
+  /**
    * Returns the names of all the projects belonging to the user.
    *
    * @return The set of project names belonging to the provided {@code userId}.

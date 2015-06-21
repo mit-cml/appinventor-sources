@@ -21,6 +21,7 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
+import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
@@ -166,6 +167,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
     ObjectifyService.register(CorruptionRecord.class);
+    ObjectifyService.register(ComponentData.class);
   }
 
   ObjectifyStorageIo() {
@@ -1547,6 +1549,42 @@ public class ObjectifyStorageIo implements  StorageIo {
     return modTime.t;
   }
 
+  public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
+    JobRetryHelper helper = new JobRetryHelper() {
+      @Override
+      public void run(Objectify datastore) throws ObjectifyException {
+        ComponentData compData = new ComponentData();
+        compData.id = null;
+        compData.userId = userId;
+        compData.name = fileName.substring(0, fileName.length() - ".aix".length());
+        compData.version = 0; // todo: make it auto-incremented
+        compData.gcsPath = "extern_comps" + "/" + compData.userId + "/" +
+            compData.name + "/" + compData.version + "/" + fileName;
+
+        try {
+          GcsOutputChannel outputChannel =
+            gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, compData.gcsPath), GcsFileOptions.getDefaultInstance());
+          outputChannel.write(ByteBuffer.wrap(content));
+          outputChannel.close();
+        } catch (IOException e) {
+          // Note that this makes the BlobWriteException fatal. The job will
+          // not be retried if we get this exception.
+          throw CrashReport.createAndLogError(LOG, null,
+            collectComponentErrorInfo(userId, fileName), e);
+        }
+
+        datastore.put(compData);
+      }
+    };
+
+    try {
+      runJobWithRetries(helper, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectComponentErrorInfo(userId, fileName), e);
+    }
+  }
+
   protected void deleteBlobstoreFile(String blobstorePath) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.
@@ -2324,6 +2362,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     return "user=" + userId + ", project=" + projectId;
   }
 
+  private static String collectComponentErrorInfo(final String userId, final String name) {
+    return "user=" + userId + ", component=" + name;
+  }
+
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
 
   @VisibleForTesting
@@ -2355,6 +2397,27 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
+  }
+
+  @VisibleForTesting
+  List<ComponentData> getCompDataList(String userId, String name) {
+    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
+    return query.filter("userId", userId).filter("name", name).list();
+  }
+
+  @VisibleForTesting
+  byte[] getGcsContent(String gcsPath) {
+    try {
+      GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
+      int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+      ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+      GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+      readChannel.read(resultBuffer);
+
+      return resultBuffer.array();
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   // Return time in ISO_8660 format

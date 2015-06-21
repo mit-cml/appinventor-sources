@@ -513,6 +513,19 @@ public interface OdeMessages extends Messages {
   @Description("Name of Install component menuitem")
   String installComponentMenuItem();
 
+  @DefaultMessage("Upload component")
+  @Description("Name of Upload component menuitem")
+  String uploadComponentMenuItem();
+
+  @DefaultMessage("Upload Component...")
+  @Description("Caption for component upload wizard.")
+  String componentUploadWizardCaption();
+
+  @DefaultMessage("The selected file is not a component file!\n" +
+      "Component files are aix files.")
+  @Description("Error message reported when the file selected for upload is not a component archive.")
+  String notComponentArchiveError();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")

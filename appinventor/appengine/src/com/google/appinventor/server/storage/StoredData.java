@@ -258,4 +258,18 @@ public class StoredData {
     public String fileId;
     public String message;
   }
+
+  // Component data specific to the user
+  @Unindexed
+  static final class ComponentData {
+    @Id Long id;
+
+    String userId;
+
+    String name;
+
+    long version;
+
+    String gcsPath;
+  }
 }

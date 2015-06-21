@@ -204,6 +204,13 @@ public final class FileImporterImpl implements FileImporter {
   }
 
   @Override
+  public void importComponentArchive(String userId, String fileName,
+      InputStream uploadedFileStream) throws IOException {
+    byte[] content = ByteStreams.toByteArray(uploadedFileStream);
+    storageIo.uploadComponentFile(userId, fileName, content);
+  }
+
+  @Override
   public Set<String> getProjectNames(final String userId) {
     List<Long> projectIds = storageIo.getProjects(userId);
     Iterable<String> names = Iterables.transform(projectIds, new Function<Long, String>() {
