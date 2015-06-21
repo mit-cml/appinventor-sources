@@ -197,4 +197,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
       assertEquals(UploadResponse.Status.NOT_PROJECT_ARCHIVE, e.uploadResponse.getStatus());
     }
   }
+
+  public void testImportComponentArchive() {
+    // todo: add test when there's API in StorageIo for info of imported archives
+  }
 }
