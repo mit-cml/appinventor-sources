@@ -775,6 +775,10 @@ public final class YoungAndroidFormUpgrader {
       // The AppName property was added.
       srcCompVersion = 14;
     }
+    if (srcCompVersion < 15) {
+      // The TitleVisible property was added.
+      srcCompVersion = 15;
+    }
     return srcCompVersion;
   }
 

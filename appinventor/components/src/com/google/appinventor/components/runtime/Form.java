@@ -28,12 +28,12 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -115,6 +115,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showTitle = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -215,6 +216,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    TitleVisible(true);
   }
 
   @Override
@@ -782,6 +784,39 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+ 
+  /**
+   * TitleVisible property getter method.
+   *
+   * @return  showTitle boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
+  public boolean TitleVisible() {
+    return showTitle;
+  }
+  
+  /**
+   * TitleVisible property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void TitleVisible(boolean show) {
+    if (show != showTitle) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (v != null) {
+        if (show) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          v.setVisibility(View.GONE);
+        }    
+        showTitle = show;		
+      }
+    }
   }
 
   /**

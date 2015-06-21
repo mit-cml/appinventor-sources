@@ -1775,7 +1775,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 14:
     // - The Screen1.AppName was added and no block need to be changed.
-    14: "noUpgrade"
+    14: "noUpgrade",
+    	
+    // For FORM_COMPONENT_VERSION 15:
+    // - The Screen1.TitleVisible was added and no block need to be changed.
+    15: "noUpgrade"
 
   }, // End Screen
 
