@@ -1014,7 +1014,7 @@ Blockly.Blocks['math_is_a_number'] = {
     translatedName: Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM,
     dropDown: {
       titleName: 'OP',
-      value: 'DECIMAL'
+      value: 'BASE10'
     }
   },{
     translatedName: Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM,
@@ -1033,7 +1033,7 @@ Blockly.Blocks['math_is_a_number'] = {
 
 Blockly.Blocks.math_is_a_number.OPERATORS =
   [[ Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM, 'NUMBER' ],
-   [ Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM, 'DECIMAL' ],
+   [ Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM, 'BASE10' ],
    [ Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM, 'HEXADECIMAL' ],
    [ Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM, 'BINARY' ]];
 

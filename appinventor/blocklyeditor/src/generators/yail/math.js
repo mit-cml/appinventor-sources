@@ -53,7 +53,7 @@ Blockly.Yail['math_arithmetic'] = function(mode,block) {
   // Basic arithmetic operators.
   var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.Yail.valueToCode(block, 'A', order) || 0;
   var argument1 = Blockly.Yail.valueToCode(block, 'B', order) || 0;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -203,8 +203,8 @@ Blockly.Yail['math_random_float'] = function() {
   // Random fraction between 0 and 1.
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "random-fraction"
       + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + 
-  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + 
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR +
+  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE +
   Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + "random fraction"
@@ -233,7 +233,7 @@ Blockly.Yail['math_on_list'] = function() {
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var args = "";
   var typeString = "";
   for(var i=0;i<this.itemCount_;i++) {
@@ -264,7 +264,7 @@ Blockly.Yail['math_divide'] = function() {
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_divide.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.Yail.valueToCode(this, 'DIVIDEND', order) || 0;
   var argument1 = Blockly.Yail.valueToCode(this, 'DIVISOR', order) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -398,10 +398,10 @@ Blockly.Yail['math_is_a_number'] = function() {
 };
 
 Blockly.Yail.math_is_a_number.OPERATORS = {
-  NUMBER: ['is-number?', "'(any) \"is a number?\""],
-  DECIMAL: ['is-decimal?', "'(any) \"is decimal?\""],
-  HEXADECIMAL: ['is-hexadecimal?', "'(any) \"is hexadecimal?\""],
-  BINARY: ['is-binary?', "'(any) \"is binary?\""]
+  NUMBER: ['is-number?', "'(text) \"is a number?\""],
+  DECIMAL: ['is-base10?', "'(text) \"is base10?\""],
+  HEXADECIMAL: ['is-hexadecimal?', "'(text) \"is hexadecimal?\""],
+  BINARY: ['is-binary?', "'(text) \"is binary?\""]
 };
 
 Blockly.Yail['math_convert_number'] = function() {
