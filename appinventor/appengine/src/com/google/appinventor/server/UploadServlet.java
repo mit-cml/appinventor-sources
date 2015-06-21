@@ -59,6 +59,11 @@ public class UploadServlet extends OdeServlet {
   private static final int USERFILE_PATH_INDEX = 4;
   private static final int SPLIT_LIMIT_USERFILE = 5;
 
+  // Constants used when upload kind is "component".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int COMPONENT_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_COMPONENT = 5;
+
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
@@ -134,6 +139,23 @@ public class UploadServlet extends OdeServlet {
         }
 
         fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_COMPONENT)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_COMPONENT);
+        if (COMPONENT_PATH_INDEX >= uriComponents.length) {
+          throw CrashReport.createAndLogError(LOG, req, null,
+              new IllegalArgumentException("Missing component file path."));
+        }
+
+        InputStream uploadedStream;
+        try {
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, req, null, e);
+        }
+
+        String fileName = uriComponents[COMPONENT_PATH_INDEX];
+        fileImporter.importComponentArchive(userInfoProvider.getUserId(), fileName, uploadedStream);
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
