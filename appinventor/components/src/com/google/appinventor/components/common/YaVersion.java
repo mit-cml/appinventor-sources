@@ -328,8 +328,10 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 126:
   // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 127:
+  // - FORM_COMPONENT_VERSION was incremented to 16.
 
-  public static final int YOUNG_ANDROID_VERSION = 126;
+  public static final int YOUNG_ANDROID_VERSION = 127;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -590,7 +592,10 @@ public class YaVersion {
   // - The Screen1.AppName was added and no block need to be changed.
   // For FORM_COMPONENT_VERSION 15:
   // - The Screen.ShowStatusBar was added.
-  public static final int FORM_COMPONENT_VERSION = 15;
+  // For FORM_COMPONENT_VERSION 16:
+  // - TitleVisible property was added
+
+  public static final int FORM_COMPONENT_VERSION = 16;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

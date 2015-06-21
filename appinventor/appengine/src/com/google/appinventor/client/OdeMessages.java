@@ -2270,6 +2270,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShowStatusBarProperties();
 
+  @DefaultMessage("TitleVisible")
+  @Description("")
+  String TitleVisibleProperties();
+
   @DefaultMessage("AboveRangeEventEnabled")
   @Description("")
   String AboveRangeEventEnabledProperties();

@@ -1785,8 +1785,12 @@ Blockly.Versioning.AllUpgradeMaps =
     14: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 15:
-    // - The Screen1.ShowStatusBar was added and no block need to be changed.
-    15: "noUpgrade"
+    // - The Screen1.ShowStatusBar was added and no block needs to be changed.
+    15: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 16:
+    // - The Screen1.TitleVisible was added and no block needs to be changed.
+    16: "noUpgrade"
 
   }, // End Screen
 
