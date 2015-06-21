@@ -399,7 +399,7 @@ Blockly.Yail['math_is_a_number'] = function() {
 
 Blockly.Yail.math_is_a_number.OPERATORS = {
   NUMBER: ['is-number?', "'(text) \"is a number?\""],
-  DECIMAL: ['is-base10?', "'(text) \"is base10?\""],
+  BASE10: ['is-base10?', "'(text) \"is base10?\""],
   HEXADECIMAL: ['is-hexadecimal?', "'(text) \"is hexadecimal?\""],
   BINARY: ['is-binary?', "'(text) \"is binary?\""]
 };
