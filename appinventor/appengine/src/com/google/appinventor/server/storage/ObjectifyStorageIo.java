@@ -1556,10 +1556,10 @@ public class ObjectifyStorageIo implements  StorageIo {
         ComponentData compData = new ComponentData();
         compData.id = null;
         compData.userId = userId;
-        compData.name = fileName;
+        compData.name = fileName.substring(0, fileName.length() - ".aix".length());
         compData.version = 0; // todo: make it auto-incremented
         compData.gcsPath = "extern_comps" + "/" + compData.userId + "/" +
-            compData.name + "/" + compData.version + "/" + compData.name;
+            compData.name + "/" + compData.version + "/" + fileName;
 
         try {
           GcsOutputChannel outputChannel =

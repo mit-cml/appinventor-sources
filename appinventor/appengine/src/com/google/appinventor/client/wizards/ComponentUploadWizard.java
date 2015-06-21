@@ -63,8 +63,7 @@ public class ComponentUploadWizard extends Wizard {
       private String trimPathAndExtension(String filename) {
         // Strip leading path off filename.
         // We need to support both Unix ('/') and Windows ('\\') separators.
-        return filename.substring(0, filename.length() - COMPONENT_ARCHIVE_EXTENSION.length()).
-            substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
+        return filename.substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
       }
     });
   }
