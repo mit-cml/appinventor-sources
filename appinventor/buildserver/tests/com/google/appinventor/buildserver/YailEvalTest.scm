@@ -72,6 +72,14 @@
     (equal? (yail-alist-lookup key alist 'notfound) (kawa-list->yail-list '(100 200 300)))))
 
 
+;;Test that we've patched around the Kawa bug in conversion to binary
+(define (testMathsConvert2)
+  (let* ((testvalue (number->string (expt 10 2)))
+	 (converted (math-convert-dec-bin testvalue))
+	 (unconverted (math-convert-bin-dec converted)))
+    (equal? converted unconverted)))
+
+
 ;; Support for testing repl communication
 
 

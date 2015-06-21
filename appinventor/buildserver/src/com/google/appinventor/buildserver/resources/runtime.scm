@@ -1614,7 +1614,6 @@
 
 (define (math-convert-dec-bin x)
   (if (is-base10? x)
-
     (patched-number->string-binary (string->number x))
     (signal-runtime-error
       (format #f "Convert base 10 to binary: '~A' is not an integer"

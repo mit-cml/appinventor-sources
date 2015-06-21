@@ -1046,13 +1046,18 @@ public class YailEvalTest extends TestCase {
 
   public void testMathsConvert() throws Throwable {
     // we have to make the test inputs strings, because in the running system,
-    // the ocnvert lobcks force a conversion to string before calling thse
+    // the convert blocks force a conversion to string before calling the
     // Yail procedures
     assertEquals("3E8", scheme.eval("(math-convert-dec-hex \"1000\")").toString());
     assertEquals("1000", scheme.eval("(math-convert-hex-dec \"3E8\")").toString());
     assertEquals("1010", scheme.eval("(math-convert-dec-bin \"10\")").toString());
     assertEquals("10", scheme.eval("(math-convert-bin-dec \"1010\")").toString());
   }
+
+  public void testMathsConvert2() throws Throwable {
+    // test that we've patched around the Kawa bug in conversion to binary
+     assertTrue((Boolean) scheme.eval("(testMathsConvert2)"));
+   }
 
   public void roundToIntegerGroup() throws Throwable {
     assertEquals("10", scheme.eval("(yail-round 10.48)").toString());
