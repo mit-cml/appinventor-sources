@@ -15,9 +15,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
-import com.qualcomm.robotcore.util.TypeConversion;
-
-import java.nio.ByteOrder;
 
 /**
  * A component for a legacy module of an FTC robot.
@@ -41,10 +38,6 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   public FtcLegacyModule(ComponentContainer container) {
     super(container.$form());
   }
-
-  // Functions
-  // TODO(lizlooney): These needs to be reviewed by Steve Barker. Some of the parameters are
-  // obsolete.
 
   @SimpleFunction(description = "Enable a physical port in NXT I2C read mode.")
   public void EnableNxtI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int memLength) {
@@ -183,161 +176,6 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
       }
     }
     return false;
-  }
-
-  @SimpleFunction(description = "Convert a 1-byte number to a byte array.")
-  public Object Convert1ByteNumberToByteArray(String number) {
-    // The number parameter is a String, which allows decimal, hexadecimal, and octal numbers to be
-    // given, for example "32", "0x20", or "040".
-    try {
-      return new byte[] { Byte.decode(number) };
-    } catch (NumberFormatException e) {
-      form.dispatchErrorOccurredEvent(this, "Convert1ByteNumberToByteArray",
-          ErrorMessages.ERROR_FTC_INVALID_NUMBER, number);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Convert1ByteNumberToByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return new byte[] { 0 };
-  }
-
-  @SimpleFunction(description = "Convert a 2-byte number to a byte array.")
-  public Object Convert2ByteNumberToByteArray(short number, boolean bigEndian) {
-    try {
-      return TypeConversion.shortToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Convert2ByteNumberToByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return new byte[] { 0, 0 };
-  }
-
-  @SimpleFunction(description = "Convert a 4-byte number to a byte array.")
-  public Object Convert4ByteNumberToByteArray(int number, boolean bigEndian) {
-    try {
-      return TypeConversion.intToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Convert4ByteNumberToByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return new byte[] { 0, 0, 0, 0 };
-  }
-
-  @SimpleFunction(description = "Convert a 8-byte number to a byte array.")
-  public Object Convert8ByteNumberToByteArray(long number, boolean bigEndian) {
-    try {
-      return TypeConversion.longToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Convert8ByteNumberToByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-  }
-
-  @SimpleFunction(description = "Convert a 1-byte array to an unsigned number.")
-  public int ConvertByteArrayToUnsigned1ByteNumber(Object byteArray) {
-    try {
-      if (byteArray instanceof byte[]) {
-        byte[] b = (byte[]) byteArray;
-        if (b.length >= 1) {
-          return TypeConversion.unsignedByteToInt(b[0]);
-        }
-      }
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToUnsigned1ByteNumber",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToUnsigned1ByteNumber",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Convert a 1-byte array to a signed number.")
-  public int ConvertByteArrayToSigned1ByteNumber(Object byteArray) {
-    try {
-      if (byteArray instanceof byte[]) {
-        byte[] b = (byte[]) byteArray;
-        if (b.length >= 1) {
-          return b[0];
-        }
-      }
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToSigned1ByteNumber",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToSigned1ByteNumber",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-
-  @SimpleFunction(description = "Convert a 2-byte array to a number.")
-  public short ConvertByteArrayTo2ByteNumber(Object byteArray, boolean bigEndian) {
-    try {
-      if (byteArray instanceof byte[]) {
-        byte[] b = (byte[]) byteArray;
-        if (b.length >= 2) {
-          return TypeConversion.byteArrayToShort(b,
-              bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        }
-      }
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo2ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo2ByteNumber",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Convert a 4-byte array to a number.")
-  public int ConvertByteArrayTo4ByteNumber(Object byteArray, boolean bigEndian) {
-    try {
-      if (byteArray instanceof byte[]) {
-        byte[] b = (byte[]) byteArray;
-        if (b.length >= 4) {
-          return TypeConversion.byteArrayToInt(b,
-              bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        }
-      }
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo4ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo4ByteNumber",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Convert a 8-byte array to a number.")
-  public long ConvertByteArrayTo8ByteNumber(Object byteArray, boolean bigEndian) {
-    try {
-      if (byteArray instanceof byte[]) {
-        byte[] b = (byte[]) byteArray;
-        if (b.length >= 8) {
-          return TypeConversion.byteArrayToLong(b,
-              bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        }
-      }
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo8ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo8ByteNumber",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
   }
 
   // FtcHardwareDevice implementation
