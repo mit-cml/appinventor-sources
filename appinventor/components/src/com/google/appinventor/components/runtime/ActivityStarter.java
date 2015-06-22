@@ -362,6 +362,9 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     return "";
   }
 
+  /**
+   * Specifies the list of key-value pairs that will be passed as extra data to the activity.
+   */
   @SimpleProperty
   public void Extras(YailList pairs) {
     for (Object pair : pairs.toArray()) {
@@ -375,6 +378,9 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     extras = pairs;
   }
 
+  /**
+   * Returns the list of key-value pairs that will be passed as extra data to the activity.
+   */
   @SimpleProperty
   public YailList Extras() {
     return extras;
