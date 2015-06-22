@@ -330,8 +330,10 @@ public class YaVersion {
   // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 127:
   // - FORM_COMPONENT_VERSION was incremented to 16.
+  // For YOUNG_ANDROID_VERSION 128:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 19
 
-  public static final int YOUNG_ANDROID_VERSION = 127;
+  public static final int YOUNG_ANDROID_VERSION = 128;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -386,8 +388,11 @@ public class YaVersion {
   // - Added close-screen-with-plain-text
   // For BLOCKS_LANGUAGE_VERSION 18:
   // - New Obsfucate Text Block was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 18;
-
+  // For BLOCKS_LANGUAGE_VERSION 19:
+  // The is-number block was modified to include dropdowns for base10, hex, and binary
+  // The number-convert blocks was added
+  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
