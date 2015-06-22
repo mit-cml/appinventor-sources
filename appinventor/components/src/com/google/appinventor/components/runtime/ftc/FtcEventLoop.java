@@ -34,16 +34,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+//package com.qualcomm.ftcrobotcontroller;
 package com.google.appinventor.components.runtime.ftc;
 
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcEventLoopHandler;
 import com.qualcomm.ftccommon.UpdateUI;
-//AI import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
+/* Removed for App Inventor
+import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
+*/
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+// Added for App Inventor:
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -54,6 +58,7 @@ import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.Util;
 
+// Added for App Inventor:
 import com.google.appinventor.components.runtime.FtcRobotController;
 
 /**
@@ -99,6 +104,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
     // Start up the op mode manager
     opModeManager.setHardwareMap(hardwareMap);
 
+    // Added for App Inventor:
     aiFtcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
     DbgLog.msg("======= INIT FINISH =======");
   }
@@ -150,6 +156,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
     // may be connected through this device
     ftcEventLoopHandler.shutdownLegacyModules();
 
+    // Added for App Inventor:
     aiFtcRobotController.onEventLoopTeardown();
     DbgLog.msg("======= TEARDOWN COMPLETE =======");
   }
@@ -228,7 +235,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   }
 
 
-  // For App Inventor:
+  // Added for App Inventor:
   private FtcRobotController aiFtcRobotController;
 
   FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback,

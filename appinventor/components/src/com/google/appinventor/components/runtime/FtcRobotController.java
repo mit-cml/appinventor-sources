@@ -109,8 +109,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private final Form form;
   public final LinearLayout view;
 
-  // The request code for launching other activities.
-  private final int requestCode;
+  // The request codes for launching other activities.
+  public final int requestCodeConfigureRobot;
 
   // Backing for properties.
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
@@ -133,7 +133,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     container.$add(this);
 
     form.registerForOnInitialize(this);
-    requestCode = form.registerForActivityResult(this);
+    requestCodeConfigureRobot = form.registerForActivityResult(this);
     form.registerForOnNewIntent(this);
     form.registerForOnCreateOptionsMenu(this);
     form.registerForOnOptionsItemSelected(this);
@@ -167,9 +167,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
-    if (requestCode == this.requestCode) {
+    if (requestCode == requestCodeConfigureRobot) {
       if (ftcRobotControllerActivity != null) {
-        ftcRobotControllerActivity.resultReturned(requestCode, resultCode, data);
+        ftcRobotControllerActivity.onActivityResultAI(requestCode, resultCode, data);
       }
     }
   }
@@ -377,6 +377,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @SimpleProperty(description = "The name of the robot configuration.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public String Configuration() {
+    // TODO(lizlooney): consider removing this property
     return configuration;
   }
 
@@ -388,6 +389,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       defaultValue = DEFAULT_CONFIGURATION)
   @SimpleProperty(userVisible = false)
   public void Configuration(String configuration) {
+    // TODO(lizlooney): consider removing this property
     if (!this.configuration.equals(configuration)) {
       this.configuration = configuration;
       if (!TextUtils.isEmpty(configuration)) {
@@ -451,7 +453,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     form.unregisterForActivityResult(this);
 
     if (ftcRobotControllerActivity != null) {
-      ftcRobotControllerActivity.prepareToDie();
+      ftcRobotControllerActivity.onStopAI();
     }
 
     if (wakeLock != null) {

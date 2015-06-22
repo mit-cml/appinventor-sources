@@ -47,7 +47,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList,components_FtcJars">
+          depends="init,CopyToRunLibDir,CopyFtcRes,MakeFtcResList,components_AndroidRuntime,components_Barcode,components_ComponentList,components_FtcAars">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -64,13 +64,6 @@
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
-    </copy>
-    <mkdir dir="${classes.files.dir}/ftcres" />
-    <copy todir="${classes.files.dir}/ftcres" flatten="false">
-      <fileset dir="${build.dir}/components/ftc/RobotCore/res" includes="**/*" />
-    </copy>
-    <copy todir="${classes.files.dir}/ftcres" flatten="false">
-      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
     </copy>
     <!-- Copy jars -->
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
@@ -135,6 +128,37 @@
     </copy>
   </target>
 
+  <target name="CopyFtcRes"
+          depends="init,components_FtcAars">
+    <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
+    <mkdir dir="${ftcres.dir}" />
+    <!-- Copy resources for FtcCommon, except layout/header.xml which is a duplicate of the one in lib/ftc/res -->
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*" excludes="layout/header.xml,xml/preferences.xml" />
+    </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
+    </copy>
+  </target>
+
+  <target name="CheckFtcResList"
+          depends="init,CopyFtcRes">
+    <uptodate property="FtcResList.uptodate" targetfile="${class.dir}/BuildServer/files/ftcres.list">
+      <srcfiles dir="${ftcres.dir}" includes="**/*" />
+    </uptodate>
+  </target>
+
+  <target name="MakeFtcResList"
+          depends="CheckFtcResList"
+          unless="FtcResList.uptodate">
+    <fileset dir="${ftcres.dir}" id="ftcres.fileset">
+      <include name="**/*" />
+    </fileset>
+    <pathconvert dirsep="/" pathsep="," property="ftcres.filelist" refid="ftcres.fileset">
+      <map from="${ftcres.dir}/" to="" />
+    </pathconvert>
+		<echo message="${ftcres.filelist}" file="${class.dir}/BuildServer/files/ftcres.list" />
+  </target>
 
   <!-- =====================================================================
        Checks to see if a debug.keystore file exists in the invoker's

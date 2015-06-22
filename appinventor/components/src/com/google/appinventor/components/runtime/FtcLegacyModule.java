@@ -121,7 +121,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   public void EnableAnalogReadMode(int physicalPort) {
     if (legacyModule != null) {
       try {
-        legacyModule.enableAnalogReadMode(physicalPort, 0);
+        legacyModule.enableAnalogReadMode(physicalPort);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableAnalogReadMode",

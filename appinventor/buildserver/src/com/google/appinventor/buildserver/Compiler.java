@@ -483,7 +483,25 @@ public final class Compiler {
       // Add FTC related activities and service to the manifest only if an FtcRobotController
       // component is used in the app.
       if (componentTypes.contains("FtcRobotController")) {
-        // TODO(lizlooney): what activities (if any) should be bundled into the user's app?
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.google.appinventor.components.runtime.ftc.FtcRobotControllerSettingsActivity\"\n");
+        out.write("      android:label=\"Settings\" />\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity\"\n");
+        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.AutoConfigureActivity\"\n");
+        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcAutoconfigureActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
         out.write("    <service\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
         out.write("      android:enabled=\"true\" />\n");
@@ -614,7 +632,7 @@ public final class Compiler {
       out.println("________Generating R.java files");
       File genDir = createDirectory(buildDir, "gen");
       String[] packages = {
-        "com.qualcomm.robotcore"
+        "com.qualcomm.ftccommon"
       };
       List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
       for (String customPackage : packages) {
@@ -730,23 +748,11 @@ public final class Compiler {
   /*
    * Creates the resources used by FTC.
    */
-  private boolean createFtcResources(File resDir) {
-    String[] FTC_FILES = {
-      "layout/activity_ftc_controller.xml",
-      "layout/device_name.xml",
-      "layout/header.xml",
-      "menu/ftc_robot_controller.xml",
-      "values/colors.xml",
-      "values/dimens.xml",
-      "values/strings.xml",
-      "xml/device_filter.xml",
-      // From RobotCore.aar
-      "values/values.xml",
-      "values-v11/values.xml",
-      "values-v14/values.xml",
-    };
-
-    for (String ftcFile : FTC_FILES) {
+  private boolean createFtcResources(File resDir) throws IOException {
+    String csv = Resources.toString(
+        Compiler.class.getResource(RUNTIME_FILES_DIR + "ftcres.list"), Charsets.UTF_8);
+    String[] ftcFiles = csv.split(",");
+    for (String ftcFile : ftcFiles) {
       out.println("________Copying " + ftcFile);
       String source = getResource(RUNTIME_FILES_DIR + "ftcres/" + ftcFile);
       File destFile = new File(resDir, ftcFile.replace('/', File.separatorChar));

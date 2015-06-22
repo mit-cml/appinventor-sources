@@ -24,14 +24,12 @@
 
     <TextView
       android:id="@+id/textWifiDirectStatus"
-      android:textColor="#000000"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="" />
 
     <TextView
       android:id="@+id/textRobotStatus"
-      android:textColor="#000000"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/textWifiDirectStatus"
@@ -39,7 +37,6 @@
 
     <TextView
       android:id="@+id/textOpMode"
-      android:textColor="#000000"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/textRobotStatus"
@@ -58,7 +55,6 @@
 
     <TextView
       android:id="@+id/textGamepad1"
-      android:textColor="#000000"
       android:layout_width="match_parent"
       android:layout_height="30dp"
       android:layout_above="@+id/textGamepad2"
@@ -67,7 +63,6 @@
 
     <TextView
       android:id="@+id/textGamepad2"
-      android:textColor="#000000"
       android:layout_width="match_parent"
       android:layout_height="30dp"
       android:layout_alignParentBottom="true"
