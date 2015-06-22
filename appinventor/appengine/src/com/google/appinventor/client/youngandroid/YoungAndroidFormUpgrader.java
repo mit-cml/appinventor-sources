@@ -410,6 +410,10 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Extras property was added to accept a list of key-value pairs to put to the intent
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 

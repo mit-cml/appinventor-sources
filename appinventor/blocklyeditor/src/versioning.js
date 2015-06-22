@@ -972,7 +972,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The ActivityStarter.StartActivity method was modified to pull the parent Form's
     // screen animation type. No blocks need to be modified to upgrade to version 4.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // Extras property was added
+    5: "noUpgrade"
 
   }, // End ActivityStarter upgraders
 
@@ -2075,4 +2078,3 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
-

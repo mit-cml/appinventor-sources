@@ -16,8 +16,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.YailList;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -108,6 +110,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   private Intent resultIntent;
   private String result;
   private int requestCode;
+  private YailList extras;
   private final ComponentContainer container;
 
   /**
@@ -359,6 +362,24 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     return "";
   }
 
+  @SimpleProperty
+  public void Extras(YailList pairs) {
+    for (Object pair : pairs.toArray()) {
+      boolean isYailList = pair instanceof YailList;
+      boolean isPair = isYailList ? ((YailList) pair).size() == 2 : false;
+      if (!isYailList || !isPair) {
+        throw new YailRuntimeError("Argument to Extras should be a list of pairs",
+            "ActivityStarter Error");
+      }
+    }
+    extras = pairs;
+  }
+
+  @SimpleProperty
+  public YailList Extras() {
+    return extras;
+  }
+
 
   /**
    * Returns the name of the activity that corresponds to this ActivityStarter,
@@ -423,6 +444,15 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
     if (extraKey.length() != 0 && extraValue.length() != 0) {
       intent.putExtra(extraKey, extraValue);
+    }
+
+    for (Object extra : extras.toArray()) {
+      YailList castExtra = (YailList) extra;
+      String key = castExtra.getString(0);
+      String value = castExtra.getString(1);
+      if (key.length() != 0 && value.length() != 0) {
+        intent.putExtra(key, value);
+      }
     }
 
     return intent;

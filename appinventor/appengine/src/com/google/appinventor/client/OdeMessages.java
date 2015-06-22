@@ -2426,6 +2426,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ExtraValueProperties();
 
+  @DefaultMessage("Extras")
+  @Description("")
+  String ExtrasProperties();
+
   @DefaultMessage("FollowLinks")
   @Description("")
   String FollowLinksProperties();
