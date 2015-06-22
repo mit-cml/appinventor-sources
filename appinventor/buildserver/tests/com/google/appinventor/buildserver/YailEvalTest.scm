@@ -74,10 +74,10 @@
 
 ;;Test that we've patched around the Kawa bug in conversion to binary
 (define (testMathsConvert2)
-  (let* ((testvalue (number->string (expt 10 2)))
-	 (converted (math-convert-dec-bin testvalue))
-	 (unconverted (math-convert-bin-dec converted)))
-    (equal? converted unconverted)))
+  (let* ((test-input (number->string (expt 10 30)))
+	 (converted (math-convert-dec-bin test-input))
+	 (unconverted (number->string (math-convert-bin-dec converted))))
+    (equal? test-input unconverted)))
 
 
 ;; Support for testing repl communication

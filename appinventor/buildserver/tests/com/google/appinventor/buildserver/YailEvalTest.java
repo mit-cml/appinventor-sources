@@ -1059,7 +1059,7 @@ public class YailEvalTest extends TestCase {
      assertTrue((Boolean) scheme.eval("(testMathsConvert2)"));
    }
 
-  public void roundToIntegerGroup() throws Throwable {
+  public void testRoundToIntegerGroup() throws Throwable {
     assertEquals("10", scheme.eval("(yail-round 10.48)").toString());
     assertEquals("10", scheme.eval("(yail-floor 10.48)").toString());
     assertEquals("11", scheme.eval("(yail-ceiling 10.48)").toString());
@@ -1073,17 +1073,10 @@ public class YailEvalTest extends TestCase {
     }
   }
 
-  public void randomIntegerAvoidError() throws Throwable {
+  public void testRandomIntegerAvoidError() throws Throwable {
     // demonstrate that this does not fail with large arguments
     scheme.eval("(random-integer 10 (- (expt 2 40)))");
     scheme.eval("(random-integer (- (expt 2 40)) 10)");
-  }
-
-  public void mathConvert() throws Throwable {
-    assertEquals("1B", scheme.eval("(convert-dec-hex 18)").toString());
-    assertEquals("18", scheme.eval("(convert-hex-dec \"1B\")").toString());
-    assertEquals("10", scheme.eval("(convert-dec-bin 1010)").toString());
-    assertEquals("4", scheme.eval("(convert-bin-dec \"100\")").toString());
   }
 
   private static final double DELTA = .0001;

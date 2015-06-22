@@ -1580,10 +1580,10 @@
   (if (is-base10? x)
     (string-to-upper-case (number->string (string->number x) 16))
     (signal-runtime-error
-      (format #f "Convert base 10 to hex: '~A' is not an integer"
+      (format #f "Convert base 10 to hex: '~A' is not a positive integer"
        (get-display-representation x)
       )
-      "Invalid decimal number"
+      "Argument is not a positive integer"
     )
   )
 )
@@ -1616,10 +1616,10 @@
   (if (is-base10? x)
     (patched-number->string-binary (string->number x))
     (signal-runtime-error
-      (format #f "Convert base 10 to binary: '~A' is not an integer"
+      (format #f "Convert base 10 to binary: '~A' is not a positive integer"
        (get-display-representation x)
       )
-      "Invalid decimal number"
+      "Argument is not a positive integer"
     )
   )
 )

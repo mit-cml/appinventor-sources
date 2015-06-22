@@ -323,7 +323,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 124:
-  // - BLOCKS_LANGUAGE_VERSION was incremented to 19.
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 19
   public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
