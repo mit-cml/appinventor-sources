@@ -6,7 +6,7 @@
 
 package com.google.appinventor.server;
 
-import com.google.appinventor.shared.rpc.component.ComponentRecord;
+import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 
 import java.util.ArrayList;
@@ -14,15 +14,15 @@ import java.util.List;
 
 public class ComponentServiceImpl extends OdeRemoteServiceServlet implements ComponentService {
   @Override
-  public List<ComponentRecord> getComponentRecords() {
-    ArrayList<ComponentRecord> records = new ArrayList<ComponentRecord>();
-    records.add(new ComponentRecord("comp0", 0));
-    records.add(new ComponentRecord("comp0", 3));
-    records.add(new ComponentRecord("comp0", 7));
-    records.add(new ComponentRecord("comp1", 0));
-    records.add(new ComponentRecord("comp2", 2));
-    records.add(new ComponentRecord("comp2", 4));
+  public List<ComponentInfo> getComponentInfos() {
+    ArrayList<ComponentInfo> infos = new ArrayList<ComponentInfo>();
+    infos.add(new ComponentInfo("comp0", 0));
+    infos.add(new ComponentInfo("comp0", 3));
+    infos.add(new ComponentInfo("comp0", 7));
+    infos.add(new ComponentInfo("comp1", 0));
+    infos.add(new ComponentInfo("comp2", 2));
+    infos.add(new ComponentInfo("comp2", 4));
 
-    return records;
+    return infos;
   }
 }

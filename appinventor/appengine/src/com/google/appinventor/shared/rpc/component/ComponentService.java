@@ -17,8 +17,8 @@ import java.util.List;
 public interface ComponentService extends RemoteService {
 
   /**
-   * @return A list of records of user's components
+   * @return A list of info of user's components
    */
-  List<ComponentRecord> getComponentRecords();
+  List<ComponentInfo> getComponentInfos();
 
 }

@@ -13,8 +13,8 @@ import java.util.List;
 public interface ComponentServiceAsync {
 
   /**
-   * @see ComponentService#getComponentRecords()
+   * @see ComponentService#getComponentInfos()
    */
-  void getComponentRecords(AsyncCallback<List<ComponentRecord>> callback);
+  void getComponentInfos(AsyncCallback<List<ComponentInfo>> callback);
 
 }
