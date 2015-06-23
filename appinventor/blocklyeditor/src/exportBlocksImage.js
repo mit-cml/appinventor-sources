@@ -122,7 +122,7 @@ out$.svgAsDataUri = function(el, optmetrics, options, cb) {
     toHide[i].setAttribute("visibility", "hidden");
   }
 
-  toHide = el.querySelectorAll('image');
+  toHide = clone.querySelectorAll('image');
 
   for (var i = 0; i < toHide.length; i++) {
     toHide[i].setAttribute("visibility", "hidden");
