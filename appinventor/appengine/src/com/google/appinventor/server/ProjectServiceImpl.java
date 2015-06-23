@@ -580,7 +580,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     try {
       GcsService fileService = GcsServiceFactory.createGcsService();
       GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
-      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 8000);
+      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
       InputStream gcsis = Channels.newInputStream(readChannel);
       // ok, we don't want to send the gcs stream because it can time out as we
