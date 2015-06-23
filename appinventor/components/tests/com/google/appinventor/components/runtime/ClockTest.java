@@ -26,11 +26,11 @@ public class ClockTest extends TestCase {
   }
 
   public void testMakeInstant() throws Exception {
-    assertEquals("Oct 11, 1941 9:30:00 AM", Clock.FormatDateTime(tc,""));
+    assertEquals("Oct 11, 1941 09:30:00 AM", Clock.FormatDateTime(tc,""));
   }
 
   public void testMakeInstantFromMillis() throws Exception {
-    assertEquals("Jan 1, 1970 12:00:00 AM",
+    assertEquals("Jan 1, 1970 00:00:00 AM",
         Clock.FormatDateTime(Clock.MakeInstantFromMillis(0
                                       - TimeZone.getDefault().getRawOffset()),""));
   }
@@ -45,24 +45,24 @@ public class ClockTest extends TestCase {
   }
 
   public void testAddYears2() throws Exception {
-    assertEquals("Oct 11, 1931 9:30 AM", Clock.FormatDateTime(Clock.AddYears(tc, -10), "MM/dd/yyyy H:mm a"));
+    assertEquals("10/11/1931 09:30 AM", Clock.FormatDateTime(Clock.AddYears(tc, -10), "MM/dd/yyyy HH:mm a"));
   }
 
   public void testAddMonths() throws Exception {
-    assertEquals("1994/12/11", Clock.FormatDate(Clock.AddMonths(tc, 2), "yyyy/MM/dd"));
+    assertEquals("1941/12/11", Clock.FormatDate(Clock.AddMonths(tc, 2), "yyyy/MM/dd"));
   }
 
   public void testAddMonths2() throws Exception {
-    assertEquals("11/10/1942 9:30:00 AM", Clock.FormatDateTime(Clock.AddMonths(tc, 12), "dd/MM/yyyy H:mm:ss a"));
+    assertEquals("11/10/1942 09:30:00 AM", Clock.FormatDateTime(Clock.AddMonths(tc, 12), "dd/MM/yyyy HH:mm:ss a"));
   }
 
   public void testAddWeeks() throws Exception {
-    assertEquals("Sep 10, 2002 12:00:00 AM", Clock.FormatDateTime(
+    assertEquals("Sep 10, 2002 00:00:00 AM", Clock.FormatDateTime(
         Clock.AddWeeks(Clock.MakeInstant("9/11/2001 00:00:00"), 52), ""));
   }
 
   public void testAddWeeks2() throws Exception {
-    assertEquals("Sep 18, 2001 12:00:00 AM", Clock.FormatDateTime(
+    assertEquals("Sep 18, 2001 00:00:00 AM", Clock.FormatDateTime(
         Clock.AddWeeks(Clock.MakeInstant("9/11/2001 00:00:00"), 1), ""));
   }
 
@@ -75,15 +75,15 @@ public class ClockTest extends TestCase {
   }
 
   public void testAddHours() throws Exception {
-    assertEquals("Oct 11, 1941 7:30:00 AM", Clock.FormatDateTime(Clock.AddHours(tc, -2),""));
+    assertEquals("Oct 11, 1941 07:30:00 AM", Clock.FormatDateTime(Clock.AddHours(tc, -2),""));
   }
 
   public void testAddHours2() throws Exception {
-    assertEquals("10-12-1941 9:30:00 AM", Clock.FormatDateTime(Clock.AddHours(tc, 24),"MM-dd-yyyy HH:mm:ss a"));
+    assertEquals("10-12-1941 09:30:00 AM", Clock.FormatDateTime(Clock.AddHours(tc, 24),"MM-dd-yyyy HH:mm:ss a"));
   }
 
   public void testAddMinutes() throws Exception {
-    assertEquals("Oct 11, 1941 9:32:00 AM", Clock.FormatDateTime(Clock.AddMinutes(tc, 2),""));
+    assertEquals("Oct 11, 1941 09:32:00 AM", Clock.FormatDateTime(Clock.AddMinutes(tc, 2),""));
   }
 
   public void testAddSeconds() throws Exception {
