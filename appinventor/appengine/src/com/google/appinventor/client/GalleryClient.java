@@ -279,7 +279,7 @@ public class GalleryClient {
   */
   public boolean loadSourceFile(GalleryApp gApp, String newProjectName, final PopupPanel popup) {
     final String projectName = newProjectName;
-    final String sourceURL = getGallerySettings().getSourceURL(gApp.getGalleryAppId());
+    final String sourceKey = getGallerySettings().getSourceKey(gApp.getGalleryAppId());
     final long galleryId = gApp.getGalleryAppId();
 
     // first check name to see if valid and unique...
@@ -304,7 +304,7 @@ public class GalleryClient {
       }
     };
     // this is really what's happening here, we call server to load project
-    ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
+    ode.getProjectService().newProjectFromGallery(projectName, sourceKey, galleryId, callback);
     return true;
   }
 
