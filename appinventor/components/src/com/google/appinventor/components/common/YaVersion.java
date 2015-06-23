@@ -332,8 +332,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 16.
   // For YOUNG_ANDROID_VERSION 128:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 19
+  // For YOUNG_ANDROID_VERSION 129:
+  // - CLOCK_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 128;
+  public static final int YOUNG_ANDROID_VERSION = 129;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -536,7 +538,9 @@ public class YaVersion {
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
 
-  public static final int CLOCK_COMPONENT_VERSION = 1;
+  // For CLOCK_COMPONENT_VERSION 2:
+  // - The pattern parameter was added to the FormatDate and FormatDateTime.
+  public static final int CLOCK_COMPONENT_VERSION = 2;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

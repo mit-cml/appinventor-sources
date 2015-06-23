@@ -850,7 +850,7 @@ Blockly.Versioning.findAllMethodCalls = function (dom, componentType, methodName
 /**
  * @param elem: an HTML element
  * @param tag: string thats a tag name
- * @returns the first child of elem with the given tag name (case insenstive)
+ * @returns the first child of elem with the given tag name (case insensitive)
  *  or null if there is no such element.
  *
  * @author fturbak@wellesley.edu (Lyn Turbak)
@@ -860,7 +860,7 @@ Blockly.Versioning.firstChildWithTagName = function (elem, tag) {
   var upcaseTag = tag.toUpperCase();
   var children = goog.dom.getChildren(elem);
   for (var c = 0, child; child = children[c]; c++) {
-    if (child.tagName == upcaseTag) {
+    if (child.tagName.toUpperCase() == upcaseTag) {
       return child;
     }
   }
@@ -1182,7 +1182,22 @@ Blockly.Versioning.AllUpgradeMaps =
   "Clock": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: The patterm pattermeter was added to FormatDate and FormatDateTime.
+    // * FormatDate(instant) to FormatDate(instant, pattern)
+    // * FormatDateTime(instant) to FormatDateTime(instant, pattern)
+    2:
+      [  // Set the default argument for parameter to be an empty string.
+         Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDateTime", 1,
+         '<block type="text">' +
+         '  <field name="TEXT">MMM d, yyyy HH:mm:ss a</field>' +
+         '</block>'),
+         Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDate", 1,
+         '<block type="text">' +
+         '  <field name="TEXT">MMM d, yyyy</field>' +
+         '</block>'),
+      ],
 
   }, // End Clock upgraders
 
