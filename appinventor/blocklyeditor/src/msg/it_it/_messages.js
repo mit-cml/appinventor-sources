@@ -56,6 +56,7 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.DISABLE_BLOCK = 'Disabilita blocco';
     Blockly.Msg.ENABLE_BLOCK = 'Abilita blocco';
     Blockly.Msg.HELP = 'Aiuto';
+    Blockly.Msg.EXPORT_IMAGE = 'Esporta come immagine';
     Blockly.Msg.COLLAPSE_ALL = 'Collassa blocchi';
     Blockly.Msg.EXPAND_ALL = 'Espandi blocchi';
     Blockly.Msg.ARRANGE_H = 'Disponi blocchi orizzontalmente';
