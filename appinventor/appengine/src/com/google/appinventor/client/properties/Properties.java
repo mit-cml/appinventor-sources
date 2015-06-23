@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.properties;
 
@@ -11,7 +12,8 @@ import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -21,6 +23,27 @@ import java.util.Map;
  */
 public class Properties<T extends Property> implements Iterable<T> {
 
+  // We define our own special comparator here. It turns out that
+  // properties are displayed in the properties panel based on the order
+  // they are pulled out of the map. When we used a hashmap, the height
+  // and width properties appeared together (lucky I guess). When
+  // we replaced it with a TreeMap, properties now appear in the panel
+  // in sort order (based on their English names). This separated
+  // the heigth and width proprites. This comparator arranges for
+  // "Width" to be sorted immediately after "Height." So properties
+  // are now displayed in sort order, with this notable exception, the
+  // width property now appears immediately after the Height property
+  // which is what people have grown used to (and seems correct).
+  private class Comparer implements Comparator<String> {
+    public int compare(String a, String b) {
+      if (a.equals("Width"))
+        a = "Heightz";
+      if (b.equals("Width"))
+        b = "Heightz";
+      return a.compareTo(b);
+    }
+  }
+
   // Maps property names to properties
   private final Map<String, T> propertiesMap;
 
@@ -28,7 +51,12 @@ public class Properties<T extends Property> implements Iterable<T> {
    * Creates a new properties instance.
    */
   public Properties() {
-    propertiesMap = new HashMap<String, T>();
+    // Note: We used to use a HashMap here. However when we iterate over its
+    //       contents we get the keys in an arbitrary order based on the hash
+    //       implementation. We have had at least one case where an update of
+    //       the GWT library changed the order which triggered unanticipated
+    //       bugs. By using a TreeMap we will get the keys in a consistent order
+    propertiesMap = new TreeMap<String, T>(new Comparer());
   }
 
   /**

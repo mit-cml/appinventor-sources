@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2013 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.wizards;
 
@@ -139,10 +140,14 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   /**
    * The current template host Url.
    */
-  private static String templateHostUrl = "";
+  private String templateHostUrl = "";
 
-  public static void setTemplateUrlHost(String host) {
+  public void setTemplateUrlHost(String host) {
     templateHostUrl = host;
+  }
+
+  public String getTemplateUrlHost() {
+    return templateHostUrl;
   }
 
   /**
@@ -202,10 +207,6 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    *
    */
   public static boolean hasUrl(String hostUrl) {
-//    if (templatesMap.get(hostUrl) != null || dynamicTemplateUrls.contains(hostUrl))
-//      return true;
-//    else
-//      return false;
    return templatesMap.get(hostUrl) != null;
   }
 
@@ -384,7 +385,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     templatePanel = new HorizontalPanel();
     templatePanel.add(makeTemplateSelector(templates));
     if (templates.size() > 0)
-      templatePanel.add(new TemplateWidget(templates.get(0)));
+      templatePanel.add(new TemplateWidget(templates.get(0), templateHostUrl));
 
     templatesMenu = makeTemplatesMenu();
 
@@ -412,8 +413,6 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   private static void addNewTemplateHost(String hostUrl, ArrayList<TemplateInfo> newTemplates) {
     templatesMap.put(hostUrl, newTemplates);
 
-    TemplateUploadWizard.setTemplateUrlHost(hostUrl);
-
     // Display the templates dialog
     if (instance == null) {
       if (dynamicTemplateUrls.contains(hostUrl)) {
@@ -421,13 +420,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
 // can happen multiple times.
 //        Window.alert("We already have that host " + hostUrl) ;
         instance = new TemplateUploadWizard();
-        TemplateUploadWizard.setTemplateUrlHost(hostUrl);
+        instance.setTemplateUrlHost(hostUrl);
         instance.populateTemplateDialog(newTemplates);
         instance.center();
         return;
       }
       instance = new TemplateUploadWizard();
-      TemplateUploadWizard.setTemplateUrlHost(hostUrl);
+      instance.setTemplateUrlHost(hostUrl);
       instance.updateTemplateOptions(hostUrl);
       instance.center();
     } else {
@@ -563,7 +562,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     // Add the new templates
     templatePanel.add(makeTemplateSelector(templates));
     if (templates.size() > 0)
-      templatePanel.add(new TemplateWidget(templates.get(0)));
+      templatePanel.add(new TemplateWidget(templates.get(0), templateHostUrl));
     parent.add(templatePanel);
   }
 
@@ -642,7 +641,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param onSuccessCommand command to open the project
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
-   if (url.endsWith(".asc")) {
+    if (url.endsWith(".asc")) {
       openTemplateProject("http://" + url, onSuccessCommand);
     } else  {
       retrieveExternalTemplateData("http://" + url);
@@ -656,19 +655,16 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    */
   private static void openTemplateProject(String url, final NewProjectCommand onSuccessCommand) {
     final Ode ode = Ode.getInstance();
+
+    // This Async callback is called after the project is input and created
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
         // failure message
         MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
-
-        // Make sure the project name is legal and unique.
-        if (!TextValidators.checkNewProjectName(projectInfo.getProjectName())) {
-          return;
-        }
-
-        // This just adds it to the project manager, not to the repo
+        // This just adds the new project to the project manager, not to AppEngine
         Project project = ode.getProjectManager().addProject(projectInfo);
+        // And this opens the project
         if (onSuccessCommand != null) {
           onSuccessCommand.execute(project);
         }
@@ -682,6 +678,17 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       return;
     }
 
+    // If project of the same name already exists, just open it
+    if (!TextValidators.checkNewProjectName(projectName)) {
+      Project project = ode.getProjectManager().getProject(projectName);
+      if (onSuccessCommand != null) {
+        onSuccessCommand.execute(project);
+      }
+     return;   // Don't retrieve the template if the project is a duplicate
+    }
+
+    // Here's where we retrieve the template data
+    // Do a GET to retrieve data at url
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
     try {
       Request response = builder.sendRequest(null, new RequestCallback() {
@@ -689,17 +696,14 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
         public void onError(Request request, Throwable exception) {
           Window.alert("Unable to load Project Template Data");
         }
+
+        // Response received from the GET
         @Override
         public void onResponseReceived(Request request, Response response) {
-
-          if (!TextValidators.checkNewProjectName(projectName)) {
-            return;
-          }
-
-          // I think this creates the project. Causing a duplicate?
-          ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
+         // The response.getText is the zip data used to create a new project.
+         // The callback opens the project
+         ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
         }
-
       });
     } catch (RequestException e) {
       Window.alert("Error fetching template file.");
@@ -771,8 +775,8 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     private static HTML descriptionHtml = new HTML();
     private VerticalPanel panel;
 
-    public TemplateWidget(TemplateInfo info) {
-      setTemplate(info);
+    public TemplateWidget(TemplateInfo info, String hostUrl) {
+      setTemplate(info, hostUrl);
 
       panel = new VerticalPanel();
       panel.add(title);
@@ -784,13 +788,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       setStylePrimaryName("ode-ContextMenu");
     }
 
-    public static void setTemplate(TemplateInfo info) {
+    public static void setTemplate(TemplateInfo info, String hostUrl) {
       title.setText(info.name);
       subtitle.setText(info.subtitle);
       descriptionHtml.setHTML(info.description);
 
       if (! info.screenshotStr.equals("")) {
-        String url = templateHostUrl + TEMPLATES_ROOT_DIRECTORY + info.name + "/" + info.screenshotStr;
+        String url = hostUrl + TEMPLATES_ROOT_DIRECTORY + info.name + "/" + info.screenshotStr;
         image.setUrl(url);
       } else {
         TemplateWidget.image.setResource(Ode.getImageBundle().appInventorLogo());
@@ -800,7 +804,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
 
       // Display the screenshot if available
       if (! info.screenshotStr.equals("")) {
-        String url = templateHostUrl + TEMPLATES_ROOT_DIRECTORY + info.name + "/" + info.screenshotStr;
+        String url = hostUrl + TEMPLATES_ROOT_DIRECTORY + info.name + "/" + info.screenshotStr;
         image.setUrl(url);
       }
     }
@@ -813,9 +817,11 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   public static class TemplateCell extends AbstractCell<TemplateInfo> {
 
     public TemplateInfo info;
+    private String hostUrl;
 
-    public TemplateCell(TemplateInfo info) {
+    public TemplateCell(TemplateInfo info, String hostUrl) {
       this.info = info;
+      this.hostUrl = hostUrl;
     }
 
     @Override
@@ -827,7 +833,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       // Add the thumbnail image, if available, or a default image.
       sb.appendHtmlConstant("<tr><td rowspan='3'>");
       if ( !template.thumbStr.equals("") )   {
-        String src = templateHostUrl + TEMPLATES_ROOT_DIRECTORY +   template.name + "/" + template.thumbStr;
+        String src = hostUrl + TEMPLATES_ROOT_DIRECTORY +   template.name + "/" + template.thumbStr;
         sb.appendHtmlConstant("<img style='width:32px' src='" + src + "'>");
       } else {
         ImageResource imgResource = Ode.getImageBundle().appInventorLogo();
@@ -853,7 +859,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @return A CellList widget
    */
   public CellList<TemplateInfo> makeTemplateSelector(ArrayList<TemplateInfo> list) {
-    TemplateCell templateCell = new TemplateCell(list.get(0));
+    TemplateCell templateCell = new TemplateCell(list.get(0), templateHostUrl);
 
     CellList<TemplateInfo> templateCellList = new CellList<TemplateInfo>(templateCell,TemplateInfo.KEY_PROVIDER);
     templateCellList.setPageSize(list.size() + 10);
@@ -867,12 +873,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       new SingleSelectionModel<TemplateInfo>(TemplateInfo.KEY_PROVIDER);
     templateCellList.setSelectionModel(selectionModel);
     selectionModel.setSelected(list.get(0), true);
+    final TemplateUploadWizard wizard = this;
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
         public void onSelectionChange(SelectionChangeEvent event) {
           TemplateInfo selected = selectionModel.getSelectedObject();
           if (selected != null) {
             selectedTemplateNAME = selected.name;
-            TemplateWidget.setTemplate(selected);
+            TemplateWidget.setTemplate(selected, wizard.getTemplateUrlHost());
           }
         }
       });

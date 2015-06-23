@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
  * @fileoverview Drop-down chooser of variables in the current lexical scope for App Inventor
@@ -620,7 +621,7 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
     } else if ( sourceBlock.type == "controls_forRange") {
       sourcePrefix = Blockly.loopRangeParameterPrefix;
     } else if (sourceBlock.type == "local_declaration_statement"
-               || sourceBlock.type == "local_declaration_expression" 
+               || sourceBlock.type == "local_declaration_expression"
                || sourceBlock.type == "local_mutatorarg") {
       sourcePrefix = Blockly.localNamePrefix;
     }
@@ -641,8 +642,8 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturables = function (source
       var newIndex = declaredNames.indexOf(newName);
       if (newIndex != -1) {
         declaredNames.splice(newIndex,1);
-  }
-  }
+      }
+    }
   }
   var conflicts = Blockly.LexicalVariable.sortAndRemoveDuplicates(capturables.concat(declaredNames));
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, conflicts);
@@ -742,7 +743,7 @@ Blockly.LexicalVariable.renameParamWithoutRenamingCapturablesInfo = function (so
  *   <first> = letter U charsIn("_$?~@")
  *   <rest> = <first> U digit
  *
- *   Note: an earlier verison also allowed characters in "!&%.^/+-*>=<",
+ *   Note: an earlier version also allowed characters in "!&%.^/+-*>=<",
  *   but we decided to remove these because (1) they may be used for arithmetic,
  *   logic, and selection infix operators in a future AI text language, and we don't want
  *   things like a+b, !c, d.e to be ambiguous between variables and other expressions.
@@ -768,7 +769,7 @@ Blockly.LexicalVariable.checkIdentifier = function(ident) {
   // Character.isJavaIdentifierPart(int)
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
-  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/
+  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/;
   var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }

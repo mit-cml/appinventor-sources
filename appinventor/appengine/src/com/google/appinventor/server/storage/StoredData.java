@@ -1,14 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.storage;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
+
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Id;
@@ -31,6 +35,7 @@ public class StoredData {
   // The UserData class is an entity root, and the parent of UserFileData
   // and UserProjectData
   @Unindexed
+  @Cached
   public static final class UserData {
     // The Google Account userid
     @Id public String id;
@@ -45,15 +50,20 @@ public class StoredData {
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
+    public String name;
+    public String link;
+    public int emailFrequency;
+    public int type;
     String sessionid;           // uuid of active session
 
     // Path to template project passed as GET parameter
     String templatePath;
-
+    boolean upgradedGCS;
   }
 
   // Project properties
   // The ProjectData class is an entity root, and the parent of FileData
+  @Cached
   @Unindexed
   static final class ProjectData {
     // Auto-generated unique project id
@@ -61,6 +71,9 @@ public class StoredData {
 
     // Verbose project name
     String name;
+
+    //introduction link
+    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum
@@ -79,6 +92,10 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
+
+    long galleryId;  // this is the galleryId of this project (if published)
+    long attributionId;  // if this project was initiated from the gallery, this is
+       // the id of the gallery app that was copied for remix
   }
 
   // Project properties specific to the user
@@ -124,8 +141,10 @@ public class StoredData {
   }
 
   // Project files
+  // Note: FileData has to be Serializable so we can put it into
+  //       memcache.
   @Unindexed
-  static final class FileData {
+  static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
     enum RoleEnum {
       SOURCE,

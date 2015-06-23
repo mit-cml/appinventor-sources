@@ -3,6 +3,10 @@
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer" />
     <meta content="Front Page" about="/front_page" property="dc:title" />
     <meta name="Generator" content="Drupal 7 (http://drupal.org)" />
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
     <title>Coming Soon!</title>
     <style>
       body{
@@ -92,14 +96,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -110,7 +116,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -411,18 +417,19 @@
           </div>
 
           <div id="menu-bar" class="nav clearfix">
-            <nav role="navigation">
-              <ul>
-                <li><a href="http://appinventor.mit.edu">Home</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/library">Support ▾</a></li></ul>
-            </nav>
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
           </div>
 
-          <div class="create-button">
-
-            <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </header>

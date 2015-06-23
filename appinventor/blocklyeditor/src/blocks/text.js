@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
  * @fileoverview Text blocks for Blockly, modified for MIT App Inventor.
@@ -446,4 +447,30 @@ Blockly.Blocks['text_replace_all'] = {
     this.setInputsInline(false);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL}]
+};
+
+Blockly.Blocks['obsufcated_text'] = {
+  // Text value.
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE
+      + " " + Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
+        new Blockly.FieldTextBlockInput(''),
+        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_TOOLTIP);
+    this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
+  },
+  domToMutation: function(xmlElement) {
+    var confounder = xmlElement.getAttribute('confounder');
+    this.confounder = confounder;
+  },
+  mutationToDom: function() {
+    var container = document.createElement('mutation')
+    container.setAttribute('confounder', this.confounder);
+    return container;
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE}]
 };

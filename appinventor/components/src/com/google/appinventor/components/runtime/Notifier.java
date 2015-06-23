@@ -1,12 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -20,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -44,6 +47,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *      which the AfterTextInput event is raised.
  * <li> ShowAlert: displays an alert that goes away by itself after
  *      a short time.
+ * <li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by
+ *      the user. Can only be dismissed by using the DismissProgressDialog block.
+ * <li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.
  * <li> LogError: logs an error message to the Android log.
  * <li> LogInfo: logs an info message to the Android log.
  * <li> LogWarning: logs a warning message to the Android log.
@@ -63,6 +69,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
         "which the AfterTextInput event is raised. " +
         "<li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li>" +
+        "<li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by " +
+        "the user. It can only be dismissed by using the DismissProgressDialog block.</li>" +
+        "<li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li>" +
         "<li> LogError: logs an error message to the Android log. </li>" +
         "<li> LogInfo: logs an info message to the Android log.</li>" +
         "<li> LogWarning: logs a warning message to the Android log.</li>" +
@@ -82,6 +91,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private static final String LOG_TAG = "Notifier";
   private final Activity activity;
   private final Handler handler;
+  private ProgressDialog progressDialog;
 
   //Length of Notifier message display
   private int notifierLength = Component.TOAST_LENGTH_LONG;
@@ -101,6 +111,49 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     super(container.$form());
     activity = container.$context();
     handler = new Handler();
+    progressDialog = null;
+  }
+
+  /**
+   * Display a progress dialog that cannot be dismissed by the user. To dismiss
+   * this alert, you must use the DismissProgressDialog block
+   *
+   * @param message the text in the alert box
+   * @param title the title for the alert box
+   */
+  @SimpleFunction(description = "Shows a dialog box with an optional title and message "
+    + "(use empty strings if they are not wanted). This dialog box contains a spinning "
+    + "artifact to indicate that the program is working. It cannot be canceled by the user "
+    + "but must be dismissed by the App Inventor Program by using the DismissProgressDialog "
+    + "block.")
+  public void ShowProgressDialog(String message, String title) {
+    progressDialog(message, title);
+  }
+
+  /**
+   * Dismisses the alert created by the ShowProgressDialog block
+   */
+  @SimpleFunction(description = "Dismiss a previously displayed ProgressDialog box")
+  public void DismissProgressDialog() {
+    if (progressDialog != null) {
+      progressDialog.dismiss();
+      progressDialog = null;
+    }
+  }
+
+  /**
+   * This method creates the actual ProgressDialog. If one is already being
+   * displayed, then it dismisses it, and creates this new one.
+   * @param message	the message for the dialog
+   * @param title the title for the dialog
+   */
+  public void progressDialog(String message, String title) {
+    if (progressDialog != null) {
+      DismissProgressDialog();
+    }
+    progressDialog = ProgressDialog.show(activity, title, message);
+    // prevents the user from escaping the dialog by hitting the Back button
+    progressDialog.setCancelable(false);
   }
 
   /**
@@ -265,27 +318,35 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setCancelable(false);
     alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
         new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // hide the keyboard
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-          imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
-        AfterTextInput(input.getText().toString());
-      }
-    });
+          public void onClick(DialogInterface dialog, int which) {
+            HideKeyboard((View) input);
+            AfterTextInput(input.getText().toString());
+          }
+        });
 
-      //If cancelable, then add the CANCEL button
-      if (cancelable)  {
-          final String cancelButtonText="Cancel";
-          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
-              new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int which) {
-                      //User pressed CANCEL. Raise AfterTextInput with CANCEL
-                      AfterTextInput(cancelButtonText);
-                  }
-              });
-      }
-
+    //If cancelable, then add the CANCEL button
+    if (cancelable)  {
+      final String cancelButtonText="Cancel";
+      alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+          new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+              HideKeyboard((View) input);
+              //User pressed CANCEL. Raise AfterTextInput with CANCEL
+              AfterTextInput(cancelButtonText);
+            }
+          });
+    }
     alertDialog.show();
+  }
+
+  /**
+  * Hide soft keyboard after user either enters text or cancels.
+  */
+  public void HideKeyboard(View view) {
+    if (view != null) {
+      InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(view.getWindowToken(),  0);
+    }
   }
 
   /**

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
@@ -60,11 +61,12 @@ public final class FileExporterImpl implements FileExporter {
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                                  boolean includeProjectHistory,
                                                  boolean includeAndroidKeystore,
-                                                 @Nullable String zipName) throws IOException {
+                                                 @Nullable String zipName,
+                                                 boolean fatalError) throws IOException {
     // Download project source files as a zip.
     if (storageIo instanceof ObjectifyStorageIo) {
       return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
-          includeProjectHistory, includeAndroidKeystore, zipName);
+          includeProjectHistory, includeAndroidKeystore, zipName, fatalError);
     } else {
       throw new IllegalArgumentException("Objectify only");
     }
@@ -86,7 +88,7 @@ public final class FileExporterImpl implements FileExporter {
     for (Long projectId : projectIds) {
       try {
         ProjectSourceZip projectSourceZip =
-            exportProjectSourceZip(userId, projectId, false, false, null);
+            exportProjectSourceZip(userId, projectId, false, false, null, false);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 

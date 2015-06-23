@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
@@ -42,6 +43,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
+    // Check to see if we need to upgrade this user's project to GCS
+    storageIo.checkUpgrade(userInfoProvider.getUserId());
     return config;
   }
 
@@ -67,6 +70,16 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
+   * Returns user information based on userId.
+   *
+   * @return  user information record
+   */
+  @Override
+  public User getUserInformationByUserId(String userId) {
+    return storageIo.getUser(userId);
+  }
+
+  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings
@@ -83,6 +96,33 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeUserSettings(String settings) {
     storageIo.storeSettings(userInfoProvider.getUserId(), settings);
+  }
+
+  /**
+   * Stores the user's name.
+   * @param name  user's name
+   */
+  @Override
+  public void storeUserName(String name) {
+    storageIo.setUserName(userInfoProvider.getUserId(), name);
+  }
+
+  /**
+   * Stores the user's link.
+   * @param name  user's link
+   */
+  @Override
+  public void storeUserLink(String link) {
+    storageIo.setUserLink(userInfoProvider.getUserId(), link);
+  }
+
+  /**
+   * Stores the user's email notification frequency.
+   * @param emailFrequency  user's email frequency
+   */
+  @Override
+  public void storeUserEmailFrequency(int emailFrequency) {
+    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
   }
 
   /**

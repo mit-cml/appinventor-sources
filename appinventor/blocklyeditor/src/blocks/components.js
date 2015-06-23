@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
  * @fileoverview Component blocks for Blockly, modified for MIT App Inventor.
@@ -85,6 +86,11 @@ Blockly.Blocks.component_event = {
 
     // [lyn, 12/23/2013] Move this out of domToMutation into top-level component_event
     // this.onchange = Blockly.WarningHandler.checkErrors;
+
+    if (this.getEventTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      this.badBlock();
+      this.setDisabled(true);
+    }
 
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
@@ -322,6 +328,10 @@ Blockly.Blocks.component_method = {
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
+    if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      this.badBlock();
+      this.setDisabled(true);
+    }
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -330,9 +340,6 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
   getMethodTypeObject : function() {
@@ -437,9 +444,8 @@ Blockly.Blocks.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
 
-        this.setTooltip(
-          thisBlock,
-          thisBlock.getPropertyObject(thisBlock.propertyName).description);
+        thisBlock.setTooltip(thisBlock.getPropertyObject(thisBlock.propertyName).description);
+        
       }
     );
 
@@ -556,9 +562,6 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
   typeblock : function(){
@@ -670,9 +673,6 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
-      if (this.type.indexOf(oldname) != -1) {
-        this.type = this.type.replace(oldname, newname);
-      }
     }
   },
 

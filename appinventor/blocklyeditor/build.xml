@@ -68,7 +68,8 @@
        ===================================================================== -->
 	
 	<target name="BlocklyTestbed" 
-		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser">
+		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
+		      depends="components_JsonComponentDescription, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
 
 		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
@@ -84,6 +85,7 @@
 	<path id="libsForBlocklyeditorTests.path">
 		<fileset dir="${run.lib.dir}" includes="*.jar" />
 		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+                <pathelement location="${build.dir}/components/CommonConstants.jar" />
 		<pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
 	</path>
 

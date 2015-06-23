@@ -1,18 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
-import com.google.appinventor.client.TranslationComponentEvents;
-import com.google.appinventor.client.TranslationComponentMethods;
 import com.google.appinventor.client.TranslationComponentParams;
-import com.google.appinventor.client.TranslationComponentProperty;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.output.OdeLog;
@@ -114,6 +113,11 @@ public class BlocklyPanel extends HTMLPanel {
   // blocks area is initialized.
   private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
 
+  // [lyn, 2014/10/27] added formJson for upgrading
+  // Pending form JSON content, indexed by form name. Waiting to be loaded when the corresponding
+  // blocks area is initialized.
+  private static final Map<String, String> pendingFormJsonMap = Maps.newHashMap();
+
   // Status of blocks loading, indexed by form name.
   private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
 
@@ -123,11 +127,15 @@ public class BlocklyPanel extends HTMLPanel {
   // My form name
   private String formName;
 
+  // My blocks editor
+  private YaBlocksEditor myBlocksEditor;  // [lyn, 2014/10/28] Added to access current form json
+
   public static boolean isWarningVisible = false;
 
-  public BlocklyPanel(String formName) {
+  public BlocklyPanel(YaBlocksEditor blocksEditor, String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
     this.formName = formName;
+    this.myBlocksEditor = blocksEditor;
     componentOps.put(formName, new ArrayList<ComponentOp>());
     // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
     currentComponents.put(formName, new HashMap<String, ComponentOp>());
@@ -200,9 +208,11 @@ public class BlocklyPanel extends HTMLPanel {
     // If we've gotten any block content to load, load it now
     // Note: Map.remove() returns the value (null if not present), as well as removing the mapping
     String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
+    // [lyn, 2014/10/27] added formJson for upgrading
+    String pendingFormJson = pendingFormJsonMap.remove(formName);
     if (pendingBlocksContent != null) {
       OdeLog.log("Loading blocks area content for " + formName);
-      loadBlocksContentNow(formName, pendingBlocksContent);
+      loadBlocksContentNow(formName, pendingFormJson, pendingBlocksContent);
     }
   }
 
@@ -475,6 +485,8 @@ public class BlocklyPanel extends HTMLPanel {
     // Get blocks content before putting anything in the componentOps map since an entry in
     // the componentOps map is taken as an indication that the blocks area has not initialized yet.
     pendingBlocksContentMap.put(formName, getBlocksContent());
+    // [lyn, 2014/10/28] added formJson for upgrading
+    pendingFormJsonMap.put(formName, getFormJson());
     componentOps.put(formName, new ArrayList<ComponentOp>());
   }
 
@@ -494,23 +506,27 @@ public class BlocklyPanel extends HTMLPanel {
    *
    * @param blocksContent XML description of a blocks workspace in format expected by Blockly
    */
-  public void loadBlocksContent(String blocksContent) {
+  // [lyn, 2014/10/27] added formJson for upgrading
+  public void loadBlocksContent(String formJson, String blocksContent) {
     LoadStatus loadStat = new LoadStatus();
     loadStatusMap.put(formName, loadStat);
     if (blocksInited(formName)) {
       OdeLog.log("Loading blocks content for " + formName);
-      loadBlocksContentNow(formName, blocksContent);
+      loadBlocksContentNow(formName, formJson, blocksContent);
     } else {
       // save it to load when the blocks area is initialized
       OdeLog.log("Caching blocks content for " + formName + " for loading when blocks area inited");
       pendingBlocksContentMap.put(formName, blocksContent);
+      // [lyn, 2014/10/27] added formJson for upgrading
+      pendingFormJsonMap.put(formName, formJson);
     }
   }
 
-  public static void loadBlocksContentNow(String formName, String blocksContent) {
+  // [lyn, 2014/10/27] added formJson for upgrading
+  public static void loadBlocksContentNow(String formName, String formJson, String blocksContent) {
     LoadStatus loadStat = loadStatusMap.get(formName);  // should not be null!
     try {
-      doLoadBlocksContent(formName, blocksContent);
+      doLoadBlocksContent(formName, formJson, blocksContent);
     } catch (JavaScriptException e) {
       ErrorReporter.reportError(MESSAGES.blocksLoadFailure(formName));
       OdeLog.elog("Error loading blocks for screen " + formName + ": "
@@ -532,6 +548,22 @@ public class BlocklyPanel extends HTMLPanel {
       return (blocksContent != null) ? blocksContent : "";
     }
   }
+
+  /**
+   * Return the JSON string describing the current state of the associated form
+   */
+  // [lyn, 2014/10/28] Handle these cases
+  public String getFormJson() {
+    if (blocksInited(formName)) {
+      return myBlocksEditor.encodeFormAsJsonString();
+    } else {
+      // in case someone clicks Save before the blocks area is inited
+      String formJson = pendingFormJsonMap.get(formName);
+      return (formJson != null) ? formJson : "";
+    }
+  }
+
+
 
   /**
    * Get Yail code for current blocks workspace
@@ -744,7 +776,7 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static String getLocalizedPropertyName(String key) {
-    return TranslationComponentProperty.getName(key);
+    return ComponentsTranslation.getPropertyName(key);
   }
 
   public static String getLocalizedParameterName(String key) {
@@ -752,11 +784,11 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static String getLocalizedMethodName(String key) {
-    return TranslationComponentMethods.getName(key);
+    return ComponentsTranslation.getMethodName(key);
   }
 
   public static String getLocalizedEventName(String key) {
-    return TranslationComponentEvents.getName(key);
+    return ComponentsTranslation.getEventName(key);
   }
 
   public static String getLocalizedComponentType(String key) {
@@ -884,8 +916,9 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.Blocklies[formName].Drawer.isShowing();
   }-*/;
 
-  public static native void doLoadBlocksContent(String formName, String blocksContent) /*-{
-    $wnd.Blocklies[formName].SaveFile.load(blocksContent);
+  // [lyn, 2014/10/27] added formJson for upgrading
+  public static native void doLoadBlocksContent(String formName, String formJson, String blocksContent) /*-{
+    $wnd.Blocklies[formName].SaveFile.load(formJson, blocksContent);
   }-*/;
 
   public static native String doGetBlocksContent(String formName) /*-{

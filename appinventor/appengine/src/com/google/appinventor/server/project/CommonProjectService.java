@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.project;
 
@@ -74,6 +75,15 @@ public abstract class CommonProjectService {
     storageIo.deleteProject(userId, projectId);
   }
 
+  /**
+   * Sets the project's gallery id.
+   *
+   * @param userId the user id
+   * @param projectId  project ID as received by
+   */
+  public void setGalleryId(String userId, long projectId, long galleryId) {
+    storageIo.setProjectGalleryId(userId, projectId, galleryId);
+  }
   /**
    * Returns the project root node for the requested project.
    *

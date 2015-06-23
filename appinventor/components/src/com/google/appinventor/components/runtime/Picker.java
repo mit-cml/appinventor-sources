@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -57,8 +58,9 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   // Events
 
   /**
-   * Simple event to raise when the component is clicked but before the
-   * picker activity is started.
+   * Event to raise when the button of the component is clicked or the list is shown
+   * using the Open block.  This event occurs before the list of items is displayed, and 
+   * can be used to prepare the list before it is shown.
    */
   @SimpleEvent
   public void BeforePicking() {
@@ -66,7 +68,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   }
 
   /**
-   * Simple event to be raised after the picker activity returns its
+   * Event to be raised after the picker activity returns its
    * result and the properties have been filled in.
    */
   @SimpleEvent

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
@@ -42,6 +43,7 @@ public interface FileExporter {
    *        containing the project's history in the zip
    * @param includeAndroidKeystore indicates whether to include the user's android.keystore file
    * @param zipName the desired name for the zip, or null for a name to be generated
+   * @param fatalError set to true to cause missing GCS file to throw exception
    * @return the zip file, which includes a count of the number of zipped files
    *         and (indirectly) the name of the file and its contents
    * @throws IllegalArgumentException if download request cannot be fulfilled
@@ -50,7 +52,8 @@ public interface FileExporter {
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore, @Nullable String zipName)
+                                          boolean includeAndroidKeystore, @Nullable String zipName,
+                                          boolean fatalError)
       throws IOException;
 
   /**

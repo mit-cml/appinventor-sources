@@ -1,7 +1,8 @@
- // -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 // ***********************************************
 // If we're not going to go this route with onDestroy, then at least get rid of the DEBUG flag.
@@ -560,6 +561,26 @@ public class Form extends Activity
   }
 
 
+  public void ErrorOccurredDialog(Component component, String functionName, int errorNumber,
+      String message, String title, String buttonText) {
+    String componentType = component.getClass().getName();
+    componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
+    Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber +
+        ", componentType = " + componentType + ", functionName = " + functionName +
+        ", messages = " + message);
+    if ((!(EventDispatcher.dispatchEvent(
+        this, "ErrorOccurred", component, functionName, errorNumber, message)))
+        && screenInitialized)  {
+      // If dispatchEvent returned false, then no user-supplied error handler was run.
+      // If in addition, the screen initializer was run, then we assume that the
+      // user did not provide an error handler.   In this case, we run a default
+      // error handler, namely, showing a message dialog to the end user of the app.
+      // The app writer can override this by providing an error handler.
+      new Notifier(this).ShowMessageDialog("Error " + errorNumber + ": " + message, title, buttonText);
+    }
+  }
+
+
   public void dispatchErrorOccurredEvent(final Component component, final String functionName,
       final int errorNumber, final Object... messageArgs) {
     runOnUiThread(new Runnable() {
@@ -569,6 +590,29 @@ public class Form extends Activity
       }
     });
   }
+
+  // This is like dispatchErrorOccurred, except that it defaults to showing
+  // a message dialog rather than an alert.   The app writer can override either of these behaviors,
+  // but using the event dialog version frees the app writer of the need to explicitly override
+  // the alert behavior in the case
+  // where a message dialog is what's generally needed.
+  public void dispatchErrorOccurredEventDialog(final Component component, final String functionName,
+      final int errorNumber, final Object... messageArgs) {
+    runOnUiThread(new Runnable() {
+      public void run() {
+        String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
+        ErrorOccurredDialog(
+            component,
+            functionName,
+            errorNumber,
+            message,
+            "Error in " + functionName,
+            "Dismiss");
+      }
+    });
+  }
+
+
 
   /**
    * Scrollable property getter method.
@@ -751,9 +795,10 @@ public class Form extends Activity
    * @return  screen orientation
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The requested screen orientation. Commonly used values are" +
-      " unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-      "See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the " +
+      description = "The requested screen orientation, specified as a text value.  " +
+      "Commonly used values are " +
+      "landscape, portrait, sensor, user and unspecified.  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
@@ -1016,6 +1061,20 @@ public class Form extends Activity
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.")
   public void VersionName(String vName) {
+    // We don't actually need to do anything.
+  }
+
+  /**
+   * Specifies the App Name.
+   *
+   * @param aName the display name of the installed application in the phone
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "This is the display name of the installed application in the phone." +
+    		"If the AppName is blank, it will be set to the name of the project when the project is built.")
+  public void AppName(String aName) {
     // We don't actually need to do anything.
   }
 
@@ -1361,14 +1420,15 @@ public class Form extends Activity
   private String yandexTranslateTagline = "";
 
   void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Powered by Yandex.Translate</small></p>";
+    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
   private void showAboutApplicationNotification() {
-    String title = "About This App";
-    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    aboutScreen = aboutScreen.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
-    String message = aboutScreen + tagline + yandexTranslateTagline;
+    String title = "About this app";
+    String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
+    // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
+    String message = aboutScreen + MITtagline + yandexTranslateTagline;
+    message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
@@ -1388,6 +1448,12 @@ public class Form extends Activity
         onStopListeners.remove(onStopListener);
       }
     }
+    if (component instanceof OnNewIntentListener) {
+      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
+      if (onNewIntentListeners.contains(onNewIntentListener)) {
+        onNewIntentListeners.remove(onNewIntentListener);
+      }
+    }
     if (component instanceof OnResumeListener) {
       OnResumeListener onResumeListener = (OnResumeListener) component;
       if (onResumeListeners.contains(onResumeListener)) {
@@ -1404,6 +1470,12 @@ public class Form extends Activity
       OnDestroyListener onDestroyListener = (OnDestroyListener) component;
       if (onDestroyListeners.contains(onDestroyListener)) {
         onDestroyListeners.remove(onDestroyListener);
+      }
+    }
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
       }
     }
     if (component instanceof Deleteable) {

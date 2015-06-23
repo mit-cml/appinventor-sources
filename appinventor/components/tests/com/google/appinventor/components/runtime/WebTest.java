@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -87,6 +88,52 @@ public class WebTest extends TestCase {
     } catch (IllegalArgumentException e) {
       // Expected.
     }
+  }
+
+  public void testDecodeXMLText() throws Exception {
+    Object decodedObject = web.XMLTextDecode("<foo>123</foo>");
+    // should be the list of one element, which is a pair of "foo" and 123
+    assertTrue(decodedObject instanceof ArrayList);
+    ArrayList outerList = (ArrayList) decodedObject;
+    assertEquals(1, outerList.size());
+    Object pairObject = outerList.get(0);
+    assertTrue(pairObject instanceof ArrayList);
+    ArrayList pair = (ArrayList) pairObject;
+    assertEquals(2, pair.size());
+    assertEquals("foo", pair.get(0));
+    // check why this isn't actually the string 123
+    assertEquals(123, pair.get(1));
+  }
+
+  public void testDecodeXMLText2() throws Exception {
+    Object decodedObject = web.XMLTextDecode("<a><foo>1 2 3</foo><bar>456</bar></a>");
+    // should be the list of one element, which is a pair of "a" and a list X.
+    // X is a list two pairs.  The first pair is "bar" and 456 and the second pair is
+    // "foo" and the string "1 2 3".
+    // The order of these is bar before foo because it's alphabetical by according to
+    // the tags.
+    assertTrue(decodedObject instanceof ArrayList);
+    ArrayList outerList = (ArrayList) decodedObject;
+    assertEquals(1, outerList.size());
+    Object pairObject = outerList.get(0);
+    assertTrue(pairObject instanceof ArrayList);
+    ArrayList pair = (ArrayList) pairObject;
+    assertEquals(2, pair.size());
+    assertEquals("a", pair.get(0));
+    Object XObject = pair.get(1);
+    assertTrue(XObject instanceof ArrayList);
+    ArrayList X = (ArrayList) XObject;
+    assertEquals(2, X.size());
+    Object firstPairObject = X.get(0);
+    Object secondPairObject = X.get(1);
+    assertTrue(firstPairObject instanceof ArrayList);
+    assertTrue(secondPairObject instanceof ArrayList);
+    ArrayList firstPair = (ArrayList) firstPairObject;
+    ArrayList secondPair = (ArrayList) secondPairObject;
+    assertEquals("bar", firstPair.get(0));
+    assertEquals(456, firstPair.get(1));
+    assertEquals("foo", secondPair.get(0));
+    assertEquals("1 2 3", secondPair.get(1));
   }
 
   public void testbuildRequestData() throws Exception {

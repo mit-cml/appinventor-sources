@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.youngandroid;
 
@@ -58,7 +59,20 @@ public final class TextValidators {
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
   }
-  
+
+  /**
+   * Checks whether the argument is a legal component identifier; please check
+   * Blockly.LexicalVariable.checkIdentifier for the regex reference
+   *
+   * @param text the proposed identifier
+   * @return {@code true} if the argument is a legal identifier, {@code false}
+   *         otherwise
+   */
+  public static boolean isValidComponentIdentifier(String text) {
+	return text.matches("^[^-0-9!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
+			"[^-!&%^/>=<'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
+  }
+
   /**
    * Checks whether the argument is a legal filename, meaning
    * it is unchanged by URL encoding and it meets the aapt

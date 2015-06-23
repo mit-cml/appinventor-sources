@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -28,7 +29,10 @@ import com.google.appinventor.components.runtime.util.YailList;
         " These elements can be set in the Designer or Blocks Editor by setting the" +
         "<code>ElementsFromString</code> property to a string-separated concatenation" +
         " (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the " +
-        "<code>Elements</code> property to a List in the Blocks editor.</p>",
+        "<code>Elements</code> property to a List in the Blocks editor. " +
+        "Spinners are created with the first item already selected. So selecting " +
+        " it does not generate an After Picking event. Consequently it's useful to make the " +
+        " first Spinner item be a non-choice like \"Select from below...\". </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/spinner.png")
@@ -40,6 +44,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private YailList items = new YailList();
   private String selection;
   private int selectionIndex;
+  private boolean isInitialized=false;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -121,6 +126,10 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
     items = ElementsUtil.elements(itemList, "Spinner");
+
+    //avoid firing off the OnItemSelect when component is initialized or data is changed
+    isInitialized = false;
+
     setAdapterData(itemList.toStringArray());
   }
 
@@ -179,6 +188,12 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
+    //prevent AfterPicking triggering when component has just been instantiated.
+    if (!isInitialized) {
+      isInitialized = true;
+      return;
+    }
+
     SelectionIndex(position + 1); // AI lists are 1-based
     AfterSelecting(selection);
   }

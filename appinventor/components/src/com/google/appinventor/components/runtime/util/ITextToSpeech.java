@@ -1,10 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * This abstracts out what a text to speech implementation needs to have.  In particular we use
@@ -67,8 +70,13 @@ public interface ITextToSpeech {
   /**
    * Sets the speech rate
    * @param speechRate Speech rate. 1.0 is the normal speech rate, lower values slow down the
-*                   speech (0.5 is half the normal speech rate), greater values
+   *                   speech (0.5 is half the normal speech rate), greater values
    *                   accelerate it (2.0 is twice the normal speech rate).
    */
   public void setSpeechRate(float speechRate);
+
+  public int isLanguageAvailable(Locale loc);
+
+  public boolean isInitialized() ;
+
 }

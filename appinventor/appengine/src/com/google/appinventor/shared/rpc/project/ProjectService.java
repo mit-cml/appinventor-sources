@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.rpc.project;
 
@@ -76,6 +77,13 @@ public interface ProjectService extends RemoteService {
    * @param projectId  project ID
    */
   void deleteProject(long projectId);
+
+  /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  void setGalleryId(long projectId, long galleryId);
 
   /**
    * Returns an array with project IDs.
@@ -276,6 +284,17 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
+
+  /**
+   * creates a new project from a gallery app
+   * @param appName name of the app to open
+   * @param aiaPath the url of the aia file in cloud
+   * @param attributionId id of the gallery app that is being remixed
+   *
+   * @return {@link UserProject} info for new project
+   */
+
+  UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
 
   /**
    * Log a string to the server log, always log with

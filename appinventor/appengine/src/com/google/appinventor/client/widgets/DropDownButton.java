@@ -1,10 +1,14 @@
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.PopupPanel;
+
+import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +22,7 @@ public class DropDownButton extends TextButton {
 
   private final ContextMenu menu;
   private final List<MenuItem> items;
+  private final boolean rightAlign;
 
   public static class DropDownItem {
     private final String widgetName;
@@ -31,34 +36,100 @@ public class DropDownButton extends TextButton {
     }
   }
 
-  // Create a new drop-down menu button, initially populated with items. Null
+  /**
+   * A subclass of PZAwarePositionCallback designed to position the ContextMenu
+   * of a DropDownButton.
+   */
+  private class DropDownPositionCallback extends PZAwarePositionCallback {
+    public DropDownPositionCallback(Element elem) {
+      super(elem);
+    }
+
+    @Override
+    public void setPosition(int offsetWidth, int offsetHeight) {
+      int left = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
+              ? getTrueAbsoluteLeft() : getAbsoluteLeft();
+      if (rightAlign) {
+        left += getOffsetWidth() - offsetWidth;
+      }
+      int top = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
+              ? getTrueAbsoluteTop() + getOffsetHeight()
+              : getAbsoluteTop() + getOffsetHeight();
+      menu.setPopupPosition(left, top);
+    }
+  }
+
+  // Create a new drop-down menu button (with text), initially populated with items. Null
   // items in the list cause a separator to be added at that position.
   public DropDownButton(String widgetName, String caption, List<DropDownItem> toolbarItems,
-                        final boolean rightAlign) {
+                        boolean rightAlign) {
     super(caption + " \u25BE ");  // drop down triangle
+
     this.menu = new ContextMenu();
     this.items = new ArrayList<MenuItem>();
+    this.rightAlign = rightAlign;
+
     for (DropDownItem item : toolbarItems) {
       if (item != null) {
-        this.items.add(menu.addItem(item.caption, item.command));
+        this.items.add(menu.addItem(item.caption, true, item.command));
       } else {
         menu.addSeparator();
       }
     }
+
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        menu.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-          @Override
-          public void setPosition(int offsetWidth, int offsetHeight) {
-            int left = getAbsoluteLeft();
-            if (rightAlign) {
-              left += getOffsetWidth() - offsetWidth;
-            }
-            int top = getAbsoluteTop() + getOffsetHeight();
-            menu.setPopupPosition(left, top);
-          }
-        });
+        menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
+      }
+    });
+  }
+
+  public DropDownButton(String widgetName, String caption, List<DropDownItem> toolbarItems,
+                        boolean rightAlign, boolean hasTriangle) {
+    this(widgetName, caption, toolbarItems, rightAlign);
+
+    if (!hasTriangle) {
+      setText(caption);
+    }
+  }
+
+  public DropDownButton(String widgetName, String caption, List<DropDownItem> toolbarItems,
+                        boolean rightAlign, boolean hasTriangle, boolean hasHtmlCaption) {
+    this(widgetName, caption, toolbarItems, rightAlign);
+
+    if (hasHtmlCaption) {
+
+      // Set the button's caption as an HTML String with or without a dropdown triangle
+      if (hasTriangle)
+        setCaption(caption);
+      else
+        setHTML(caption);
+    }
+  }
+
+  // Create a new drop-down menu button (with image), initially populated with items. Null
+  // items in the list cause a separator to be added at that position.
+  public DropDownButton(String widgetName, Image icon, List<DropDownItem> toolbarItems,
+                        boolean rightAlign) {
+    super(icon);  // icon for button
+
+    this.menu = new ContextMenu();
+    this.items = new ArrayList<MenuItem>();
+    this.rightAlign = rightAlign;
+
+    for (DropDownItem item : toolbarItems) {
+      if (item != null) {
+        addItem(item);
+      } else {
+        menu.addSeparator();
+      }
+    }
+
+    addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
       }
     });
   }
@@ -71,7 +142,7 @@ public class DropDownButton extends TextButton {
   }
 
   public void addItem(DropDownItem item) {
-    items.add(menu.addItem(item.caption, item.command));
+    items.add(menu.addItem(item.caption, true, item.command));
   }
 
   public void removeItem(String itemName) {

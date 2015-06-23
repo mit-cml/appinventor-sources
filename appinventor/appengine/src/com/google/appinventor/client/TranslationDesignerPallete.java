@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client;
 
@@ -153,6 +154,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.bluetoothServerComponentPallette();
     } else if (key.equals("Notifier")) {
       value = MESSAGES.notifierComponentPallette();
+    } else if (key.equals("ProximitySensor")) {
+      value = MESSAGES.proximitySensorComponentPallette();
     } else if (key.equals("SpeechRecognizer")) {
       value = MESSAGES.speechRecognizerComponentPallette();
     } else if (key.equals("TextToSpeech")) {
@@ -235,6 +238,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.NearFieldHelpStringComponentPallette();
     } else if (key.equals("Notifier-helpString")) {
       value = MESSAGES.NotifierHelpStringComponentPallette();
+    } else if (key.equals("ProximitySensor-helpString")) {
+      value = MESSAGES.ProximitySensorHelpStringComponentPallette();
     } else if (key.equals("NxtColorSensor-helpString")) {
       value = MESSAGES.NxtColorSensorHelpStringComponentPallette();
     } else if (key.equals("NxtDirectCommands-helpString")) {

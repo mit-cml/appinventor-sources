@@ -1,5 +1,8 @@
 Description:
 JSON is a Java library for use in transmitting data in JSON format.
 
-Source code for JSON version 2 was downloaded from "http://json.org/java/index.html",
-compiled with javac from JDK 5, and packaged into a jar on May 23, 2011.
+This file was downloaded from the repository at
+http://mvnrepository.com/artifact/org.json/json/20140107
+
+For sources, see
+https://github.com/douglascrockford/JSON-java

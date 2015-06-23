@@ -7,6 +7,8 @@
 # Then run this script
 # The output log will be written in the directory where the script is run
 
+export LANG=en_US.UTF-8
+
 EXECUTE=true
 LAUNCH_BUILDSERVER_OPT=
 LAUNCH_BUILDSERVER_LOG_PATH="../buildserver-log.out"
@@ -22,6 +24,8 @@ while true; do
       LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --requiredHosts $2"; shift 2;;
     -d | --debug )
       LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --debug $2"; shift 2;;
+    -s | --shutdownToken )
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --shutdownToken $2"; shift 2;;
     -l | --logPath )
       LAUNCH_BUILDSERVER_LOG_PATH=$2; shift 2;;
     -h | --help )

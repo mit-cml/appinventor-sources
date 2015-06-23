@@ -220,7 +220,15 @@ Blockly.Xml.domToWorkspace = function(workspace, xml) {
         if (Blockly.RTL) {
           width = workspace.getMetrics().viewWidth;
         }
-        for (var x = 0, xmlChild; xmlChild = xml.childNodes[x]; x++) {
+// The commented line below was replaced because it would reference beyond
+// the end of the childNodes pseudo-array. In Chrome this is fine because
+// the value returned is "undefined" which counts as false. However when
+// using phantomjs (unit test) you wind up fetching memory garbage (!!)
+//
+//        for (var x = 0, xmlChild; xmlChild = xml.childNodes[x]; x++) {
+        var xmlChild;
+        for (var x = 0; x < xml.childNodes.length; x++) {
+          xmlChild = xml.childNodes[x];
           if (xmlChild.nodeName.toLowerCase() == 'block') {
             var block = Blockly.Xml.domToBlock(workspace, xmlChild);
             var blockX = parseInt(xmlChild.getAttribute('x'), 10);

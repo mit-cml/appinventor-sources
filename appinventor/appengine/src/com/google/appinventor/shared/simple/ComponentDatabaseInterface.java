@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.simple;
 
@@ -120,13 +121,15 @@ public interface ComponentDatabaseInterface {
   public static class EventDefinition {
     private final String name;
     private final String description;
+    private final boolean deprecated;
     // "params": [{ "name": "xAccel", "type": "number"},*]
     private final List<ParameterDefinition> params;
 
-    public EventDefinition(String name, String description,
+    public EventDefinition(String name, String description, boolean deprecated,
         List<ParameterDefinition> params) {
       this.name = name;
       this.description = description;
+      this.deprecated = deprecated;
       this.params = params;
     }
 
@@ -137,6 +140,8 @@ public interface ComponentDatabaseInterface {
     public String getDescription() {
       return description;
     }
+
+    public boolean getDeprecated() { return deprecated; }
 
     public List<ParameterDefinition> getParam() {
       return params;
@@ -150,13 +155,15 @@ public interface ComponentDatabaseInterface {
   public static class MethodDefinition {
     private final String name;
     private final String description;
+    private final boolean deprecated;
     // "params": [{ "name": "xAccel", "type": "number"},*]
     private List<ParameterDefinition> params;
 
-    public MethodDefinition(String name, String description,
+    public MethodDefinition(String name, String description, boolean deprecated,
         List<ParameterDefinition> params) {
       this.name = name;
       this.description = description;
+      this.deprecated = deprecated;
       this.params = params;
     }
 
@@ -167,6 +174,8 @@ public interface ComponentDatabaseInterface {
     public String getDescription() {
       return description;
     }
+
+    public boolean getDeprecated() { return deprecated; }
 
     public List<ParameterDefinition> getParam() {
       return params;

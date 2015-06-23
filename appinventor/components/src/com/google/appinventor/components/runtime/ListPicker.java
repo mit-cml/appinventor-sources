@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -49,6 +50,9 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_ANIM_TYPE = LIST_ACTIVITY_CLASS + ".anim";
   static final String LIST_ACTIVITY_SHOW_SEARCH_BAR = LIST_ACTIVITY_CLASS + ".search";
   static final String LIST_ACTIVITY_TITLE = LIST_ACTIVITY_CLASS + ".title";
+  static final String LIST_ACTIVITY_ORIENTATION_TYPE = LIST_ACTIVITY_CLASS + ".orientation";
+  static final String LIST_ACTIVITY_ITEM_TEXT_COLOR = LIST_ACTIVITY_CLASS + ".itemtextcolor";
+  static final String LIST_ACTIVITY_BACKGROUND_COLOR = LIST_ACTIVITY_CLASS + ".backgroundcolor";
 
   private YailList items;
   private String selection;
@@ -58,6 +62,11 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   private String title = "";    // The Title to display the List Picker with
                                 // if left blank, the App Name is used instead
   private boolean resumedFromListFlag  = false; //flag so onResume knows if the resume was triggered by closing the listpicker activity
+
+  private int itemTextColor;
+  private int itemBackgroundColor;
+  public final static int DEFAULT_ITEM_TEXT_COLOR = Component.COLOR_WHITE;
+  public final static int DEFAULT_ITEM_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
   /**
    * Create a new ListPicker component.
@@ -69,6 +78,9 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     items = new YailList();
     selection = "";
     selectionIndex = 0;
+    itemTextColor = DEFAULT_ITEM_TEXT_COLOR;
+    itemBackgroundColor = DEFAULT_ITEM_BACKGROUND_COLOR;
+
     container.$form().registerForOnResume(this);
   }
 
@@ -120,6 +132,32 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
           "Search Filter Bar will be displayed on ListPicker or not")
   public boolean ShowFilterBar() {
     return showFilter;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void ItemTextColor(int argb) {
+    this.itemTextColor = argb;
+  }
+
+  @SimpleProperty(description = "The text color of the ListPicker items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ItemTextColor() {
+    return this.itemTextColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+  @SimpleProperty
+  public void ItemBackgroundColor(int argb) {
+    this.itemBackgroundColor = argb;
+  }
+
+  @SimpleProperty(description = "The background color of the ListPicker items.",
+      category = PropertyCategory.APPEARANCE)
+  public int ItemBackgroundColor() {
+    return this.itemBackgroundColor;
   }
 
   /**
@@ -223,6 +261,10 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     // the closing animation will be the same (but in reverse)
     String openAnim = container.$form().getOpenAnimType();
     intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim);
+    intent.putExtra(LIST_ACTIVITY_ORIENTATION_TYPE,container.$form().ScreenOrientation());
+    intent.putExtra(LIST_ACTIVITY_ITEM_TEXT_COLOR, itemTextColor);
+    intent.putExtra(LIST_ACTIVITY_BACKGROUND_COLOR, itemBackgroundColor);
+
     return intent;
   }
 

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
@@ -25,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -92,6 +94,7 @@ public final class Compiler {
 
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_APP_NAME = "";
 
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -311,12 +314,13 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanVname(project.getVName());
+    String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : project.getAName();
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
-      BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(manifestFile), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       // TODO(markf) Allow users to set versionCode and versionName attributes.
       // See http://developer.android.com/guide/publishing/publishing.html for
@@ -376,7 +380,11 @@ public final class Compiler {
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
-      out.write("android:label=\"" + projectName + "\" ");
+      if (aName.equals("")) {
+        out.write("android:label=\"" + projectName + "\" ");
+      } else {
+        out.write("android:label=\"" + aName + "\" ");
+      }
       out.write("android:icon=\"@drawable/ya\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
@@ -448,6 +456,16 @@ public final class Compiler {
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
         out.write("      </intent-filter>\n");
         out.write("    </activity>\n");
+      }
+
+      if (componentTypes.contains("BarcodeScanner")) {
+        // Barcode Activity
+        out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
+        out.write("              android:screenOrientation=\"landscape\"\n");
+        out.write("              android:stateNotNeeded=\"true\"\n");
+        out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
+        out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
+        out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
       }
 
       // BroadcastReceiver for Texting Component
@@ -914,7 +932,7 @@ public final class Compiler {
         apkAbsolutePath,
         zipAlignedPath
     };
-    long startAapt = System.currentTimeMillis();
+    long startZipAlign = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
@@ -930,7 +948,7 @@ public final class Compiler {
       return false;
     }
     String zipALignTimeMessage = "ZIPALIGN time: " +
-        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+        ((System.currentTimeMillis() - startZipAlign) / 1000.0) + " seconds";
     out.println(zipALignTimeMessage);
     LOG.info(zipALignTimeMessage);
     return true;
@@ -1044,6 +1062,7 @@ public final class Compiler {
         "-A", project.getAssetsDirectory().getAbsolutePath(),
         "-I", getResource(ANDROID_RUNTIME),
         "-F", tmpPackageName,
+        libsDir.getAbsolutePath()
     };
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
@@ -1078,10 +1097,10 @@ public final class Compiler {
         if (library.endsWith(ARMEABI_V7A_SUFFIX)) { // Remove suffix and copy.
           library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
           Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
-              File.separator + library)), new File(armeabiV7aDir, library));
+              "/" + library)), new File(armeabiV7aDir, library));
         } else {
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + library)),
-              new File(armeabiDir, library));
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_DIR_NAME +
+              "/" + library)), new File(armeabiDir, library));
         }
       }
       return true;

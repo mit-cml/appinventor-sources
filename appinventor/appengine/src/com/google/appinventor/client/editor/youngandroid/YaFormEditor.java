@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid;
 
@@ -102,6 +103,15 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
 
   private MockForm form;  // initialized lazily after the file is loaded from the ODE server
+
+  // [lyn, 2014/10/13] Need to remember JSON initially loaded from .scm file *before* it is upgraded
+  // by YoungAndroidFormUpgrader within upgradeFile. This JSON contains pre-upgrade component
+  // version info that is needed by Blockly.SaveFile.load to perform upgrades in the Blocks Editor.
+  // This was unnecessary in AI Classic because the .blk file contained component version info
+  // as well as the .scm file. But in AI2, the .bky file contains no component version info,
+  // and we rely on the pre-upgraded .scm file for this info.
+  private String preUpgradeJsonString;
+
 
   /**
    * Creates a new YaFormEditor.
@@ -216,7 +226,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           + "current file editor!");
     }
   }
-  
+
   @Override
   public void onClose() {
     form.removeFormChangeListener(this);
@@ -247,8 +257,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Map<String, MockComponent> map = Maps.newHashMap();
     if (loadComplete) {
       populateComponentsMap(form, map);
-    } else {
-      OdeLog.log("YaFormEditor: about to return an empty map!!!!!");
     }
     return map;
   }
@@ -313,6 +321,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onFormStructureChange();
+      updatePropertiesPanel(component);
     } else {
       OdeLog.elog("onComponentRenamed called when loadComplete is false");
     }
@@ -370,6 +379,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       final Command afterUpgradeComplete) {
     JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(
         fileContentHolder.getFileContent(), JSON_PARSER);
+    preUpgradeJsonString =  propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
     if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
@@ -453,6 +463,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)
         mockComponent.changeProperty(name, properties.get(name).asString().getString());
       }
+    }
+
+    //This is for old project which doesn't have the AppName property
+    if (!properties.keySet().contains("AppName")) {
+      String fileId = getFileId();
+      String projectName = fileId.split("/")[3];
+      mockComponent.changeProperty("AppName", projectName);
     }
 
     // Add component type to the blocks editor
@@ -548,6 +565,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     encodeComponentProperties(form, sb);
     sb.append("}");
     return sb.toString();
+  }
+
+  // [lyn, 2014/10/13] returns the *pre-upgraded* JSON for this form.
+  // needed to allow associated blocks editor to get this info.
+  protected String preUpgradeJsonString() {
+    return preUpgradeJsonString;
   }
 
   /*

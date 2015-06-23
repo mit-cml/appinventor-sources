@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
@@ -77,7 +78,7 @@ public class MockHVArrangement extends MockContainer {
     } catch (BadPropertyEditorException e) {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
-    };
+    }
     enableAndDisableDropdowns();
     initialized = true;
   }
@@ -106,7 +107,7 @@ public class MockHVArrangement extends MockContainer {
     if (initialized) enableAndDisableDropdowns();
   }
 
-  // If the width is automatic, the selector for horizontal alignment should be disabled.  
+  // If the width is automatic, the selector for horizontal alignment should be disabled.
   // If the length is automatic, the selector for vertical alignment should be disabled.
   private void enableAndDisableDropdowns() {
     String width = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_WIDTH).getValue();
@@ -119,6 +120,5 @@ public class MockHVArrangement extends MockContainer {
       myVAlignmentPropertyEditor.disable();
     } else myVAlignmentPropertyEditor.enable();
   }
-      
-  }
+}
 

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.scripts;
 
@@ -107,20 +108,16 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("],\n  \"events\": [");
     separator = "";
     for (Event event : component.events.values()) {
-      if (event.userVisible) {
-        sb.append(separator);
-        outputBlockEvent(event.name, event, sb);
-        separator = ",\n    ";
-      }
+      sb.append(separator);
+      outputBlockEvent(event.name, event, sb, !event.userVisible);
+      separator = ",\n    ";
     }
     sb.append("],\n  \"methods\": [");
     separator = "";
     for (Method method : component.methods.values()) {
-      if (method.userVisible) {
-        sb.append(separator);
-        outputBlockMethod(method.name, method, sb);
-        separator = ",\n    ";
-      }
+      sb.append(separator);
+      outputBlockMethod(method.name, method, sb, !method.userVisible);
+      separator = ",\n    ";
     }
     sb.append("]}\n");
   }
@@ -147,21 +144,25 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("\"}");
   }
   
-  private void outputBlockEvent(String eventName, Event event, StringBuilder sb) {
+  private void outputBlockEvent(String eventName, Event event, StringBuilder sb,
+                                boolean deprecated) {
     sb.append("{ \"name\": \"");
     sb.append(eventName);
     sb.append("\", \"description\": ");
     sb.append(formatDescription(event.description));
+    sb.append(", \"deprecated\": \"" + deprecated + "\"");
     sb.append(", \"params\": ");
     outputParameters(event.parameters, sb);
     sb.append("}\n");
   }
   
-  private void outputBlockMethod(String methodName, Method method, StringBuilder sb) {
+  private void outputBlockMethod(String methodName, Method method, StringBuilder sb,
+                                 boolean deprecated) {
     sb.append("{ \"name\": \"");
     sb.append(methodName);
     sb.append("\", \"description\": ");
     sb.append(formatDescription(method.description));
+    sb.append(", \"deprecated\": \"" + deprecated + "\"");
     sb.append(", \"params\": ");
     outputParameters(method.parameters, sb);
     if (method.getReturnType() != null) {
