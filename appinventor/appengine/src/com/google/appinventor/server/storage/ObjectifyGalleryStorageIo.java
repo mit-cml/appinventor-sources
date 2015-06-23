@@ -12,10 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.GalleryEmail;
 import com.google.appinventor.server.GallerySearchIndex;

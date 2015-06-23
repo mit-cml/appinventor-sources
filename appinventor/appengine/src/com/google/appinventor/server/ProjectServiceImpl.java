@@ -30,7 +30,6 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
 import com.google.common.collect.Lists;
-import com.google.gwt.user.client.Window;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
