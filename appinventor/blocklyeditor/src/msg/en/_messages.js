@@ -53,6 +53,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DISABLE_BLOCK = 'Disable Block';
     Blockly.Msg.ENABLE_BLOCK = 'Enable Block';
     Blockly.Msg.HELP = 'Help';
+    Blockly.Msg.EXPORT_IMAGE = 'Download Blocks as Image';
     Blockly.Msg.COLLAPSE_ALL = 'Collapse Blocks';
     Blockly.Msg.EXPAND_ALL = 'Expand Blocks';
     Blockly.Msg.ARRANGE_H = 'Arrange Blocks Horizontally';
