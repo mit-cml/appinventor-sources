@@ -29,6 +29,7 @@ import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.client.wizards.ComponentUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
@@ -813,16 +814,7 @@ public class TopToolbar extends Composite {
   private static class ImportComponentAction implements Command {
     @Override
     public void execute() {
-      long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-      Ode.getInstance().getProjectService().load(currentProjectId, "ClockDotJson.json", new OdeAsyncCallback<String>() {
-        @Override
-        public void onSuccess(String result) {
-          SimpleComponentDatabase.getInstance().addComponent(new ClientJsonParser().parse(result));
-          YaProjectEditor editor = (YaProjectEditor) Ode.getInstance().getCurrentFileEditor().getProjectEditor();
-          YoungAndroidFormNode formNode = (YoungAndroidFormNode) Ode.getInstance().getCurrentYoungAndroidSourceNode();
-          editor.getFormFileEditor(formNode.getFormName()).getComponentPalettePanel().addComponent("Clock");
-        }
-      });
+      new ComponentImportWizard().center();
     }
   }
 

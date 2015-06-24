@@ -521,6 +521,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption for component upload wizard.")
   String componentUploadWizardCaption();
 
+  @DefaultMessage("Import Component...")
+  @Description("Caption for component import wizard.")
+  String componentImportWizardCaption();
+
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
   @Description("Error message reported when the file selected for upload is not a component archive.")
