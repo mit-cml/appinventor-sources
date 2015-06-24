@@ -1549,6 +1549,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     return modTime.t;
   }
 
+  @Override
   public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
     JobRetryHelper helper = new JobRetryHelper() {
       @Override
