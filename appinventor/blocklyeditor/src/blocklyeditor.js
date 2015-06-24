@@ -135,6 +135,11 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
     }
   }
 
+  Blockly.BlocklyEditor.doitChar = "D";
+  Blockly.BlocklyEditor.watchChar = "W";
+  Blockly.BlocklyEditor.yailChar = "Y";
+  Blockly.BlocklyEditor.commentChar = "?";
+
   /******************************************************************************/
 
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
@@ -164,52 +169,100 @@ Blockly.BlocklyEditor.render = function() {
  * the block's comment (if it has one) for now.
  * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
  * the bubble for "do it" output once we hook up to the REPL.
+ *
+ * [edited by emery, 6/2015] to add doit and watch tags to better differentiate between the two.
+ * Also added error message for Watch.
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
+
   var myBlock = this;
-  var doitOption = { enabled: this.disabled?false : true};
+
+  var doitOption = {enabled: this.disabled ? false : true};
+  var watchOption = {enabled: this.disabled ? false : true}; //JOHANNA
+
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
-    var yailOption = {enabled: this.disabled?false : true};
+    var yailOption = {enabled: this.disabled ? false : true};
     yailOption.text = Blockly.Msg.GENERATE_YAIL;
-    yailOption.callback = function() {
+    yailOption.callback = function () {
       var yailText;
       //Blockly.Yail.blockToCode1 returns a string if the block is a statement
       //and an array if the block is a value
       var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-      if(yailTextOrArray instanceof Array){
+      if (yailTextOrArray instanceof Array) {
         yailText = yailTextOrArray[0];
       } else {
         yailText = yailTextOrArray;
       }
-      myBlock.setCommentText(yailText);
+      // changed to set to the yail textBubble rather than default comment bubble
+      myBlock.setTextBubbleText(Blockly.BlocklyEditor.yailChar, yailText);
     };
     options.push(yailOption);
   }
-  doitOption.text = Blockly.Msg.DO_IT;
-  doitOption.callback = function() {
-    var yailText;
-    //Blockly.Yail.blockToCode1 returns a string if the block is a statement
-    //and an array if the block is a value
-    var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-    var dialog;
-    if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
-      dialog = new goog.ui.Dialog(null, true);
-      dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
-      dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
-      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
-        addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-          false, true));
-      dialog.setVisible(true);
-    } else {
-      if(yailTextOrArray instanceof Array){
-        yailText = yailTextOrArray[0];
-      } else {
-        yailText = yailTextOrArray;
-      }
-      Blockly.ReplMgr.putYail(yailText, myBlock);
-    }
-  };
-  options.push(doitOption);
+
+
+     doitOption.text = Blockly.Msg.DO_IT;
+     doitOption.callback = function () {
+
+       myBlock.doit = true;  // to differentiate between watch and doit
+       var yailText;
+       //Blockly.Yail.blockToCode1 returns a string if the block is a statement
+       //and an array if the block is a value
+       var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
+       var dialog;
+       if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+         dialog = new goog.ui.Dialog(null, true);
+         dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
+         dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
+         dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+             false, true));
+         dialog.setVisible(true);
+       } else {
+         if (yailTextOrArray instanceof Array) {
+           yailText = yailTextOrArray[0];
+         } else {
+           yailText = yailTextOrArray;
+         }
+         Blockly.ReplMgr.putYail(yailText, myBlock);
+       }
+     };
+     options.push(doitOption);
+
+   // Watch option added by Johanna
+    // second case is for aesthetic, so statement blocks do not react.
+   if (!myBlock.watch || !myBlock.textBubbles[Blockly.BlocklyEditor.watchChar]) {
+     watchOption.text = Blockly.Msg.WATCH;
+     watchOption.callback = function () {
+       var yailText;
+       var yailTextOrArray = Blockly.Yail.blockToCode(myBlock);
+       var dialog;
+       if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+         dialog = new goog.ui.Dialog(null, true);
+         dialog.setTitle(Blockly.Msg.CAN_NOT_WATCH);
+         dialog.setContent(Blockly.Msg.CONNECT_TO_WATCH);
+         dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+             false, true));
+         dialog.setVisible(true);
+       } else {
+         if (yailTextOrArray instanceof Array) {
+           yailText = yailTextOrArray[0];
+         } else {
+           yailText = yailTextOrArray;
+         }
+         // watch originated from doit, so the initial return value will be a doit.
+         // used this tag to ignore the doit and only print the following watch values
+         myBlock.watchIgnore = true;
+         myBlock.watch = true;
+         // set a blank watch bubble. without this, you have to wait until the first value for the bubble to appear
+         myBlock.setTextBubbleText(Blockly.BlocklyEditor.watchChar, '');
+         Blockly.ReplMgr.putYail(yailText, myBlock);
+       }
+     };
+     options.push(watchOption);
+   }
+
+
   //Option to clear error generated by Do It
   if(myBlock.replError){
     var clearDoitOption = {enabled: true};
@@ -220,6 +273,8 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     }
     options.push(clearDoitOption);
   }
+
+
   if(myBlock.procCustomContextMenu){
     myBlock.procCustomContextMenu(options);
   }
