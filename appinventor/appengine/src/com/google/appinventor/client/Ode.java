@@ -33,6 +33,7 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.component.ComponentManager;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
@@ -173,6 +174,9 @@ public class Ode implements EntryPoint {
 
   // Collection of editors
   private EditorManager editorManager;
+
+  // Collection of components
+  private ComponentManager componentManager;
 
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
@@ -693,6 +697,7 @@ public class Ode implements EntryPoint {
           }
         });
         editorManager = new EditorManager();
+        componentManager = new ComponentManager();
 
         // Initialize UI
         initializeUi();
@@ -1181,6 +1186,15 @@ public class Ode implements EntryPoint {
    */
   public ComponentServiceAsync getComponentService() {
     return componentService;
+  }
+
+  /**
+   * Returns the component manager.
+   *
+   * @return  {@link CopmponentManager}
+   */
+  public ComponentManager getComponentManager() {
+    return componentManager;
   }
 
   /**
