@@ -2702,6 +2702,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String UseGPSProperties();
 
+  @DefaultMessage("UseJSONDisplay")
+  @Description("")
+  String UseJSONDisplayProperties();
+
   @DefaultMessage("UseServiceAuthentication")
   @Description("")
   String UseServiceAuthenticationProperties();

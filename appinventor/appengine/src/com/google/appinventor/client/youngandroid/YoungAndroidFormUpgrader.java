@@ -775,6 +775,11 @@ public final class YoungAndroidFormUpgrader {
       // The AppName property was added.
       srcCompVersion = 14;
     }
+    if (srcCompVersion < 15) {
+      // default for json is false.
+      componentProperties.put("UseJSONDisplay", new ClientJsonString("False"));
+      srcCompVersion = 15;
+    }
     return srcCompVersion;
   }
 

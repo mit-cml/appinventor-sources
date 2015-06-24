@@ -322,8 +322,9 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  // For YOUNG_ANDROID_VERSION 124:
+  // - FORM_COMPONENT_VERSION was incremented to 15.
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -578,7 +579,9 @@ public class YaVersion {
   // - The Screen.Scrollable property was set to False by default
   // For FORM_COMPONENT_VERSION 14:
   // - The Screen1.AppName was added and no block need to be changed.
-  public static final int FORM_COMPONENT_VERSION = 14;
+  // For FORM_COMPONENT_VERSION 15:
+  // - The UseJSONDisplay was added as a property.
+  public static final int FORM_COMPONENT_VERSION = 15;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

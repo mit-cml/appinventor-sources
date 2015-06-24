@@ -162,6 +162,8 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  public static boolean useJSONDisplay; //EMERY use JSON representation for lists
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -215,6 +217,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    UseJSONDisplay(true); //emery
   }
 
   @Override
@@ -1525,6 +1528,29 @@ public class Form extends Activity
       throw e.getTargetException();
     }
   }
+
+  /**
+   * Determines if lists should be represented using JSON Display or the old way
+   *
+   * @param useJSONDisplay true if use JSON Display for return values.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue= "True")
+  @SimpleProperty(userVisible = false,
+          description = "Set this to use JSON Display Representation for lists.")
+  public void UseJSONDisplay (boolean useJSONDisplay) {
+    this.useJSONDisplay = useJSONDisplay;
+  }
+
+  /**
+   * UseJSONDisplay getter method.
+   *
+   * @return true if return values are printed in JSON format.
+   */
+  public static boolean UseJSONDisplay() {
+    return useJSONDisplay;
+  }
+
 
   /**
    * Perform some action related to fullscreen video display.

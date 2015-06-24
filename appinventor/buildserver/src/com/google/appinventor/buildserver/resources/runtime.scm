@@ -1090,19 +1090,19 @@
 
 ;;; show a string that is the elements in arglist, with the individual
 ;;; elements delimited by brackets to make error messages more readable
-(define (show-arglist-no-parens args)
-  (let* ((elements (map get-display-representation args))
-         (bracketed (map (lambda (s) (string-append "[" s "]")) elements)))
-    (let loop ((result "") (rest-elements bracketed))
-      (if (null? rest-elements)
-          result
-          (loop (string-append result " " (car rest-elements))
-                (cdr rest-elements))))))
-
-
 ;;(define (show-arglist-no-parens args)
-;;  (let ((s (get-display-representation args)))
-;;    (substring s 1 (- (string-length s) 1))))
+  ;;(let* ((elements (map get-display-representation args))
+    ;;     (bracketed (map (lambda (s) (string-append "[" s "]")) elements)))
+   ;; (let loop ((result "") (rest-elements bracketed))
+     ;; (if (null? rest-elements)
+       ;;   result
+         ;; (loop (string-append result " " (car rest-elements))
+           ;;     (cdr rest-elements))))))
+
+
+(define (show-arglist-no-parens args)
+  (let ((s (get-display-representation args)))
+    (substring s 1 (- (string-length s) 1))))
 
 ;;; Coerce the list of args to the corresponding list of types
 
@@ -1195,18 +1195,30 @@
         ((boolean? arg) (boolean->string arg))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((list? arg)
-         (let ((pieces (map coerce-to-string arg)))
-            (call-with-output-string (lambda (port) (display pieces port)))))
+            (if (SimpleForm:UseJSONDisplay)
+                (let ((pieces (map get-json-display-representation arg)))
+                          (string-append "[" (join-strings pieces ", ") "]"))
+                (let ((pieces (map coerce-to-string arg)))
+                            (call-with-output-string (lambda (port) (display pieces port))))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
+
+
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
 ;;; want to make the structure more clear.  For example, the empty string should
 ;;; be explicity shown in error messages.
 ;;; This procedure is currently almost completely redundant with coerce-to-string
 ;;; but it give us flexibility to tailor display for other data types
+
 (define get-display-representation
-  ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
-  ;; which is why this uses 1.0 and -1.0
+    (lambda (arg)
+        (if (SimpleForm:UseJSONDisplay)
+            (get-json-display-representation arg)
+            (get-original-display-representation arg))))
+
+(define get-original-display-representation
+   ;;there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
+   ;;which is why this uses 1.0 and -1.0
   (let ((+inf (/ 1.0 0))
         (-inf (/ -1.0 0)))
     (lambda (arg)
@@ -1226,6 +1238,38 @@
              (let ((pieces (map get-display-representation arg)))
                (call-with-output-string (lambda (port) (display pieces port)))))
             (else (call-with-output-string (lambda (port) (display arg port))))))))
+
+(define get-json-display-representation
+  ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
+  ;; which is why this uses 1.0 and -1.0
+  (let ((+inf (/ 1.0 0))
+        (-inf (/ -1.0 0)))
+    (lambda (arg)
+      (cond ((= arg +inf) "+infinity")
+            ((= arg -inf) "-infinity")
+            ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+            ((symbol? arg)
+             (symbol->string arg))
+            ((string? arg) (string-append "\"" arg "\""))
+            ((number? arg) (appinventor-number->string arg))
+            ((boolean? arg) (boolean->string arg))
+            ((yail-list? arg) (get-json-display-representation (yail-list->kawa-list arg)))
+            ((list? arg)
+             (let ((pieces (map get-json-display-representation arg)))
+                (string-append "[" (join-strings pieces ", ") "]")))
+            (else (call-with-output-string (lambda (port) (display arg port))))))))
+
+(define (join-strings strings separator)
+   (cond ((null? strings) "")
+         ((null? (cdr strings)) (car strings))
+         (else ;; have at least two strings
+           (apply string-append
+                  (cons (car strings)
+                        (let recur ((strs (cdr strings)))
+                          (if (null? strs)
+                              '()
+                              (cons separator (cons (car strs) (recur (cdr strs)))))))))))
+
 
 ;; Note: This is not general substring replacement. It just replaces one string with another
 ;; using the replacement table
