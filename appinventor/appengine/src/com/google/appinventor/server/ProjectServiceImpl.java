@@ -586,7 +586,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       // ok, we don't want to send the gcs stream because it can time out as we
       // process the zip. We need to copy to a byte buffer first, then send a bytestream
 
-      byte[] buffer = new byte[8000];
+      byte[] buffer = new byte[16384];
       int bytesRead = 0;
       ByteArrayOutputStream bao = new ByteArrayOutputStream();
 
