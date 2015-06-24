@@ -565,7 +565,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUploadComponentFile() {
     final String USER_ID = "369";
-    final String FILE_NAME = "twitter";
+    final String FILE_NAME = "twitter.aix";
     storage.uploadComponentFile(USER_ID, FILE_NAME, RAW_FILE_CONTENT1);
 
     List<ComponentData> compDataList = storage.getCompDataList(USER_ID, FILE_NAME);
