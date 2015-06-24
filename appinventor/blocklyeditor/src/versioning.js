@@ -1778,7 +1778,7 @@ Blockly.Versioning.AllUpgradeMaps =
     14: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 15:
-    // - The Screen1.UseJSONDisplay was added
+    // - The Screen1.UseJSONFormat was added
     15: "noUpgrade"
 
   }, // End Screen

@@ -777,7 +777,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 15) {
       // default for json is false.
-      componentProperties.put("UseJSONDisplay", new ClientJsonString("False"));
+      componentProperties.put("UseJSONFormat", new ClientJsonString("False"));
       srcCompVersion = 15;
     }
     return srcCompVersion;

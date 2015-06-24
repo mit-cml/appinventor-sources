@@ -1195,7 +1195,7 @@
         ((boolean? arg) (boolean->string arg))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((list? arg)
-            (if (SimpleForm:UseJSONDisplay)
+            (if (SimpleForm:UseJSONFormat)
                 (let ((pieces (map get-json-display-representation arg)))
                           (string-append "[" (join-strings pieces ", ") "]"))
                 (let ((pieces (map coerce-to-string arg)))
@@ -1212,7 +1212,7 @@
 
 (define get-display-representation
     (lambda (arg)
-        (if (SimpleForm:UseJSONDisplay)
+        (if (SimpleForm:UseJSONFormat)
             (get-json-display-representation arg)
             (get-original-display-representation arg))))
 

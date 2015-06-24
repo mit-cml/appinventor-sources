@@ -162,7 +162,7 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
-  public static boolean useJSONDisplay; //EMERY use JSON representation for lists
+  public static boolean useJSONFormat; //EMERY use JSON representation for lists
 
   @Override
   public void onCreate(Bundle icicle) {
@@ -217,7 +217,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
-    UseJSONDisplay(true); //emery
+    UseJSONFormat(true); //emery
   }
 
   @Override
@@ -1532,23 +1532,23 @@ public class Form extends Activity
   /**
    * Determines if lists should be represented using JSON Display or the old way
    *
-   * @param useJSONDisplay true if use JSON Display for return values.
+   * @param useJSONFormat true if use JSON Display for return values.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
           defaultValue= "True")
   @SimpleProperty(userVisible = false,
           description = "Set this to use JSON Display Representation for lists.")
-  public void UseJSONDisplay (boolean useJSONDisplay) {
-    this.useJSONDisplay = useJSONDisplay;
+  public void UseJSONFormat (boolean useJSONFormat) {
+    this.useJSONFormat = useJSONFormat;
   }
 
   /**
-   * UseJSONDisplay getter method.
+   * UseJSONFormat getter method.
    *
    * @return true if return values are printed in JSON format.
    */
-  public static boolean UseJSONDisplay() {
-    return useJSONDisplay;
+  public static boolean UseJSONFormat() {
+    return useJSONFormat;
   }
 
 
