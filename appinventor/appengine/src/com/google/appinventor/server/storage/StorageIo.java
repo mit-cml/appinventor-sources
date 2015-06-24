@@ -458,6 +458,12 @@ public interface StorageIo {
    */
   long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
 
+  /**
+   * Uploads a file which is expected to be a .aix zipped file
+   * @param userId the user who owns the file
+   * @param fileName the file name with the extension
+   * @param content  file content
+   */
   void uploadComponentFile(final String userId, final String fileName, final byte[] content);
 
   /**
