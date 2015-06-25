@@ -22,6 +22,7 @@ import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -52,6 +53,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String FILE_NAME2 = "src/File2.blk";
   private static final String RAW_FILE_NAME1 = "assets/File1.jpg";
   private static final String RAW_FILE_NAME2 = "assets/File2.wav";
+  private static final String COMPONENT_FILE_NAME1 = "twitter.aix";
+  private static final String COMPONENT_FILE_NAME2 = "facebook.aix";
+  private static final String COMPONENT_EXTENSION_NAME = ".aix";
   private static final String FILE_NAME_OUTPUT = "File.apk";
   private static final String FILE_CONTENT1 = "The quick onyx goblin jumps over the lazy dwarf";
   private static final String FILE_CONTENT2 = "This Pangram contains four a's, one b, two c's, "
@@ -565,10 +569,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUploadComponentFile() {
     final String USER_ID = "369";
-    final String FILE_NAME = "twitter.aix";
-    final String COMP_NAME = FILE_NAME.substring(0, FILE_NAME.length() - ".aix".length());
+    final String COMP_NAME = COMPONENT_FILE_NAME1.substring(0,
+        COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
     final long INIT_VERSION = 0;
-    storage.uploadComponentFile(USER_ID, FILE_NAME, RAW_FILE_CONTENT1);
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
     List<ComponentData> compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
     assertFalse(compDataList.isEmpty());
@@ -580,8 +584,32 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
 
     // store different content with the same user id and file name
-    storage.uploadComponentFile(USER_ID, FILE_NAME, RAW_FILE_CONTENT3);
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT3);
     assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
+  }
+
+  public void testGetComponentInfo() {
+    final String USER_ID = "246";
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
+
+    assertEquals(storage.getComponentInfo(USER_ID).size(), 2);
+
+    final String COMP_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
+        COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
+    final String COMP_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
+        COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
+    final long INIT_VERSION = 0;
+
+    ComponentInfo compInfo1 = storage.getComponentInfo(USER_ID).get(0);
+    assertEquals(compInfo1.getAuthorId(), USER_ID);
+    assertEquals(compInfo1.getName(), COMP_NAME_1);
+    assertEquals(compInfo1.getVersion(), INIT_VERSION);
+
+    ComponentInfo compInfo2 = storage.getComponentInfo(USER_ID).get(1);
+    assertEquals(compInfo2.getAuthorId(), USER_ID);
+    assertEquals(compInfo2.getName(), COMP_NAME_2);
+    assertEquals(compInfo2.getVersion(), INIT_VERSION);
   }
 
 
