@@ -258,4 +258,14 @@ public class StoredData {
     public String fileId;
     public String message;
   }
+
+  @Unindexed
+  static final class SplashData {
+    @Id Long id;
+    public int version;
+    public String content;
+    public int height;
+    public int width;
+  }
+
 }
