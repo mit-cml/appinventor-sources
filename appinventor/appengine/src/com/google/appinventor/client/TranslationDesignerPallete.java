@@ -184,6 +184,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcCompassSensorComponentPallette();
     } else if (key.equals("FtcDcMotor")) {
       value = MESSAGES.ftcDcMotorComponentPallette();
+    } else if (key.equals("FtcDeviceInterfaceModule")) {
+      value = MESSAGES.ftcDeviceInterfaceModuleComponentPallette();
     } else if (key.equals("FtcGamepad")) {
       value = MESSAGES.ftcGamepadComponentPallette();
     } else if (key.equals("FtcGyroSensor")) {
@@ -342,6 +344,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcCompassSensorHelpStringComponentPallette();
     } else if (key.equals("FtcDcMotor-helpString")) {
       value = MESSAGES.FtcDcMotorHelpStringComponentPallette();
+    } else if (key.equals("FtcDeviceInterfaceModule-helpString")) {
+      value = MESSAGES.FtcDeviceInterfaceModuleHelpStringComponentPallette();
     } else if (key.equals("FtcGamepad-helpString")) {
       value = MESSAGES.FtcGamepadHelpStringComponentPallette();
     } else if (key.equals("FtcGyroSensor-helpString")) {

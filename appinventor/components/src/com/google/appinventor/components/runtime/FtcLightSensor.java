@@ -58,10 +58,10 @@ public final class FtcLightSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void EnableLed(boolean enableLed) {
-    this.enableLed = enableLed;
     if (lightSensor != null) {
       try {
         lightSensor.enableLed(enableLed);
+        this.enableLed = enableLed;
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableLed",

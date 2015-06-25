@@ -1,12 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-  <!-- removed for App Inventor
   <item
     android:id="@+id/action_settings"
     android:orderInCategory="99"
     android:showAsAction="never"
     android:title="@string/settings_menu_item"/>
-  removed for App Inventor -->
   <item
     android:id="@+id/action_restart_robot"
     android:orderInCategory="100"

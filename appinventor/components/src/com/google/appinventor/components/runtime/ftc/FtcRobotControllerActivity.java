@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+//package com.qualcomm.ftcrobotcontroller;
 package com.google.appinventor.components.runtime.ftc;
 
 import android.app.ActionBar;
@@ -47,6 +48,7 @@ import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.Menu;
@@ -57,7 +59,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qualcomm.analytics.Analytics;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
@@ -77,21 +78,30 @@ import com.qualcomm.robotcore.hardware.mock.MockDeviceManager;
 import com.qualcomm.robotcore.hardware.mock.MockHardwareFactory;
 import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.Dimmer;
+/* Removed for App Inventor
 import com.qualcomm.robotcore.util.ImmersiveMode;
+*/
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 
+// Added for App Inventor:
 import com.google.appinventor.components.runtime.FtcRobotController;
 
 public class FtcRobotControllerActivity extends ActivityGlue {
 
-  private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+  private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1; // TODO(lizlooney): is this ever used in a startActivityForResult call?
   private static final boolean USE_MOCK_HARDWARE_FACTORY = false;
   private static final int NUM_GAMEPADS = 2;
+
+  /* Removed for App Inventor
+  public static final int CONFIGURE_ROBOT = 3;
+  */
+  public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
 
   protected static final String VIEW_LOGS_ACTION = "com.qualcomm.ftcrobotcontroller.VIEW_LOGS";
 
@@ -100,7 +110,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   protected UpdateUI.Callback callback;
   protected Context context;
   private Utility utility;
-  private boolean launched;
 
   protected TextView textDeviceName;
   protected TextView textWifiDirectStatus;
@@ -108,7 +117,9 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
   protected TextView textOpMode;
   protected TextView textErrorMessage;
-  //AI protected ImmersiveMode immersion;
+  /* Removed for App Inventor
+  protected ImmersiveMode immersion;
+  */
 
   protected UpdateUI updateUI;
   protected BatteryChecker batteryChecker;
@@ -155,8 +166,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
     setContentView(R.layout.activity_ftc_controller);
 
-    context = thisActivity;
     utility = new Utility(thisActivity);
+    context = thisActivity;
     entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
 
     textDeviceName = (TextView) findViewById(R.id.textDeviceName);
@@ -166,11 +177,12 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
     textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-    //AI immersion = new ImmersiveMode(getWindow().getDecorView());
+    /* Removed for App Inventor
+    immersion = new ImmersiveMode(getWindow().getDecorView());
+    */
     dimmer = new Dimmer(thisActivity);
     dimmer.longBright();
     Restarter restarter = new RobotRestarter();
-    Analytics analytics = new Analytics(thisActivity);
 
     updateUI = new UpdateUI(thisActivity, dimmer);
     updateUI.setRestarter(restarter);
@@ -178,10 +190,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         textGamepad, textOpMode, textErrorMessage, textDeviceName);
     callback = updateUI.new Callback();
 
-    //AI PreferenceManager.setDefaultValues(thisActivity, R.xml.preferences, false);
+    PreferenceManager.setDefaultValues(thisActivity, R.xml.preferences, false);
     preferences = PreferenceManager.getDefaultSharedPreferences(thisActivity);
-
-    launched = false;
 
     hittingMenuButtonBrightensScreen();
   }
@@ -207,6 +217,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         return false;
       }
     });
+
   }
 
   @Override
@@ -228,7 +239,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     RobotLog.cancelWriteLogcatToDisk(thisActivity);
   }
 
-  /*AI
+  /* Removed for App Inventor
   @Override
   public void onWindowFocusChanged(boolean hasFocus){
     super.onWindowFocusChanged(hasFocus);
@@ -255,15 +266,19 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    // Added for App Inventor:
     int itemId = item.getItemId();
     if (itemId == R.id.action_restart_robot) {
       dimmer.handleDimTimer();
       Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
       requestRobotRestart();
       return true;
+    } else if (itemId == R.id.action_settings) {
+      startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), requestCodeConfigureRobot);
+      return true;
     }
     return false;
-    /*AI
+    /* Removed for App Inventor
     switch (item.getItemId()) {
       case R.id.action_restart_robot:
         dimmer.handleDimTimer();
@@ -271,7 +286,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         requestRobotRestart();
         return true;
       case R.id.action_settings:
-        startActivity(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class));
+        startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
         return true;
       case R.id.action_about:
         startActivity(new Intent(getBaseContext(), AboutActivity.class));
@@ -295,6 +310,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     super.onConfigurationChanged(newConfig);
     // don't destroy assets on screen rotation
   }
+
   @Override
   protected void onActivityResult(int request, int result, Intent intent) {
     if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
@@ -302,6 +318,15 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         showToast(toast);
+      }
+    }
+    if (request == requestCodeConfigureRobot) {
+      if (result == RESULT_OK) {
+        Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
+        if (extra != null) {
+          utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
+          utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+        }
       }
     }
   }
@@ -348,6 +373,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     eventLoop = new FtcEventLoop(factory, callback, aiFtcRobotController);
 
     controllerService.setCallback(callback);
+    // Added for App Inventor:
     aiFtcRobotController.beforeSetupRobot();
     controllerService.setupRobot(eventLoop);
 
@@ -357,23 +383,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   }
 
   private FileInputStream fileSetup() {
-    boolean hasConfigFile = preferences.contains(getString(R.string.pref_hardware_config_filename));
-    String activeFilename = utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE);
-    if (!launched) {
-      if (!hasConfigFile ||
-          activeFilename.equalsIgnoreCase(Utility.NO_FILE) ||
-          activeFilename.toLowerCase().contains(Utility.UNSAVED.toLowerCase())) {
-        /*AI
-        utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
-        DbgLog.msg("No default config file, so launching Hardware Wizard");
-        launched = true;
-        startActivity(new Intent(getBaseContext(), FtcLoadFileActivity.class));
-        return null;
-        */
-      }
-    }
-
-    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
     final String filename = Utility.CONFIG_FILES_DIR
         + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
@@ -385,8 +394,10 @@ public class FtcRobotControllerActivity extends ActivityGlue {
       String msg = "Cannot open robot configuration file - " + filename;
       utility.complainToast(msg, context);
       DbgLog.msg(msg);
-      return null;
+      utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
+      fis = null;
     }
+    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
     return fis;
   }
 
@@ -451,9 +462,11 @@ public class FtcRobotControllerActivity extends ActivityGlue {
    */
   public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity,
       String configuration) {
-    super(aiFtcRobotController, activity);
+    super(activity, aiFtcRobotController);
     onCreate(null);
-    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
+    if (!configuration.isEmpty()) {
+      utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
+    }
     onStart();
   }
 
@@ -461,7 +474,9 @@ public class FtcRobotControllerActivity extends ActivityGlue {
    * Called from FtcRobotController when the Configuration property is change.
    */
   public void onConfigurationPropertyChanged(String configuration) {
-    utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
-    callback.restartRobot();
+    if (!configuration.isEmpty()) {
+      utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
+      callback.restartRobot();
+    }
   }
 }

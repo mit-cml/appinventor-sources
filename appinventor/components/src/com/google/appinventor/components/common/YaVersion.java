@@ -326,6 +326,7 @@ public class YaVersion {
   // - The FtcAccelerationSensor component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
+  // - The FtcDeviceInterfaceModule component was added.
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
   // - The FtcIrSeekerSensor component was added.
@@ -599,6 +600,8 @@ public class YaVersion {
   public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
 
   public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 1;
 
   public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
 

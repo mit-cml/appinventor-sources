@@ -410,17 +410,17 @@
   </target>
 
   <!-- ====================================================================
-       components_FtcJars builds:
-       - build/components/ftc/Analytics/classes.jar
-       - build/components/ftc/FtcCommon/classes.jar
-       - build/components/ftc/ModernRobotics/classes.jar
-       - build/components/ftc/RobotCore/classes.jar
-       - build/components/ftc/WirelessP2p/classes.jar
+       components_FtcAars builds:
+       - build/components/ftc/Analytics/...
+       - build/components/ftc/FtcCommon/...
+       - build/components/ftc/ModernRobotics/...
+       - build/components/ftc/RobotCore/...
+       - build/components/ftc/WirelessP2p/...
        ==================================================================== -->
 
-  <target name="components_FtcJars">
+  <target name="components_FtcAars">
     <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
-         target="FtcJars"/>
+         target="FtcAars"/>
   </target>
 
   <!-- ====================================================================

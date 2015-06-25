@@ -5,6 +5,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -85,7 +87,11 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     }
     this.hardwareMap = hardwareMap;
     if (this.hardwareMap != null) {
-      initHardwareDevice();
+      try {
+        initHardwareDevice();
+      } catch (Throwable e) {
+        Log.e("FtcHardwareDevice", e.getMessage());
+      }
     }
   }
 

@@ -2298,6 +2298,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcDcMotorComponentPallette();
 
+  @DefaultMessage("FtcDeviceInterfaceModule")
+  @Description("")
+  String ftcDeviceInterfaceModuleComponentPallette();
+
   @DefaultMessage("FtcGamepad")
   @Description("")
   String ftcGamepadComponentPallette();
@@ -5263,6 +5267,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EnableAnalogReadModeMethods();
 
+  @DefaultMessage("EnableI2cReadMode")
+  @Description("")
+  String EnableI2cReadModeMethods();
+
+  @DefaultMessage("EnableI2cWriteMode")
+  @Description("")
+  String EnableI2cWriteModeMethods();
+
   @DefaultMessage("EnableNxtI2cReadMode")
   @Description("")
   String EnableNxtI2cReadModeMethods();
@@ -5278,6 +5290,42 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Float")
   @Description("")
   String FloatMethods();
+
+  @DefaultMessage("GetAnalogInputValue")
+  @Description("")
+  String GetAnalogInputValueMethods();
+
+  @DefaultMessage("GetAnalogOutputFrequency")
+  @Description("")
+  String GetAnalogOutputFrequencyMethods();
+
+  @DefaultMessage("GetAnalogOutputMode")
+  @Description("")
+  String GetAnalogOutputModeMethods();
+
+  @DefaultMessage("GetAnalogOutputVoltage")
+  @Description("")
+  String GetAnalogOutputVoltageMethods();
+
+  @DefaultMessage("GetDigitalInputStateByte")
+  @Description("")
+  String GetDigitalInputStateByteMethods();
+
+  @DefaultMessage("GetDigitalOutputByte")
+  @Description("")
+  String GetDigitalOutputByteMethods();
+
+  @DefaultMessage("GetLEDSetting")
+  @Description("")
+  String GetLEDSettingMethods();
+
+  @DefaultMessage("GetPulseWidthOutputTime")
+  @Description("")
+  String GetPulseWidthOutputTimeMethods();
+
+  @DefaultMessage("GetPulseWidthPeriod")
+  @Description("")
+  String GetPulseWidthPeriodMethods();
 
   @DefaultMessage("GetRuntime")
   @Description("")
@@ -5299,6 +5347,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ReadAnalogMethods();
 
+  @DefaultMessage("ReadDeviceInterfaceModuleI2cCache")
+  @Description("")
+  String ReadDeviceInterfaceModuleI2cCacheMethods();
+
   @DefaultMessage("ReadLegacyModuleCache")
   @Description("")
   String ReadLegacyModuleCacheMethods();
@@ -5307,13 +5359,41 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ScaleRangeMethods();
 
+  @DefaultMessage("SetAnalogOutputFrequency")
+  @Description("")
+  String SetAnalogOutputFrequencyMethods();
+
+  @DefaultMessage("SetAnalogOutputMode")
+  @Description("")
+  String SetAnalogOutputModeMethods();
+
+  @DefaultMessage("SetAnalogOutputVoltage")
+  @Description("")
+  String SetAnalogOutputVoltageMethods();
+
   @DefaultMessage("SetDifferentialControlLoopCoefficients")
   @Description("")
   String SetDifferentialControlLoopCoefficientsMethods();
 
+  @DefaultMessage("SetDigitalIOControlByte")
+  @Description("")
+  String SetDigitalIOControlByteMethods();
+
   @DefaultMessage("SetDigitalLine")
   @Description("")
   String SetDigitalLineMethods();
+
+  @DefaultMessage("SetLED")
+  @Description("")
+  String SetLEDMethods();
+
+  @DefaultMessage("SetPulseWidthOutputTime")
+  @Description("")
+  String SetPulseWidthOutputTimeMethods();
+
+  @DefaultMessage("SetPulseWidthPeriod")
+  @Description("")
+  String SetPulseWidthPeriodMethods();
 
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")
@@ -5322,6 +5402,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("TelemetryAddTextData")
   @Description("")
   String TelemetryAddTextDataMethods();
+
+  @DefaultMessage("WriteDeviceInterfaceModuleI2cCache")
+  @Description("")
+  String WriteDeviceInterfaceModuleI2cCacheMethods();
 
   @DefaultMessage("WriteLegacyModuleCache")
   @Description("")
@@ -5602,6 +5686,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a DC motor of an FTC robot.")
   @Description("")
   String FtcDcMotorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a device interface module of an FTC robot.")
+  @Description("")
+  String FtcDeviceInterfaceModuleHelpStringComponentPallette();
 
   @DefaultMessage("A component for a gamepad of an FTC robot.")
   @Description("")

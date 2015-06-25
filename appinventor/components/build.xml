@@ -54,7 +54,7 @@
   <!-- =====================================================================
        Unzip lib/ftc .aar files
        ===================================================================== -->
-  <target name="FtcJars"
+  <target name="FtcAars"
           depends="init">
     <aar.unzip src="${lib.dir}/ftc/Analytics-release.aar"
                dest="${public.build.dir}/ftc/Analytics" />
@@ -143,7 +143,7 @@
        ===================================================================== -->
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities,FtcJars,common_CommonVersion">
+          depends="CommonConstants,HtmlEntities,FtcAars,common_CommonVersion">
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
