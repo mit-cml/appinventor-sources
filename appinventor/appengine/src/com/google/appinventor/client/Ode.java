@@ -44,6 +44,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
@@ -77,6 +78,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -982,6 +985,22 @@ public class Ode implements EntryPoint {
     mainPanel.add(statusPanel, DockPanel.SOUTH);
     mainPanel.setSize("100%", "100%");
     RootPanel.get().add(mainPanel);
+
+    // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
+    // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
+    // control key pressed.
+    RootPanel.get().addDomHandler(new MouseWheelHandler() {
+      @Override
+      public void onMouseWheel(MouseWheelEvent event) {
+        if(event.isControlKeyDown()) {
+          // Trip the appropriate flag in PZAwarePositionCallback when the page
+          // is Pinch Zoomed. Note that this flag does not need to be removed when
+          // the browser is un-zoomed because the patched function for determining
+          // absolute position works in all circumstances.
+          PZAwarePositionCallback.setPinchZoomed(true);
+        }
+      }
+    }, MouseWheelEvent.getType());
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will

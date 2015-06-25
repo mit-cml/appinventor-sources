@@ -78,7 +78,7 @@ public class MockHVArrangement extends MockContainer {
     } catch (BadPropertyEditorException e) {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
-    };
+    }
     enableAndDisableDropdowns();
     initialized = true;
   }
@@ -107,7 +107,7 @@ public class MockHVArrangement extends MockContainer {
     if (initialized) enableAndDisableDropdowns();
   }
 
-  // If the width is automatic, the selector for horizontal alignment should be disabled.  
+  // If the width is automatic, the selector for horizontal alignment should be disabled.
   // If the length is automatic, the selector for vertical alignment should be disabled.
   private void enableAndDisableDropdowns() {
     String width = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_WIDTH).getValue();
@@ -120,6 +120,5 @@ public class MockHVArrangement extends MockContainer {
       myVAlignmentPropertyEditor.disable();
     } else myVAlignmentPropertyEditor.enable();
   }
-      
-  }
+}
 
