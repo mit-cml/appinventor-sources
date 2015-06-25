@@ -9,6 +9,7 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -465,6 +466,14 @@ public interface StorageIo {
    * @param content  file content
    */
   void uploadComponentFile(final String userId, final String fileName, final byte[] content);
+
+  /**
+   * Returns a list of info about the components uploaded by the user
+   *
+   * @param userId unique user id
+   * @return list of component info
+   */
+  List<ComponentInfo> getComponentInfo(String userId);
 
   /**
    * Deletes a file.

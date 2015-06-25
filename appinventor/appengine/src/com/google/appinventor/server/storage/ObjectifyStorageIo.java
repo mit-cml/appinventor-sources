@@ -35,6 +35,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -1584,6 +1585,16 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
         collectComponentErrorInfo(userId, fileName), e);
     }
+  }
+
+  @Override
+  public List<ComponentInfo> getComponentInfo(String userId) {
+    ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
+    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
+    for (ComponentData compData : query.filter("userId", userId).list()) {
+      results.add(new ComponentInfo(compData.userId, compData.name, compData.version));
+    }
+    return results;
   }
 
   protected void deleteBlobstoreFile(String blobstorePath) {
