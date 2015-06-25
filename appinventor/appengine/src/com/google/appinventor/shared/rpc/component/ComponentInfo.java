@@ -22,6 +22,7 @@ public class ComponentInfo implements IsSerializable {
   }
 
   public ComponentInfo(String authorId, String name, long version) {
+    this.authorId = authorId;
     this.name = name;
     this.version = version;
   }
