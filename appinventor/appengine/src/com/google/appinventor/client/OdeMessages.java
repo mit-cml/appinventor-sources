@@ -2298,6 +2298,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcDcMotorComponentPallette();
 
+  @DefaultMessage("FtcDeviceInterfaceModule")
+  @Description("")
+  String ftcDeviceInterfaceModuleComponentPallette();
+
   @DefaultMessage("FtcGamepad")
   @Description("")
   String ftcGamepadComponentPallette();
@@ -3188,10 +3192,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BackProperties();
 
-  @DefaultMessage("BlueLed")
-  @Description("")
-  String BlueLedProperties();
-
   @DefaultMessage("CalibrationFailed")
   @Description("")
   String CalibrationFailedProperties();
@@ -3303,10 +3303,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PowerFloat")
   @Description("")
   String PowerFloatProperties();
-
-  @DefaultMessage("RedLed")
-  @Description("")
-  String RedLedProperties();
 
   @DefaultMessage("RightBumper")
   @Description("")
@@ -5319,6 +5315,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetDigitalOutputByteMethods();
 
+  @DefaultMessage("GetLEDSetting")
+  @Description("")
+  String GetLEDSettingMethods();
+
   @DefaultMessage("GetPulseWidthOutputTime")
   @Description("")
   String GetPulseWidthOutputTimeMethods();
@@ -5382,6 +5382,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetDigitalLine")
   @Description("")
   String SetDigitalLineMethods();
+
+  @DefaultMessage("SetLED")
+  @Description("")
+  String SetLEDMethods();
 
   @DefaultMessage("SetPulseWidthOutputTime")
   @Description("")
@@ -5682,6 +5686,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a DC motor of an FTC robot.")
   @Description("")
   String FtcDcMotorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a device interface module of an FTC robot.")
+  @Description("")
+  String FtcDeviceInterfaceModuleHelpStringComponentPallette();
 
   @DefaultMessage("A component for a gamepad of an FTC robot.")
   @Description("")

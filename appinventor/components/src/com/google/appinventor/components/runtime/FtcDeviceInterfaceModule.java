@@ -32,8 +32,6 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
 
-  private volatile boolean redLed;
-  private volatile boolean blueLed;
   private volatile DeviceInterfaceModule deviceInterfaceModule;
 
   /**
@@ -42,6 +40,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   public FtcDeviceInterfaceModule(ComponentContainer container) {
     super(container.$form());
   }
+
+  // Fuctions
 
   @SimpleFunction(description = "Enable a physical port in I2C read mode.")
   public void EnableI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int memLength) {
@@ -78,57 +78,31 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
-  // Properties
 
-  /**
-   * RedLed property getter.
-   */
-  @SimpleProperty(description = "The setting of the red LED.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean RedLed() {
-    return redLed;
-  }
-
-  /**
-   * RedLed property setter.
-   */
-  @SimpleProperty
-  public void RedLed(boolean redLed) {
-    this.redLed = redLed;
+  @SimpleFunction(description = "The lower two bits of the \"setting\" byte indicate the values " +
+      "of the red (0) and blue (1) LEDs.")
+  public int GetLEDSetting() {
     if (deviceInterfaceModule != null) {
       try {
-        int setting = (redLed ? 1 : 0) | (blueLed ? 2 : 0);
-        deviceInterfaceModule.setLED((byte) setting);
+        return deviceInterfaceModule.getLEDSetting();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "RedLed",
+        form.dispatchErrorOccurredEvent(this, "GetLEDSetting",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+    return 0;
   }
 
-  /**
-   * BlueLed property getter.
-   */
-  @SimpleProperty(description = "The setting of the blue LED.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean BlueLed() {
-    return blueLed;
-  }
-
-  /**
-   * BlueLed property setter.
-   */
-  @SimpleProperty
-  public void BlueLed(boolean blueLed) {
-    this.blueLed = blueLed;
+  @SimpleFunction(description = "Lower two bits of the \"setting\" byte turn on the red (0) and " +
+      "blue (1) LEDs.")
+  public void SetLED(int setting) {
     if (deviceInterfaceModule != null) {
       try {
-        int setting = (redLed ? 1 : 0) | (blueLed ? 2 : 0);
         deviceInterfaceModule.setLED((byte) setting);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "BlueLed",
+        form.dispatchErrorOccurredEvent(this, "SetLED",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }

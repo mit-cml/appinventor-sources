@@ -106,7 +106,6 @@ public class FtcRobotControllerSettingsActivity extends Activity {
       @Override
       public boolean onPreferenceClick(Preference preference) {
         Intent intent =  new Intent(preference.getIntent().getAction());
-        android.util.Log.e("HeyLiz", "starting activity with intent " + intent);
         startActivityForResult(intent, CONFIGURE_ROBOT);
         return true;
       }

@@ -324,7 +324,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
       if (result == RESULT_OK) {
         Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
         if (extra != null) {
-          android.util.Log.e("HeyLiz", "extra is " + extra);
           utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
           utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
         }
