@@ -1588,7 +1588,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public List<ComponentInfo> getComponentInfo(String userId) {
+  public List<ComponentInfo> getComponentInfos(String userId) {
     ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {

@@ -588,12 +588,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
   }
 
-  public void testGetComponentInfo() {
+  public void testGetComponentInfos() {
     final String USER_ID = "246";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
 
-    assertEquals(2, storage.getComponentInfo(USER_ID).size());
+    assertEquals(2, storage.getComponentInfos(USER_ID).size());
 
     final String COMP_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
@@ -601,12 +601,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
     final long INIT_VERSION = 0;
 
-    ComponentInfo compInfo1 = storage.getComponentInfo(USER_ID).get(0);
+    ComponentInfo compInfo1 = storage.getComponentInfos(USER_ID).get(0);
     assertEquals(USER_ID, compInfo1.getAuthorId());
     assertEquals(COMP_NAME_1, compInfo1.getName());
     assertEquals(INIT_VERSION, compInfo1.getVersion());
 
-    ComponentInfo compInfo2 = storage.getComponentInfo(USER_ID).get(1);
+    ComponentInfo compInfo2 = storage.getComponentInfos(USER_ID).get(1);
     assertEquals(USER_ID, compInfo2.getAuthorId());
     assertEquals(COMP_NAME_2, compInfo2.getName());
     assertEquals(INIT_VERSION, compInfo2.getVersion());

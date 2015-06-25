@@ -473,7 +473,7 @@ public interface StorageIo {
    * @param userId unique user id
    * @return list of component info
    */
-  List<ComponentInfo> getComponentInfo(String userId);
+  List<ComponentInfo> getComponentInfos(String userId);
 
   /**
    * Deletes a file.
