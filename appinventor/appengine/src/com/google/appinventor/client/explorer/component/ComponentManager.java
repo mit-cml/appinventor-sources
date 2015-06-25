@@ -17,13 +17,7 @@ public final class ComponentManager {
   private final List<ComponentInfo> compInfos = new ArrayList<ComponentInfo>();
 
   public ComponentManager() {
-    Ode.getInstance().getComponentService().getComponentInfos(
-      new OdeAsyncCallback<List<ComponentInfo>>() {
-        @Override
-        public void onSuccess(List<ComponentInfo> compInfos) {
-          ComponentManager.this.compInfos.addAll(compInfos);
-        }
-      });
+    pullComponentInfos();
   }
 
   /**
@@ -31,5 +25,16 @@ public final class ComponentManager {
    */
   public List<ComponentInfo> getRetrivedComponentInfos() {
     return compInfos;
+  }
+
+  public void pullComponentInfos() {
+    Ode.getInstance().getComponentService().getComponentInfos(
+      new OdeAsyncCallback<List<ComponentInfo>>() {
+        @Override
+        public void onSuccess(List<ComponentInfo> compInfos) {
+          ComponentManager.this.compInfos.clear();
+          ComponentManager.this.compInfos.addAll(compInfos);
+        }
+      });
   }
 }

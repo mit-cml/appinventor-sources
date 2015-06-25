@@ -8,6 +8,7 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
@@ -55,6 +56,7 @@ public class ComponentUploadWizard extends Wizard {
           new OdeAsyncCallback<UploadResponse>() {
             @Override
             public void onSuccess(UploadResponse uploadResponse) {
+              Ode.getInstance().getComponentManager().pullComponentInfos();
               ErrorReporter.reportInfo("Uploaded successfully");
             }
           });
