@@ -241,7 +241,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     List<Long> projectIds = storageIo.getProjects(userId);
     List<UserProject> projectInfos = Lists.newArrayListWithExpectedSize(projectIds.size());
     for (Long projectId : projectIds) {
-      projectInfos.add(makeUserProject(userId, projectId));
+      UserProject up = makeUserProject(userId, projectId);
+      if (up != null) {
+        projectInfos.add(up);
+      } else {
+        LOG.log(Level.WARNING, "ProjectId " + projectId +
+          " is missing at the lower level.");
+      }
     }
     return projectInfos;
   }

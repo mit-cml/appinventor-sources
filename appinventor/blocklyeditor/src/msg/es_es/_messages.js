@@ -1274,6 +1274,15 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "¿Estás totalmente seguro?";
     Blockly.Msg.REPL_FACTORY_RESET = 'Esto intentará devolver tu emulador a su estado “de fábrica”. Si habías actualizado Companion en el emulador, seguramente tendrás que hacerlo de nuevo.';
 
+// Messages from Blockly.js
+    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Estás seguro de que quieres borrar todos los %1 bloques?";
+
+// Blocklyeditor.js
+    Blockly.Msg.GENERATE_YAIL = "Generate Yail";
+    Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Cerrar Error";
+    Blockly.Msg.CAN_NOT_DO_IT = 'El comando "Do it" no está disponible';
+    Blockly.Msg.CONNECT_TO_DO_IT = 'Necesitas estar conectado a la Companion or al Emulador para utilizar "Do It"';
   }
 };
 
