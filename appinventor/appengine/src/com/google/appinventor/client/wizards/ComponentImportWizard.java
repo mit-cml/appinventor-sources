@@ -27,7 +27,7 @@ public class ComponentImportWizard extends Wizard {
       sb.appendEscaped(value.getName());
       sb.appendHtmlConstant("</tr>");
       sb.appendHtmlConstant("<tr>");
-      sb.appendEscaped(new Integer(value.getVersion()).toString());
+      sb.appendEscaped(new Long(value.getVersion()).toString());
       sb.appendHtmlConstant("</tr>");
       sb.appendHtmlConstant("</table>");
     }
