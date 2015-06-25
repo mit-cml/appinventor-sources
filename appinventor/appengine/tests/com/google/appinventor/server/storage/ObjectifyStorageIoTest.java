@@ -578,9 +578,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertFalse(compDataList.isEmpty());
 
     ComponentData firstData = compDataList.get(0);
-    assertEquals(firstData.userId, USER_ID);
-    assertEquals(firstData.name, COMP_NAME);
-    assertEquals(firstData.version, INIT_VERSION);
+    assertEquals(USER_ID, firstData.userId);
+    assertEquals(COMP_NAME, firstData.name);
+    assertEquals(INIT_VERSION, firstData.version);
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
 
     // store different content with the same user id and file name
@@ -593,7 +593,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
 
-    assertEquals(storage.getComponentInfo(USER_ID).size(), 2);
+    assertEquals(2, storage.getComponentInfo(USER_ID).size());
 
     final String COMP_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
@@ -602,14 +602,14 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final long INIT_VERSION = 0;
 
     ComponentInfo compInfo1 = storage.getComponentInfo(USER_ID).get(0);
-    assertEquals(compInfo1.getAuthorId(), USER_ID);
-    assertEquals(compInfo1.getName(), COMP_NAME_1);
-    assertEquals(compInfo1.getVersion(), INIT_VERSION);
+    assertEquals(USER_ID, compInfo1.getAuthorId());
+    assertEquals(COMP_NAME_1, compInfo1.getName());
+    assertEquals(INIT_VERSION, compInfo1.getVersion());
 
     ComponentInfo compInfo2 = storage.getComponentInfo(USER_ID).get(1);
-    assertEquals(compInfo2.getAuthorId(), USER_ID);
-    assertEquals(compInfo2.getName(), COMP_NAME_2);
-    assertEquals(compInfo2.getVersion(), INIT_VERSION);
+    assertEquals(USER_ID, compInfo2.getAuthorId());
+    assertEquals(COMP_NAME_2, compInfo2.getName());
+    assertEquals(INIT_VERSION, compInfo2.getVersion());
   }
 
 
