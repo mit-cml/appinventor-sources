@@ -6,6 +6,8 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 
@@ -13,16 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentServiceImpl extends OdeRemoteServiceServlet implements ComponentService {
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+
   @Override
   public List<ComponentInfo> getComponentInfos() {
-    ArrayList<ComponentInfo> infos = new ArrayList<ComponentInfo>();
-    infos.add(new ComponentInfo("comp0", 0));
-    infos.add(new ComponentInfo("comp0", 3));
-    infos.add(new ComponentInfo("comp0", 7));
-    infos.add(new ComponentInfo("comp1", 0));
-    infos.add(new ComponentInfo("comp2", 2));
-    infos.add(new ComponentInfo("comp2", 4));
-
-    return infos;
+    return storageIo.getComponentInfos(userInfoProvider.getUserId());
   }
 }
