@@ -125,7 +125,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     
     String extraComponent = "[{ \"name\": \"MysteryComponent\","
   +"\"version\": \"1\","
-  +"\"package\": \"com.google.appinventor.components.runtime\","
+  +"\"classpath\": \"com.google.appinventor.components.runtime.Camera\","
   +"\"external\": \"true\","
   +"\"categoryString\": \"EXTERNAL\","
   +"\"helpString\": \"A component to take a picture using the device's camera. After the picture is taken, the name of the file on the phone containing the picture is available as an argument to the AfterPicture event. The file name can be used, for example, to set the Picture property of an Image component.\","
