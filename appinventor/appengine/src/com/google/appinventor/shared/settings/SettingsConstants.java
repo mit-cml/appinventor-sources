@@ -25,6 +25,8 @@ public class SettingsConstants {
 
   public static final String SPLASH_SETTINGS_SHOWSURVEY = "ShowSurvey";
   public static final String SPLASH_SETTINGS_DECLINED = "DeclinedSurvey";
+  public static final String SPLASH_SETTINGS_VERSION = "SplashVersion";
+
   /**
    *  YoungAndroid settings.
    */

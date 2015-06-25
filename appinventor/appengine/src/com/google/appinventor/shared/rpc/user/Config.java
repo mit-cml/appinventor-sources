@@ -19,6 +19,8 @@ public class Config implements IsSerializable, Serializable {
 
   private String rendezvousServer = null;
 
+  private SplashConfig splashConfig;
+
   public Config() {
   }
 
@@ -36,6 +38,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setRendezvousServer(String value) {
     this.rendezvousServer = value;
+  }
+
+  public SplashConfig getSplashConfig() {
+    return this.splashConfig;
+  }
+
+  public void setSplashConfig(SplashConfig config) {
+    this.splashConfig = config;
   }
 
 }
