@@ -566,20 +566,21 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   public void testUploadComponentFile() {
     final String USER_ID = "369";
     final String FILE_NAME = "twitter.aix";
+    final String COMP_NAME = FILE_NAME.substring(0, FILE_NAME.length() - ".aix".length());
+    final long INIT_VERSION = 0;
     storage.uploadComponentFile(USER_ID, FILE_NAME, RAW_FILE_CONTENT1);
 
-    List<ComponentData> compDataList = storage.getCompDataList(USER_ID, FILE_NAME);
-    ComponentData firstData = compDataList.get(0);
-
-    // check existence
+    List<ComponentData> compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
     assertFalse(compDataList.isEmpty());
-    // check input and gcs-stored content
+
+    ComponentData firstData = compDataList.get(0);
+    assertEquals(firstData.userId, USER_ID);
+    assertEquals(firstData.name, COMP_NAME);
+    assertEquals(firstData.version, INIT_VERSION);
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
 
     // store different content with the same user id and file name
     storage.uploadComponentFile(USER_ID, FILE_NAME, RAW_FILE_CONTENT3);
-
-    // check replacement
     assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
   }
 

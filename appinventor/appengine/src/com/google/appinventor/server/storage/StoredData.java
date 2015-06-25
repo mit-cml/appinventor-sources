@@ -264,9 +264,9 @@ public class StoredData {
   static final class ComponentData {
     @Id Long id;
 
-    String userId;
+    @Indexed String userId;
 
-    String name;
+    @Indexed String name;
 
     long version;
 
