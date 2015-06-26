@@ -11,7 +11,6 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 
-import java.util.ArrayList;
 import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
