@@ -1601,13 +1601,16 @@ public class ObjectifyStorageIo implements  StorageIo {
   public byte[] getFileContentFromGcs(String gcsPath) {
     try {
       GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
-      GcsService gcsService = GcsServiceFactory.createGcsService();
       int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
       ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
       GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
       readChannel.read(resultBuffer);
       return resultBuffer.array();
     } catch (IOException e) {
+      // todo: handle exception
+      return null;
+    } catch (NullPointerException e) {
+      // todo: handle exception
       return null;
     }
   }
