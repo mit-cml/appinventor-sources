@@ -17,4 +17,9 @@ public interface ComponentServiceAsync {
    */
   void getComponentInfos(AsyncCallback<List<ComponentInfo>> callback);
 
+  /**
+   * @see ComponentService#importComponentToProject(ComponentInfo, long)
+   */
+  void importComponentToProject(ComponentInfo info, long projectId, AsyncCallback<Void> callback);
+
 }

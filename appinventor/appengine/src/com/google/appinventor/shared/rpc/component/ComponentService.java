@@ -21,4 +21,12 @@ public interface ComponentService extends RemoteService {
    */
   List<ComponentInfo> getComponentInfos();
 
+  /**
+   * Import the component to the project
+   *
+   * @param info info about the component
+   * @param projectId id of the project to import
+   */
+  void importComponentToProject(ComponentInfo info, long projectId);
+
 }
