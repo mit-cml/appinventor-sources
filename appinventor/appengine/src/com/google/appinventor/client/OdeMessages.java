@@ -530,6 +530,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the file selected for upload is not a component archive.")
   String notComponentArchiveError();
 
+  @DefaultMessage("Please select a component to import")
+  @Description("Error message reported when no component is selected to import.")
+  String noComponentSelectedError();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
