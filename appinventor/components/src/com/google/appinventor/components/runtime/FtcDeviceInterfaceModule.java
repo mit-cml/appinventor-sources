@@ -80,7 +80,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
 
 
   @SimpleFunction(description = "The lower two bits of the \"setting\" byte indicate the values " +
-      "of the red (0) and blue (1) LEDs.")
+      "of the blue (0) and red (1) LEDs.")
   public int GetLEDSetting() {
     if (deviceInterfaceModule != null) {
       try {
@@ -94,8 +94,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Lower two bits of the \"setting\" byte turn on the red (0) and " +
-      "blue (1) LEDs.")
+  @SimpleFunction(description = "Lower two bits of the \"setting\" byte turn on the blue (0) and " +
+      "red (1) LEDs.")
   public void SetLED(int setting) {
     if (deviceInterfaceModule != null) {
       try {
