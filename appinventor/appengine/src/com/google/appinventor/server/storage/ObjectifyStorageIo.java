@@ -1615,6 +1615,12 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  @Override
+  public String getGcsPath(ComponentInfo compInfo) {
+    ComponentData result = ObjectifyService.begin().find(componentKey(compInfo.getId()));
+    return result == null ? null : result.gcsPath;
+  }
+
   protected void deleteBlobstoreFile(String blobstorePath) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.
@@ -2312,6 +2318,10 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   private Key<FileData> projectFileKey(Key<ProjectData> projectKey, String fileName) {
     return new Key<FileData>(projectKey, FileData.class, fileName);
+  }
+
+  private Key<ComponentData> componentKey(long compId) {
+    return new Key<ComponentData>(ComponentData.class, compId);
   }
 
   /**

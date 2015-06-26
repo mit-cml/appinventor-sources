@@ -484,6 +484,11 @@ public interface StorageIo {
   byte[] getGcsFileContent(String gcsPath);
 
   /**
+   * @return gcs path to the component file
+   */
+  String getGcsPath(ComponentInfo compInfo);
+
+  /**
    * Deletes a file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project ID
