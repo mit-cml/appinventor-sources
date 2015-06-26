@@ -27,12 +27,12 @@ public class ComponentImportWizard extends Wizard {
     @Override
     public void render(Context context, ComponentInfo value, SafeHtmlBuilder sb) {
       sb.appendHtmlConstant("<table>");
-      sb.appendHtmlConstant("<tr>");
+      sb.appendHtmlConstant("<td>");
       sb.appendEscaped(value.getName());
-      sb.appendHtmlConstant("</tr>");
-      sb.appendHtmlConstant("<tr>");
+      sb.appendHtmlConstant("</td>");
+      sb.appendHtmlConstant("<td>");
       sb.appendEscaped(new Long(value.getVersion()).toString());
-      sb.appendHtmlConstant("</tr>");
+      sb.appendHtmlConstant("</td>");
       sb.appendHtmlConstant("</table>");
     }
   }
@@ -57,7 +57,7 @@ public class ComponentImportWizard extends Wizard {
     addPage(panel);
 
     // todo: improve the ui
-    setPagePanelHeight(40);
+    setPagePanelHeight(80);
     setStylePrimaryName("ode-DialogBox");
 
     initFinishCommand(new Command() {
