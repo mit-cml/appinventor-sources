@@ -152,6 +152,20 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
+  @SimpleFunction(description = "If a particular control field bit is set to one, the channel " +
+      "pin will be in output mode and will reflect the value of the corresponding field bit.")
+  public void SetDigitalOutputByte(int input) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setDigitalOutputByte((byte) input);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDigitalOutputByte",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
   @SimpleFunction(description = "The D7-D0 output set field is a byte containing the required " +
       "I/O output of the D7-D0 channel pins. If the corresponding Dy-D0 I/O control field bit " +
       "is set to one, the channel pin will be in output mode and will reflect the value of the " +

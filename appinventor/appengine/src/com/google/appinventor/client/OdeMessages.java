@@ -5383,6 +5383,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetDigitalLineMethods();
 
+  @DefaultMessage("SetDigitalOutputByte")
+  @Description("")
+  String SetDigitalOutputByteMethods();
+
   @DefaultMessage("SetLED")
   @Description("")
   String SetLEDMethods();
