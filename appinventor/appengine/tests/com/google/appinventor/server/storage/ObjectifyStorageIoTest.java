@@ -572,6 +572,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String COMP_NAME = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
     final long INIT_VERSION = 0;
+    final String PATH_SUFFIX = USER_ID + "/" + COMP_NAME + "/" + INIT_VERSION +
+        "/" + COMPONENT_FILE_NAME1;
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
     List<ComponentData> compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
@@ -581,6 +583,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(USER_ID, firstData.userId);
     assertEquals(COMP_NAME, firstData.name);
     assertEquals(INIT_VERSION, firstData.version);
+    assertTrue(firstData.gcsPath.endsWith(PATH_SUFFIX));
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
 
     // store different content with the same user id and file name
