@@ -479,9 +479,9 @@ public interface StorageIo {
    * Returns the content of a file from gcs
    *
    * @param gcsPath path to the gcs file
-   * @return byte array of the file content
+   * @return the file content in byte array
    */
-  byte[] getFileContentFromGcs(String gcsPath);
+  byte[] getGcsFileContent(String gcsPath);
 
   /**
    * Deletes a file.

@@ -1598,7 +1598,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public byte[] getFileContentFromGcs(String gcsPath) {
+  public byte[] getGcsFileContent(String gcsPath) {
     try {
       GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
       int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
