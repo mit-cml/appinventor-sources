@@ -36,16 +36,17 @@
        ===================================================================== -->
   <macrodef name="aar.unzip">
     <attribute name="src"/>
+    <attribute name="name"/>
     <attribute name="dest"/>
     <sequential>
-      <uptodate property="dest.uptodate"
+      <uptodate property="@{name}.uptodate"
                 srcfile="@{src}"
                 targetfile="@{dest}/classes.jar" />
-      <mkdir unless:set="dest.uptodate" dir="@{dest}" />
-      <unzip unless:set="dest.uptodate"
+      <mkdir unless:set="@{name}.uptodate" dir="@{dest}" />
+      <unzip unless:set="@{name}.uptodate"
              src="@{src}"
              dest="@{dest}" />
-      <touch unless:set="dest.uptodate">
+      <touch unless:set="@{name}.uptodate">
         <fileset dir="@{dest}" />
       </touch>
     </sequential>
@@ -57,14 +58,19 @@
   <target name="FtcAars"
           depends="init">
     <aar.unzip src="${lib.dir}/ftc/Analytics-release.aar"
+               name="Analytics"
                dest="${public.build.dir}/ftc/Analytics" />
     <aar.unzip src="${lib.dir}/ftc/FtcCommon-release.aar"
+               name="FtcCommon"
                dest="${public.build.dir}/ftc/FtcCommon" />
     <aar.unzip src="${lib.dir}/ftc/ModernRobotics-release.aar"
+               name="ModernRobotics"
                dest="${public.build.dir}/ftc/ModernRobotics" />
     <aar.unzip src="${lib.dir}/ftc/RobotCore-release.aar"
+               name="RobotCore"
                dest="${public.build.dir}/ftc/RobotCore" />
     <aar.unzip src="${lib.dir}/ftc/WirelessP2p-release.aar"
+               name="WirelessP2p"
                dest="${public.build.dir}/ftc/WirelessP2p" />
   </target>
 
