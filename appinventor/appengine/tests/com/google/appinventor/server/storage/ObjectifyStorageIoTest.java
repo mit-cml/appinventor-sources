@@ -612,6 +612,16 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(INIT_VERSION, compInfo2.getVersion());
   }
 
+  public void testGetGcsPath() {
+    final String USER_ID = "135";
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
+    ComponentInfo compInfo = storage.getComponentInfos(USER_ID).get(0);
+    assertNotNull(storage.getGcsPath(compInfo));
+
+    ComponentInfo fakeInfo = new ComponentInfo(123, "fakeId", "fakeName", 456);
+    assertNull(storage.getGcsPath(fakeInfo));
+  }
+
 
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
