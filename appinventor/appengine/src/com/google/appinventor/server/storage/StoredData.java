@@ -259,6 +259,7 @@ public class StoredData {
     public String message;
   }
 
+  @Cached(expirationSeconds=60)
   @Unindexed
   static final class SplashData {
     @Id Long id;
