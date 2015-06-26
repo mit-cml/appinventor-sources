@@ -1597,6 +1597,21 @@ public class ObjectifyStorageIo implements  StorageIo {
     return results;
   }
 
+  @Override
+  public byte[] getFileContentFromGcs(String gcsPath) {
+    try {
+      GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
+      GcsService gcsService = GcsServiceFactory.createGcsService();
+      int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+      ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+      GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+      readChannel.read(resultBuffer);
+      return resultBuffer.array();
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
   protected void deleteBlobstoreFile(String blobstorePath) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.
@@ -2415,22 +2430,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   List<ComponentData> getCompDataList(String userId, String name) {
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     return query.filter("userId", userId).filter("name", name).list();
-  }
-
-  @VisibleForTesting
-  byte[] getGcsContent(String gcsPath) {
-    try {
-      GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
-      GcsService gcsService = GcsServiceFactory.createGcsService();
-      int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-      ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
-      GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-      readChannel.read(resultBuffer);
-
-      return resultBuffer.array();
-    } catch (IOException e) {
-      return null;
-    }
   }
 
   // Return time in ISO_8660 format

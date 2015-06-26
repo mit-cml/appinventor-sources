@@ -581,11 +581,11 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(USER_ID, firstData.userId);
     assertEquals(COMP_NAME, firstData.name);
     assertEquals(INIT_VERSION, firstData.version);
-    assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
+    assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getFileContentFromGcs(firstData.gcsPath)));
 
     // store different content with the same user id and file name
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT3);
-    assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsContent(firstData.gcsPath)));
+    assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getFileContentFromGcs(firstData.gcsPath)));
   }
 
   public void testGetComponentInfos() {
