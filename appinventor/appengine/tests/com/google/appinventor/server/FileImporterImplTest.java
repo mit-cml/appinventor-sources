@@ -198,7 +198,18 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testImportComponentArchive() {
-    // todo: add test when there's API in StorageIo for info of imported archives
+  public void testImportComponentArchive() throws Exception {
+    String userId = "123";
+    String fileName = "Component.aix";
+    String compName = "Component";
+    File compFile = new File(TESTING_SOURCE_PATH + fileName);
+
+    assertEquals(0, storageIo.getComponentInfos(userId).size());
+
+    fileImporter.importComponentArchive(userId, fileName, new FileInputStream(compFile));
+
+    assertEquals(1, storageIo.getComponentInfos(userId).size());
+
+    // more tests in ObjectifyStorageIoTest.testUploadComponentFile()
   }
 }
