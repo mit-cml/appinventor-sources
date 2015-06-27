@@ -10,6 +10,8 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.io.ByteStreams;
@@ -17,6 +19,7 @@ import com.google.common.io.ByteStreams;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -33,34 +36,44 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
   }
 
   @Override
-  public void importComponentToProject(ComponentInfo info, long projectId) {
+  public List<ProjectNode> importComponentToProject(ComponentInfo info, ProjectNode parentNode) {
     String gcsPath = storageIo.getGcsPath(info);
+
     if (gcsPath == null) {
       // todo: handel the case that the datastore cannot find the
       // corresponding entry of info
-    } else {
-      byte[] fileContent = storageIo.getGcsFileContent(gcsPath);
-      try {
-        ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(fileContent));
-        ZipEntry entry;
-        while ((entry = zip.getNextEntry()) != null) {
-          ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
-          ByteStreams.copy(zip, contentStream);
-
-          fileImporter.importFile(
-              userInfoProvider.getUserId(),
-              projectId,
-              "assets/" + StorageUtil.basename(entry.getName()),
-              new ByteArrayInputStream(contentStream.toByteArray()));
-        }
-        zip.close();
-      } catch (ZipException e) {
-        // todo: handle exception
-      } catch (IOException e) {
-        // todo: handle exception
-      } catch (FileImporterException e) {
-        // todo: handle exception
-      }
+      return null;
     }
+
+    byte[] fileContent = storageIo.getGcsFileContent(gcsPath);
+    ArrayList<ProjectNode> childNodes = new ArrayList<ProjectNode>();
+
+    try {
+      ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(fileContent));
+      ZipEntry entry;
+      while ((entry = zip.getNextEntry()) != null) {
+        ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
+        ByteStreams.copy(zip, contentStream);
+
+        String basename = StorageUtil.basename(entry.getName());
+        FileNode fileNode = new FileNode(basename, parentNode.getFileId() + "/" + basename);
+        childNodes.add(fileNode);
+
+        fileImporter.importFile(
+            userInfoProvider.getUserId(),
+            parentNode.getProjectId(),
+            fileNode.getFileId(),
+            new ByteArrayInputStream(contentStream.toByteArray()));
+      }
+      zip.close();
+    } catch (ZipException e) {
+      // todo: handle exception
+    } catch (IOException e) {
+      // todo: handle exception
+    } catch (FileImporterException e) {
+      // todo: handle exception
+    }
+
+    return childNodes;
   }
 }
