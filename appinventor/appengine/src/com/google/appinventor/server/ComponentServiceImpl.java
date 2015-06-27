@@ -10,6 +10,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.io.ByteStreams;
 
@@ -49,7 +50,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
           fileImporter.importFile(
               userInfoProvider.getUserId(),
               projectId,
-              "assets/" + entry.getName(),
+              "assets/" + StorageUtil.basename(entry.getName()),
               new ByteArrayInputStream(contentStream.toByteArray()));
         }
         zip.close();
