@@ -21,11 +21,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 public class ComponentServiceImpl extends OdeRemoteServiceServlet implements ComponentService {
+
+  private static final Logger LOG = Logger.getLogger(ComponentServiceImpl.class.getName());
+
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
 
   private final FileImporter fileImporter = new FileImporterImpl();
@@ -38,17 +43,19 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
   @Override
   public List<ProjectNode> importComponentToProject(ComponentInfo info, ProjectNode parentNode) {
     String gcsPath = storageIo.getGcsPath(info);
+    ArrayList<ProjectNode> childNodes = new ArrayList<ProjectNode>();
 
     if (gcsPath == null) {
-      // todo: handel the case that the datastore cannot find the
-      // corresponding entry of info
-      return null;
+      // info may not come from the datastore so gcsPath is null
+      // return an empty ArrayList rathan than null because
+      // the ensuing code will not return an empty ArrayList
+      return childNodes;
     }
 
     byte[] fileContent = storageIo.getGcsFileContent(gcsPath);
-    ArrayList<ProjectNode> childNodes = new ArrayList<ProjectNode>();
 
     try {
+      // assumption: the zip is non-empty
       ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(fileContent));
       ZipEntry entry;
       while ((entry = zip.getNextEntry()) != null) {
@@ -67,13 +74,20 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
       }
       zip.close();
     } catch (ZipException e) {
-      // todo: handle exception
+      throw CrashReport.createAndLogError(LOG, null,
+          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
     } catch (IOException e) {
-      // todo: handle exception
+      throw CrashReport.createAndLogError(LOG, null,
+          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
     } catch (FileImporterException e) {
-      // todo: handle exception
+      throw CrashReport.createAndLogError(LOG, null,
+          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
     }
 
     return childNodes;
+  }
+
+  private String collectImportErrorInfo(String gcsPath, long projectId) {
+    return "Error importing " + gcsPath + " to project " + projectId;
   }
 }

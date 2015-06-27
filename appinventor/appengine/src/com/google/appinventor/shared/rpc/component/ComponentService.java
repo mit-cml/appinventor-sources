@@ -27,7 +27,7 @@ public interface ComponentService extends RemoteService {
    *
    * @param info info about the component
    * @param parentNode the parent node that the component will be added to
-   * @return a list of ProjectNode to add to parentNode
+   * @return a list of ProjectNode created from the component
    */
   List<ProjectNode> importComponentToProject(ComponentInfo info, ProjectNode parentNode);
 
