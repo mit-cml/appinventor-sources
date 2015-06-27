@@ -1569,8 +1569,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           outputChannel.write(ByteBuffer.wrap(content));
           outputChannel.close();
         } catch (IOException e) {
-          // Note that this makes the BlobWriteException fatal. The job will
-          // not be retried if we get this exception.
           throw CrashReport.createAndLogError(LOG, null,
             collectComponentErrorInfo(userId, fileName), e);
         }
@@ -1599,20 +1597,20 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public byte[] getGcsFileContent(String gcsPath) {
+    byte[] results = null;
     try {
       GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
       int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
       ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
       GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
       readChannel.read(resultBuffer);
-      return resultBuffer.array();
+      results = resultBuffer.array();
     } catch (IOException e) {
-      // todo: handle exception
-      return null;
+      throw CrashReport.createAndLogError(LOG, null, "Error reading gcs file at " + gcsPath, e);
     } catch (NullPointerException e) {
-      // todo: handle exception
-      return null;
+      LOG.log(Level.WARNING, gcsPath + " doesn't exist in gcs");
     }
+    return results;
   }
 
   @Override
