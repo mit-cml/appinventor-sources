@@ -9,9 +9,13 @@ package com.google.appinventor.client.wizards;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -21,6 +25,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
+
+import java.util.List;
 
 public class ComponentImportWizard extends Wizard {
   static class ComponentCell extends AbstractCell<ComponentInfo> {
@@ -71,12 +77,19 @@ public class ComponentImportWizard extends Wizard {
           return;
         }
 
-        final Ode ODE = Ode.getInstance();
-        final long projectId = ODE.getCurrentYoungAndroidProjectId();
-        ODE.getComponentService().importComponentToProject(toImport, projectId,
-            new OdeAsyncCallback<Void>() {
+        final Ode ode = Ode.getInstance();
+        final Project project = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
+        final YoungAndroidAssetsFolder assetsFolderNode =
+            ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+
+        ode.getComponentService().importComponentToProject(toImport, assetsFolderNode,
+            new OdeAsyncCallback<List<ProjectNode>>() {
               @Override
-              public void onSuccess(Void result) {
+              public void onSuccess(List<ProjectNode> result) {
+                for (ProjectNode node : result) {
+                  project.addNode(assetsFolderNode,
+                      new YoungAndroidAssetNode(node.getName(), node.getFileId()));
+                }
                 // todo: make use of the files in assets to do the importing
               }
         });
