@@ -615,6 +615,16 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(INIT_VERSION, compInfo2.getVersion());
   }
 
+  public void testGetGcsFileContent() throws Exception {
+    String path = "/path/to/heaven.aix";
+
+    storage.setGcsFileContent(path, RAW_FILE_CONTENT1);
+    assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(path)));
+
+    path = "/path/to/hell.aix";
+    assertNull(storage.getGcsFileContent(path));
+  }
+
   public void testGetGcsPath() {
     final String USER_ID = "135";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);

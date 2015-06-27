@@ -2443,6 +2443,15 @@ public class ObjectifyStorageIo implements  StorageIo {
     return query.filter("userId", userId).filter("name", name).list();
   }
 
+  @VisibleForTesting
+  void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
+    GcsOutputChannel outputChannel = gcsService.createOrReplace(
+        new GcsFilename(GCS_BUCKET_NAME, gcsPath),
+        GcsFileOptions.getDefaultInstance());
+    outputChannel.write(ByteBuffer.wrap(content));
+    outputChannel.close();
+  }
+
   // Return time in ISO_8660 format
   private static String formattedTime() {
     java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
