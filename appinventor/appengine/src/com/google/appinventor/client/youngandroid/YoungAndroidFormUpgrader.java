@@ -519,6 +519,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // the Country designer property was changed to use a ChoicePropertyEditor
+      // the Language designer property was changed to use a ChoicePropertyEditor
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

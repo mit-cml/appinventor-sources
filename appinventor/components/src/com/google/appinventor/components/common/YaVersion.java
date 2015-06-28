@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -785,7 +787,10 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 3:
   // - the AvailableLanguages property was added
   // - the AvailableCountries property was added
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 3;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 4:
+  // - the Country designer property was changed to use a ChoicePropertyEditor
+  // - the Language designer property was changed to use a ChoicePropertyEditor
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 4;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
