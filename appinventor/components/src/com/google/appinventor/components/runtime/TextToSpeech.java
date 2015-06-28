@@ -122,8 +122,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   public TextToSpeech(ComponentContainer container) {
     super(container.$form());
     result = false;
-    Language("");
-    Country("");
+    Language("en");
+    Country("USA");
     /* Determine which TTS library to use */
     boolean useExternalLibrary = SdkLevel.getLevel() < SdkLevel.LEVEL_DONUT;
     Log.v(LOG_TAG, "Using " + (useExternalLibrary ? "external" : "internal") + " TTS library.");
@@ -154,9 +154,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     countryList = new ArrayList<String>();
     allLanguages = YailList.makeList(languageList);
     allCountries = YailList.makeList(countryList);
-
-    Log.d("TTS", Locale.getDefault().getCountry());
-    Log.d("TTS", Locale.getDefault().getLanguage());
 
   }
 
