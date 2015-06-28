@@ -425,7 +425,7 @@ public class YaVersion {
   //   second time). To add the "Foo" property you would add:
 
   //         @defaultMessage("Foo")
-  //         @description(""
+  //         @description("")
   //         String FooProperties();
 
   //   If you edit the description of a component (but not yet a
