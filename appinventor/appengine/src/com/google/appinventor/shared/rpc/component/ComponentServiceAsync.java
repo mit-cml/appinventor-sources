@@ -20,8 +20,8 @@ public interface ComponentServiceAsync {
   void getComponentInfos(AsyncCallback<List<ComponentInfo>> callback);
 
   /**
-   * @see ComponentService#importComponentToProject(ComponentInfo, ProjectNode)
+   * @see ComponentService#importComponentToProject(ComponentInfo, long, String)
    */
-  void importComponentToProject(ComponentInfo info, ProjectNode parentNode, AsyncCallback<List<ProjectNode>> callback);
+  void importComponentToProject(ComponentInfo info, long projectId, String folderPath, AsyncCallback<List<ProjectNode>> callback);
 
 }

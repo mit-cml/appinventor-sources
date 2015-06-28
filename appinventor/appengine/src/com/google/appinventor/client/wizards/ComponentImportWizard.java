@@ -78,11 +78,15 @@ public class ComponentImportWizard extends Wizard {
         }
 
         final Ode ode = Ode.getInstance();
-        final Project project = ode.getProjectManager().getProject(ode.getCurrentYoungAndroidProjectId());
+        final long projectId = ode.getCurrentYoungAndroidProjectId();
+        final Project project = ode.getProjectManager().getProject(projectId);
         final YoungAndroidAssetsFolder assetsFolderNode =
             ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
 
-        ode.getComponentService().importComponentToProject(toImport, assetsFolderNode,
+        ode.getComponentService().importComponentToProject(
+            toImport,
+            projectId,
+            assetsFolderNode.getFileId(),
             new OdeAsyncCallback<List<ProjectNode>>() {
               @Override
               public void onSuccess(List<ProjectNode> result) {
@@ -92,7 +96,7 @@ public class ComponentImportWizard extends Wizard {
                 }
                 // todo: make use of the files in assets to do the importing
               }
-        });
+            });
       }
     });
   }

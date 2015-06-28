@@ -41,7 +41,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
   }
 
   @Override
-  public List<ProjectNode> importComponentToProject(ComponentInfo info, ProjectNode parentNode) {
+  public List<ProjectNode> importComponentToProject(ComponentInfo info, long projectId, String folderPath) {
     String gcsPath = storageIo.getGcsPath(info);
     ArrayList<ProjectNode> childNodes = new ArrayList<ProjectNode>();
 
@@ -63,25 +63,26 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
         ByteStreams.copy(zip, contentStream);
 
         String basename = StorageUtil.basename(entry.getName());
-        FileNode fileNode = new FileNode(basename, parentNode.getFileId() + "/" + basename);
+
+        FileNode fileNode = new FileNode(basename, folderPath + "/" + basename);
         childNodes.add(fileNode);
 
         fileImporter.importFile(
             userInfoProvider.getUserId(),
-            parentNode.getProjectId(),
-            fileNode.getFileId(),
+            projectId,
+            folderPath + "/" + basename,
             new ByteArrayInputStream(contentStream.toByteArray()));
       }
       zip.close();
     } catch (ZipException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
+          collectImportErrorInfo(gcsPath, projectId), e);
     } catch (IOException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
+          collectImportErrorInfo(gcsPath, projectId), e);
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(gcsPath, parentNode.getProjectId()), e);
+          collectImportErrorInfo(gcsPath, projectId), e);
     }
 
     return childNodes;

@@ -27,9 +27,10 @@ public interface ComponentService extends RemoteService {
    * return a list of ProjectNode that can be added to the client
    *
    * @param info info about the component
-   * @param parentNode node providing info about where the component will be added
+   * @param projectId id of the project to which the component will be added
+   * @param folderPath folder to which the component will be stored
    * @return a list of ProjectNode created from the component
    */
-  List<ProjectNode> importComponentToProject(ComponentInfo info, ProjectNode parentNode);
+  List<ProjectNode> importComponentToProject(ComponentInfo info, long projectId, String folderPath);
 
 }
