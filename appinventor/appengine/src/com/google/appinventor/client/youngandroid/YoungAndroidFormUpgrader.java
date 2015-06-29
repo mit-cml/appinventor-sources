@@ -245,6 +245,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("EmailPicker")) {
         srcCompVersion = upgradeEmailPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("File")) {
+        srcCompVersion = upgradeFileProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
@@ -675,6 +678,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // RequestFocus function was added (via TextBoxBase)
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFileProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if(srcCompVersion < 2) {
+      // File.AfterFileSaved event was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

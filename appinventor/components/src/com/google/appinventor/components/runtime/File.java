@@ -231,7 +231,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              AfterFileSaved(text);
+              AfterFileSaved(filename);
             }
           });
         } catch (IOException e) {
@@ -331,9 +331,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param text write to the file
    */
   @SimpleEvent (description = "Event indicating that the contents of the file have been written.")
-  public void AfterFileSaved(String text) {
-    // invoke the application's "AfterText" event handler.
-    EventDispatcher.dispatchEvent(this, "AfterFileSaved", text);
+  public void AfterFileSaved(String fileName) {
+    // invoke the application's "AfterFileSaved" event handler.
+    EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
   }
 
   /**
