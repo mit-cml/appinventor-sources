@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.IOException;
 import java.util.Date;
@@ -578,4 +579,7 @@ public interface StorageIo {
 
   // Called by the task queue to actually upgrade user's projects
   void doUpgrade(String userId);
+
+  // Retrieve the current Splash Screen Version
+  SplashConfig getSplashConfig();
 }

@@ -7,15 +7,11 @@
 package com.google.appinventor.server.storage;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.GalleryEmail;
 import com.google.appinventor.server.GallerySearchIndex;
@@ -79,7 +75,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     T t;
   }
 
-  private FileService fileService;
   static {
     // Register the data object classes stored in the database
     ObjectifyService.register(EmailData.class);
@@ -92,15 +87,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryModerationActionData.class);
   }
 
-  ObjectifyGalleryStorageIo() {
-    fileService = FileServiceFactory.getFileService();
-  }
-
-  // for testing
-  ObjectifyGalleryStorageIo(FileService fileService) {
-    this.fileService = fileService;
-
-  }
   // we'll need to talk to the StorageIo to get developer names, so...
   private final transient StorageIo storageIo =
       StorageIoInstanceHolder.INSTANCE;
@@ -187,9 +173,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   @Override
   public GalleryAppListResult getRecentGalleryApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
-    // if i try to run this in runjobwithretries it tells me can't run
+    // If I try to run this in runjobwithretries, it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
-    // of not using transactions (run with) so i grabbed
+    // of not using transactions (run with) so I grabbed.
 
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-dateModified").filter("active", true).offset(start).limit(count)) {
@@ -210,9 +196,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   @Override
   public GalleryAppListResult getMostDownloadedApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
-    // if i try to run this in runjobwithretries it tells me can't run
+    // If I try to run this in runjobwithretries, it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
-    // of not using transactions (run with) so i grabbed
+    // of not using transactions (run with) so I grabbed.
 
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").filter("active", true).offset(start).limit(count)) {
@@ -234,9 +220,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   @Override
   public GalleryAppListResult getMostLikedApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
-    // if i try to run this in runjobwithretries it tells me can't run
+    // If I try to run this in runjobwithretries, it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
-    // of not using transactions (run with) so i grabbed
+    // of not using transactions (run with) so I grabbed
 
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData : datastore.query(GalleryAppData.class)
@@ -835,8 +821,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
-   * @param userId id of user who commented
-   * @param report report
+   * @param offenderId id of user who commented
+   * @param reporterId report
    * @return the id of the new report
    */
   @Override
@@ -1027,7 +1013,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
   /**
    * deactivate app
-   * @param appId the id of the app
+   * @param galleryId the id of the app
    */
   @Override
   public boolean deactivateGalleryApp(final long galleryId) {
@@ -1292,7 +1278,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * Sends an email to a particular user
    * @param senderId id of user sending this email
    * @param receiverId id of user receiving this email
-   * @param titlle title of email
+   * @param title title of email
    * @param body body of email
    */
   @Override
