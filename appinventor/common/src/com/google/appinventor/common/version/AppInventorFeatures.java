@@ -49,15 +49,30 @@ public final class AppInventorFeatures {
   }
 
   /**
-   * If set to return true, a splash screen will be shown on every login. The
-   * Contents are defined in {@link com.google.appinventor.client.Ode#createWelcomeDialog}
-   * You should set the "message" variable there to an iframe that points to your
-   * content. The default size of the splash box is 400x400 (which you can change).
+   * If set to return true we may show a splash screen. Each splash
+   * screen has a version stored in the datastore in the SplashData
+   * kind. If it doesn't exist, it is initialized to 0. If 0, no
+   * splash screen is shown. If it is non-zero it is compared to the
+   * users's SplashSettings value. If the users's is less then the
+   * current SplashData.version, they are shown the splash screen.
+   * Along with the splash screen a "Continue" button is displayed
+   * along with a checkbox labeled "Do Not Show Again".  If they check
+   * this box then their SplashSettings value is set to the current
+   * version and they do not see that splash screen again. We provide
+   * a python script for the System Admin to use to set or "bump" the
+   * system splash screen version. Presumably you use this when you
+   * update the splash screen and want to show the new version to
+   * people, including people who had previously checked the "Do Not
+   * Show Again" box.
    *
-   * @return true to display a splash screen
+   * Because a system splash version of 0 means "Do not ever show the
+   * splash screen" we can leave this feature on. Sites that do not
+   * wish to show a splash screen just leave it set to zero.
+   *
+   * @return true to (maybe) show a splash screen.
    */
   public static boolean showSplashScreen() {
-    return false;
+    return true;
   }
 
   /**

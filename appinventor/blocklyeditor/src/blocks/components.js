@@ -170,6 +170,7 @@ Blockly.Blocks.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.ComponentBlock.renameCollapsed(this);
     }
   },
   renameVar: function(oldName, newName) {
@@ -340,6 +341,7 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.ComponentBlock.renameCollapsed(this);
     }
   },
   getMethodTypeObject : function() {
@@ -420,7 +422,7 @@ Blockly.Blocks.component_set_get = {
   },
 
   domToMutation : function(xmlElement) {
-	this.typeName = xmlElement.getAttribute('component_type');
+    this.typeName = xmlElement.getAttribute('component_type');
     this.setOrGet = xmlElement.getAttribute('set_or_get');
     this.propertyName = xmlElement.getAttribute('property_name');
     var isGenericString = xmlElement.getAttribute('is_generic');
@@ -436,16 +438,13 @@ Blockly.Blocks.component_set_get = {
 
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
-
       function() {return thisBlock.getPropertyDropDownList(); },
       // change the output type and tooltip to match the new selection
       function(selection) {
         this.setValue(selection);
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
-
         thisBlock.setTooltip(thisBlock.getPropertyObject(thisBlock.propertyName).description);
-        
       }
     );
 
@@ -562,6 +561,7 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.ComponentBlock.renameCollapsed(this);
     }
   },
   typeblock : function(){
@@ -673,6 +673,7 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.ComponentBlock.renameCollapsed(this);
     }
   },
 
@@ -707,6 +708,15 @@ Blockly.ComponentBlock.createComponentDropDown = function(block){
     }
   };
   return componentDropDown;
+}
+
+Blockly.ComponentBlock.renameCollapsed = function(block){
+  if (block.isCollapsed()) {
+    var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+    block.removeInput(COLLAPSED_INPUT_NAME);
+    var text = block.toString(Blockly.COLLAPSE_CHARS);
+    block.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+  }
 }
 
 Blockly.ComponentBlock.HELPURLS = {

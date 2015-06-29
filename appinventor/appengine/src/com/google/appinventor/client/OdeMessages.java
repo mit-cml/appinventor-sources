@@ -5202,6 +5202,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createWelcomeDialogButton();
 
+  @DefaultMessage("Do Not Show Again")
+  @Description("")
+  String doNotShow();
+
   @DefaultMessage("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>")
   @Description("")
   String showSurveySplashMessage();
@@ -5276,6 +5280,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Your Session is Finished")
   @Description("")
   String finalDialogText();
+
+  @DefaultMessage("Your Account is Disabled")
+  @Description("")
+  String accountDisabledMessage();
 
   @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
   @Description("")
