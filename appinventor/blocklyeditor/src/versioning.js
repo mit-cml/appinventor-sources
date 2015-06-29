@@ -1196,8 +1196,8 @@ Blockly.Versioning.AllUpgradeMaps =
          Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDate", 1,
          '<block type="text">' +
          '  <field name="TEXT">MMM d, yyyy</field>' +
-         '</block>'),
-      ],
+         '</block>')
+      ]
 
   }, // End Clock upgraders
 
