@@ -227,6 +227,7 @@ Blockly.ComponentTypes.populateTypes = function() {
     var componentInfo = componentInfoArray[i];
     var typeName = componentInfo.name;
     Blockly.ComponentTypes[typeName] = {};
+    Blockly.ComponentTypes[typeName].type = componentInfo.classpath;
     Blockly.ComponentTypes[typeName].componentInfo = componentInfo;
     Blockly.ComponentTypes[typeName].eventDictionary = {};
     Blockly.ComponentTypes[typeName].methodDictionary = {};

@@ -58,7 +58,7 @@ public class StoredData {
 
     // Path to template project passed as GET parameter
     String templatePath;
-
+    boolean upgradedGCS;
   }
 
   // Project properties
@@ -272,4 +272,14 @@ public class StoredData {
 
     String gcsPath;
   }
+  @Cached(expirationSeconds=60)
+  @Unindexed
+  static final class SplashData {
+    @Id Long id;
+    public int version;
+    public String content;
+    public int height;
+    public int width;
+  }
+
 }

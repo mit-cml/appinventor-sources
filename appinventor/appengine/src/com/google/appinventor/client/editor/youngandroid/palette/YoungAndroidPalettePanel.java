@@ -32,6 +32,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor;
@@ -123,17 +124,36 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
+    
+    String extraComponent = "[{ \"name\": \"MysteryComponent\","
+  +"\"version\": \"1\","
+  +"\"classpath\": \"com.google.appinventor.components.runtime.Camera\","
+  +"\"external\": \"true\","
+  +"\"categoryString\": \"EXTERNAL\","
+  +"\"helpString\": \"A component to take a picture using the device's camera. After the picture is taken, the name of the file on the phone containing the picture is available as an argument to the AfterPicture event. The file name can be used, for example, to set the Picture property of an Image component.\","
+  +"\"showOnPalette\": \"true\","
+  +"\"nonVisible\": \"true\","
+  +"\"iconName\": \"images/externalComponent.png\","
+  +"\"properties\": [{ \"name\": \"UseFront\", \"editorType\": \"boolean\", \"defaultValue\": \"False\"}],"
+  +"\"blockProperties\": [{ \"name\": \"UseFront\", \"description\": \"Specifies whether the front-facing camera should be used (when available). If the device does not have a front-facing camera, this option will be ignored and the camera will open normally.\", \"type\": \"boolean\", \"rw\": \"read-write\"}],"
+  +"\"events\": [{ \"name\": \"AfterPicture\", \"description\": \"Indicates that a photo was taken with the camera and provides the path to\\n the stored picture.\", \"deprecated\": \"false\", \"params\": [{ \"name\": \"image\", \"type\": \"text\"}]}"
+  +"],"
+  +"\"methods\": [{ \"name\": \"TakePicture\", \"description\": \"Takes a picture, then raises the AfterPicture event.\\n If useFront is true, adds an extra to the intent that requests the front-facing camera.\", \"deprecated\": \"false\", \"params\": []}]}]";
+    
+        
+    COMPONENT_DATABASE.addComponents(new ClientJsonParser().parse(extraComponent).asArray());
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       String categoryString = COMPONENT_DATABASE.getCategoryString(component);
       String helpString = COMPONENT_DATABASE.getHelpString(component);
       String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(component);
       Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(component);
       Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(component);
+      Boolean external = COMPONENT_DATABASE.getComponentExternal(component);
       ComponentCategory category = ComponentCategory.valueOf(categoryString);
       if (showOnPalette && showCategory(category)) {
         addPaletteItem(new SimplePaletteItem(
             new SimpleComponentDescriptor(component, editor, helpString,
-              categoryDocUrlString, showOnPalette, nonVisible),
+              categoryDocUrlString, showOnPalette, nonVisible, external),
             dropTargetProvider),
           category);
       }
@@ -159,14 +179,15 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public void addComponent(String componentTypeName) {
     String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
     String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
     Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentTypeName);
-    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    Boolean external = COMPONENT_DATABASE.getComponentExternal(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     if (showOnPalette && showCategory(category)) {
       addPaletteItem(new SimplePaletteItem(
         new SimpleComponentDescriptor(componentTypeName, editor, helpString,
-          categoryDocUrlString, showOnPalette, nonVisible),
+          categoryDocUrlString, showOnPalette, nonVisible, external),
         dropTargetProvider),
       category);
     }

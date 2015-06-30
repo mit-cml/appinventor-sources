@@ -20,11 +20,18 @@ public class SettingsConstants {
   public static final String USER_GENERAL_SETTINGS = "GeneralSettings";
   public static final String GENERAL_SETTINGS_CURRENT_PROJECT_ID = "CurrentProjectId";
   public static final String USER_TEMPLATE_URLS = "TemplateUrls";
+  // If DISABLED_USER_URL is non-empty, then it is the URL to display in a frame
+  // inside of a modal dialog, displayed at login, with no exit. This is used to
+  // disable someone's account. The URL can be user specific in order to deliver
+  // a particular message to a particular user.
+  public static final String DISABLED_USER_URL = "DisabledUserUrl";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 
   public static final String SPLASH_SETTINGS_SHOWSURVEY = "ShowSurvey";
   public static final String SPLASH_SETTINGS_DECLINED = "DeclinedSurvey";
+  public static final String SPLASH_SETTINGS_VERSION = "SplashVersion";
+
   /**
    *  YoungAndroid settings.
    */

@@ -6,11 +6,12 @@
 
 package com.google.appinventor.server;
 
-import com.google.appengine.api.files.AppEngineFile;
-import com.google.appengine.api.files.FileReadChannel;
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
@@ -241,7 +242,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     List<Long> projectIds = storageIo.getProjects(userId);
     List<UserProject> projectInfos = Lists.newArrayListWithExpectedSize(projectIds.size());
     for (Long projectId : projectIds) {
-      projectInfos.add(makeUserProject(userId, projectId));
+      UserProject up = makeUserProject(userId, projectId);
+      if (up != null) {
+        projectInfos.add(up);
+      } else {
+        LOG.log(Level.WARNING, "ProjectId " + projectId +
+          " is missing at the lower level.");
+      }
     }
     return projectInfos;
   }
@@ -562,25 +569,24 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * This service is passed a URL to an aia file in GCS, of the form
-   *    /gs/bucket/gallery/apps/<galleryid>/aia
+   *    /gallery/apps/<galleryid>/aia
    * It converts it to a byte array and imports the project using FileImporter.
    * It also sets the attributionId of the project to point to the galleryID
    * it is remixing.
    */
   @Override
-  public UserProject newProjectFromGallery(String projectName, String aiaPath,
-      long attributionId) {
-    boolean lockForRead = false;
+  public UserProject newProjectFromGallery(String projectName, String galleryPath,
+      long galleryId) {
     try {
-      FileService fileService = FileServiceFactory.getFileService();
-      AppEngineFile readableFile = new AppEngineFile(aiaPath);
-      FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
+      GcsService fileService = GcsServiceFactory.createGcsService();
+      GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
+      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
-      InputStream gcsis =Channels.newInputStream(readChannel);
+      InputStream gcsis = Channels.newInputStream(readChannel);
       // ok, we don't want to send the gcs stream because it can time out as we
       // process the zip. We need to copy to a byte buffer first, then send a bytestream
 
-      byte[] buffer = new byte[8000];
+      byte[] buffer = new byte[16384];
       int bytesRead = 0;
       ByteArrayOutputStream bao = new ByteArrayOutputStream();
 
@@ -600,24 +606,24 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
 
       // set the attribution id of the project
-      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
+      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),galleryId);
       //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
-      userProject.setAttributionId(attributionId);
+      userProject.setAttributionId(galleryId);
 
       return userProject;
       } catch (FileNotFoundException e) {
         e.printStackTrace();
-         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
           e);
       } catch (IOException e) {
         e.printStackTrace();
 
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath+":"+projectName,
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath+":"+projectName,
           e);
       } catch (FileImporterException e) {
         e.printStackTrace();
 
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
           e);
       }
   }

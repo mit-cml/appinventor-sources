@@ -129,6 +129,12 @@ public interface Images extends Resources {
   ImageResource datePickerComponent();
 
   /**
+   * Designer palette item: External Component
+   */
+  @Source("com/google/appinventor/images/externalComponent.png")
+  ImageResource externalComponent();
+  
+  /**
    * Designer palette item: form component
    */
   @Source("com/google/appinventor/images/form.png")

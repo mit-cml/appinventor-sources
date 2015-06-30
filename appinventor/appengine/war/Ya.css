@@ -829,6 +829,49 @@ select {
 }
 
 .ode-PropertyEditor {
+  padding: 3px;
+}
+
+.ode-PropertyEditor:hover {
+  cursor: auto;
+}
+
+.ode-ChoicePropertyEditor {
+  padding: 3px;
+  border: thin solid #CCCCCC;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #FFFFFF;
+
+  box-shadow: #D3D3D3;
+  color: #575757;
+  width: auto;
+  text-align: center;
+  display: inline-block;
+  white-space: nowrap;
+
+  -o-transition:color .2s ease-out, background-color .2s ease-in;
+  -ms-transition:color .2s ease-out, background-color .2s ease-in;
+  -moz-transition:color .2s ease-out, background-color .2s ease-in;
+  -webkit-transition:color .2s ease-out, background-color .2s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .2s ease-out, background .2s ease-in;
+}
+
+.ode-ChoicePropertyEditor:hover {
+  background: #E6E6E6;
+  color: #5B5B5B;
+}
+
+.ode-ChoicePropertyEditor:focus {
+  border-color: #D3D3D3;
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #D3D3D3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px #D3D3D3;
 }
 
 select.ode-PropertyEditor[disabled] {
@@ -845,10 +888,19 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ColorChoicePropertyEditor {
-  background-color: white;
-  font-size: small;
-  border: 1px solid darkgray;
-  cursor: hand;
+  padding: 3px;
+  cursor: pointer;
+  width: auto;
+}
+
+.ode-ColorChoicePropertyEditor:focus {
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
 }
 
 .ode-SimpleFormDesigner {
@@ -1578,21 +1630,28 @@ textarea::-webkit-input-placeholder {
 .gallery-nav-next .gwt-Label  {
   margin-left: 5px;
 }
+.gallery-report-next .gwt-Label{
+  width:100px;
+}
 .gallery-nav-prev .active,
-.gallery-nav-next .active {
+.gallery-nav-next .active,
+.gallery-report-next .active {
   color: #777;
 }
 .gallery-nav-prev .disabled,
-.gallery-nav-next .disabled {
+.gallery-nav-next .disabled,
+.gallery-report-next .disabled {
   color: #ddd;
 }
 .gallery-nav-prev .active:hover,
-.gallery-nav-next .active:hover {
+.gallery-nav-next .active:hover,
+.gallery-report-next .active:hover {
   cursor: pointer;
   background-color: #FFF;
 }
 .gallery-nav-prev .disabled:hover,
-.gallery-nav-next .disabled:hover {
+.gallery-nav-next .disabled:hover,
+.gallery-report-next .disabled:hover  {
   cursor: default;
   background: none;
 }

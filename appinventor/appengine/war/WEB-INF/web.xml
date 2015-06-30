@@ -62,6 +62,7 @@
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/appstats/*</url-pattern>
+      <url-pattern>/convert/</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
@@ -69,6 +70,18 @@
   </security-constraint>
 
   <!-- Servlets -->
+
+  <!-- Blob Conversion Servlet -->
+
+  <servlet>
+    <display-name>Blob Conversion Servlet</display-name>
+    <servlet-name>BlobUpgradeServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.BlobUpgradeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BlobUpgradeServlet</servlet-name>
+    <url-pattern>/convert</url-pattern>
+  </servlet-mapping>
 
   <!-- Remote API -->
   <servlet>

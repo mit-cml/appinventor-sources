@@ -34,16 +34,16 @@ import java.util.Date;
  *
  *
  */
-@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
+/*@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
    description = "A component to take a picture using the device's camera. " +
         "After the picture is taken, the name of the file on the phone " +
         "containing the picture is available as an argument to the " +
         "AfterPicture event. The file name can be used, for example, to set " +
         "the Picture property of an Image component.",
-   category = ComponentCategory.MEDIA,
+   category = ComponentCategory.EXTERNAL,
    nonVisible = true,
-   iconName = "images/camera.png")
-@SimpleObject
+   iconName = "images/externalComponent.png")
+@SimpleObject*/
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 

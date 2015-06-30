@@ -312,8 +312,9 @@ Blockly.Yail.getComponentPropertiesLines = function(formName, componentJson, par
   if (includeComments) {
     code.push(Blockly.Yail.YAIL_COMMENT_MAJOR + componentName + Blockly.Yail.YAIL_LINE_FEED);
   }
+  // Send Blockly.ComponentTypes[componentType].type for full class path
   code.push(Blockly.Yail.YAIL_ADD_COMPONENT + parentName + Blockly.Yail.YAIL_SPACER + 
-    componentType + Blockly.Yail.YAIL_SPACER + componentName + Blockly.Yail.YAIL_SPACER);
+    Blockly.ComponentTypes[componentType].type + Blockly.Yail.YAIL_SPACER + componentName + Blockly.Yail.YAIL_SPACER);
   code = code.concat(Blockly.Yail.getPropertySettersLines(componentJson, componentName));
   code.push(Blockly.Yail.YAIL_CLOSE_BLOCK);
   return code;

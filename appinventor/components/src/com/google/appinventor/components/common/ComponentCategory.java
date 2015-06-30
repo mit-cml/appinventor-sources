@@ -56,7 +56,7 @@ import java.util.Map;
     STORAGE("Storage"),
     CONNECTIVITY("Connectivity"),
     LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
-    EXTERNALCOMPONENTS("External Components"),
+    EXTERNAL("External"),
     //EXPERIMENTAL("Experimental"),
     INTERNAL("For internal use only"),
     // UNINITIALIZED is used as a default value so Swing libraries can still compile
@@ -76,7 +76,7 @@ import java.util.Map;
       DOC_MAP.put("Storage", "storage");
       DOC_MAP.put("Connectivity", "connectivity");
       DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
-      DOC_MAP.put("External Components", "externalcomponents");
+      DOC_MAP.put("External", "external");
       //DOC_MAP.put("Experimental", "experimental");
     }
 

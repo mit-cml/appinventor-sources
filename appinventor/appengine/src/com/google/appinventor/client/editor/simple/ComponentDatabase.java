@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -30,6 +31,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   private static class Component {
     private final String name;
     private final int version;
+    private final String type;
+    private final boolean external;
     private final String categoryString;
     private final String helpString;
     private final boolean showOnPalette;
@@ -43,10 +46,12 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     private final String iconName;
     private final String typeDescription;
 
-    Component(String name, int version, String categoryString, String helpString,
+    Component(String name, int version, String type, boolean external, String categoryString, String helpString,
         boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
       this.name = name;
       this.version = version;
+      this.type = type;
+      this.external = external;
       this.categoryString = categoryString;
       this.helpString = helpString;
       this.showOnPalette = showOnPalette;
@@ -82,7 +87,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   // Maps component names to component descriptors
   private Map<String, Component> components;
 
-  // Maps component names to component descriptors
+  // Components in JSON String generated from components
   private String componentsJSONString;
 
 
@@ -95,23 +100,32 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   ComponentDatabase(JSONArray array) {
     components = new HashMap<String, Component>();
     for (JSONValue component : array.getElements()) {
-      initComponent(component.asObject());
+      initComponent(component.asObject()); 
     }
-    componentsJSONString = array.toJson();
+    
+    componentsJSONString = generateComponentsJSON();
   }
 
-  public void addComponent(JSONValue component) {
-    initComponent(component.asObject());
+  public boolean addComponent(JSONValue component) {
+    if (!initComponent(component.asObject())) return false;
 
     // append the String form of component to componentsJSONString
     // which is the String form of a JSONArray
-    componentsJSONString =
-      componentsJSONString.substring(0, componentsJSONString.lastIndexOf(']'))
-      + ','
-      + component.asString()
-      + ']';
+    componentsJSONString = generateComponentsJSON();
+    return true;
   }
 
+  public int addComponents(JSONArray array) {
+    int compsAdded = 0;
+    for ( JSONValue component : array.getElements()){
+      if(initComponent(component.asObject())) ++compsAdded;
+    }
+    
+    componentsJSONString = generateComponentsJSON();
+    return compsAdded;
+  }
+  
+  
   @Override
   public Set<String> getComponentNames() {
     return components.keySet();
@@ -126,7 +140,27 @@ class ComponentDatabase implements ComponentDatabaseInterface {
 
     return component.version;
   }
-
+  
+  @Override
+  public String getComponentType(String componentTypeName){
+    Component component = components.get(componentTypeName);
+    if(component == null){
+      throw new IllegalArgumentException();
+    }
+    
+    return component.type;
+  }
+  
+  @Override
+  public boolean getComponentExternal(String componentTypeName){
+    Component component = components.get(componentTypeName);
+    if(component == null){
+      throw new IllegalArgumentException();
+    }
+    
+    return component.external;
+  }
+  
   @Override
   public String getCategoryString(String componentTypeName) {
     Component component = components.get(componentTypeName);
@@ -253,19 +287,25 @@ class ComponentDatabase implements ComponentDatabaseInterface {
    * Creates a component descriptor from the contents of the JSON file and puts
    * it in the components map.
    */
-  private void initComponent(JSONObject componentNode) {
+  private boolean initComponent(JSONObject componentNode) {
     Map<String, JSONValue> properties = componentNode.getProperties();
-    Component component = new Component(properties.get("name").asString().getString(),
-        Integer.parseInt(properties.get("version").asString().getString()), properties
-            .get("categoryString").asString().getString(), properties.get("helpString").asString()
-            .getString(), Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
-        Boolean.valueOf(properties.get("nonVisible").asString().getString()), properties
-            .get("iconName").asString().getString(), componentNode.toJson());
+    String name = properties.get("name").asString().getString();
+    if(components.containsKey(name))  return false;
+    Component component = new Component(name,
+        Integer.parseInt(properties.get("version").asString().getString()), 
+        properties.get("classpath").asString().getString(), 
+        Boolean.valueOf(properties.get("external").asString().getString()),
+        properties.get("categoryString").asString().getString(), 
+        properties.get("helpString").asString().getString(), 
+        Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
+        Boolean.valueOf(properties.get("nonVisible").asString().getString()), 
+        properties.get("iconName").asString().getString(), componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
     findComponentEvents(component, properties.get("events").asArray());
     findComponentMethods(component, properties.get("methods").asArray());
     components.put(component.name, component);
+    return true;
   }
 
   /*
@@ -340,6 +380,18 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     }
   }
 
+  private String generateComponentsJSON(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    String separator = "";
+    for(Map.Entry<String, Component> comp : components.entrySet()){
+      sb.append(separator).append(comp.getValue().typeDescription);
+      separator=",";
+    }
+    sb.append("]");
+    return sb.toString();
+  }
+  
   @Override
   public boolean isComponent(String componentTypeName) {
     Component component = components.get(componentTypeName);
