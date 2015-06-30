@@ -236,6 +236,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("CheckBox")) {
         srcCompVersion = upgradeCheckBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Clock")) {
+        srcCompVersion = upgradeClockProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ContactPicker")) {
         srcCompVersion = upgradeContactPickerProperties(componentProperties, srcCompVersion);
 
@@ -410,6 +413,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The ActivityStarter.ActivityCanceled event was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -519,6 +527,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // the Country designer property was changed to use a ChoicePropertyEditor
+      // the Language designer property was changed to use a ChoicePropertyEditor
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -624,6 +637,16 @@ public final class YoungAndroidFormUpgrader {
       // The Value property was renamed to Checked.
       handlePropertyRename(componentProperties, "Value", "Checked");
       // Properties related to this component have now been upgraded to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
+      // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -774,6 +797,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 14) {
       // The AppName property was added.
       srcCompVersion = 14;
+    }
+    if (srcCompVersion < 16) {
+      // The ShowStatusBar property was added.
+      // The TitleVisible property was added.
+      srcCompVersion = 16;
     }
     return srcCompVersion;
   }
@@ -930,6 +958,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // Added the TextSize property
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Added the SelectionColor property
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

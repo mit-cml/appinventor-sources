@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -72,6 +73,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
+  private int selectionColor;
+  private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
+
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
 
@@ -85,6 +89,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     items = YailList.makeEmptyList();
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
+    view.setScrollingCacheEnabled(false);
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -127,6 +133,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    SelectionColor(DEFAULT_SELECTION_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
@@ -384,6 +391,39 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void BackgroundColor(int argb) {
       backgroundColor = argb;
       setBackgroundColor(backgroundColor);
+  }
+
+  /**
+   * Returns the listview's selection color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Icecream Sandwich or earlier
+   *
+   * @return selection color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(description = "The color of the item when it is selected.")
+  public int SelectionColor() {
+    return selectionColor;
+  }
+
+  /**
+   * Specifies the ListView's selection color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Icecream Sandwich or earlier
+   *
+   * @param argb selection color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void SelectionColor(int argb) {
+    selectionColor = argb;
+    view.setSelector(new GradientDrawable(
+      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
+    ));
   }
 
   /**
