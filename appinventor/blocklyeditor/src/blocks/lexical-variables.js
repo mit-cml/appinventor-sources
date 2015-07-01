@@ -137,6 +137,12 @@ Blockly.Blocks['lexical_variable_get'] = {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
     if (oldName === this.getFieldValue('VAR')) {
         this.setFieldValue(newName, 'VAR');
+        if (this.isCollapsed()) {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+        this.removeInput(COLLAPSED_INPUT_NAME);
+        var text = this.toString(Blockly.COLLAPSE_CHARS);
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
   renameFree: function (freeSubstitution) {

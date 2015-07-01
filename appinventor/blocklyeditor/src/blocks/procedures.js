@@ -250,6 +250,18 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       // 1. Change all callers so label reflects new name
       Blockly.Procedures.mutateCallers(procName, procWorkspace, newArguments, procDecl.paramIds_);
 
+      var callers = Blockly.Procedures.getCallers(procName, procWorkspace);
+      for (var x = 0; x < callers.length; x++) {
+          var block = callers[x];
+          if (block.isCollapsed()) {
+          var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+          block.removeInput(COLLAPSED_INPUT_NAME);
+          var text = block.toString(Blockly.COLLAPSE_CHARS);
+          block.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+          block.moveInputBefore(COLLAPSED_INPUT_NAME, 'ARG0');
+        }
+      }
+
       // 2. If there's an open mutator, change the name in the corresponding slot.
       if (procDecl.mutator && procDecl.mutator.rootBlock_) {
         // Iterate through mutatorarg param blocks and change name of one at paramIndex
@@ -751,6 +763,12 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   renameProcedure: function(oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
       this.setFieldValue(newName, 'PROCNAME');
+      if (this.isCollapsed()) {
+        var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+        this.removeInput(COLLAPSED_INPUT_NAME);
+        var text = this.toString(Blockly.COLLAPSE_CHARS);
+        this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+      }
     }
   },
   // [lyn, 10/27/13] Renamed "fromChange" parameter to "startTracking", because it should be true in any situation
