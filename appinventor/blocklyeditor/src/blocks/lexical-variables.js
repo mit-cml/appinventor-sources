@@ -137,6 +137,7 @@ Blockly.Blocks['lexical_variable_get'] = {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
     if (oldName === this.getFieldValue('VAR')) {
         this.setFieldValue(newName, 'VAR');
+        Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
   renameFree: function (freeSubstitution) {
