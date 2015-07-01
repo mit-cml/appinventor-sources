@@ -17,6 +17,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
+import android.util.Log;
+
 /**
  * A component for an ultrasonic sensor of an FTC robot.
  *
@@ -88,6 +90,9 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
+      if (ultrasonicSensor == null) {
+        Log.e("FtcUltrasonicSensor", "Could not find a UltrasonicSensor named " + getDeviceName());
+      }
     }
   }
 

@@ -63,50 +63,83 @@ class ActivityGlue {
 
   // Activity methods that are overridden in FtcRobotControllerActivity.
 
+  protected void onActivityResult(int request, int result, Intent intent) {
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+  }
+
   protected void onCreate(Bundle savedInstanceState) {
-  }
-
-  protected void onNewIntent(Intent intent) {
-  }
-
-  protected void onStart() {
-  }
-
-  protected void onResume() {
-  }
-
-  public void onPause() {
-  }
-
-  protected void onStop() {
   }
 
   public boolean onCreateOptionsMenu(Menu menu) {
     return false;
   }
 
+  protected void onNewIntent(Intent intent) {
+  }
+
   public boolean onOptionsItemSelected(MenuItem item) {
     return false;
   }
 
-  public void onConfigurationChanged(Configuration newConfig) {
+  public void onPause() {
   }
 
-  protected void onActivityResult(int request, int result, Intent intent) {
+  protected void onResume() {
+  }
+
+  protected void onStart() {
+  }
+
+  protected void onStop() {
   }
 
   // Activity methods that are called from FtcRobotControllerActivity.
 
-  void runOnUiThread(Runnable runnable) {
-    thisActivity.runOnUiThread(runnable);
+  void bindService(Intent intent, ServiceConnection connection, int flags) {
+    thisActivity.bindService(intent, connection, flags);
+  }
+
+  View findViewById(int id) {
+    return thisActivity.findViewById(id);
+  }
+
+  void finish() {
+    thisActivity.finish();
   }
 
   ActionBar getActionBar() {
     return thisActivity.getActionBar();
   }
 
+  Context getBaseContext() {
+    return thisActivity.getBaseContext();
+  }
+
+  MenuInflater getMenuInflater() {
+    return thisActivity.getMenuInflater();
+  }
+
+  String getString(int id) {
+    return thisActivity.getString(id);
+  }
+
   Window getWindow() {
     return thisActivity.getWindow();
+  }
+
+  void openOptionsMenu() {
+    thisActivity.openOptionsMenu();
+  }
+
+  void runOnUiThread(Runnable runnable) {
+    thisActivity.runOnUiThread(runnable);
+  }
+
+  void setContentView(int layoutId) {
+    // Inflate the layout into the FtcRobotController component's view.
+    thisActivity.getLayoutInflater().inflate(layoutId, aiFtcRobotController.view, true);
   }
 
   void startActivity(Intent intent) {
@@ -125,36 +158,7 @@ class ActivityGlue {
     }
   }
 
-  void bindService(Intent intent, ServiceConnection connection, int flags) {
-    thisActivity.bindService(intent, connection, flags);
-  }
-
   void unbindService(ServiceConnection connection) {
     thisActivity.unbindService(connection);
-  }
-
-  MenuInflater getMenuInflater() {
-    return thisActivity.getMenuInflater();
-  }
-
-  void setContentView(int layoutId) {
-    // Inflate the layout into the FtcRobotController component's view.
-    thisActivity.getLayoutInflater().inflate(layoutId, aiFtcRobotController.view, true);
-  }
-
-  View findViewById(int id) {
-    return thisActivity.findViewById(id);
-  }
-
-  String getString(int id) {
-    return thisActivity.getString(id);
-  }
-
-  void finish() {
-    thisActivity.finish();
-  }
-
-  Context getBaseContext() {
-    return thisActivity.getBaseContext();
   }
 }

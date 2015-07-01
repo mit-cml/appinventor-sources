@@ -20,6 +20,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Servo.Direction;
 
+import android.util.Log;
+
 /**
  * A component for a servo of an FTC robot.
  *
@@ -163,6 +165,9 @@ public final class FtcServo extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       servo = hardwareMap.servo.get(getDeviceName());
+      if (servo == null) {
+        Log.e("FtcServo", "Could not find a Servo named " + getDeviceName());
+      }
     }
   }
 

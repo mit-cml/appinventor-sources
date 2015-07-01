@@ -17,6 +17,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import android.util.Log;
+
 /**
  * A component for a gyro sensor of an FTC robot.
  *
@@ -88,6 +90,9 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
+      if (gyroSensor == null) {
+        Log.e("FtcGyroSensor", "Could not find a GyroSensor named " + getDeviceName());
+      }
     }
   }
 

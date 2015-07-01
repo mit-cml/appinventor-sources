@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.CompassSensor.CompassMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import android.util.Log;
+
 /**
  * A component for a compass sensor of an FTC robot.
  *
@@ -143,6 +145,9 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
+      if (compassSensor == null) {
+        Log.e("FtcCompassSensor", "Could not find a CompassSensor named " + getDeviceName());
+      }
     }
   }
 

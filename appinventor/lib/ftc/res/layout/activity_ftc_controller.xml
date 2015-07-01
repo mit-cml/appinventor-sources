@@ -7,8 +7,50 @@
     android:id="@+id/entire_screen"
     android:orientation="vertical">
 
-  <include layout="@layout/device_name"
-           android:id="@+id/device_name_header"/>
+  <!-- black bar on top -->
+  <RelativeLayout
+    android:id="@+id/top_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="80dp"
+    android:background="@color/black">
+    <ImageView
+      android:id="@+id/robotIcon"
+      android:layout_width="40dp"
+      android:layout_height="wrap_content"
+      android:adjustViewBounds="true"
+      android:layout_margin="5dp"
+      android:layout_centerVertical="true"
+      android:background="@drawable/icon_robotcontroller"/>
+
+    <TextView
+      android:id="@+id/textDeviceName"
+      android:layout_toRightOf="@id/robotIcon"
+      android:layout_toEndOf="@id/robotIcon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/white"
+      android:padding="8dp"
+      android:textSize="16sp"
+      android:textStyle="bold"/>
+
+    <ImageButton
+      android:id="@+id/menu_buttons"
+      android:contentDescription="menu_buttons"
+      android:scaleType="fitXY"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/icon_menu"
+      android:background="@color/black"
+      android:padding="15dp"
+      android:adjustViewBounds="true"
+      android:layout_alignParentRight="true"
+      android:layout_alignParentEnd="true"
+      android:layout_centerInParent="true"
+      android:layout_centerHorizontal="true"
+      android:layout_margin="10dp"/>
+
+  </RelativeLayout>
+  <!-- end of black bar -->
 
   <include layout="@layout/header"
            android:id="@+id/included_header"/>
@@ -26,6 +68,7 @@
       android:id="@+id/textWifiDirectStatus"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:textColor="@color/black"
       android:text="" />
 
     <TextView
@@ -33,6 +76,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/textWifiDirectStatus"
+      android:textColor="@color/black"
       android:text="" />
 
     <TextView
@@ -40,6 +84,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/textRobotStatus"
+      android:textColor="@color/black"
       android:text="" />
 
     <TextView
@@ -59,6 +104,7 @@
       android:layout_height="30dp"
       android:layout_above="@+id/textGamepad2"
       android:layout_marginBottom="10dp"
+      android:textColor="@color/black"
       android:text="" />
 
     <TextView
@@ -67,6 +113,7 @@
       android:layout_height="30dp"
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="10dp"
+      android:textColor="@color/black"
       android:text="" />
 
   </RelativeLayout>

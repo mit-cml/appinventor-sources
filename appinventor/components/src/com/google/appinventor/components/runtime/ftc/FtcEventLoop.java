@@ -106,6 +106,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
     // Added for App Inventor:
     aiFtcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
+
     DbgLog.msg("======= INIT FINISH =======");
   }
 
@@ -158,6 +159,7 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
     // Added for App Inventor:
     aiFtcRobotController.onEventLoopTeardown();
+
     DbgLog.msg("======= TEARDOWN COMPLETE =======");
   }
 
@@ -224,14 +226,12 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
 
     opModeManager.switchOpModes(newOpMode);
 
-    RobotLog.clearGlobalErrorMsg();
-
     //send response
     ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
   }
 
   public void updateBatteryLevel(float percent) {
-    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, "RobotController battery level: " + percent + "%");
+    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, percent + "%");
   }
 
 

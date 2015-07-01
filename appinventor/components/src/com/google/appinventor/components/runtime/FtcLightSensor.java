@@ -18,6 +18,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 
+import android.util.Log;
+
 /**
  * A component for a light sensor of an FTC robot.
  *
@@ -116,6 +118,9 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       lightSensor = hardwareMap.lightSensor.get(getDeviceName());
+      if (lightSensor == null) {
+        Log.e("FtcLightSensor", "Could not find a LightSensor named " + getDeviceName());
+      }
     }
   }
 

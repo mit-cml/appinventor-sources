@@ -5331,6 +5331,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRuntimeMethods();
 
+  @DefaultMessage("IsBitSet")
+  @Description("")
+  String IsBitSetMethods();
+
   @DefaultMessage("IsPortReady")
   @Description("")
   String IsPortReadyMethods();
