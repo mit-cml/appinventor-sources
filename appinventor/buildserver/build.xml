@@ -132,9 +132,11 @@
           depends="init,components_FtcAars">
     <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
     <mkdir dir="${ftcres.dir}" />
-    <!-- Copy resources for FtcCommon, except layout/header.xml which is a duplicate of the one in lib/ftc/res -->
+    <!-- Copy resources for FtcCommon, except layout/header.xml and
+         xml/preferences.xml (which should not override the ones in lib/ftc/res) -->
     <copy todir="${ftcres.dir}" flatten="false">
-      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*" excludes="layout/header.xml,xml/preferences.xml" />
+      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*"
+               excludes="layout/header.xml,xml/preferences.xml" />
     </copy>
     <copy todir="${ftcres.dir}" flatten="false">
       <fileset dir="${lib.dir}/ftc/res" includes="**/*" />

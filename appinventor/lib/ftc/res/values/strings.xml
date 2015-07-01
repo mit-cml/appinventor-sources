@@ -39,8 +39,8 @@
 
   <string name="restart_robot_menu_item">Restart Robot</string>
   <string name="action_exit_app">Exit</string>
-  <string name="about_activity">About</string>
-  <string name="about_menu_item">About</string>
+  <!-- Modified for App Inventor -->
+  <string name="about_menu_item">About FtcRobotController</string>
   <string name="settings_activity">Settings</string>
   <string name="settings_menu_item">Settings</string>
   <!-- also defined in FtcCommon/res/values/values.xml

@@ -18,6 +18,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 
+import android.util.Log;
+
 /**
  * A component for a device interface module of an FTC robot.
  *
@@ -388,6 +390,9 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
+      if (deviceInterfaceModule == null) {
+        Log.e("FtcDeviceInterfaceModule", "Could not find a DeviceInterfaceModule named " + getDeviceName());
+      }
     }
   }
 

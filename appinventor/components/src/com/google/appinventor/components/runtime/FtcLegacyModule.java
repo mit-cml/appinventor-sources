@@ -16,6 +16,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
 
+import android.util.Log;
+
 /**
  * A component for a legacy module of an FTC robot.
  *
@@ -185,6 +187,9 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       legacyModule = hardwareMap.legacyModule.get(getDeviceName());
+      if (legacyModule == null) {
+        Log.e("FtcLegacyModule", "Could not find a LegacyModule named " + getDeviceName());
+      }
     }
   }
 

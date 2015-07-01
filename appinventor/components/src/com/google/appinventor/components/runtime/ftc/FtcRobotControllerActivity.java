@@ -55,6 +55,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,6 +111,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   protected UpdateUI.Callback callback;
   protected Context context;
   private Utility utility;
+  protected ImageButton buttonMenu;
 
   protected TextView textDeviceName;
   protected TextView textWifiDirectStatus;
@@ -169,6 +171,13 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     utility = new Utility(thisActivity);
     context = thisActivity;
     entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
+    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
+    buttonMenu.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        openOptionsMenu();
+      }
+    });
 
     textDeviceName = (TextView) findViewById(R.id.textDeviceName);
     textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
@@ -276,7 +285,14 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     } else if (itemId == R.id.action_settings) {
       startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), requestCodeConfigureRobot);
       return true;
+    } else if (itemId == R.id.action_about) {
+      Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
+      startActivity(intent);
+      return true;
     }
+    // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
+    // FtcCommon.
+
     return false;
     /* Removed for App Inventor
     switch (item.getItemId()) {
@@ -289,7 +305,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
         return true;
       case R.id.action_about:
-        startActivity(new Intent(getBaseContext(), AboutActivity.class));
+        Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
+        startActivity(intent);
         return true;
       case R.id.action_exit_app:
         finish();
@@ -328,6 +345,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
           utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
         }
       }
+
     }
   }
 
@@ -424,9 +442,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   private void requestRobotShutdown() {
     if (controllerService == null) return;
     controllerService.shutdownRobot();
-    if (batteryChecker != null) {
-      batteryChecker.endBatteryMonitoring();
-    }
+    batteryChecker.endBatteryMonitoring();
   }
 
   private void requestRobotRestart() {

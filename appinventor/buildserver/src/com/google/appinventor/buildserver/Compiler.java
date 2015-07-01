@@ -392,6 +392,9 @@ public final class Compiler {
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       }
+      if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+        out.write("android:theme=\"@style/AppTheme\"\n");
+      }
       out.write(">\n");
 
       for (Project.SourceDescriptor source : project.getSources()) {
@@ -413,6 +416,8 @@ public final class Compiler {
         // better to do this programmatically when the NearField component is created, rather
         // than here in the manifest.
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
+          out.write("android:launchMode=\"singleTask\" ");
+        } else if (componentTypes.contains("FtcRobotController") && !isForCompanion && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
         } else if (isMain && isForCompanion) {
           out.write("android:launchMode=\"singleTop\" ");
@@ -485,10 +490,10 @@ public final class Compiler {
       if (componentTypes.contains("FtcRobotController")) {
         out.write("    <activity\n");
         out.write("      android:name=\"com.google.appinventor.components.runtime.ftc.FtcRobotControllerSettingsActivity\"\n");
-        out.write("      android:label=\"Settings\" />\n");
+        out.write("      android:label=\"@string/settings_activity\" />\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity\"\n");
-        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      android:label=\"@string/title_activity_load\">\n");
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity.intent.action.Launch\" />\n");
         out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
@@ -496,7 +501,7 @@ public final class Compiler {
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.AutoConfigureActivity\"\n");
-        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      android:label=\"@string/title_activity_autoconfigure\">\n");
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcAutoconfigureActivity.intent.action.Launch\" />\n");
         out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
@@ -505,6 +510,14 @@ public final class Compiler {
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
         out.write("      android:label=\"@string/app_name\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.AboutActivity\"\n");
+        out.write("      android:label=\"@string/about_activity\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditMotorControllerActivity\"\n");
@@ -660,7 +673,8 @@ public final class Compiler {
       out.println("________Generating R.java files");
       File genDir = createDirectory(buildDir, "gen");
       String[] packages = {
-        "com.qualcomm.ftccommon"
+        "com.qualcomm.ftccommon",
+        "com.qualcomm.robotcore"
       };
       List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
       for (String customPackage : packages) {
