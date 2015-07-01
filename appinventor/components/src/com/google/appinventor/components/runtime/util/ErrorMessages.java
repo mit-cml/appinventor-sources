@@ -20,6 +20,7 @@ public final class ErrorMessages {
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER = 2;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_FUSIONTABLES_CONTROL = 3;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES = 4;
+  public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT = 5;
   // LocationSensor errors
   public static final int ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101;
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
@@ -180,7 +181,16 @@ public final class ErrorMessages {
   //TextToSpeech errors
   public static final int ERROR_TTS_NOT_READY = 2701;
 
-  // Please start the next group of error numbers at 2801.
+  // FTC errors
+  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2801;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2802;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2803;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2804;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2805;
+  public static final int ERROR_FTC_INVALID_NUMBER = 2806;
+  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2807;
+
+  // Please start the next group of error numbers at 2901.
 
 
   // Mapping of error numbers to error message format strings.
@@ -200,6 +210,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES,
         "Warning: This app contains functionality that does not work on this phone: " +
         "using cookies in the Web component.");
+    errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT,
+        "Warning: This app contains functionality that does not work on this phone: " +
+        "Wi-Fi peer-to-peer connectivity.");
     // LocationSensor errors
     errorMessages.put(ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND,
         "Unable to find latitude from %s.");
@@ -452,6 +465,24 @@ public final class ErrorMessages {
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    // FTC errors
+    errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
+        "An unexpected error occurred: %s");
+    errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
+        "The specified run mode \"%s\" is not valid. The valid modes are RUN_USING_ENCODERS, " +
+        "RUN_WITHOUT_ENCODERS, RUN_TO_POSITION, and RESET_ENCODERS.");
+    errorMessages.put(ERROR_FTC_INVALID_DIRECTION,
+        "The specified direction \"%s\" is not valid. The valid directions are FORWARD (or 1) " +
+        "and REVERSE (or -1).");
+    errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
+        "The specified IR seeker sensor mode \"%s\" is not valid. The valid modes are " +
+        "MODE_600HZ_DC and MODE_1200HZ_AC.");
+    errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE,
+        "The specified scale range is not valid: %s %s");
+    errorMessages.put(ERROR_FTC_INVALID_NUMBER,
+        "The specified number is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_BYTE_ARRAY,
+        "The specified byte array is not valid");
   }
 
   private ErrorMessages() {
@@ -462,4 +493,3 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
-

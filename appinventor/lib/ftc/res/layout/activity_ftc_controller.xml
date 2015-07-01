@@ -1,0 +1,73 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FtcRobotControllerActivity"
+    android:focusable="true"
+    android:id="@+id/entire_screen"
+    android:orientation="vertical">
+
+  <include layout="@layout/device_name"
+           android:id="@+id/device_name_header"/>
+
+  <include layout="@layout/header"
+           android:id="@+id/included_header"/>
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin" >
+
+    <TextView
+      android:id="@+id/textWifiDirectStatus"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textRobotStatus"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/textWifiDirectStatus"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textOpMode"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/textRobotStatus"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textErrorMessage"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/textOpMode"
+      android:textColor="#990000"
+      android:textStyle="bold"
+      android:minLines="2"
+      android:maxLines="4"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textGamepad1"
+      android:layout_width="match_parent"
+      android:layout_height="30dp"
+      android:layout_above="@+id/textGamepad2"
+      android:layout_marginBottom="10dp"
+      android:text="" />
+
+    <TextView
+      android:id="@+id/textGamepad2"
+      android:layout_width="match_parent"
+      android:layout_height="30dp"
+      android:layout_alignParentBottom="true"
+      android:layout_marginBottom="10dp"
+      android:text="" />
+
+  </RelativeLayout>
+</LinearLayout>

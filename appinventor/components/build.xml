@@ -6,7 +6,7 @@
      App Inventor component libraries
      ====================================================================== -->
 
-<project name="components" default="all">
+<project name="components" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>
     App Inventor component libraries
   </description>
@@ -30,6 +30,49 @@
        Define base package path.
        ===================================================================== -->
   <property name="components.pkg" value="com/google/appinventor/components" />
+
+  <!-- =====================================================================
+       Definition for unzip an aar file.
+       ===================================================================== -->
+  <macrodef name="aar.unzip">
+    <attribute name="src"/>
+    <attribute name="name"/>
+    <attribute name="dest"/>
+    <sequential>
+      <uptodate property="@{name}.uptodate"
+                srcfile="@{src}"
+                targetfile="@{dest}/classes.jar" />
+      <mkdir unless:set="@{name}.uptodate" dir="@{dest}" />
+      <unzip unless:set="@{name}.uptodate"
+             src="@{src}"
+             dest="@{dest}" />
+      <touch unless:set="@{name}.uptodate">
+        <fileset dir="@{dest}" />
+      </touch>
+    </sequential>
+  </macrodef>
+    
+  <!-- =====================================================================
+       Unzip lib/ftc .aar files
+       ===================================================================== -->
+  <target name="FtcAars"
+          depends="init">
+    <aar.unzip src="${lib.dir}/ftc/Analytics-release.aar"
+               name="Analytics"
+               dest="${public.build.dir}/ftc/Analytics" />
+    <aar.unzip src="${lib.dir}/ftc/FtcCommon-release.aar"
+               name="FtcCommon"
+               dest="${public.build.dir}/ftc/FtcCommon" />
+    <aar.unzip src="${lib.dir}/ftc/ModernRobotics-release.aar"
+               name="ModernRobotics"
+               dest="${public.build.dir}/ftc/ModernRobotics" />
+    <aar.unzip src="${lib.dir}/ftc/RobotCore-release.aar"
+               name="RobotCore"
+               dest="${public.build.dir}/ftc/RobotCore" />
+    <aar.unzip src="${lib.dir}/ftc/WirelessP2p-release.aar"
+               name="WirelessP2p"
+               dest="${public.build.dir}/ftc/WirelessP2p" />
+  </target>
 
   <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
@@ -106,7 +149,7 @@
        ===================================================================== -->
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
-          depends="CommonConstants,HtmlEntities,common_CommonVersion">
+          depends="CommonConstants,HtmlEntities,FtcAars,common_CommonVersion">
     <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
@@ -124,6 +167,12 @@
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+        <pathelement location="${public.build.dir}/ftc/Analytics/classes.jar" />
+        <pathelement location="${public.build.dir}/ftc/FtcCommon/classes.jar" />
+        <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
+        <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
+        <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />
+        <pathelement location="${lib.dir}/ftc/d2xx.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -152,6 +201,7 @@
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
     <pathelement location="${public.build.dir}/CommonConstants.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
@@ -225,6 +275,12 @@
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+          <pathelement location="${public.build.dir}/ftc/Analytics/classes.jar" />
+          <pathelement location="${public.build.dir}/ftc/FtcCommon/classes.jar" />
+          <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
+          <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
+          <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />
+          <pathelement location="${lib.dir}/ftc/d2xx.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />

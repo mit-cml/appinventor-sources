@@ -676,9 +676,11 @@ public class TopToolbar extends Composite {
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
       HTML message = new HTML(
+          "This version of MIT App Inventor contains support for<BR/>" +
+          "FIRST\u00AE Tech Challenge<BR/><BR/>" +
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-              "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
-              "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
+          //    "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
+          //    "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
               "<BR/><BR/>" + termsOfServiceText
       );
 

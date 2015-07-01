@@ -348,7 +348,10 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+      } else if (componentTypes.contains("FtcRobotController")) {
+        out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" />\n");
       }
 
       for (String permission : permissionsNeeded) {
@@ -423,7 +426,16 @@ public final class Compiler {
         if (isMain) {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
+        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
+        }
         out.write("      </intent-filter>\n");
+
+        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("      <meta-data\n");
+          out.write("        android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"\n");
+          out.write("        android:resource=\"@xml/device_filter\" />\n");
+        }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
@@ -466,6 +478,61 @@ public final class Compiler {
         out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
         out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
         out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
+      }
+
+      // Add FTC related activities and service to the manifest only if an FtcRobotController
+      // component is used in the app.
+      if (componentTypes.contains("FtcRobotController")) {
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.google.appinventor.components.runtime.ftc.FtcRobotControllerSettingsActivity\"\n");
+        out.write("      android:label=\"Settings\" />\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity\"\n");
+        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.AutoConfigureActivity\"\n");
+        out.write("      android:label=\"Configure Robot\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcAutoconfigureActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
+        out.write("      android:label=\"@string/app_name\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditMotorControllerActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/edit_motor_controller_activity\"\n");
+        out.write("      android:windowSoftInputMode=\"stateHidden\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditServoControllerActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/edit_servo_controller_activity\"\n");
+        out.write("      android:windowSoftInputMode=\"stateHidden\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditLegacyModuleControllerActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/edit_legacy_module_controller_activity\"\n");
+        out.write("      android:windowSoftInputMode=\"stateHidden\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditDeviceInterfaceModuleActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/edit_core_device_interface_module_controller_activity\"\n");
+        out.write("      android:windowSoftInputMode=\"stateHidden\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <service\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerService\"\n");
+        out.write("      android:enabled=\"true\" />\n");
       }
 
       // BroadcastReceiver for Texting Component
@@ -545,6 +612,13 @@ public final class Compiler {
       return false;
     }
 
+    if (componentTypes.contains("FtcRobotController")) {
+      // Copy resources used in FTC libraries and components.
+      if (!compiler.createFtcResources(resDir)) {
+        return false;
+      }
+    }
+
     // Determine android permissions.
     out.println("________Determining permissions");
     Set<String> permissionsNeeded = compiler.generatePermissions();
@@ -580,6 +654,28 @@ public final class Compiler {
       return false;
     }
     setProgress(35);
+
+    if (componentTypes.contains("FtcRobotController")) {
+      // Generate R.java files used in FTC libraries.
+      out.println("________Generating R.java files");
+      File genDir = createDirectory(buildDir, "gen");
+      String[] packages = {
+        "com.qualcomm.ftccommon"
+      };
+      List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
+      for (String customPackage : packages) {
+        if (!compiler.runAaptPackage(manifestFile, resDir, genDir, customPackage)) {
+          return false;
+        }
+        genFileNames.add(genDir.getAbsolutePath() + File.separatorChar + 
+            customPackage.replace('.', File.separatorChar) + File.separatorChar + "R.java");
+      }
+      // Compile the generated R.java files.
+      out.println("________Compiling R.java files");
+      if (!compiler.runJavac(classesDir, genFileNames)) {
+        return false;
+      }
+    }
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -671,6 +767,25 @@ public final class Compiler {
     for (String filename : files.keySet()) {
       File file = new File(animDir, filename);
       if (!writeXmlFile(file, files.get(filename))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Creates the resources used by FTC.
+   */
+  private boolean createFtcResources(File resDir) throws IOException {
+    String csv = Resources.toString(
+        Compiler.class.getResource(RUNTIME_FILES_DIR + "ftcres.list"), Charsets.UTF_8);
+    String[] ftcFiles = csv.split(",");
+    for (String ftcFile : ftcFiles) {
+      out.println("________Copying " + ftcFile);
+      String source = getResource(RUNTIME_FILES_DIR + "ftcres/" + ftcFile);
+      File destFile = new File(resDir, ftcFile.replace('/', File.separatorChar));
+      destFile.getParentFile().mkdirs();
+      if (!copyFile(source, destFile.getAbsolutePath())) {
         return false;
       }
     }
@@ -857,6 +972,94 @@ public final class Compiler {
     } catch (IOException e) {
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "compile"));
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Runs aapt package to generate R.java files.
+   */
+  private boolean runAaptPackage(File manifestFile, File resDir, File genDir, String customPackage) {
+    String aaptTool;
+    String osName = System.getProperty("os.name");
+    if (osName.equals("Mac OS X")) {
+      aaptTool = MAC_AAPT_TOOL;
+    } else if (osName.equals("Linux")) {
+      aaptTool = LINUX_AAPT_TOOL;
+    } else if (osName.startsWith("Windows")) {
+      aaptTool = WINDOWS_AAPT_TOOL;
+    } else {
+      LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
+      err.println("YAIL compiler - cannot run AAPT on OS " + osName);
+      userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
+      return false;
+    }
+    String[] aaptPackageCommandLine = {
+      getResource(aaptTool),
+      "package",
+      "-f",
+      "-m",
+      "-I", getResource(ANDROID_RUNTIME),
+      "-S", resDir.getAbsolutePath(),
+      "-M", manifestFile.getAbsolutePath(),
+      "-J", genDir.getAbsolutePath(),
+      "--custom-package", customPackage
+    };
+    long startAapt = System.currentTimeMillis();
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
+    // tools output
+    if (!Execution.execute(null, aaptPackageCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - AAPT execution failed.");
+      err.println("YAIL compiler - AAPT execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
+      return false;
+    }
+    String aaptTimeMessage = "AAPT time: " +
+        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+    out.println(aaptTimeMessage);
+    LOG.info(aaptTimeMessage);
+
+    return true;
+  }
+
+  /**
+   * Runs javac to compiler generated .java files.
+   */
+  private boolean runJavac(File classesDir, List<String> genFileNames) {
+    String javaHome = System.getProperty("java.home");
+    // This works on Mac OS X.
+    File javacFile = new File(javaHome + File.separator + "bin" +
+        File.separator + "javac");
+    if (!javacFile.exists()) {
+      // This works when a JDK is installed with the JRE.
+      javacFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+          File.separator + "javac");
+      if (System.getProperty("os.name").startsWith("Windows")) {
+        javacFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+            File.separator + "javac.exe");
+      }
+      if (!javacFile.exists()) {
+        LOG.warning("YAIL compiler - could not find javac.");
+        err.println("YAIL compiler - could not find javac.");
+        userErrors.print(String.format(ERROR_IN_STAGE, "Javac"));
+        return false;
+      }
+    }
+
+    List<String> javacCommandArgs = Lists.newArrayList();
+    Collections.addAll(javacCommandArgs,
+        javacFile.getAbsolutePath(),
+        "-d", classesDir.getAbsolutePath(),
+        "-source", "5",
+        "-target", "5");
+    javacCommandArgs.addAll(genFileNames);
+    String[] javacCommandLine = javacCommandArgs.toArray(new String[javacCommandArgs.size()]);
+    if (!Execution.execute(null, javacCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - javac execution failed.");
+      err.println("YAIL compiler - javac execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "Javac"));
       return false;
     }
 
