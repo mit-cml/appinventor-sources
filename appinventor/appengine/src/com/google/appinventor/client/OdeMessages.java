@@ -2950,6 +2950,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BallotQuestionProperties();
 
+  @DefaultMessage("ContactUri")
+  @Description("")
+  String ContactUriProperties();
+
   @DefaultMessage("EmailAddress")
   @Description("")
   String EmailAddressProperties();
@@ -3089,6 +3093,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SelectionIndex")
   @Description("")
   String SelectionIndexProperties();
+
+  @DefaultMessage("uri")
+  @Description("")
+  String uriParams();
 
   @DefaultMessage("UserChoice")
   @Description("")
@@ -3795,6 +3803,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LostFocus")
   @Description("")
   String LostFocusEvents();
+
+  @DefaultMessage("ViewContact")
+  @Description("")
+  String ViewContactMethods();
 
   @DefaultMessage("AfterRecording")
   @Description("")
@@ -4983,7 +4995,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ClockHelpStringComponentPallette();
 
-  @DefaultMessage("A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact\"s name </li>\n <li> <code>EmailAddress</code>: the contact\"s primary email address </li>\n <li> <code>Picture</code>: the name of the file containing the contact\"s image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).\n</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.")
+  @DefaultMessage("A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact's name </li>\n <li> <code>EmailAddress</code>: the contact's primary email address </li>\n <li> <code>ContactUri</code>: the contact's URI on the device </li>\n <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).\n</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.")
   @Description("")
   String ContactPickerHelpStringComponentPallette();
 

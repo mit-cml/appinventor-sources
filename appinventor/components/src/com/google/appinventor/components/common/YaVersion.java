@@ -336,8 +336,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 130:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 131:
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 6.
 
-  public static final int YOUNG_ANDROID_VERSION = 130;
+  public static final int YOUNG_ANDROID_VERSION = 131;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -553,7 +555,9 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 5:
   // - Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
   // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
+  // For CONTACTPICKER_COMPONENT_VERSION 6:
+  // - The ContactUri property was added
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
 
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date

@@ -1219,7 +1219,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:  Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
     // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2:  Added ContactUri
+    6: "noUpgrade"
 
   }, // End ContactPicker upgraders
 

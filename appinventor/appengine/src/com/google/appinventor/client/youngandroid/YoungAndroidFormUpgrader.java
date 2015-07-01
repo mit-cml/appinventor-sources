@@ -674,6 +674,11 @@ public final class YoungAndroidFormUpgrader {
       // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The ContactUri property was added.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
