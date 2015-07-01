@@ -883,10 +883,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.24";
+  public static final String PREFERRED_COMPANION = "2.27";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.23ai2", "2.23ai2zx1", "2.24"};
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.23ai2", "2.23ai2zx1", "2.24", "2.27"};
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

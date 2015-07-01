@@ -34,6 +34,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *
  * @author sharon@google.com (Sharon Perl)
  * @author markf@google.com (Mark Friedman)
+ * @author: Yifan(Evan) Li (for contact Uri)
+
  */
 @DesignerComponent(version = YaVersion.CONTACTPICKER_COMPONENT_VERSION,
     description = "A button that, when clicked on, displays a list of " +
@@ -142,10 +144,9 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
   
   /**
-   * ContactUri property getter method.
-   * @Author: Yifan(Evan) Li
+   * "URI that specifies the location of the contact on the device.",
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "URI that specifies the location of the contact on the device.",
       category = PropertyCategory.BEHAVIOR)
   public String ContactUri() {
     return ensureNotNull(contactUri);
@@ -181,7 +182,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   /**
    *  return nothing, just call another activity which is view contact
    */
-  @SimpleFunction(description = "view a contact through its URI")
+  @SimpleFunction(description = "view a contact via its URI")
   public void ViewContact(String uri) {
     if(contactUri != null){
     	Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(uri));
