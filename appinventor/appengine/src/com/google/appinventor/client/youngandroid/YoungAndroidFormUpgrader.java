@@ -236,9 +236,6 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("CheckBox")) {
         srcCompVersion = upgradeCheckBoxProperties(componentProperties, srcCompVersion);
 
-      } else if (componentType.equals("Clock")) {
-        srcCompVersion = upgradeClockProperties(componentProperties, srcCompVersion);
-
       } else if (componentType.equals("ContactPicker")) {
         srcCompVersion = upgradeContactPickerProperties(componentProperties, srcCompVersion);
 
@@ -413,11 +410,6 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
-    if (srcCompVersion < 5) {
-      // The ActivityStarter.ActivityCanceled event was added.
-      // No properties need to be modified to upgrade to version 5.
-      srcCompVersion = 5;
-    }
     return srcCompVersion;
   }
 
@@ -508,10 +500,7 @@ public final class YoungAndroidFormUpgrader {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
     }
-    if (srcCompVersion < 2) {
-      // Added the property to allow for the removal of the Thumb Slider
-      srcCompVersion = 2;
-    }
+
     return srcCompVersion;
   }
 
@@ -521,17 +510,7 @@ public final class YoungAndroidFormUpgrader {
       // Added speech pitch and rate
       srcCompVersion = 2;
     }
-    if (srcCompVersion < 3) {
-      // The AvailableLanguages property was added
-      // The AvailableCountires property was added
-      // No properties need to be modified to upgrade to version 3.
-      srcCompVersion = 3;
-    }
-    if (srcCompVersion < 4) {
-      // the Country designer property was changed to use a ChoicePropertyEditor
-      // the Language designer property was changed to use a ChoicePropertyEditor
-      srcCompVersion = 4;
-    }
+
     return srcCompVersion;
   }
 
@@ -642,16 +621,6 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
-  private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
-    int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
-      // No properties need to be modified to upgrade to version 2.
-      srcCompVersion = 2;
-    }
-    return srcCompVersion;
-  }
-
   private static int upgradeContactPickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -674,6 +643,11 @@ public final class YoungAndroidFormUpgrader {
       // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The ContactUri property was added.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -694,10 +668,6 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
-    }
-    if (srcCompVersion < 3) {
-      // RequestFocus function was added (via TextBoxBase)
-      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -797,11 +767,6 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 14) {
       // The AppName property was added.
       srcCompVersion = 14;
-    }
-    if (srcCompVersion < 16) {
-      // The ShowStatusBar property was added.
-      // The TitleVisible property was added.
-      srcCompVersion = 16;
     }
     return srcCompVersion;
   }
@@ -959,10 +924,6 @@ public final class YoungAndroidFormUpgrader {
       // Added the TextSize property
       srcCompVersion = 4;
     }
-    if (srcCompVersion < 5) {
-      // Added the SelectionColor property
-      srcCompVersion = 5;
-    }
     return srcCompVersion;
   }
 
@@ -994,10 +955,6 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
-    }
-    if (srcCompVersion < 3) {
-      // Added RequestFocus Function (via TextBoxBase)
-      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1135,11 +1092,6 @@ public final class YoungAndroidFormUpgrader {
       // The BackgroundColor, NotifierLength, and TextColor options were added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
-    }
-    if (srcCompVersion < 4) {
-      // A new type of dialog was created, a ProgressDialog, and a method to
-      // dismiss the dialog was also added.
-      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
