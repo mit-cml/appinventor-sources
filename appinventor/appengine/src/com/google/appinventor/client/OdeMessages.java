@@ -2950,6 +2950,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BallotQuestionProperties();
 
+  @DefaultMessage("ContactUri")
+  @Description("")
+  String ContactUriProperties();
+
   @DefaultMessage("EmailAddress")
   @Description("")
   String EmailAddressProperties();
@@ -3089,6 +3093,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SelectionIndex")
   @Description("")
   String SelectionIndexProperties();
+
+  @DefaultMessage("uri")
+  @Description("")
+  String uriParams();
 
   @DefaultMessage("UserChoice")
   @Description("")
@@ -3795,6 +3803,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LostFocus")
   @Description("")
   String LostFocusEvents();
+
+  @DefaultMessage("ViewContact")
+  @Description("")
+  String ViewContactMethods();
 
   @DefaultMessage("AfterRecording")
   @Description("")
