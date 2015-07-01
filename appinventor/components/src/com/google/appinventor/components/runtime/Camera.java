@@ -152,6 +152,7 @@ public class Camera extends AndroidNonvisibleComponent
     if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
       File image = new File(imageFile.getPath());
       if (image.length() != 0) {
+        scanFileToAdd(image);
         AfterPicture(imageFile.toString());
       } else {
         deleteFile(imageFile);  // delete empty file
@@ -172,6 +173,19 @@ public class Camera extends AndroidNonvisibleComponent
       deleteFile(imageFile);
     }
   }
+
+  /**
+   * Scan the newly added picture to be displayed in a default media content provider 
+   * in a device (e.g. Gallery, Google Photo, etc..) 
+   * 
+   * @param image the picture taken by Camera component 
+   */
+  private void scanFileToAdd(File image) {
+	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+	    Uri contentUri = Uri.fromFile(image);
+	    mediaScanIntent.setData(contentUri);
+	    container.$context().getApplicationContext().sendBroadcast(mediaScanIntent);
+}
 
   private void deleteFile(Uri fileUri) {
     File fileToDelete = new File(fileUri.getPath());
