@@ -7,7 +7,6 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -39,7 +38,6 @@ public final class MockFtcRobotController extends MockVisibleComponent {
   private static final String COLOR_MEDIUM_RED = "#4e0106";
 
   private static final String TEXT_ALIGN_RIGHT = "right";
-
 
   private static final String LABEL_DEVICE_NAME = "<Device>";
   private static final String LABEL_CONFIGURATION = "Active Configuration File:";
