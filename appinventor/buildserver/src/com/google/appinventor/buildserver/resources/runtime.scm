@@ -36,8 +36,8 @@
     (syntax-case stx ()
       ((_ short-component-type-name)
        (datum->syntax-object stx
-                 (string-append simple-component-package-name
-                        "."
+                 (string-append ""
+                        ""
                         (symbol->string #'short-component-type-name)))))))
 
 ;;; (add-component Screen1 Label Label1)
