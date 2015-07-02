@@ -336,8 +336,11 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 130:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 131:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 3
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 130;
+  public static final int YOUNG_ANDROID_VERSION = 131;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -561,7 +564,9 @@ public class YaVersion {
   // The SetDateToDisplay and LaunchPicker methods were added to
   // give the user more control of what time is displayed in the
   // datepicker dialog.
-  public static final int DATEPICKER_COMPONENT_VERSION = 2;
+  // For DATEPICKER_COMPONENT_VERSION 3:
+  // - SetDateToDisplayFromInstant, and Instant property are added.
+  public static final int DATEPICKER_COMPONENT_VERSION = 3;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -826,7 +831,9 @@ public class YaVersion {
   // The SetTimeToDisplay and LaunchPicker methods were added to
   // give the user more control of what time is displayed in the
   // timepicker dialog.
-  public static final int TIMEPICKER_COMPONENT_VERSION = 2;
+  // For TIMEPICKER_COMPONENT_VERSION 3:
+  // - SetTimeToDisplayFromInstant, and Instant property are added.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 3;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 

@@ -2493,6 +2493,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Icon")
   @Description("")
   String IconProperties();
+  
+  @DefaultMessage("Instant")
+  @Description("")
+  String InstantProperties();
 
   @DefaultMessage("IgnoreSslErrors")
   @Description("")
@@ -4297,6 +4301,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HourMethods();
 
+//  @DefaultMessage("Instant")
+  //@Description("")
+  //String InstantMethods();
+  
   @DefaultMessage("MakeInstant")
   @Description("")
   String MakeInstantMethods();
@@ -5430,6 +5438,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetDateToDisplayMethods();
 
+  @DefaultMessage("SetDateToDisplayFromInstant")
+  @Description("")
+  String SetDateToDisplayFromInstantMethods();
+
   @DefaultMessage("IncomingCallAnswered")
   @Description("")
   String IncomingCallAnsweredEvents();
@@ -5461,6 +5473,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetTimeToDisplay")
   @Description("")
   String SetTimeToDisplayMethods();
+
+  @DefaultMessage("SetTimeToDisplayFromInstant")
+  @Description("")
+  String SetTimeToDisplayFromInstantMethods();
 
   @DefaultMessage("XMLTextDecode")
   @Description("")
