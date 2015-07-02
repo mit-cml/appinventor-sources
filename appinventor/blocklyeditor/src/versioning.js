@@ -1234,7 +1234,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // The SetDateToDisplay and LaunchPicker methods were added to
     // give the user more control of what time is displayed in the
     // datepicker dialog.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: SetDateToDisplayFromInstant method and Instant property are added.
+    3: "noUpgrade"
 
   }, // End DatePicker upgraders
 
@@ -1953,9 +1956,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // The SetTimeToDisplay and LaunchPicker methods were added to
     // give the user more control of what time is displayed in the
     // timepicker dialog.
-    2: "noUpgrade"
+    2: "noUpgrade",
 
-  }, // End TimerPicker upgraders
+    // AI2: SetTimeToDisplayFromInstant method and Instant property are added.
+    3: "noUpgrade"
+
+  }, // End TimePicker upgraders
 
   "TinyDB": {
 

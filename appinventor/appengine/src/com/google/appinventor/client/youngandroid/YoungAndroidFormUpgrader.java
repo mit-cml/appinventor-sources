@@ -697,6 +697,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // SetDateToDisplayFromInstant, and Instant property are added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1123,6 +1128,11 @@ public final class YoungAndroidFormUpgrader {
       // The SetTimeToDisplay and LaunchPicker methods were added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // SetTimeToDisplayFromInstant, and Instant property are added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
