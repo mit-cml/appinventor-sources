@@ -449,6 +449,74 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     return 0.0;
   }
 
+  @SimpleFunction(description = "Create a byte array.")
+  public Object CreateByteArray(int size) {
+    return new byte[size];
+  }
+
+  @SimpleFunction(description = "Returns the size of a byte array.")
+  public int SizeOfByteArray(Object byteArray) {
+    try {
+      if (byteArray instanceof byte[]) {
+        byte[] b = (byte[]) byteArray;
+        return b.length;
+      } else {
+        form.dispatchErrorOccurredEvent(this, "SizeOfByteArray",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "SizeOfByteArray",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description =
+      "Copies one or more bytes from the source byte array to the destination byte array.")
+  public void CopyBytes(Object sourceByteArray, int sourcePosition,
+      Object destinationByteArray, int destinationPosition, int length) {
+    try {
+      if (sourceByteArray instanceof byte[]) {
+        if (destinationByteArray instanceof byte[]) {
+          if (length < 0) {
+            byte[] source = (byte[]) sourceByteArray;
+            byte[] destination = (byte[]) destinationByteArray;
+            if (sourcePosition > 0 &&
+                sourcePosition < source.length &&
+                sourcePosition + length < source.length) {
+              if (destinationPosition > 0 &&
+                  destinationPosition < destination.length &&
+                  destinationPosition + length < destination.length) {
+                System.arraycopy(source, sourcePosition, destination, destinationPosition, length);
+              } else {
+                form.dispatchErrorOccurredEvent(this, "CopyBytes",
+                    ErrorMessages.ERROR_FTC_INVALID_POSITION, "destinationPosition");
+              }
+            } else {
+              form.dispatchErrorOccurredEvent(this, "CopyBytes",
+                  ErrorMessages.ERROR_FTC_INVALID_POSITION, "sourcePosition");
+            }
+          } else {
+            form.dispatchErrorOccurredEvent(this, "CopyBytes",
+                ErrorMessages.ERROR_FTC_INVALID_LENGTH);
+          }
+        } else {
+          form.dispatchErrorOccurredEvent(this, "CopyBytes",
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "destinationByteArray");
+        }
+      } else {
+        form.dispatchErrorOccurredEvent(this, "CopyBytes",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "sourceByteArray");
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "CopyBytes",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
+  
+
   @SimpleFunction(description = "Convert a 1-byte number to a byte array.")
   public Object Convert1ByteNumberToByteArray(String number) {
     // The number parameter is a String, which allows decimal, hexadecimal, and octal numbers to be
@@ -515,7 +583,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         }
       }
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToUnsigned1ByteNumber",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
     } catch (Throwable e) {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToUnsigned1ByteNumber",
@@ -534,7 +602,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         }
       }
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToSigned1ByteNumber",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
     } catch (Throwable e) {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayToSigned1ByteNumber",
@@ -555,7 +623,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         }
       }
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo2ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
+          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
     } catch (Throwable e) {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo2ByteNumber",
@@ -575,7 +643,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         }
       }
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo4ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
+          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
     } catch (Throwable e) {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo4ByteNumber",
@@ -595,7 +663,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         }
       }
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo8ByteNumber",
-          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY);
+          ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
     } catch (Throwable e) {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ConvertByteArrayTo8ByteNumber",
