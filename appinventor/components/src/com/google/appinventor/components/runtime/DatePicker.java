@@ -140,14 +140,6 @@ public class DatePicker extends ButtonBase {
 	  int year = Dates.Year(instant);
 	  int month = Dates.Month(instant);
 	  int day = Dates.Day(instant);
-	  int jMonth = month - 1;
-	  try {
-	    GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
-	    cal.setLenient(false);
-	    cal.getTime();
-	  } catch (java.lang.IllegalArgumentException e) {
-	    form.dispatchErrorOccurredEvent(this, "SetDateToDisplayFromInstant", ErrorMessages.ERROR_ILLEGAL_DATE);
-	  }
 	  date.updateDate(year, month, day);
 	  instant = Dates.DateInstant(year, month, day);
 	  customDate = true;
