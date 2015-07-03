@@ -189,6 +189,8 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2805;
   public static final int ERROR_FTC_INVALID_NUMBER = 2806;
   public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2807;
+  public static final int ERROR_FTC_INVALID_POSITION = 2808;
+  public static final int ERROR_FTC_INVALID_LENGTH = 2809;
 
   // Please start the next group of error numbers at 2901.
 
@@ -482,7 +484,11 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_NUMBER,
         "The specified number is not valid: %s");
     errorMessages.put(ERROR_FTC_INVALID_BYTE_ARRAY,
-        "The specified byte array is not valid");
+        "The specified byte array (%s) is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_POSITION,
+        "The specified position (%s) is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_LENGTH,
+        "The specified length is not valid");
   }
 
   private ErrorMessages() {

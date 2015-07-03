@@ -5275,6 +5275,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ConvertByteArrayTo8ByteNumberMethods();
 
+  @DefaultMessage("CopyBytes")
+  @Description("")
+  String CopyBytesMethods();
+
+  @DefaultMessage("CreateByteArray")
+  @Description("")
+  String CreateByteArrayMethods();
+
   @DefaultMessage("EnableAnalogReadMode")
   @Description("")
   String EnableAnalogReadModeMethods();
@@ -5414,6 +5422,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetPulseWidthPeriod")
   @Description("")
   String SetPulseWidthPeriodMethods();
+
+  @DefaultMessage("SizeOfByteArray")
+  @Description("")
+  String SizeOfByteArrayMethods();
 
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")
