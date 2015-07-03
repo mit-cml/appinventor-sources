@@ -338,8 +338,10 @@ public class YaVersion {
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 131:
   // - CONTACTPICKER_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 132:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 131;
+  public static final int YOUNG_ANDROID_VERSION = 132;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -398,7 +400,7 @@ public class YaVersion {
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
   public static final int BLOCKS_LANGUAGE_VERSION = 19;
-  
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
@@ -822,7 +824,10 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 4:
   // - the Country designer property was changed to use a ChoicePropertyEditor
   // - the Language designer property was changed to use a ChoicePropertyEditor
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 4;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 5:
+  // - default value was added to the Country designer property
+  // - default value was added to the Language designer property
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 5;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated

@@ -18,6 +18,10 @@ import com.google.gwt.i18n.client.Messages;
 public interface OdeMessages extends Messages {
   // Used in multiple files
 
+  @DefaultMessage("Default")
+  @Description("Text for property editors")
+  String defaultText();
+
   @DefaultMessage("Cancel")
   @Description("Text on \"Cancel\" button.")
   String cancelButton();

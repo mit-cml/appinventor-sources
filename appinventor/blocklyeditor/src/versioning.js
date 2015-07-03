@@ -1937,7 +1937,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // the Country designer property was changed to use a ChoicePropertyEditor
     // the Language designer property was changed to use a ChoicePropertyEditor
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // default value was added to the Country designer property
+    // default value was added to the Language designer property
+    5: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 
@@ -2120,4 +2124,3 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
-
