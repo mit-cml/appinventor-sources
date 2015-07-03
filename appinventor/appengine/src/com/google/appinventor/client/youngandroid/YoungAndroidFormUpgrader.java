@@ -532,6 +532,11 @@ public final class YoungAndroidFormUpgrader {
       // the Language designer property was changed to use a ChoicePropertyEditor
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // default value was added to the Country designer property
+      // default value was added to the Language designer property
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
