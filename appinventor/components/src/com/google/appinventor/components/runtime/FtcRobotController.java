@@ -455,7 +455,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       return new byte[length];
     } else {
       form.dispatchErrorOccurredEvent(this, "CreateByteArray",
-          ErrorMessages.ERROR_FTC_INVALID_LENGTH);
+          ErrorMessages.ERROR_FTC_INVALID_LENGTH, length);
     }
     return new byte[0];
   }
@@ -489,23 +489,22 @@ public final class FtcRobotController extends AndroidViewComponent implements On
             byte[] source = (byte[]) sourceByteArray;
             byte[] destination = (byte[]) destinationByteArray;
             if (sourcePosition >= 0 &&
-                sourcePosition < source.length &&
-                sourcePosition + length < source.length) {
+                sourcePosition + length <= source.length) {
               if (destinationPosition >= 0 &&
-                  destinationPosition < destination.length &&
-                  destinationPosition + length < destination.length) {
+                  destinationPosition + length <= destination.length) {
                 System.arraycopy(source, sourcePosition, destination, destinationPosition, length);
               } else {
                 form.dispatchErrorOccurredEvent(this, "CopyBytes",
-                    ErrorMessages.ERROR_FTC_INVALID_POSITION, "destinationPosition");
+                    ErrorMessages.ERROR_FTC_INVALID_POSITION, "destinationPosition",
+                    destinationPosition);
               }
             } else {
               form.dispatchErrorOccurredEvent(this, "CopyBytes",
-                  ErrorMessages.ERROR_FTC_INVALID_POSITION, "sourcePosition");
+                  ErrorMessages.ERROR_FTC_INVALID_POSITION, "sourcePosition", sourcePosition);
             }
           } else {
             form.dispatchErrorOccurredEvent(this, "CopyBytes",
-                ErrorMessages.ERROR_FTC_INVALID_LENGTH);
+                ErrorMessages.ERROR_FTC_INVALID_LENGTH, length);
           }
         } else {
           form.dispatchErrorOccurredEvent(this, "CopyBytes",
