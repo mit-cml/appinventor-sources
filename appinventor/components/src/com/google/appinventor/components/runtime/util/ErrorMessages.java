@@ -486,9 +486,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_BYTE_ARRAY,
         "The specified byte array (%s) is not valid");
     errorMessages.put(ERROR_FTC_INVALID_POSITION,
-        "The specified position (%s) is not valid");
+        "The specified position (%s) is not valid: %s");
     errorMessages.put(ERROR_FTC_INVALID_LENGTH,
-        "The specified length is not valid");
+        "The specified length is not valid: %s");
   }
 
   private ErrorMessages() {
