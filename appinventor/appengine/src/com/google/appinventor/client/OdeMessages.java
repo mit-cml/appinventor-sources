@@ -4890,6 +4890,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StopSoundPlaybackMethods();
 
+  @DefaultMessage("LengthOfByteArray")
+  @Description("")
+  String LengthOfByteArrayMethods();
+
   @DefaultMessage("LsWrite")
   @Description("")
   String LsWriteMethods();
@@ -5422,10 +5426,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetPulseWidthPeriod")
   @Description("")
   String SetPulseWidthPeriodMethods();
-
-  @DefaultMessage("SizeOfByteArray")
-  @Description("")
-  String SizeOfByteArrayMethods();
 
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")

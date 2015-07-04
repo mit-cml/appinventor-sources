@@ -450,23 +450,29 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   }
 
   @SimpleFunction(description = "Create a byte array.")
-  public Object CreateByteArray(int size) {
-    return new byte[size];
+  public Object CreateByteArray(int length) {
+    if (length > 0) {
+      return new byte[length];
+    } else {
+      form.dispatchErrorOccurredEvent(this, "CreateByteArray",
+          ErrorMessages.ERROR_FTC_INVALID_LENGTH);
+    }
+    return new byte[0];
   }
 
-  @SimpleFunction(description = "Returns the size of a byte array.")
-  public int SizeOfByteArray(Object byteArray) {
+  @SimpleFunction(description = "Returns the length of a byte array.")
+  public int LengthOfByteArray(Object byteArray) {
     try {
       if (byteArray instanceof byte[]) {
         byte[] b = (byte[]) byteArray;
         return b.length;
       } else {
-        form.dispatchErrorOccurredEvent(this, "SizeOfByteArray",
+        form.dispatchErrorOccurredEvent(this, "LengthOfByteArray",
             ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
       }
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "SizeOfByteArray",
+      form.dispatchErrorOccurredEvent(this, "LengthOfByteArray",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
@@ -479,7 +485,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     try {
       if (sourceByteArray instanceof byte[]) {
         if (destinationByteArray instanceof byte[]) {
-          if (length < 0) {
+          if (length > 0) {
             byte[] source = (byte[]) sourceByteArray;
             byte[] destination = (byte[]) destinationByteArray;
             if (sourcePosition > 0 &&
