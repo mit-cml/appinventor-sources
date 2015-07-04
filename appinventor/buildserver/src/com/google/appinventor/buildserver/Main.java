@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
@@ -22,12 +23,8 @@ import java.util.zip.ZipFile;
 public final class Main {
 
   static class CommandLineOptions {
-    @Option(name = "--isForWirelessRepl", usage = "create the AppInventorDebugger APK")
-    boolean isForWireless = false;
-
-    @Option(name = "--isForStemCellApp", usage = "create APK suitable for Phone App",
-            aliases = {"--isForRepl"})
-    boolean isForStemCellApp = false;
+    @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
+    boolean isForCompanion = false;
 
     @Option(name = "--inputZipFile", required = true,
             usage = "the ZIP file of the project to build")
@@ -85,8 +82,7 @@ public final class Main {
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,
-                                         commandLineOptions.isForStemCellApp,
-                                         commandLineOptions.isForWireless,
+                                         commandLineOptions.isForCompanion,
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir);
     System.exit(result.getResult());

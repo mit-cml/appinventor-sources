@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -79,8 +80,8 @@ import java.io.IOException;
         + "appear to play/pause, skip ahead, and skip backward within the video.  "
         + "The application can also control behavior by calling the "
         + "<code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  "
-        + "<p>Video files should be in Windows Media Video (.wmv) format, "
-        + "3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal "
+        + "<p>Video files should be in "
+        + "3GPP (.3gp) or MPEG-4 (.mp4) formats.  For more details about legal "
         + "formats, see "
         + "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\""
         + " target=\"_blank\">Android Supported Media Formats</a>.</p>"

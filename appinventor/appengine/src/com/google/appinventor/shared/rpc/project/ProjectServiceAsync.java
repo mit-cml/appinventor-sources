@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.rpc.project;
 
@@ -26,6 +27,21 @@ public interface ProjectServiceAsync {
       AsyncCallback<UserProject> callback);
 
   /**
+   * @see ProjectService#newProjectFromTemplate(String, String, NewProjectParameters, String)
+   */
+  void newProjectFromTemplate(String projectName, String pathToZip, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#newProjectFromExternalTemplate(String, String)
+   */
+  void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#retrieveTemplateData(String)
+   */
+  void retrieveTemplateData(String pathToTemplates, AsyncCallback<String> callback);
+
+  /**
    * @see ProjectService#copyProject(long, String)
    */
   void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
@@ -34,6 +50,11 @@ public interface ProjectServiceAsync {
    * @see ProjectService#deleteProject(long)
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
+
+   /**
+   * @see ProjectService#setGalleryid
+   */
+  void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
 
   /**
    * @see ProjectService#getProjects()
@@ -129,6 +150,8 @@ public interface ProjectServiceAsync {
    * @see ProjectService#addFile(long, String)
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
+
+  void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#log(String)

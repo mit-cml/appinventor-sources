@@ -96,7 +96,7 @@ goog.provide('Blockly.Msg.{0}');
 
 goog.require('Blockly.Msg');
 
-""".format(target_lang))
+""".format(target_lang.replace('-', '.')))
         # For each key in the source language file, output the target value
         # if present; otherwise, output the source language value with a
         # warning comment.

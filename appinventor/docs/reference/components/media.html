@@ -9,6 +9,10 @@
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
     <meta content="Front Page" about="/front_page" property="dc:title">
     <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
     <title>Media Components - App Inventor for Android</title>
     <style>
       body{
@@ -98,14 +102,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -116,7 +122,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -414,20 +420,24 @@
                 class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
           </div>
           <div id="menu-bar" class="nav clearfix">
-            <nav role="navigation">
-              <ul>
-                <li><a href="http://appinventor.mit.edu">Home</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog
-                    ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/library">Support
-                    ▾</a></li>
-              </ul>
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
             </nav>
           </div>
-          <div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </header>
+
       <div id="columns" class="no-menu-bar" style="margin-top:15px;">
         <div class="columns-inner clearfix">
           <div id="content-column">
@@ -504,8 +514,8 @@
 
 <p>A special-purpose button. When the user taps an image picker, the
 device's image gallery appears, and the user can choose an
-image. After an image is picked, it is saved on the SD card and
-the <code>ImageFile</code> property will be the name of the file where
+image. After an image is picked, it is saved, and
+the <code>Selected</code> property will be the name of the file where
 the image is stored. In order to not fill up storage, a maximum of 10
 images will be stored.  Picking more images will delete previous
 images, in order from oldest to newest.</p>
@@ -580,6 +590,8 @@ images, in order from oldest to newest.</p>
   <dd>Reports whether the media is playing</dd>
   <dt><code>Loop</code></dt>
   <dd>If true, the player will loop when it plays. Setting Loop while the player is playing will affect the current playing.</dd>
+  <dt><code>PlayOnlyInForeground</code></dt>
+  <dd>If true, the player will pause playing when leaving the current screen; if false (default option), the player continues playing whenever the current screen is displaying or not.</dd>
   <dt><code>Source</code></dt>
   <dd></dd>
   <dt><code>Volume</code></dt>
@@ -590,6 +602,8 @@ images, in order from oldest to newest.</p>
 <dl>
   <dt><code>Completed()</code></dt>
   <dd>Indicates that the media has reached the end</dd>
+  <dt><code>OtherPlayerStarted()</code></dt>
+  <dd>This event is signaled when another player has started (and the current player is playing or paused, but not stopped).</dd>
 </dl>
 
 <h3>Methods</h3>
@@ -682,141 +696,74 @@ none
                       <dt> <code> BeforeGettingText() </code> </dt>
                       <dd> Signaled just before the recognizer is called. </dd>
                     </dl>
-                    <h2 id="TextToSpeech"> TextToSpeech </h2>
-                    <img src="images/texttospeech.png" alt="Picture of Text to Speech component">
-                    <p> Use a text-to-speech component to have the device speak
-                      text audibly. </p>
-                    <p> In order for this component to work, the device must
-                      have the <em> TTS Extended Service </em> app by
-                      Eyes-Free Project installed. You can download this from <a
-                        href="http://code.google.com/p/eyes-free/downloads/list">
-                        http://code.google.com/p/eyes-free/downloads/list </a>
-                    </p>
-                    <p> The text-to-speech component has properties you can set
-                      to guide the pronunciation of the text to be spoken. These
-                      properties use three-letter codes to specify the language
-                      and the country in which the language is spoken. For
-                      example, you can specify British English or US English.
-                      For British English, the language code is <code> eng </code>
-                      and the country code is <code> GBR </code> , while for
-                      US English, the language code is <code> eng </code> and
-                      the country code is <code> USA </code> . The complete
-                      list is below. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> Country </code> </dt>
-                      <dd> The country code for speech production. </dd>
-                      <dt> <code> Language </code> </dt>
-                      <dd> The language code for speech production. </dd>
-                      <dt> <code class="c2"> Result </code> </dt>
-                      <dd> Details to come. </dd>
-                        <dt><code>Pitch</code></dt>
-                        <dd>Sets the Pitch for tts. The values should be between 0 and 2 where lower values lower the tone of synthesized voice and greater values increases it</dd>
-                        <dd></dd>
-                        <dt><code>SpeechRate</code></dt>
-                        <dd>Sets the SpeechRate for tts. The values should be between 0 and 2 where lower values slow down the pitch and greater values accelerate it</dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Speak(Text message) </code> </dt>
-                      <dd> Speaks the given text. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> AfterSpeaking(Text result) </code> </dt>
-                      <dd> Signaled after the text is spoken. The argument is
-                        the text result that was produced. </dd>
-                      <dt> <code> BeforeSpeaking() </code> </dt>
-                      <dd> Signaled just before the text is spoken. </dd>
-                    </dl>
-                    <p> Here are the language and country codes you can use. The
-                      codes are organized first by language; then, in each
-                      language section are a list of possible country codes: </p>
-                    <ul>
-                      <li> ces (Czech)
-                        <ul>
-                          <li> CZE </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> spa (Spanish)
-                        <ul>
-                          <li> ESP </li>
-                          <li> USA </li>
-                        </ul>
-                        <br>
-                      </li>
-                      <li> deu (German)
-                        <ul>
-                          <li> AUT </li>
-                          <li> BEL </li>
-                          <li> CHE </li>
-                          <li> DEU </li>
-                          <li> LIE </li>
-                          <li> LUX </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> fra (French)
-                        <ul>
-                          <li> BEL </li>
-                          <li> CAN </li>
-                          <li> CHE </li>
-                          <li> FRA </li>
-                          <li> LUX </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> nld (Dutch)
-                        <ul>
-                          <li> BEL </li>
-                          <li> NLD </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> ita (Italian)
-                        <ul>
-                          <li> CHE </li>
-                          <li> ITA </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> pol (Polish)
-                        <ul>
-                          <li> POL </li>
-                        </ul>
-                      </li>
-                      <br>
-                      <li> eng (English)
-                        <ul>
-                          <li> AUS </li>
-                          <li> BEL </li>
-                          <li> BWA </li>
-                          <li> BLZ </li>
-                          <li> CAN </li>
-                          <li> GBR </li>
-                          <li> HKG </li>
-                          <li> IRL </li>
-                          <li> IND </li>
-                          <li> JAM </li>
-                          <li> MHL </li>
-                          <li> MLT </li>
-                          <li> NAM </li>
-                          <li> NZL </li>
-                          <li> PHL </li>
-                          <li> PAK </li>
-                          <li> SGP </li>
-                          <li> TTO </li>
-                          <li> USA </li>
-                          <li> VIR </li>
-                          <li> ZAF </li>
-                          <li> ZWE </li>
-                        </ul>
-                      </li>
-                    </ul>
+
+<h2 id="TextToSpeech">TextToSpeech</h2>
+
+<p>The TestToSpeech component speaks a given text aloud.  You can set
+the pitch and the rate of speech. <p>You can also set a language by
+supplying a language code.  This changes the pronounciation of words,
+not the actual language spoken.  For example, setting the language to
+French and speaking English text will sound like someone speaking
+English (en) with a French accent.</p> <p>You can also specify a
+country by supplying a country code. This can affect the
+pronounciation.  For example, British English (GBR) will sound
+different from US English (USA).  Not every country code will affect
+every language.</p> <p>The languages and countries available depend on
+the particular device, and can be listed with the AvailableLanguages
+and AvailableCountries properties.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>AvailableCountries</em></code></dt>
+  <dd>List of the country codes available on this device for use with
+  TextToSpeech.  Check the Android developer documentation under
+  supported languages to find the meanings of these
+  abbreviations.</dd>
+  <dt><code><em>AvailableLanguages</em></code></dt>
+  <dd>List of the languages available on this device for use with
+  TextToSpeech.  Check the Android developer documentation under
+  supported languages to find the meanings of these
+  abbreviations.</dd>
+  <dt><code>Country</code></dt>
+  <dd>Country code to use for speech generation.  This can affect the
+  pronounciation.  For example, British English (GBR) will sound
+  different from US English (USA).  Not every country code will affect
+  every language.</dd>
+  <dt><code>Language</code></dt>
+  <dd>Sets the language for TextToSpeech. This changes the way that
+  words are pronounced, not the actual language that is spoken.  For
+  example setting the language to and speaking English text with sound
+  like someone speaking English with a Frernch accent.</dd>
+  <dt><code>Pitch</code></dt>
+  <dd>Sets the Pitch for TextToSpeech. The values should be between 0 and 2
+  where lower values lower the tone of synthesized voice and greater
+  values raise it.</dd>
+  <dt><code><em>Result</em></code></dt>
+  <dd></dd>
+  <dt><code>SpeechRate</code></dt>
+  <dd>Sets the SpeechRate for TextToSpeech. The values should be between 0 and
+  2 where lower values slow down the pitch and greater values
+  accelerate it.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSpeaking(boolean result)</code></dt>
+  <dd>Event to raise after the message is spoken.</dd>
+  <dt><code>BeforeSpeaking()</code></dt>
+  <dd>Event to raise when Speak is invoked, before the message is spoken.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Speak(text message)</code></dt>
+  <dd>Speaks the given message.</dd>
+</dl>
+
+
 <h2 id="VideoPlayer">VideoPlayer</h2>
 
-<p>A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in Windows Media Video (.wmv) format, 3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.</p>
+<p>A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats.  For more details about legal formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.</p>
 
 <h3>Properties</h3>
 <dl>

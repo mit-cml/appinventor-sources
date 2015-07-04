@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.storage;
 
@@ -12,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.IOException;
 import java.util.Date;
@@ -88,12 +90,55 @@ public interface StorageIo {
   String loadSettings(String userId);
 
   /**
+   * Sets the stored name for user with id userId
+   *
+   */
+  void setUserName(String userId, String name);
+
+  /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserName(String userId);
+
+  /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserLink(String userId);
+
+  /**
+   * Sets the stored link for user with id userId
+   *
+   */
+  void setUserLink(String userId, String link);
+
+  /**
+   * Returns the email notification frequency
+   *
+   * @param userId user id
+   * @return emailFrequency email frequency
+   */
+  int getUserEmailFrequency(String userId);
+
+  /**
+   * Sets the stored email notification frequency for user with id userId
+   *
+   */
+  void setUserEmailFrequency(String userId, int emailFrequency);
+
+  /**
    * Stores a string with the user's settings.
    *
    * @param userId user ID
    * @param settings user's settings
    */
   void storeSettings(String userId, String settings);
+
 
   // Project management
 
@@ -125,6 +170,22 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
+
+  /**
+   * sets a projects gallery id when it is published
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param galleryId gallery ID
+   */
+  void setProjectGalleryId(final String userId, final long projectId,final long galleryId);
+
+   /**
+   * sets a projects attribution id when it is opened from a gallery project
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param attributionId attribution ID
+   */
+  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);
 
   /**
    * Returns a string with the project settings.
@@ -186,6 +247,24 @@ public interface StorageIo {
    * @return String specially formatted history
    */
   String getProjectHistory(String userId, long projectId);
+
+  // JIS XXX
+  /**
+   * Returns the date the project was created.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getProjectDateCreated(String userId, long projectId);
+ /**
+   * Returns the gallery id or -1 if not published.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+//  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -320,6 +399,22 @@ public interface StorageIo {
   List<String> getProjectOutputFiles(String userId, long projectId);
 
   /**
+   * Returns the gallery id for a project.
+   * @param projectId  project ID
+   *
+   * @return  list of output file ID
+   */
+  long getProjectGalleryId(String userId, final long projectId);
+
+   /**
+   * Returns the attribution id for a project-- the app it was copied/remixed from
+   * @param projectId  project ID
+   *
+   * @return galleryId
+   */
+  long getProjectAttributionId(final long projectId);
+
+  /**
    * Uploads a file.
    * @param projectId  project ID
    * @param fileId  file ID
@@ -421,13 +516,15 @@ public interface StorageIo {
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
    * @param zipName  the name of the zip file, if a specific one is desired
-
+   * @param fatalError set true to cause missing GCS file to throw exception
+   *
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
-                                          @Nullable String zipName) throws IOException;
+                                          @Nullable String zipName,
+                                          boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
@@ -476,4 +573,13 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
+  // Check to see if user needs projects upgraded (moved to GCS)
+  // if so, add task to task queue
+  void checkUpgrade(String userId);
+
+  // Called by the task queue to actually upgrade user's projects
+  void doUpgrade(String userId);
+
+  // Retrieve the current Splash Screen Version
+  SplashConfig getSplashConfig();
 }

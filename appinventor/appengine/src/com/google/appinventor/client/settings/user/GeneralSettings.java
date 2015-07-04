@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.settings.user;
 
@@ -26,10 +27,21 @@ public final class GeneralSettings extends Settings {
 
     addProperty(new EditableProperty(this, SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
         "0", EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_TEMPLATE_URLS,"",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.DISABLED_USER_URL, "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override
   protected void updateAfterDecoding() {
-    Ode.getInstance().openPreviousProject();
+    String disabledUrl = getPropertyValue(SettingsConstants.DISABLED_USER_URL);
+    if (disabledUrl != null && !disabledUrl.equals("")) {
+      // Account is disabled, show dialog box and stop further processing
+      // i.e., do not open previous project.
+      Ode.getInstance().disabledAccountDialog(disabledUrl);
+    } else {
+      Ode.getInstance().openPreviousProject();
+    }
   }
 }

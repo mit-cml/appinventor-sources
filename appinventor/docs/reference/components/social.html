@@ -1,9 +1,12 @@
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
     <meta content="Front Page" about="/front_page" property="dc:title">
     <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
     <title>Social Components - App Inventor for Android</title>
     <style>
       body{
@@ -93,14 +96,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -111,7 +116,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -412,18 +417,19 @@
           </div>
 
           <div id="menu-bar" class="nav clearfix">
-            <nav role="navigation">
-              <ul>
-                <li><a href="http://appinventor.mit.edu">Home</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/library">Support ▾</a></li></ul>
-            </nav>
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
           </div>
 
-          <div class="create-button">
-
-            <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </header>
@@ -479,11 +485,16 @@
 <h2 id="ContactPicker">ContactPicker</h2>
 
 <p>A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
-<li> <code>ContactName</code>: the contact's name </li>
+ <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>EmailAddress</code>: the contact's primary email address </li>
+ <li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>
+ <li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>
+ <li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>
  <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).
-</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+</p><p>The ContactPicker component might not work on all phones. For
+example, on Android systems before system 3.0, it cannot pick phone
+numbers, and the list of email addresses will contain only one email.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -553,6 +564,11 @@
 <p>An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>
  <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>
 <p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.</p>
+<h3>Methods</h3>
+<dl>
+  <dt><code>RequestFocus()</code></dt>
+  <dd>Sets the EmailPicker active.</dd>
+</dl>
 
 <h3>Properties</h3>
 <dl>
@@ -597,96 +613,56 @@
 <h3>Methods</h3>
 none
 
-                    <h2 id="PhoneCall">
-                      PhoneCall
-                    </h2>
-                    <img alt="" src="images/phonecall.png" />
-                    <p>
-                      Use this component to dial the phone and make a call.
-                    </p>
-                    <p>
-                      <code>
-                        PhoneCall
-                      </code>
-                      is a non-visible component that makes a phone call to the
-                      number specified in the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property, which can be set either
-                      in the Designer or Blocks Editor. You can use the
-                      <code>
-                        MakePhoneCall
-                      </code>
-                      method
-                      to make a phone call programatically from your app.
-                    </p>
-                    <p>
-                      This component is often used with the
-                      <code>
-                        ContactPicker
-                      </code>
-                      component, which
-                      lets the user select from the contacts stored on the phone and sets the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property to the contact's phone number.
-                    </p>
-                    <p>
-                      To directly specify the phone number, set the
-                      <code>
-                        PhoneNumber
-                      </code>
-                      property to
-                      a
-                      <code>
-                        Text
-                      </code>
-                      with the specified digits (for example, "6505551212"). The
-                      number can be formatted with hyphens, periods, and parentheses; they are ignored.
-                      You can't include spaces in the number.
-                    </p>
-                    <h3>
-                      Properties
-                    </h3>
-                    <dl>
-                      <dt>
-                        <code>
-                          PhoneNumber
-                        </code>
-                      </dt>
-                      <dd>
-                        Phone number to dial.
-                      </dd>
-                    </dl>
-                    <h3>
-                      Methods
-                    </h3>
-                    <dl>
-                      <dt>
-                        <code>
-                          MakePhoneCall()
-                        </code>
-                      </dt>
-                      <dd>
-                        Dials the number specified by the component's
-                        <code>
-                          PhoneNumber
-                        </code>
-                        property.
-                      </dd>
-                    </dl>
+<h2 id="PhoneCall">
+  PhoneCall
+</h2>
+<img alt="" src="images/phonecall.png" />
+  <p>
+    A non-visible component that makes a phone call to the number
+    specified in the <code>PhoneNumber</code> property, which can be
+    set either in the Designer or Blocks Editor. The component has
+    a <code>MakePhoneCall</code> method, enabling the program to
+    launch a phone call.</p><p>Often, this component is used with
+    the <code>ContactPicker</code> component, which lets the user
+    select a contact from the ones stored on the phone and sets
+    the <code>PhoneNumber</code> property to the contact's phone
+    number.</p><p>To directly specify the phone number (e.g.,
+    650-555-1212), set the <code>PhoneNumber</code> property to a Text
+    with the specified digits (e.g., "6505551212").  Dashes, dots, and
+    parentheses may be included (e.g., "(650)-555-1212") but will be
+    ignored; spaces may not be included.
+</p>
 
+<h3>Properties</h3>
+<dl>
+  <dt><code>PhoneNumber</code></dt>
+  <dd></dd>
+</dl>
 
+<h3>Events</h3>
+<dl>
+  <dt><code>IncomingCallAnswered(text phoneNumber)</code></dt>
+  <dd>Event indicating that an incoming phone call is
+  answered. phoneNumber is the incoming call phone number.</dd>
+  <dt><code>PhoneCallEnded(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phone call has ended. If status is 1, incoming call is missed or rejected; if status is 2, incoming call is answered before hanging up; if status is 3, outgoing call is hung up. phoneNumber is the ended call phone number.</dd>
+  <dt><code>PhoneCallStarted(number status, text phoneNumber)</code></dt>
+  <dd>Event indicating that a phonecall has started. If status is 1, incoming call is ringing; if status is 2, outgoing call is dialled. phoneNumber is the incoming/outgoing phone number.</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+  <dt><code>MakePhoneCall()</code></dt>
+  <dd>Makes a phone call using the number in the PhoneNumber property.</dd>
+</dl>
 <h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
-
 <p>A button that, when clicked on, displays a list of the contacts' phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>
 <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>PhoneNumber</code>: the contact's phone number </li>
  <li> <code>EmailAddress</code>: the contact's email address </li> <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
 </p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>
-<p>Picking is not supported on all phones.  If it fails, this component will show a notification.  This default error behavior can be overridden with the Screen.ErrorOccurred event handler.</p>
+<p>The PhoneNumberPicker component may not work on all Android
+devices. For example, on Android systems before system 3.0, the
+returned lists of phone numbers and email addresses will be empty.</p>
 
 <h3>Properties</h3>
 <dl>
@@ -883,7 +859,7 @@ none
 <li> Getting a list of users following the logged-in user      (<code>RequestFollowers</code>)</li>
  <li> Getting the most recent messages of users followed by the      logged-in user (<code>RequestFriendTimeline</code>)</li>
  <li> Getting the most recent mentions of the logged-in user      (<code>RequestMentions</code>)</li></ul></p>
- <p>You must obtain a Comsumer Key and Consumer Secret for Twitter authorization  specific to your app from http://twitter.com/oauth_clients/new</p>
+ <p>You must obtain a Consumer Key and Consumer Secret for Twitter authorization  specific to your app from http://twitter.com/oauth_clients/new</p>
 
 <h3>Properties</h3>
 <dl>
@@ -906,8 +882,6 @@ The value of this property will then be set to the list of mentions (and will ma
   <dt><code><em>SearchResults</em></code></dt>
   <dd>This property, which is initially empty, is set to a list of search results after the program: <ol><li>Calls the <code>SearchTwitter</code> method.</li> <li>Waits for the <code>SearchSuccessful</code> event.</li></ol>
 The value of the property will then be the same as the parameter to <code>SearchSuccessful</code>.  Note that it is not necessary to call the <code>Authorize</code> method before calling <code>SearchTwitter</code>.</dd>
-  <dt><code>TwitPic_API_Key</code></dt>
-  <dd>The API Key for image uploading, provided by TwitPic.</dd>
   <dt><code><em>Username</em></code></dt>
   <dd>The user name of the authorized user. Empty if there is no authorized user.</dd>
 </dl>
@@ -954,11 +928,9 @@ The value of the property will then be the same as the parameter to <code>Search
   <dd>Stops following a user.</dd>
   <dt><code>Tweet(text status)</code></dt>
   <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it exceeds 160 characters. <p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
-  <dt><code>TweetWithImage(text status, text ImagePath)</code></dt>
-  <dd>This sends a tweet as the logged-in user with the specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds160 characters. If an image is not found or invalid, only the text will be tweeted.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+  <dt><code>TweetWithImage(text status, text imagePath)</code></dt>
+  <dd>This sends a tweet as the logged-in user with the specified Text and a path to the image to be uploaded, which will be trimmed if it exceeds 160 characters. If an image is not found or invalid, the update will not be sent.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
 </dl>
-
-
 
                   </div>
                 </div>

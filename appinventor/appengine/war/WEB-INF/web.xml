@@ -48,12 +48,13 @@
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/ode2/*</url-pattern>
-<!--      <url-pattern>/docs/*</url-pattern> -->
+      <url-pattern>/companions/*</url-pattern>
+      <url-pattern>/reference/*</url-pattern>
       <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
       <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
-<!--      <url-pattern>/rendezvous/*</url-pattern> -->
+      <url-pattern>/rendezvous/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 
@@ -61,6 +62,7 @@
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/appstats/*</url-pattern>
+      <url-pattern>/convert/</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
@@ -68,6 +70,18 @@
   </security-constraint>
 
   <!-- Servlets -->
+
+  <!-- Blob Conversion Servlet -->
+
+  <servlet>
+    <display-name>Blob Conversion Servlet</display-name>
+    <servlet-name>BlobUpgradeServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.BlobUpgradeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BlobUpgradeServlet</servlet-name>
+    <url-pattern>/convert</url-pattern>
+  </servlet-mapping>
 
   <!-- Remote API -->
   <servlet>
@@ -151,6 +165,34 @@
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>projectService</servlet-name>
+  </filter-mapping>
+
+  <!-- gallery -->
+  <servlet>
+    <servlet-name>galleryService</servlet-name>
+    <servlet-class>com.google.appinventor.server.GalleryServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>galleryService</servlet-name>
+    <url-pattern>/ode/gallery</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>galleryService</servlet-name>
+  </filter-mapping>
+
+  <!-- gallery image upload servlet -->
+  <servlet>
+    <servlet-name>galleryServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.GalleryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>galleryServlet</servlet-name>
+    <url-pattern>/ode/gallery_servlet/*</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>galleryServlet</servlet-name>
   </filter-mapping>
 
   <!-- upload -->

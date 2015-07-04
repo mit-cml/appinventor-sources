@@ -3,7 +3,11 @@
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer" />
     <meta content="Front Page" about="/front_page" property="dc:title" />
     <meta name="Generator" content="Drupal 7 (http://drupal.org)" />
-    <title>Uploading Apps to Google Play</title>
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Uploading Your Apps to Google Play</title>
     <style>
       body{
       background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
@@ -92,14 +96,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -110,7 +116,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -398,6 +404,7 @@
 
 
     </style>
+
   </head>
 
 
@@ -411,18 +418,19 @@
           </div>
 
           <div id="menu-bar" class="nav clearfix">
-            <nav role="navigation">
-              <ul>
-                <li><a href="http://appinventor.mit.edu">Home</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/library">Support ▾</a></li></ul>
-            </nav>
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
           </div>
 
-          <div class="create-button">
-
-            <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </header>
@@ -434,149 +442,41 @@
           <div id="content-column"><div class="content-inner">
               <section id="main-content" role="main">
                 <div id="content">  <div class="region region-content">
-       <h1>
-        Uploading Apps to Google Play
-       </h1>
-       Applications built with App Inventor can be uploaded to Google Play!
-       <dl>
-        <dt>
-        <h2>Version Your App</h2>
-        </dt>
-        <dd>
-         <p>
-          Every app you publish must have a <code>VersionCode</code> and a
-          <code>VersionName</code>. You can set these in the designer under the
-          properties panel for the <code>Screen1</code> component.
-         </p>
-         <p>
-          <code>VersionCode</code> is an integer value that will not be visible to
-          Google Play Store users. It is used by other apps to check if your app
-          has been upgraded or downgraded. It defaults to 1 and should be increased by
-          one with every successive change whether it is a major change or a minor change.
-         </p>
-         <p>
-          <code>VersionName</code> is a String which can be anything you would like. It is
-          defaulted to 1.0. A common structure is a decimal number which is
-          increased by 1 for every major change and 0.1 for every minor change. For example,
-          an initial <code>VersionName</code> could be 1.0 which can be updated to 1.1 after
-          a small change and 2.0 after a larger change.
-         </p>
-	 <p>
-	   You will need to increase the VersionCode and change the
-	   VersionName of your application when you upload a new
-	   version to the Play Store.
-	 </p>
-        </dd>
-        <dt>
-         <h2>Download <code>.apk</code></h2>
-        </dt>
-        <dd>
-         <p>
-            Once you are done making your app, you can download your Android
-            <code>.apk</code>
-            file as follows:
-         </p>
-         <p>
-          1. Navigate to the home screen of the app you want to download in App Inventor<br />
-          2. Click the dropdown labled “Package for phone”<br />
-          3. Click “Download to This Computer”<br />
-         </p>
-         <p>
-         This will prompt you to save the application somewhere. Once you have the .apk downloaded, you are ready to begin the publishing process.
-         </p>
-        </dd>
-        <dt>
-         <h2>Publish Your App</h2>
-        </dt>
-        <dd>
-         <p>
-            You can now go
-            to <a href="https://play.google.com/apps/publish/Home" target="_blank">Google Play Publishing Home</a> and follow the steps to publish your app to Google Play.
-         </p>
-         <p>
-            For more details, you may want to start
-            with <a href="http://developer.android.com/guide/publishing/publishing.html"
-            target="_blank">Introduction to Publishing on Google Play</a>
-            and
-            <a href="https://support.google.com/googleplay/android-developer/bin/answer.py?hl=en&answer=113469&topic=2365624&ctx=topic"
-            target="_blank">Google Support on Uploading to Google Play</a>.
 
-         </p>
-        </dd>
-	<dt>
-	  <h2>A Word about Backups</h2>
-	</dt>
-	<dd>
-	  <p>
-	    Once you publish your application in the Google Play
-	    Store, other people will now be depending upon you to fix
-	    bugs and otherwise maintain your application. It is
-	    therefore very important that you backup your
-	    application's source code.. Go to "My Projects", check the
-	    box next to the name of your project and select
-	    "More Options->Download Source." This will download a zip
-	    file which contains your projects source code. Store it in
-	    a safe place!
-	  </p>
-	  <p>
-	    MIT and Google, which operates the App Engine service on
-	    which MIT App Inventor relies, make best efforts to ensure
-	    that MIT App Inventor does not lose projects. HOWEVER WE
-	    CAN OFFER NO GUARANTEE THAT DATA (LIKE YOUR PROJECTS) WILL
-	    NEVER BE LOST. IT IS IMPERATIVE THAT YOU MAKE YOUR OWN BACKUPS!
-	  </p>
-	  <h3>A Word about keystores</h3>
-	  <p>
-	    During the .apk building process your application
-	    is <code>signed</code> with a digital private key which is
-	    associated with your account. Whenever you build a new
-	    version this same key is used to sign the new
-	    version. When an android phone has an application
-	    installed on it, it remembers the key that was used to
-	    sign it. In order to install an updated version of an
-	    application, the new application must be signed by the
-	    same key. It is therefore important that you not lose this
-	    key!
-	  </p>
-	  <p>
-	    Your private digital key is stored in
-	    a <code>keystore</code> file. Normally the MIT App
-	    Inventor server will create this file when needed and
-	    store it for you so you do not need to worry about
-	    it. Although we do not anticipate losing your keystore
-	    file, we recommend that you back it up. From the designer
-	    under "My Projects", under the "More Options" menu there
-	    is a choice labeled "Download Keystore". Select this
-	    option. This will download your keystore file to your
-	    local computer. Save it in a safe place. It
-	    should <b>not</b> be publicly readable as your private
-	    digital key is a secret which should not be shared.
-	  </p>
-	  <p>
-	    If you move your project to another App Inventor server,
-	    you will want to upload your keystore to that server (you
-	    will see that under "More Options" there is a "Upload
-	    Keystore" option as well). You only need to do this if you
-	    are publishing .apk files to Google Play or if you intend
-	    to share your application with other people in general.
-	  </p>
-	  <p>
-	    IF YOUR keyfile IS LOST OR DELETED IT CANNOT BE RECOVERED. If you
-	    were to lose your project's source code, you could always
-	    re-enter it from scratch (this may be a lot of work, but
-	    is something you can do). NEITHER YOU NOR MIT CAN RECOVER A
-	    LOST keyfile. NO AMOUNT OF EFFORT WILL RECOVER IT, SO BE
-	    SURE TO BACK IT UP!!!
-	  </p>
-	</dd>
 
-       </dl>
-                    <!-- Content -->
+       <!-- Here's where we insert the link to the Google Doc that holds the page contents, so people
+            can comment and edit, together with an iframe that holds the ame doc.  Apparently the
+            iFrame itself is not editable, which is why we link to the Doc twice. -->
+
+       <!-- Here's where we insert the link to the Google Doc that holds the page contents, so people
+            can comment and edit, together with an iframe that holds
+            the web published version of the doc.   The we use the web
+            version because the Doc version is limited in the number
+            of people who can view it simultaneously with permission to
+            comment. -->
+
+       <!-- ************  BEGIN NON-TEMPLATE STUFF *************** -->
+
+       <a href="https://docs.google.com/document/d/1H8oLfSV5yZkAOrhQ5JZkVJFPFA03jX1rXbQ0MTQMG9g/edit#heading=h.n95t40gjwerc"
+
+	   target="_blank">
+
+           Click here for a version of this page on which you can comment.</a>
+
+       <!-- Insert the Web version here -->
+       <iframe width="100%" height="3000" frameborder="0" scrolling="yes" id="frame1"
+
+               src="https://docs.google.com/document/d/1H8oLfSV5yZkAOrhQ5JZkVJFPFA03jX1rXbQ0MTQMG9g/pub"/>
                   </div>
                 </div>
               </section>
           </div></div>
       </div></div>
+      <!-- End of inserted doc -->
+
+       <!-- ************  END NON-TEMPLATE STUFF *************** -->
+
+SOMEETHING HERE!!!
 
       <footer role="contentinfo">
         <div class="region region-footer">

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.widgets;
 
@@ -43,6 +44,27 @@ public final class ContextMenu {
    */
   public MenuItem addItem(String text, final Command command) {
     MenuItem menuItem = new MenuItem(text, new Command() {
+      @Override
+      public void execute() {
+        hide();
+        command.execute();
+      }
+    });
+    menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    menuBar.addItem(menuItem);
+    return menuItem;
+  }
+
+  /**
+   * Adds a menu item to the context menu.
+   *
+   * @param text  caption of menu item
+   * @param asHtml whether to treat text as html
+   * @param command   command to execute when menu item is chosen
+   * @return  menu item
+   */
+  public MenuItem addItem(String text, boolean asHtml, final Command command) {
+    MenuItem menuItem = new MenuItem(text, asHtml, new Command() {
       @Override
       public void execute() {
         hide();

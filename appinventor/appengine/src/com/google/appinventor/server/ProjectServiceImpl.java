@@ -1,11 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
@@ -22,9 +28,21 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.util.Base64Util;
 import com.google.common.collect.Lists;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -64,6 +82,105 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Creates a new project from a zip file that is already stored
+   *  on the server.
+   * @param projectName  name of new project
+   * @param pathToZip path the to template's zip file
+   *
+   * @return  a {@link UserProject} for new project
+   */
+  @Override
+  public UserProject newProjectFromTemplate(String projectName, String pathToZip) {
+
+    //Window.alert("newProjectFromTemplate " + host + pathToZip);
+    //   System.out.println("newProjectFromTemplate = " +  host + pathToZip);
+    UserProject userProject = null;
+    try {
+      FileInputStream fis = new FileInputStream(pathToZip);
+      FileImporter fileImporter = new FileImporterImpl();
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(), projectName, fis);
+    } catch (IOException e) {
+      LOG.log(Level.SEVERE, "I/O Error importing from template project", e);
+    } catch (FileImporterException e) {
+      LOG.log(Level.SEVERE, "FileImporterException Error importing from template project", e);
+    }
+
+    return userProject;
+  }
+
+  /**
+   * This service is passed a base64 encoded string representing the Zip file.
+   * It converts it to a byte array and imports the project using FileImporter.
+   *
+   * @see http://stackoverflow.com/questions/6409587/
+   *   generating-an-inline-image-with-java-gwt/6495356#6495356
+   */
+  @Override
+  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+
+    System.out.println(">>>>> ProjectService newProjectFromExternalTemplate name = " + projectName);
+    UserProject userProject = null;
+
+    // Convert base64 string to byte[]
+    // NOTE: GWT's Base64Utils uses a non-standard algorithm.
+    // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
+    byte[] binData = null;
+    binData = Base64Util.decode(zipData);
+
+    // Import the project
+    ByteArrayInputStream bais = null;
+    FileImporter fileImporter = new FileImporterImpl();
+    try {
+      bais = new ByteArrayInputStream(binData);
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+    } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+      LOG.log(Level.SEVERE, "File Not Found importing from template project (external)", e);
+    } catch (IOException e) {
+      LOG.log(Level.SEVERE, "I/O Error importing from template project (external)", e);
+    } catch (FileImporterException e) {
+      LOG.log(Level.SEVERE, "FileImporterException Error importing from template project (external)", e);
+    }
+    return userProject;
+  }
+
+
+  /**
+   * Reads the template data from a JSON File
+   * @param pathToTemplatesDir pathname of the templates directory which may contain
+   *  0 or more template instances, each of which consists of a JSON file describing
+   *  the template, plus a zip file and image files.
+   *
+   * @return A json-formatted String consisting of an array of template objects
+   */
+  @Override
+  public String retrieveTemplateData(String pathToTemplatesDir) {
+    String json = "[";
+    File templatesRepository = new File(pathToTemplatesDir);
+    File templateFolder[] = templatesRepository.listFiles();
+    for (File file: templateFolder) {
+      String templateName = file.getName();
+      if (file.isDirectory()) {  // Should be a template folder
+        File templateFiles[] = file.listFiles();
+        for (File f: templateFiles) {
+          if (f.isFile() && f.getName().equals(templateName + ".json")) {
+            try {
+              BufferedReader in = new BufferedReader(
+                new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
+              json += in.readLine() +  ", ";
+            } catch (IOException e) {
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
+                new IllegalArgumentException("Cannot Read Internal Project Template"));
+            }
+          }
+        }
+      }
+    }
+    return json + "]";
+  }
+
+  /**
    * Copies a project with a new name.
    * @param oldProjectId  old project ID
    * @param newName new project name
@@ -86,6 +203,16 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public void deleteProject(long projectId) {
     final String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
+  }
+
+ /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  public void setGalleryId(long projectId, long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
   }
 
   /**
@@ -115,7 +242,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     List<Long> projectIds = storageIo.getProjects(userId);
     List<UserProject> projectInfos = Lists.newArrayListWithExpectedSize(projectIds.size());
     for (Long projectId : projectIds) {
-      projectInfos.add(makeUserProject(userId, projectId));
+      UserProject up = makeUserProject(userId, projectId);
+      if (up != null) {
+        projectInfos.add(up);
+      } else {
+        LOG.log(Level.WARNING, "ProjectId " + projectId +
+          " is missing at the lower level.");
+      }
     }
     return projectInfos;
   }
@@ -432,6 +565,67 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public long addFile(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
+  }
+
+  /**
+   * This service is passed a URL to an aia file in GCS, of the form
+   *    /gallery/apps/<galleryid>/aia
+   * It converts it to a byte array and imports the project using FileImporter.
+   * It also sets the attributionId of the project to point to the galleryID
+   * it is remixing.
+   */
+  @Override
+  public UserProject newProjectFromGallery(String projectName, String galleryPath,
+      long galleryId) {
+    try {
+      GcsService fileService = GcsServiceFactory.createGcsService();
+      GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
+      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
+      InputStream gcsis = Channels.newInputStream(readChannel);
+      // ok, we don't want to send the gcs stream because it can time out as we
+      // process the zip. We need to copy to a byte buffer first, then send a bytestream
+
+      byte[] buffer = new byte[16384];
+      int bytesRead = 0;
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();
+
+      while ((bytesRead = gcsis.read(buffer)) != -1) {
+        bao.write(buffer, 0, bytesRead);
+      }
+
+      InputStream bais = new ByteArrayInputStream(bao.toByteArray());
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+
+      // close the gcs
+      readChannel.close();
+      // now use byte stream to process aia file
+      FileImporter fileImporter = new FileImporterImpl();
+      UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
+
+      // set the attribution id of the project
+      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),galleryId);
+      //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
+      userProject.setAttributionId(galleryId);
+
+      return userProject;
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
+          e);
+      } catch (IOException e) {
+        e.printStackTrace();
+
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath+":"+projectName,
+          e);
+      } catch (FileImporterException e) {
+        e.printStackTrace();
+
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
+          e);
+      }
   }
 
   @Override

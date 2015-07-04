@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
@@ -75,7 +76,7 @@ public class DownloadServletTest {
   public void testDownloadProjectSourceZipWithoutTitle() throws Exception {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234");
-    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null))
+    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null, false))
         .andReturn(dummyZip);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -91,7 +92,7 @@ public class DownloadServletTest {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234/My Project Title 123");
     expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false,
-                                               "MyProjectTitle123.aia"))
+        "MyProjectTitle123.aia", false))
         .andReturn(dummyZipWithTitle);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -107,7 +108,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/12345");
-    expect(exporterMock.exportProjectSourceZip(USER_ID, 12345L, true, false, null))
+    expect(exporterMock.exportProjectSourceZip(USER_ID, 12345L, true, false, null, false))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();

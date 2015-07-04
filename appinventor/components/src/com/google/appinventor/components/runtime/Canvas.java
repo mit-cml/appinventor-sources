@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -111,6 +112,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
+  private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
   private static final int FLING_INTERVAL = 1000;  // ms
 
   // Keep track of enclosed sprites.  This list should always be
@@ -666,7 +668,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
     PaintColor(DEFAULT_PAINT_COLOR);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
-    TextAlignment(Component.ALIGNMENT_NORMAL);
+    TextAlignment(DEFAULT_TEXTALIGNMENT);
     FontSize(Component.FONT_DEFAULT_SIZE);
 
     sprites = new LinkedList<Sprite>();
@@ -731,7 +733,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * Updates the sorted set of Sprites and the screen when a Sprite's Z
    * property is changed.
    *
-   * @param Sprite the Sprite whose Z property has changed
+   * @param sprite the Sprite whose Z property has changed
    */
   void changeSpriteLayer(Sprite sprite) {
     removeSprite(sprite);
@@ -1013,9 +1015,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *          {@link Component#ALIGNMENT_CENTER} or
    *          {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "Determines the alignment of the " +
+      "text drawn by DrawText() or DrawAngle() with respect to the " +
+      "point specified by that command.",
       category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      userVisible = true)
   public int TextAlignment() {
     return textAlignment;
   }
@@ -1031,8 +1035,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-                    defaultValue = Component.ALIGNMENT_CENTER + "")
-  @SimpleProperty(userVisible = false)
+                    defaultValue = DEFAULT_TEXTALIGNMENT + "")
+  @SimpleProperty(userVisible = true)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     switch (alignment) {
@@ -1053,17 +1057,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * When the user touches the canvas and then immediately lifts finger: provides
-   * the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedSprite
+   * the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedAnySprite
    * is true if the same touch also touched a sprite, and false otherwise.
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
-   * @param touchedSprite {@code true} if a sprite was touched, {@code false}
+   * @param touchedAnySprite {@code true} if a sprite was touched, {@code false}
    *        otherwise
    */
   @SimpleEvent
-  public void Touched(float x, float y, boolean touchedSprite) {
-    EventDispatcher.dispatchEvent(this, "Touched", x, y, touchedSprite);
+  public void Touched(float x, float y, boolean touchedAnySprite) {
+    EventDispatcher.dispatchEvent(this, "Touched", x, y, touchedAnySprite);
   }
 
   /**
@@ -1116,10 +1120,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     EventDispatcher.dispatchEvent(this, "Flung", x, y, speed, heading, xvel, yvel, flungSprite);
   }
 
-  /**
+/**
    * When the user does a drag from one point (prevX, prevY) to
    * another (x, y).  The pair (startX, startY) indicates where the
-   * user first touched the screen, and "draggedSprite" indicates whether a
+   * user first touched the screen, and "draggedAnySprite" indicates whether a
    * sprite is being dragged.
    *
    * @param startX the starting x-coordinate
@@ -1128,18 +1132,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param prevY the previous y-coordinate (possibly equal to startY)
    * @param currentX the current x-coordinate
    * @param currentY the current y-coordinate
-   * @param draggedSprite {@code true} if
+   * @param draggedAnySprite {@code true} if
    *        {@link Sprite#Dragged(float, float, float, float, float, float)}
    *        was called for one or more sprites for this segment, {@code false}
    *        otherwise
    */
   @SimpleEvent
   public void Dragged(float startX, float startY, float prevX, float prevY,
-                      float currentX, float currentY, boolean draggedSprite) {
+                      float currentX, float currentY, boolean draggedAnySprite) {
     EventDispatcher.dispatchEvent(this, "Dragged", startX, startY,
-                                  prevX, prevY, currentX, currentY, draggedSprite);
+                                  prevX, prevY, currentX, currentY, draggedAnySprite);
   }
-
 
   // Functions
 
@@ -1165,17 +1168,23 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     view.invalidate();
   }
 
-  /**
-   * Draws a circle (filled in) at the given coordinates on the canvas, with the
-   * given radius.
+ /**
+   * Draws a circle (filled in) with the given radius centered at the given coordinates on the canvas
    *
-   * @param x  x coordinate
-   * @param y  y coordinate
-   * @param r  radius
+   * @param centerX  x-coordinate of the center of the circle
+   * @param centerY  y-coordinate of the center of the circle
+   * @param radius  radius of the circle
+   * @param fill  true for filled circle; false for circle outline
    */
   @SimpleFunction
-  public void DrawCircle(int x, int y, float r) {
-    view.canvas.drawCircle(x, y, r, paint);
+  public void DrawCircle(int centerX, int centerY, float radius, boolean fill) {
+    // Log.i(LOG_TAG, String.format("fill = " + fill));
+    // Log.i(LOG_TAG, String.format("PaintSyle.FILL = " + Paint.Style.FILL));
+    //Log.i(LOG_TAG, String.format("PaintSyle.STROKE = " + Paint.Style.STROKE));
+    Paint p = new Paint(paint);
+    p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+    // Log.i(LOG_TAG, String.format("PaintSyle = " + p.getStyle()));
+    view.canvas.drawCircle(centerX, centerY, radius, p);
     view.invalidate();
   }
 

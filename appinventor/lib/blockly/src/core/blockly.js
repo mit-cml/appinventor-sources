@@ -93,9 +93,17 @@ Blockly.HSV_SATURATION = 0.45;
 Blockly.HSV_VALUE = 0.65;
 
 /**
- * Convert a hue (HSV model) or an RGB Array
- * into an RGB hex triplet.
- * @param {number|Array} hueOrRGBArray Hue on a colour wheel (0-360) or RGB array.
+ * Sprited icons and images.
+ */
+Blockly.SPRITE = {
+  width: 64,
+  height: 92,
+  url: 'media/sprites.png'
+};
+
+/**
+ * Convert a hue (HSV model) into an RGB hex triplet.
+ * @param {number} hue Hue on a colour wheel (0-360).
  * @return {string} RGB code, e.g. '#5ba65b'.
  */
 Blockly.makeColour = function(hueOrRGBArray) {
@@ -217,25 +225,21 @@ Blockly.localConnection_ = null;
 
 /**
  * Number of pixels the mouse must move before a drag starts.
- * @const
  */
 Blockly.DRAG_RADIUS = 5;
 
 /**
  * Maximum misalignment between connections for them to snap together.
- * @const
  */
 Blockly.SNAP_RADIUS = 20;
 
 /**
  * Delay in ms between trigger and bumping unconnected block out of alignment.
- * @const
  */
 Blockly.BUMP_DELAY = 250;
 
 /**
  * Number of characters to truncate a collapsed block to.
- * @const
  */
 Blockly.COLLAPSE_CHARS = 30;
 
@@ -251,6 +255,13 @@ Blockly.mainWorkspace = null;
  * @private
  */
 Blockly.clipboard_ = null;
+
+/**
+ * Wrapper function called when a touch mouseUp occurs during a drag operation.
+ * @type {Array.<!Array>}
+ * @private
+ */
+Blockly.onTouchUpWrapper_ = null;
 
 /**
  * Returns the dimensions of the current SVG image.
@@ -299,7 +310,7 @@ Blockly.latestClick = { x: 0, y: 0 };
 Blockly.onMouseDown_ = function(e) {
   Blockly.latestClick = { x: e.clientX, y: e.clientY }; // Might be needed?
   Blockly.svgResize();
-  Blockly.terminateDrag_(); // In case mouse-up event was lost.
+  Blockly.terminateDrag_();  // In case mouse-up event was lost.
   Blockly.hideChaff();
   //if drawer exists and supposed to close
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
@@ -342,6 +353,15 @@ Blockly.onMouseDown_ = function(e) {
         Blockly.mainWorkspace.getMetrics();
     Blockly.mainWorkspace.startScrollX = Blockly.mainWorkspace.scrollX;
     Blockly.mainWorkspace.startScrollY = Blockly.mainWorkspace.scrollY;
+
+    // If this is a touch event then bind to the mouseup so workspace drag mode
+    // is turned off and double move events are not performed on a block.
+    // See comment in inject.js Blockly.init_ as to why mouseup events are
+    // bound to the document instead of the SVG's surface.
+    if ('mouseup' in Blockly.bindEvent_.TOUCH_MAP) {
+      Blockly.onTouchUpWrapper_ =
+          Blockly.bindEvent_(document, 'mouseup', null, Blockly.onMouseUp_);
+    }
   }
 };
 
@@ -353,6 +373,12 @@ Blockly.onMouseDown_ = function(e) {
 Blockly.onMouseUp_ = function(e) {
   Blockly.setCursorHand_(false);
   Blockly.mainWorkspace.dragMode = false;
+
+  // Unbind the touch event if it exists.
+  if (Blockly.onTouchUpWrapper_) {
+    Blockly.unbindEvent_(Blockly.onTouchUpWrapper_);
+    Blockly.onTouchUpWrapper_ = null;
+  }
 };
 
 /**
@@ -378,6 +404,7 @@ Blockly.onMouseMove_ = function(e) {
     // Move the scrollbars and the page will scroll automatically.
     Blockly.mainWorkspace.scrollbar.set(-x - metrics.contentLeft,
                                         -y - metrics.contentTop);
+    e.stopPropagation();
   }
 };
 
@@ -399,22 +426,10 @@ Blockly.onKeyDown_ = function(e) {
     // Delete or backspace.
     try {
       if (Blockly.selected && Blockly.selected.isDeletable()) {
-        var descendantCount = Blockly.selected.getDescendants().length;
-        if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
-          descendantCount -= Blockly.selected.nextConnection.targetBlock().
-            getDescendants().length;
-        }
-        // Ask for confirmation before deleting 3 or more blocks
-        if (descendantCount >= 3) {
-          if (confirm("Are you sure you want to delete all " + descendantCount + " of these blocks?")) {
-            Blockly.hideChaff();
-            Blockly.selected.dispose(true, true);
-          }
-        }
-        else {
-          Blockly.hideChaff();
+        if (Blockly.selected.confirmDeletion()){
           Blockly.selected.dispose(true, true);
         }
+        Blockly.hideChaff()
       }
     } finally {
       // Stop the browser from going back to the previous page.
@@ -423,7 +438,8 @@ Blockly.onKeyDown_ = function(e) {
       e.preventDefault();
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
-    if (Blockly.selected && Blockly.selected.isDeletable() &&
+    if (Blockly.selected &&
+        Blockly.selected.isDeletable() && Blockly.selected.isMovable() &&
         Blockly.selected.workspace == Blockly.mainWorkspace) {
       Blockly.hideChaff();
       if (e.keyCode == 67) {
@@ -478,16 +494,22 @@ Blockly.showContextMenu_ = function(e) {
     return;
   }
   var options = [];
+  // Add a little animation to collapsing and expanding.
+  var COLLAPSE_DELAY = 10;
 
   if (Blockly.collapse) {
     var hasCollapsedBlocks = false;
     var hasExpandedBlocks = false;
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
     for (var i = 0; i < topBlocks.length; i++) {
-      if (topBlocks[i].isCollapsed()) {
-        hasCollapsedBlocks = true;
-      } else {
-        hasExpandedBlocks = true;
+      var block = topBlocks[i];
+      while (block) {
+        if (block.isCollapsed()) {
+          hasCollapsedBlocks = true;
+        } else {
+          hasExpandedBlocks = true;
+        }
+        block = block.getNextBlock();
       }
     }
 
@@ -495,8 +517,14 @@ Blockly.showContextMenu_ = function(e) {
     var collapseOption = {enabled: hasExpandedBlocks};
     collapseOption.text = Blockly.Msg.COLLAPSE_ALL;
     collapseOption.callback = function() {
+      var ms = 0;
       for (var i = 0; i < topBlocks.length; i++) {
-        topBlocks[i].setCollapsed(true);
+        var block = topBlocks[i];
+        while (block) {
+          setTimeout(block.setCollapsed.bind(block, true), ms);
+          block = block.getNextBlock();
+          ms += COLLAPSE_DELAY;
+        }
       }
       Blockly.resetWorkspaceArrangements();
     };
@@ -508,16 +536,22 @@ Blockly.showContextMenu_ = function(e) {
     expandOption.callback = function() {
       Blockly.Instrument.initializeStats("expandAllCollapsedBlocks");
       Blockly.Instrument.timer(
-      function () {
-      for (var i = 0; i < topBlocks.length; i++) {
-        topBlocks[i].setCollapsed(false);
-      }
-      Blockly.resetWorkspaceArrangements();
-      },
-      function (result, timeDiff) {
-        Blockly.Instrument.stats.totalTime = timeDiff;
-        Blockly.Instrument.displayStats("expandAllCollapsedBlocks");
-      }
+          function () {
+            var ms = 0;
+            for (var i = 0; i < topBlocks.length; i++) {
+              var block = topBlocks[i];
+              while (block) {
+                setTimeout(block.setCollapsed.bind(block, false), ms);
+                block = block.getNextBlock();
+                ms += COLLAPSE_DELAY;
+              }
+            }
+            Blockly.resetWorkspaceArrangements();
+          },
+          function (result, timeDiff) {
+            Blockly.Instrument.stats.totalTime = timeDiff;
+            Blockly.Instrument.displayStats("expandAllCollapsedBlocks");
+          }
       );
     };
     options.push(expandOption);
@@ -764,6 +798,11 @@ Blockly.preloadAudio_ = function() {
     sound.volume = .01;
     sound.play();
     sound.pause();
+    // iOS can only process one sound at a time.  Trying to load more than one
+    // corrupts the earlier ones.  Just load one and leave the others uncached.
+    if (goog.userAgent.IPAD || goog.userAgent.IPHONE) {
+      break;
+    }
   }
 };
 
@@ -951,7 +990,9 @@ Blockly.getMainWorkspace = function() {
 };
 
 // Export symbols that would otherwise be renamed by Closure compiler.
-window['Blockly'] = Blockly;
-Blockly['getMainWorkspace'] = Blockly.getMainWorkspace;
-Blockly['addChangeListener'] = Blockly.addChangeListener;
-Blockly['removeChangeListener'] = Blockly.removeChangeListener;
+if (!window['Blockly']) {
+  window['Blockly'] = {};
+}
+window['Blockly']['getMainWorkspace'] = Blockly.getMainWorkspace;
+window['Blockly']['addChangeListener'] = Blockly.addChangeListener;
+window['Blockly']['removeChangeListener'] = Blockly.removeChangeListener;

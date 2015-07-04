@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.rpc;
 
@@ -39,6 +40,21 @@ public class ServerLayout {
    * the ODE GWT module.
    */
   public static final String PROJECT_SERVICE = "projects";
+
+  /**
+   * Relative path of the
+   * {@link com.google.appinventor.shared.rpc.project.GalleryService} within
+   * the ODE GWT module.
+   */
+  public static final String GALLERY_SERVICE = "gallery";
+
+
+  /**
+   * Relative path of the {@link com.google.appinventor.server.GalleryServlet}
+   * within the ODE GWT module.
+   */
+  public static final String GALLERY_SERVLET = "gallery_servlet";
+
 
   /**
    * Relative path of the {@link com.google.appinventor.server.AndroidServlet}

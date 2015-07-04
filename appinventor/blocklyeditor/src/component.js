@@ -17,6 +17,10 @@ goog.provide('Blockly.ComponentTypes');
 goog.provide('Blockly.ComponentInstances');
 
 goog.require('Blockly.TypeBlock');
+goog.require('Blockly.TranslationProperties');
+goog.require('Blockly.TranslationEvents');
+goog.require('Blockly.TranslationMethods');
+goog.require('Blockly.TranslationParams');
 
 Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
@@ -217,6 +221,7 @@ Blockly.ComponentTypes.haveType = function(typeName) {
  *
  */
 Blockly.ComponentTypes.populateTypes = function() {
+  
   var componentInfoArray = JSON.parse(window.parent.BlocklyPanel_getComponentsJSONString());
   for(var i=0;i<componentInfoArray.length;i++) {
     var componentInfo = componentInfoArray[i];

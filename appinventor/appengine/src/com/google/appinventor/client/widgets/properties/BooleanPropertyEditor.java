@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.widgets.properties;
 
@@ -42,13 +43,13 @@ public class BooleanPropertyEditor extends PropertyEditor implements ValueChange
   // Updates the property value shown in the editor
   @Override
   protected void updateValue() {
-    checkbox.setChecked(property.getValue().equals(trueValue));
+    checkbox.setValue(property.getValue().equals(trueValue));
   }
 
   // ValueChangeHandler implementation
 
   @Override
   public void onValueChange(ValueChangeEvent<Boolean> event) {
-    property.setValue(checkbox.isChecked() ? trueValue : falseValue);
+    property.setValue(checkbox.getValue() ? trueValue : falseValue);
   }
 }

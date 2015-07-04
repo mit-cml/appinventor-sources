@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -47,11 +49,15 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private static Activity activity;
   private static final String LOG_TAG = "PhoneStatus";
   private final Form form;
+  private static PhoneStatus mainInstance = null;
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
     this.form = container.$form();
     activity = container.$context();
+    if (mainInstance == null) { // First one?
+      mainInstance = this;
+    }
   }
 
   @SimpleFunction(description = "Returns the IP address of the phone in the form of a String")
@@ -161,6 +167,29 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   public void shutdown() {
     form.finish();
     System.exit(0);             // We cannot be restarted, so we better kill the process
+  }
+
+  /**
+   * This event is fired when the "settings" menu item is selected (only available in the
+   * Companion App, defined in ReplForm.java).
+   */
+  @SimpleEvent
+  public void OnSettings() {
+    EventDispatcher.dispatchEvent(this, "OnSettings");
+  }
+
+  /**
+   * Static function called from ReplForm when settings menu item is chosen.
+   * Triggers the "OnSettings" event iff there is a PhoneStatus component (which
+   * there will be in the Companion App where this is used).
+   */
+  static void doSettings() {
+    Log.d(LOG_TAG, "doSettings called.");
+    if (mainInstance != null) {
+      mainInstance.OnSettings();
+    } else {
+      Log.d(LOG_TAG, "mainStance is null on doSettings");
+    }
   }
 
   public static String intToIp(int i) {

@@ -1,12 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 
@@ -25,10 +28,38 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private static final long serialVersionUID = -7316312435338169166L;
 
   /**
+   * Returns System Config, including user information record
+   *
+   */
+
+  @Override
+  public Config getSystemConfig(String sessionId) {
+    Config config = new Config();
+    User user = userInfoProvider.getUser();
+    user.setSessionId(sessionId);
+    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
+    Flag<String> rendezvousFlag = Flag.createFlag("use.rendezvousserver", "");
+    if (!rendezvousFlag.get().equals("")) {
+      config.setRendezvousServer(rendezvousFlag.get());
+    }
+    config.setUser(user);
+
+    // Fetch the current splash screen version
+    config.setSplashConfig(storageIo.getSplashConfig());
+
+    // Check to see if we need to upgrade this user's project to GCS
+    storageIo.checkUpgrade(userInfoProvider.getUserId());
+    return config;
+  }
+
+  /**
    * Returns user information.
+   *
+   * (obsoleted by getSystemConfig())
    *
    * @return  user information record
    */
+
   @Override
   public User getUserInformation(String sessionId) {
     // This is a little evil here. We are fetching the User object
@@ -40,6 +71,16 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     // Store it in the data store
     storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
     return user;
+  }
+
+  /**
+   * Returns user information based on userId.
+   *
+   * @return  user information record
+   */
+  @Override
+  public User getUserInformationByUserId(String userId) {
+    return storageIo.getUser(userId);
   }
 
   /**
@@ -59,6 +100,33 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeUserSettings(String settings) {
     storageIo.storeSettings(userInfoProvider.getUserId(), settings);
+  }
+
+  /**
+   * Stores the user's name.
+   * @param name  user's name
+   */
+  @Override
+  public void storeUserName(String name) {
+    storageIo.setUserName(userInfoProvider.getUserId(), name);
+  }
+
+  /**
+   * Stores the user's link.
+   * @param name  user's link
+   */
+  @Override
+  public void storeUserLink(String link) {
+    storageIo.setUserLink(userInfoProvider.getUserId(), link);
+  }
+
+  /**
+   * Stores the user's email notification frequency.
+   * @param emailFrequency  user's email frequency
+   */
+  @Override
+  public void storeUserEmailFrequency(int emailFrequency) {
+    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
   }
 
   /**

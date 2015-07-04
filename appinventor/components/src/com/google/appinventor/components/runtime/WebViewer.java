@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -19,6 +20,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
@@ -74,10 +76,15 @@ public final class WebViewer extends AndroidViewComponent {
   private String homeUrl;
 
   // whether or not to follow links when they are tapped
-  private boolean followLinks;
+  private boolean followLinks = true;
 
   // Whether or not to prompt for permission in the WebViewer
   private boolean prompt = true;
+
+  // ignore SSL Errors (mostly certificate errors. When set
+  // self signed certificates should work.
+
+  private boolean ignoreSslErrors = false;
 
   // allows passing strings to javascript
   WebViewInterface wvInterface;
@@ -91,7 +98,7 @@ public final class WebViewer extends AndroidViewComponent {
     super(container);
 
     webview = new WebView(container.$context());
-    webview.setWebViewClient(new WebViewerClient());
+    resetWebViewClient();       // Set up the web view client
     webview.getSettings().setJavaScriptEnabled(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
@@ -123,7 +130,6 @@ public final class WebViewer extends AndroidViewComponent {
     // set the initial default properties.  Height and Width
     // will be fill-parent, which will be the default for the web viewer.
 
-    followLinks = true;
     HomeUrl("");
     Width(LENGTH_FILL_PARENT);
     Height(LENGTH_FILL_PARENT);
@@ -262,8 +268,35 @@ public final class WebViewer extends AndroidViewComponent {
   @SimpleProperty()
   public void FollowLinks(boolean follow) {
     followLinks = follow;
+    resetWebViewClient();
   }
 
+  /**
+   * Determines whether SSL Errors are ignored. Set to true to use self signed certificates
+   *
+   * @return true or false
+   *
+   */
+  @SimpleProperty(
+      description = "Determine whether or not to ignore SSL errors. Set to true to ignore " +
+          "errors. Use this to accept self signed certificates from websites.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean IgnoreSslErrors() {
+    return ignoreSslErrors;
+  }
+
+  /**
+   * Determines whether or not to ignore SSL Errors
+   *
+   * @param ignoreErrors set to true to ignore SSL errors
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty()
+  public void IgnoreSslErrors(boolean ignoreSslErrors) {
+    this.ignoreSslErrors = ignoreSslErrors;
+    resetWebViewClient();
+  }
 
   /**
    * Loads the  page from the home URL.  This happens automatically when
@@ -385,6 +418,26 @@ public final class WebViewer extends AndroidViewComponent {
   public void ClearLocations() {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.clearWebViewGeoLoc();
+  }
+
+  private void resetWebViewClient() {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      webview.setWebViewClient(FroyoUtil.getWebViewClient(ignoreSslErrors, followLinks, container.$form(), this));
+    } else {
+      webview.setWebViewClient(new WebViewerClient());
+    }
+  }
+
+  /**
+   * Clear the webview cache, both ram and disk. This is useful
+   * when using the webviewer to poll a page that may not be sending
+   * appropriate cache control headers. This is particularly useful
+   * when using the webviwer to look at a Fusion Table.
+   */
+
+  @SimpleFunction(description = "Clear WebView caches.")
+  public void ClearCaches() {
+    webview.clearCache(true);
   }
 
   /**

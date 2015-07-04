@@ -1,7 +1,8 @@
 // -*- Mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
@@ -22,6 +23,13 @@ public class ElementsUtil {
     return items;
   }
 
+ /** Check a Yail list of items to verify that they are all strings and
+  *
+  * @param itemList
+  * @param componentName
+  * @return the original list
+  */
+
   public static YailList elements(YailList itemList, String componentName){
     Object[] objects = itemList.toStringArray();
     for (int i = 0; i < objects.length; i++) {
@@ -30,6 +38,7 @@ public class ElementsUtil {
             "Error");
       }
     }
+    // this is not changing itemlist.  it's just checking that the items are strings
     return itemList;
   }
 

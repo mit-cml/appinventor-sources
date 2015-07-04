@@ -1,23 +1,30 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.content.ComponentName;
 import android.util.Log;
 
 /**
@@ -31,20 +38,25 @@ import android.util.Log;
     nonVisible = true,
     iconName = "images/barcodeScanner.png")
 @SimpleObject
+@UsesPermissions(permissionNames = "android.permission.CAMERA")
+@UsesLibraries(libraries = "Barcode.jar,core.jar")
 public class BarcodeScanner extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
   private static final String SCAN_INTENT = "com.google.zxing.client.android.SCAN";
+  private static final String LOCAL_SCAN = "com.google.zxing.client.android.AppInvCaptureActivity";
   private static final String SCANNER_RESULT_NAME = "SCAN_RESULT";
   private String result = "";
+  private boolean useExternalScanner = true;
   private final ComponentContainer container;
+
 
   /* Used to identify the call to startActivityForResult. Will be passed back into the
   resultReturned() callback method. */
   private int requestCode;
 
   /**
-   * Creates a Phone Call component.
+   * Creates a Bar Code scanning component.
    *
    * @param container container, component will be placed in
    */
@@ -70,12 +82,17 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
       "is complete, the AfterScan event will be raised.")
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
+    if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
+      String packageName = container.$form().getPackageName();
+      intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
+    }
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);
     }
     try {
       container.$context().startActivityForResult(intent, requestCode);
     } catch (ActivityNotFoundException e) {
+      e.printStackTrace();
       container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
         ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
     }
@@ -100,6 +117,36 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   @SimpleEvent
   public void AfterScan(String result) {
     EventDispatcher.dispatchEvent(this, "AfterScan", result);
+  }
+
+  /**
+   * Gets whether or not you want to use an external scanning program to
+   * scan barcodes.
+   *
+   * @return 'true' or 'false' depending on whether or not you want to use
+   *         an external scanning program.
+   */
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+    description = "If true App Inventor will look for and use an external scanning" +
+    " program such as \"Bar Code Scanner.\"")
+  public boolean UseExternalScanner() {
+    return useExternalScanner;
+  }
+
+  /**
+   * Set whether or not you wish to use an External Scanning program such as
+   * Bar Code Scanner. If false a version of ZXing integrated into App Inventor
+   * Will be used.
+   *
+   * @param useExternalScanner  Set true to use an external scanning program,
+   *                            false to use internal copy of ZXing.
+   *
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @SimpleProperty()
+  public void UseExternalScanner(boolean useExternalScanner) {
+    this.useExternalScanner = useExternalScanner;
   }
 
 }

@@ -7,7 +7,11 @@
     '../lib/blockly/src/core/blockly.js',
 
     //msg/js/*.js has to come next (for constants)
-    './src/msg/_messages.js',
+    './src/msg/es_es/_messages.js',
+    './src/msg/zh_tw/_messages.js',
+    './src/msg/zh_cn/_messages.js',
+    './src/msg/it_it/_messages.js',
+    './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code
     "./src/instrument.js",
@@ -37,7 +41,7 @@
     '../lib/blockly/src/core/icon.js',
     '../lib/blockly/src/core/inject.js',
     '../lib/blockly/src/core/input.js',
-//    '../lib/blockly/src/core/msg.js',
+    '../lib/blockly/src/core/msg.js',
     '../lib/blockly/src/core/mutator.js',
     '../lib/blockly/src/core/names.js',
     '../lib/blockly/src/core/procedures.js',
@@ -58,6 +62,10 @@
     //finally, include any of our own .js file in any orde
     "./src/blocklyeditor.js",
     "./src/blockColors.js",
+    "./src/translation_properties.js",
+    "./src/translation_events.js",
+    "./src/translation_methods.js",
+    "./src/translation_params.js",
     "./src/component.js",
     "./src/drawer.js",
     "./src/savefile.js",
@@ -74,6 +82,9 @@
     "./src/field_parameter_flydown.js",
     "./src/field_global_flydown.js",
     "./src/field_procedure_flydown.js",
+    "./src/nameSet.js",
+    "./src/substitution.js",
+    "./src/language_switch.js",
 
     //blocks files
     './src/blocks/control.js',
@@ -98,9 +109,6 @@
     "./src/generators/yail/colors.js",
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
-
-    //versioning files
-    "./src/versioning/017_blocksOverhaul.js",
 
     // Repl
     "./src/replmgr.js"

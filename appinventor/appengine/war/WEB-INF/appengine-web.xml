@@ -5,13 +5,16 @@
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
-    <include path="/blockly-all.js">
+    <include path="/blockly-*.js" expiration="365d">
       <http-header name="Content-Type" value="application/javascript; charset=UTF-8" />
     </include>
-    <include path="**" />
-
-    <!-- The following line requires App Engine 1.3.2 SDK -->
+    <include path="/fonts/*" expiration="365d">
+      <http-header name="Content-Type" value="font/ttf" />
+    </include>
+    <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
+    <include path="/blocklyframe.html" expiration="0s" />
+    <include path="/index.html" expiration="0s" />
 
     <include path="/ode/**.cache.*" expiration="365d" />
     <exclude path="/ode/**.gwt.rpc" />
@@ -32,6 +35,17 @@
          the log4j configuration is looking for a URL -->
     <property name="log4j.configuration" value="file:WEB-INF/log4j.properties"/>
 
+    <!-- Set this to the IP Address or Host Name of the Rendezvous server.
+         If left as the empty string, the default in YaVersion is used, which
+         should be rendezvous.appinventor.mit.edu. Note: You can specify both
+         a name and a port using a colon to separate them. For example you can
+         use example.com:8888 to specify port 8888. Note: The rendezvous server
+         is assumed to be a path "/rendezvous/" on the server. So specifying
+         "example.com:8888" would mean the Rendezvous Server would be querired
+         on http://example.com:8888/rendezvous/. -->
+
+    <property name="use.rendezvousserver" value=""/>
+
     <!-- set to true if users should not be allowed to access the App
          Inventor server unless they are listed in the appengine/war/whitelist file -->
     <property name="use.whitelist" value="false"/>
@@ -39,7 +53,16 @@
     <!-- Name of storage bucket in Google Cloud Store -->
     <property name="gcs.bucket" value="" />
     <!-- Whether or not to use GCS for storage -->
-    <property name="use.gcs" value="false" />
+    <property name="use.gcs" value="true" />
+
+    <!-- Name of gallery bucket in Google Cloud Store -->
+    <property name="gallery.bucket" value="" />
+    <!-- Whether or not to use the gallery -->
+    <property name="use.gallery" value="false" />
+
+    <!-- Gallery Admin Email -->
+    <property name="gallery.admin.email" value="" />
+
 
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
@@ -48,14 +71,19 @@
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
 
+    <!-- host[:port] to tell build server the app host url to callback
+         when deploy AppInventor on other GAE implementation such as
+         AppScale.Keep it blank when deploy on GAE -->
+    <property name="appengine.host" value="" />
+
     <!-- Interval is seconds between checking for a message of the day.
          Set set to 0 to disable checking for a MOTD.  If you do enable
          MOTD checking, make the interval long, because this check is
          resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
-    
+
     <!-- Set this to false if we should not send the Git build version with build requests.
-         This is useful when testing new servers where we don't want to require the 
+         This is useful when testing new servers where we don't want to require the
          buildserver to match -->
     <property name="build.send.git.version" value="true" />
 

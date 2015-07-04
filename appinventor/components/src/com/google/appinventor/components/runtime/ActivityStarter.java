@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -328,6 +329,12 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "AfterActivity", result);
   }
 
+  @SimpleEvent(description =
+      "Event raised if this ActivityStarter returns because the activity was canceled.")
+  public void ActivityCanceled() {
+    EventDispatcher.dispatchEvent(this, "ActivityCanceled");
+  }
+
   /**
    * Returns the MIME type from the activity.
    */
@@ -360,11 +367,11 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
 
   /**
-   * Returns the name of the activity that corresponds to this ActivityStarer,
+   * Returns the name of the activity that corresponds to this ActivityStarter,
    * or an empty string if no corresponding activity can be found.
    */
   @SimpleFunction(description = "Returns the name of the activity that corresponds to this " +
-      "ActivityStarer, or an empty string if no corresponding activity can be found.")
+      "ActivityStarter, or an empty string if no corresponding activity can be found.")
   public String ResolveActivity() {
     Intent intent = buildActivityIntent();
     PackageManager pm = container.$context().getPackageManager();
@@ -441,6 +448,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
         }
         // call user's AfterActivity event handler
         AfterActivity(result);
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        ActivityCanceled();
       }
     }
   }

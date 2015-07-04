@@ -47,7 +47,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_ComponentList">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -63,7 +63,7 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json"/>
+               includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
@@ -75,8 +75,11 @@
     <copy toFile="${classes.files.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
+    <copy toFile="${classes.files.dir}/json.jar" file="${lib.dir}/json/json.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/4.2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
@@ -120,69 +123,41 @@
     </copy>
   </target>
 
+
   <!-- =====================================================================
-       GenStarterAppSrcZip
+       Checks to see if a debug.keystore file exists in the invoker's
+       home directory (in the .appinventor subdirectory)
        ===================================================================== -->
-  <target name="GenStarterAppSrcZip"
+  <target name="CheckKeystore"
           depends="init">
-    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
-         AppInventorPhoneApp.apk (i.e. the stem cell app) you should put that file in the
-         ${appinventor.dir}/aiphoneapp directory and add 'android.keystore' to the includes
-         list below.
-      -->
-    <zip destfile="${local.build.dir}/aiphoneapp.zip" basedir="${appinventor.dir}/aiphoneapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*" />
+    <available file="${user.home}/.appinventor/debug.keystore"
+               property="keystore.exists" />
   </target>
 
   <!-- =====================================================================
-       CheckStarterApp: Sets the StarterApp.uptodate property to true if
-                        the starter app needs to be rebuilt. This can happen
-                        if the starter app source files have changed, or if
-                        any of the build server jars have changed.
+       Creates a personal DEBUG keystore in the invoker's .appinventor
+       subdirectory.
        ===================================================================== -->
-  <target name="CheckStarterApp"
-          depends="GenStarterAppSrcZip,BuildServer">
-    <uptodate property="StarterApp.uptodate" targetfile="${public.build.dir}/AppInventorPhoneApp.apk">
-      <srcfiles file="${local.build.dir}/aiphoneapp.zip"/>
-      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
-    </uptodate>
-  </target>
 
-  <!-- =====================================================================
-       StarterApp: builds ../build/buildserver/AppInventorPhoneApp.apk
-       ===================================================================== -->
-  <target name="StarterApp"
-          depends="CheckStarterApp"
-          unless="StarterApp.uptodate">
-    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
-      <classpath>
-        <fileset dir="${run.lib.dir}" includes="*.jar" />
-      </classpath>
-      <sysproperty key="file.encoding" value="UTF-8" />
-      <arg value="--inputZipFile" />
-      <arg value="${local.build.dir}/aiphoneapp.zip" />
-      <arg value="--userName" />
-      <arg value="App Inventor" />
-      <arg value="--isForStemCellApp" />
-      <arg value="--outputDir" />
-      <arg value="${public.build.dir}" />
-      <arg value="--dexCacheDir" />
-      <arg value="${public.build.dir}/dexCache" />
-    </java>
+  <target name="MakeKeyStore"
+          depends="init,CheckKeystore" unless="${keystore.exists}">
+    <mkdir dir="${user.home}/.appinventor" />
+    <genkey alias="androidkey" dname="CN=Android Debug, O=Android, C=US" storepass="android"
+            keystore="${user.home}/.appinventor/debug.keystore" keyalg="rsa"
+            validity="10000" />
   </target>
 
   <!-- =====================================================================
        GenPlayAppSrcZip Version for the Google Play Store works over WiFi
        ===================================================================== -->
   <target name="GenPlayAppSrcZip"
-          depends="init">
-    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
-         AppInventorDebugApp.apk (i.e. the stem cell app) you should put that file in the
-         ${appinventor.dir}/aiplayapp directory and add 'android.keystore' to the includes
-         list below.
-      -->
+          depends="init,MakeKeyStore">
+    <copy tofile="${appinventor.dir}/aiplayapp/android.keystore" file="${user.home}/.appinventor/debug.keystore" />
     <zip destfile="${local.build.dir}/aiplayapp.zip" basedir="${appinventor.dir}/aiplayapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*,assets/*" />
+         includes="src/**/*,youngandroidproject/*,assets/*,android.keystore" />
+    <!-- We delete the keyfile below so as to not leave it laying around the source
+         tree -->
+    <delete file="${appinventor.dir}/aiplayapp/android.keystore" failonerror="true" />
   </target>
 
   <!-- =====================================================================
@@ -214,7 +189,7 @@
       <arg value="${local.build.dir}/aiplayapp.zip" />
       <arg value="--userName" />
       <arg value="App Inventor" />
-      <arg value="--isForWirelessRepl" />
+      <arg value="--isForCompanion" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
       <arg value="--dexCacheDir" />
@@ -248,6 +223,8 @@
       <sysproperty key="file.encoding" value="UTF-8" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--shutdownToken" />
+      <arg value="token" />
     </java>
   </target>
 

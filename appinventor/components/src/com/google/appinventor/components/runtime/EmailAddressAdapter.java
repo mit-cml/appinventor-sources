@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -16,10 +17,10 @@ import android.text.util.Rfc822Token;
 import android.view.View;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-
 import android.util.Log;
 
-
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * EmailAddressAdapter provides email address completion from contacts,
@@ -32,48 +33,74 @@ import android.util.Log;
  * @author hal@mit.edu (Hal Abelson)
  */
 
-// TODO(halabelson): Get rid of the use of android.provder.Contacts (deprecated) and
-// replace by android.provider.contactsContract and associated methods
-
-
 public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private static final boolean DEBUG = false;
   private static final String TAG = "EmailAddressAdapter";
 
-  public static final int NAME_INDEX = 1;
-  public static final int DATA_INDEX = 2;
+  public static final int PRE_HONEYCOMB_NAME_INDEX = 1;
+  public static final int PRE_HONEYCOMB_DATA_INDEX = 2;
 
-  private static final String SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
+  private static String SORT_ORDER;
+
   private ContentResolver contentResolver;
 
   private Context context;
 
-  private static final String[] PROJECTION = {
-    ContactMethods._ID,     // 0
-    ContactMethods.NAME,    // 1
-    ContactMethods.DATA     // 2
+  private static final String[] PRE_HONEYCOMB_PROJECTION = {
+    ContactMethods._ID,    // 0
+    ContactMethods.NAME,   // 1
+    ContactMethods.DATA,   // 2
   };
+
+  private static final String[] POST_HONEYCOMB_PROJECTION = HoneycombUtil.getEmailAdapterProjection();
 
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
     this.context = context;
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      SORT_ORDER = HoneycombUtil.getTimesContacted() + " DESC, " + HoneycombUtil.getDisplayName();
+    } else {
+      SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
+    }
   }
 
   @Override
   public final String convertToString(Cursor cursor) {
-    String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(DATA_INDEX);
+
+    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombUtil.getDisplayName());
+    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombUtil.getEmailAddress());
+    String name = "";
+    String address = "";
+
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
+      address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
+    } else {
+      name = cursor.getString(PRE_HONEYCOMB_NAME_INDEX);
+      address = cursor.getString(PRE_HONEYCOMB_DATA_INDEX);
+    }
 
     return new Rfc822Token(name, address, null).toString();
   }
 
   private final String makeDisplayString(Cursor cursor) {
+
+    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombUtil.getDisplayName());
+    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombUtil.getEmailAddress());
     StringBuilder s = new StringBuilder();
     boolean flag = false;
-    String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(DATA_INDEX);
+    String name = "";
+    String address = "";
+
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
+      address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
+    } else {
+      name = cursor.getString(PRE_HONEYCOMB_NAME_INDEX);
+      address = cursor.getString(PRE_HONEYCOMB_DATA_INDEX);
+    }
 
     if (!TextUtils.isEmpty(name)) {
       s.append(name);
@@ -100,22 +127,31 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   @Override
   public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-    String where = null;
 
-    android.net.Uri db = ContactMethods.CONTENT_EMAIL_URI;
+    String where = null;
+    android.net.Uri db = null;
+    StringBuilder s = new StringBuilder();
 
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
 
-      StringBuilder s = new StringBuilder();
-      s.append("(name LIKE ");
-      s.append(filter);
-      s.append(") OR (display_name LIKE ");
-      s.append(filter);
-      s.append(")");
-
-      where = s.toString();
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+        db = HoneycombUtil.getDataContentUri();
+        s.append("(" + HoneycombUtil.getDataMimeType() + "='" + HoneycombUtil.getEmailType() + "')");
+        s.append(" AND ");
+        s.append("(display_name LIKE ");
+        s.append(filter);
+        s.append(")");
+      } else {
+        db = ContactMethods.CONTENT_EMAIL_URI;
+        s.append("(name LIKE ");
+        s.append(filter);
+        s.append(") OR (display_name LIKE ");
+        s.append(filter);
+        s.append(")");
+      }
     }
+    where = s.toString();
 
     // Note(hal): This lists the column names in the table being accessed, since they aren't
     // obvious to me from the documentation
@@ -127,8 +163,13 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
       }
     }
 
-    return contentResolver.query(db, PROJECTION,
-        where, null, SORT_ORDER);
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      return contentResolver.query(db, POST_HONEYCOMB_PROJECTION,
+          where, null, SORT_ORDER);
+    } else {
+      return contentResolver.query(db, PRE_HONEYCOMB_PROJECTION,
+          where, null, SORT_ORDER);
+    }
   }
 }
 

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Copyright 2011-2014 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -18,14 +19,16 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -50,17 +53,17 @@ import java.io.IOException;
  */
 @DesignerComponent(version = YaVersion.PLAYER_COMPONENT_VERSION,
     description = "Multimedia component that plays audio and " +
-    "controls phone vibration.  The name of a multimedia field is " +
-    "specified in the <code>Source</code> property, which can be set in " +
-    "the Designer or in the Blocks Editor.  The length of time for a " +
-    "vibration is specified in the Blocks Editor in milliseconds " +
-    "(thousandths of a second).\n" +
-    "<p>For supported audio formats, see " +
-    "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
-    " target=\"_blank\">Android Supported Media Formats</a>.</p>\n" +
-    "<p>This component is best for long sound files, such as songs, " +
-    "while the <code>Sound</code> component is more efficient for short " +
-    "files, such as sound effects.</p>",
+        "controls phone vibration.  The name of a multimedia field is " +
+        "specified in the <code>Source</code> property, which can be set in " +
+        "the Designer or in the Blocks Editor.  The length of time for a " +
+        "vibration is specified in the Blocks Editor in milliseconds " +
+        "(thousandths of a second).\n" +
+        "<p>For supported audio formats, see " +
+        "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
+        " target=\"_blank\">Android Supported Media Formats</a>.</p>\n" +
+        "<p>This component is best for long sound files, such as songs, " +
+        "while the <code>Sound</code> component is more efficient for short " +
+        "files, such as sound effects.</p>",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/player.png")
@@ -72,23 +75,45 @@ public final class Player extends AndroidNonvisibleComponent
   private MediaPlayer player;
   private final Vibrator vibe;
 
-  private int playerState;
+  public State playerState;
+  public enum State { INITIAL, PREPARED, PLAYING, PAUSED_BY_USER, PAUSED_BY_EVENT; }
   private String sourcePath;
 
   // determines if playing should loop
   private boolean loop;
 
+  // choices on player policy: Foreground, Always
+  private boolean playOnlyInForeground;
+  // status of audio focus
+  private boolean focusOn;
+  private AudioManager am;
+  private final Activity activity;
+  // Flag if SDK level >= 8
+  private static final boolean audioFocusSupported;
+  private Object afChangeListener;
+
+  static{
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
+      audioFocusSupported = true;
+    } else {
+      audioFocusSupported = false;
+    }
+  }
+
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
    * adequate, given this API:
-   * 0: player initial state
-   * 1: player prepared but not started
-   * 2: player is playing
-   * 3: player was playing and is now paused
+   * 0 (INITIAL) : player initial state
+   * 1 (PREPARED) : player prepared but not started
+   * 2 (PLAYING) : player is playing
+   * 3 (PAUSED_BY_USER) : player was playing and is now paused by a user action
+   * 4 (PAUSED_BY_EVENT) : player was playing and is now paused by lifecycle events or audio focus interrupts
    * The allowable transitions are:
-   * Start: must be called in state 1, 2, or 3, results in state 2
-   * Pause: must be called in state 2, results in state 3
-   * Stop: must be called in state 1, 2 or 3, results in state 1
+   * Start: must be called in state 1, 2, 3 or 4, results in state 2
+   * Pause (User method): must be called in state 2, results in state 3
+   * pause (Lifecycle method): must be called in state 2, results in state 4; will go back to
+   *                           state 2 automatically
+   * Stop: must be called in state 1, 2, 3 or 4, results in state 1
    * We can simplify this to remove state 0 and use a simple boolean after we're
    * more confident that there are no start-up problems.
    */
@@ -100,6 +125,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   public Player(ComponentContainer container) {
     super(container.$form());
+    activity = container.$context();
     sourcePath = "";
     vibe = (Vibrator) form.getSystemService(Context.VIBRATOR_SERVICE);
     form.registerForOnDestroy(this);
@@ -109,6 +135,10 @@ public final class Player extends AndroidNonvisibleComponent
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
+    playOnlyInForeground = false;
+    focusOn = false;
+    am = (audioFocusSupported) ? FroyoUtil.setAudioManager(activity) : null;
+    afChangeListener = (audioFocusSupported) ? FroyoUtil.setAudioFocusChangeListener(this) : null;
   }
 
   /**
@@ -135,9 +165,9 @@ public final class Player extends AndroidNonvisibleComponent
     sourcePath = (path == null) ? "" : path;
 
     // Clear the previous MediaPlayer.
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       player.stop();
-      playerState = 0;
+      playerState = State.INITIAL;
     }
     if (player != null) {
       player.release();
@@ -160,11 +190,24 @@ public final class Player extends AndroidNonvisibleComponent
       }
 
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
+      if (audioFocusSupported) {
+        requestPermanentFocus();
+      }
       // The Simple API is set up so that the user never has to call prepare.
       prepare();
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
     }
+  }
+
+  /**
+   * This method relies on FroyoUtil as Focus is only available on API Level 8
+   */
+  private void requestPermanentFocus() {
+    // Request permanent focus on music stream
+    focusOn = (FroyoUtil.focusRequestGranted(am, afChangeListener)) ? true : false;
+    if (!focusOn)
+      form.dispatchErrorOccurredEvent(this, "Source",
+          ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
   }
 
   /**
@@ -174,7 +217,7 @@ public final class Player extends AndroidNonvisibleComponent
       description = "Reports whether the media is playing",
       category = PropertyCategory.BEHAVIOR)
   public boolean IsPlaying() {
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING) {
       return player.isPlaying();
     }
     return false;
@@ -184,9 +227,8 @@ public final class Player extends AndroidNonvisibleComponent
    * Reports whether the playing should loop.
    */
   @SimpleProperty(
-      description =
-      "If true, the player will loop when it plays. Setting Loop while the player " +
-      "is playing will affect the current playing.",
+      description = "If true, the player will loop when it plays. Setting Loop while the player " +
+          "is playing will affect the current playing.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Loop() {
     return loop;
@@ -203,13 +245,13 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty
   public void Loop(boolean shouldLoop) {
     // set the desired looping right now if the player is prepared.
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
-       player.setLooping(shouldLoop);
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
+      player.setLooping(shouldLoop);
     }
     // even if the player is not prepared, it will be set according to
     // Loop the next time it is started
     loop = shouldLoop;
-    }
+  }
 
   /**
    * Sets the volume property to a number between 0 and 100.
@@ -222,7 +264,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100")
   public void Volume(int vol) {
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {
         throw new IllegalArgumentError("Volume must be set to a number between 0 and 100");
       }
@@ -231,16 +273,46 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
+   * Gets the policy whether playing should only work in foreground.
+   *
+   * @return playOnlyInForeground
+   */
+  @SimpleProperty(
+      description = "If true, the player will pause playing when leaving the current screen; " +
+          "if false (default option), the player continues playing"+
+          " whenever the current screen is displaying or not.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean PlayOnlyInForeground() {
+    return playOnlyInForeground;
+  }
+
+  /**
+   * Sets the property PlayOnlyInForeground to true or false.
+   *
+   * @param shouldForeground determines whether plays only in foreground or always.
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty
+  public void PlayOnlyInForeground(boolean shouldForeground) {
+    playOnlyInForeground = shouldForeground;
+  }
+
+  /**
    * Plays the media.  If it was previously paused, the playing is resumed.
    * If it was previously stopped, it starts from the beginning.
    */
   @SimpleFunction
   public void Start() {
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (audioFocusSupported && !focusOn) {
+      requestPermanentFocus();
+    }
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT ) {
       player.setLooping(loop);
       player.start();
-      playerState = 2;
-      // Player should now be in state 2
+      playerState = State.PLAYING;
+      // Player should now be in state 2(PLAYING)
     }
   }
 
@@ -251,12 +323,25 @@ public final class Player extends AndroidNonvisibleComponent
   public void Pause() {
     if (player == null) return; //Do nothing if the player is not
     boolean wasPlaying = player.isPlaying();
-    if (playerState == 2) {
+    if (playerState == State.PLAYING) {
       player.pause();
       if (wasPlaying) {
-        playerState = 3;
-        // Player should now be in state 3.
+        playerState = State.PAUSED_BY_USER;
+        // Player should now be in state 3(PAUSED_BY_USER).
       }
+    }
+  }
+
+  /**
+   * Pauses when leaving the screen or losing focus. Public so that in can be called from
+   * FroyoUtil
+   */
+  public void pause() {
+    if (player == null) return; //Do nothing if the player is not playing
+    if (playerState == State.PLAYING) {
+      player.pause();
+      playerState = State.PAUSED_BY_EVENT;
+      // Player should now be in state 4(PAUSED_BY_EVENT).
     }
   }
 
@@ -265,12 +350,24 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (audioFocusSupported && focusOn) {
+      abandonFocus();
+    }
+    if (playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT) {
       player.stop();
       prepare();
       player.seekTo(0);
-      // Player should now be in state 1. (If prepare failed, we are in state 0.)
+      // Player should now be in state 1(PREPARED). (If prepare failed, we are in state 0 (INITIAL).)
     }
+  }
+
+  /**
+   * This method relies on FroyoUtil as Focus is only available on API Level 8
+   */
+  private void abandonFocus() {
+    // Abandon focus
+    FroyoUtil.abandonFocus(am, afChangeListener);
+    focusOn = false;
   }
 
   //  TODO: Reconsider whether vibrate should be here or in a separate component.
@@ -293,11 +390,11 @@ public final class Player extends AndroidNonvisibleComponent
     // initialization
     try {
       player.prepare();
-      playerState = 1;
+      playerState = State.PREPARED;
     } catch (IOException ioe) {
       player.release();
       player = null;
-      playerState = 0;
+      playerState = State.INITIAL;
       form.dispatchErrorOccurredEvent(this, "Source",
           ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA, sourcePath);
     }
@@ -314,13 +411,27 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void Completed() {
+    //Once you've finished playback be sure to call abandonAudioFocus() according to Android developer reference.
+    if (audioFocusSupported && focusOn) {
+      abandonFocus();
+    }
+
     EventDispatcher.dispatchEvent(this, "Completed");
+  }
+
+  /**
+   * Indicates that the other player has requested the focus of media
+   */
+  @SimpleEvent(description = "This event is signaled when another player has started" +
+      " (and the current player is playing or paused, but not stopped).")
+  public void OtherPlayerStarted() {
+    EventDispatcher.dispatchEvent(this, "OtherPlayerStarted");
   }
 
   // OnResumeListener implementation
   @Override
   public void onResume() {
-    if (playerState == 3) {
+    if (playOnlyInForeground && playerState == State.PAUSED_BY_EVENT) {
       Start();
     }
   }
@@ -330,16 +441,16 @@ public final class Player extends AndroidNonvisibleComponent
   @Override
   public void onPause() {
     if (player == null) return; //Do nothing if the player is not ready
-    if (player.isPlaying()) {
-      Pause();
+    if (playOnlyInForeground && player.isPlaying()) {
+      pause();
     }
   }
 
   @Override
   public void onStop() {
     if (player == null) return; //Do nothing if the player is not
-    if (player.isPlaying()) {
-      Pause();
+    if (playOnlyInForeground && player.isPlaying()) {
+      pause();
     }
   }
 
@@ -357,10 +468,13 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
-    if (playerState != 0) {
+    if (audioFocusSupported && focusOn) {
+      abandonFocus();
+    }
+    if (playerState != State.INITIAL) {
       player.stop();
     }
-    playerState = 0;
+    playerState = State.INITIAL;
     if (player != null) {
       player.release();
       player = null;

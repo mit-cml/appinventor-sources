@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.server;
 
 import com.google.appinventor.common.testutils.TestUtils;
@@ -47,7 +48,7 @@ public class WhitelistTest {
   }
 
   LocalUser makeUser(String email) {
-    user.set(new User(ID, email, false, false, "test-session"));
+    user.set(new User(ID, email, null, "http://www.appinventor.org/", 5, false, false, 0, "test-session"));
     return user;
   }
 

@@ -1,10 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.palette;
 
+import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
@@ -51,7 +53,7 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
     panel.setCellWidth(image, "30px");
 
-    Label label = new Label(scd.getName());
+    Label label = new Label(TranslationDesignerPallete.getCorrespondingString(scd.getName()));
     label.setHorizontalAlignment(Label.ALIGN_LEFT);
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);

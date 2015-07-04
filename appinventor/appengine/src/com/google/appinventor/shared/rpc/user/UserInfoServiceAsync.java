@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.rpc.user;
 
@@ -16,9 +17,19 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface UserInfoServiceAsync {
 
   /**
+   * @see UserInfoService#getSystemConfig()
+   */
+  void getSystemConfig(String sessionId, AsyncCallback<Config> callback);
+
+  /**
    * @see UserInfoService#getUserInformation()
    */
   void getUserInformation(String sessionId, AsyncCallback<User> callback);
+
+  /**
+   * @see UserInfoService#getUserInformationByUserId(String)
+   */
+  void getUserInformationByUserId(String userId, AsyncCallback<User> callback);
 
   /**
    * @see UserInfoService#loadUserSettings()
@@ -29,6 +40,21 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#storeUserSettings(String)
    */
   void storeUserSettings(String settings, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#storeNameSettings(String)
+   */
+  void storeUserName(String name, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#storeNameLink(String)
+   */
+  void storeUserLink(String link, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#storeUserEmailFrequency(int)
+   */
+  void storeUserEmailFrequency(int emailFrequency, AsyncCallback<Void> callback);
 
   /**
    * @see UserInfoService#hasUserFile(String)

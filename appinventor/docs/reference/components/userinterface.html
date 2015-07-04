@@ -9,6 +9,10 @@
     <meta datatype="xsd:integer" content="0" property="sioc:num_replies" about="/front_page" />
     <meta property="dc:title" about="/front_page" content="Front Page" />
     <meta content="Drupal 7 (http://drupal.org)" name="Generator" />
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
     <!-- Title ----------------------- -->
     <title>User Interface Components - App Inventor for Android</title>
     <!-- Title ----------------------- -->
@@ -100,14 +104,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -118,7 +124,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -409,26 +415,30 @@
   </head>
   <body>
     <div class="container" id="page">
-      <header role="banner" class="clearfix"> </header>
+      <header role="banner" class="clearfix">
       <div id="top_bar">
         <div id="branding">
           <div id="logo"><a class="active" title="Home page" href="http://appinventor.mit.edu"><img
                 alt="Explore MIT App Inventor logo" src="images/logo2.png" /></a></div>
         </div>
         <div class="nav clearfix" id="menu-bar">
-          <nav role="navigation"> </nav>
-          <ul>
-            <li><a href="http://appinventor.mit.edu">Home</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/library">Support
-                ▾</a></li>
-          </ul>
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+</nav>
         </div>
-        <div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-        </div>
-      </div>
-      <div style="margin-top: 15px;" class="no-menu-bar" id="columns">
-        <div class="columns-inner clearfix">
+
+        <div class="region region-create">
+          <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+            <div class="block-inner clearfix">
+              <h2 class="block-title">Create Button</h2>
+              <div class="block-content content">
+                <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+              </div>
+            </div>
+          </section>
+</header>
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
           <div id="content-column">
             <div class="content-inner">
               <section role="main" id="main-content"> </section>
@@ -440,7 +450,6 @@
                   <ul>
                     <li> <a href="#Button"> Button </a> </li>
                     <li> <a href="#CheckBox"> CheckBox </a> </li>
-                    <li> <a href="#Clock"> Clock </a> </li>
                     <li> <a href="#DatePicker"> DatePicker </a> </li>
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
@@ -552,180 +561,75 @@
                     <dt> <code> LostFocus() </code> </dt>
                     <dd> Check box stopped being the focused component. </dd>
                   </dl>
-                  <h2 id="Clock"> Clock </h2>
-                  <img src="images/clock.png" alt="" />
-                  <p> Use a clock component to create a timer that signals
-                    events at
-                    regular intervals. The clock component also does various
-                    conversions
-                    and manipulations with time units. </p>
-                  <p> One use of the clock component is a a <em> timer </em> :
-                    set the
-                    timer interval, and the timer will fire repeatedly at the
-                    interval,
-                    signalling a timer event. </p>
-                  <p> A second use of the clock component is to manipulate time,
-                    and
-                    express time in various units. The internal time format used
-                    by the
-                    clock is called an <em> instant </em> . The clock's <code>
-                      Now </code>
-                    method returns the current time as an instant. The clock
-                    provides
-                    methods to manipulate instants, for example, return an
-                    instant that is
-                    several seconds, or months, or years from the given instant.
-                    It also
-                    provides methods to show the second, minute, hour, day, …,
-                    corresponding to a given instant. </p>
-                  <h3> Properties </h3>
+
+                  <h2 id="DatePicker">DatePicker</h2>
+
+                  <p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p>
+
+                  <h3>Properties</h3>
                   <dl>
-                    <dt> <code> TimerInterval </code> </dt>
-                    <dd> timer interval in milliseconds </dd>
-                    <dt> <code> TimerEnabled </code> </dt>
-                    <dd> If true, then the timer will fire </dd>
-                    <dt> <code> TimerAlwaysFires </code> </dt>
-                    <dd> if true, the timer will fire even if the application is
-                      not
-                      showing on the screen </dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                    <dt> <code> Timer() </code> </dt>
-                    <dd> This event is signaled when the timer fires </dd>
-                  </dl>
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> SystemTime() </code> </dt>
-                    <dd> The phone's internal time in milliseconds </dd>
-                    <dt> <code> Now() </code> </dt>
-                    <dd> The instant in time read from phone's clock </dd>
-                    <dt> <code> MakeInstant(Text from) </code> </dt>
-                    <dd> Make an instant specified by MM/DD/YYYY hh:mm:ss or
-                      MM/DD/YYYY
-                      or hh:mm. </dd>
-                    <dt> <code> MakeInstantFromMillis(Number millis) </code> </dt>
-                    <dd> Make an instant specified by time in milliseconds </dd>
-                    <dt> <code> GetMillis(instant) </code> </dt>
-                    <dd> The instant in time measured as milliseconds since 1970
-                    </dd>
-                    <dt> <code> AddSeconds(instant, Number seconds) </code> </dt>
-                    <dd> An instant in time some number of seconds after the
-                      given
-                      instant </dd>
-                    <dt> <code> AddMinutes(instant, Number minutes) </code> </dt>
-                    <dd> An instant in time some number of minutes after the
-                      given
-                      instant </dd>
-                    <dt> <code> AddHours(instant, Number hours) </code> </dt>
-                    <dd> An instant in time some number of hours after the given
-                      instant </dd>
-                    <dt> <code> AddDays(instant, Number days) </code> </dt>
-                    <dd> An instant in time some number of days after the given
-                      instant </dd>
-                    <dt> <code> AddWeeks(instant, Number weeks) </code> </dt>
-                    <dd> An instant in time some number of weeks after the given
-                      instant </dd>
-                    <dt> <code> AddMonths(instant, Number months) </code> </dt>
-                    <dd> An instant in time some number of months after the
-                      given instant </dd>
-                    <dt> <code> AddYears(instant, Number years) </code> </dt>
-                    <dd> An instant in time some number of years after the given
-                      instant </dd>
-                    <dt> <code> Duration(Calendar start, Calendar end) </code>
-                    </dt>
-                    <dd> Milliseconds between instants </dd>
-                    <dt> <code> Second(Calendar instant) </code> </dt>
-                    <dd> The second of the minute </dd>
-                    <dt> <code> Minute(Calendar instant) </code> </dt>
-                    <dd> The minute of the hour </dd>
-                    <dt> <code> Hour(Calendar instant) </code> </dt>
-                    <dd> The hour of the day </dd>
-                    <dt> <code> DayOfMonth(Calendar instant) </code> </dt>
-                    <dd> The day of the month,a number from 1 to 31 </dd>
-                    <dt> <code> Weekday(Calendar instant) </code> </dt>
-                    <dd> The day of the week. a number from 1 (Sunday) to 7
-                      (Saturday) </dd>
-                    <dt> <code> WeekdayName(Calendar instant) </code> </dt>
-                    <dd> The name of the day of the week </dd>
-                    <dt> <code> Month(Calendar instant) </code> </dt>
-                    <dd> The month of the year, a number from 1 to 12) </dd>
-                    <dt> <code> MonthName(Calendar instant) </code> </dt>
-                    <dd> The name of the month </dd>
-                    <dt> <code> Year(Calendar instant) </code> </dt>
-                    <dd> The year </dd>
-                    <dt> <code> FormatDateTime(Calendar instant) </code> </dt>
-                    <dd> Text describing the date and time of an instant </dd>
-                    <dt> <code> FormatDate(Calendar instant) </code> </dt>
-                    <dd> Text describing the date of an instant </dd>
-                    <dt> <code> FormatTime(Calendar instant) </code> </dt>
-                    <dd> Text describing time time of an instant </dd>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code><em>Day</em></code></dt>
+                    <dd>the Day of the month that was last picked using the DatePicker.</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd>If set, user can tap check box to cause action.</dd>
+                    <dt><code>FontBold</code></dt>
+                    <dd>If set, button text is displayed in bold.</dd>
+                    <dt><code>FontItalic</code></dt>
+                    <dd>If set, button text is displayed in italics.</dd>
+                    <dt><code>FontSize</code></dt>
+                    <dd>Point size for button text.</dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd>Font family for button text.</dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Image to display on button.</dd>
+                    <dt><code><em>Month</em></code></dt>
+                    <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 1 = January, 12 = December.</dd>
+                    <dt><code><em>MonthInText</em></code></dt>
+                    <dd>Returns the name of the Month that was last picked using the DatePicker, in textual format.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd>Text to display on button.</dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd>Left, center, or right.</dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd>Color for button text.</dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Year</em></code></dt>
+                    <dd>the Year that was last picked using the DatePicker</dd>
                   </dl>
 
-                <h2 id="DatePicker">DatePicker</h2>
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterDateSet()</code></dt>
+                    <dd>Event that runs after the user chooses a Date in the dialog</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no longer possible to click it.</dd>
+                    <dt><code>TouchDown()</code></dt>
+                    <dd>Indicates that the button was pressed down.</dd>
+                    <dt><code>TouchUp()</code></dt>
+                    <dd>Indicates that a button has been released.</dd>
+                  </dl>
 
-                <p><p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p></p>
-
-                <h3>Properties</h3>
-                <dl>
-                  <dt><code>BackgroundColor</code></dt>
-                  <dd>Returns the button's background color</dd>
-                  <dt><code><em>Day</em></code></dt>
-                  <dd>the Day of the month that was last picked using the DatePicker.</dd>
-                  <dt><code>Enabled</code></dt>
-                  <dd></dd>
-                  <dt><code>FontBold</code></dt>
-                  <dd></dd>
-                  <dt><code>FontItalic</code></dt>
-                  <dd></dd>
-                  <dt><code>FontSize</code></dt>
-                  <dd></dd>
-                  <dt><code>FontTypeface</code> (designer only)</dt>
-                  <dd></dd>
-                  <dt><code>Height</code></dt>
-                  <dd></dd>
-                  <dt><code>Image</code></dt>
-                  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
-                  <dt><code><em>Month</em></code></dt>
-                  <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 1 = January, 12 = December.</dd>
-                  <dt><code><em>MonthInText</em></code></dt>
-                  <dd>Returns the name of the Month that was last picked using the DatePicker, in textual format.</dd>
-                  <dt><code>Shape</code> (designer only)</dt>
-                  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
-                  <dt><code>ShowFeedback</code></dt>
-                  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
-                  <dt><code>Text</code></dt>
-                  <dd></dd>
-                  <dt><code>TextAlignment</code> (designer only)</dt>
-                  <dd></dd>
-                  <dt><code>TextColor</code></dt>
-                  <dd></dd>
-                  <dt><code>Visible</code></dt>
-                  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
-                  <dt><code>Width</code></dt>
-                  <dd></dd>
-                  <dt><code><em>Year</em></code></dt>
-                  <dd>the Year that was last picked using the DatePicker</dd>
-                </dl>
-
-                <h3>Events</h3>
-                <dl>
-                  <dt><code>AfterDateSet()</code></dt>
-                  <dd>Event that runs after the user chooses a Date in the dialog</dd>
-                  <dt><code>GotFocus()</code></dt>
-                  <dd>Indicates the cursor moved over the button so it is now possible
-                 to click it.</dd>
-                  <dt><code>LostFocus()</code></dt>
-                  <dd>Indicates the cursor moved away from the button so it is now no
-                 longer possible to click it.</dd>
-                  <dt><code>TouchDown()</code></dt>
-                  <dd>Indicates when a button is touch down</dd>
-                  <dt><code>TouchUp()</code></dt>
-                  <dd>Indicates when a button touch ends</dd>
-                </dl>
-
-                <h3>Methods</h3>
-                none
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt><code>LaunchPicker()</code></dt>
+                    <dd>Launches the DatePicker popup.</dd>
+                    <dt><code>SetDateToDisplay(number year, number month, number day)</code></dt>
+                    <dd>Allows the user to set the date to be displayed when the date picker opens.
+                      Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
+                  </dl>
 
                  <h2 id="Image">Image</h2>
 
@@ -781,6 +685,12 @@
                     <dd> Point size for label text. </dd>
                     <dt> <code> FontTypeface </code> </dt>
                     <dd> Font family for label text. </dd>
+                    <dt><code>HasMargins</code></dt>
+		    <dd>Reports whether or not the label appears with
+                    margins.  All four margins
+                    (left, right, top, bottom) are the same.  This
+                    property has no effect in the designer,
+                    where labels are always shown with margins.</dd>
                     <dt> <code> Height </code> </dt>
                     <dd> Label height (y-size). </dd>
                     <dt> <code> Width </code> </dt>
@@ -845,16 +755,21 @@
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt><code>Width</code></dt>
   <dd>Box width (x-size). </dd>
+  <dt><code>ItemTextColor</code></dt>
+  <dd>The text color of the ListPicker items.</dd>
+  <dt><code>ItemBackgroundColor</code></dt>
+  <dd>The background color of the ListPicker items.</dd>
 </dl>
 
 <h3>Events</h3>
 <dl>
   <dt><code>AfterPicking()</code></dt>
-  <dd>Simple event to be raised after the picker activity returns its
+  <dd>Event to be raised after the picker activity returns its
  result and the properties have been filled in.</dd>
   <dt><code>BeforePicking()</code></dt>
-  <dd>Simple event to raise when the component is clicked but before the
- picker activity is started.</dd>
+  <dd>Event to raise when the button of the component is clicked or the list is shown
+ using the Open block.  This event occurs before the list of items is displayed, and 
+ can be used to prepare the list before it is shown.</dd>
   <dt><code>GotFocus()</code></dt>
   <dd>Indicates the cursor moved over the button so it is now possible
  to click it.</dd>
@@ -875,8 +790,10 @@
 
 <h3>Properties</h3>
 <dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>The color of the listview background.</dd>
   <dt><code>Elements</code></dt>
-  <dd>Set a list of text elements to build your list.</dd>
+  <dd>List of text elements to build your list.</dd>
   <dt><code>ElementsFromString</code></dt>
   <dd>Build a list with a series of text elements separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.</dd>
   <dt><code>Height</code></dt>
@@ -887,6 +804,8 @@
   <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListView, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
   <dt><code>ShowFilterBar</code></dt>
   <dd>Sets visibility of ShowFilterBar. True will show the bar, False will hide it.</dd>
+  <dt><code>TextColor</code></dt>
+  <dd>The text color of the listview items.</dd>
   <dt><code>Visible</code></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt><code>Width</code></dt>
@@ -904,7 +823,7 @@ none
 
 <h2 id="Notifier">Notifier</h2>
 
-<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
+<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by the user. It can only be dismissed by using the DismissProgressDialog block.</li><li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
 
 <h3>Properties</h3>
 <dl>
@@ -926,6 +845,8 @@ none
 
 <h3>Methods</h3>
 <dl>
+  <dt><code>DismissProgressDialog()</code></dt>
+  <dd>Dismiss a previously displayed ProgressDialog box</dd>
   <dt><code>LogError(text message)</code></dt>
   <dd>Writes an error message to the Android system log. See the Google Android documentation for how to access the log.</dd>
   <dt><code>LogInfo(text message)</code></dt>
@@ -938,6 +859,8 @@ none
   <dd>Shows a dialog box with two buttons, from which the user can choose.  If cancelable is true there will be an additional CANCEL button. Pressing a button will raise the AfterChoosing event.  The "choice" parameter to AfterChoosing will be the text on the button that was pressed, or "Cancel" if the  CANCEL button was pressed.</dd>
   <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
   <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
+  <dt><code>ShowProgressDialog(text message, text title)</code></dt>
+  <dd>Shows a dialog box with an optional title and message (use empty strings if they are not wanted). This dialog box contains a spinning artifact to indicate that the program is working. It cannot be canceled by the user but must be dismissed by the App Inventor Program by using the DismissProgressDialog block.</dd>
   <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
   <dd>Shows a dialog box where the user can enter text, after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering text will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the text that was entered, or "Cancel" if the CANCEL button was pressed.</dd>
 </dl>
@@ -964,6 +887,11 @@ none
                   <p> Password text box components are usually used with a
                     button
                     component. The user taps the button after entering text. </p>
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt><code>RequestFocus()</code></dt>
+                    <dd>Sets the PasswordTextBox active.</dd>
+                  </dl>
                   <h3> Properties </h3>
                   <dl>
                     <dt> <code> BackgroundColor </code> </dt>
@@ -1011,6 +939,8 @@ none
   <dt><code>AlignVertical</code></dt>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.</dd>
   <dt><code>BackgroundColor</code></dt>
+  <dt><code>AppName</code> (designer only)</dt>
+  <dd>This is the display name of the installed application in the phone. If the AppName is blank, it will be set to the name of the project when the project is built.</dd>
   <dd></dd>
   <dt><code>BackgroundImage</code></dt>
   <dd>The screen background image.</dd>
@@ -1023,9 +953,13 @@ none
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
   <dt><code>ScreenOrientation</code></dt>
-  <dd>The requested screen orientation. Commonly used values are unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
+  <dd>The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
   <dt><code>Scrollable</code></dt>
   <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.</dd>
+  <dt><code><em>ShowStatusBar</em></code></dt>
+  <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.</dd>
+  <dt><code><em>TitleVisible</em></code></dt>
+  <dd>The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.</dd>
   <dt><code>Title</code></dt>
   <dd>The caption for the form, which apears in the title bar</dd>
   <dt><code>VersionCode</code> (designer only)</dt>
@@ -1068,6 +1002,8 @@ none
 <dd>Sets the minimum value of slider.  Changing the minimum value also resets Thumbposition to be halfway between the (new) minimum and the maximum. If the new minimum is greater than the current maximum, then minimum and maximum will both be set to this value.  Setting MinValue resets the thumb position to halfway between MinValue and MaxValue and signals the PositionChanged event.</dd>
 <dt><code>ThumbPosition</code></dt>
 <dd>Sets the position of the slider thumb. If this value is greater than MaxValue, then it will be set to same value as MaxValue. If this value is less than MinValue, then it will be set to same value as MinValue.</dd>
+<dt><code>ThumbEnabled</code></dt>
+<dd>Sets whether or not to display the slider thumb.</dd>
 <dt><code>Visible</code></dt>
 <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
 <dt><code>Width</code></dt>
@@ -1080,7 +1016,7 @@ none
 
 <h2 id="Spinner">Spinner</h2>
 
-<p><p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p></p>
+<p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor. Spinners are created with the first item already selected. So selecting  it does not generate an After Picking event. Consequently it's useful to make the  first Spinner item be a non-choice like "Select from below...". </p>
 
 <h3>Properties</h3>
 <dl>
@@ -1148,6 +1084,16 @@ none
                   <p> If the text entered by the user should not be displayed,
                     use <code>
                       PasswordTextBox </code> instead. </p>
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> HideKeyboard() </code> </dt>
+                    <dd> Hide the keyboard. Only multiline text boxes need this.
+                      Single
+                      line text boxes close the keyboard when the users presses
+                      the Done key. </dd>
+                    <dt><code>RequestFocus()</code></dt>
+                    <dd>Sets the textbox active.</dd>
+                  </dl>
                   <h3> Properties </h3>
                   <dl>
                     <dt> <code> BackgroundColor </code> </dt>
@@ -1230,14 +1176,6 @@ none
                       for
                       input, such as if the user touches a different text box. </dd>
                   </dl>
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> HideKeyboard() </code> </dt>
-                    <dd> Hide the keyboard. Only multiline text boxes need this.
-                      Single
-                      line text boxes close the keyboard when the users presses
-                      the Done key. </dd>
-                  </dl>
 
                   <h2 id="TimePicker">TimePicker</h2>
                   <p><p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p></p>
@@ -1312,6 +1250,8 @@ none
   <dd></dd>
   <dt><code>HomeUrl</code></dt>
   <dd>URL of the page the WebViewer should initially open to.  Setting this will load the page.</dd>
+  <dt><code>IgnoreSslError</code></dt>
+  <dd>Determine whether or not to ignore SSL errors. Set to true to ignore errors. Use this to accept self signed certificates from websites.</dd>
   <dt><code>PromptforPermission</code></dt>
   <dd>If True, then prompt the user of the WebView to give permission to access the geolocation API. If False, then assume permission is granted.</dd>
   <dt><code>UsesLocation</code> (designer only)</dt>
@@ -1333,6 +1273,8 @@ none
   <dd>Returns true if the WebViewer can go back in the history list.</dd>
   <dt><code>boolean CanGoForward()</code></dt>
   <dd>Returns true if the WebViewer can go forward in the history list.</dd>
+  <dt><code>ClearCaches()</code></dt>
+  <dd>Clear the WebViewer caches</dd>
   <dt><code>ClearLocations()</code></dt>
   <dd>Clear stored location permissions.</dd>
   <dt><code>GoBack()</code></dt>

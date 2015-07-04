@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -10,12 +11,13 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Interface for Simple components.
- * 
+ *
  */
 @SimpleObject
 public interface Component {
   /**
-   * Returns the dispatch delegate that is responsible for dispatching events for this component.
+   * Returns the dispatch delegate that is responsible for dispatching events
+   * for this component.
    */
   public HandlesEventDispatching getDispatchDelegate();
 
@@ -114,8 +116,8 @@ public interface Component {
   static final int TOAST_LENGTH_LONG = 1;
 
   /*
-   * Screen direction constants. Observe that opposite directions have the same magnitude but
-   * opposite signs.
+   * Screen direction constants.
+   * Observe that opposite directions have the same magnitude but opposite signs.
    */
   static final int DIRECTION_NORTH = 1;
   static final int DIRECTION_NORTHEAST = 2;
@@ -130,13 +132,15 @@ public interface Component {
   static final int DIRECTION_MIN = -4;
   static final int DIRECTION_MAX = 4;
 
-  // Slider defaults for setting MinimumValue and MaximumValue
+  //Slider defaults for setting MinimumValue and MaximumValue
   public static float SLIDER_MIN_VALUE = 10;
   public static float SLIDER_MAX_VALUE = 50;
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
+  static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "USA";
+  static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "en";
+
   // iSENSE
   public static int iSENSE_LOGIN_TYPE_EMAIL = 1;
   public static int iSENSE_LOGIN_TYPE_KEY = 2;
-
 }

@@ -3,7 +3,7 @@
 <module rename-to='ode'>
   <entry-point class="com.google.appinventor.client.Ode" />
 
-  <!-- speed up compilation for testing. comment out the next two lines to compile 
+  <!-- speed up compilation for testing. comment out the next two lines to compile
        all permutations -->
   <!--
   <inherits name='com.google.gwt.user.UserAgent'/>
@@ -14,7 +14,10 @@
   <set-property name="user.agent" value="safari,gecko1_8" />
 
   <!-- inherits -->
+
   <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <!--inherits name="com.google.gwt.i18n.CldrLocales"/-->
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
   <inherits name="com.google.gwt.resources.Resources" />
@@ -38,9 +41,10 @@
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
   <servlet path="/webstartfile" class="com.google.appinventor.server.WebStartFileServlet" />
-  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" /> 
-  
+  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" />
+
   <!-- srcs -->
+  <source path="" includes="simple_components.json" />
   <source path="client"/>
   <source path="client/boxes"/>
   <source path="client/editor"/>
@@ -70,6 +74,7 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>
   <source path="shared/settings"/>
@@ -100,5 +105,16 @@
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
 
-  <extend-property name="locale" values="de"/>
+  <!-- English language, independent of country -->
+  <extend-property name="locale" values="en"/>
+  <!-- Simplified Chinese -->
+  <extend-property name="locale" values="zh_CN"/>
+  <!-- Traditional Chinese -->
+  <extend-property name="locale" values="zh_TW"/>
+  <!-- Spanish from Spain -->
+  <extend-property name="locale" values="es_ES"/>
+  <!-- Italian -->
+  <extend-property name="locale" values="it_IT"/>
+  <set-property-fallback name="locale" value="en"/>
+
 </module>

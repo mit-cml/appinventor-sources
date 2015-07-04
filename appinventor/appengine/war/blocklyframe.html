@@ -6,7 +6,7 @@
     <script type="text/javascript" src="closure-library/closure/goog/base.js"></script>
     <link type="text/css" rel="stylesheet" href="media/blockly.css">
     <link type="text/css" rel="stylesheet" href="closure-library/closure/goog/css/dialog.css">
-    <script type="text/javascript" src="blockly-all.js"></script>
+    <script type="text/javascript" src="blockly-@GUID@.js"></script>
     <style>
       html, body {
       background-color: #fff;
@@ -45,6 +45,10 @@
     </style>
 
     <script type="text/javascript">
+      function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)')
+                .exec(window.parent.location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+      }
       function init() {
         // We expect window.location.hash to have the form:
         // projectId_formName, and to be unique among

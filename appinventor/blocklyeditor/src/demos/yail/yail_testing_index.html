@@ -9,7 +9,7 @@
 <title> Yail Comparison Test </title>
 
 <script type="text/javascript" src="../../../../lib/closure-library/closure/goog/base.js"></script>
-<script type="text/javascript" src="../../../../appengine/build/war/blockly-all.js"></script>
+<script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/component-types.js"></script>
 
 <script type ="text/javascript">
@@ -20,6 +20,8 @@
 
 var formJson = "";
 var componentTypes = {};
+var YOUNG_ANDROID_VERSION;
+var BLOCKS_LANGUAGE_VERSION;
 
 function start() {
 
@@ -29,6 +31,13 @@ function start() {
   // --- Begin Blockly Initialization
 
   Blockly.inject(document.body);
+
+  // [lyn, 2015/01/02] Logging interferes with equality tests.
+  Blockly.Versioning.setLogging(false);
+
+  // [lyn, 2015/01/02] All BlocklyEvalTests fail in Blockly.TypeBlock.hide
+  // so I've redefined it to avoid errors.
+  Blockly.TypeBlock.hide = function () {};
 
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
@@ -92,6 +101,31 @@ function start() {
 
   // ----- End the Blockly Initialization
 
+  // These "localized" operations are used in the internationalization code
+  // They are provided by the browser in the actual system, but
+  // are not present in phantomJS.  So define mock versions to be used by the tests.
+
+  window.parent.BlocklyPanel_getLocalizedEventName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedPropertyName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedMethodName =
+    function (name) {return name} ;
+
+  window.parent.BlocklyPanel_getLocalizedParameterName =
+    function (name) {return name} ;
+
+  // [lyn, 2015/01/02] Needed by the upgrader in versioning.js
+  // Is there a way to get the actual current version number?
+
+  window.parent.BlocklyPanel_getBlocksLanguageVersion = function () { return BLOCKS_LANGUAGE_VERSION; }
+  window.parent.BlocklyPanel_getYaVersion = function() { return YOUNG_ANDROID_VERSION; }
+
+  // ----- End the Mock locale operations
+
+
   // ----- Emulate GWT Provided functions
   BlocklyPanel_getComponentsJSONString = function(type) {
     return JSON.stringify(componentTypeJson);
@@ -142,7 +176,7 @@ function handleLoadBlocks(event) {
         var target = event.target;
         // 2 == FileReader.DONE
         if (target.readyState == 2) {
-            Blockly.SaveFile.load(target.result);
+            Blockly.SaveFile.load(formJson, target.result);
         }
     };
     reader.readAsText(files[0]);
@@ -165,8 +199,13 @@ function handleLoadForm(event) {
     reader.readAsText(files[0]);
 }
 
-function processBlocks(blocks){
-    return Blockly.SaveFile.load(blocks);
+function processVersion(bl, yav) {
+    BLOCKS_LANGUAGE_VERSION = bl;
+    YOUNG_ANDROID_VERSION = yav;
+}
+
+function processBlocks(formJsonString, blocks){ // [lyn, 2015/01/01] Modified to handled upgrader changes
+    return Blockly.SaveFile.load(formJsonString, blocks);
 }
 
 function processForm(formo){

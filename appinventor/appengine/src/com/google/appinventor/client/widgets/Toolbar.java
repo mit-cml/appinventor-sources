@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.widgets;
 
@@ -87,6 +88,16 @@ public class Toolbar extends Composite {
    */
   public void setButtonEnabled(String widgetName, boolean enabled) {
     buttonMap.get(widgetName).setEnabled(enabled);
+  }
+
+  /**
+   * Sets text for button
+   *
+   * @param widgetName name of button
+   * @param text text of button
+   */
+  public void setButtonText(String widgetName, String text) {
+    buttonMap.get(widgetName).setText(text);
   }
 
   /**

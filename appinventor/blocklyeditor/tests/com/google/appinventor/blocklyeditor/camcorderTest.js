@@ -7,7 +7,8 @@ var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/block
 var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/camcorder/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2); // Cut off Leading $JSON
 var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/camcorder/Screen1.bky');
-
+var system = require('system');
+var args = system.args;
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
 // Some debugging from PhantomJS
@@ -36,15 +37,15 @@ page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(statu
         var expected = arguments[0];
 
         // Functions in yail_testing_index.html
+        processVersion(arguments[3], arguments[4]);
         processForm(arguments[1]);
-        processBlocks(arguments[2]);
+        processBlocks(arguments[1], arguments[2]); // [lyn, 2015/01/01] Changed to handle upgrader
 
         var newblocks = toAppYail();
 
         return doTheyMatch(expected, newblocks);
 
-
-    }, expected, formJson, blocks);
+    }, expected, formJson, blocks, args[1], args[2]); // args[1] and args[2] are blocks Version and YaV
 
     //This is the actual result of the test
     console.log(passed);

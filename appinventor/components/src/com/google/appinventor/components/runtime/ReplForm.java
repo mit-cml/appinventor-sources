@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
 import java.net.InetAddress;
@@ -11,7 +12,6 @@ import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
-import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -22,6 +22,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,15 +43,14 @@ import android.content.Context;
 
 public class ReplForm extends Form {
 
-  // Controller for the ReplCommController associated with this form
-  private ReplCommController formReplCommController = null;
-
-  private AppInvHTTPD assetServer = null;
+  private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
+  private Object replResult = null; // Return result when closing screen in Repl
+  private String replResultFormName = null;
 
   public ReplForm() {
     super();
@@ -57,45 +59,28 @@ public class ReplForm extends Form {
 
   @Override
   public void onCreate(Bundle icicle) {
+    super.onCreate(icicle);
+    Log.d("ReplForm", "onCreate");
     Intent intent = getIntent();
     processExtras(intent, false);
-    super.onCreate(icicle);
-
-    if (IsUSBRepl) { // Note: Obsolete code for AI1
-      PackageManager packageManager = this.$context().getPackageManager();
-      // the following is intended to prevent the application from being restarted
-      // once it has ever run (so it can be run only once after it is installed)
-      packageManager.setComponentEnabledSetting(
-        new ComponentName(this.getPackageName(), this.getClass().getName()),
-        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-      formReplCommController = new ReplCommController(this);
-      formReplCommController.startListening(true /*showAlert*/);
-      assetsLoaded = true;                       // we don't have any for the usb repl...
-    }
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-    if (formReplCommController != null)
-        formReplCommController.startListening(true /*showAlert*/);
   }
 
   @Override
   protected void onStop() {
     super.onStop();
-    if (formReplCommController != null)
-        formReplCommController.stopListening(false /*showAlert*/);
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (formReplCommController != null)
-        formReplCommController.destroy();
-    if (assetServer != null) {
-        assetServer.stop();
-        assetServer = null;
+    if (httpdServer != null) {
+        httpdServer.stop();
+        httpdServer = null;
     }
     finish();                   // Must really exit here, so if you hits the back button we terminate completely.
     System.exit(0);
@@ -103,12 +88,26 @@ public class ReplForm extends Form {
 
   @Override
   protected void startNewForm(String nextFormName, Object startupValue) {
+    if (startupValue != null) {
+      this.startupValue = jsonEncodeForForm(startupValue, "open another screen with start value");
+    }
     RetValManager.pushScreen(nextFormName, startupValue);
+  }
+
+  public void setFormName(String formName) {
+    this.formName = formName;
+    Log.d("ReplForm", "formName is now " + formName);
   }
 
   @Override
   protected void closeForm(Intent resultIntent) {
     RetValManager.popScreen("Not Yet");
+  }
+
+  protected void setResult(Object result) {
+    Log.d("ReplForm", "setResult: " + result);
+    replResult = result;
+    replResultFormName = formName;
   }
 
   @Override
@@ -122,10 +121,44 @@ public class ReplForm extends Form {
     });
   }
 
+  // Configure the system menu to include items to kill the application and to show "about"
+  // information and providing the "Settings" menu option.
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // This procedure is called only once.  To change the items dynamically
+    // we would use onPrepareOptionsMenu.
+    super.onCreateOptionsMenu(menu); // sets up the exit and about buttons
+    addSettingsButton(menu);         // Now add our button!
+    return true;
+  }
+
+  public void addSettingsButton(Menu menu) {
+    MenuItem showSettingsItem = menu.add(Menu.NONE, Menu.NONE, 3,
+      "Settings").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            PhoneStatus.doSettings();
+            return true;
+          }
+        });
+    showSettingsItem.setIcon(android.R.drawable.sym_def_app_icon);
+  }
+
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
+    Log.d("ReplForm", "onNewIntent Called");
     processExtras(intent, true);
+  }
+
+  void HandleReturnValues() {
+    Log.d("ReplForm", "HandleReturnValues() Called, replResult = " + replResult);
+    if (replResult != null) {   // Act as if it was returned
+      OtherScreenClosed(replResultFormName, replResult);
+      Log.d("ReplForm", "Called OtherScreenClosed");
+      replResult = null;
+    }
   }
 
   protected void processExtras(Intent intent, boolean restart) {
@@ -140,11 +173,15 @@ public class ReplForm extends Form {
     if ((extras != null) && extras.getBoolean("rundirect")) {
       Log.d("ReplForm", "processExtras rundirect is true and restart is " + restart);
       isDirect = true;
-      assetsLoaded = false;     // So we can reload them!
+      assetsLoaded = true;
       if (restart) {
         this.clear();
-        this.$define();
-        this.Initialize();        // Restart UI
+        if (httpdServer != null) {
+          httpdServer.resetSeq();
+        } else {                // User manually started the Companion on her phone
+          startHTTPD(true);     // but never typed in the UI and then connected via
+          httpdServer.setHmacKey("emulator"); // USB. This is an ugly hack
+        }
       }
     }
   }
@@ -160,20 +197,14 @@ public class ReplForm extends Form {
   // Called from the Phone Status Block to start the Repl HTTPD
   public void startHTTPD(boolean secure) {
     try {
-        if (assetServer == null) {
+        if (httpdServer == null) {
             checkAssetDir();
-            assetServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), secure, this); // Probably should make the port variable
+            httpdServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), secure, this); // Probably should make the port variable
             Log.i("ReplForm", "started AppInvHTTPD");
         }
     } catch (IOException ex) {
       Log.e("ReplForm", "Setting up NanoHTTPD: " + ex.toString());
     }
-  }
-
-  public void startRepl() {  // Obsolete code for AI1
-    Log.i("ReplForm", "startRepl()");
-    formReplCommController = new ReplCommController(this);
-    formReplCommController.startListening(true /*showAlert*/);
   }
 
   // Make sure that the REPL asset directory exists.

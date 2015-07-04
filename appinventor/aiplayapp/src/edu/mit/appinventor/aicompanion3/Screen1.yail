@@ -6,25 +6,100 @@ $Source $Yail
 (require <com.google.youngandroid.runtime>)
 
 (def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
-(def (p$callrendezvous $code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")) '(list))) '(text)))
-(def (p$isAPK $input) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "="))
-(def (p$processcode $x)  (if ((get-var p$isAPK) (lexical-value $x)) (begin   (call-component-method 'PhoneStatus1 'installURL (*list-for-runtime* (lexical-value $x)) '(text))) (begin   ((get-var p$callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value $x)) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f) '(boolean)))))
-(def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator") '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
+(def (p$callrendezvous $code)  (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (get-var g$rendezvousServer) "/rendezvous/" ) '(text text text ) "join") 'text)(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")) '(list))) '(text)))
 (def (p$checkWiFi )  (if (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive string-starts-at (*list-for-runtime* (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) "Error") '(text text) "starts at")) '(any any) "=") (begin   (call-component-method 'Notifier1 'ShowChooseDialog (*list-for-runtime* "Your Device does not appear to have a WiFi Connection"  "No WiFi"  "Continue without WiFi"  "Exit"  #f) '(text text text text boolean)))))
+(def (p$getRendezvousServer ) (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "rendezvousServer"  (get-var g$rendezvousServer)) '(text any)))
+(def (p$isAPK $input) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "="))
+(def (p$processcode $x)  (if ((get-var p$isAPK) (lexical-value $x)) (begin   (call-component-method 'PhoneStatus1 'installURL (*list-for-runtime* (lexical-value $x)) '(text))) (begin   ((get-var p$callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* ((get-var p$extractRendezvousServer) (lexical-value $x))) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f) '(boolean)))))
+(def (p$extractRendezvousServer $code) (if (call-yail-primitive string-contains (*list-for-runtime* (lexical-value $code) ";") '(text text) "contains") (let ( ($codes (call-yail-primitive string-split (*list-for-runtime* (lexical-value $code) ";") '(text text) "split"))  ) (begin   ((get-var p$setRendezvousServer) (call-yail-primitive yail-list-get-item (*list-for-runtime* (lexical-value $codes) 1) '(list number) "select list item") #f) (call-yail-primitive yail-list-get-item (*list-for-runtime* (lexical-value $codes) 2) '(list number) "select list item")) ) (lexical-value $code)))
+(def (p$resetRendezvousServer )  (set-var! g$rendezvousServer "rendezvous.appinventor.mit.edu")(call-component-method 'TinyDB1 'ClearTag (*list-for-runtime* "rendezvousServer") '(text)))
+(def (p$setRendezvousServer $value $permanent)  (set-var! g$rendezvousServer (lexical-value $value))(if (lexical-value $permanent) (begin   (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "rendezvousServer"  (lexical-value $value)) '(text any)))))
+(def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator") '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
+(def g$rendezvousServer "rendezvous.appinventor.mit.edu")
 ;;; Screen1
 
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
  (set-and-coerce-property! 'Screen1 'BackgroundColor #x00FFFFFF 'number)
  (set-and-coerce-property! 'Screen1 'BackgroundImage "mooning.png" 'text)
  (set-and-coerce-property! 'Screen1 'Icon "AI2Companion-Icon.png" 'text)
+ (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
  (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2 Companion" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*) '()) 'text))
+    (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*) '()) 'text))
+;;; SettingsPanel
+
+(add-component Screen1 VerticalArrangement SettingsPanel 
+(set-and-coerce-property! 'SettingsPanel 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)
+
+(set-and-coerce-property! 'SettingsPanel 'Width -2 'number)
+
+)
+
+;;; settingsintro
+
+(add-component SettingsPanel Label settingsintro 
+(set-and-coerce-property! 'settingsintro 'Text "App Inventor Companion Settings" 'text)
+
+)
+
+;;; HorizontalArrangement4
+
+(add-component SettingsPanel HorizontalArrangement HorizontalArrangement4 
+)
+
+;;; Label12
+
+(add-component HorizontalArrangement4 Label Label12 
+(set-and-coerce-property! 'Label12 'Text "Set Rendezvous Server: " 'text)
+
+)
+
+;;; rendezvoustextbox
+
+(add-component HorizontalArrangement4 TextBox rendezvoustextbox 
+(set-and-coerce-property! 'rendezvoustextbox 'Hint "Hint for TextBox1" 'text)
+
+)
+
+;;; HorizontalArrangement5
+
+(add-component SettingsPanel HorizontalArrangement HorizontalArrangement5 
+)
+
+;;; SetRenzvousServer
+
+(add-component HorizontalArrangement5 Button SetRenzvousServer 
+(set-and-coerce-property! 'SetRenzvousServer 'Text "Set Rendezvous Server" 'text)
+
+)
+
+(define-event SetRenzvousServer Click()(set-this-form)
+    ((get-var p$setRendezvousServer) (get-property 'rendezvoustextbox 'Text) #t)(call-component-method 'rendezvoustextbox 'HideKeyboard (*list-for-runtime*) '())(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)(set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+;;; ResetRendezvousServer
+
+(add-component HorizontalArrangement5 Button ResetRendezvousServer 
+(set-and-coerce-property! 'ResetRendezvousServer 'Text "Reset to Default" 'text)
+
+)
+
+(define-event ResetRendezvousServer Click()(set-this-form)
+    ((get-var p$resetRendezvousServer) )(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)(set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+;;; MainPanel
+
+(add-component Screen1 VerticalArrangement MainPanel 
+(set-and-coerce-property! 'MainPanel 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'MainPanel 'Width -2 'number)
+
+)
+
 ;;; Header
 
-(add-component Screen1 HorizontalArrangement Header 
+(add-component MainPanel HorizontalArrangement Header 
 (set-and-coerce-property! 'Header 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'Header 'Width -2 'number)
@@ -40,7 +115,7 @@ $Source $Yail
 
 ;;; EmulatorPanel
 
-(add-component Screen1 VerticalArrangement EmulatorPanel 
+(add-component MainPanel VerticalArrangement EmulatorPanel 
 (set-and-coerce-property! 'EmulatorPanel 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'EmulatorPanel 'Width -2 'number)
@@ -56,7 +131,7 @@ $Source $Yail
 
 ;;; ErrorLabel
 
-(add-component Screen1 Label ErrorLabel 
+(add-component MainPanel Label ErrorLabel 
 (set-and-coerce-property! 'ErrorLabel 'TextAlignment 1 'number)
 
 (set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
@@ -67,7 +142,7 @@ $Source $Yail
 
 ;;; PhonePanel
 
-(add-component Screen1 VerticalArrangement PhonePanel 
+(add-component MainPanel VerticalArrangement PhonePanel 
 (set-and-coerce-property! 'PhonePanel 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'PhonePanel 'Width -2 'number)
@@ -141,7 +216,7 @@ $Source $Yail
 (add-component HorizontalArrangement2 TextBox CodeBox 
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
 
-(set-and-coerce-property! 'CodeBox 'Hint "Six Digit Code" 'text)
+(set-and-coerce-property! 'CodeBox 'Hint "Six Character Code" 'text)
 
 (set-and-coerce-property! 'CodeBox 'MultiLine #t 'boolean)
 
@@ -204,7 +279,7 @@ $Source $Yail
     (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '()))
 ;;; IPContainer
 
-(add-component Screen1 HorizontalArrangement IPContainer 
+(add-component MainPanel HorizontalArrangement IPContainer 
 (set-and-coerce-property! 'IPContainer 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'IPContainer 'Width -2 'number)
@@ -227,7 +302,7 @@ $Source $Yail
 
 ;;; HorizontalArrangement3
 
-(add-component Screen1 HorizontalArrangement HorizontalArrangement3 
+(add-component MainPanel HorizontalArrangement HorizontalArrangement3 
 (set-and-coerce-property! 'HorizontalArrangement3 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'HorizontalArrangement3 'Width -2 'number)
@@ -250,28 +325,33 @@ $Source $Yail
 
 ;;; PhoneStatus1
 
-(add-component Screen1 PhoneStatus PhoneStatus1 
+(add-component MainPanel PhoneStatus PhoneStatus1 
 )
 
+(define-event PhoneStatus1 OnSettings()(set-this-form)
+    (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text))
 ;;; Web1
 
-(add-component Screen1 Web Web1 
-(set-and-coerce-property! 'Web1 'Url "http://rendezvous.appinventor.mit.edu/rendezvous/" 'text)
-
+(add-component MainPanel Web Web1 
 )
 
 ;;; BarcodeScanner1
 
-(add-component Screen1 BarcodeScanner BarcodeScanner1 
+(add-component MainPanel BarcodeScanner BarcodeScanner1 (set-and-coerce-property! 'BarcodeScanner1 'UseExternalScanner #f 'boolean)
 )
 
 (define-event BarcodeScanner1 AfterScan($result)(set-this-form)
     (set-and-coerce-property! 'CodeBox 'Text (lexical-value $result) 'text)((get-var p$processcode) (lexical-value $result)))
 ;;; Notifier1
 
-(add-component Screen1 Notifier Notifier1 
+(add-component MainPanel Notifier Notifier1 
 )
 
 (define-event Notifier1 AfterChoosing($choice)(set-this-form)
     (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $choice) "Exit") '(any any) "=") (begin   (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))))
+;;; TinyDB1
+
+(add-component Screen1 TinyDB TinyDB1 
+)
+
 (init-runtime)

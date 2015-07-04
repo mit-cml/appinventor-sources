@@ -2,7 +2,7 @@
 $Source $Yail
 |#
 
-(define-form appinventor.ai_Jeffrey_Schiller.paintpot.Screen1 Screen1)
+(define-form fakepackagename Screen1)
 (require <com.google.youngandroid.runtime>)
 
 ;;; Screen1
@@ -30,12 +30,6 @@ $Source $Yail
 
 (define-event Red Click()(set-this-form)
     (set-and-coerce-property! 'DrawingCanvas 'PaintColor -65536 'number))
-(define-event Blue Click()(set-this-form)
-    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16776961 'number))
-(define-event Green Click()(set-this-form)
-    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16711936 'number))
-(define-event Wipe Click()(set-this-form)
-    (call-component-method 'DrawingCanvas 'Clear (*list-for-runtime*) '()))
 ;;; Blue
 
 (add-component ThreeButtons Button Blue 
@@ -47,6 +41,8 @@ $Source $Yail
 
 )
 
+(define-event Blue Click()(set-this-form)
+    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16776961 'number))
 ;;; Green
 
 (add-component ThreeButtons Button Green 
@@ -58,6 +54,8 @@ $Source $Yail
 
 )
 
+(define-event Green Click()(set-this-form)
+    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16711936 'number))
 ;;; DrawingCanvas
 
 (add-component Screen1 Canvas DrawingCanvas 
@@ -67,9 +65,9 @@ $Source $Yail
 
 )
 
-(define-event DrawingCanvas Touched($x $y $touchedSprite)(set-this-form)
-    (call-component-method 'DrawingCanvas 'DrawCircle (*list-for-runtime* (lexical-value $x)  (lexical-value $y)  5) '(number number number)))
-(define-event DrawingCanvas Dragged($startX $startY $prevX $prevY $currentX $currentY $draggedSprite)(set-this-form)
+(define-event DrawingCanvas Touched($x $y $touchedAnySprite)(set-this-form)
+    (call-component-method 'DrawingCanvas 'DrawCircle (*list-for-runtime* (lexical-value $x)  (lexical-value $y)  5  #t) '(number number number boolean)))
+(define-event DrawingCanvas Dragged($startX $startY $prevX $prevY $currentX $currentY $draggedAnySprite)(set-this-form)
     (call-component-method 'DrawingCanvas 'DrawLine (*list-for-runtime* (lexical-value $prevX)  (lexical-value $prevY)  (lexical-value $currentX)  (lexical-value $currentY)) '(number number number number)))
 ;;; Wipe
 
@@ -80,4 +78,6 @@ $Source $Yail
 
 )
 
+(define-event Wipe Click()(set-this-form)
+    (call-component-method 'DrawingCanvas 'Clear (*list-for-runtime*) '()))
 (init-runtime)

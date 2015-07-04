@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -94,50 +95,28 @@ public class ImageSprite extends Sprite {
         drawable.draw(canvas);
       } else {
         // compute the new rotated image if the heading has changed
-        if (!rotationCached || (cachedRotationHeading != Heading())) {
-          // Set up the matrix for the rotation transformation
-          // Rotate around the center of the sprite image (w/2, h/2)
-          // TODO(halabelson): Add a way for the user to specify the center of rotation.
-          mat.setRotate((float) -Heading(), w / 2, h / 2);
-          // We must scale the unrotated Bitmap to be the user specified size before
-          // rotating.
-          if (w != unrotatedBitmap.getWidth() || h != unrotatedBitmap.getHeight()) {
-            scaledBitmap = Bitmap.createScaledBitmap(unrotatedBitmap, w, h, true);
-          }
-          else {
-            scaledBitmap = unrotatedBitmap;
-          }
-          // Next create the rotated bitmap
-          // Careful: We use getWidth and getHeight of the unrotated bitmap, rather than the
-          // Width and Height of the sprite.  Doing the latter produces an illegal argument
-          // exception in creating the bitmap, if the user sets the Width or Height of the
-          // sprite to be larger than the image size.
-          rotatedBitmap = Bitmap.createBitmap(
-              scaledBitmap,
-              0, 0,
-              scaledBitmap.getWidth(), scaledBitmap.getHeight(),
-              mat, true);
-          // make a drawable for the rotated image and cache the heading
-          rotatedDrawable = new BitmapDrawable(rotatedBitmap);
-          cachedRotationHeading = Heading();
+       if (!rotationCached || (cachedRotationHeading != Heading())) {
+         // Set up the matrix for the rotation transformation
+         // Rotate around the center of the sprite image (w/2, h/2)
+         // TODO(halabelson): Add a way for the user to specify the center of rotation.
+         // Generate a new matrix based on the current rotation and x and y coordinates.
+         Matrix temporaryMatrix = new Matrix();
+         temporaryMatrix.postRotate((float) -Heading(), w / 2, h / 2);
+         temporaryMatrix.postTranslate(xinit, yinit);
+         // Set the current position to the updated rotation
+         mat.set(temporaryMatrix);
+         // We must scale the unrotated Bitmap to be the user specified size before
+         // rotating.
+         if (w != unrotatedBitmap.getWidth() || h != unrotatedBitmap.getHeight()) {
+          scaledBitmap = Bitmap.createScaledBitmap(unrotatedBitmap, w, h, true);
         }
-        // Position the drawable:
-        // We want the center of the image to remain fixed under the rotation.
-        // To do this, we have to take account of the fact that, since the original
-        // and the rotated bitmaps are rectangular, the offset of the center point from (0,0)
-        // in the rotated bitmap will in general be different from the offset
-        // in the unrotated bitmap.  Namely, rather than being 1/2 the width and height of the
-        // unrotated bitmap, the offset is 1/2 the width and height of the rotated bitmap.
-        // So when we display on the canvas, we  need to displace the upper left away
-        // from (xinit, yinit) to take account of the difference in the offsets.
-        rotatedDrawable.setBounds(
-            xinit + w / 2 - rotatedBitmap.getWidth() / 2,
-            yinit + h / 2 - rotatedBitmap.getHeight() / 2 ,
-            // add in the width and height of the rotated bitmap
-            // to get the other right and bottom edges
-            xinit + w / 2 + rotatedBitmap.getWidth() / 2,
-            yinit + h / 2 + rotatedBitmap.getHeight() / 2);
-        rotatedDrawable.draw(canvas);
+        else {
+          scaledBitmap = unrotatedBitmap;
+        }
+        cachedRotationHeading = Heading();
+      }
+        // Draw the scaledBitmap using the specified matrix.
+        canvas.drawBitmap(scaledBitmap, mat, null);
       }
     }
   }

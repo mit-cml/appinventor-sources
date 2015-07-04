@@ -146,7 +146,7 @@
        compiles all the specified tests, builds them into a library,
        runs them with junit, and then generates a report. It sets
        haltonfailure to no so that the tests will continue to run even
-       after a failure, and so that a report wil be generated.
+       after a failure, and so that a report will be generated.
 
        Depends on having the following properties and paths defined:
 
@@ -285,6 +285,16 @@
   </target>
 
   <!-- ====================================================================
+       components_ComponentTranslation builds:
+       common/build/src/com/google/appinventor/ComponentsTranslation.java
+       ==================================================================== -->
+
+  <target name="components_ComponentTranslation">
+    <ant inheritAll="false" useNativeBaseDir="true" dir="${appinventor.dir}/components"
+         target="ComponentTranslation"/>
+  </target>
+
+  <!-- ====================================================================
        buildserver_StarterApp builds:
        - build/buildserver/AppInventorPhoneApp.apk
        ==================================================================== -->
@@ -292,6 +302,16 @@
   <target name="buildserver_StarterApp">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/buildserver"
          target="StarterApp"/>
+  </target>
+
+  <!-- ====================================================================
+       common_CommonTranslations builds:
+       - build/common/CommonTranslations.jar
+       ==================================================================== -->
+  
+  <target name="common_CommonTranslations">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
+         target="CommonTranslations"/>
   </target>
 
   <!-- ====================================================================
@@ -336,7 +356,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
          target="CommonTestUtils"/>
   </target>
-
+  
   <!-- ====================================================================
        components_AndroidRuntime builds:
        - build/components/AndroidRuntime.jar
@@ -345,6 +365,16 @@
   <target name="components_AndroidRuntime">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="AndroidRuntime"/>
+  </target>
+
+  <!-- ====================================================================
+       components_Barcode builds:
+       - build/components/Barcode.jar
+       ==================================================================== -->
+  
+  <target name="components_Barcode">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="Barcode"/>
   </target>
 
   <!-- ====================================================================

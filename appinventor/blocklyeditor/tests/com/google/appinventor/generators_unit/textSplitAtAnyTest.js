@@ -1,5 +1,6 @@
 // Copyright 2011-2013 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/appinventor-sources/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 /**
  * Unit test for "split at any" block Yail generator

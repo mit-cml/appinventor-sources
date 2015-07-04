@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.buildserver;
 
 import com.google.common.base.Preconditions;
@@ -10,6 +11,7 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -79,6 +81,7 @@ public final class Project {
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
+  private static final String ANAMETAG = "aname";
 
   // Table containing project properties
   private Properties properties;
@@ -238,6 +241,31 @@ public final class Project {
     if (retval == null)         // Older Projects won't have this
       retval = "False";
     return retval;
+  }
+
+  /**
+   * Returns the app name.
+   *
+   * @return  app name
+   */
+  public String getAName() {
+    //The non-English character set can't be shown properly and need special encoding.
+    String appName = properties.getProperty(ANAMETAG);
+    try {
+      appName = new String(appName.getBytes("ISO-8859-1"), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    } catch (NullPointerException e) {
+    }
+    return appName;
+  }
+
+  /**
+   * Sets the app name.
+   *
+   * @param aname  app name
+   */
+  public void setAName(String aname) {
+    properties.setProperty(ANAMETAG, aname);
   }
 
   /**

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.simple;
 
@@ -50,6 +51,134 @@ public interface ComponentDatabaseInterface {
 
     public String getEditorType() {
       return editorType;
+    }
+  }
+
+  /**
+   * Block Property definition: property name, property description and property
+   * type and read/write permission.
+   */
+  public static class BlockPropertyDefinition {
+    private final String name;
+    private final String description;
+    private final String type;
+    private final String rw;
+
+    public BlockPropertyDefinition(String name, String description, String type) {
+      this(name, description, type, "read-write");
+    }
+
+    public BlockPropertyDefinition(String name, String description,
+        String type, String rw) {
+      this.name = name;
+      this.description = description;
+      this.type = type;
+      this.rw = rw;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public String getRW() {
+      return rw;
+    }
+  }
+
+  /**
+   * Method and Event's parameter definition: parameter name and
+   * parameter type.
+   */
+  public static class ParameterDefinition {
+    private final String name;
+    private final String type;
+
+    public ParameterDefinition(String name, String type) {
+      this.name = name;
+      this.type = type;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getType() {
+      return type;
+    }
+  }
+
+  /**
+   * Event definition: event name, event description and event params.
+   */
+  public static class EventDefinition {
+    private final String name;
+    private final String description;
+    private final boolean deprecated;
+    // "params": [{ "name": "xAccel", "type": "number"},*]
+    private final List<ParameterDefinition> params;
+
+    public EventDefinition(String name, String description, boolean deprecated,
+        List<ParameterDefinition> params) {
+      this.name = name;
+      this.description = description;
+      this.deprecated = deprecated;
+      this.params = params;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public boolean getDeprecated() { return deprecated; }
+
+    public List<ParameterDefinition> getParam() {
+      return params;
+    }
+  }
+
+  /**
+   * Method definition: method name, method description, method params,
+   * and return type.
+   */
+  public static class MethodDefinition {
+    private final String name;
+    private final String description;
+    private final boolean deprecated;
+    // "params": [{ "name": "xAccel", "type": "number"},*]
+    private List<ParameterDefinition> params;
+
+    public MethodDefinition(String name, String description, boolean deprecated,
+        List<ParameterDefinition> params) {
+      this.name = name;
+      this.description = description;
+      this.deprecated = deprecated;
+      this.params = params;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public boolean getDeprecated() { return deprecated; }
+
+    public List<ParameterDefinition> getParam() {
+      return params;
     }
   }
 
@@ -139,6 +268,30 @@ public interface ComponentDatabaseInterface {
    */
   List<PropertyDefinition> getPropertyDefinitions(String componentTypeName);
 
+  /**
+   * Returns a list of a component's block property definitions.
+   *
+   * @param componentTypeName  name of component to query
+   * @return  list of block property definition for the component
+   */
+  List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentTypeName);
+
+  /**
+   * Returns a list of a component's event definitions.
+   *
+   * @param componentTypeName  name of component to query
+   * @return  list of event definition for the component
+   */
+  List<EventDefinition> getEventDefinitions(String componentTypeName);
+
+  /**
+   * Returns a list of a component's method definitions.
+   *
+   * @param componentTypeName  name of component to query
+   * @return  list of method definition for the component
+   */
+  List<MethodDefinition> getMethodDefinitions(String componentTypeName);
+
   /*
    * Returns a map of the property names and types for a component
    *
@@ -146,10 +299,10 @@ public interface ComponentDatabaseInterface {
    * @return  map of property names and types
    */
   Map<String, String> getPropertyTypesByName(String componentTypeName);
-  
+
   /*
    * Returns the JSON string describing the component type for a component
-   * 
+   *
    * @param componentTypeName  name of component to query
    */
   String getTypeDescription(String componentTypeName);

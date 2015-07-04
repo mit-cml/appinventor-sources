@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @fileoverview Control blocks for Blockly, modified for App Inventor
  * @author fraser@google.com (Neil Fraser)
@@ -11,6 +12,7 @@
 
 /**
  * Lyn's History:
+ * [lyn, written 11/16-17/13, added 07/01/14] Added freeVariables, renameFree, and renameBound to forRange and forEach loops
  * [lyn, 10/27/13] Specify direction of flydowns
  * [lyn, 10/25/13] Made collapsed block labels more sensible.
  * [lyn, 10/10-14/13]
@@ -19,7 +21,7 @@
  *   + Renamed "for <i> start [] end [] step []" block to "for each <number> from [] to [] by []"
  *   + Renamed "for each <i> in list []" block to "for each <item> in list []"
  *   + Renamed "choose test [] then-return [] else-return []" to "if [] then [] else []"
- *     (TODO: still needs to have a mutator like	the "if" statement blocks).
+ *     (TODO: still needs to have a mutator like  the "if" statement blocks).
  *   + Renamed "evaluate" block to "evaluate but ignore result"
  *   + Renamed "do {} then-return []" block to "do {} result []" and re-added this block
  *     to the Control drawer (who removed it?)
@@ -27,7 +29,7 @@
  * [lyn, 11/29-30/12]
  *   + Change forEach and forRange loops to take name as input text rather than via plug.
  *   + For these blocks, add extra methods to support renaming.
-*/
+ */
 
 'use strict';
 
@@ -37,22 +39,22 @@ goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_IF_HELPURL,
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('IF0')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_IF);
     this.appendStatementInput('DO0')
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setMutator(new Blockly.Mutator(['controls_if_elseif',
-                                         'controls_if_else']));
+      'controls_if_else']));
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
-    this.setTooltip(function() {
+    this.setTooltip(function () {
       if (!thisBlock.elseifCount_ && !thisBlock.elseCount_) {
         return Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1;
       } else if (!thisBlock.elseifCount_ && thisBlock.elseCount_) {
@@ -66,9 +68,9 @@ Blockly.Blocks['controls_if'] = {
     });
     this.elseifCount_ = 0;
     this.elseCount_ = 0;
-    this.warnings = [{name:"checkEmptySockets",sockets:[{baseName:"IF"},{baseName:"DO"}]}];
+    this.warnings = [{name: "checkEmptySockets", sockets: [{baseName: "IF"}, {baseName: "DO"}]}];
   },
-  mutationToDom: function() {
+  mutationToDom: function () {
     if (!this.elseifCount_ && !this.elseCount_) {
       return null;
     }
@@ -81,8 +83,8 @@ Blockly.Blocks['controls_if'] = {
     }
     return container;
   },
-  domToMutation: function(xmlElement) {
-    if(xmlElement.getAttribute('elseif') === null){
+  domToMutation: function (xmlElement) {
+    if (xmlElement.getAttribute('elseif') === null) {
       this.elseifCount_ = 0;
     } else {
       this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
@@ -91,7 +93,7 @@ Blockly.Blocks['controls_if'] = {
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
-          .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+          .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
           .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
       this.appendStatementInput('DO' + x)
           .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
@@ -101,7 +103,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE);
     }
   },
-  decompose: function(workspace) {
+  decompose: function (workspace) {
     var containerBlock = new Blockly.Block.obtain(workspace, 'controls_if_if');
     containerBlock.initSvg();
     var connection = containerBlock.getInput('STACK').connection;
@@ -118,7 +120,7 @@ Blockly.Blocks['controls_if'] = {
     }
     return containerBlock;
   },
-  compose: function(containerBlock) {
+  compose: function (containerBlock) {
     // Disconnect the else input blocks and destroy the inputs.
     if (this.elseCount_) {
       this.removeInput('ELSE');
@@ -137,7 +139,7 @@ Blockly.Blocks['controls_if'] = {
         case 'controls_if_elseif':
           this.elseifCount_++;
           var ifInput = this.appendValueInput('IF' + this.elseifCount_)
-              .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+              .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
               .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
           var doInput = this.appendStatementInput('DO' + this.elseifCount_);
           doInput.appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
@@ -162,10 +164,10 @@ Blockly.Blocks['controls_if'] = {
           throw 'Unknown block type.';
       }
       clauseBlock = clauseBlock.nextConnection &&
-          clauseBlock.nextConnection.targetBlock();
+      clauseBlock.nextConnection.targetBlock();
     }
   },
-  saveConnections: function(containerBlock) {
+  saveConnections: function (containerBlock) {
     // Store a pointer to any connected child blocks.
     var inputDo;
     var clauseBlock = containerBlock.getInputTargetBlock('STACK');
@@ -190,15 +192,15 @@ Blockly.Blocks['controls_if'] = {
           throw 'Unknown block type.';
       }
       clauseBlock = clauseBlock.nextConnection &&
-          clauseBlock.nextConnection.targetBlock();
+      clauseBlock.nextConnection.targetBlock();
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF}]
 };
 
 Blockly.Blocks['controls_if_if'] = {
   // If condition.
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF);
@@ -210,7 +212,7 @@ Blockly.Blocks['controls_if_if'] = {
 
 Blockly.Blocks['controls_if_elseif'] = {
   // Else-If condition.
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF);
@@ -223,7 +225,7 @@ Blockly.Blocks['controls_if_elseif'] = {
 
 Blockly.Blocks['controls_if_else'] = {
   // Else condition.
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE);
@@ -235,9 +237,9 @@ Blockly.Blocks['controls_if_else'] = {
 
 Blockly.Blocks['controls_forRange'] = {
   // For range.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
     // Need to deal with variables here
@@ -246,17 +248,17 @@ Blockly.Blocks['controls_forRange'] = {
     // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('START')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR, true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('END')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('STEP')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO')
@@ -266,10 +268,10 @@ Blockly.Blocks['controls_forRange'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP);
   },
-  getVars: function() {
+  getVars: function () {
     return [this.getFieldValue('VAR')];
   },
-  blocksInScope: function() {
+  blocksInScope: function () {
     var doBlock = this.getInputTargetBlock('DO');
     if (doBlock) {
       return [doBlock];
@@ -277,22 +279,67 @@ Blockly.Blocks['controls_forRange'] = {
       return [];
     }
   },
-  declaredNames: function() {
+  declaredNames: function () {
     return [this.getFieldValue('VAR')];
   },
-  renameVar: function(oldName, newName) {
+  renameVar: function (oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
       this.setFieldValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM }]
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('START'), freeSubstitution);
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('END'), freeSubstitution);
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('STEP'), freeSubstitution);
+    var oldIndexVar = this.getFieldValue('VAR');
+    var newIndexVar = boundSubstitution.apply(oldIndexVar);
+    if (newIndexVar !== oldIndexVar) {
+      this.renameVar(oldIndexVar, newIndexVar);
+      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
+      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    } else {
+      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+    }
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function (freeSubstitution) {
+    var indexVar = this.getFieldValue('VAR');
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    bodyFreeVars.deleteName(indexVar);
+    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
+      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
+      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
+      this.renameBound(boundSubstitution, freeSubstitution);
+    } else {
+      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+    }
+  },
+  freeVariables: function () { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    result.deleteName(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('START')));
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('END')));
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('STEP')));
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+    return result;
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM}]
 };
 
 Blockly.Blocks['controls_forEach'] = {
   // For each loop.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
     // [lyn, 10/07/13] Changed default name from "i" to "item"
@@ -301,7 +348,7 @@ Blockly.Blocks['controls_forEach'] = {
     // this.appendValueInput('VAR').appendField('for range').appendField('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendField('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('LIST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM)
         .appendField(new Blockly.FieldParameterFlydown(Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_VAR,
             true, Blockly.FieldFlydown.DISPLAY_BELOW), 'VAR')
@@ -312,10 +359,10 @@ Blockly.Blocks['controls_forEach'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_FOREACH_TOOLTIP);
   },
-  getVars: function() {
+  getVars: function () {
     return [this.getFieldValue('VAR')];
   },
-  blocksInScope: function() {
+  blocksInScope: function () {
     var doBlock = this.getInputTargetBlock('DO');
     if (doBlock) {
       return [doBlock];
@@ -323,22 +370,63 @@ Blockly.Blocks['controls_forEach'] = {
       return [];
     }
   },
-  declaredNames: function() {
+  declaredNames: function () {
     return [this.getFieldValue('VAR')];
   },
-  renameVar: function(oldName, newName) {
+  renameVar: function (oldName, newName) {
     if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
       this.setFieldValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM }]
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('LIST'), freeSubstitution);
+    var oldIndexVar = this.getFieldValue('VAR');
+    var newIndexVar = boundSubstitution.apply(oldIndexVar);
+    if (newIndexVar !== oldIndexVar) {
+      this.renameVar(oldIndexVar, newIndexVar);
+      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
+      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    } else {
+      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+    }
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function (freeSubstitution) {
+    var indexVar = this.getFieldValue('VAR');
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    bodyFreeVars.deleteName(indexVar);
+    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
+      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
+      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
+      this.renameBound(boundSubstitution, freeSubstitution);
+    } else {
+      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+    }
+  },
+  freeVariables: function () { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    result.deleteName(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('LIST')));
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+    return result;
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM}]
 };
 
 /* [lyn 10/10/13] With parameter flydown changes,
 * I don't think a special GET block in the Control drawer is necesssary
 Blockly.Blocks.for_lexical_variable_get = {
   // Variable getter.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_GET_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -391,12 +479,12 @@ Blockly.Blocks.for_lexical_variable_get = {
 
 Blockly.Blocks['controls_while'] = {
   // While condition.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_WHILE_INPUT_TEST)
         .setAlign(Blockly.ALIGN_RIGHT);
@@ -407,19 +495,19 @@ Blockly.Blocks['controls_while'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_WHILE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_WHILE_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_WHILE_TITLE}]
 };
 
 // [lyn, 01/15/2013] Remove DO C-sockets because now handled more modularly by DO-THEN-RETURN block.
 Blockly.Blocks['controls_choose'] = {
   // Choose.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('TEST')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_TEST)
         .setAlign(Blockly.ALIGN_RIGHT);
@@ -432,25 +520,27 @@ Blockly.Blocks['controls_choose'] = {
         .appendField(Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN)
         .setAlign(Blockly.ALIGN_RIGHT);
     /* this.setTooltip('If the condition being tested is true, the agent will '
-       + 'run all the blocks attached to the \'then-do\' section and return the value attached '
-       + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
-       + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
-       */
+     + 'run all the blocks attached to the \'then-do\' section and return the value attached '
+     + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
+     + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
+     */
     // [lyn, 01/15/2013] Edit description to be consistent with changes to slots.
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CHOOSE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE + ' ' +
-      Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN + ' ' +
-      Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN}]
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_CONTROLS_CHOOSE_TITLE + ' ' +
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN + ' ' +
+    Blockly.Msg.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN
+  }]
 };
 
 // [lyn, 10/10/13] This used to be in the control drawer as well as the procedure drawer
 // but someone removed it from the control drawer. I think it still belongs here.
 Blockly.Blocks['controls_do_then_return'] = {
   // String length.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendStatementInput('STM')
         .appendField(Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO);
@@ -460,14 +550,14 @@ Blockly.Blocks['controls_do_then_return'] = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE}]
 };
 
 // [lyn, 01/15/2013] Added
 Blockly.Blocks['controls_eval_but_ignore'] = {
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL,
-  init: function() {
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('VALUE')
         .appendField(Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE);
@@ -475,53 +565,52 @@ Blockly.Blocks['controls_eval_but_ignore'] = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE}]
 };
 
 /* [lyn 10/10/13] Hal doesn't like NOTHING. Must rethink
-// [lyn, 01/15/2013] Added
-Blockly.Blocks.controls_nothing = {
-  // Expression for the nothing value
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl: Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL,
-  init: function() {
-    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendDummyInput()
-        .appendField("nothing");
-    this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP);
-  },
-  onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE }]
-};
-*/
-
+ // [lyn, 01/15/2013] Added
+ Blockly.Blocks.controls_nothing = {
+ // Expression for the nothing value
+ category: 'Control',
+ helpUrl: Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL,
+ init: function() {
+ this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+ this.appendDummyInput()
+ .appendField("nothing");
+ this.setOutput(true, null);
+ this.setTooltip(Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP);
+ },
+ onchange: Blockly.WarningHandler.checkErrors,
+ typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE }]
+ };
+ */
 
 Blockly.Blocks['controls_openAnotherScreen'] = {
   // Open another screen
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREEN')
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME)
         .setAlign(Blockly.ALIGN_RIGHT)
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT));
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT));
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE}]
 };
 
 Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
   // Open another screen with start value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREENNAME')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
         .setAlign(Blockly.ALIGN_RIGHT);
@@ -531,42 +620,42 @@ Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE}]
 };
 
 Blockly.Blocks['controls_getStartValue'] = {
   // Get start value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_TITLE}]
 };
 
 Blockly.Blocks['controls_closeScreen'] = {
   // Close screen
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_TITLE}]
 };
 
 Blockly.Blocks['controls_closeScreenWithValue'] = {
   // Close screen with value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREEN')
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE)
@@ -575,48 +664,49 @@ Blockly.Blocks['controls_closeScreenWithValue'] = {
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE}]
 };
 
 Blockly.Blocks['controls_closeApplication'] = {
   // Close application
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput().appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE}]
 };
 
 Blockly.Blocks['controls_getPlainStartText'] = {
   // Get plain start text
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendDummyInput().appendField('get plain start text');
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE}]
 };
 
 Blockly.Blocks['controls_closeScreenWithPlainText'] = {
   // Close screen with plain text
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
-  init : function() {
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
+  init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE }]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE}]
 };

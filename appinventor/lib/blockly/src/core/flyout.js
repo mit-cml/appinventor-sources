@@ -28,6 +28,7 @@ goog.provide('Blockly.Flyout');
 
 goog.require('Blockly.Block');
 goog.require('Blockly.Comment');
+goog.require('goog.userAgent');
 
 
 /**
@@ -50,7 +51,7 @@ Blockly.Flyout = function() {
    * @type {Array.<!Array>}
    * @private
    */
-  this.changeWrapper_ = null;
+  this.eventWrappers_ = [];
 
   /**
    * @type {number}
@@ -101,7 +102,7 @@ Blockly.Flyout.prototype.CORNER_RADIUS = 8;
  */
 Blockly.Flyout.prototype.VERTICAL_SEPARATION_FACTOR = 2;
 
-/**
+/*
  * Wrapper function called when a resize occurs.
  * @type {Array.<!Array>}
  * @private
@@ -132,14 +133,8 @@ Blockly.Flyout.prototype.createDom = function() {
  */
 Blockly.Flyout.prototype.dispose = function() {
   this.hide();
-  if (this.onResizeWrapper_) {
-    Blockly.unbindEvent_(this.onResizeWrapper_);
-    this.onResizeWrapper_ = null;
-  }
-  if (this.changeWrapper_) {
-    Blockly.unbindEvent_(this.changeWrapper_);
-    this.changeWrapper_ = null;
-  }
+  Blockly.unbindEvent_(this.eventWrappers_);
+  this.eventWrappers_.length = 0;
   if (this.scrollbar_) {
     this.scrollbar_.dispose();
     this.scrollbar_ = null;
@@ -217,8 +212,7 @@ Blockly.Flyout.prototype.setMetrics_ = function(yRatio) {
  *     blocks.
  * @param {boolean} withScrollbar True if a scrollbar should be displayed.
  */
-Blockly.Flyout.prototype.init =
-    function(workspace, withScrollbar) {
+Blockly.Flyout.prototype.init = function(workspace, withScrollbar) {
   this.targetWorkspace_ = workspace;
   // Add scrollbars.
   var flyout = this;
@@ -229,11 +223,17 @@ Blockly.Flyout.prototype.init =
   this.hide();
 
   // If the document resizes, reposition the flyout.
-  this.onResizeWrapper_ = Blockly.bindEvent_(window,
-      goog.events.EventType.RESIZE, this, this.position_);
+  this.eventWrappers_.concat(Blockly.bindEvent_(window,
+      goog.events.EventType.RESIZE, this, this.position_));
   this.position_();
-  this.changeWrapper_ = Blockly.bindEvent_(this.targetWorkspace_.getCanvas(),
-      'blocklyWorkspaceChange', this, this.filterForCapacity_);
+  this.eventWrappers_.concat(Blockly.bindEvent_(this.svgGroup_,
+      'wheel', this, this.wheel_));
+  // Safari needs mousewheel.
+  this.eventWrappers_.concat(Blockly.bindEvent_(this.svgGroup_,
+      'mousewheel', this, this.wheel_));
+  this.eventWrappers_.concat(
+      Blockly.bindEvent_(this.targetWorkspace_.getCanvas(),
+      'blocklyWorkspaceChange', this, this.filterForCapacity_));
 };
 
 /**
@@ -286,11 +286,33 @@ Blockly.Flyout.prototype.position_ = function() {
 };
 
 /**
+ * Scroll the flyout up or down.
+ * @param {!Event} e Mouse wheel scroll event.
+ */
+Blockly.Flyout.prototype.wheel_ = function(e) {
+  // Safari uses wheelDeltaY, everyone else uses deltaY.
+  var delta = e.deltaY || -e.wheelDeltaY;
+  if (delta) {
+    if (goog.userAgent.GECKO) {
+      // Firefox's deltas are a tenth that of Chrome/Safari.
+      delta *= 10;
+    }
+    var metrics = this.getMetrics_();
+    var y = metrics.viewTop + delta;
+    y = Math.max(y, 0);
+    y = Math.min(y, metrics.contentHeight - metrics.viewHeight);
+    this.scrollbar_.set(y);
+    // Don't scroll the page.
+    e.preventDefault();
+  }
+};
+
+/**
  * Is the flyout visible?
  * @return {boolean} True if visible.
  */
 Blockly.Flyout.prototype.isVisible = function() {
-  return this.svgGroup_.style.display == 'block';
+  return this.svgGroup_ && this.svgGroup_.style.display == 'block';
 };
 
 /**
@@ -305,23 +327,13 @@ Blockly.Flyout.prototype.hide = function() {
   for (var x = 0, listen; listen = this.listeners_[x]; x++) {
     Blockly.unbindEvent_(listen);
   }
-  this.listeners_.splice(0);
+  this.listeners_.length = 0;
   if (this.reflowWrapper_) {
     Blockly.unbindEvent_(this.reflowWrapper_);
     this.reflowWrapper_ = null;
   }
-  // Delete all the blocks.
-  var blocks = this.workspace_.getTopBlocks(false);
-  for (var x = 0, block; block = blocks[x]; x++) {
-    if (block.workspace == this.workspace_) {
-      block.dispose(false, false);
-    }
-  }
-  // Delete all the background buttons.
-  for (var x = 0, rect; rect = this.buttons_[x]; x++) {
-    goog.dom.removeNode(rect);
-  }
-  this.buttons_.splice(0);
+  // Do NOT delete the blocks here.  Wait until Flyout.show.
+  // https://neil.fraser.name/news/2014/08/09/
 };
 
 /**
@@ -331,6 +343,19 @@ Blockly.Flyout.prototype.hide = function() {
  */
 Blockly.Flyout.prototype.show = function(xmlList) {
   this.hide();
+  // Delete any blocks from a previous showing.
+  var blocks = this.workspace_.getTopBlocks(false);
+  for (var x = 0, block; block = blocks[x]; x++) {
+    if (block.workspace == this.workspace_) {
+      block.dispose(false, false);
+    }
+  }
+  // Delete any background buttons from a previous showing.
+  for (var x = 0, rect; rect = this.buttons_[x]; x++) {
+    goog.dom.removeNode(rect);
+  }
+  this.buttons_.length = 0;
+
   var margin = this.CORNER_RADIUS;
   this.svgGroup_.style.display = 'block';
 
@@ -589,6 +614,7 @@ Blockly.Flyout.prototype.createBlockFunc_ = function(originBlock) {
  * @private
  */
 Blockly.Flyout.prototype.filterForCapacity_ = function() {
+  if (!this.targetWorkspace_) return;
   var remainingCapacity = this.targetWorkspace_.remainingCapacity();
   var blocks = this.workspace_.getTopBlocks(false);
   for (var i = 0, block; block = blocks[i]; i++) {

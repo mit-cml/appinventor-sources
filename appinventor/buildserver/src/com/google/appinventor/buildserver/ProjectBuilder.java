@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
@@ -111,7 +112,7 @@ public final class ProjectBuilder {
         + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
   }
 
-    Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl, boolean isForWireless,
+  Result build(String userName, ZipFile inputZip, File outputDir, boolean isForCompanion,
                int childProcessRam, String dexCachePath) {
     try {
       // Download project files into a temporary directory
@@ -157,11 +158,11 @@ public final class ProjectBuilder {
         PrintStream userErrors = new PrintStream(errors);
 
         Set<String> componentTypes =
-            (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
+          isForCompanion ? getAllComponentTypes() : getComponentTypes(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
+            Compiler.compile(project, componentTypes, console, console, userErrors, isForCompanion,
                              keyStorePath, childProcessRam, dexCachePath);
         console.close();
         userErrors.close();

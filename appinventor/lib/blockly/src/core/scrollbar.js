@@ -136,36 +136,8 @@ Blockly.ScrollbarPair.prototype.resize = function() {
  * @param {number} y Vertical scroll value.
  */
 Blockly.ScrollbarPair.prototype.set = function(x, y) {
-  /* HACK:
-   Two scrollbars are about to have their sliders moved.  Moving a scrollbar
-   will normally result in its onScroll function being called.  That function
-   will update the contents.  At issue is what happens when two scrollbars are
-   moved.  Calling onScroll twice may result in two rerenderings of the content
-   and increase jerkiness during dragging.
-   In the case of native scrollbars (currently used only by Firefox), onScroll
-   is called as an event, which means two separate renderings of the content are
-   performed.  However in the case of SVG scrollbars (currently used by all
-   other browsers), onScroll is called as a function and the browser only
-   rerenders the contents once at the end of the thread.
-  */
-  if (Blockly.Scrollbar === Blockly.ScrollbarNative) {
-    // Native scrollbar mode.
-    // Set both scrollbars and suppress their two separate onScroll events.
-    this.hScroll.set(x, false);
-    this.vScroll.set(y, false);
-    // Redraw the surface once with the new settings for both scrollbars.
-    var xyRatio = {};
-    xyRatio.x = (this.hScroll.outerDiv_.scrollLeft /
-                 this.hScroll.innerImg_.offsetWidth) || 0;
-    xyRatio.y = (this.vScroll.outerDiv_.scrollTop /
-                 this.vScroll.innerImg_.offsetHeight) || 0;
-    this.workspace_.setMetrics(xyRatio);
-  } else {
-    // SVG scrollbars.
-    // Set both scrollbars and allow each to call a separate onScroll execution.
-    this.hScroll.set(x, true);
-    this.vScroll.set(y, true);
-  }
+  this.hScroll.set(x);
+  this.vScroll.set(y);
 };
 
 // --------------------------------------------------------------------
@@ -208,8 +180,10 @@ Blockly.Scrollbar = function(workspace, horizontal, opt_pair) {
 
 /**
  * Width of vertical scrollbar or height of horizontal scrollbar.
+ * Increase the size of scrollbars on touch devices.
  */
-Blockly.Scrollbar.scrollbarThickness = 15;
+Blockly.Scrollbar.scrollbarThickness =
+    ('ontouchstart' in document.documentElement) ? 25 : 15;
 
 /**
  * Dispose of this scrollbar.
@@ -520,15 +494,11 @@ Blockly.Scrollbar.prototype.onScroll_ = function() {
 /**
  * Set the scrollbar slider's position.
  * @param {number} value The distance from the top/left end of the bar.
- * @param {boolean} fireEvents True if onScroll events should be fired.
  */
-Blockly.Scrollbar.prototype.set = function(value, fireEvents) {
+Blockly.Scrollbar.prototype.set = function(value) {
   // Move the scrollbar slider.
-  this.svgKnob_.setAttribute(this.horizontal_ ? 'x' : 'y', value * this.ratio_);
-
-  if (fireEvents) {
-    this.onScroll_();
-  }
+  this.svgKnob_.setAttribute(this.horizontal_ ? 'x' : 'y', this.constrainKnob_(value * this.ratio_));
+  this.onScroll_();
 };
 
 /**

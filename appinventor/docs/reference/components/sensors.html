@@ -9,6 +9,10 @@
     <meta datatype="xsd:integer" content="0" property="sioc:num_replies" about="/front_page" />
     <meta property="dc:title" about="/front_page" content="Front Page" />
     <meta content="Drupal 7 (http://drupal.org)" name="Generator" />
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
     <title>Sensor Components - App Inventor for Android</title>
     <style>
       body{
@@ -98,14 +102,16 @@
       }
 
       #branding, #create-button, #region-create, #menu-bar li{
-      display: inline-block;
+      display: block;
       }
+/*
       #menu-bar{
       margin: 0;
       padding-top:10px;
       position: absolute;
       top: 0;
       }
+*/
       #menu-bar li{
       margin:0;
 
@@ -116,7 +122,7 @@
       font-size: 22px;
       text-decoration: none;
       color: #3D3D3D;
-      background:transparent !important;
+/*      background:transparent !important; */
       border-radius:0 !important;
       display: block;
       line-height: 2.5em;
@@ -407,25 +413,31 @@
   </head>
   <body>
     <div class="container" id="page">
-      <header role="banner" class="clearfix"> </header>
-      <div id="top_bar">
-        <div id="branding">
-          <div id="logo"><a class="active" title="Home page" href="http://appinventor.mit.edu"><img
-                alt="Explore MIT App Inventor logo" src="images/logo2.png" /></a></div>
+      <header role="banner" class="clearfix">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a class="active" title="Home page" href="http://appinventor.mit.edu">
+                <img alt="Explore MIT App Inventor logo" src="images/logo2.png" /></a></div>
+          </div>
+          <div class="nav clearfix" id="menu-bar">
+            <nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+              <ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+            </nav>
+          </div>
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
-        <div class="nav clearfix" id="menu-bar">
-          <nav role="navigation"> </nav>
-          <ul>
-            <li><a href="http://appinventor.mit.edu">Home</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/library">Support
-                ▾</a></li>
-          </ul>
-        </div>
-        <div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
-        </div>
-      </div>
-      <div style="margin-top: 15px;" class="no-menu-bar" id="columns">
+      </header>
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;">
         <div class="columns-inner clearfix">
           <div id="content-column">
             <div class="content-inner">
@@ -439,9 +451,11 @@
                     <li> <a href="#AccelerometerSensor"> AccelerometerSensor </a>
                     </li>
                     <li> <a href="#BarcodeScanner"> BarcodeScanner </a> </li>
+                    <li> <a href="#Clock"> Clock </a> </li>
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
                     <li> <a href="#OrientationSensor"> OrientationSensor </a>
+                    <li> <a href="#ProximitySensor"> ProximitySensor </a>
                     </li>
                   </ul>
 
@@ -490,6 +504,8 @@ none
 <dl>
   <dt><code><em>Result</em></code></dt>
   <dd>Text result of the previous scan.</dd>
+  <dt><code><em>UseExternalScanner</em></code></dt>
+  <dd>If true App Inventor will look for and use an external scanning program such as "Bar Code Scanner."</dd>
 </dl>
 
 <h3>Events</h3>
@@ -503,6 +519,79 @@ none
   <dt><code>DoScan()</code></dt>
   <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
 </dl>
+
+ <h2 id="Clock"> Clock </h2>
+  <img src="images/clock.png" alt="" />
+  <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p> 
+  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p> 
+  <h3> Properties </h3>
+  <dl>
+      <dt> <code> TimerAlwaysFires </code> </dt>
+      <dd> Will fire even when application is not showing on the screen if true </dd>
+      <dt> <code> TimerEnabled </code> </dt>
+      <dd> Fires timer if true </dd>
+      <dt> <code> TimerInterval </code> </dt>
+      <dd> Interval between timer events in ms </dd>
+  </dl> 
+  <h3> Events </h3>
+  <dl>
+    <dt> <code> Timer() </code> </dt>
+    <dd>Timer has gone off.</dd>
+  </dl>
+  <h3> Methods </h3>
+  <dl>
+      <dt> <code> InstantInTime AddDays(InstantInTime instant, number days) </code> </dt>
+      <dd> An instant in time some days after the argument </dd>
+      <dt> <code> InstantInTime AddHours(InstantInTime instant, number hours) </code> </dt>
+      <dd> An instant in time some hours after the argument </dd>
+      <dt> <code> InstantInTime AddMinutes(InstantInTime instant, number minutes) </code> </dt>
+      <dd> An instant in time some minutes after the argument </dd>
+      <dt> <code> InstantInTime AddMonths(InstantInTime instant, number months) </code> </dt>
+      <dd> An instant in time some months after the argument </dd>
+      <dt> <code> InstantInTime AddSeconds(InstantInTime instant, number seconds) </code> </dt>
+      <dd> An instant in time some seconds after the argument </dd>
+      <dt> <code> InstantInTime AddWeeks(InstantInTime instant, number weeks) </code> </dt>
+      <dd> An instant in time some weeks after the argument </dd>
+      <dt> <code> InstantInTime AddYears(InstantInTime instant, number years) </code> </dt>
+      <dd> An instant in time some years after the argument </dd>
+      <dt> <code> number DayOfMonth(InstantInTime instant) </code> </dt>
+      <dd> The day of the month </dd>
+      <dt> <code> number Duration(InstantInTime start, InstantInTime end) </code> </dt>
+      <dd> Milliseconds elapsed between instants </dd>
+      <dt> <code> text FormatDate(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date of an instant in the specified pattern </dd>
+      <dt> <code> text FormatDateTime(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date and time of an instant in the specified pattern</dd>
+      <dt> <code> text FormatTime(InstantInTime instant) </code> </dt>
+      <dd> Text representing the time of an instant </dd>
+      <dt> <code> number GetMillis(InstantInTime instant) </code> </dt>
+      <dd> The instant in time measured as milliseconds since 1970. </dd>
+      <dt> <code> number Hour(InstantInTime instant) </code> </dt>
+      <dd> The hour of the day </dd>
+      <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
+      <dd> An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm </dd>
+      <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
+      <dd> An instant in time specified by the milliseconds since 1970. </dd>
+      <dt> <code> number Minute(InstantInTime instant) </code> </dt>
+      <dd> The minute of the hour </dd>
+      <dt> <code> number Month(InstantInTime instant) </code> </dt>
+      <dd> The month of the year represented as a number from 1 to 12) </dd>
+      <dt> <code> text MonthName(InstantInTime instant) </code> </dt>
+      <dd> The name of the month </dd>
+      <dt> <code> InstantInTime Now() </code> </dt>
+      <dd> The current instant in time read from phone's clock </dd>
+      <dt> <code> number Second(InstantInTime instant) </code> </dt>
+      <dd> The second of the minute </dd>
+      <dt> <code> number SystemTime() </code> </dt>
+      <dd> The phone's internal time </dd>
+      <dt> <code> number Weekday(InstantInTime instant) </code> </dt>
+      <dd> The day of the week represented as a number from 1 (Sunday) to 7 (Saturday) </dd>
+      <dt> <code> text WeekdayName(InstantInTime instant) </code> </dt>
+      <dd> The name of the day of the week </dd>
+      <dt> <code> number Year(InstantInTime instant) </code> </dt>
+      <dd> The year </dd>
+  </dl>
+
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
@@ -650,6 +739,43 @@ none
                         pitch, number roll) </code> </dt>
                     <dd> Called when the orientation has changed. </dd>
                   </dl>
+                  <!-- ===== start: ProximitySensor ==== -->
+                  <h2 id="ProximitySensor">ProximitySensor </h2>
+                  <p> A sensor component that can measure the proximity of an object (in cm)
+                      relative to the view screen of a device. This sensor is typically used to determine
+                      whether a handset is being held up to a persons ear;
+                      i.e. lets you determine how far away an object is from a device.
+                      Many devices return the absolute distance, in cm, but some return only near and far values.
+                      In this case, the sensor usually reports its maximum range value in the far state
+                      and a lesser value in the near state. It reports the following value:</p>
+                  <ul>
+                      <li><strong>Distance</strong>: The distance from the object to the device</li>
+                  </ul>
+                  <h3> Properties </h3>
+                  <dl>
+                      <dt> <code class="c2"> Available </code> </dt>
+                      <dd> Reports whether or not the device has a proximity sensor </dd>
+
+                      <dt> <code class="c2"> Enabled </code> </dt>
+                      <dd> If enabled, then device will listen for changes in proximity</dd>
+
+                      <dt> <code class="c2"> KeepRunningWhenOnPause </code> </dt>
+                      <dd> If set to true, it will keep sensing for proximity changes even when the app is not visible</dd>
+
+                       <dt> <code class="c2"> Distance </code> </dt>
+                      <dd> Returns the distance from the object to the device</dd>
+
+                      <dt> <code class="c2"> MaximumRange </code> </dt>
+                      <dd> Reports the Maximum Range of the device's ProximitySensor. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                      <dt> <code> ProximityChanged(number distance) </code> </dt>
+                      <dd> Called when distance (in cm) of the object to the device changes. </dd>
+                  </dl>
+
+                  <!-- ===== end: ProximitySensor ==== -->
+
                   <!-- Content ----------------------- --> </div>
               </div>
             </div>

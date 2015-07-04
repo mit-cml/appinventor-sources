@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.buildserver;
 
 import com.google.appinventor.common.version.GitBuildId;
@@ -66,6 +67,10 @@ public class BuildServer {
   private ProjectBuilder projectBuilder = new ProjectBuilder();
 
   static class CommandLineOptions {
+    @Option(name = "--shutdownToken",
+      usage = "Token needed to shutdown the server remotely.")
+    String shutdownToken = null;
+
     @Option(name = "--childProcessRamMb",
       usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
@@ -142,11 +147,31 @@ public class BuildServer {
   // The zip file where we put all the build results for this request.
   private File outputZip;
 
+  // non-zero means we are shutting down, if currentTimeMillis is > then this, then we are
+  // completely shutdown, otherwise we are just providing NOT OK for health checks but
+  // otherwise still accepting jobs. This avoids having people get an error if the load
+  // balancer sends a job our way because it hasn't decided we are down.
+  private static volatile long shuttingTime = 0;
+
+  private static String shutdownToken = null;
+
+  private enum ShutdownState { UP, SHUTTING, DOWN };
+
   @GET
   @Path("health")
   @Produces(MediaType.TEXT_PLAIN)
   public Response health() throws IOException {
-    return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    ShutdownState shut = getShutdownState();
+    if (shut == ShutdownState.UP) {
+      LOG.info("Healthcheck: UP");
+      return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
+    } else if (shut == ShutdownState.DOWN) {
+      LOG.info("Healthcheck: DOWN");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutdown").build();
+    } else {
+      LOG.info("Healthcheck: SHUTTING");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
+    }
   }
 
   @GET
@@ -158,6 +183,10 @@ public class BuildServer {
     // Runtime
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+    variables.put("state", getShutdownState() + "");
+    if (shuttingTime != 0) {
+      variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
+    }
     variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
     variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
     variables.put("vm-name", runtimeBean.getVmName());
@@ -211,6 +240,37 @@ public class BuildServer {
     }
     html.append("</tt></body></html>");
     return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  /**
+   * Indicate that the server is shutting down.
+   *
+   * @param token -- secret token used like a password to authenticate the shutdown command
+   * @param delay -- the delay in seconds before jobs are no longer accepted
+   */
+
+  @GET
+  @Path("shutdown")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response shutdown(@QueryParam("token") String token, @QueryParam("delay") String delay) throws IOException {
+    if (commandLineOptions.shutdownToken == null || token == null) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("No Shutdown Token").build();
+    } else if (!token.equals(commandLineOptions.shutdownToken)) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
+    } else {
+      long shutdownTime = System.currentTimeMillis();
+      if (delay != null) {
+        try {
+          shutdownTime += Integer.parseInt(delay) *1000;
+        } catch (NumberFormatException e) {
+          // XXX Ignore
+        }
+      }
+      shuttingTime = shutdownTime;
+      DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+      return Response.ok("ok: Will shutdown at " + dateTimeFormat.format(new Date(shuttingTime)),
+          MediaType.TEXT_PLAIN_TYPE).build();
+    }
   }
 
   /**
@@ -339,6 +399,10 @@ public class BuildServer {
     if (inputZip.length() == 0L) {
       cleanUp();
     } else {
+      if (getShutdownState() == ShutdownState.DOWN) {
+        LOG.info("request received while shutdown completely");
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Temporary build error, try again.").build();
+      }
       if (commandLineOptions.requiredHosts != null) {
         boolean oktoproceed = false;
         for (String host : commandLineOptions.requiredHosts) {
@@ -491,7 +555,7 @@ public class BuildServer {
     // actually be deleted. That's only if the build server is killed (via ctrl+c) while a build
     // is happening, so we should be careful about that.
     outputDir.deleteOnExit();
-    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false, false,
+    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
       commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);
@@ -579,6 +643,16 @@ public class BuildServer {
     public void close() throws IOException {
       super.close();
       file.delete();
+    }
+  }
+
+  private ShutdownState getShutdownState() {
+    if (shuttingTime == 0) {
+      return ShutdownState.UP;
+    } else if (System.currentTimeMillis() > shuttingTime) {
+      return ShutdownState.DOWN;
+    } else {
+      return ShutdownState.SHUTTING;
     }
   }
 }

@@ -1,7 +1,8 @@
- // -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 // ***********************************************
 // If we're not going to go this route with onDestroy, then at least get rid of the DEBUG flag.
@@ -24,15 +25,17 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -94,14 +97,14 @@ public class Form extends Activity
   // activity: if a Clock component's TimerAlwaysFires property is true, the Clock component's
   // Timer event will still fire, even when the activity is no longer in the foreground. For this
   // reason, we cannot assume that the activeForm is the foreground activity.
-  private static Form activeForm;
+  protected static Form activeForm;
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
 
   private final Handler androidUIHandler = new Handler();
 
-  private String formName;
+  protected String formName;
 
   private boolean screenInitialized;
 
@@ -114,6 +117,8 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showStatusBar = true;
+  private boolean showTitle = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -147,7 +152,8 @@ public class Form extends Activity
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
-  private String startupValue = "";
+  // This is passed directly in the Repl.
+  protected String startupValue = "";
 
   // To control volume of error complaints
   private static long minimumToastWait = 10000000000L; // 10 seconds
@@ -206,13 +212,15 @@ public class Form extends Activity
   }
 
   private void defaultPropertyValues() {
-    Scrollable(true); // frameLayout is created in Scrollable()
-    BackgroundImage("");
+    Scrollable(false); // frameLayout is created in Scrollable()
     AboutScreen("");
+    BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowStatusBar(true);
+    TitleVisible(true);
   }
 
   @Override
@@ -515,7 +523,9 @@ public class Form extends Activity
           for (OnInitializeListener onInitializeListener : onInitializeListeners) {
             onInitializeListener.onInitialize();
           }
-
+          if (activeForm instanceof ReplForm) { // We are the Companion
+            ((ReplForm)activeForm).HandleReturnValues();
+          }
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -557,6 +567,26 @@ public class Form extends Activity
   }
 
 
+  public void ErrorOccurredDialog(Component component, String functionName, int errorNumber,
+      String message, String title, String buttonText) {
+    String componentType = component.getClass().getName();
+    componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
+    Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber +
+        ", componentType = " + componentType + ", functionName = " + functionName +
+        ", messages = " + message);
+    if ((!(EventDispatcher.dispatchEvent(
+        this, "ErrorOccurred", component, functionName, errorNumber, message)))
+        && screenInitialized)  {
+      // If dispatchEvent returned false, then no user-supplied error handler was run.
+      // If in addition, the screen initializer was run, then we assume that the
+      // user did not provide an error handler.   In this case, we run a default
+      // error handler, namely, showing a message dialog to the end user of the app.
+      // The app writer can override this by providing an error handler.
+      new Notifier(this).ShowMessageDialog("Error " + errorNumber + ": " + message, title, buttonText);
+    }
+  }
+
+
   public void dispatchErrorOccurredEvent(final Component component, final String functionName,
       final int errorNumber, final Object... messageArgs) {
     runOnUiThread(new Runnable() {
@@ -566,6 +596,29 @@ public class Form extends Activity
       }
     });
   }
+
+  // This is like dispatchErrorOccurred, except that it defaults to showing
+  // a message dialog rather than an alert.   The app writer can override either of these behaviors,
+  // but using the event dialog version frees the app writer of the need to explicitly override
+  // the alert behavior in the case
+  // where a message dialog is what's generally needed.
+  public void dispatchErrorOccurredEventDialog(final Component component, final String functionName,
+      final int errorNumber, final Object... messageArgs) {
+    runOnUiThread(new Runnable() {
+      public void run() {
+        String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
+        ErrorOccurredDialog(
+            component,
+            functionName,
+            errorNumber,
+            message,
+            "Error in " + functionName,
+            "Dismiss");
+      }
+    });
+  }
+
+
 
   /**
    * Scrollable property getter method.
@@ -587,7 +640,7 @@ public class Form extends Activity
    * @param scrollable  true if the screen should be vertically scrollable
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "True")
+    defaultValue = "False")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable && frameLayout != null) {
@@ -606,10 +659,7 @@ public class Form extends Activity
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
-    frameLayout.setBackgroundColor(backgroundColor);
-    if (backgroundDrawable != null) {
-      ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    }
+    setBackground(frameLayout);
 
     setContentView(frameLayout);
     frameLayout.requestLayout();
@@ -635,15 +685,8 @@ public class Form extends Activity
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      viewLayout.getLayoutManager().setBackgroundColor(argb);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(argb);
-    } else {
-      viewLayout.getLayoutManager().setBackgroundColor(Component.COLOR_WHITE);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(Component.COLOR_WHITE);
-    }
+    // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
+    setBackground(frameLayout);
   }
 
   /**
@@ -681,9 +724,7 @@ public class Form extends Activity
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;
     }
-
-    ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    frameLayout.invalidate();
+    setBackground(frameLayout);
   }
 
   /**
@@ -738,6 +779,71 @@ public class Form extends Activity
   }
 
   /**
+   * TitleVisible property getter method.
+   *
+   * @return  showTitle boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
+  public boolean TitleVisible() {
+    return showTitle;
+  }
+
+  /**
+   * TitleVisible property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void TitleVisible(boolean show) {
+    if (show != showTitle) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (v != null) {
+        if (show) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          v.setVisibility(View.GONE);
+        }
+        showTitle = show;
+      }
+    }
+  }
+
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowStatusBar(boolean show) {
+    if (show != showStatusBar) {
+      if (show) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }
+      showStatusBar = show;
+    }
+  }
+
+  /**
    * The requested screen orientation. Commonly used values are
       unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
       "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
@@ -748,9 +854,10 @@ public class Form extends Activity
    * @return  screen orientation
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The requested screen orientation. Commonly used values are" +
-      " unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-      "See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the " +
+      description = "The requested screen orientation, specified as a text value.  " +
+      "Commonly used values are " +
+      "landscape, portrait, sensor, user and unspecified.  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
@@ -1017,6 +1124,20 @@ public class Form extends Activity
   }
 
   /**
+   * Specifies the App Name.
+   *
+   * @param aName the display name of the installed application in the phone
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "This is the display name of the installed application in the phone." +
+        "If the AppName is blank, it will be set to the name of the project when the project is built.")
+  public void AppName(String aName) {
+    // We don't actually need to do anything.
+  }
+
+  /**
    * Width property getter method.
    *
    * @return  width property used by the layout
@@ -1103,7 +1224,7 @@ public class Form extends Activity
 
   // functionName is used for including in the error message to be shown
   // if the JSON encoding fails
-  private static String jsonEncodeForForm(Object value, String functionName) {
+  protected static String jsonEncodeForForm(Object value, String functionName) {
     String jsonResult = "";
     Log.i(LOG_TAG, "jsonEncodeForForm -- creating JSON representation:" + value.toString());
     try {
@@ -1223,10 +1344,15 @@ public class Form extends Activity
   // This is called from runtime.scm when a "close screen with value" block is executed.
   public static void finishActivityWithResult(Object result) {
     if (activeForm != null) {
-      String jString = jsonEncodeForForm(result, "close screen with value");
-      Intent resultIntent = new Intent();
-      resultIntent.putExtra(RESULT_NAME, jString);
-      activeForm.closeForm(resultIntent);
+      if (activeForm instanceof ReplForm) {
+        ((ReplForm)activeForm).setResult(result);
+        activeForm.closeForm(null);        // This will call RetValManager.popScreen()
+      } else {
+        String jString = jsonEncodeForForm(result, "close screen with value");
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(RESULT_NAME, jString);
+        activeForm.closeForm(resultIntent);
+      }
     } else {
       throw new IllegalStateException("activeForm is null");
     }
@@ -1353,13 +1479,15 @@ public class Form extends Activity
   private String yandexTranslateTagline = "";
 
   void setYandexTranslateTagline(){
-    yandexTranslateTagline = "<p><small>Powered by Yandex.Translate</small></p>";
+    yandexTranslateTagline = "<p><small>Language translation powered by Yandex.Translate</small></p>";
   }
 
   private void showAboutApplicationNotification() {
-    String title = "About This App";
-    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    String message = aboutScreen + tagline + yandexTranslateTagline;
+    String title = "About this app";
+    String MITtagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
+    // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
+    String message = aboutScreen + MITtagline + yandexTranslateTagline;
+    message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
@@ -1379,6 +1507,12 @@ public class Form extends Activity
         onStopListeners.remove(onStopListener);
       }
     }
+    if (component instanceof OnNewIntentListener) {
+      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
+      if (onNewIntentListeners.contains(onNewIntentListener)) {
+        onNewIntentListeners.remove(onNewIntentListener);
+      }
+    }
     if (component instanceof OnResumeListener) {
       OnResumeListener onResumeListener = (OnResumeListener) component;
       if (onResumeListeners.contains(onResumeListener)) {
@@ -1395,6 +1529,12 @@ public class Form extends Activity
       OnDestroyListener onDestroyListener = (OnDestroyListener) component;
       if (onDestroyListeners.contains(onDestroyListener)) {
         onDestroyListeners.remove(onDestroyListener);
+      }
+    }
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
       }
     }
     if (component instanceof Deleteable) {
@@ -1481,4 +1621,19 @@ public class Form extends Activity
   public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
     return fullScreenVideoUtil.performAction(action, source, data);
   }
+
+  private void setBackground(View bgview) {
+    Drawable setDraw = backgroundDrawable;
+    if (backgroundImagePath != "" && setDraw != null) {
+      setDraw = backgroundDrawable.getConstantState().newDrawable();
+      setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
+        PorterDuff.Mode.DST_OVER);
+    } else {
+      setDraw = new ColorDrawable(
+        (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
+    }
+    ViewUtil.setBackgroundImage(bgview, setDraw);
+    bgview.invalidate();
+  }
+
 }

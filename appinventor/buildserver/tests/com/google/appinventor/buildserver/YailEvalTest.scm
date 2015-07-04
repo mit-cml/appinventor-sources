@@ -54,6 +54,32 @@
 )
 
 
+;; test that we can use keys that are themselves lists
+(define (testLookupInPairs1)
+  (let* ((key-k '(a b c))
+         (key (kawa-list->yail-list key-k))
+         (alist-k '(((a b c) (100 200 300)) (d 2) (f 3)))
+         (alist (kawa-list->yail-list alist-k)))
+    (equal? (yail-alist-lookup key alist 'notfound) (kawa-list->yail-list '(100 200 300)))))
+
+
+;;Test that "0" is considered equal to "00" in looking up keys
+(define (testLookupInPairs2)
+  (let* ((key-k '("0" b c))
+         (key (kawa-list->yail-list key-k))
+         (alist-k '((("00" b c) (100 200 300)) (d 2) (f 3)))
+         (alist (kawa-list->yail-list alist-k)))
+    (equal? (yail-alist-lookup key alist 'notfound) (kawa-list->yail-list '(100 200 300)))))
+
+
+;;Test that we've patched around the Kawa bug in conversion to binary
+(define (testMathsConvert2)
+  (let* ((test-input (number->string (expt 10 30)))
+         (converted (math-convert-dec-bin test-input))
+         (unconverted (number->string (math-convert-bin-dec converted))))
+    (equal? test-input unconverted)))
+
+
 ;; Support for testing repl communication
 
 

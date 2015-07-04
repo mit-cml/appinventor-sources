@@ -16,3 +16,4 @@ reports/
 .externalToolBuilders/
 .gwt/
 out/
+*.pyc

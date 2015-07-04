@@ -1,12 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.ui.ListBox;
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Spinner component.
@@ -30,7 +32,7 @@ public final class MockSpinner extends MockVisibleComponent {
 
     // Initialize mock label UI
     spinnerWidget = new ListBox();
-    spinnerWidget.addItem("add items...");
+    spinnerWidget.addItem(MESSAGES.MockSpinnerAddItems());
     spinnerWidget.setStylePrimaryName("ode-SimpleMockComponent");
     spinnerWidget.addStyleName("spinnerComponentStyle");
     initComponent(spinnerWidget);

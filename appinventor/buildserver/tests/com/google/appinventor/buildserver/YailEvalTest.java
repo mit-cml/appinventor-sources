@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
@@ -110,6 +111,15 @@ public class YailEvalTest extends TestCase {
      assertTrue((Boolean) scheme.eval("(testTailRecursion)"));
    }
 
+   public void testLookupInPairs1() throws Throwable {
+     assertTrue((Boolean) scheme.eval("(testLookupInPairs1)"));
+   }
+
+   public void testLookupInPairs2() throws Throwable {
+     assertTrue((Boolean) scheme.eval("(testLookupInPairs2)"));
+   }
+
+
   public void testIsNumber() throws Throwable {
     assertTrue((Boolean) scheme.eval(
         "(call-yail-primitive is-number? (*list-for-runtime* \"1.01\") '(any) \"is a number?\")"));
@@ -147,7 +157,7 @@ public class YailEvalTest extends TestCase {
 
   public void testTypedCoercions() throws Throwable {
     String schemeString = "(coerce-arg (Float 5) 'text)";
-    assertEquals("5.0", scheme.eval(schemeString).toString());
+    assertEquals("5", scheme.eval(schemeString).toString());
     schemeString = "(coerce-arg (Double 3.33333) 'number)";
     assertEquals("3.33333", scheme.eval(schemeString).toString());
     schemeString = "(coerce-arg (Integer 10453) 'text)";
@@ -196,6 +206,8 @@ public class YailEvalTest extends TestCase {
     "(yail-equal? \"1\" 1)"));
     assertTrue((Boolean) scheme.eval(
     "(yail-equal? \"1\" 1.0)"));
+    assertTrue((Boolean) scheme.eval(
+    "(yail-equal? \"0\" \"00\")"));
     assertFalse((Boolean) scheme.eval(
     "(yail-equal? \"1\" 1.01)"));
     assertFalse((Boolean) scheme.eval(
@@ -1032,7 +1044,22 @@ public class YailEvalTest extends TestCase {
     assertFalse((Boolean) scheme.eval("(string-empty? \"foo\")"));
   }
 
-  public void roundToIntegerGroup() throws Throwable {
+  public void testMathsConvert() throws Throwable {
+    // we have to make the test inputs strings, because in the running system,
+    // the convert blocks force a conversion to string before calling the
+    // Yail procedures
+    assertEquals("3E8", scheme.eval("(math-convert-dec-hex \"1000\")").toString());
+    assertEquals("1000", scheme.eval("(math-convert-hex-dec \"3E8\")").toString());
+    assertEquals("1010", scheme.eval("(math-convert-dec-bin \"10\")").toString());
+    assertEquals("10", scheme.eval("(math-convert-bin-dec \"1010\")").toString());
+  }
+
+  public void testMathsConvert2() throws Throwable {
+    // test that we've patched around the Kawa bug in conversion to binary
+     assertTrue((Boolean) scheme.eval("(testMathsConvert2)"));
+   }
+
+  public void testRoundToIntegerGroup() throws Throwable {
     assertEquals("10", scheme.eval("(yail-round 10.48)").toString());
     assertEquals("10", scheme.eval("(yail-floor 10.48)").toString());
     assertEquals("11", scheme.eval("(yail-ceiling 10.48)").toString());
@@ -1046,12 +1073,11 @@ public class YailEvalTest extends TestCase {
     }
   }
 
-  public void randomIntegerAvoidError() throws Throwable {
+  public void testRandomIntegerAvoidError() throws Throwable {
     // demonstrate that this does not fail with large arguments
     scheme.eval("(random-integer 10 (- (expt 2 40)))");
     scheme.eval("(random-integer (- (expt 2 40)) 10)");
   }
-
 
   private static final double DELTA = .0001;
 
@@ -1151,9 +1177,15 @@ public class YailEvalTest extends TestCase {
      testBinaryDoubleFunction("atan2-degrees", args1, args2, vals);
    }
 
+   public void testIntegerDivison() throws Throwable {
+     // Check that integer division does not produce rationals
+     assertFalse((Boolean) scheme.eval("(exact? (yail-divide 2 3))"));
+   }
+
+
    public void testConvertToStrings() throws Throwable {
-     String schemeInputString = "(convert-to-strings (make-yail-list \"abc\" 123 (list 4 5 6)))";
-     String schemeExpectedResultString = "(abc 123 (4 5 6))";
+     String schemeInputString = "(convert-to-strings (make-yail-list (/ 10 5) 2.0 \"abc\" 123 (list 4 5 6)))";
+     String schemeExpectedResultString = "(2 2 abc 123 (4 5 6))";
      String schemeActualResult = scheme.eval(schemeInputString).toString();
      assertEquals(schemeExpectedResultString, schemeActualResult);
    }
@@ -1208,8 +1240,8 @@ public class YailEvalTest extends TestCase {
     // This tests the bug where passing a double property value to expt caused
     // java.lang.ClassCastException: java.lang.Double cannot be cast to gnu.math.Numeric
     String schemeString = "(define five :: java.lang.Double (java.lang.Double 5)) " +
-        "(expt (sanitize-component-data five) 2)";
-    assertEquals("25.0", scheme.eval(schemeString).toString());
+        "(coerce-to-string (expt (sanitize-component-data five) 2))";
+    assertEquals("25", scheme.eval(schemeString).toString());
   }
 
   public void testCoerceToStringWithSanitizedFloatZero() throws Throwable {
@@ -1217,7 +1249,7 @@ public class YailEvalTest extends TestCase {
     // incorrect result "OEO".
     String schemeString = "(define zero :: java.lang.Float (java.lang.Float 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
-    assertEquals("0.0", scheme.eval(schemeString).toString());
+    assertEquals("0", scheme.eval(schemeString).toString());
   }
 
   public void testCoerceToStringWithSanitizedDoubleZero() throws Throwable {
@@ -1225,6 +1257,6 @@ public class YailEvalTest extends TestCase {
     // incorrect result "OEO".
     String schemeString = "(define zero :: java.lang.Double (java.lang.Double 0)) " +
         "(coerce-to-string (sanitize-component-data zero))";
-    assertEquals("0.0", scheme.eval(schemeString).toString());
+    assertEquals("0", scheme.eval(schemeString).toString());
   }
 }

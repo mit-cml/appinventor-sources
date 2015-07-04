@@ -1,6 +1,7 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2013-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 /**
  * @license
  * @fileoverview Visual blocks editor for App Inventor
@@ -179,12 +180,14 @@ Blockly.Drawer.instanceNameToXMLArray = function(instanceName) {
   //create event blocks
   var eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
   for(var i=0;i<eventObjects.length;i++) {
+    if (eventObjects[i].deprecated === "true") continue;
     mutatorAttributes = {component_type: typeName, instance_name: instanceName, event_name : eventObjects[i].name};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
   }
   //create non-generic method blocks
   var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
   for(var i=0;i<methodObjects.length;i++) {
+    if (methodObjects[i].deprecated === "true") continue;
     mutatorAttributes = {component_type: typeName, instance_name: instanceName, method_name: methodObjects[i].name, is_generic:"false"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
   }
@@ -399,6 +402,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
+   lists_lookup_in_pairs: {xmlString:
+  '<xml>' +
+    '<block type="lists_lookup_in_pairs">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
@@ -433,6 +442,42 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          //mutator generator
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG4"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Canvas.DrawCircle has fill default to TRUE
+    {matchingMutatorAttributes:{component_type:"Canvas", method_name:"DrawCircle"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Clock.FormatDate has pattern default to MMM d, yyyy
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDate"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MMM d, yyyy</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Clock.FormatDateTime has pattern default to MM/dd/yyyy hh:mm:ss a
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDateTime"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
          '</block>' +
          '</xml>';}}
   ]

@@ -39,6 +39,10 @@ Blockly.Yail.YAIL_CALL_COMPONENT_METHOD = "(call-component-method ";
 Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD = "(call-component-type-method ";
 Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE = "(call-yail-primitive ";
 Blockly.Yail.YAIL_CLEAR_FORM = "(clear-current-form)";
+// The lines below are complicated because we want to support versions of the
+// Companion older then 2.20ai2 which do not have set-form-name defined
+Blockly.Yail.YAIL_SET_FORM_NAME_BEGIN = "(try-catch (let ((attempt (delay (set-form-name \"";
+Blockly.Yail.YAIL_SET_FORM_NAME_END = "\")))) (force attempt)) (exception java.lang.Throwable 'notfound))";
 Blockly.Yail.YAIL_CLOSE_COMBINATION = ")";
 Blockly.Yail.YAIL_CLOSE_BLOCK = ")\n";
 Blockly.Yail.YAIL_COMMENT_MAJOR = ";;; ";
@@ -431,8 +435,8 @@ Blockly.Yail.getPropertyValueString = function(propertyValue, propertyType) {
  * @private
  */
 Blockly.Yail.getComponentRenameString = function(oldName, newName) {
-  return Blockly.Yail.YAIL_RENAME_COMPONENT + Blockly.Yail.quotifyForREPL(oldName) 
-    + Blockly.Yail.YAIL_SPACER + Blockly.Yail.quotifyForREPL(newName) 
+  return Blockly.Yail.YAIL_RENAME_COMPONENT + Blockly.Yail.quotifyForREPL(oldName)
+    + Blockly.Yail.YAIL_SPACER + Blockly.Yail.quotifyForREPL(newName)
     + Blockly.Yail.YAIL_CLOSE_BLOCK;
 }
 

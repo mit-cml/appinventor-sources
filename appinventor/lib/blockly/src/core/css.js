@@ -25,6 +25,7 @@
 'use strict';
 
 /**
+ * [lyn, 09/10/14] Limit size of runtime error dialog window,
  * [lyn, 10/10/13]
  * + Added CSS tags blocklyFieldParameter and blocklyFieldParameterFlydown
  *   to control parameter flydowns.
@@ -110,6 +111,15 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklySelected>.blocklyPathLight {',
+  '  display: none;',
+  '}',
+
+  '.badBlock>.blocklyPath {',
+  '  stroke-width: 3px;',
+  '  stroke: #f00;',
+  '}',
+
+  '.badBlockl>.blocklyPathLight {',
   '  display: none;',
   '}',
 
@@ -230,6 +240,15 @@ Blockly.Css.CONTENT = [
 
   '.blocklyBubbleText {',
   '  fill: #000;',
+  '}',
+
+  '/*',
+  ' * [lyn, 09/10/14] Limit size of runtime error dialog window',
+  ' */',
+  '.blocklyRuntimeErrorDialog {',
+  '  max-width: 75%;',
+  '  max-height: 75%;',
+  '  overflow: auto',
   '}',
 
   /*
@@ -418,9 +437,9 @@ Blockly.Css.CONTENT = [
   '}',
 
   /* Override the default Closure URL. */
-  '.goog-option-selected .goog-menuitem-checkbox,',
-  '.goog-option-selected .goog-menuitem-icon {',
-  '  background: url(<<<PATH>>>/media/sprites.png) no-repeat 0 0 !important;',
+  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-checkbox,',
+  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-icon {',
+  '  background: url(<<<PATH>>>/media/sprites.png) no-repeat -48px -16px !important;',
   '}',
 
   /* Category tree in Toolbox. */
@@ -460,7 +479,7 @@ Blockly.Css.CONTENT = [
   '  height: 16px;',
   '  width: 16px;',
   '  vertical-align: middle;',
-  '  background-image: url(<<<PATH>>>/media/tree.png);',
+  '  background-image: url(<<<PATH>>>/media/sprites.png);',
   '}',
 
   '.blocklyTreeIconClosedLtr {',
@@ -475,10 +494,6 @@ Blockly.Css.CONTENT = [
   '  background-position: -16px -1px;',
   '}',
 
-  '.blocklyTreeIconNone {',
-  '  background-position: -48px -1px;',
-  '}',
-
   '.blocklyTreeSelected>.blocklyTreeIconClosedLtr {',
   '  background-position: -32px -17px;',
   '}',
@@ -491,8 +506,9 @@ Blockly.Css.CONTENT = [
   '  background-position: -16px -17px;',
   '}',
 
+  '.blocklyTreeIconNone,',
   '.blocklyTreeSelected>.blocklyTreeIconNone {',
-  '  background-position: -48px -17px;',
+  '  background-position: -48px -1px;',
   '}',
 
   '.blocklyTreeLabel {',
@@ -525,17 +541,17 @@ Blockly.Css.CONTENT = [
     Styles to make the colorpicker look like the old gmail color picker
     NOTE: without CSS scoping this will override styles defined in palette.css
   */
-  '.goog-palette {',
+  '.blocklyWidgetDiv .goog-palette {',
   '  outline: none;',
   '  cursor: default;',
   '}',
 
-  '.goog-palette-table {',
+  '.blocklyWidgetDiv .goog-palette-table {',
   '  border: 1px solid #666;',
   '  border-collapse: collapse;',
   '}',
 
-  '.goog-palette-cell {',
+  '.blocklyWidgetDiv .goog-palette-cell {',
   '  height: 13px;',
   '  width: 15px;',
   '  margin: 0;',
@@ -546,18 +562,18 @@ Blockly.Css.CONTENT = [
   '  font-size: 1px;',
   '}',
 
-  '.goog-palette-colorswatch {',
+  '.blocklyWidgetDiv .goog-palette-colorswatch {',
   '  position: relative;',
   '  height: 13px;',
   '  width: 15px;',
   '  border: 1px solid #666;',
   '}',
 
-  '.goog-palette-cell-hover .goog-palette-colorswatch {',
+  '.blocklyWidgetDiv .goog-palette-cell-hover .goog-palette-colorswatch {',
   '  border: 1px solid #FFF;',
   '}',
 
-  '.goog-palette-cell-selected .goog-palette-colorswatch {',
+  '.blocklyWidgetDiv .goog-palette-cell-selected .goog-palette-colorswatch {',
   '  border: 1px solid #000;',
   '  color: #fff;',
   '}',
@@ -576,7 +592,7 @@ Blockly.Css.CONTENT = [
    * @author attila@google.com (Attila Bodis)
    */
 
-  '.goog-menu {',
+  '.blocklyWidgetDiv .goog-menu {',
   '  background: #fff;',
   '  border-color: #ccc #666 #666 #ccc;',
   '  border-style: solid;',
@@ -619,7 +635,7 @@ Blockly.Css.CONTENT = [
    * on the BiDi flipping by the CSS compiler.  That's why we're not adding the
    * #noflip to .goog-menuitem.
    */
-  '.goog-menuitem {',
+  '.blocklyWidgetDiv .goog-menuitem {',
   '  color: #000;',
   '  font: normal 13px Arial, sans-serif;',
   '  list-style: none;',
@@ -631,15 +647,15 @@ Blockly.Css.CONTENT = [
 
   /* BiDi override for the resting state. */
   /* #noflip */
-  '.goog-menuitem.goog-menuitem-rtl {',
+  '.blocklyWidgetDiv .goog-menuitem.goog-menuitem-rtl {',
      /* Flip left/right padding for BiDi. */
   '  padding-left: 7em;',
   '  padding-right: 28px;',
   '}',
 
   /* If a menu doesn't have checkable items or items with icons, remove padding. */
-  '.goog-menu-nocheckbox .goog-menuitem,',
-  '.goog-menu-noicon .goog-menuitem {',
+  '.blocklyWidgetDiv .goog-menu-nocheckbox .goog-menuitem,',
+  '.blocklyWidgetDiv .goog-menu-noicon .goog-menuitem {',
   '  padding-left: 12px;',
   '}',
 
@@ -647,30 +663,30 @@ Blockly.Css.CONTENT = [
    * If a menu doesn't have items with shortcuts, leave just enough room for
    * submenu arrows, if they are rendered.
    */
-  '.goog-menu-noaccel .goog-menuitem {',
+  '.blocklyWidgetDiv .goog-menu-noaccel .goog-menuitem {',
   '  padding-right: 20px;',
   '}',
 
-  '.goog-menuitem-content {',
+  '.blocklyWidgetDiv .goog-menuitem-content {',
   '  color: #000;',
   '  font: normal 13px Arial, sans-serif;',
   '}',
 
   /* State: disabled. */
-  '.goog-menuitem-disabled .goog-menuitem-accel,',
-  '.goog-menuitem-disabled .goog-menuitem-content {',
+  '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-accel,',
+  '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-content {',
   '  color: #ccc !important;',
   '}',
 
-  '.goog-menuitem-disabled .goog-menuitem-icon {',
+  '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-icon {',
   '  opacity: 0.3;',
   '  -moz-opacity: 0.3;',
   '  filter: alpha(opacity=30);',
   '}',
 
   /* State: hover. */
-  '.goog-menuitem-highlight,',
-  '.goog-menuitem-hover {',
+  '.blocklyWidgetDiv .goog-menuitem-highlight,',
+  '.blocklyWidgetDiv .goog-menuitem-hover {',
   '  background-color: #d6e9f8;',
      /* Use an explicit top and bottom border so that the selection is visible',
       * in high contrast mode. */
@@ -682,8 +698,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   /* State: selected/checked. */
-  '.goog-menuitem-checkbox,',
-  '.goog-menuitem-icon {',
+  '.blocklyWidgetDiv .goog-menuitem-checkbox,',
+  '.blocklyWidgetDiv .goog-menuitem-icon {',
   '  background-repeat: no-repeat;',
   '  height: 16px;',
   '  left: 6px;',
@@ -695,21 +711,21 @@ Blockly.Css.CONTENT = [
 
   /* BiDi override for the selected/checked state. */
   /* #noflip */
-  '.goog-menuitem-rtl .goog-menuitem-checkbox,',
-  '.goog-menuitem-rtl .goog-menuitem-icon {',
+  '.blocklyWidgetDiv .goog-menuitem-rtl .goog-menuitem-checkbox,',
+  '.blocklyWidgetDiv .goog-menuitem-rtl .goog-menuitem-icon {',
      /* Flip left/right positioning. */
   '  left: auto;',
   '  right: 6px;',
   '}',
 
-  '.goog-option-selected .goog-menuitem-checkbox,',
-  '.goog-option-selected .goog-menuitem-icon {',
+  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-checkbox,',
+  '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-icon {',
      /* Client apps may override the URL at which they serve the sprite. */
   '  background: url(//ssl.gstatic.com/editor/editortoolbar.png) no-repeat -512px 0;',
   '}',
 
   /* Keyboard shortcut ("accelerator") style. */
-  '.goog-menuitem-accel {',
+  '.blocklyWidgetDiv .goog-menuitem-accel {',
   '  color: #999;',
      /* Keyboard shortcuts are untranslated; always left-to-right. */
      /* #noflip */
@@ -723,7 +739,7 @@ Blockly.Css.CONTENT = [
 
   /* BiDi override for shortcut style. */
   /* #noflip */
-  '.goog-menuitem-rtl .goog-menuitem-accel {',
+  '.blocklyWidgetDiv .goog-menuitem-rtl .goog-menuitem-accel {',
      /* Flip left/right positioning and text alignment. */
   '  left: 0;',
   '  right: auto;',
@@ -731,11 +747,11 @@ Blockly.Css.CONTENT = [
   '}',
 
   /* Mnemonic styles. */
-  '.goog-menuitem-mnemonic-hint {',
+  '.blocklyWidgetDiv .goog-menuitem-mnemonic-hint {',
   '  text-decoration: underline;',
   '}',
 
-  '.goog-menuitem-mnemonic-separator {',
+  '.blocklyWidgetDiv .goog-menuitem-mnemonic-separator {',
   '  color: #999;',
   '  font-size: 12px;',
   '  padding-left: 4px;',
@@ -755,7 +771,7 @@ Blockly.Css.CONTENT = [
    * @author attila@google.com (Attila Bodis)
    */
 
-  '.goog-menuseparator {',
+  '.blocklyWidgetDiv .goog-menuseparator {',
   '  border-top: 1px solid #ccc;',
   '  margin: 4px 0;',
   '  padding: 0;',

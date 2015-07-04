@@ -1,13 +1,15 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -436,6 +438,15 @@ public abstract class TextBoxBase extends AndroidViewComponent
     } else {
       TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
     }
+  }
+
+  /**
+   * Request focus to current textbox.
+   */
+  @SimpleFunction(
+    description = "Sets the textbox active.")
+  public void RequestFocus() {
+    view.requestFocus();
   }
 
   // OnFocusChangeListener implementation

@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
@@ -140,30 +141,43 @@ public final class Dates {
   }
 
   /**
-   * Converts and formats the given date into a date and time string.
+   * Converts and formats an instant into a string of date and time with the specified pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
+   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted date
    */
   @SimpleFunction
-  public static String FormatDateTime(Calendar date) {
-    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
-        .format(date.getTime());
+  public static String FormatDateTime(Calendar date, String pattern) {
+    SimpleDateFormat formatdate = new SimpleDateFormat();
+    if (pattern.length() == 0) {
+      formatdate.applyPattern("MMM d, yyyy HH:mm:ss a");
+    } else {
+      formatdate.applyPattern(pattern);
+    }
+    return formatdate.format(date.getTime());
   }
 
   /**
-   * Converts and formats the given date into a date string.
+   * Converts and formats an instant into a string of date with the specified pattern.
    *
    * @see SimpleDateFormat
    *
    * @param date  date to format
+   * @param pattern format of the date e.g. MM/DD/YYYY or MMM d, yyyy
    * @return  formatted date
    */
   @SimpleFunction
-  public static String FormatDate(Calendar date) {
-    return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date.getTime());
+  public static String FormatDate(Calendar date, String pattern) {
+    SimpleDateFormat formatdate = new SimpleDateFormat();
+    if (pattern.length() == 0) {
+      formatdate.applyPattern("MMM d, yyyy");
+    } else {
+      formatdate.applyPattern(pattern);
+    }
+      return formatdate.format(date.getTime());
   }
 
   /**

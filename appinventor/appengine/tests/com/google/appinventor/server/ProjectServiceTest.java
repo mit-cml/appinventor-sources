@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
@@ -81,7 +82,7 @@ public class ProjectServiceTest {
       "#|\n" +
       "$JSON\n" +
       "{\"Source\":\"Form\",\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
-      "\"Uuid\":\"0\",\"Title\":\"Screen1\",\"$Components\":[" +
+      "\"Uuid\":\"0\",\"Title\":\"Screen1\",\"AppName\":\"noname\",\"$Components\":[" +
       "{\"$Name\":\"Button1\",\"$Type\":\"Button\",\"Uuid\":\"123\",\"Text\":\"Button1\"," +
       "\"Width\":\"80\"}," +
       "{\"$Name\":\"Label1\",\"$Type\":\"Label\",\"Uuid\":\"-456\",\"Text\":\"Liz\"}" +
@@ -175,7 +176,7 @@ public class ProjectServiceTest {
         YOUNG_ANDROID_COMMENT + user1Project1Source1);
     assertEquals(YOUNG_ANDROID_COMMENT + user1Project1Source1,
         projectServiceImpl.load(user1Project1, user1Project1Source1FileId));
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
 
@@ -214,7 +215,7 @@ public class ProjectServiceTest {
         u1p2s1));
     checkModificationDateMatchesStored(oldModificationDate, USER_ID_ONE, user1Project1);
     modificationDate = projectServiceImpl.save("test-session", filesWithContent);
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project2);
     oldModificationDate = modificationDate;
 
@@ -235,7 +236,7 @@ public class ProjectServiceTest {
 
     oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
     modificationDate = projectServiceImpl.deleteFile("test-session", user1Project1, user1Project1Source1FileId);
-    assertTrue(oldModificationDate < modificationDate);
+    assertTrue(oldModificationDate <= modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
 
@@ -277,13 +278,13 @@ public class ProjectServiceTest {
         "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
-        "\"Title\":\"Screen1\"}}\n|#");
+        "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
     assertEquals(expectedYaFiles, getTextFiles(USER_ID_ONE, yaProject));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject).isEmpty());
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis()));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, 0L));
     PowerMock.verifyAll();
   }
 
@@ -335,7 +336,8 @@ public class ProjectServiceTest {
         "build=../build\n" +
         "versioncode=1\n" +
         "versionname=1.0\n" +
-        "useslocation=false\n");
+        "useslocation=false\n" +
+        "aname=Project1\n");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
@@ -480,7 +482,8 @@ public class ProjectServiceTest {
         "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"1\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"1.0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\"}}",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\"}}",
         loadedSettings);
 
     String storedSettings =

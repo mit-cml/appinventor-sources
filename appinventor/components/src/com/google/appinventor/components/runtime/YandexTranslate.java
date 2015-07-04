@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2014 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 @DesignerComponent(version = YaVersion.YANDEX_COMPONENT_VERSION,
     description = "Use this component to translate words and sentences between different " +
@@ -116,7 +118,7 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
     final String finalURL = YANDEX_TRANSLATE_SERVICE_URL +
         this.yandexKey +
         "&lang=" + languageToTranslateTo +
-        "&text=" + textToTranslate;
+        "&text=" + URLEncoder.encode(textToTranslate, "UTF-8");
 
     URL url = new URL(finalURL);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();

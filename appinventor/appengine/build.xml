@@ -12,6 +12,25 @@
   <description>
     Appengine server and client code
   </description>
+
+  <!-- =====================================================================
+       Definition for generating a Unique ID.
+       ===================================================================== -->
+
+  <scriptdef name="generateguid" language="javascript">
+    <attribute name="property" />
+    <![CDATA[
+             try {
+               load("nashorn:mozilla_compat.js");
+             }
+             catch (exception) {
+               // Ignore the exception as the compat mode is only needed for Java 8
+             }
+             importClass( java.util.UUID );
+             project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
+    ]]>
+  </scriptdef>
+
   <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
     <os family="mac"/>
   </condition>
@@ -33,32 +52,51 @@
        ===================================================================== -->
   <import file="../build-common.xml" />
 
-  <property name="gwt.sdk" location="${lib.dir}/gwt/2.5.1" />
-  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.7.6" />
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.7" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.17" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
+
+  <!-- =====================================================================
+       Generate a Unique ID for this build. This is used to name blockly-all.js
+       in a unique way (blockly-${guid1}.js) so blockly is cacheable but
+       different builds get their own copy instead of a potentially out of date
+       version. This is particularly important when we do releases.
+       ===================================================================== -->
+  <target name="GenerateGuid1"
+          description="Generate a Unique ID for this build">
+    <generateguid property="guid1" />
+    <echo message="${guid1}" />
+  </target>
 
   <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war"/>
+      <fileset dir="war">
+        <exclude name="blocklyframe.html"/>
+      </fileset>
       <fileset dir="src/${appinventor.pkg}">
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${docs.dir}"/>
-      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
       <fileset dir="${lib.dir}/blockly/src">
         <include name="media/*"/>
         <include name="**/*.css"/>
         <include name="1x1.gif"/>
       </fileset>
     </copy>
+    <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
+      <filterset>
+        <filter token="GUID" value="${guid1}"/>
+      </filterset>
+    </copy>
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
     <copy todir="${build.war.dir}/">
       <fileset dir="${lib.dir}">
         <include name="closure-library/**/*"/>
@@ -67,10 +105,13 @@
   </target>
 
   <target name="CopyBlocklyToBuildWar"
-          description="Create blockly-all.js and add to war"
-          depends="init,blocklyeditor_BlocklyCompile">
-    <copy todir="${build.war.dir}/">
-      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"></fileset>
+          description="Create blockly-all.js and add to war with unique name"
+          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
+    <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
+      <filterset>
+        <filter token="GUID" value="${guid1}"/>
+      </filterset>
     </copy>
   </target>
   <!-- =====================================================================
@@ -120,14 +161,24 @@
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/findbugs/jsr305.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-14.0.1.jar" /> 
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-18.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/json/json.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/keyczar/keyczar-0.66-080111-java-1.6.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar --> 
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
     <!-- GCS Libs -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-appengine-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-appengine-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-jackson-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-jackson2-1.18.0-rc.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-services-storage-v1-rev23-1.19.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/httpclient-4.0.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/joda-time-2.6.jar" />
     <!-- gwt libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
@@ -178,19 +229,19 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
-    <pathelement location="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
+    <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
     <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
     <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
     <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
     <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
-    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
@@ -246,10 +297,10 @@
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
-    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
 
@@ -299,10 +350,11 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription">
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
+              srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
               source="1.5" target="1.5" nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
@@ -312,8 +364,9 @@
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
+        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <!-- gwt libs -->
@@ -353,6 +406,7 @@
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
         <pathelement location="src"/>
+        <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
         <pathelement location="${build.war.dir}/WEB-INF/classes"/>
         <pathelement location="${local.build.dir}/AiRebindLib.jar" />
         <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
@@ -361,8 +415,8 @@
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-14.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <!-- gwt libs -->
@@ -392,7 +446,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
