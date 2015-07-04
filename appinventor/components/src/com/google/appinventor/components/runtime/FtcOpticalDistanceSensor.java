@@ -16,61 +16,34 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import android.util.Log;
 
 /**
- * A component for a light sensor of an FTC robot.
+ * A component for an optical distance sensor of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-@DesignerComponent(version = YaVersion.FTC_LIGHT_SENSOR_COMPONENT_VERSION,
-    description = "A component for a light sensor of an FTC robot.",
+@DesignerComponent(version = YaVersion.FTC_OPTICAL_DISTANCE_SENSOR_COMPONENT_VERSION,
+    description = "A component for an optical distance sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLightSensor extends FtcHardwareDevice {
+public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
 
-  private volatile boolean enableLed;
-  private volatile LightSensor lightSensor;
+  private volatile OpticalDistanceSensor opticalDistanceSensor;
 
   /**
-   * Creates a new FtcLightSensor component.
+   * Creates a new FtcOpticalDistanceSensor component.
    */
-  public FtcLightSensor(ComponentContainer container) {
+  public FtcOpticalDistanceSensor(ComponentContainer container) {
     super(container.$form());
   }
 
   // Properties
-
-  /**
-   * EnableLed property getter.
-   */
-  @SimpleProperty(description = "Whether to enable the LED light.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean EnableLed() {
-    return enableLed;
-  }
-
-  /**
-   * EnableLed property setter.
-   */
-  @SimpleProperty
-  public void EnableLed(boolean enableLed) {
-    if (lightSensor != null) {
-      try {
-        lightSensor.enableLed(enableLed);
-        this.enableLed = enableLed;
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableLed",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
 
   /**
    * LightDetected property getter.
@@ -78,9 +51,9 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, on a scale of 0 to 1.",
       category = PropertyCategory.BEHAVIOR)
   public double LightDetected() {
-    if (lightSensor != null) {
+    if (opticalDistanceSensor != null) {
       try {
-        return lightSensor.getLightDetected();
+        return opticalDistanceSensor.getLightDetected();
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "LightDetected",
@@ -96,9 +69,9 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int LightDetectedRaw() {
-    if (lightSensor != null) {
+    if (opticalDistanceSensor != null) {
       try {
-        return lightSensor.getLightDetectedRaw();
+        return opticalDistanceSensor.getLightDetectedRaw();
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "LightDetectedRaw",
@@ -114,9 +87,9 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
-    if (lightSensor != null) {
+    if (opticalDistanceSensor != null) {
       try {
-        String status = lightSensor.status();
+        String status = opticalDistanceSensor.status();
         if (status != null) {
           return status;
         }
@@ -135,15 +108,15 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
-      lightSensor = hardwareMap.lightSensor.get(getDeviceName());
-      if (lightSensor == null) {
-        Log.e("FtcLightSensor", "Could not find a LightSensor named " + getDeviceName());
+      opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
+      if (opticalDistanceSensor == null) {
+        Log.e("FtcOpticalDistanceSensor", "Could not find a OpticalDistanceSensor named " + getDeviceName());
       }
     }
   }
 
   @Override
   protected void clearHardwareDevice() {
-    lightSensor = null;
+    opticalDistanceSensor = null;
   }
 }

@@ -442,6 +442,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   private void requestRobotShutdown() {
     if (controllerService == null) return;
     controllerService.shutdownRobot();
+    if (batteryChecker == null) return;
     batteryChecker.endBatteryMonitoring();
   }
 
