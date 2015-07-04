@@ -488,10 +488,10 @@ public final class FtcRobotController extends AndroidViewComponent implements On
           if (length > 0) {
             byte[] source = (byte[]) sourceByteArray;
             byte[] destination = (byte[]) destinationByteArray;
-            if (sourcePosition > 0 &&
+            if (sourcePosition >= 0 &&
                 sourcePosition < source.length &&
                 sourcePosition + length < source.length) {
-              if (destinationPosition > 0 &&
+              if (destinationPosition >= 0 &&
                   destinationPosition < destination.length &&
                   destinationPosition + length < destination.length) {
                 System.arraycopy(source, sourcePosition, destination, destinationPosition, length);
