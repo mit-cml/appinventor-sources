@@ -2290,6 +2290,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcAccelerationSensorComponentPallette();
 
+  @DefaultMessage("FtcAnalogInput")
+  @Description("")
+  String ftcAnalogInputComponentPallette();
+
   @DefaultMessage("FtcCompassSensor")
   @Description("")
   String ftcCompassSensorComponentPallette();
@@ -2301,6 +2305,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcDeviceInterfaceModule")
   @Description("")
   String ftcDeviceInterfaceModuleComponentPallette();
+
+  @DefaultMessage("FtcDigitalChannel")
+  @Description("")
+  String ftcDigitalChannelComponentPallette();
 
   @DefaultMessage("FtcGamepad")
   @Description("")
@@ -2326,6 +2334,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcOpModeComponentPallette();
 
+  @DefaultMessage("FtcOpticalDistanceSensor")
+  @Description("")
+  String ftcOpticalDistanceSensorComponentPallette();
+
   @DefaultMessage("FtcRobotController")
   @Description("")
   String ftcRobotControllerComponentPallette();
@@ -2333,6 +2345,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcServo")
   @Description("")
   String ftcServoComponentPallette();
+
+  @DefaultMessage("FtcTouchSensor")
+  @Description("")
+  String ftcTouchSensorComponentPallette();
 
   @DefaultMessage("FtcUltrasonicSensor")
   @Description("")
@@ -3268,6 +3284,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GuideProperties();
 
+  @DefaultMessage("IsPressed")
+  @Description("")
+  String IsPressedProperties();
+
   @DefaultMessage("JoystickDeadzone")
   @Description("")
   String JoystickDeadzoneProperties();
@@ -3288,9 +3308,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LeftTriggerProperties();
 
-  @DefaultMessage("LightLevel")
+  @DefaultMessage("LightDetected")
   @Description("")
-  String LightLevelProperties();
+  String LightDetectedProperties();
+
+  @DefaultMessage("LightDetectedRaw")
+  @Description("")
+  String LightDetectedRawProperties();
 
   @DefaultMessage("Mode")
   @Description("")
@@ -3363,6 +3387,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UsbScanTimeInSeconds")
   @Description("")
   String UsbScanTimeInSecondsProperties();
+
+  @DefaultMessage("Value")
+  @Description("")
+  String ValueProperties();
 
   @DefaultMessage("Voltage")
   @Description("")
@@ -5243,42 +5271,6 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
-  @DefaultMessage("Convert1ByteNumberToByteArray")
-  @Description("")
-  String Convert1ByteNumberToByteArrayMethods();
-
-  @DefaultMessage("Convert2ByteNumberToByteArray")
-  @Description("")
-  String Convert2ByteNumberToByteArrayMethods();
-
-  @DefaultMessage("Convert4ByteNumberToByteArray")
-  @Description("")
-  String Convert4ByteNumberToByteArrayMethods();
-
-  @DefaultMessage("Convert8ByteNumberToByteArray")
-  @Description("")
-  String Convert8ByteNumberToByteArrayMethods();
-
-  @DefaultMessage("ConvertByteArrayToUnsigned1ByteNumber")
-  @Description("")
-  String ConvertByteArrayToUnsigned1ByteNumberMethods();
-
-  @DefaultMessage("ConvertByteArrayToSigned1ByteNumber")
-  @Description("")
-  String ConvertByteArrayToSigned1ByteNumberMethods();
-
-  @DefaultMessage("ConvertByteArrayTo2ByteNumber")
-  @Description("")
-  String ConvertByteArrayTo2ByteNumberMethods();
-
-  @DefaultMessage("ConvertByteArrayTo4ByteNumber")
-  @Description("")
-  String ConvertByteArrayTo4ByteNumberMethods();
-
-  @DefaultMessage("ConvertByteArrayTo8ByteNumber")
-  @Description("")
-  String ConvertByteArrayTo8ByteNumberMethods();
-
   @DefaultMessage("CopyBytes")
   @Description("")
   String CopyBytesMethods();
@@ -5315,6 +5307,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FloatMethods();
 
+  @DefaultMessage("Get1ByteNumberFromByteArray")
+  @Description("")
+  String Get1ByteNumberFromByteArrayMethods();
+
+  @DefaultMessage("Get2ByteNumberFromByteArray")
+  @Description("")
+  String Get2ByteNumberFromByteArrayMethods();
+
+  @DefaultMessage("Get4ByteNumberFromByteArray")
+  @Description("")
+  String Get4ByteNumberFromByteArrayMethods();
+
+  @DefaultMessage("Get8ByteNumberFromByteArray")
+  @Description("")
+  String Get8ByteNumberFromByteArrayMethods();
+
   @DefaultMessage("GetAnalogInputValue")
   @Description("")
   String GetAnalogInputValueMethods();
@@ -5335,13 +5343,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetDigitalInputStateByteMethods();
 
-  @DefaultMessage("GetDigitalOutputByte")
+  @DefaultMessage("GetDigitalIOControlByte")
   @Description("")
-  String GetDigitalOutputByteMethods();
+  String GetDigitalIOControlByteMethods();
 
-  @DefaultMessage("GetLEDSetting")
+  @DefaultMessage("GetDigitalOutputStateByte")
   @Description("")
-  String GetLEDSettingMethods();
+  String GetDigitalOutputStateByteMethods();
+
+  @DefaultMessage("GetLEDState")
+  @Description("")
+  String GetLEDStateMethods();
 
   @DefaultMessage("GetPulseWidthOutputTime")
   @Description("")
@@ -5362,6 +5374,22 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsPortReady")
   @Description("")
   String IsPortReadyMethods();
+
+  @DefaultMessage("Put1ByteNumberIntoByteArray")
+  @Description("")
+  String Put1ByteNumberIntoByteArrayMethods();
+
+  @DefaultMessage("Put2ByteNumberIntoByteArray")
+  @Description("")
+  String Put2ByteNumberIntoByteArrayMethods();
+
+  @DefaultMessage("Put4ByteNumberIntoByteArray")
+  @Description("")
+  String Put4ByteNumberIntoByteArrayMethods();
+
+  @DefaultMessage("Put8ByteNumberIntoByteArray")
+  @Description("")
+  String Put8ByteNumberIntoByteArrayMethods();
 
   @DefaultMessage("RangeClip")
   @Description("")
@@ -5718,6 +5746,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcAccelerationSensorHelpStringComponentPallette();
 
+  @DefaultMessage("A component for an analog input of an FTC robot.")
+  @Description("")
+  String FtcAnalogInputHelpStringComponentPallette();
+
   @DefaultMessage("A component for a compass sensor of an FTC robot.")
   @Description("")
   String FtcCompassSensorHelpStringComponentPallette();
@@ -5729,6 +5761,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a device interface module of an FTC robot.")
   @Description("")
   String FtcDeviceInterfaceModuleHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a single digital channel of an FTC robot.")
+  @Description("")
+  String FtcDigitalChannelHelpStringComponentPallette();
 
   @DefaultMessage("A component for a gamepad of an FTC robot.")
   @Description("")
@@ -5750,9 +5786,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcLightSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component for an Operational Mode for an FTC robot.")
+  @DefaultMessage("A component for an operational mode for an FTC robot.")
   @Description("")
   String FtcOpModeHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an optical distance sensor of an FTC robot.")
+  @Description("")
+  String FtcOpticalDistanceSensorHelpStringComponentPallette();
 
   @DefaultMessage("The primary FTC Robot Controller component.")
   @Description("")
@@ -5761,6 +5801,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a servo of an FTC robot.")
   @Description("")
   String FtcServoHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a touch sensor of an FTC robot.")
+  @Description("")
+  String FtcTouchSensorHelpStringComponentPallette();
 
   @DefaultMessage("A component for an ultrasonic sensor of an FTC robot.")
   @Description("")

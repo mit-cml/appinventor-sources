@@ -16,31 +16,31 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IrSeekerSensor;
-import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 
 import android.util.Log;
 
 /**
- * A component for an IR seeker sensor of an FTC robot.
+ * A component for a single digital channel of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-@DesignerComponent(version = YaVersion.FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION,
-    description = "A component for an IR seeker sensor of an FTC robot.",
+@DesignerComponent(version = YaVersion.FTC_DIGITAL_CHANNEL_COMPONENT_VERSION,
+    description = "A component for a single digital channel of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcIrSeekerSensor extends FtcHardwareDevice {
+public final class FtcDigitalChannel extends FtcHardwareDevice {
 
-  private volatile IrSeekerSensor irSeekerSensor;
+  private volatile DigitalChannel digitalChannel;
 
   /**
-   * Creates a new FtcIrSeekerSensor component.
+   * Creates a new FtcDigitalChannel component.
    */
-  public FtcIrSeekerSensor(ComponentContainer container) {
+  public FtcDigitalChannel(ComponentContainer container) {
     super(container.$form());
   }
 
@@ -49,12 +49,12 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ_DC or MODE_1200HZ_AC.",
+  @SimpleProperty(description = "The mode of the digital channel; INPUT or OUTPUT.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
-    if (irSeekerSensor != null) {
+    if (digitalChannel != null) {
       try {
-        Mode mode = irSeekerSensor.getMode();
+        Mode mode = digitalChannel.getMode();
         if (mode != null) {
           return mode.toString();
         }
@@ -64,7 +64,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Mode.MODE_1200HZ_AC.toString();
+    return Mode.INPUT.toString();
   }
 
   /**
@@ -72,17 +72,17 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String modeString) {
-    if (irSeekerSensor != null) {
+    if (digitalChannel != null) {
       try {
         for (Mode mode : Mode.values()) {
           if (mode.toString().equalsIgnoreCase(modeString)) {
-            irSeekerSensor.setMode(mode);
+            digitalChannel.setMode(mode);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE, modeString);
+            ErrorMessages.ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE, modeString);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Mode",
@@ -92,17 +92,19 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   }
 
   /**
-   * SignalDetected property getter.
+   * State property getter.
    */
-  @SimpleProperty(description = "Whether a signal is detected by the sensor.",
+  @SimpleProperty(description = "The state of the digital channel. If it's in OUTPUT mode, " +
+      "this will return the output bit. If the channel is in INPUT mode, this will return the " +
+      "input bit.",
       category = PropertyCategory.BEHAVIOR)
-  public boolean SignalDetected() {
-    if (irSeekerSensor != null) {
+  public boolean State() {
+    if (digitalChannel != null) {
       try {
-        return irSeekerSensor.signalDetected();
+        return digitalChannel.getState();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SignalDetected",
+        form.dispatchErrorOccurredEvent(this, "State",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -110,43 +112,19 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   }
 
   /**
-   * Angle property getter.
+   * State property setter.
    */
-  @SimpleProperty(description = "The Angle.",
-      category = PropertyCategory.BEHAVIOR)
-  public double Angle() {
-    if (irSeekerSensor != null) {
+  @SimpleProperty
+  public void State(boolean state) {
+    if (digitalChannel != null) {
       try {
-        if (irSeekerSensor.signalDetected()) {
-          return irSeekerSensor.getAngle();
-        }
+        digitalChannel.setState(state);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Angle",
+        form.dispatchErrorOccurredEvent(this, "State",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0;
-  }
-
-  /**
-   * Strength property getter.
-   */
-  @SimpleProperty(description = "The Strength.",
-      category = PropertyCategory.BEHAVIOR)
-  public double Strength() {
-    if (irSeekerSensor != null) {
-      try {
-        if (irSeekerSensor.signalDetected()) {
-          return irSeekerSensor.getStrength();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Strength",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
   }
 
   // FtcHardwareDevice implementation
@@ -155,15 +133,15 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   protected void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
-      irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
-      if (irSeekerSensor == null) {
-        Log.e("FtcIrSeekerSensor", "Could not find a IrSeekerSensor named " + getDeviceName());
+      digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
+      if (digitalChannel == null) {
+        Log.e("FtcDigitalChannel", "Could not find a DigitalChannel named " + getDeviceName());
       }
     }
   }
 
   @Override
   protected void clearHardwareDevice() {
-    irSeekerSensor = null;
+    digitalChannel = null;
   }
 }

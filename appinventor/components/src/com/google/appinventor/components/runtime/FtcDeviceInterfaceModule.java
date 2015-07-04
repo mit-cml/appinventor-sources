@@ -81,27 +81,25 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   }
 
 
-  @SimpleFunction(description = "The lower two bits of the \"setting\" byte indicate the values " +
-      "of the blue (0) and red (1) LEDs.")
-  public int GetLEDSetting() {
+  @SimpleFunction(description = "Indicates whether the LED on the given channel is on or not")
+  public boolean GetLEDState(int channel) {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.getLEDSetting();
+        return deviceInterfaceModule.getLEDState(channel);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetLEDSetting",
+        form.dispatchErrorOccurredEvent(this, "GetLEDState",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0;
+    return false;
   }
 
-  @SimpleFunction(description = "Lower two bits of the \"setting\" byte turn on the blue (0) and " +
-      "red (1) LEDs.")
-  public void SetLED(int setting) {
+  @SimpleFunction(description = "Turn on or off a particular LED.")
+  public void SetLED(int channel, boolean state) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setLED((byte) setting);
+        deviceInterfaceModule.setLED(channel, state);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetLED",
@@ -130,10 +128,25 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   public int GetDigitalInputStateByte() {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.getDigitalInputStateByte();
+        return deviceInterfaceModule.getDigitalInputStateByte() & 0xFF;
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "GetDigitalInputStateByte",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "If a particular bit is one, the corresponding channel " +
+      "pin is in output mode; else it is in input mode.")
+  public int GetDigitalIOControlByte() {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.getDigitalIOControlByte() & 0xFF;
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetDigitalIOControlByte",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -172,13 +185,13 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
       "I/O output of the D7-D0 channel pins. If the corresponding Dy-D0 I/O control field bit " +
       "is set to one, the channel pin will be in output mode and will reflect the value of the " +
       "corresponding D7-D0 output set field bit.")
-  public int GetDigitalOutputByte() {
+  public int GetDigitalOutputStateByte() {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.getDigitalOutputByte();
+        return deviceInterfaceModule.getDigitalOutputStateByte() & 0xFF;
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetDigitalOutputByte",
+        form.dispatchErrorOccurredEvent(this, "GetDigitalOutputStateByte",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -247,7 +260,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   public int GetAnalogOutputMode(int port) {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.getAnalogOutputMode(port);
+        return deviceInterfaceModule.getAnalogOutputMode(port) & 0xFF;
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "GetAnalogOutputMode",
