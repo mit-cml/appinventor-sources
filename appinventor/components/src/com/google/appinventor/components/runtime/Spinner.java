@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.MotionEvent;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -37,14 +38,14 @@ import com.google.appinventor.components.runtime.util.YailList;
     nonVisible = false,
     iconName = "images/spinner.png")
 @SimpleObject
-public final class Spinner extends AndroidViewComponent implements OnItemSelectedListener {
+public final class Spinner extends AndroidViewComponent implements OnItemSelectedListener, View.OnTouchListener {
 
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
   private String selection;
   private int selectionIndex;
-  private boolean isInitialized=false;
+  private boolean spinnerTouched = false;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -55,8 +56,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
-
-    container.$add(this);
+    view.setOnTouchListener(this);
+    
+	container.$add(this);
   }
 
   @Override
@@ -128,7 +130,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     items = ElementsUtil.elements(itemList, "Spinner");
 
     //avoid firing off the OnItemSelect when component is initialized or data is changed
-    isInitialized = false;
+    spinnerTouched = false;
 
     setAdapterData(itemList.toStringArray());
   }
@@ -189,17 +191,19 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
 
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     //prevent AfterPicking triggering when component has just been instantiated.
-    if (!isInitialized) {
-      isInitialized = true;
-      return;
+    if (spinnerTouched) {
+      SelectionIndex(position + 1); // AI lists are 1-based
+      AfterSelecting(selection);
     }
 
-    SelectionIndex(position + 1); // AI lists are 1-based
-    AfterSelecting(selection);
   }
 
   public void onNothingSelected(AdapterView<?> parent){
     view.setSelection(0);
   }
 
+  public void onTouch(View v, MotionEvent event){
+    spinnerTouched = true;
+    return false;
+  }
 }
