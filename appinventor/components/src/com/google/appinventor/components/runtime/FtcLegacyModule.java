@@ -54,11 +54,15 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Read the device memory map; only works in NXT I2C read mode.")
+  @SimpleFunction(description =
+      "Read the device memory map and return a byte array; only works in NXT I2C read mode.")
   public Object ReadLegacyModuleCache(int physicalPort) {
     if (legacyModule != null) {
       try {
-        return legacyModule.readLegacyModuleCache(physicalPort);
+        byte[] data = legacyModule.readLegacyModuleCache(physicalPort);
+        if (data != null) {
+          return data;
+        }
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadLegacyModuleCache",
@@ -69,21 +73,17 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
 
-  @SimpleFunction(description =
-      "Enable a physical port in NXT I2C write mode.")
-  public void EnableNxtI2cWriteMode(int physicalPort, int i2cAddress,
-      int memAddress, Object initialValues) {
+  @SimpleFunction(description = "Enable a physical port in NXT I2C write mode.")
+  public void EnableNxtI2cWriteMode(int physicalPort, int i2cAddress, int memAddress,
+      Object byteArray) {
     if (legacyModule != null) {
       try {
-        if (initialValues.equals("")) {
+        if (byteArray instanceof byte[]) {
           legacyModule.enableNxtI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              new byte[0]);
-        } else if (initialValues instanceof byte[]) {
-          legacyModule.enableNxtI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              (byte[]) initialValues);
+              (byte[]) byteArray);
         } else {
           form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode",
-              ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, "initialValues is not valid");
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
@@ -94,14 +94,14 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Write to the device memory map; only works in NXT I2C write mode.")
-  public void WriteLegacyModuleCache(int physicalPort, Object data) {
+  public void WriteLegacyModuleCache(int physicalPort, Object byteArray) {
     if (legacyModule != null) {
       try {
-        if (data instanceof byte[]) {
-          legacyModule.writeLegacyModuleCache(physicalPort, (byte[]) data);
+        if (byteArray instanceof byte[]) {
+          legacyModule.writeLegacyModuleCache(physicalPort, (byte[]) byteArray);
         } else {
           form.dispatchErrorOccurredEvent(this, "WriteLegacyModuleCache",
-              ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, "data is not valid");
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
@@ -126,11 +126,14 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description =
-      "Read an analog value from a device; only works in analog read mode.")
+      "Read an analog value from a device and return a byte array; only works in analog read mode.")
   public Object ReadAnalog(int physicalPort) {
     if (legacyModule != null) {
       try {
-        return legacyModule.readAnalog(physicalPort);
+        byte[] data = legacyModule.readAnalog(physicalPort);
+        if (data != null) {
+          return data;
+        }
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadNumberFromAnalog",

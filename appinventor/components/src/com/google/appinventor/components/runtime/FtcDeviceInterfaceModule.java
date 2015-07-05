@@ -59,18 +59,16 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Enable a physical port in I2C write mode.")
-  public void EnableI2cWriteMode(int physicalPort, int i2cAddress, int memAddress, Object initialValues) {
+  public void EnableI2cWriteMode(int physicalPort, int i2cAddress, int memAddress,
+      Object byteArray) {
     if (deviceInterfaceModule != null) {
       try {
-        if (initialValues.equals("")) {
+        if (byteArray instanceof byte[]) {
           deviceInterfaceModule.enableI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              new byte[0]);
-        } else if (initialValues instanceof byte[]) {
-          deviceInterfaceModule.enableI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              (byte[]) initialValues);
+              (byte[]) byteArray);
         } else {
           form.dispatchErrorOccurredEvent(this, "EnableI2cWriteMode",
-              ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, "initialValues is not valid");
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
@@ -79,7 +77,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
       }
     }
   }
-
 
   @SimpleFunction(description = "Indicates whether the LED on the given channel is on or not")
   public boolean GetLEDState(int channel) {
@@ -348,11 +345,15 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Read the device memory map; only works in I2C read mode.")
+  @SimpleFunction(description =
+      "Read the device memory map and return a byte array; only works in I2C read mode.")
   public Object ReadDeviceInterfaceModuleI2cCache(int physicalPort) {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.readDeviceInterfaceModuleI2cCache(physicalPort);
+        byte[] data = deviceInterfaceModule.readDeviceInterfaceModuleI2cCache(physicalPort);
+        if (data != null) {
+          return data;
+        }
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ReadDeviceInterfaceModuleI2cCache",
@@ -363,15 +364,17 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
   }
 
 
-  @SimpleFunction(description = "Write to the device memory map; only works in I2C write mode.")
-  public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object data) {
+  @SimpleFunction(description =
+      "Write to the device memory map; only works in I2C write mode.")
+  public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object byteArray) {
     if (deviceInterfaceModule != null) {
       try {
-        if (data instanceof byte[]) {
-          deviceInterfaceModule.writeDeviceInterfaceModuleI2cCache(physicalPort, (byte[]) data);
+        if (byteArray instanceof byte[]) {
+          deviceInterfaceModule.writeDeviceInterfaceModuleI2cCache(physicalPort,
+              (byte[]) byteArray);
         } else {
           form.dispatchErrorOccurredEvent(this, "WriteDeviceInterfaceModuleI2cCache",
-              ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, "data is not valid");
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
