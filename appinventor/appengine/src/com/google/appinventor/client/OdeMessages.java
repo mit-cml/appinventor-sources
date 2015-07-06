@@ -4301,10 +4301,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HourMethods();
 
-//  @DefaultMessage("Instant")
-  //@Description("")
-  //String InstantMethods();
-  
   @DefaultMessage("MakeInstant")
   @Description("")
   String MakeInstantMethods();
