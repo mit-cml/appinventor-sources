@@ -305,8 +305,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert 
    * @return  duration in seconds 
    */
-  @SimpleFunction (description = "get duration in seconds")
-  public static long DurationInSeconds(long duration) {
+  @SimpleFunction (description = "convert duration to seconds")
+  public static long DurationToSeconds(long duration) {
 	  return Dates.ConvertDuration(duration, Calendar.SECOND);
   }
 
@@ -316,8 +316,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert 
    * @return  duration in minutes 
    */
-  @SimpleFunction (description = "get duration in minutes")
-  public static long DurationInMinutes(long duration) {
+  @SimpleFunction (description = "convert duration to minutes")
+  public static long DurationToMinutes(long duration) {
 	  return Dates.ConvertDuration(duration, Calendar.MINUTE);
   }
 
@@ -327,9 +327,9 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert 
    * @return  duration in hours 
    */
-  @SimpleFunction (description = "get duration in hours")
-  public static long DurationInHours(long duration) {
-	  return Dates.ConvertDuration(duration, Calendar.HOUR);
+  @SimpleFunction (description = "convert duration to hours")
+  public static long DurationToHours(long duration) {
+	  return Dates.ConvertDuration(duration, Calendar.HOUR_OF_DAY);
   }
 
   /**
@@ -338,8 +338,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert 
    * @return  duration in days 
    */
-  @SimpleFunction (description = "get duration in days")
-  public static long DurationInDays(long duration) {
+  @SimpleFunction (description = "convert duration to days")
+  public static long DurationToDays(long duration) {
 	  return Dates.ConvertDuration(duration, Calendar.DATE);
   }
 
@@ -349,8 +349,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert 
    * @return  duration in weeks 
    */
-  @SimpleFunction (description = "get duration in weeks")
-  public static long DurationInWeeks(long duration) {
+  @SimpleFunction (description = "convert duration to weeks")
+  public static long DurationToWeeks(long duration) {
 	  return Dates.ConvertDuration(duration, Calendar.WEEK_OF_YEAR);
   }
 

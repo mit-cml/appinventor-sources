@@ -172,10 +172,10 @@ public final class Dates {
 	    switch (intervalKind) {
 	      default:
 	        throw new IllegalArgumentException("illegal date/time interval kind in function Duration()");
+	      case DATE_WEEK:
+	    	  return duration/1000/60/60/24/7;
 	      case DATE_DAY:
 	    	  return duration/1000/60/60/24;
-	      case DATE_WEEK:
-	    	  return duration/1000/60/60/7;
 	      case DATE_HOUR:
 	    	  return duration/1000/60/60;
 	      case DATE_MINUTE:
