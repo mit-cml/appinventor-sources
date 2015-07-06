@@ -559,6 +559,10 @@ public interface OdeMessages extends Messages {
   @Description("Information about the Companion")
   String companionInformation();
 
+  @DefaultMessage("Show Splash Screen")
+  @Description("Redisplay the Splash Screen")
+  String showSplashMenuItem();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();
