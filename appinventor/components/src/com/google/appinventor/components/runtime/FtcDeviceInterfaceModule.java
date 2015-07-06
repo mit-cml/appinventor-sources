@@ -398,7 +398,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     return false;
   }
 
-
   // FtcHardwareDevice implementation
 
   @Override
