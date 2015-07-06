@@ -25,15 +25,17 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -115,6 +117,8 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showStatusBar = true;
+  private boolean showTitle = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -209,12 +213,14 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
-    BackgroundImage("");
     AboutScreen("");
+    BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowStatusBar(true);
+    TitleVisible(true);
   }
 
   @Override
@@ -653,10 +659,7 @@ public class Form extends Activity
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
-    frameLayout.setBackgroundColor(backgroundColor);
-    if (backgroundDrawable != null) {
-      ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    }
+    setBackground(frameLayout);
 
     setContentView(frameLayout);
     frameLayout.requestLayout();
@@ -682,15 +685,8 @@ public class Form extends Activity
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      viewLayout.getLayoutManager().setBackgroundColor(argb);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(argb);
-    } else {
-      viewLayout.getLayoutManager().setBackgroundColor(Component.COLOR_WHITE);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(Component.COLOR_WHITE);
-    }
+    // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
+    setBackground(frameLayout);
   }
 
   /**
@@ -728,9 +724,7 @@ public class Form extends Activity
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;
     }
-
-    ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    frameLayout.invalidate();
+    setBackground(frameLayout);
   }
 
   /**
@@ -782,6 +776,71 @@ public class Form extends Activity
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+
+  /**
+   * TitleVisible property getter method.
+   *
+   * @return  showTitle boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
+  public boolean TitleVisible() {
+    return showTitle;
+  }
+
+  /**
+   * TitleVisible property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void TitleVisible(boolean show) {
+    if (show != showTitle) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (v != null) {
+        if (show) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          v.setVisibility(View.GONE);
+        }
+        showTitle = show;
+      }
+    }
+  }
+
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowStatusBar(boolean show) {
+    if (show != showStatusBar) {
+      if (show) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }
+      showStatusBar = show;
+    }
   }
 
   /**
@@ -1073,7 +1132,7 @@ public class Form extends Activity
     defaultValue = "")
   @SimpleProperty(userVisible = false,
     description = "This is the display name of the installed application in the phone." +
-    		"If the AppName is blank, it will be set to the name of the project when the project is built.")
+        "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1562,4 +1621,19 @@ public class Form extends Activity
   public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
     return fullScreenVideoUtil.performAction(action, source, data);
   }
+
+  private void setBackground(View bgview) {
+    Drawable setDraw = backgroundDrawable;
+    if (backgroundImagePath != "" && setDraw != null) {
+      setDraw = backgroundDrawable.getConstantState().newDrawable();
+      setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
+        PorterDuff.Mode.DST_OVER);
+    } else {
+      setDraw = new ColorDrawable(
+        (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
+    }
+    ViewUtil.setBackgroundImage(bgview, setDraw);
+    bgview.invalidate();
+  }
+
 }

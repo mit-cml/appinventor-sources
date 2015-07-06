@@ -53,7 +53,7 @@ Blockly.Yail['math_arithmetic'] = function(mode,block) {
   // Basic arithmetic operators.
   var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.Yail.valueToCode(block, 'A', order) || 0;
   var argument1 = Blockly.Yail.valueToCode(block, 'B', order) || 0;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -203,8 +203,8 @@ Blockly.Yail['math_random_float'] = function() {
   // Random fraction between 0 and 1.
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "random-fraction"
       + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + 
-  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + 
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR +
+  Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE +
   Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + "random fraction"
@@ -233,7 +233,7 @@ Blockly.Yail['math_on_list'] = function() {
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var args = "";
   var typeString = "";
   for(var i=0;i<this.itemCount_;i++) {
@@ -264,7 +264,7 @@ Blockly.Yail['math_divide'] = function() {
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_divide.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.Yail.valueToCode(this, 'DIVIDEND', order) || 0;
   var argument1 = Blockly.Yail.valueToCode(this, 'DIVISOR', order) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -388,17 +388,35 @@ Blockly.Yail['math_format_as_decimal'] = function() {
 };
 
 Blockly.Yail['math_is_a_number'] = function() {
-  // Basic is_a_number.
+  var mode = this.getFieldValue('OP');
+  var tuple = Blockly.Yail.math_is_a_number.OPERATORS[mode];
+  var yailname = tuple[0];
+  var description = tuple[1];
   var argument = Blockly.Yail.valueToCode(this, 'NUM', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "is-number?"
-      + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "any"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "is a number?"
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var code ="(call-yail-primitive " + yailname + " (*list-for-runtime* " + argument +") " + description + ")";
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+Blockly.Yail.math_is_a_number.OPERATORS = {
+  NUMBER: ['is-number?', "'(text) \"is a number?\""],
+  BASE10: ['is-base10?', "'(text) \"is base10?\""],
+  HEXADECIMAL: ['is-hexadecimal?', "'(text) \"is hexadecimal?\""],
+  BINARY: ['is-binary?', "'(text) \"is binary?\""]
+};
+
+Blockly.Yail['math_convert_number'] = function() {
+  var mode = this.getFieldValue('OP');
+  var tuple = Blockly.Yail.math_convert_number.OPERATORS[mode];
+  var yailname = tuple[0];
+  var description = tuple[1];
+  var argument0 = Blockly.Yail.valueToCode(this, 'NUM', Blockly.Yail.ORDER_NONE) || 0;
+  var code ="(call-yail-primitive " + yailname + " (*list-for-runtime* " + argument0 +") " + description + ")";
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+Blockly.Yail.math_convert_number.OPERATORS = {
+  DEC_TO_HEX: ['math-convert-dec-hex', "'(text) \"convert Dec to Hex\""],
+  HEX_TO_DEC: ['math-convert-hex-dec', "'(text) \"convert Hex to Dec\""],
+  DEC_TO_BIN: ['math-convert-dec-bin', "'(text) \"convert Dec to Hex\""],
+  BIN_TO_DEC: ['math-convert-bin-dec', "'(text) \"convert Hex to Dec\""]
 };

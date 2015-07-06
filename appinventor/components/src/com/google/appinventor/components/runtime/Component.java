@@ -137,4 +137,7 @@ public interface Component {
   public static float SLIDER_MAX_VALUE = 50;
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
+  static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "USA";
+  static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "en";
+
 }

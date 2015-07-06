@@ -455,6 +455,30 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
+         '</xml>';}},
+
+    // Clock.FormatDate has pattern default to MMM d, yyyy
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDate"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MMM d, yyyy</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Clock.FormatDateTime has pattern default to MM/dd/yyyy hh:mm:ss a
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDateTime"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
+         '</block>' +
          '</xml>';}}
   ]
 };

@@ -1363,13 +1363,24 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Creates, visually centers, and optionally displays the dialog box
-   * that informs the user how to start learning about using App Inventor
-   * or create a new project.
-   * @param showDialog Convenience variable to show the created DialogBox.
+   * public entry for (re)displaying the welcome dialog box.
+   * Bypass the "Do Not Show Again" feature. This is used by the
+   * menu choice to explicitly show the dialog box. This lets
+   * people who have dismissed the dialog to manually decide to
+   * see it again.
+   *
    */
-  private void createWelcomeDialog(boolean showDialog) {
-    if (!shouldShowWelcomeDialog()) {
+  public void showWelcomeDialog() {
+    createWelcomeDialog(true);
+  }
+
+  /**
+   * Possibly display the MIT App Inventor "Splash Screen"
+   *
+   * @param force Bypass the check to see if they have dimissed this version
+   */
+  private void createWelcomeDialog(boolean force) {
+    if (!shouldShowWelcomeDialog() && !force) {
       openProjectsTab();
       return;
     }
@@ -1405,9 +1416,7 @@ public class Ode implements EntryPoint {
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
-    if (showDialog) {
-      dialogBox.show();
-    }
+    dialogBox.show();
   }
 
   /**
@@ -1520,7 +1529,7 @@ public class Ode implements EntryPoint {
 
   private void maybeShowSplash() {
     if (AppInventorFeatures.showSplashScreen()) {
-      createWelcomeDialog(true);
+      createWelcomeDialog(false);
     } else {
       openProjectsTab();
     }

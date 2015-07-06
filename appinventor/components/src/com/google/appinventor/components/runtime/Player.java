@@ -75,7 +75,8 @@ public final class Player extends AndroidNonvisibleComponent
   private MediaPlayer player;
   private final Vibrator vibe;
 
-  public int playerState;
+  public State playerState;
+  public enum State { INITIAL, PREPARED, PLAYING, PAUSED_BY_USER, PAUSED_BY_EVENT; }
   private String sourcePath;
 
   // determines if playing should loop
@@ -102,11 +103,11 @@ public final class Player extends AndroidNonvisibleComponent
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
    * adequate, given this API:
-   * 0: player initial state
-   * 1: player prepared but not started
-   * 2: player is playing
-   * 3: player was playing and is now paused by a user action
-   * 4: player was playing and is now paused by lifecycle events or audio focus interrupts
+   * 0 (INITIAL) : player initial state
+   * 1 (PREPARED) : player prepared but not started
+   * 2 (PLAYING) : player is playing
+   * 3 (PAUSED_BY_USER) : player was playing and is now paused by a user action
+   * 4 (PAUSED_BY_EVENT) : player was playing and is now paused by lifecycle events or audio focus interrupts
    * The allowable transitions are:
    * Start: must be called in state 1, 2, 3 or 4, results in state 2
    * Pause (User method): must be called in state 2, results in state 3
@@ -164,9 +165,9 @@ public final class Player extends AndroidNonvisibleComponent
     sourcePath = (path == null) ? "" : path;
 
     // Clear the previous MediaPlayer.
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       player.stop();
-      playerState = 0;
+      playerState = State.INITIAL;
     }
     if (player != null) {
       player.release();
@@ -216,7 +217,7 @@ public final class Player extends AndroidNonvisibleComponent
       description = "Reports whether the media is playing",
       category = PropertyCategory.BEHAVIOR)
   public boolean IsPlaying() {
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING) {
       return player.isPlaying();
     }
     return false;
@@ -244,7 +245,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty
   public void Loop(boolean shouldLoop) {
     // set the desired looping right now if the player is prepared.
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       player.setLooping(shouldLoop);
     }
     // even if the player is not prepared, it will be set according to
@@ -263,7 +264,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100")
   public void Volume(int vol) {
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
       if (vol > 100 || vol < 0) {
         throw new IllegalArgumentError("Volume must be set to a number between 0 and 100");
       }
@@ -307,11 +308,11 @@ public final class Player extends AndroidNonvisibleComponent
     if (audioFocusSupported && !focusOn) {
       requestPermanentFocus();
     }
-    if (playerState == 1 || playerState == 2 || playerState == 3 || playerState == 4) {
+    if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT ) {
       player.setLooping(loop);
       player.start();
-      playerState = 2;
-      // Player should now be in state 2
+      playerState = State.PLAYING;
+      // Player should now be in state 2(PLAYING)
     }
   }
 
@@ -322,11 +323,11 @@ public final class Player extends AndroidNonvisibleComponent
   public void Pause() {
     if (player == null) return; //Do nothing if the player is not
     boolean wasPlaying = player.isPlaying();
-    if (playerState == 2) {
+    if (playerState == State.PLAYING) {
       player.pause();
       if (wasPlaying) {
-        playerState = 3;
-        // Player should now be in state 3.
+        playerState = State.PAUSED_BY_USER;
+        // Player should now be in state 3(PAUSED_BY_USER).
       }
     }
   }
@@ -337,10 +338,10 @@ public final class Player extends AndroidNonvisibleComponent
    */
   public void pause() {
     if (player == null) return; //Do nothing if the player is not playing
-    if (playerState == 2) {
+    if (playerState == State.PLAYING) {
       player.pause();
-      playerState = 4;
-      // Player should now be in state 4.
+      playerState = State.PAUSED_BY_EVENT;
+      // Player should now be in state 4(PAUSED_BY_EVENT).
     }
   }
 
@@ -352,11 +353,11 @@ public final class Player extends AndroidNonvisibleComponent
     if (audioFocusSupported && focusOn) {
       abandonFocus();
     }
-    if (playerState == 2 || playerState == 3 || playerState == 4) {
+    if (playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT) {
       player.stop();
       prepare();
       player.seekTo(0);
-      // Player should now be in state 1. (If prepare failed, we are in state 0.)
+      // Player should now be in state 1(PREPARED). (If prepare failed, we are in state 0 (INITIAL).)
     }
   }
 
@@ -389,11 +390,11 @@ public final class Player extends AndroidNonvisibleComponent
     // initialization
     try {
       player.prepare();
-      playerState = 1;
+      playerState = State.PREPARED;
     } catch (IOException ioe) {
       player.release();
       player = null;
-      playerState = 0;
+      playerState = State.INITIAL;
       form.dispatchErrorOccurredEvent(this, "Source",
           ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA, sourcePath);
     }
@@ -410,6 +411,11 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void Completed() {
+    //Once you've finished playback be sure to call abandonAudioFocus() according to Android developer reference.
+    if (audioFocusSupported && focusOn) {
+      abandonFocus();
+    }
+
     EventDispatcher.dispatchEvent(this, "Completed");
   }
 
@@ -425,7 +431,7 @@ public final class Player extends AndroidNonvisibleComponent
   // OnResumeListener implementation
   @Override
   public void onResume() {
-    if (playOnlyInForeground && playerState == 4) {
+    if (playOnlyInForeground && playerState == State.PAUSED_BY_EVENT) {
       Start();
     }
   }
@@ -465,10 +471,10 @@ public final class Player extends AndroidNonvisibleComponent
     if (audioFocusSupported && focusOn) {
       abandonFocus();
     }
-    if (playerState != 0) {
+    if (playerState != State.INITIAL) {
       player.stop();
     }
-    playerState = 0;
+    playerState = State.INITIAL;
     if (player != null) {
       player.release();
       player = null;
