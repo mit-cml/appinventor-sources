@@ -322,7 +322,6 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
-<<<<<<< HEAD
   // For YOUNG_ANDROID_VERSION 124:
   // - FORM_COMPONENT_VERSION was incremented to 15.
   // For YOUNG_ANDROID_VERSION 125:
@@ -341,7 +340,7 @@ public class YaVersion {
   // - FILE_COMPONENT_VERSION was incremented to 2
 
   public static final int YOUNG_ANDROID_VERSION = 131;
-
+    
   // ............................... Blocks Language Version Number ...............................
 
   // NOTE(lizlooney,user) - when the blocks language changes:
