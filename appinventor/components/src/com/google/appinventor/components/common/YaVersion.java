@@ -336,7 +336,7 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 130:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
-  // For YOUNG_ANDROID_VERION 131;
+  // For YOUNG_ANDROID_VERSION 131:
   // - FILE_COMPONENT_VERSION was incremented to 2
 
   public static final int YOUNG_ANDROID_VERSION = 131;
