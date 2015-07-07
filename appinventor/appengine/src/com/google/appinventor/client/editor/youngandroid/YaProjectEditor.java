@@ -6,29 +6,43 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -53,6 +67,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Maps form name -> editors for this form
   private final HashMap<String, EditorSet> editorMap = Maps.newHashMap();
+  
+  // List of External Components
+  private final List<String> externalComponents = new ArrayList<String>();
+  
+  //State variables to help determine whether we are ready to load Project
+  private boolean externalComponentsLoaded = false;
   
   // State variables to help determine whether we are ready to show Screen1  
   // Automatically select the Screen1 form editor when we have finished loading
@@ -111,6 +131,16 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   }
 
+  /**
+   * Project process is completed before loadProject is started!
+   * Currently Project process loads all External Components
+   */
+  @Override
+  public void processProject() {
+    loadExternalComponents();
+    callLoadProject();
+  }
+  
   // Note: When we add the blocks editors in the loop below we do not actually
   // have them load the blocks file. Instead we trigger the load of a blocks file
   // in the callback for the loading of its associated forms file. This is important
@@ -326,7 +356,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.get(formName).formEditor = newFormEditor;
     } else {
       EditorSet editors = new EditorSet();
-      editors.formEditor = newFormEditor;
+      editors.formEditor = newFormEditor;http://www.gwtproject.org/javadoc/latest/com/google/gwt/core/client/Scheduler.html
       editorMap.put(formName, editors);
     }
     newFormEditor.loadFile(new Command() {
@@ -354,6 +384,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     
   private boolean readyToShowScreen1() {
     return screen1FormLoaded && screen1BlocksLoaded && screen1Added;
+  }
+  
+  private boolean readyToLoadProject() {
+    return externalComponentsLoaded;
   }
 
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
@@ -390,6 +424,84 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         editors.blocksEditor = null;
       }
     }    
+  }
+  
+  public void addComponent(final ProjectNode node, final Command afterComponentAdded) {
+    final ProjectNode compNode = node;
+    final String fileId = compNode.getFileId();
+    AsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
+      @Override
+      public void onSuccess(ChecksumedLoadFile result) {
+        String jsonFileContent;
+        try {
+          jsonFileContent = result.getContent();
+        } catch (ChecksumedFileException e) {
+          this.onFailure(e);
+          return;
+        }
+        SimpleComponentDatabase datbase = SimpleComponentDatabase.getInstance();
+        for (String formName : editorMap.keySet()) {
+          EditorSet editors = editorMap.get(formName);
+          datbase.addComponentDatabaseListener(editors.formEditor.getComponentDatabaseChangeListener());
+        }
+        datbase.addComponent(new ClientJsonParser().parse(
+            jsonFileContent).asObject());
+        externalComponents.add(compNode.getName());
+        if (afterComponentAdded != null) {
+          afterComponentAdded.execute();
+        }
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        if (caught instanceof ChecksumedFileException) {
+          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());
+        }
+        super.onFailure(caught);
+      }
+    };
+    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
+  }
+  
+  private void callLoadProject() {
+    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          if (!readyToLoadProject()) { // wait till project is processed
+            Scheduler.get().scheduleDeferred(this);
+          } else {
+            loadProject();
+          }
+        }
+      });
+  }
+  
+  private void loadExternalComponents() {
+  //Get the list of all ComponentNodes to be Added
+    List<ProjectNode> componentNodes = new ArrayList<ProjectNode>();
+    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+    if (assetsFolder != null) {
+      for (ProjectNode node : assetsFolder.getChildren()) {
+        // Find all assets that are json files. 
+        final String nodeName = node.getName();
+        if (nodeName.endsWith(".json")) {
+          componentNodes.add(node);
+        }
+      }
+    }
+    final int componentCount = componentNodes.size();
+    for (ProjectNode componentNode : componentNodes) {
+      addComponent(componentNode, new Command() {
+        @Override
+        public void execute() {
+          if (componentCount == externalComponents.size()) { // This will be true for the last component added
+            externalComponentsLoaded = true;
+          }
+        }
+      }); 
+    }
+    if (componentCount == 0) {
+      externalComponentsLoaded = true; // to hint that we are ready to load
+    }
   }
   
   private static boolean isScreen1(String formName) {

@@ -6,7 +6,8 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -87,9 +88,13 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   // Maps component names to component descriptors
   private Map<String, Component> components;
 
+  // Components in JSON String generated from internal components
+  private final String internalComponentsJSONString;
   // Components in JSON String generated from components
   private String componentsJSONString;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = 
+      new ArrayList<ComponentDatabaseChangeListener>();
 
   /**
    * Creates a new component database.
@@ -99,32 +104,59 @@ class ComponentDatabase implements ComponentDatabaseInterface {
    */
   ComponentDatabase(JSONArray array) {
     components = new HashMap<String, Component>();
+    List<String> newComponents = new ArrayList<String>();
     for (JSONValue component : array.getElements()) {
-      initComponent(component.asObject()); 
+      if (initComponent(component.asObject())) { 
+        newComponents.add(component.asObject().get("name").asString().getString());
+      }
     }
-    
-    componentsJSONString = generateComponentsJSON();
+    internalComponentsJSONString = generateComponentsJSON(); 
+    componentsJSONString = internalComponentsJSONString;
+    fireComponentsAdded(newComponents);
   }
 
   public boolean addComponent(JSONValue component) {
     if (!initComponent(component.asObject())) return false;
-
-    // append the String form of component to componentsJSONString
-    // which is the String form of a JSONArray
+    List<String> newComponents = new ArrayList<String>();
+    newComponents.add(component.asObject().get("name").asString().getString());
     componentsJSONString = generateComponentsJSON();
+    fireComponentsAdded(newComponents);
     return true;
   }
 
   public int addComponents(JSONArray array) {
     int compsAdded = 0;
-    for ( JSONValue component : array.getElements()){
-      if(initComponent(component.asObject())) ++compsAdded;
+    List<String> newComponents = new ArrayList<String>();
+    for ( JSONValue component : array.getElements()) {
+      if(initComponent(component.asObject())) {
+        newComponents.add(component.asObject().get("name").asString().getString());
+        ++compsAdded;
+      }
     }
-    
     componentsJSONString = generateComponentsJSON();
+    fireComponentsAdded(newComponents);
     return compsAdded;
   }
   
+  public boolean removeComponent(String componentTypeName) {
+    if (components.remove(componentTypeName) != null) {
+      componentsJSONString = generateComponentsJSON();
+      List<String> removedComponents = new ArrayList<String>();
+      removedComponents.add(componentTypeName);
+      fireComponentsRemoved(removedComponents);
+      return true;
+    }
+    return false;
+  }
+  /**
+   * Resets the Component Database to include only Internal Components
+   */
+  public void resetDatabase() {
+    components.clear();
+    componentsJSONString = "";
+    addComponents(new ClientJsonParser().parse(internalComponentsJSONString).asArray());
+    fireResetDatabase();
+  }
   
   @Override
   public Set<String> getComponentNames() {
@@ -402,5 +434,34 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return true;
   }
 
+  public void addComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+    componentDatabaseChangeListeners.add(listener);
+  }
+  
+  public void removeComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+    componentDatabaseChangeListeners.remove(listener);
+  }
+  
+  private List<ComponentDatabaseChangeListener> copyComponentDatbaseChangeListeners() {
+    return new ArrayList<ComponentDatabaseChangeListener>(componentDatabaseChangeListeners);
+  }
+  
+  private void fireComponentsAdded(List<String> componentTypes) {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onComponentsAdded(componentTypes);
+    }
+  }
+  
+  private void fireComponentsRemoved(List<String> componentTypes) {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onComponentsRemoved(componentTypes);
+    }
+  }
+  
+  private void fireResetDatabase() {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onResetDatabase();;
+    }
+  }
 
 }

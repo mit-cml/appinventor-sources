@@ -8,7 +8,10 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
@@ -16,7 +19,6 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellList;
@@ -90,11 +92,14 @@ public class ComponentImportWizard extends Wizard {
             new OdeAsyncCallback<List<ProjectNode>>() {
               @Override
               public void onSuccess(List<ProjectNode> result) {
+                YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
                 for (ProjectNode node : result) {
                   project.addNode(assetsFolderNode,
                       new YoungAndroidAssetNode(node.getName(), node.getFileId()));
+                  if (node.getName().endsWith(".json")) {
+                    projectEditor.addComponent(node, null);
+                  }
                 }
-                // todo: make use of the files in assets to do the importing
               }
             });
       }

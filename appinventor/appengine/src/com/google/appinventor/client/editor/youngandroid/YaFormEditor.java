@@ -28,6 +28,7 @@ import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescri
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -271,6 +272,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return palettePanel;
   }
 
+  @Override
+  public ComponentDatabaseChangeListener getComponentDatabaseChangeListener() {
+    return palettePanel;
+  }
+  
   @Override
   public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
     return nonVisibleComponentsPanel;
