@@ -34,6 +34,7 @@ import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
@@ -48,6 +49,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
@@ -106,6 +108,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final String DEFAULT_ENCODING = "UTF-8";
 
   private static final long MOTD_ID = 1;
+  private static final long SPLASHDATA_ID = 1;
 
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
@@ -175,6 +178,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
     ObjectifyService.register(CorruptionRecord.class);
+    ObjectifyService.register(SplashData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     String gcsBucket = Flag.createFlag("gcs.bucket", "").get();
@@ -875,7 +879,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-    if (projectData == null) {
+    if (projectData.t == null) {
       return null;
     } else {
       return new UserProject(projectId, projectData.t.name,
@@ -2537,6 +2541,34 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.upgradedGCS = useGcs;
     datastore.put(userData);
     datastore.getTxn().commit();
+  }
+
+  public SplashConfig getSplashConfig() {
+    final Result<SplashConfig> result = new Result<SplashConfig>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            // Fixed key because only one record
+            SplashData sd = datastore.find(SplashData.class, SPLASHDATA_ID);
+            if (sd == null) {   // If we don't have Splash Data, create it
+              SplashData firstSd = new SplashData(); // We do this so cacheing works
+              firstSd.id = SPLASHDATA_ID;
+              firstSd.version = 0;                   // on future calls
+              firstSd.content = "<b>Welcome to MIT App Inventor</b>";
+              firstSd.width = 350;
+              firstSd.height = 100;
+              datastore.put(firstSd);
+              result.t = new SplashConfig(0, firstSd.width, firstSd.height, firstSd.content);
+            } else {
+              result.t = new SplashConfig(sd.version, sd.width, sd.height, sd.content);
+            }
+          }
+        }, false);             // No transaction, Objectify will cache
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
   }
 
 }

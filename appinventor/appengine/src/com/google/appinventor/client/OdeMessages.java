@@ -559,6 +559,10 @@ public interface OdeMessages extends Messages {
   @Description("Information about the Companion")
   String companionInformation();
 
+  @DefaultMessage("Show Splash Screen")
+  @Description("Redisplay the Splash Screen")
+  String showSplashMenuItem();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();
@@ -2290,6 +2294,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AboutScreenProperties();
 
+  @DefaultMessage("ShowStatusBar")
+  @Description("")
+  String ShowStatusBarProperties();
+
+  @DefaultMessage("TitleVisible")
+  @Description("")
+  String TitleVisibleProperties();
+
   @DefaultMessage("AboveRangeEventEnabled")
   @Description("")
   String AboveRangeEventEnabledProperties();
@@ -3720,6 +3732,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AccelerationChangedEvents();
 
+  @DefaultMessage("ActivityCanceled")
+  @Description("")
+  String ActivityCanceledEvents();
+
   @DefaultMessage("AfterActivity")
   @Description("")
   String AfterActivityEvents();
@@ -4956,11 +4972,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CheckBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Non-visible component that provides the instant in time"+
-      "using the internal clock on the phone. It can fire a timer at " +
-      "regularly set intervals and perform time calculations, " +
-      "manipulations, and conversions. Methods to format the date and " +
-      "time are also available.")
+  @DefaultMessage("Non-visible component that provides the instant in time "
+    + "using the internal clock on the phone. It can fire a timer at "
+    + "regularly set intervals and perform time calculations, "
+    + "manipulations, and conversions.</p> <p>Methods to convert an "
+    + "instant to text are also available. Acceptable patterns are "
+    + "empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy "
+    + "HH:mm. The empty string will provide the default format, "
+    + "which is \"MMM d, yyyy HH:mm:ss a\" for FormatDateTime \"MMM "
+    + "d, yyyy\" for FormatDate.  To see all possible format, "
+    + "please see <a "
+    + "href=\"https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\" "
+    + "target=\"_blank\"> here</a>.")
   @Description("")
   String ClockHelpStringComponentPallette();
 
@@ -5202,6 +5225,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createWelcomeDialogButton();
 
+  @DefaultMessage("Do Not Show Again")
+  @Description("")
+  String doNotShow();
+
   @DefaultMessage("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>")
   @Description("")
   String showSurveySplashMessage();
@@ -5276,6 +5303,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Your Session is Finished")
   @Description("")
   String finalDialogText();
+
+  @DefaultMessage("Your Account is Disabled")
+  @Description("")
+  String accountDisabledMessage();
 
   @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
   @Description("")
@@ -5397,6 +5428,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Direction")
   @Description("")
   String DirectionProperties();
+
+  @DefaultMessage("SelectionColor")
+  @Description("")
+  String SelectionColorProperties();
 
   // Missing translations from 4/8/2015 -- Should sort into appropriate place
 

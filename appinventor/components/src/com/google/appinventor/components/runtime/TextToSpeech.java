@@ -122,8 +122,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   public TextToSpeech(ComponentContainer container) {
     super(container.$form());
     result = false;
-    Language("");
-    Country("");
+    Language("en");
+    Country("USA");
     /* Determine which TTS library to use */
     boolean useExternalLibrary = SdkLevel.getLevel() < SdkLevel.LEVEL_DONUT;
     Log.v(LOG_TAG, "Using " + (useExternalLibrary ? "external" : "internal") + " TTS library.");
@@ -172,7 +172,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param language is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) language code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES,
+    defaultValue = Component.DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
@@ -288,7 +289,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * @param country is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) country code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_COUNTRIES,
+    defaultValue = Component.DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY)
   @SimpleProperty(description = "Country code to use for speech generation.  This can affect the " +
       "pronounciation.  For example, British English (GBR) will sound different from US English " +
       "(USA).  Not every country code will affect every language.",
@@ -331,7 +333,6 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   public String Country() {
     return country;
   }
-
 
   @SimpleProperty(description = "List of the languages available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +

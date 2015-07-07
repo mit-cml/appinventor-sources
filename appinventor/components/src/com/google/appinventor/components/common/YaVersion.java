@@ -322,8 +322,22 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - FORM_COMPONENT_VERSION was incremented to 15.
+  // For YOUNG_ANDROID_VERSION 125:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 126:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 127:
+  // - FORM_COMPONENT_VERSION was incremented to 16.
+  // For YOUNG_ANDROID_VERSION 128:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 19
+  // For YOUNG_ANDROID_VERSION 129:
+  // - CLOCK_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 130:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 130;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -378,13 +392,17 @@ public class YaVersion {
   // - Added close-screen-with-plain-text
   // For BLOCKS_LANGUAGE_VERSION 18:
   // - New Obsfucate Text Block was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 18;
-
+  // For BLOCKS_LANGUAGE_VERSION 19:
+  // The is-number block was modified to include dropdowns for base10, hex, and binary
+  // The number-convert blocks was added
+  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Add the version number for the new component below
+  // 3. Add documentation to the appropriate html file in docs/reference/components.
 
   // NOTE(lizlooney,user) - when a component changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
@@ -394,6 +412,7 @@ public class YaVersion {
   // *** OBSOLETE 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
   // *** OBSOLETE upgrade the .blk file contents (not used in AI 2)
   // 4. For AI2, update the table in blocklyeditor/src/versioning.js
+  // 5. Update documentation in the appropriate html file in docs/reference/components.
 
 
   // Note added after internationalization (8/25/2014)
@@ -433,7 +452,9 @@ public class YaVersion {
   // For ACTIVITYSTARTER_COMPONENT_VERSION 4:
   // - The ActivityStarter.StartActivity was edited to use the parent Form's open screen
   //   animation to transition to next activity.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
+  // - The ActivityStarter.ActivityCanceled event was added.
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -519,7 +540,9 @@ public class YaVersion {
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
 
-  public static final int CLOCK_COMPONENT_VERSION = 1;
+  // For CLOCK_COMPONENT_VERSION 2:
+  // - The pattern parameter was added to the FormatDate and FormatDateTime.
+  public static final int CLOCK_COMPONENT_VERSION = 2;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -578,7 +601,12 @@ public class YaVersion {
   // - The Screen.Scrollable property was set to False by default
   // For FORM_COMPONENT_VERSION 14:
   // - The Screen1.AppName was added and no block need to be changed.
-  public static final int FORM_COMPONENT_VERSION = 14;
+  // For FORM_COMPONENT_VERSION 15:
+  // - The Screen.ShowStatusBar was added.
+  // For FORM_COMPONENT_VERSION 16:
+  // - TitleVisible property was added
+
+  public static final int FORM_COMPONENT_VERSION = 16;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -656,7 +684,9 @@ public class YaVersion {
   // - Added TextColor Property
   // For LISTVIEW_COMPONENT_VERSION 4:
   // - Added TextSize Property
-  public static final int LISTVIEW_COMPONENT_VERSION = 4;
+  // For LISTVIEW_COMPONENT_VERSION 5:
+  // - Added SelectionColor Property
+  public static final int LISTVIEW_COMPONENT_VERSION = 5;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -785,7 +815,10 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 3:
   // - the AvailableLanguages property was added
   // - the AvailableCountries property was added
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 3;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 4:
+  // - the Country designer property was changed to use a ChoicePropertyEditor
+  // - the Language designer property was changed to use a ChoicePropertyEditor
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 4;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -897,10 +930,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.26";
+  public static final String PREFERRED_COMPANION = "2.27";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.26" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.27" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

@@ -243,5 +243,23 @@ public class BlocklyEvalTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
+
+  public void testmathsconvert() throws Exception {
+
+    String[] params =
+      { "phantomjs",
+        testpath + "/tests/com/google/appinventor/blocklyeditor/mathsconvertTest.js",
+        Integer.toString(YaVersion.BLOCKS_LANGUAGE_VERSION), Integer.toString(YaVersion.YOUNG_ANDROID_VERSION) };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
 }
 
