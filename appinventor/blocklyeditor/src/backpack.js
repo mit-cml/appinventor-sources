@@ -49,14 +49,14 @@ Blockly.Backpack = function(workspace) {
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_SMALL_ = 'media/backpack-small.png';
+Blockly.Backpack.prototype.BPACK_SMALL_ = 'media/backpack-smaller.png';
 
 /**
  * URL of the small backpack image.
  * @type {string}
  * @private
  */
-//Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small-over.png';
+//Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small-highlighted.png';
 Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small.png';
 
 /**
@@ -64,14 +64,14 @@ Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small.png';
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.WIDTH_ = 74;
+Blockly.Backpack.prototype.WIDTH_ = 80;
 
 /**
  * Height of the image.
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.BODY_HEIGHT_ = 70; 
+Blockly.Backpack.prototype.BODY_HEIGHT_ = 75; 
 
 /**
  * Distance between backpack and top edge of workspace.
@@ -85,7 +85,7 @@ Blockly.Backpack.prototype.MARGIN_TOP_ = 10;
  * @type {number}
  * @private
  */
-Blockly.Backpack.prototype.MARGIN_SIDE_ = 28;
+Blockly.Backpack.prototype.MARGIN_SIDE_ = 20;
 
 /**
  * Current small/large state of the backpack.
@@ -186,8 +186,11 @@ Blockly.Backpack.prototype.init = function() {
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.Backpack.flyout_.init(Blockly.mainWorkspace,
                               Blockly.getMainWorkspaceMetrics_,
-                              true /*withScrollbar*/);  
-  
+                              true /*withScrollbar*/); 
+
+  // load files for sound effect 
+  Blockly.loadAudio_(['media/backpack.mp3', 'media/backpack.ogg', 'media/backpack.wav'], 'backpack');
+
   if (this.getBackpack() == undefined)
     return;
 
@@ -290,6 +293,7 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
   bp_contents[len] = newBlock;
   this.setBackpack(JSON.stringify(bp_contents));
   this.grow();
+  Blockly.playAudio('backpack');
 }
 
 /**
@@ -441,7 +445,7 @@ Blockly.Backpack.prototype.setOpen_ = function(state) {
 Blockly.Backpack.prototype.animateBackpack_ = function() {
   var icon = document.getElementById('backpackIcon');
   if (this.isOpen){
-    icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_OVER_);  
+    icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_OVER_);
   } else {
     icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_SMALL_);
   }
