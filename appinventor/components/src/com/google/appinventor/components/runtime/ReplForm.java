@@ -7,6 +7,8 @@ package com.google.appinventor.components.runtime;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.io.File;
@@ -17,6 +19,7 @@ import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 
+import dalvik.system.DexClassLoader;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -62,6 +65,7 @@ public class ReplForm extends Form {
     super.onCreate(icicle);
     Log.d("ReplForm", "onCreate");
     Intent intent = getIntent();
+    loadComponents(); // find a better place for this to be called, to fix first time failure!! 
     processExtras(intent, false);
   }
 
@@ -225,6 +229,28 @@ public class ReplForm extends Form {
 
   public void setAssetsLoaded() {
     assetsLoaded = true;
+  }
+  
+  /**
+   * This is a nasty hack. For loading external component's dex file so that they can be accessible for 
+   * kawa to load it, when required. This assumes classloader checks class via delegation through the parent
+   * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy 
+   */
+  public static void loadComponents() {
+    // Store the loaded dex files in the private storage of the App for optimization
+    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
+    File assetFolder = new File(REPL_ASSET_DIR );
+    // Current Thread Class Loader
+    ClassLoader parentClassLoader = activeForm.$context().getClassLoader();
+    ArrayList<File> assetsList = new ArrayList<File>(Arrays.asList(assetFolder.listFiles()));
+    for (File assetFile : assetsList) {
+      if (assetFile.getName().endsWith(".dex")) {
+        DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
+            null, parentClassLoader);
+        parentClassLoader = dexCloader;
+        Thread.currentThread().setContextClassLoader(parentClassLoader);
+      }
+    }
   }
 
 }
