@@ -128,8 +128,6 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     ActivityClass("");
     DataUri("");
     DataType("");
-    ExtraKey("");
-    ExtraValue("");
     Extras(new YailList());
     ResultName("");
   }
@@ -170,18 +168,19 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Returns the extra key that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = false)
   public String ExtraKey() {
     return extraKey;
   }
 
   /**
    * Specifies the extra key that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
   @SimpleProperty
   public void ExtraKey(String extraKey) {
     this.extraKey = extraKey.trim();
@@ -190,18 +189,19 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Returns the extra value that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = false)
   public String ExtraValue() {
     return extraValue;
   }
 
   /**
    * Specifies the extra value that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
   @SimpleProperty
   public void ExtraValue(String extraValue) {
     this.extraValue = extraValue.trim();
