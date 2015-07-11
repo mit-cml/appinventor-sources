@@ -100,6 +100,12 @@ Blockly.Backpack.prototype.isLarge = false;
 Blockly.Backpack.prototype.isOver = false;
 
 /**
+ * Current state whether a block is added to backpack.
+ * @type {boolean}
+ */
+Blockly.Backpack.prototype.isAdded = false;
+
+/**
  * The SVG group containing the backpack.
  * @type {Element}
  * @private
@@ -294,6 +300,13 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
   this.setBackpack(JSON.stringify(bp_contents));
   this.grow();
   Blockly.playAudio('backpack');
+
+  // update the flyout when it's visible 
+  if (Blockly.Backpack.flyout_.isVisible()) {
+    this.isAdded = true;
+    this.openBackpack();
+    this.isAdded = false;
+  }
 }
 
 /**
@@ -322,20 +335,19 @@ Blockly.Backpack.prototype.position_ = function() {
  * On left click, open backpack and view flyout
  */
 Blockly.Backpack.prototype.openBackpack = function(){
-  if (Blockly.Backpack.flyout_.isVisible()) {
+  if (!this.isAdded && Blockly.Backpack.flyout_.isVisible()) {
       Blockly.Backpack.flyout_.hide();
   } else {
-  var backpack = JSON.parse(this.getBackpack());
-  //get backpack contents from java
+    var backpack = JSON.parse(this.getBackpack());
+    //get backpack contents from java
 
-  var len = backpack.length;
-  var newBackpack = []
-  for (var i = 0; i < len; i++) {
-    var dom = Blockly.Xml.textToDom(backpack[i]).firstChild;
-    newBackpack[i] = dom;
+    var len = backpack.length;
+    var newBackpack = []
+    for (var i = 0; i < len; i++) {
+      var dom = Blockly.Xml.textToDom(backpack[i]).firstChild;
+      newBackpack[i] = dom;
     }
-
-  Blockly.Backpack.flyout_.show(newBackpack);
+    Blockly.Backpack.flyout_.show(newBackpack);
   }  
 };
 
