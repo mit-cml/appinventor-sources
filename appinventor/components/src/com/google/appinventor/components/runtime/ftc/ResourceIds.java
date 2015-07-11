@@ -16,6 +16,7 @@ class ResourceIds {
     final int action_about;
     final int action_restart_robot;
     final int action_settings;
+    final int action_view_logs;
     final int active_filename;
     final int entire_screen;
     final int included_header;
@@ -34,6 +35,7 @@ class ResourceIds {
       action_about = getIdentifier(resources, "action_about", "id", packageName);
       action_restart_robot = getIdentifier(resources, "action_restart_robot", "id", packageName);
       action_settings = getIdentifier(resources, "action_settings", "id", packageName);
+      action_view_logs = getIdentifier(resources, "action_view_logs", "id", packageName);
       active_filename = getIdentifier(resources, "active_filename", "id", packageName);
       entire_screen = getIdentifier(resources, "entire_screen", "id", packageName);
       included_header = getIdentifier(resources, "included_header", "id", packageName);

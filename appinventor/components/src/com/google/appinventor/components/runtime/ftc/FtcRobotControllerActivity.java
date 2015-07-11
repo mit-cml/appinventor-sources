@@ -83,7 +83,7 @@ import com.google.appinventor.components.runtime.FtcRobotController;
 
 public class FtcRobotControllerActivity extends ActivityGlue {
 
-  public static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+  static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
   private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
 
@@ -262,51 +262,36 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    // Added for App Inventor:
-    int itemId = item.getItemId();
-    if (itemId == R.id.action_restart_robot) {
-      dimmer.handleDimTimer();
-      Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-      requestRobotRestart();
-      return true;
-    } else if (itemId == R.id.action_settings) {
-      startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
-      return true;
-    } else if (itemId == R.id.action_about) {
-      Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
-      startActivity(intent);
-      return true;
-    }
-    // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
-    // FtcCommon.
-
-    return false;
-    /* Removed for App Inventor
-    switch (item.getItemId()) {
-      case R.id.action_restart_robot:
+    switch (actionIdToConstant(item.getItemId())) {
+      case R_id_action_restart_robot:
         dimmer.handleDimTimer();
         Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
         requestRobotRestart();
         return true;
-      case R.id.action_settings:
+      case R_id_action_settings:
         startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
         return true;
-      case R.id.action_about:
+      case R_id_action_about:
         Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
         startActivity(intent);
         return true;
+      /* Removed for App Inventor
       case R.id.action_exit_app:
         finish();
         return true;
-      case R.id.action_view_logs:
+        */
+      case R_id_action_view_logs:
+        // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
+        // FtcCommon.
+        /*
         Intent viewLogsIntent = new Intent(VIEW_LOGS_ACTION);
         viewLogsIntent.putExtra(ViewLogsActivity.FILENAME, RobotLog.getLogFilename(this));
         startActivity(viewLogsIntent);
+        */
         return true;
       default:
         return super.onOptionsItemSelected(item);
     }
-    */
   }
 
   @Override

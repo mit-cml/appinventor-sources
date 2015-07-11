@@ -31,9 +31,15 @@ import java.util.Map;
 class ActivityGlue {
   static final int RESULT_OK = Activity.RESULT_OK;
 
+  static final int R_id_action_about = 1;
+  static final int R_id_action_restart_robot = 2;
+  static final int R_id_action_settings = 3;
+  static final int R_id_action_view_logs = 4;
+
   protected final Activity thisActivity;
   protected final FtcRobotController aiFtcRobotController;
   protected final ResourceIds R;
+  private final Map<Integer, Integer> actionIdToConstant = Maps.newHashMap();
   private final Map<Integer, Integer> requestCodeToConstant = Maps.newHashMap();
   private final Map<Integer, Integer> constantToRequestCode = Maps.newHashMap();
 
@@ -41,6 +47,12 @@ class ActivityGlue {
     thisActivity = activity;
     this.aiFtcRobotController = aiFtcRobotController;
     R = new ResourceIds(activity);
+
+    actionIdToConstant.put(R.id.action_about, R_id_action_about);
+    actionIdToConstant.put(R.id.action_restart_robot, R_id_action_restart_robot);
+    actionIdToConstant.put(R.id.action_settings, R_id_action_settings);
+    actionIdToConstant.put(R.id.action_view_logs, R_id_action_view_logs);
+
     requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureRobot,
         FtcRobotControllerActivity.CONFIGURE_ROBOT);
     requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureWifiChannel,
@@ -175,5 +187,16 @@ class ActivityGlue {
 
   void unbindService(ServiceConnection connection) {
     thisActivity.unbindService(connection);
+  }
+
+  // Other methods that are called from FtcRobotControllerActivity.
+
+  int actionIdToConstant(int id) {
+    try {
+      return actionIdToConstant.get(id);
+    } catch (Throwable e) {
+      DbgLog.error("Could not handle action with id " + id);
+      return 0;
+    }
   }
 }
