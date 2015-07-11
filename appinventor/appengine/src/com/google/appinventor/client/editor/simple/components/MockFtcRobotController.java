@@ -99,13 +99,19 @@ public final class MockFtcRobotController extends MockVisibleComponent {
     verticalPanel.add(header);
 
     verticalPanel.add(new Label(LABEL_WIFI_DIRECT));
+    verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label(LABEL_ROBOT_STATUS));
+    verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label(LABEL_OP_MODE));
     verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label(LABEL_GAMEPAD_1));
+    verticalPanel.add(new Label("-"));
+    verticalPanel.add(new Label("-"));
     verticalPanel.add(new Label(LABEL_GAMEPAD_2));
+    verticalPanel.add(new Label("-"));
+    verticalPanel.add(new Label("-"));
 
     panelWidget.add(verticalPanel);
     initComponent(panelWidget);

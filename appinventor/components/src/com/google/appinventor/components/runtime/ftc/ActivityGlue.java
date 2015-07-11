@@ -20,6 +20,9 @@ import android.view.Window;
 import com.qualcomm.ftccommon.DbgLog;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
+import com.google.appinventor.components.runtime.collect.Maps;
+
+import java.util.Map;
 
 /**
  * ActivityGlue is the base class for FtcRobotControllerActivity. It acts like glue between
@@ -31,20 +34,32 @@ class ActivityGlue {
   protected final Activity thisActivity;
   protected final FtcRobotController aiFtcRobotController;
   protected final ResourceIds R;
-  protected final int requestCodeConfigureRobot;
+  private final Map<Integer, Integer> requestCodeToConstant = Maps.newHashMap();
+  private final Map<Integer, Integer> constantToRequestCode = Maps.newHashMap();
 
   ActivityGlue(Activity activity, FtcRobotController aiFtcRobotController) {
     thisActivity = activity;
     this.aiFtcRobotController = aiFtcRobotController;
     R = new ResourceIds(activity);
-    requestCodeConfigureRobot = aiFtcRobotController.requestCodeConfigureRobot;
+    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureRobot,
+        FtcRobotControllerActivity.CONFIGURE_ROBOT);
+    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureWifiChannel,
+        FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL);
+    constantToRequestCode.put(FtcRobotControllerActivity.CONFIGURE_ROBOT,
+        aiFtcRobotController.requestCodeConfigureRobot);
+    constantToRequestCode.put(FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL,
+        aiFtcRobotController.requestCodeConfigureWifiChannel);
   }
 
   /*
    * Called from FtcRobotController.resultReturned.
    */
-  public void onActivityResultAI(int request, int result, Intent intent) {
-    onActivityResult(request, result, intent);
+  public void onActivityResultAI(int requestCode, int result, Intent intent) {
+    try {
+      onActivityResult(requestCodeToConstant.get(requestCode), result, intent);
+    } catch (Throwable e) {
+      DbgLog.error("Could not handle activity result for request code " + requestCode);
+    }
   }
 
   /*
@@ -152,9 +167,9 @@ class ActivityGlue {
 
   void startActivityForResult(Intent intent, int i) {
     try {
-      thisActivity.startActivityForResult(intent, i);
+      thisActivity.startActivityForResult(intent, constantToRequestCode.get(i));
     } catch (Throwable e) {
-      DbgLog.error("Could not start activity with intent " + intent);
+      DbgLog.error("Could not start activity for result with intent " + intent + " and " + i);
     }
   }
 

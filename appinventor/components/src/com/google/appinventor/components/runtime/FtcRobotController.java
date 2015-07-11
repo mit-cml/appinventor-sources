@@ -39,9 +39,11 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import java.nio.ByteOrder;
@@ -94,13 +96,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
   private static final String DEFAULT_CONFIGURATION = "";
 
-  private static final int NUM_GAMEPADS = 2;
-  private static final int COLOR_TRANSPARENT = 0x00FFFFFF;
-  private static final int COLOR_BLACK = 0xFF000000;
-  private static final int COLOR_DEVICE_NAME = 0xFFC1E2E4;
-  private static final int COLOR_HEADER = 0xFF309EA4;
-  private static final int COLOR_ERROR = 0xFF990000;
-
   private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
   private static final Object hardwareDevicesLock = new Object();
   private static final Map<Form, List<GamepadDevice>> gamepadDevices = Maps.newHashMap();
@@ -113,6 +108,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   // The request codes for launching other activities.
   public final int requestCodeConfigureRobot;
+  public final int requestCodeConfigureWifiChannel;
 
   // Backing for properties.
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
@@ -134,8 +130,16 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
     container.$add(this);
 
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    Display display = wm.getDefaultDisplay();
+    int preferredWidth = display.getWidth();
+    int preferredHeight = display.getHeight();
+    container.setChildWidth(this, preferredWidth);
+    container.setChildHeight(this, preferredHeight);
+
     form.registerForOnInitialize(this);
     requestCodeConfigureRobot = form.registerForActivityResult(this);
+    requestCodeConfigureWifiChannel = form.registerForActivityResult(this);
     form.registerForOnNewIntent(this);
     form.registerForOnCreateOptionsMenu(this);
     form.registerForOnOptionsItemSelected(this);
@@ -159,6 +163,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       wakeLock.acquire();
 
       ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form, configuration);
+      view.requestLayout();
     } else {
       form.dispatchErrorOccurredEvent(this, "FtcRobotController",
           ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT);
@@ -169,7 +174,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
-    if (requestCode == requestCodeConfigureRobot) {
+    if (requestCode == requestCodeConfigureRobot ||
+        requestCode == requestCodeConfigureWifiChannel) {
       if (ftcRobotControllerActivity != null) {
         ftcRobotControllerActivity.onActivityResultAI(requestCode, resultCode, data);
       }

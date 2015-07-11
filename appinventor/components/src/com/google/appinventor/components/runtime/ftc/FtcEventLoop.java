@@ -37,6 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 //package com.qualcomm.ftcrobotcontroller;
 package com.google.appinventor.components.runtime.ftc;
 
+import android.content.Context;
+
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcEventLoopHandler;
@@ -64,14 +66,13 @@ import com.google.appinventor.components.runtime.FtcRobotController;
 /**
  * Main event loop to control robot
  */
-public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
+public class FtcEventLoop implements EventLoop {
 
   FtcEventLoopHandler ftcEventLoopHandler;
-
   OpModeManager opModeManager = new OpModeManager(new HardwareMap());
 
-  public FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback) {
-    this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback);
+  public FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback, Context robotControllerContext) {
+    this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback, robotControllerContext);
   }
 
   public OpModeManager getOpModeManager() {
@@ -171,6 +172,8 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
   public void processCommand(Command command) {
     DbgLog.msg("Processing Command: " + command.getName() + " " + command.getExtra());
 
+    ftcEventLoopHandler.sendBatteryInfo();
+
     String name = command.getName();
     String extra = command.getExtra();
 
@@ -230,17 +233,13 @@ public class FtcEventLoop implements EventLoop, BatteryChecker.BatteryWatcher {
     ftcEventLoopHandler.sendCommand(new Command(CommandList.CMD_SWITCH_OP_MODE_RESP, opModeManager.getActiveOpModeName()));
   }
 
-  public void updateBatteryLevel(float percent) {
-    ftcEventLoopHandler.sendTelemetry(EventLoopManager.RC_BATTERY_LEVEL_KEY, percent + "%");
-  }
-
 
   // Added for App Inventor:
   private FtcRobotController aiFtcRobotController;
 
-  FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback,
+  FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback, Context robotControllerContext,
       FtcRobotController aiFtcRobotController) {
-    this(hardwareFactory, callback);
+    this(hardwareFactory, callback, robotControllerContext);
     this.aiFtcRobotController = aiFtcRobotController;
   }
 

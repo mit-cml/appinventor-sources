@@ -143,6 +143,23 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return new byte[0];
   }
 
+  @SimpleFunction(description = "Fetch the cache that is about to be written.")
+  public Object FetchLegacyModuleWriteCache(int physicalPort) {
+    if (legacyModule != null) {
+      try {
+        byte[] data = legacyModule.fetchLegacyModuleWriteCache(physicalPort);
+        if (data != null) {
+          return data;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "FetchLegacyModuleWriteCache",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return new byte[0];
+  }
+
   @SimpleFunction(description = "Set the value of digital line 0 or 1 while in analog mode.")
   public void SetDigitalLine(int physicalPort, int line, boolean set) {
     if (legacyModule != null) {

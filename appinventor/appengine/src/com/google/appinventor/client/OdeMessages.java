@@ -3300,6 +3300,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LeftBumperProperties();
 
+  @DefaultMessage("LeftStickButton")
+  @Description("")
+  String LeftStickButtonProperties();
+
   @DefaultMessage("LeftStickX")
   @Description("")
   String LeftStickXProperties();
@@ -3336,13 +3340,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PowerProperties();
 
-  @DefaultMessage("PowerFloat")
-  @Description("")
-  String PowerFloatProperties();
-
   @DefaultMessage("RightBumper")
   @Description("")
   String RightBumperProperties();
+
+  @DefaultMessage("RightStickButton")
+  @Description("")
+  String RightStickButtonProperties();
 
   @DefaultMessage("RightStickX")
   @Description("")
@@ -4433,6 +4437,10 @@ public interface OdeMessages extends Messages {
   String ShakingEvents();
 
   // FIRST Tech Challenge events
+  @DefaultMessage("Init")
+  @Description("")
+  String InitEvents();
+
   @DefaultMessage("Loop")
   @Description("")
   String LoopEvents();
@@ -5307,9 +5315,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Enable9vMethods();
 
-  @DefaultMessage("Float")
+  @DefaultMessage("FetchLegacyModuleWriteCache")
   @Description("")
-  String FloatMethods();
+  String FetchLegacyModuleWriteCacheMethods();
 
   @DefaultMessage("Get1ByteNumberFromByteArray")
   @Description("")
@@ -5359,6 +5367,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetLEDStateMethods();
 
+  @DefaultMessage("GetPowerFloat")
+  @Description("")
+  String GetPowerFloatMethods();
+
   @DefaultMessage("GetPulseWidthOutputTime")
   @Description("")
   String GetPulseWidthOutputTimeMethods();
@@ -5374,6 +5386,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsBitSet")
   @Description("")
   String IsBitSetMethods();
+
+  @DefaultMessage("IsBusy")
+  @Description("")
+  String IsBusyMethods();
 
   @DefaultMessage("IsPortReady")
   @Description("")
@@ -5450,6 +5466,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetLED")
   @Description("")
   String SetLEDMethods();
+
+  @DefaultMessage("SetPowerFloat")
+  @Description("")
+  String SetPowerFloatMethods();
 
   @DefaultMessage("SetPulseWidthOutputTime")
   @Description("")
