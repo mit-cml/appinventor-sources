@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import org.json.JSONObject;
+
 /**
  * Tests for {@link ObjectifyStorageIo}.
  *
@@ -567,7 +569,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testUploadComponentFile() {
+  public void testUploadComponentFile() throws Exception {
     final String USER_ID = "369";
     final String COMP_NAME = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
@@ -586,9 +588,17 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertTrue(firstData.gcsPath.endsWith(PATH_SUFFIX));
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
 
-    // store different content with the same user id and file name
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT3);
-    assertFalse(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
+    // the version of the newly uploaded component is based on versionCounter in info.json
+    final String INFO_PATH = "external_comps" + "/" + USER_ID + "/" + COMP_NAME +
+        "/" + "info.json";
+    final long VERSION = 10;
+    JSONObject info = new JSONObject();
+    info.put("versionCounter", VERSION);
+    storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
+    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
+    compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
+    ComponentData newData = compDataList.get(compDataList.size() - 1);
+    assertEquals(VERSION + 1, newData.version);
   }
 
   public void testGetComponentInfos() {
