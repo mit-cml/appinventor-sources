@@ -95,6 +95,8 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
+import org.json.JSONObject;
+
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
  * store.
@@ -1606,27 +1608,56 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
     JobRetryHelper helper = new JobRetryHelper() {
+      private static final String EXTERNAL_COMP_DIR = "external_comps";
+      private static final String INFO_FILE_NAME = "info.json";
+
       @Override
       public void run(Objectify datastore) throws ObjectifyException {
         ComponentData compData = new ComponentData();
         compData.id = null;
         compData.userId = userId;
         compData.name = fileName.substring(0, fileName.length() - ".aix".length());
-        compData.version = 0; // todo: make it auto-incremented
-        compData.gcsPath = "extern_comps" + "/" + compData.userId + "/" +
+        compData.version = getNextVersion(compData);
+        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
             compData.name + "/" + compData.version + "/" + fileName;
 
+        datastore.put(compData);
+
         try {
-          GcsOutputChannel outputChannel =
-            gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, compData.gcsPath), GcsFileOptions.getDefaultInstance());
-          outputChannel.write(ByteBuffer.wrap(content));
-          outputChannel.close();
+          setGcsFileContent(compData.gcsPath, content);
+          updateInfoFile(compData);
         } catch (IOException e) {
           throw CrashReport.createAndLogError(LOG, null,
             collectComponentErrorInfo(userId, fileName), e);
         }
+      }
 
-        datastore.put(compData);
+      private long getNextVersion(ComponentData compData) {
+        JSONObject info = getInfoJson(compData);
+        return info == null ? 0 : info.getLong("versionCounter") + 1;
+      }
+
+      private void updateInfoFile(ComponentData compData) throws IOException {
+        JSONObject info = getInfoJson(compData);
+        if (info == null) {
+          info = new JSONObject();
+          info.put("versionCounter", 0L);
+        } else {
+          info.put("versionCounter", compData.version);
+        }
+
+        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
+            compData.name + "/" + INFO_FILE_NAME;
+        setGcsFileContent(infoFilePath, info.toString().getBytes());
+      }
+
+      private JSONObject getInfoJson(ComponentData compData) {
+        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
+            compData.name + "/" + INFO_FILE_NAME;
+
+        byte[] infoContent = getGcsFileContent(infoFilePath);
+
+        return infoContent == null ? null : new JSONObject(new String(infoContent));
       }
     };
 
