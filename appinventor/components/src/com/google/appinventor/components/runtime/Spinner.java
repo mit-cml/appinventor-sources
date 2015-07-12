@@ -39,7 +39,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
-  private int adapterOldCount;
+  private int oldAdapterCount;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -138,7 +138,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   private void setAdapterData(String[] theItems) {
-    adapterOldCount = adapter.getCount();
+    oldAdapterCount = adapter.getCount();
     adapter.clear();
     for (int i = 0; i < theItems.length; i++){
       adapter.add(theItems[i]);
@@ -184,8 +184,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
     SelectionIndex(position + 1); // AI lists are 1-based
 
-    if (adapterOldCount > adapter.getCount() || adapterOldCount == 0) {
-      adapterOldCount = adapter.getCount();
+    if (oldAdapterCount > adapter.getCount() || oldAdapterCount == 0) {
+      oldAdapterCount = adapter.getCount();
     } else {
       AfterSelecting(Selection());
     }
