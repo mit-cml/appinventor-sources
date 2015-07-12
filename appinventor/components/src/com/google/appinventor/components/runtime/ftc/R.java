@@ -8,11 +8,11 @@ import android.content.Context;
 import android.content.res.Resources;
 
 /**
- * ResourceIds simulates R.<type>.<name> identifiers used in FtcRobotControllerActivity.java and
- * FtcRobotControllerSettingsActivity.java
+ * R provides dynamic values for R.<type>.<name> identifiers used in
+ * FtcRobotControllerActivity.java and FtcRobotControllerSettingsActivity.java.
  */
-class ResourceIds {
-  class RId {
+class R {
+  static class Ids {
     final int action_about;
     final int action_restart_robot;
     final int action_settings;
@@ -29,9 +29,7 @@ class ResourceIds {
     final int textRobotStatus;
     final int textWifiDirectStatus;
 
-    RId(Context context) {
-      Resources resources = context.getResources();
-      String packageName = context.getPackageName();
+    Ids(Resources resources, String packageName) {
       action_about = getIdentifier(resources, "action_about", "id", packageName);
       action_restart_robot = getIdentifier(resources, "action_restart_robot", "id", packageName);
       action_settings = getIdentifier(resources, "action_settings", "id", packageName);
@@ -49,61 +47,61 @@ class ResourceIds {
       textWifiDirectStatus = getIdentifier(resources, "textWifiDirectStatus", "id", packageName);
     }
   }
-  class RLayout {
+  static class Layouts {
     final int activity_ftc_controller;
 
-    RLayout(Context context) {
-      Resources resources = context.getResources();
-      String packageName = context.getPackageName();
+    Layouts(Resources resources, String packageName) {
       activity_ftc_controller =  getIdentifier(resources, "activity_ftc_controller", "layout", packageName);
     }
   }
-  class RMenu {
+  static class Menus {
     final int ftc_robot_controller;
 
-    RMenu(Context context) {
-      Resources resources = context.getResources();
-      String packageName = context.getPackageName();
+    Menus(Resources resources, String packageName) {
       ftc_robot_controller = getIdentifier(resources, "ftc_robot_controller", "menu", packageName);
     }
   }
-  class RString {
+  static class Strings {
     final int pref_hardware_config_filename;
     final int pref_launch_autoconfigure;
     final int pref_launch_configure;
     final int pref_launch_settings;
 
-    RString(Context context) {
-      Resources resources = context.getResources();
-      String packageName = context.getPackageName();
+    Strings(Resources resources, String packageName) {
       pref_hardware_config_filename =  getIdentifier(resources, "pref_hardware_config_filename", "string", packageName);
       pref_launch_autoconfigure = getIdentifier(resources, "pref_launch_autoconfigure", "string", packageName);
       pref_launch_configure = getIdentifier(resources, "pref_launch_configure", "string", packageName);
       pref_launch_settings = getIdentifier(resources, "pref_launch_settings", "string", packageName);
     }
   }
-  class RXml {
+  static class Xmls {
     final int preferences;
 
-    RXml(Context context) {
-      Resources resources = context.getResources();
-      String packageName = context.getPackageName();
+    Xmls(Resources resources, String packageName) {
       preferences =  getIdentifier(resources, "preferences", "xml", packageName);
     }
   }
 
-  final RId id;
-  final RLayout layout;
-  final RMenu menu;
-  final RString string;
-  final RXml xml;
+  /**
+   * Prevent instantiation.
+   */
+  private R() {
+  }
 
-  ResourceIds(Context context) {
-    id = new RId(context);
-    layout = new RLayout(context);
-    menu = new RMenu(context);
-    string = new RString(context);
-    xml = new RXml(context);
+  static Ids id;
+  static Layouts layout;
+  static Menus menu;
+  static Strings string;
+  static Xmls xml;
+
+  static void init(Context context) {
+    Resources resources = context.getResources();
+    String packageName = context.getPackageName();
+    id = new Ids(resources, packageName);
+    layout = new Layouts(resources, packageName);
+    menu = new Menus(resources, packageName);
+    string = new Strings(resources, packageName);
+    xml = new Xmls(resources, packageName);
   }
 
   private static int getIdentifier(Resources resources, String name, String defType, String defPackage) {

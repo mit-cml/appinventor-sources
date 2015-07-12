@@ -38,15 +38,14 @@ class ActivityGlue {
 
   protected final Activity thisActivity;
   protected final FtcRobotController aiFtcRobotController;
-  protected final ResourceIds R;
   private final Map<Integer, Integer> actionIdToConstant = Maps.newHashMap();
   private final Map<Integer, Integer> requestCodeToConstant = Maps.newHashMap();
   private final Map<Integer, Integer> constantToRequestCode = Maps.newHashMap();
 
   ActivityGlue(Activity activity, FtcRobotController aiFtcRobotController) {
+    R.init(activity);
     thisActivity = activity;
     this.aiFtcRobotController = aiFtcRobotController;
-    R = new ResourceIds(activity);
 
     actionIdToConstant.put(R.id.action_about, R_id_action_about);
     actionIdToConstant.put(R.id.action_restart_robot, R_id_action_restart_robot);
