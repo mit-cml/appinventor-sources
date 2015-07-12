@@ -189,24 +189,6 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * PowerFloat property getter.
-   */
-  @SimpleProperty(description = "Whether the motor power is set to float",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean PowerFloat() {
-    if (dcMotor != null) {
-      try {
-        return dcMotor.getPowerFloat();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "PowerFloat",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return true;
-  }
-
-  /**
    * TargetPosition property getter.
    */
   @SimpleProperty(description = "The motor target position.",
@@ -390,20 +372,45 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     }
   }
 
-  // Note that this is a function, not a property because there is no parameter. You can make a
-  // motor float, but if it is floating, you can't make it NOT float by setting the Float property.
-  // You have to use the Power property if you want to make it NOT float.
+  @SimpleFunction(description = "Whether the motor is busy.")
+  public boolean IsBusy() {
+    if (dcMotor != null) {
+      try {
+        return dcMotor.isBusy();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsBusy",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
   @SimpleFunction(description = "Allow the motor to float.")
-  public void Float() {
+  public void SetPowerFloat() {
     if (dcMotor != null) {
       try {
         dcMotor.setPowerFloat();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Float",
+        form.dispatchErrorOccurredEvent(this, "SetPowerFloat",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+  }
+
+  @SimpleFunction(description = "Is motor power set to float?")
+  public boolean GetPowerFloat() {
+    if (dcMotor != null) {
+      try {
+        return dcMotor.getPowerFloat();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetPowerFloat",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return true;
   }
 
   // FtcHardwareDevice implementation

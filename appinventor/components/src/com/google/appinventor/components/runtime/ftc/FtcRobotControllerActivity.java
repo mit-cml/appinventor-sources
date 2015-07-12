@@ -48,7 +48,6 @@ import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.Menu;
@@ -66,42 +65,30 @@ import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
-import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
-import com.qualcomm.robotcore.hardware.mock.MockDeviceManager;
-import com.qualcomm.robotcore.hardware.mock.MockHardwareFactory;
-import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.Dimmer;
 /* Removed for App Inventor
 import com.qualcomm.robotcore.util.ImmersiveMode;
 */
 import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-// Added for App Inventor:
+// Added for App Inventor
 import com.google.appinventor.components.runtime.FtcRobotController;
 
 public class FtcRobotControllerActivity extends ActivityGlue {
 
-  private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1; // TODO(lizlooney): is this ever used in a startActivityForResult call?
-  private static final boolean USE_MOCK_HARDWARE_FACTORY = false;
+  /* Modified for App Inventor
+  private */ static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+  private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
 
-  /* Removed for App Inventor
   public static final int CONFIGURE_ROBOT = 3;
-  */
   public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
 
   protected static final String VIEW_LOGS_ACTION = "com.qualcomm.ftcrobotcontroller.VIEW_LOGS";
@@ -124,7 +111,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   */
 
   protected UpdateUI updateUI;
-  protected BatteryChecker batteryChecker;
   protected Dimmer dimmer;
   protected LinearLayout entireScreenLayout;
 
@@ -203,6 +189,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     preferences = PreferenceManager.getDefaultSharedPreferences(thisActivity);
 
     hittingMenuButtonBrightensScreen();
+
+    //if (USE_DEVICE_EMULATION) { ModernRoboticsHardwareFactory.enableDeviceEmulation(); }
   }
 
   @Override
@@ -275,51 +263,37 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    // Added for App Inventor:
-    int itemId = item.getItemId();
-    if (itemId == R.id.action_restart_robot) {
-      dimmer.handleDimTimer();
-      Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-      requestRobotRestart();
-      return true;
-    } else if (itemId == R.id.action_settings) {
-      startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), requestCodeConfigureRobot);
-      return true;
-    } else if (itemId == R.id.action_about) {
-      Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
-      startActivity(intent);
-      return true;
-    }
-    // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
-    // FtcCommon.
-
-    return false;
-    /* Removed for App Inventor
-    switch (item.getItemId()) {
-      case R.id.action_restart_robot:
+    // Modified for App Inventor
+    switch (actionIdToConstant(item.getItemId())) {
+      case R_id_action_restart_robot:
         dimmer.handleDimTimer();
         Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
         requestRobotRestart();
         return true;
-      case R.id.action_settings:
+      case R_id_action_settings:
         startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
         return true;
-      case R.id.action_about:
+      case R_id_action_about:
         Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
         startActivity(intent);
         return true;
+      /* Removed for App Inventor
       case R.id.action_exit_app:
         finish();
         return true;
-      case R.id.action_view_logs:
+        */
+      case R_id_action_view_logs:
+        // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
+        // FtcCommon.
+        /*
         Intent viewLogsIntent = new Intent(VIEW_LOGS_ACTION);
         viewLogsIntent.putExtra(ViewLogsActivity.FILENAME, RobotLog.getLogFilename(this));
         startActivity(viewLogsIntent);
+        */
         return true;
       default:
         return super.onOptionsItemSelected(item);
     }
-    */
   }
 
   @Override
@@ -337,7 +311,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         showToast(toast);
       }
     }
-    if (request == requestCodeConfigureRobot) {
+    if (request == CONFIGURE_ROBOT) {
       if (result == RESULT_OK) {
         Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
         if (extra != null) {
@@ -368,36 +342,20 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
     HardwareFactory factory;
 
-    if (USE_MOCK_HARDWARE_FACTORY) {
-      // TODO: temp testing code. This will be removed in a future release
-      try {
-        factory = buildMockHardware();
-      } catch (RobotCoreException e) {
-        DbgLog.logStacktrace(e);
-        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
-        return;
-      } catch (InterruptedException e) {
-        DbgLog.logStacktrace(e);
-        Toast.makeText(thisActivity, e.getMessage(), Toast.LENGTH_LONG).show();
-        return;
-      }
-  } else {
-      // Modern Robotics Factory for use with Modern Robotics hardware
-      ModernRoboticsHardwareFactory modernroboticsFactory = new ModernRoboticsHardwareFactory(context);
-      modernroboticsFactory.setXmlInputStream(fis);
-      factory = modernroboticsFactory;
-    }
+    // Modern Robotics Factory for use with Modern Robotics hardware
+    ModernRoboticsHardwareFactory modernRoboticsFactory = new ModernRoboticsHardwareFactory(context);
+    modernRoboticsFactory.setXmlInputStream(fis);
+    factory = modernRoboticsFactory;
 
-    eventLoop = new FtcEventLoop(factory, callback, aiFtcRobotController);
+    // Modified for App Inventor
+    eventLoop = new FtcEventLoop(factory, callback, thisActivity, aiFtcRobotController);
 
     controllerService.setCallback(callback);
-    // Added for App Inventor:
-    aiFtcRobotController.beforeSetupRobot();
-    controllerService.setupRobot(eventLoop);
 
-    long milliseconds = 180000; //milliseconds
-    batteryChecker = new BatteryChecker(thisActivity, eventLoop, milliseconds);
-    batteryChecker.startBatteryMonitoring();
+    // Added for App Inventor
+    aiFtcRobotController.beforeSetupRobot();
+
+    controllerService.setupRobot(eventLoop);
   }
 
   private FileInputStream fileSetup() {
@@ -419,31 +377,9 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     return fis;
   }
 
-  // TODO: temp testing code. This will be removed in a future release
-  private MockHardwareFactory buildMockHardware() throws RobotCoreException, InterruptedException{
-    DeviceManager dm = new MockDeviceManager(null, null);
-    DcMotorController mc = dm.createUsbDcMotorController(new SerialNumber("MC"));
-    DcMotorController mc2 = dm.createUsbDcMotorController(new SerialNumber("MC2"));
-    ServoController sc = dm.createUsbServoController(new SerialNumber("SC"));
-
-    HardwareMap hwMap = new HardwareMap();
-    hwMap.dcMotor.put("left", new DcMotor(mc, 1));
-    hwMap.dcMotor.put("right", new DcMotor(mc, 2));
-    hwMap.dcMotor.put("flag", new DcMotor(mc2, 1));
-    hwMap.dcMotor.put("arm", new DcMotor(mc2, 2));
-    hwMap.servo.put("a", new Servo(sc, 1));
-    hwMap.servo.put("b", new Servo(sc, 6));
-
-    hwMap.appContext = thisActivity;
-
-    return new MockHardwareFactory(hwMap);
-  }
-
   private void requestRobotShutdown() {
     if (controllerService == null) return;
     controllerService.shutdownRobot();
-    if (batteryChecker == null) return;
-    batteryChecker.endBatteryMonitoring();
   }
 
   private void requestRobotRestart() {
@@ -474,6 +410,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     });
   }
 
+  // Added for App Inventor
+
   /*
    * Constructor for App Inventor.
    */
@@ -481,6 +419,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
       String configuration) {
     super(activity, aiFtcRobotController);
     onCreate(null);
+    entireScreenLayout.requestLayout();
     if (!configuration.isEmpty()) {
       utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
     }

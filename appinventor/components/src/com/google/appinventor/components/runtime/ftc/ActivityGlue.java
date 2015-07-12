@@ -20,6 +20,9 @@ import android.view.Window;
 import com.qualcomm.ftccommon.DbgLog;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
+import com.google.appinventor.components.runtime.collect.Maps;
+
+import java.util.Map;
 
 /**
  * ActivityGlue is the base class for FtcRobotControllerActivity. It acts like glue between
@@ -28,23 +31,47 @@ import com.google.appinventor.components.runtime.FtcRobotController;
 class ActivityGlue {
   static final int RESULT_OK = Activity.RESULT_OK;
 
+  static final int R_id_action_about = 1;
+  static final int R_id_action_restart_robot = 2;
+  static final int R_id_action_settings = 3;
+  static final int R_id_action_view_logs = 4;
+
   protected final Activity thisActivity;
   protected final FtcRobotController aiFtcRobotController;
   protected final ResourceIds R;
-  protected final int requestCodeConfigureRobot;
+  private final Map<Integer, Integer> actionIdToConstant = Maps.newHashMap();
+  private final Map<Integer, Integer> requestCodeToConstant = Maps.newHashMap();
+  private final Map<Integer, Integer> constantToRequestCode = Maps.newHashMap();
 
   ActivityGlue(Activity activity, FtcRobotController aiFtcRobotController) {
     thisActivity = activity;
     this.aiFtcRobotController = aiFtcRobotController;
     R = new ResourceIds(activity);
-    requestCodeConfigureRobot = aiFtcRobotController.requestCodeConfigureRobot;
+
+    actionIdToConstant.put(R.id.action_about, R_id_action_about);
+    actionIdToConstant.put(R.id.action_restart_robot, R_id_action_restart_robot);
+    actionIdToConstant.put(R.id.action_settings, R_id_action_settings);
+    actionIdToConstant.put(R.id.action_view_logs, R_id_action_view_logs);
+
+    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureRobot,
+        FtcRobotControllerActivity.CONFIGURE_ROBOT);
+    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureWifiChannel,
+        FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL);
+    constantToRequestCode.put(FtcRobotControllerActivity.CONFIGURE_ROBOT,
+        aiFtcRobotController.requestCodeConfigureRobot);
+    constantToRequestCode.put(FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL,
+        aiFtcRobotController.requestCodeConfigureWifiChannel);
   }
 
   /*
    * Called from FtcRobotController.resultReturned.
    */
-  public void onActivityResultAI(int request, int result, Intent intent) {
-    onActivityResult(request, result, intent);
+  public void onActivityResultAI(int requestCode, int result, Intent intent) {
+    try {
+      onActivityResult(requestCodeToConstant.get(requestCode), result, intent);
+    } catch (Throwable e) {
+      DbgLog.error("Could not handle activity result for request code " + requestCode);
+    }
   }
 
   /*
@@ -152,13 +179,24 @@ class ActivityGlue {
 
   void startActivityForResult(Intent intent, int i) {
     try {
-      thisActivity.startActivityForResult(intent, i);
+      thisActivity.startActivityForResult(intent, constantToRequestCode.get(i));
     } catch (Throwable e) {
-      DbgLog.error("Could not start activity with intent " + intent);
+      DbgLog.error("Could not start activity for result with intent " + intent + " and " + i);
     }
   }
 
   void unbindService(ServiceConnection connection) {
     thisActivity.unbindService(connection);
+  }
+
+  // Other methods that are called from FtcRobotControllerActivity.
+
+  int actionIdToConstant(int id) {
+    try {
+      return actionIdToConstant.get(id);
+    } catch (Throwable e) {
+      DbgLog.error("Could not handle action with id " + id);
+      return 0;
+    }
   }
 }

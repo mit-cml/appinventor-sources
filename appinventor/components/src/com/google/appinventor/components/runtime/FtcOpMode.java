@@ -49,6 +49,11 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
     opMode = new OpMode() {
       @Override
+      public void init() {
+        Init();
+      }
+
+      @Override
       public void start() {
         Start();
       }
@@ -122,7 +127,13 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
   // Events
 
   @SimpleEvent(description =
-      "This event is triggered when the user hits the start button on the driver station.")
+      "This event is triggered when this op mode is armed.")
+  public void Init() {
+    EventDispatcher.dispatchEvent(this, "Init");
+  }
+
+  @SimpleEvent(description =
+      "This event is triggered when this op mode is first enabled.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }
@@ -132,8 +143,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Loop");
   }
 
-  @SimpleEvent(description = "This event is triggered when the user hits the stop button on the " +
-      "driver stations, or right before the user switches to another Op Mode.")
+  @SimpleEvent(description = "This event is triggered when this op mode is first disabled.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }

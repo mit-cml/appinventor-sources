@@ -444,6 +444,44 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   }
 
   /**
+   * LeftStickButton property getter.
+   */
+  @SimpleProperty(description = "The value of the left stick button.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean LeftStickButton() {
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.left_stick_button;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "LeftStickButton",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return false;
+  }
+
+  /**
+   * RightStickButton property getter.
+   */
+  @SimpleProperty(description = "The value of the right stick button.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean RightStickButton() {
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        return gamepad.right_stick_button;
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "RightStickButton",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return false;
+  }
+
+  /**
    * LeftTrigger property getter.
    */
   @SimpleProperty(description = "The left trigger value.",

@@ -54,9 +54,6 @@ import java.io.Serializable;
 
 public class FtcRobotControllerSettingsActivity extends Activity {
 
-  // Added for App Inventor:
-  private static final int CONFIGURE_ROBOT = 3;
-
   public static class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +103,7 @@ public class FtcRobotControllerSettingsActivity extends Activity {
       @Override
       public boolean onPreferenceClick(Preference preference) {
         Intent intent =  new Intent(preference.getIntent().getAction());
-        startActivityForResult(intent, CONFIGURE_ROBOT);
+        startActivityForResult(intent, FtcRobotControllerActivity.CONFIGURE_ROBOT);
         return true;
       }
     };
@@ -114,7 +111,7 @@ public class FtcRobotControllerSettingsActivity extends Activity {
 
     @Override
     public void onActivityResult(int request, int result, Intent intent) {
-      if (request == CONFIGURE_ROBOT) {
+      if (request == FtcRobotControllerActivity.CONFIGURE_ROBOT) {
         if (result == RESULT_OK) {
           getActivity().setResult(RESULT_OK, intent);
         }
@@ -128,7 +125,7 @@ public class FtcRobotControllerSettingsActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    // Added for App Inventor:
+    // Added for App Inventor
     R = new ResourceIds(this);
 
     // Display the fragment as the main content.
@@ -137,6 +134,6 @@ public class FtcRobotControllerSettingsActivity extends Activity {
     .commit();
   }
 
-  // Added for App Inventor:
+  // Added for App Inventor
   private static ResourceIds R;
 }
