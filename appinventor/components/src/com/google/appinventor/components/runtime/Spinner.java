@@ -52,6 +52,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     view.setOnItemSelectedListener(this);
 
     container.$add(this);
+
+    Prompt("");
   }
 
   @Override
