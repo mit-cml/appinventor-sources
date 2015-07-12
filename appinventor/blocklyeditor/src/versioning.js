@@ -1821,10 +1821,7 @@ Blockly.Versioning.AllUpgradeMaps =
   "Spinner": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade",
-
-    // A bunch of bugs were fixed
-    2: "noUpgrade"
+    1: "noUpgrade"
 
   }, // End Spinner upgraders
 
@@ -2061,3 +2058,4 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
+

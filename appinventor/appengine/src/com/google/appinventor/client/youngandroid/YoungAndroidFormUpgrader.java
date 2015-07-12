@@ -293,9 +293,6 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SoundRecorder")) {
         srcCompVersion = upgradeSoundRecorderProperties(componentProperties, srcCompVersion);
 
-      } else if (componentType.equals("Spinner")) {
-        srcCompVersion = upgradeSpinnerProperties(componentProperties, srcCompVersion);
-
       } else if (componentType.equals("TimePicker")) {
         srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
 
@@ -1048,14 +1045,6 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
-  private static int upgradeSpinnerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // A bunch of bugs were fixed
-      srcCompVersion = 2;
-    }
-    return srcCompVersion;
-  }
 
   private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
