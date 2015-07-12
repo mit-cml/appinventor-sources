@@ -1251,8 +1251,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "File": {
 
-    //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    // AI2: The AfterFileSaved event was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
 
   }, // End File upgraders
 
@@ -2117,4 +2118,3 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
-
