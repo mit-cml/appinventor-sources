@@ -274,6 +274,14 @@ public abstract class Wizard extends DialogBox {
       finishCommand.execute();
     }
   }
+  
+  protected void disableOkButton() {
+    okButton.setEnabled(false);
+  }
+  
+  protected void enableOkButton() {
+    okButton.setEnabled(true);
+  }
 
   /*
    * Hides the wizard.
