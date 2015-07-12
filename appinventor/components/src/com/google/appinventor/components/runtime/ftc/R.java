@@ -7,6 +7,12 @@ package com.google.appinventor.components.runtime.ftc;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.qualcomm.ftccommon.DbgLog;
+
+import com.google.appinventor.components.runtime.collect.Maps;
+
+import java.util.Map;
+
 /**
  * R provides dynamic values for R.<type>.<name> identifiers used in
  * FtcRobotControllerActivity.java and FtcRobotControllerSettingsActivity.java.
@@ -88,6 +94,12 @@ class R {
   private R() {
   }
 
+  static final int id_action_about = 1;
+  static final int id_action_restart_robot = 2;
+  static final int id_action_settings = 3;
+  static final int id_action_view_logs = 4;
+  private static final Map<Integer, Integer> actionIdToConstant = Maps.newHashMap();
+
   static Ids id;
   static Layouts layout;
   static Menus menu;
@@ -102,6 +114,11 @@ class R {
     menu = new Menus(resources, packageName);
     string = new Strings(resources, packageName);
     xml = new Xmls(resources, packageName);
+
+    actionIdToConstant.put(id.action_about, id_action_about);
+    actionIdToConstant.put(id.action_restart_robot, id_action_restart_robot);
+    actionIdToConstant.put(id.action_settings, id_action_settings);
+    actionIdToConstant.put(id.action_view_logs, id_action_view_logs);
   }
 
   private static int getIdentifier(Resources resources, String name, String defType, String defPackage) {
@@ -110,5 +127,14 @@ class R {
       throw new IllegalStateException("Resource " + name + " not found");
     }
     return id;
+  }
+
+  static int actionIdToConstant(int id) {
+    try {
+      return actionIdToConstant.get(id);
+    } catch (Throwable e) {
+      DbgLog.error("Could not handle action with id " + id);
+      return 0;
+    }
   }
 }

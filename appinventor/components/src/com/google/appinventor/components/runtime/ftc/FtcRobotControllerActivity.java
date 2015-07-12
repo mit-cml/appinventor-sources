@@ -264,16 +264,16 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Modified for App Inventor
-    switch (actionIdToConstant(item.getItemId())) {
-      case R_id_action_restart_robot:
+    switch (R.actionIdToConstant(item.getItemId())) {
+      case R.id_action_restart_robot:
         dimmer.handleDimTimer();
         Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
         requestRobotRestart();
         return true;
-      case R_id_action_settings:
+      case R.id_action_settings:
         startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
         return true;
-      case R_id_action_about:
+      case R.id_action_about:
         Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
         startActivity(intent);
         return true;
@@ -282,7 +282,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         finish();
         return true;
         */
-      case R_id_action_view_logs:
+      case R.id_action_view_logs:
         // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
         // FtcCommon.
         /*
