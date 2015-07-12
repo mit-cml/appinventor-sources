@@ -49,7 +49,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
-// Added for App Inventor:
+// Added for App Inventor
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -60,7 +60,7 @@ import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.Util;
 
-// Added for App Inventor:
+// Added for App Inventor
 import com.google.appinventor.components.runtime.FtcRobotController;
 
 /**
@@ -105,7 +105,7 @@ public class FtcEventLoop implements EventLoop {
     // Start up the op mode manager
     opModeManager.setHardwareMap(hardwareMap);
 
-    // Added for App Inventor:
+    // Added for App Inventor
     aiFtcRobotController.onEventLoopInit(eventLoopManager, hardwareMap);
 
     DbgLog.msg("======= INIT FINISH =======");
@@ -158,7 +158,7 @@ public class FtcEventLoop implements EventLoop {
     // may be connected through this device
     ftcEventLoopHandler.shutdownLegacyModules();
 
-    // Added for App Inventor:
+    // Added for App Inventor
     aiFtcRobotController.onEventLoopTeardown();
 
     DbgLog.msg("======= TEARDOWN COMPLETE =======");
@@ -234,7 +234,7 @@ public class FtcEventLoop implements EventLoop {
   }
 
 
-  // Added for App Inventor:
+  // Added for App Inventor
   private FtcRobotController aiFtcRobotController;
 
   FtcEventLoop(HardwareFactory hardwareFactory, UpdateUI.Callback callback, Context robotControllerContext,

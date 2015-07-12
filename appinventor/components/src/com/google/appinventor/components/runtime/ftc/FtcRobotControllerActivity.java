@@ -78,12 +78,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-// Added for App Inventor:
+// Added for App Inventor
 import com.google.appinventor.components.runtime.FtcRobotController;
 
 public class FtcRobotControllerActivity extends ActivityGlue {
 
-  static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
+  /* Modified for App Inventor
+  private */ static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
   private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
 
@@ -262,6 +263,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    // Modified for App Inventor
     switch (actionIdToConstant(item.getItemId())) {
       case R_id_action_restart_robot:
         dimmer.handleDimTimer();
@@ -345,11 +347,12 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     modernRoboticsFactory.setXmlInputStream(fis);
     factory = modernRoboticsFactory;
 
+    // Modified for App Inventor
     eventLoop = new FtcEventLoop(factory, callback, thisActivity, aiFtcRobotController);
 
     controllerService.setCallback(callback);
 
-    // Added for App Inventor:
+    // Added for App Inventor
     aiFtcRobotController.beforeSetupRobot();
 
     controllerService.setupRobot(eventLoop);

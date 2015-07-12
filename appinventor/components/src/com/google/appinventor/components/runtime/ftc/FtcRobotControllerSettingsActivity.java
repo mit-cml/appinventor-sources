@@ -125,7 +125,7 @@ public class FtcRobotControllerSettingsActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    // Added for App Inventor:
+    // Added for App Inventor
     R = new ResourceIds(this);
 
     // Display the fragment as the main content.
@@ -134,6 +134,6 @@ public class FtcRobotControllerSettingsActivity extends Activity {
     .commit();
   }
 
-  // Added for App Inventor:
+  // Added for App Inventor
   private static ResourceIds R;
 }
