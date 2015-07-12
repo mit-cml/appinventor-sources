@@ -40,6 +40,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
   private int oldAdapterCount;
+  private int oldSelectionIndex;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -54,6 +55,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     container.$add(this);
 
     Prompt("");
+    oldSelectionIndex = SelectionIndex();
   }
 
   @Override
@@ -98,6 +100,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       "items in the Spinner, SelectionIndex will be set to 0, and Selection will be set to empty.",
       category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index){
+    oldSelectionIndex = SelectionIndex();
     view.setSelection(ElementsUtil.selectionIndex(index, items) - 1); // AI lists are 1-based
   }
 
@@ -182,11 +185,18 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
-    SelectionIndex(position + 1); // AI lists are 1-based
-
-    if (oldAdapterCount > adapter.getCount() || oldAdapterCount == 0) {
+    // special case 1:
+    // onItemSelected is fired when the adapter goes from empty to non-empty AND
+    // SelectionIndex was not set, i.e. oldSelectionIndex == 0
+    // special case 2:
+    // onItemSelected is fired when the adapter goes from larger size to smaller size AND
+    // the old selection position (one-based) is larger than the size of the new adapter
+    if (oldAdapterCount == 0 && adapter.getCount() > 0 && oldSelectionIndex == 0 ||
+        oldAdapterCount > adapter.getCount() && oldSelectionIndex > adapter.getCount()) {
+      SelectionIndex(position + 1);  // AI lists are 1-based
       oldAdapterCount = adapter.getCount();
     } else {
+      SelectionIndex(position + 1); // AI lists are 1-based
       AfterSelecting(Selection());
     }
   }
