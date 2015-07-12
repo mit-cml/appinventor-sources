@@ -65,7 +65,7 @@ public class ReplForm extends Form {
     super.onCreate(icicle);
     Log.d("ReplForm", "onCreate");
     Intent intent = getIntent();
-    loadComponents(); // find a better place for this to be called, to fix first time failure!! 
+    //loadComponents(); // find a better place for this to be called, to fix first time failure!! 
     processExtras(intent, false);
   }
 
@@ -236,14 +236,14 @@ public class ReplForm extends Form {
    * kawa to load it, when required. This assumes classloader checks class via delegation through the parent
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy 
    */
-  public static void loadComponents() {
-    // Store the loaded dex files in the private storage of the App for optimization
+  public void loadComponents() {
+    // Store the loaded dex files in the private storage of the App for stable optimization
     File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
     File assetFolder = new File(REPL_ASSET_DIR );
+    checkAssetDir();
     // Current Thread Class Loader
     ClassLoader parentClassLoader = activeForm.$context().getClassLoader();
-    ArrayList<File> assetsList = new ArrayList<File>(Arrays.asList(assetFolder.listFiles()));
-    for (File assetFile : assetsList) {
+    for (File assetFile : assetFolder.listFiles()) {
       if (assetFile.getName().endsWith(".dex")) {
         DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
             null, parentClassLoader);
