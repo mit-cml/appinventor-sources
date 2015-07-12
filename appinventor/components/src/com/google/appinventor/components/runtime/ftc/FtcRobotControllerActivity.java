@@ -410,6 +410,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     });
   }
 
+  // Added for App Inventor
+
   /*
    * Constructor for App Inventor.
    */
