@@ -340,8 +340,10 @@ public class YaVersion {
   // - CONTACTPICKER_COMPONENT_VERSION was incremented to 6.
   // For YOUNG_ANDROID_VERSION 132:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 133:
+  // - FILE_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 132;
+  public static final int YOUNG_ANDROID_VERSION = 133;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -429,7 +431,7 @@ public class YaVersion {
   //   second time). To add the "Foo" property you would add:
 
   //         @defaultMessage("Foo")
-  //         @description(""
+  //         @description("")
   //         String FooProperties();
 
   //   If you edit the description of a component (but not yet a
@@ -575,8 +577,9 @@ public class YaVersion {
   // - RequestFocus function was added (via TextBoxBase)
   public static final int EMAILPICKER_COMPONENT_VERSION = 3;
 
-  // For FILE_COMPONENT_VERSION 1:
-  public static final int FILE_COMPONENT_VERSION = 1;
+  // For FILE_COMPONENT_VERSION 2:
+  // - The AfterFileSaved event was added.
+  public static final int FILE_COMPONENT_VERSION = 2;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.

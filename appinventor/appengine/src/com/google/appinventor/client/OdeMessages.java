@@ -4076,6 +4076,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotTextEvents();
 
+  @DefaultMessage("AfterFileSaved")
+  @Description("")
+  String AfterFileSavedEvents();
+
   @DefaultMessage("AfterDateSet")
   @Description("")
   String AfterDateSetEvents();
