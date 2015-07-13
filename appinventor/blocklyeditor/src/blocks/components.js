@@ -252,7 +252,7 @@ Blockly.Blocks.component_event = {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   },
   // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
-  errors: [{name:"checkIfIAmADuplicateEventHandler"}],
+  errors: [{name:"checkIfIAmADuplicateEventHandler"}, {name:"checkComponentNotExistsError"}],
   onchange: Blockly.WarningHandler.checkErrors
 };
 
@@ -328,7 +328,7 @@ Blockly.Blocks.component_method = {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
     if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       this.badBlock();
       this.setDisabled(true);
@@ -511,7 +511,7 @@ Blockly.Blocks.component_set_get = {
 
     this.setTooltip(this.getPropertyObject(this.propertyName).description);
 
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
     //this.typeblock = this.createTypeBlock();
   },
 
@@ -664,7 +664,7 @@ Blockly.Blocks.component_component_block = {
     this.appendDummyInput().appendField(this.componentDropDown, "COMPONENT_SELECTOR");
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
