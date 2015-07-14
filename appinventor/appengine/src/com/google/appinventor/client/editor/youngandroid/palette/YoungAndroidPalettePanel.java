@@ -134,13 +134,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       this.addComponent(component);
     }
   }
-  
+
   public void loadComponents() {
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       this.addComponent(component);
     }
   }
-  
+
   @Override
   public void configureComponent(MockComponent mockComponent) {
     String componentType = mockComponent.getType();
@@ -156,7 +156,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Loads a single Component to Palette. Used for adding External Components. 
+   *  Loads a single Component to Palette. Used for adding External Components.
    */
   @Override
   public void addComponent(String componentTypeName) {
@@ -176,7 +176,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       addPaletteItem(item, category);
     }
   }
-  
+
   public void removeComponent(String componentTypeName) {
     String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
@@ -255,7 +255,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     VerticalPanel panel = categoryPanels.get(category);
     panel.add(component);
   }
-  
+
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
     panel.remove(component);
@@ -268,7 +268,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       this.addComponent(componentType);
     }
   }
-  
+
   @Override
   public void onComponentsRemoved(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
@@ -276,7 +276,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       this.removeComponent(componentType);
     }
   }
-  
+
   @Override
   public void onResetDatabase() {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
@@ -290,11 +290,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       panel.clear();
     }
   }
-  
+
   @Override
   public void reloadComponents() {
     clearComponents();
     loadComponents();
-  } 
+  }
 
 }

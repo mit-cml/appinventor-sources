@@ -60,11 +60,6 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.properties.json.ClientJsonParser;
-import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
-
 
 /**
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
