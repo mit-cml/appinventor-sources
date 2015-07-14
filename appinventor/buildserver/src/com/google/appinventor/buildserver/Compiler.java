@@ -1179,6 +1179,15 @@ public final class Compiler {
             Compiler.class.getResource(COMPONENT_BUILD_INFO), Charsets.UTF_8);
 
         JSONArray componentsArray = new JSONArray(buildInfoJson);
+
+        for (File file : project.getAssetsDirectory().listFiles()) {
+          if (file.getName().endsWith("_build_info.json")) {
+            String externalCompsBuildInfoJson =
+                Resources.toString(file.toURI().toURL(), Charsets.UTF_8);
+            componentsArray.put(new JSONObject(externalCompsBuildInfoJson));
+          }
+        }
+
         int componentsLength = componentsArray.length();
         for (int componentsIndex = 0; componentsIndex < componentsLength; componentsIndex++) {
           JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
