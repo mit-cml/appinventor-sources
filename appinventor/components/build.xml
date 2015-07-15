@@ -280,6 +280,7 @@
 
     <ai.javac5 destdir="${AnnotationProcessors-class.dir}">
       <include name="${components.pkg}/scripts/*.java" />
+      <exclude name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
       <classpath>
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
@@ -331,7 +332,7 @@
 
   <target name="ExternalComponentJsonProcessing"
      description="Generate library for external component individual annotation processors"
-     depends="JsonComponentDescription">
+     depends="all">
      <property name="ExternalComponentJsonProcessingLib-class.dir"
        location="${class.dir}/ExternalComponentJsonProcessingLib" />
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
@@ -339,23 +340,23 @@
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
        <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
        <classpath>
-         <pathelement location="${lib.dir}/JSON-java/java-json.jar" />
-         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+         <pathelement location="${lib.dir}/json-java/java-json.jar"/>
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar"/>
        </classpath>
      </ai.javac5>
 
-     <jar basedir="${ExternalComponentJsonProcessingLib-class.dir}"
+  <!--   <jar basedir="${ExternalComponentJsonProcessingLib-class.dir}"
           destfile="${local.build.dir}/ExternalComponentJsonProcessingLib.jar" >
        <manifest>
          <attribute name="Main-Class" value="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator"/>
        </manifest>
-     </jar>
+     </jar>  -->
 
      <java classname="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator">
        <arg value="${public.build.dir}/simple_components.json"/>
        <classpath>
-         <pathelement location="${local.build.dir}/ExternalComponentJsonProcessingLib.jar" />
-         <pathelement location="${lib.dir}/JSON-java/java-json.jar" />
+         <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
          <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
        </classpath>
      </java>
