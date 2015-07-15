@@ -75,7 +75,7 @@ public abstract class Wizard extends DialogBox {
    */
   protected Wizard(String title, boolean modal, boolean adaptiveSizing) {
     // Initialize UI
-    // TODO(lizlooney) - investigate using built-in modality support. The 
+    // TODO(lizlooney) - investigate using built-in modality support. The
     // reasons for not using it initially are no longer valid.
     super(false, false);
 
@@ -273,6 +273,14 @@ public abstract class Wizard extends DialogBox {
       hideWizard();
       finishCommand.execute();
     }
+  }
+
+  protected void disableOkButton() {
+    okButton.setEnabled(false);
+  }
+
+  protected void enableOkButton() {
+    okButton.setEnabled(true);
   }
 
   /*
