@@ -412,7 +412,6 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 5) {
       // Extras property was added to accept a list of key-value pairs to put to the intent
-      // ExtraKey and ExtraValue were made invisible to users
       srcCompVersion = 5;
     }
     return srcCompVersion;

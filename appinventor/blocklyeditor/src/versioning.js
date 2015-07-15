@@ -975,7 +975,6 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // Extras property was added
-    // ExtraKey and ExtraValue were made invisible to users
     5: "noUpgrade"
 
   }, // End ActivityStarter upgraders

@@ -437,7 +437,6 @@ public class YaVersion {
   //   animation to transition to next activity.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
   // - Extras property was added to accept a list of key-value pairs to put to the intent
-  // - ExtraKey and ExtraValue were made invisible to users
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
 
   // For BALL_COMPONENT_VERSION 2:
