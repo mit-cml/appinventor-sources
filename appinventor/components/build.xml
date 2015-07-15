@@ -371,6 +371,22 @@
                   location="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
 
 </target>
+
+
+<target name="dexit">
+  <basename property="filename" file="${theFile}" suffix=".class"/>
+  <java jar="${lib.dir}/android/tools/dx.jar"
+    fork="true"
+    failonerror="true">
+    <arg value="--dex"/>
+    <arg value="--no-strict"/>
+    <arg value="--output"/>
+    <arg value="${post.dex.dir}/${filename}.dex"/>
+    <arg value="${pre.dex.dir}/${filename}.class"/>
+  </java>
+  <echo>Dexing External Component:${filename}</echo>
+</target>
+
   <!-- =====================================================================
        XmlComponentDescription: create lang_def.xml for Blocks Editor.
        ===================================================================== -->
