@@ -272,6 +272,19 @@ Blockly.Backpack.prototype.checkValidBlockTypes = function(block, arr) {
 }
 
 /**
+ *  Copy all blocks in the workspace to backpack
+ *  
+ */
+Blockly.Backpack.prototype.addAllToBackpack = function() {
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+  for (var x = 0; x < topBlocks.length; x++) {
+      block = allBlocks[x];
+      this.addToBackpack(block);
+  }
+}
+
+/**
  *  The backpack is an array containing 0 or more
  *   blocks 
  */

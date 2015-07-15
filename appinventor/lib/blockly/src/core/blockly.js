@@ -704,6 +704,16 @@ Blockly.showContextMenu_ = function(e) {
   }
   options.push(backpackRetrieve);
 
+  // Copy all blocks to backpack option.
+  var backpackCopyAll = {enabled: true};
+  backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
+  backpackCopyAll.callback = function() {
+      if (Blockly.mainWorkspace.backpack) {
+          Blockly.mainWorkspace.backpack.addAllToBackpack();
+      }
+  }
+  options.push(backpackCopyAll);
+
   // Clear backpack.
   var backpackClear = {enabled: true};
   backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
