@@ -330,7 +330,8 @@
        ===================================================================== -->
 
 
-   <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors" depends="all">
+   <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors"
+           depends="JsonComponentDescription">
      <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
@@ -356,6 +357,20 @@
        </fileset>
      </move>
    </target>
+
+
+   <!-- =====================================================================
+        DexingExternalComponent: create ExternalComponentName.dex
+                                         for each external component.
+        ===================================================================== -->
+<target name="DexExternalComponent" description="Dex External component"
+        depends="AndroidRuntime">>
+        <property name="post.dex.dir"
+                  location="${ExternalComponentAsset.dir}"/>
+        <property name="pre.dex.dir"
+                  location="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
+
+</target>
   <!-- =====================================================================
        XmlComponentDescription: create lang_def.xml for Blocks Editor.
        ===================================================================== -->
