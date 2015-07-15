@@ -157,6 +157,7 @@ Blockly.BlocklyEditor.render = function() {
   var timeDiff = stop - start;
   Blockly.Instrument.stats.totalTime = timeDiff;
   Blockly.Instrument.displayStats("Blockly.BlocklyEditor.render");
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 }
 
 /**
