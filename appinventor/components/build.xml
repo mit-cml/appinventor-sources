@@ -360,6 +360,15 @@
          <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
        </classpath>
      </java>
+
+     <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents"/>
+
+     <mkdir dir="${ExternalComponentAsset.dir}"/>
+     <move todir="${ExternalComponentAsset.dir}">
+       <fileset dir=".">
+         <include name="*.json"/>
+       </fileset>
+    </move>
   </target>
 
   <!-- =====================================================================

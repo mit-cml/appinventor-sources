@@ -34,7 +34,7 @@ public class ExternalComponentJsonGenerator {
     JSONArray array = (JSONArray)obj;
     for(int i = 0; i<array.size();i++){
       JSONObject component = (JSONObject)array.get(i);
-      if(component.get("external").equals("true")){
+      if(component.get("categoryString").equals("EXTERNAL")){  // Should test the external boolean here instead
         FileWriter file = new FileWriter(component.get("name")+".json");
         try {
           file.write(component.toJSONString());
