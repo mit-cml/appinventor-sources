@@ -330,47 +330,32 @@
        ===================================================================== -->
 
 
-  <target name="ExternalComponentJsonProcessing"
-     description="Generate library for external component individual annotation processors"
-     depends="all">
-     <property name="ExternalComponentJsonProcessingLib-class.dir"
-       location="${class.dir}/ExternalComponentJsonProcessingLib" />
+   <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors" depends="all">
+     <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
-
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
        <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
        <classpath>
-         <pathelement location="${lib.dir}/json-java/java-json.jar"/>
-         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar"/>
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
        </classpath>
      </ai.javac5>
-
-  <!--   <jar basedir="${ExternalComponentJsonProcessingLib-class.dir}"
-          destfile="${local.build.dir}/ExternalComponentJsonProcessingLib.jar" >
-       <manifest>
-         <attribute name="Main-Class" value="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator"/>
-       </manifest>
-     </jar>  -->
-
      <java classname="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator">
-       <arg value="${public.build.dir}/simple_components.json"/>
+       <arg value="${public.build.dir}/simple_components.json" />
        <classpath>
          <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
          <pathelement location="${lib.dir}/json-java/java-json.jar" />
          <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
        </classpath>
      </java>
-
-     <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents"/>
-
-     <mkdir dir="${ExternalComponentAsset.dir}"/>
+     <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
+     <mkdir dir="${ExternalComponentAsset.dir}" />
      <move todir="${ExternalComponentAsset.dir}">
        <fileset dir=".">
-         <include name="*.json"/>
+         <include name="*.json" />
        </fileset>
-    </move>
-  </target>
-
+     </move>
+   </target>
   <!-- =====================================================================
        XmlComponentDescription: create lang_def.xml for Blocks Editor.
        ===================================================================== -->
