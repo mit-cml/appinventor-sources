@@ -171,8 +171,9 @@ public class ActivityStarter extends AndroidNonvisibleComponent
    * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      userVisible = false)
+      description = "Returns the extra key that will be passed to the activity.\n" +
+          "DEPRECATED: New code should use Extras property instead.",
+      category = PropertyCategory.BEHAVIOR)
   public String ExtraKey() {
     return extraKey;
   }
@@ -192,8 +193,9 @@ public class ActivityStarter extends AndroidNonvisibleComponent
    * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      userVisible = false)
+      description = "Returns the extra value that will be passed to the activity.\n" +
+          "DEPRECATED: New code should use Extras property instead.",
+      category = PropertyCategory.BEHAVIOR)
   public String ExtraValue() {
     return extraValue;
   }
