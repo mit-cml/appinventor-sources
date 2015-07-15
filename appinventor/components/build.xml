@@ -332,7 +332,7 @@
    <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
 
    <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors"
-           depends="JsonComponentDescription">
+           depends="all">
      <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
@@ -369,15 +369,15 @@
               location="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
 
     <target name="dexAll">
-      <foreach target="dexit" param="theFile">
+      <foreach target="dexit" param="theComponent">
         <fileset dir="${ExternalComponentAsset.dir}" >
           <include name="*.class"/>
         </fileset>
       </foreach>
     </target>
 
-    <target name="dexit">
-      <basename property="filename" file="${theFile}" suffix=".class"/>
+    <target name="dexit" depends= "copyExternalComponentClasses">
+      <basename property="filename" file="${theComponent}" suffix=".class"/>
       <java jar="${lib.dir}/android/tools/dx.jar"
         fork="true"
         failonerror="true">
@@ -394,11 +394,12 @@
       <foreach target="copyExternalComponentClass" param="theComponent">
         <fileset dir="${ExternalComponentAsset.dir}">
           <include name="*.json" />
+          <exclude name="*.class" />
         </fileset>
       </foreach>
     </target>
 
-    <target name="externalComponent.check">
+    <target name="externalComponent.check" depends="ExternalComponentJsonProcessing">
       <basename property="filename" file="${theComponent}" suffix=".json" />
       <available file="${ExternalComponentAsset.dir}/${filename}.json"
                  type="file" property="isExternalComponent" />
@@ -424,15 +425,14 @@
        excludes="${filename}.class,${filename}.aix"/>
      </target>
 
-
-     <target name="zipExternalComponent">
+     <target name="zipExternalComponent" depends="all,ExternalComponentJsonProcessing,copyExternalComponentClasses,dexAll">
        <foreach target="zipit" param="theComponent">
          <fileset dir="${ExternalComponentAsset.dir}">
            <include name="*.*" />
          </fileset>
        </foreach>
+       <echo> Find external components into "${ExternalComponentAsset.dir}"</echo>
      </target>
-
 
     <!-- =====================================================================
          XmlComponentDescription: create lang_def.xml for Blocks Editor.
