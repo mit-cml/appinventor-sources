@@ -368,10 +368,27 @@
     <property name="pre.dex.dir"
               location="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
 
+    <target name="dexAll">
+      <foreach target="dexit" param="theFile">
+        <fileset dir="${ExternalComponentAsset.dir}" >
+          <include name="*.class"/>
+        </fileset>
+      </foreach>
+    </target>
 
-
-
-
+    <target name="dexit">
+      <basename property="filename" file="${theFile}" suffix=".class"/>
+      <java jar="${lib.dir}/android/tools/dx.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--dex"/>
+        <arg value="--no-strict"/>
+        <arg value="--output"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}.dex"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}.class"/>
+      </java>
+      <echo>Dexing External Component:${filename}</echo>
+    </target>
 
     <target name="copyExternalComponentClasses">
       <foreach target="copyExternalComponentClass" param="theComponent">
@@ -393,8 +410,6 @@
       <basename property="filename" file="${theComponent}" suffix=".class" />
       <copy file="${pre.dex.dir}/${filename}.class" todir="${ExternalComponentAsset.dir}" />
     </target>
-
-
 
     <!-- =====================================================================
         PackagingExternalComponent: create ExternalComponentName.aix
