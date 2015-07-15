@@ -416,7 +416,13 @@
                                           for each external component.
          ===================================================================== -->
 
-
+         <target name="zipit">
+           <basename property="filename" file="${theComponent}" suffix=".class" />
+         <zip destfile="${ExternalComponentAsset.dir}/${filename}.aix"
+           basedir="${ExternalComponentAsset.dir}"
+           includes="${filename}.*"
+           />
+         </target>
 
 
     <!-- =====================================================================
