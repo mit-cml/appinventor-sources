@@ -1094,14 +1094,23 @@ public final class Compiler {
      */
     try {
       for (String library : nativeLibrariesNeeded) {
-        if (library.endsWith(ARMEABI_V7A_SUFFIX)) { // Remove suffix and copy.
-          library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
-              "/" + library)), new File(armeabiV7aDir, library));
+        boolean isV7a = library.endsWith(ARMEABI_V7A_SUFFIX);
+        String libName = isV7a ?
+            library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length()) :
+            library;
+        String mainPath = RUNTIME_FILES_DIR +
+            (isV7a ? ARMEABI_V7A_DIRECTORY : ARMEABI_DIR_NAME) +
+            "/" + libName;
+        File targetDir = isV7a ? armeabiV7aDir : armeabiDir;
+
+        String sourcePath = "";
+        if (resources.containsKey(mainPath)) {
+          sourcePath = getResource(mainPath);
         } else {
-          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_DIR_NAME +
-              "/" + library)), new File(armeabiDir, library));
+          sourcePath = project.getAssetsDirectory() + "/" + libName;
         }
+
+        Files.copy(new File(sourcePath), new File(targetDir, library));
       }
       return true;
     } catch (IOException e) {
