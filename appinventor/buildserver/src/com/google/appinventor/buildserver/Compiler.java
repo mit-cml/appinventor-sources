@@ -1128,8 +1128,14 @@ public final class Compiler {
       File componentAssetDirectory = createDirectory(project.getAssetsDirectory(),
           ASSET_DIRECTORY);
       for (String filename : assetsNeeded) {
-        Files.copy(new File(getResource(RUNTIME_FILES_DIR + filename)),
-            new File(componentAssetDirectory, filename));
+        String sourcePath = "";
+        if (resources.containsKey(RUNTIME_FILES_DIR + filename)) {
+          sourcePath = getResource(RUNTIME_FILES_DIR + filename);
+        } else {
+          // assets of external components
+          sourcePath = project.getAssetsDirectory() + File.separator + filename;
+        }
+        Files.copy(new File(sourcePath), new File(componentAssetDirectory, filename));
       }
     } catch (IOException e) {
       e.printStackTrace();
