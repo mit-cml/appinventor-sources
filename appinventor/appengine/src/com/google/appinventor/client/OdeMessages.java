@@ -3256,6 +3256,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DirectionProperties();
 
+  @DefaultMessage("Direction_FORWARD")
+  @Description("")
+  String Direction_FORWARDProperties();
+
+  @DefaultMessage("Direction_REVERSE")
+  @Description("")
+  String Direction_REVERSEProperties();
+
   @DefaultMessage("DpadDown")
   @Description("")
   String DpadDownProperties();
@@ -3327,6 +3335,46 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Mode")
   @Description("")
   String ModeProperties();
+
+  @DefaultMessage("Mode_CALIBRATION")
+  @Description("")
+  String Mode_CALIBRATIONProperties();
+
+  @DefaultMessage("Mode_INPUT")
+  @Description("")
+  String Mode_INPUTProperties();
+
+  @DefaultMessage("Mode_MEASUREMENT")
+  @Description("")
+  String Mode_MEASUREMENTProperties();
+
+  @DefaultMessage("Mode_OUTPUT")
+  @Description("")
+  String Mode_OUTPUTProperties();
+
+  @DefaultMessage("Mode_RESET_ENCODERS")
+  @Description("")
+  String Mode_RESET_ENCODERSProperties();
+
+  @DefaultMessage("Mode_RUN_TO_POSITION")
+  @Description("")
+  String Mode_RUN_TO_POSITIONProperties();
+
+  @DefaultMessage("Mode_RUN_USING_ENCODERS")
+  @Description("")
+  String Mode_RUN_USING_ENCODERSProperties();
+
+  @DefaultMessage("Mode_RUN_WITHOUT_ENCODERS")
+  @Description("")
+  String Mode_RUN_WITHOUT_ENCODERSProperties();
+
+  @DefaultMessage("Mode_600HZ_DC")
+  @Description("")
+  String Mode_600HZ_DCProperties();
+
+  @DefaultMessage("Mode_1200HZ_AC")
+  @Description("")
+  String Mode_1200HZ_ACProperties();
 
   @DefaultMessage("OpModeName")
   @Description("")

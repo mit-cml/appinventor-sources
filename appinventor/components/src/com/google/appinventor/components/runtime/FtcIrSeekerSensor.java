@@ -47,6 +47,24 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   // Properties
 
   /**
+   * Mode_600HZ_DC property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_600HZ_DC.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_600HZ_DC() {
+    return Mode.MODE_600HZ_DC.toString();
+  }
+
+  /**
+   * Mode_1200HZ_AC property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_1200HZ_AC.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_1200HZ_AC() {
+    return Mode.MODE_1200HZ_AC.toString();
+  }
+
+  /**
    * Mode property getter.
    */
   @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ_DC or MODE_1200HZ_AC.",

@@ -51,6 +51,42 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   // Properties
 
   /**
+   * Mode_RUN_USING_ENCODERS property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_RUN_USING_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_RUN_USING_ENCODERS() {
+    return RunMode.RUN_USING_ENCODERS.toString();
+  }
+
+  /**
+   * Mode_RUN_WITHOUT_ENCODERS property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_RUN_WITHOUT_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_RUN_WITHOUT_ENCODERS() {
+    return RunMode.RUN_WITHOUT_ENCODERS.toString();
+  }
+
+  /**
+   * Mode_RUN_TO_POSITION property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_RUN_TO_POSITION.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_RUN_TO_POSITION() {
+    return RunMode.RUN_TO_POSITION.toString();
+  }
+
+  /**
+   * Mode_RESET_ENCODERS property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_RESET_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_RESET_ENCODERS() {
+    return RunMode.RESET_ENCODERS.toString();
+  }
+
+  /**
    * ChannelMode property getter.
    */
   @SimpleProperty(description = "The channel mode.",
@@ -93,6 +129,24 @@ public final class FtcDcMotor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+  }
+
+  /**
+   * Direction_FORWARD property getter.
+   */
+  @SimpleProperty(description = "The constant for Direction_FORWARD.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Direction_FORWARD() {
+    return Direction.FORWARD.toString();
+  }
+
+  /**
+   * Direction_REVERSE property getter.
+   */
+  @SimpleProperty(description = "The constant for Direction_REVERSE.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Direction_REVERSE() {
+    return Direction.REVERSE.toString();
   }
 
   /**
