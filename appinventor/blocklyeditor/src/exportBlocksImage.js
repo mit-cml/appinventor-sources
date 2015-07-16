@@ -95,7 +95,9 @@ out$.svgAsDataUri = function(el, optmetrics, options, cb) {
   clone.setAttribute("version", "1.1");
   var left = (parseFloat(optmetrics.contentLeft) - parseFloat(optmetrics.viewLeft)).toString();
   var top = (parseFloat(optmetrics.contentTop) - parseFloat(optmetrics.viewTop)).toString();
-  clone.setAttribute("viewBox", left + " " + top + " " + optmetrics.contentWidth + " " + optmetrics.contentHeight);
+  var right = (parseFloat(optmetrics.contentWidth)).toString();
+  var bottom = (parseFloat(optmetrics.contentHeight)).toString();
+  clone.setAttribute("viewBox", left + " " + top + " " + right + " " + bottom);
   
   clone.setAttribute("width", optmetrics.contentWidth);
   clone.setAttribute("height", optmetrics.contentHeight);
