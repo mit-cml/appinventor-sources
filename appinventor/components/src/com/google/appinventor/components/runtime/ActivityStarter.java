@@ -184,6 +184,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
    * Specifies the extra key that will be passed to the activity.
    * Obsolete. Should use Extras instead
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
   @SimpleProperty
   public void ExtraKey(String extraKey) {
     this.extraKey = extraKey.trim();
@@ -206,6 +208,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
    * Specifies the extra value that will be passed to the activity.
    * Obsolete. Should use Extras instead
    */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
   @SimpleProperty
   public void ExtraValue(String extraValue) {
     this.extraValue = extraValue.trim();
