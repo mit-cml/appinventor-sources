@@ -47,6 +47,24 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
   // Properties
 
   /**
+   * Mode_INPUT property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_INPUT.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_INPUT() {
+    return Mode.INPUT.toString();
+  }
+
+  /**
+   * Mode_OUTPUT property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_OUTPUT.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_OUTPUT() {
+    return Mode.OUTPUT.toString();
+  }
+
+  /**
    * Mode property getter.
    */
   @SimpleProperty(description = "The mode of the digital channel; INPUT or OUTPUT.",

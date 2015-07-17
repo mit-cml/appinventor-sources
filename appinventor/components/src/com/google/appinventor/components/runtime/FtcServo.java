@@ -48,6 +48,24 @@ public final class FtcServo extends FtcHardwareDevice {
   // Properties
 
   /**
+   * Direction_FORWARD property getter.
+   */
+  @SimpleProperty(description = "The constant for Direction_FORWARD.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Direction_FORWARD() {
+    return Direction.FORWARD.toString();
+  }
+
+  /**
+   * Direction_REVERSE property getter.
+   */
+  @SimpleProperty(description = "The constant for Direction_REVERSE.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Direction_REVERSE() {
+    return Direction.REVERSE.toString();
+  }
+
+  /**
    * Direction property getter.
    */
   @SimpleProperty(description = "Whether this servo should spin forward or reverse.",

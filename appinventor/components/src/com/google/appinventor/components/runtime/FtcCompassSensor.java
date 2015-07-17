@@ -35,6 +35,8 @@ import android.util.Log;
 public final class FtcCompassSensor extends FtcHardwareDevice {
 
   private volatile CompassSensor compassSensor;
+  // We need a backing field for the Mode property because CompassSensor doesn't have a getMode
+  // method.
   private volatile CompassMode mode = CompassMode.MEASUREMENT_MODE;
 
   /**
@@ -65,12 +67,43 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   }
 
   /**
+   * Mode_MEASUREMENT property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_MEASUREMENT.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_MEASUREMENT() {
+    return CompassMode.MEASUREMENT_MODE.toString();
+  }
+
+  /**
+   * Mode_CALIBRATION property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_CALIBRATION.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_CALIBRATION() {
+    return CompassMode.CALIBRATION_MODE.toString();
+  }
+
+  /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode: MEASUREMENT_MODE or CALIBRATION_MODE",
+  @SimpleProperty(description = "The mode: MEASUREMENT_MODE or CALIBRATION_MODE.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
-    return mode.toString();
+    if (compassSensor != null) {
+      try {
+        // CompassSensor doesn't have a getMode method. Use our backing field instead.
+        CompassMode mode = this.mode;
+        if (mode != null) {
+          return mode.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return CompassMode.MEASUREMENT_MODE.toString();
   }
 
   /**
@@ -78,23 +111,24 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String modeString) {
-    try {
-      for (CompassMode mode : CompassMode.values()) {
-        if (mode.toString().equalsIgnoreCase(modeString)) {
-          this.mode = mode;
-          if (compassSensor != null) {
+    if (compassSensor != null) {
+      try {
+        for (CompassMode mode : CompassMode.values()) {
+          if (mode.toString().equalsIgnoreCase(modeString)) {
             compassSensor.setMode(mode);
+            // Set our backing field.
+            this.mode = mode;
+            return;
           }
-          return;
         }
-      }
 
-      form.dispatchErrorOccurredEvent(this, "Mode",
-          ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Mode",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_INVALID_COMPASS_MODE, modeString);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
   }
 
