@@ -114,7 +114,15 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Adds a numeric data point to the telemetry for this op mode.")
-  public void TelemetryAddNumericData(String key, float number) {
+  public void TelemetryAddNumericData(String key, String number) {
+    // Try to parse the number as a float, but if that fails, fallback to text.
+    try {
+      opMode.telemetry.addData(key, Float.parseFloat(number));
+      return;
+    } catch (Throwable e) {
+      // Exception is ignored. Fallback to treating number as text.
+    }
+
     try {
       opMode.telemetry.addData(key, number);
     } catch (Throwable e) {
