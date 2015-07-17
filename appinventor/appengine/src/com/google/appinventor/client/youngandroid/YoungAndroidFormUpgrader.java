@@ -412,6 +412,21 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 5) {
       // Extras property was added to accept a list of key-value pairs to put to the intent
+      String defaultValue = "";
+
+      if (componentProperties.containsKey("ExtraKey")) {
+        String extraKeyValue = componentProperties.get("ExtraKey").asString().getString();
+        if (!extraKeyValue.equals(defaultValue)) {
+          Window.alert(MESSAGES.extraKeyValueWarning());
+        }
+      }
+
+      if (componentProperties.containsKey("ExtraValue")) {
+        String extraValueValue = componentProperties.get("ExtraValue").asString().getString();
+        if (!extraValueValue.equals(defaultValue)) {
+          Window.alert(MESSAGES.extraKeyValueWarning());
+        }
+      }
       srcCompVersion = 5;
     }
     return srcCompVersion;

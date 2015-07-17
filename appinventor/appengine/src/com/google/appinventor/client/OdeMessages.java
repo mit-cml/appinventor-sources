@@ -5439,4 +5439,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String XMLTextDecodeMethods();
 
+  @DefaultMessage("ExtraKey and ExtraValue are deprecated and will not be supported. " +
+      "Please use the new Extras property in Blocks.\n")
+  @Description("")
+  String extraKeyValueWarning();
+
 }
