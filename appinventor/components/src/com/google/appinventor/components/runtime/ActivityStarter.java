@@ -128,6 +128,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     ActivityClass("");
     DataUri("");
     DataType("");
+    ExtraKey("");
+    ExtraValue("");
     Extras(new YailList());
     ResultName("");
   }
