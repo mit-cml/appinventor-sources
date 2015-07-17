@@ -316,8 +316,11 @@ Blockly.onMouseDown_ = function(e) {
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
     Blockly.Drawer.hide();
   }
-  //if backpack exists and supposed to close
-  if(Blockly.mainWorkspace.backpack && Blockly.Backpack.flyout_.autoClose) {
+
+  //if backpack exists and clicked, open or close 
+  if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)) {
+    Blockly.mainWorkspace.backpack.openBackpack();
+  } else if(Blockly.mainWorkspace.backpack && Blockly.Backpack.flyout_.autoClose) {
     Blockly.Backpack.hide();
   }
 
@@ -345,10 +348,7 @@ Blockly.onMouseDown_ = function(e) {
   if (e.target == Blockly.svg && Blockly.isRightButton(e)) {
     // Right-click.
     Blockly.showContextMenu_(e);
-  }  else if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)) {
-      Blockly.mainWorkspace.backpack.openBackpack();
-  } else if ((Blockly.readOnly || isTargetSvg) &&
-             Blockly.mainWorkspace.scrollbar) {
+  } else if ((Blockly.readOnly || isTargetSvg) && Blockly.mainWorkspace.scrollbar) {
     // If the workspace is editable, only allow dragging when gripping empty
     // space.  Otherwise, allow dragging when gripping anywhere.
     Blockly.mainWorkspace.dragMode = true;

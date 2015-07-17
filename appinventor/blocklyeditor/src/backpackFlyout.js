@@ -269,8 +269,13 @@ Blockly.backpackFlyout.prototype.position_ = function() {
   var x = metrics.absoluteLeft;
   // Commenting out the if-stmt positions the flyout on the right margin rather than the left.
   //  if (Blockly.RTL) {
-  x += metrics.viewWidth;
-  x -= this.width_;
+  // the if=stmt below will keep the width of the flyout exceeding the workspace screen.  
+  if (this.width_ >= metrics.viewWidth){
+    x += 30; //add 30 to give an extra space
+  } else {
+    x += metrics.viewWidth;
+    x -= this.width_;
+  }  
   //  }
   this.svgGroup_.setAttribute('transform',
       'translate(' + x + ',' + metrics.absoluteTop + ')');
