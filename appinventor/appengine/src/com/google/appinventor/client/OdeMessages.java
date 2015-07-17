@@ -5374,6 +5374,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToItalian();
 
+  @DefaultMessage("Pусский")
+  @Description("")
+  String SwitchToRussian();
+
   @DefaultMessage("Progress Bar")
   @Description("")
   String ProgressBarFor();
