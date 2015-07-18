@@ -19,8 +19,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
 
-import android.util.Log;
-
 /**
  * A component for an IR seeker sensor of an FTC robot.
  *
@@ -33,7 +31,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcIrSeekerSensor extends FtcHardwareDevice {
+public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
 
   private volatile IrSeekerSensor irSeekerSensor;
 
@@ -175,7 +173,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
       if (irSeekerSensor == null) {
-        Log.e("FtcIrSeekerSensor", "Could not find a IrSeekerSensor named " + getDeviceName());
+        deviceNotFound("IrSeekerSensor", hardwareMap.irSeekerSensor);
       }
     }
   }

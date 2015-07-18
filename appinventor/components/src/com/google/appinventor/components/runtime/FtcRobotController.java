@@ -38,7 +38,6 @@ import android.graphics.Typeface;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;

@@ -5,15 +5,19 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.util.Log;
-
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping;
+
+import android.util.Log;
+
+import java.util.Map;
 
 /**
  * A base class for components for hardware devices of an FTC robot.
@@ -21,7 +25,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * @author lizlooney@google.com (Liz Looney)
  */
 @SimpleObject
-public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
+public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
@@ -67,6 +71,17 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
 
   protected final HardwareMap getHardwareMap() {
     return hardwareMap;
+  }
+
+  protected final void deviceNotFound(String type, DeviceMapping<DEVICE_TYPE> deviceMapping) {
+    StringBuilder names = new StringBuilder();
+    String delimiter = "";
+    for (Map.Entry<String, DEVICE_TYPE> entry : deviceMapping.entrySet()) {
+      names.append(delimiter).append(entry.getKey());
+      delimiter = ", ";
+    }
+    form.dispatchErrorOccurredEvent(this, "", ErrorMessages.ERROR_FTC_INVALID_DEVICE_NAME,
+        type, getDeviceName(), names.toString());
   }
 
   // Deleteable implementation

@@ -193,6 +193,7 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_LENGTH = 2809;
   public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2810;
   public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2811;
+  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2812;
 
   // Please start the next group of error numbers at 2901.
 
@@ -497,6 +498,8 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_COMPASS_MODE,
         "The specified compass mode \"%s\" is not valid. The valid modes are " +
         "MEASUREMENT_MODE and CALIBRATION_MODE.");
+    errorMessages.put(ERROR_FTC_INVALID_DEVICE_NAME,
+        "There is no %s named %s. Valid names are %s.");
   }
 
   private ErrorMessages() {
