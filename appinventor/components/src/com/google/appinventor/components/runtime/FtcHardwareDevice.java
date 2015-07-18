@@ -74,6 +74,7 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
   }
 
   protected final void deviceNotFound(String type, DeviceMapping<DEVICE_TYPE> deviceMapping) {
+    /*
     StringBuilder names = new StringBuilder();
     String delimiter = "";
     for (Map.Entry<String, DEVICE_TYPE> entry : deviceMapping.entrySet()) {
@@ -82,6 +83,8 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
     }
     form.dispatchErrorOccurredEvent(this, "", ErrorMessages.ERROR_FTC_INVALID_DEVICE_NAME,
         type, getDeviceName(), names.toString());
+    */
+    Log.e("FtcHardwareDevice", "Could not find a " + type + " named " + getDeviceName());
   }
 
   // Deleteable implementation
