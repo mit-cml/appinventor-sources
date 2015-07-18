@@ -23,8 +23,6 @@ import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
 
-import android.util.Log;
-
 /**
  * A component for a DC motor of an FTC robot.
  *
@@ -37,7 +35,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDcMotor extends FtcHardwareDevice {
+public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
 
   private volatile DcMotor dcMotor;
 
@@ -475,7 +473,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       dcMotor = hardwareMap.dcMotor.get(getDeviceName());
       if (dcMotor == null) {
-        Log.e("FtcDcMotor", "Could not find a DcMotor named " + getDeviceName());
+        deviceNotFound("DcMotor", hardwareMap.dcMotor);
       }
     }
   }

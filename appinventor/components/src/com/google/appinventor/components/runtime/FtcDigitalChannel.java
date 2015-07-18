@@ -19,8 +19,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
 
-import android.util.Log;
-
 /**
  * A component for a single digital channel of an FTC robot.
  *
@@ -33,7 +31,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDigitalChannel extends FtcHardwareDevice {
+public final class FtcDigitalChannel extends FtcHardwareDevice<DigitalChannel> {
 
   private volatile DigitalChannel digitalChannel;
 
@@ -153,7 +151,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
     if (hardwareMap != null) {
       digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
       if (digitalChannel == null) {
-        Log.e("FtcDigitalChannel", "Could not find a DigitalChannel named " + getDeviceName());
+        deviceNotFound("DigitalChannel", hardwareMap.digitalChannel);
       }
     }
   }

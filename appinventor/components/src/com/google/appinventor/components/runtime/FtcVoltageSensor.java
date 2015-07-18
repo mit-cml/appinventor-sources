@@ -17,8 +17,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import android.util.Log;
-
 /**
  * A component for a voltage sensor of an FTC robot.
  *
@@ -31,7 +29,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcVoltageSensor extends FtcHardwareDevice {
+public final class FtcVoltageSensor extends FtcHardwareDevice<VoltageSensor> {
 
   private volatile VoltageSensor voltageSensor;
 
@@ -70,7 +68,7 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
       if (voltageSensor == null) {
-        Log.e("FtcVoltageSensor", "Could not find a VoltageSensor named " + getDeviceName());
+        deviceNotFound("VoltageSensor", hardwareMap.voltageSensor);
       }
     }
   }

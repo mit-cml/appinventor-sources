@@ -18,8 +18,6 @@ import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.AccelerationSensor.Acceleration;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import android.util.Log;
-
 /**
  * A component for an acceleration sensor of an FTC robot.
  *
@@ -32,7 +30,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcAccelerationSensor extends FtcHardwareDevice {
+public final class FtcAccelerationSensor extends FtcHardwareDevice<AccelerationSensor> {
 
   private volatile AccelerationSensor accelerationSensor;
 
@@ -137,7 +135,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
       if (accelerationSensor == null) {
-        Log.e("FtcAccelerationSensor", "Could not find an AccelerationSensor named " + getDeviceName());
+        deviceNotFound("AccelerationSensor", hardwareMap.accelerationSensor);
       }
     }
   }

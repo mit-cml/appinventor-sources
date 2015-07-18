@@ -18,8 +18,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
-import android.util.Log;
-
 /**
  * A component for an optical distance sensor of an FTC robot.
  *
@@ -32,7 +30,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
+public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDistanceSensor> {
 
   private volatile OpticalDistanceSensor opticalDistanceSensor;
 
@@ -110,7 +108,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
       if (opticalDistanceSensor == null) {
-        Log.e("FtcOpticalDistanceSensor", "Could not find a OpticalDistanceSensor named " + getDeviceName());
+        deviceNotFound("OpticalDistanceSensor", hardwareMap.opticalDistanceSensor);
       }
     }
   }

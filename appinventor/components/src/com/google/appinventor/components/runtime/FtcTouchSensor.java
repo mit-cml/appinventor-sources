@@ -18,8 +18,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import android.util.Log;
-
 /**
  * A component for a touch sensor of an FTC robot.
  *
@@ -32,7 +30,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcTouchSensor extends FtcHardwareDevice {
+public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
 
   private volatile TouchSensor touchSensor;
 
@@ -90,7 +88,7 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
     if (hardwareMap != null) {
       touchSensor = hardwareMap.touchSensor.get(getDeviceName());
       if (touchSensor == null) {
-        Log.e("FtcTouchSensor", "Could not find a TouchSensor named " + getDeviceName());
+        deviceNotFound("TouchSensor", hardwareMap.touchSensor);
       }
     }
   }

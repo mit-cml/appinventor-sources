@@ -18,8 +18,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 
-import android.util.Log;
-
 /**
  * A component for an analog input of an FTC robot.
  *
@@ -32,7 +30,7 @@ import android.util.Log;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcAnalogInput extends FtcHardwareDevice {
+public final class FtcAnalogInput extends FtcHardwareDevice<AnalogInput> {
 
   private volatile AnalogInput analogInput;
 
@@ -71,7 +69,7 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
     if (hardwareMap != null) {
       analogInput = hardwareMap.analogInput.get(getDeviceName());
       if (analogInput == null) {
-        Log.e("FtcAnalogInput", "Could not find a AnalogInput named " + getDeviceName());
+        deviceNotFound("AnalogInput", hardwareMap.analogInput);
       }
     }
   }
