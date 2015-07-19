@@ -639,6 +639,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   public void testGetGcsPath() {
     final String USER_ID = "135";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
+
     ComponentInfo compInfo = storage.getComponentInfos(USER_ID).get(0);
     assertNotNull(storage.getGcsPath(compInfo));
 
