@@ -575,8 +575,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
     final String COMP_NAME = FULL_NAME.substring(FULL_NAME.lastIndexOf(".") + 1);
     final long INIT_VERSION = 0;
-    final String PATH_SUFFIX = USER_ID + "/" + COMP_NAME + "/" + INIT_VERSION +
-        "/" + COMPONENT_FILE_NAME1;
+    final String PATH_SUFFIX = FULL_NAME + "/" + INIT_VERSION + "/" + COMPONENT_FILE_NAME1;
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
     List<ComponentData> compDataList = storage.getCompDataList(FULL_NAME);
@@ -591,12 +590,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
 
     // the version of the newly uploaded component is based on versionCounter in info.json
-    final String INFO_PATH = "external_comps" + "/" + USER_ID + "/" + COMP_NAME +
-        "/" + "info.json";
+    final String INFO_PATH = "external_comps" + "/" + FULL_NAME + "/" + "info.json";
     final long VERSION = 10;
     JSONObject info = new JSONObject();
     info.put("versionCounter", VERSION);
     storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
+
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
     compDataList = storage.getCompDataList(FULL_NAME);
     ComponentData newData = compDataList.get(compDataList.size() - 1);

@@ -1621,8 +1621,8 @@ public class ObjectifyStorageIo implements  StorageIo {
             fileName.length() - EXTERNAL_COMP_EXTENSION.length());
         compData.name = getCompName(fileName);
         compData.version = getNextVersion(compData);
-        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + compData.version + "/" + fileName;
+        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
+            "/" + compData.version + "/" + fileName;
 
         datastore.put(compData);
 
@@ -1655,18 +1655,16 @@ public class ObjectifyStorageIo implements  StorageIo {
           info.put("versionCounter", compData.version);
         }
 
-        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + INFO_FILE_NAME;
-        setGcsFileContent(infoFilePath, info.toString().getBytes());
+        setGcsFileContent(getInfoFilePath(compData), info.toString().getBytes());
       }
 
       private JSONObject getInfoJson(ComponentData compData) {
-        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + INFO_FILE_NAME;
-
-        byte[] infoContent = getGcsFileContent(infoFilePath);
-
+        byte[] infoContent = getGcsFileContent(getInfoFilePath(compData));
         return infoContent == null ? null : new JSONObject(new String(infoContent));
+      }
+
+      private String getInfoFilePath(ComponentData compData) {
+        return EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName + "/" + INFO_FILE_NAME;
       }
     };
 
