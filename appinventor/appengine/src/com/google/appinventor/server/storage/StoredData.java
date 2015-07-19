@@ -268,8 +268,6 @@ public class StoredData {
 
     @Indexed String fullyQualifiedName;
 
-    @Indexed String name;
-
     @Indexed long version;
 
     String gcsPath;

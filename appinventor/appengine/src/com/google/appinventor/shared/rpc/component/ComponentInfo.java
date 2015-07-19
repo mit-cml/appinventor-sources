@@ -22,10 +22,10 @@ public class ComponentInfo implements IsSerializable {
     // no-op
   }
 
-  public ComponentInfo(String authorId, String fullyQualifiedName, String name, long version) {
+  public ComponentInfo(String authorId, String fullyQualifiedName, long version) {
     this.authorId = authorId;
     this.fullyQualifiedName = fullyQualifiedName;
-    this.name = name;
+    this.name = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
     this.version = version;
   }
 

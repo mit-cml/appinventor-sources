@@ -112,7 +112,7 @@ public class ComponentServiceTest {
       assertTrue(node.getFileId().startsWith(folderPath));
     }
 
-    info = new ComponentInfo("fakeAuthorId", "fakeFullName", "fakeName", 0);
+    info = new ComponentInfo("fakeAuthorId", "fakeFullName", 0);
     nodes = compServiceImpl.importComponentToProject(info, projectId, folderPath);
     assertTrue(nodes.isEmpty());
 

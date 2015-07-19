@@ -1619,7 +1619,6 @@ public class ObjectifyStorageIo implements  StorageIo {
         compData.userId = userId;
         compData.fullyQualifiedName = fileName.substring(0,
             fileName.length() - EXTERNAL_COMP_EXTENSION.length());
-        compData.name = getCompName(fileName);
         compData.version = getNextVersion(compData);
         compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
             "/" + compData.version + "/" + fileName;
@@ -1633,12 +1632,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           throw CrashReport.createAndLogError(LOG, null,
             collectComponentErrorInfo(userId, fileName), e);
         }
-      }
-
-      private String getCompName(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf(".");
-        int secondLastDotIndex = fileName.lastIndexOf(".", lastDotIndex - 1);
-        return fileName.substring(secondLastDotIndex + 1, lastDotIndex);
       }
 
       private long getNextVersion(ComponentData compData) {
@@ -1682,7 +1675,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
       results.add(new ComponentInfo(compData.userId, compData.fullyQualifiedName,
-          compData.name, compData.version));
+          compData.version));
     }
     return results;
   }
