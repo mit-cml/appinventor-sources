@@ -1,0 +1,31 @@
+//blockly/editor/src/generators/yail/controls.js
+Blockly.Yail.controls_forRange = function() {
+  // For range loop.
+  var loopIndexName = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getTitleValue('VAR');
+  var startCode = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || 0;
+  var endCode = Blockly.Yail.valueToCode(this, 'END', Blockly.Yail.ORDER_NONE) || 0;
+  var stepCode = Blockly.Yail.valueToCode(this, 'STEP', Blockly.Yail.ORDER_NONE) || 0;
+  var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  return Blockly.Yail.YAIL_FORRANGE + loopIndexName + Blockly.Yail.YAIL_SPACER
+         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER 
+         + startCode + Blockly.Yail.YAIL_SPACER 
+         + endCode + Blockly.Yail.YAIL_SPACER 
+         + stepCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+};
+//with strings inserted
+Blockly.Yail.controls_forRange = function() {
+  // For range loop.
+  var loopIndexName = '$' + this.getTitleValue('VAR');
+  var startCode = Blockly.Yail.valueToCode(this, 'START', 99) || 0;
+  var endCode = Blockly.Yail.valueToCode(this, 'END', 99) || 0;
+  var stepCode = Blockly.Yail.valueToCode(this, 'STEP', 99) || 0;
+  var bodyCode = Blockly.Yail.statementToCode(this, 'DO', 99) || "#f";
+  return "(forrange " + loopIndexName + " " + "(begin " + bodyCode + ")" + " " + startCode + " " + endCode + " " + stepCode + ")";
+  //return (forrange $VAR (begin DO) START END STEP)
+};
+///buildserver/src/com/google/appinventor/buildserver/resources/runtime.scm
+(define-syntax forrange
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form start end step)
+     (yail-for-range (lambda (lambda-arg-name) body-form) start end step))))
+

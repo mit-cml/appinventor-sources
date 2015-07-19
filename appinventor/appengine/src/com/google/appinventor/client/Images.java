@@ -491,4 +491,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+   * Designer palette item: iSENSE Component
+   */
+  @Source("com/google/appinventor/images/isense.png")
+  ImageResource iSENSEComponent();
+
 }

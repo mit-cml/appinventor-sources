@@ -218,6 +218,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new CountryChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES)) {
       return new LanguageChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ISENSE_LOGIN_TYPE)) {
+      return new YoungAndroidiSENSELoginTypePropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

@@ -115,6 +115,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/file.png", images.file());
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
+    bundledImages.put("images/isense.png", images.iSENSEComponent());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/sharing.png", images.sharingComponent());

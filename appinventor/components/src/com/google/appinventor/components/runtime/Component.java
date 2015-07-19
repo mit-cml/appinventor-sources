@@ -140,4 +140,7 @@ public interface Component {
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY = "USA";
   static final String DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE = "en";
 
+  // iSENSE
+  public static int iSENSE_LOGIN_TYPE_EMAIL = 1;
+  public static int iSENSE_LOGIN_TYPE_KEY = 2;
 }

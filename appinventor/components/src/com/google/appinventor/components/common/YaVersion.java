@@ -937,6 +937,9 @@ public class YaVersion {
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
+  
+  //iSENE
+  public static final int ISENSE_PROJECT_VERSION = 1;
 
 
 }

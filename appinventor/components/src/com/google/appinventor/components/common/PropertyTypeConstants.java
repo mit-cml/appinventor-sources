@@ -191,4 +191,14 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES = "languages";
 
+  //isense
+
+  /**
+   * isense login type
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidiSENSELoginTypePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_ISENSE_LOGIN_TYPE = "isense_login_type";
+  
+
 }
