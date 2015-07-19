@@ -579,7 +579,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         "/" + COMPONENT_FILE_NAME1;
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
-    List<ComponentData> compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
+    List<ComponentData> compDataList = storage.getCompDataList(FULL_NAME);
     assertFalse(compDataList.isEmpty());
 
     ComponentData firstData = compDataList.get(0);
@@ -598,7 +598,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     info.put("versionCounter", VERSION);
     storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-    compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
+    compDataList = storage.getCompDataList(FULL_NAME);
     ComponentData newData = compDataList.get(compDataList.size() - 1);
     assertEquals(VERSION + 1, newData.version);
   }

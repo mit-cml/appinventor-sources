@@ -2567,9 +2567,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @VisibleForTesting
-  List<ComponentData> getCompDataList(String userId, String name) {
+  List<ComponentData> getCompDataList(String fullyQualifiedName) {
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    return query.filter("userId", userId).filter("name", name).list();
+    return query.filter("fullyQualifiedName", fullyQualifiedName).list();
   }
 
   @VisibleForTesting
