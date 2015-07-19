@@ -160,7 +160,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
      * move from the starting point to be considered a drag (instead of a
      * touch).
      */
-    public static final int TAP_THRESHOLD = 30;
+    // This used to be 30 and people complained that they could not draw small circles.
+    // If the threshold is too small, then touches might be misinterpreted as drags,
+    // this might require more experimentation.  We might also want to take screen resolution
+    // into account and/or try to make a more clever motion parser.
+    public static final int TAP_THRESHOLD = 15;
 
     /**
      * The width of a finger.  This is used in determining whether a sprite is
