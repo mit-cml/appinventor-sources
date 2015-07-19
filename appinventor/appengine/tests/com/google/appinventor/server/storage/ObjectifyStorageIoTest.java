@@ -55,8 +55,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String FILE_NAME2 = "src/File2.blk";
   private static final String RAW_FILE_NAME1 = "assets/File1.jpg";
   private static final String RAW_FILE_NAME2 = "assets/File2.wav";
-  private static final String COMPONENT_FILE_NAME1 = "twitter.aix";
-  private static final String COMPONENT_FILE_NAME2 = "facebook.aix";
+  private static final String COMPONENT_FILE_NAME1 = "com.package.Twitter.aix";
+  private static final String COMPONENT_FILE_NAME2 = "com.package.Facebook.aix";
   private static final String COMPONENT_EXTENSION_NAME = ".aix";
   private static final String FILE_NAME_OUTPUT = "File.apk";
   private static final String FILE_CONTENT1 = "The quick onyx goblin jumps over the lazy dwarf";
@@ -571,8 +571,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUploadComponentFile() throws Exception {
     final String USER_ID = "369";
-    final String COMP_NAME = COMPONENT_FILE_NAME1.substring(0,
+    final String FULL_NAME = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
+    final String COMP_NAME = FULL_NAME.substring(FULL_NAME.lastIndexOf(".") + 1);
     final long INIT_VERSION = 0;
     final String PATH_SUFFIX = USER_ID + "/" + COMP_NAME + "/" + INIT_VERSION +
         "/" + COMPONENT_FILE_NAME1;
@@ -583,6 +584,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     ComponentData firstData = compDataList.get(0);
     assertEquals(USER_ID, firstData.userId);
+    assertEquals(FULL_NAME, firstData.fullyQualifiedName);
     assertEquals(COMP_NAME, firstData.name);
     assertEquals(INIT_VERSION, firstData.version);
     assertTrue(firstData.gcsPath.endsWith(PATH_SUFFIX));
@@ -608,10 +610,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     assertEquals(2, storage.getComponentInfos(USER_ID).size());
 
-    final String COMP_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
+    final String FULL_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
-    final String COMP_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
+    final String COMP_NAME_1 = FULL_NAME_1.substring(FULL_NAME_1.lastIndexOf(".") + 1);
+    final String FULL_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
         COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
+    final String COMP_NAME_2 = FULL_NAME_2.substring(FULL_NAME_2.lastIndexOf(".") + 1);
     final long INIT_VERSION = 0;
 
     ComponentInfo compInfo1 = storage.getComponentInfos(USER_ID).get(0);

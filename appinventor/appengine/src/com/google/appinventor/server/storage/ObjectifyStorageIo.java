@@ -1609,6 +1609,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
     JobRetryHelper helper = new JobRetryHelper() {
       private static final String EXTERNAL_COMP_DIR = "external_comps";
+      private static final String EXTERNAL_COMP_EXTENSION = ".aix";
       private static final String INFO_FILE_NAME = "info.json";
 
       @Override
@@ -1616,7 +1617,9 @@ public class ObjectifyStorageIo implements  StorageIo {
         ComponentData compData = new ComponentData();
         compData.id = null;
         compData.userId = userId;
-        compData.name = fileName.substring(0, fileName.length() - ".aix".length());
+        compData.fullyQualifiedName = fileName.substring(0,
+            fileName.length() - EXTERNAL_COMP_EXTENSION.length());
+        compData.name = getCompName(fileName);
         compData.version = getNextVersion(compData);
         compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
             compData.name + "/" + compData.version + "/" + fileName;
@@ -1630,6 +1633,12 @@ public class ObjectifyStorageIo implements  StorageIo {
           throw CrashReport.createAndLogError(LOG, null,
             collectComponentErrorInfo(userId, fileName), e);
         }
+      }
+
+      private String getCompName(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf(".");
+        int secondLastDotIndex = fileName.lastIndexOf(".", lastDotIndex - 1);
+        return fileName.substring(secondLastDotIndex + 1, lastDotIndex);
       }
 
       private long getNextVersion(ComponentData compData) {
