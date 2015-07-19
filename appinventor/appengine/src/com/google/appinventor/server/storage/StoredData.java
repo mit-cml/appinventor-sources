@@ -270,7 +270,7 @@ public class StoredData {
 
     @Indexed String name;
 
-    long version;
+    @Indexed long version;
 
     String gcsPath;
   }

@@ -13,7 +13,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class ComponentInfo implements IsSerializable {
 
-  private long compId;
   private String authorId;
   private String fullyQualifiedName;
   private String name;
@@ -23,16 +22,11 @@ public class ComponentInfo implements IsSerializable {
     // no-op
   }
 
-  public ComponentInfo(long compId, String authorId, String fullyQualifiedName, String name, long version) {
-    this.compId = compId;
+  public ComponentInfo(String authorId, String fullyQualifiedName, String name, long version) {
     this.authorId = authorId;
     this.fullyQualifiedName = fullyQualifiedName;
     this.name = name;
     this.version = version;
-  }
-
-  public long getId() {
-    return compId;
   }
 
   public String getAuthorId() {

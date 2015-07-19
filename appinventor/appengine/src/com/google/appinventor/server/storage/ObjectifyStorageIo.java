@@ -1683,8 +1683,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new ComponentInfo(compData.id, compData.userId,
-          compData.fullyQualifiedName,compData.name, compData.version));
+      results.add(new ComponentInfo(compData.userId, compData.fullyQualifiedName,
+          compData.name, compData.version));
     }
     return results;
   }
@@ -1709,7 +1709,9 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String getGcsPath(ComponentInfo compInfo) {
-    ComponentData result = ObjectifyService.begin().find(componentKey(compInfo.getId()));
+    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
+    ComponentData result = query.filter("fullyQualifiedName", compInfo.getFullyQualifiedName()).
+        filter("version", compInfo.getVersion()).get();
     return result == null ? null : result.gcsPath;
   }
 
