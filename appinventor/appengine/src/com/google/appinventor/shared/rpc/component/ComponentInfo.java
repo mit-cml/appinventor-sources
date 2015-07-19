@@ -15,6 +15,7 @@ public class ComponentInfo implements IsSerializable {
 
   private long compId;
   private String authorId;
+  private String fullyQualifiedName;
   private String name;
   private long version;
 
@@ -22,9 +23,10 @@ public class ComponentInfo implements IsSerializable {
     // no-op
   }
 
-  public ComponentInfo(long compId, String authorId, String name, long version) {
+  public ComponentInfo(long compId, String authorId, String fullyQualifiedName, String name, long version) {
     this.compId = compId;
     this.authorId = authorId;
+    this.fullyQualifiedName = fullyQualifiedName;
     this.name = name;
     this.version = version;
   }
@@ -35,6 +37,10 @@ public class ComponentInfo implements IsSerializable {
 
   public String getAuthorId() {
     return authorId;
+  }
+
+  public String getFullyQualifiedName() {
+    return fullyQualifiedName;
   }
 
   public String getName() {

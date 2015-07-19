@@ -1683,7 +1683,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new ComponentInfo(compData.id, compData.userId, compData.name, compData.version));
+      results.add(new ComponentInfo(compData.id, compData.userId,
+          compData.fullyQualifiedName,compData.name, compData.version));
     }
     return results;
   }
