@@ -200,8 +200,7 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
 
   public void testImportComponentArchive() throws Exception {
     String userId = "123";
-    String fileName = "Component.aix";
-    String compName = "Component";
+    String fileName = "package.Component.aix";
     File compFile = new File(TESTING_SOURCE_PATH + fileName);
 
     assertEquals(0, storageIo.getComponentInfos(userId).size());

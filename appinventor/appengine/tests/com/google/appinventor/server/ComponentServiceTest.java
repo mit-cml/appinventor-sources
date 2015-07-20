@@ -10,10 +10,12 @@ import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.project.ComponentNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
+import com.google.common.collect.Iterators;
 import com.google.common.io.ByteStreams;
 
 import org.junit.After;
@@ -33,7 +35,6 @@ import static org.easymock.EasyMock.expectLastCall;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.Exception;
-import java.util.List;
 
 /**
  * Tests for {@link ComponentServiceImpl}.
@@ -96,7 +97,7 @@ public class ComponentServiceTest {
 
     String testingSourcePath = TestUtils.APP_INVENTOR_ROOT_DIR +
         "/appengine/tests/com/google/appinventor/server/";
-    String fileName = "Component.aix";
+    String fileName = "package.Component.aix";
     byte[] content = ByteStreams.toByteArray(
         new FileInputStream(new File(testingSourcePath + fileName)));
 
@@ -105,16 +106,16 @@ public class ComponentServiceTest {
     ComponentInfo info = storageIo.getComponentInfos(USER_ID).get(0);
     long projectId = user1Project1;
     String folderPath = "awesomeFolder";
-    List<ProjectNode> nodes = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    ComponentNode compNode = compServiceImpl.importComponentToProject(info, projectId, folderPath);
 
-    assertFalse(nodes.isEmpty());
-    for (ProjectNode node : nodes) {
+    assertTrue(Iterators.size(compNode.getChildren().iterator()) > 0);
+    for (ProjectNode node : compNode.getChildren()) {
       assertTrue(node.getFileId().startsWith(folderPath));
     }
 
     info = new ComponentInfo("fakeAuthorId", "fakeFullName", 0);
-    nodes = compServiceImpl.importComponentToProject(info, projectId, folderPath);
-    assertTrue(nodes.isEmpty());
+    compNode = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    assertEquals(0, Iterators.size(compNode.getChildren().iterator()));
 
     PowerMock.verifyAll();
   }
