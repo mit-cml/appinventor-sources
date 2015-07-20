@@ -171,6 +171,7 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForCompanion;
+  private final String externalCompsDirName;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
@@ -726,12 +727,15 @@ public final class Compiler {
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
            PrintStream userErrors, boolean isForCompanion,
            int childProcessMaxRam, String dexCacheDir) {
+    createDirectory(project.getAssetsDirectory());
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
     this.isForCompanion = isForCompanion;
+    this.externalCompsDirName = project.getAssetsDirectory() + File.separator +
+        "external_comps";
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
   }
@@ -1195,11 +1199,17 @@ public final class Compiler {
 
         JSONArray componentsArray = new JSONArray(buildInfoJson);
 
-        for (File file : project.getAssetsDirectory().listFiles()) {
-          if (file.getName().endsWith("_build_info.json")) {
-            String externalCompsBuildInfoJson =
-                Resources.toString(file.toURI().toURL(), Charsets.UTF_8);
-            componentsArray.put(new JSONObject(externalCompsBuildInfoJson));
+        // .../assets/external_comps/com.package.MyExtComp/files/MyExtComp_build_info.json
+        File extCompsDir = new File(externalCompsDirName);
+        File[] dirs = extCompsDir.exists() ? extCompsDir.listFiles() : new File[0];
+        for (File extCompDir : dirs) {
+          File extCompRuntimeFileDir = new File(extCompDir.getAbsolutePath() + RUNTIME_FILES_DIR);
+          for (File file : extCompRuntimeFileDir.listFiles()) {
+            if (file.getName().endsWith("_build_info.json")) {
+              String extCompBuildInfoJson =
+                  Resources.toString(file.toURI().toURL(), Charsets.UTF_8);
+              componentsArray.put(new JSONObject(extCompBuildInfoJson));
+            }
           }
         }
 
