@@ -198,10 +198,10 @@ public final class FtcLegacyModule extends FtcHardwareDevice<LegacyModule> {
     return false;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       legacyModule = hardwareMap.legacyModule.get(getDeviceName());
@@ -212,7 +212,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice<LegacyModule> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     legacyModule = null;
   }
 }

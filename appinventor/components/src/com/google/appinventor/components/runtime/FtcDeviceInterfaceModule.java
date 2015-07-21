@@ -396,10 +396,10 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice<DeviceInte
     return false;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
@@ -410,7 +410,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice<DeviceInte
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     deviceInterfaceModule = null;
   }
 }

@@ -127,10 +127,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice<AccelerationS
     return "";
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
@@ -141,7 +141,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice<AccelerationS
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     accelerationSensor = null;
   }
 }

@@ -80,10 +80,10 @@ public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
     return false;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       touchSensor = hardwareMap.touchSensor.get(getDeviceName());
@@ -94,7 +94,7 @@ public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     touchSensor = null;
   }
 }

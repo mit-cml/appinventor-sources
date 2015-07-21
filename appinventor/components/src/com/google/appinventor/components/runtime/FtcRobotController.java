@@ -81,6 +81,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   interface HardwareDevice {
     void setHardwareMap(HardwareMap hardwareMap);
+    void initHardwareDevice();
+    void clearHardwareDevice();
   }
 
   interface GamepadDevice {
@@ -248,8 +250,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
         hardwareDevices.put(form, hardwareDevicesForForm);
       }
       hardwareDevicesForForm.add(hardwareDevice);
-      // TODO(lizlooney): if onEventLoopInit has already been called, we should call
-      // hardwareDevice.setHardwareMap() now.
     }
   }
 
@@ -350,6 +350,30 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       if (hardwareDevicesForForm != null) {
         for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
           hardwareDevice.setHardwareMap(hardwareMap);
+        }
+      }
+    }
+  }
+
+  // Called before an FtcOpMode's Init event is triggered.
+  static void beforeOpModeInit(Form form) {
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.initHardwareDevice();
+        }
+      }
+    }
+  }
+
+  // Called after an FtcOpMode's Stop event is triggered.
+  static void afterOpModeStop(Form form) {
+    synchronized (hardwareDevicesLock) {
+      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
+      if (hardwareDevicesForForm != null) {
+        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
+          hardwareDevice.clearHardwareDevice();
         }
       }
     }

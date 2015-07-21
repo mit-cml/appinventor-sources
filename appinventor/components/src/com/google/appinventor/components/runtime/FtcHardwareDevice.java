@@ -56,13 +56,7 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
       defaultValue = "")
   @SimpleProperty(userVisible = false)
   public void DeviceName(String deviceName) {
-    if (hardwareMap != null) {
-      clearHardwareDevice();
-    }
     this.deviceName = deviceName;
-    if (hardwareMap != null) {
-      initHardwareDevice();
-    }
   }
 
   protected final String getDeviceName() {
@@ -74,7 +68,6 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
   }
 
   protected final void deviceNotFound(String type, DeviceMapping<DEVICE_TYPE> deviceMapping) {
-    /*
     StringBuilder names = new StringBuilder();
     String delimiter = "";
     for (Map.Entry<String, DEVICE_TYPE> entry : deviceMapping.entrySet()) {
@@ -83,8 +76,6 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
     }
     form.dispatchErrorOccurredEvent(this, "", ErrorMessages.ERROR_FTC_INVALID_DEVICE_NAME,
         type, getDeviceName(), names.toString());
-    */
-    Log.e("FtcHardwareDevice", "Could not find a " + type + " named " + getDeviceName());
   }
 
   // Deleteable implementation
@@ -104,18 +95,9 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
       clearHardwareDevice();
     }
     this.hardwareMap = hardwareMap;
-    if (this.hardwareMap != null) {
-      try {
-        initHardwareDevice();
-      } catch (Throwable e) {
-        Log.e("FtcHardwareDevice", e.getMessage());
-      }
-    }
   }
 
-  // abstract methods
+  public abstract void initHardwareDevice();
 
-  protected abstract void initHardwareDevice();
-
-  protected abstract void clearHardwareDevice();
+  public abstract void clearHardwareDevice();
 }

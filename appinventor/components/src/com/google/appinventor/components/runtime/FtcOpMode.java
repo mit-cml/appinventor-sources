@@ -50,6 +50,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     opMode = new OpMode() {
       @Override
       public void init() {
+        FtcRobotController.beforeOpModeInit(form);
         Init();
       }
 
@@ -66,6 +67,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
       @Override
       public void stop() {
         Stop();
+        FtcRobotController.afterOpModeStop(form);
       }
     };
 
