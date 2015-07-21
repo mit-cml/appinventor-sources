@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -55,6 +56,8 @@ public interface FileExporter {
                                           boolean includeAndroidKeystore, @Nullable String zipName,
                                           boolean fatalError)
       throws IOException;
+
+  ProjectSourceZip exportSelectedProjectsSourceZip(String userId, String zipName, List<Long> projectIds)
 
   /**
    * Exports all of the user's projects' source files as a zip of zips.

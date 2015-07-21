@@ -108,7 +108,6 @@ public class TopToolbar extends Composite {
 	private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
 	private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 	private static final String WIDGET_NAME_EXPORTSELECTEDPROJECTS = "ExportSelectedProjects";
-
 	private static final String WIDGET_NAME_ADMIN = "Admin";
 	private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
 	private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
@@ -158,7 +157,7 @@ public class TopToolbar extends Composite {
 		fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES
 				.exportProjectMenuItem(), new ExportProjectAction()));
 		fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTSELECTEDPROJECTS,
-				MESSAGES.exportProjectMenuItem(),
+				MESSAGES.exportSelectedProjectsMenuItem(),
 				new ExportSelectedProjectsAction()));
 		fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES
 				.exportAllProjectsMenuItem(), new ExportAllProjectsAction()));
@@ -443,15 +442,11 @@ public class TopToolbar extends Composite {
 					.getProjectList().getSelectedProjects();
 			if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
 				// If we are in the projects view
-				// if (selectedProjects.size() == 1) {
-				for (int index = 0; index < selectedProjects.size(); index++) {
-					exportProject(selectedProjects.get(index));
+				if (selectedProjects.size() == 1) {
+				} else { // The user needs to select only one project.
+					ErrorReporter.reportInfo(MESSAGES
+							.wrongNumberProjectsSelected());
 				}
-				/*
-				 * } else { // The user needs to select only one project.
-				 * ErrorReporter.reportInfo(MESSAGES
-				 * .wrongNumberProjectsSelected()); }
-				 */
 			} else {
 				// If we are in the designer view.
 				Downloader.getInstance().download(
