@@ -802,6 +802,7 @@ public final class YoungAndroidFormUpgrader {
       // default for json is false.
       componentProperties.put("UseJSONFormat", new ClientJsonString("False"));
       srcCompVersion = 15;
+    }
     if (srcCompVersion < 16) {
       // The ShowStatusBar property was added.
       // The TitleVisible property was added.
