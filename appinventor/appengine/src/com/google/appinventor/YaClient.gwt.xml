@@ -115,6 +115,9 @@
   <extend-property name="locale" values="es_ES"/>
   <!-- Italian -->
   <extend-property name="locale" values="it_IT"/>
+  <!-- Russian -->
+  <extend-property name="locale" values="ru"/>
+
   <set-property-fallback name="locale" value="en"/>
 
 </module>
