@@ -100,10 +100,10 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDis
     return "";
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
@@ -114,7 +114,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDis
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     opticalDistanceSensor = null;
   }
 }

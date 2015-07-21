@@ -165,10 +165,10 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
     return 0;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
@@ -179,7 +179,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     irSeekerSensor = null;
   }
 }

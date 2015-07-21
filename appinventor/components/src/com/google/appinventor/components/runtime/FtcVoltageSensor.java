@@ -60,10 +60,10 @@ public final class FtcVoltageSensor extends FtcHardwareDevice<VoltageSensor> {
     return 0;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
@@ -74,7 +74,7 @@ public final class FtcVoltageSensor extends FtcHardwareDevice<VoltageSensor> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     voltageSensor = null;
   }
 }

@@ -61,10 +61,10 @@ public final class FtcAnalogInput extends FtcHardwareDevice<AnalogInput> {
     return 0;
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       analogInput = hardwareMap.analogInput.get(getDeviceName());
@@ -75,7 +75,7 @@ public final class FtcAnalogInput extends FtcHardwareDevice<AnalogInput> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     analogInput = null;
   }
 }

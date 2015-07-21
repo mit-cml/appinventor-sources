@@ -170,10 +170,10 @@ public final class FtcCompassSensor extends FtcHardwareDevice<CompassSensor> {
     return "";
   }
 
-  // FtcHardwareDevice implementation
+  // HardwareDevice implementation
 
   @Override
-  protected void initHardwareDevice() {
+  public void initHardwareDevice() {
     HardwareMap hardwareMap = getHardwareMap();
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
@@ -184,7 +184,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice<CompassSensor> {
   }
 
   @Override
-  protected void clearHardwareDevice() {
+  public void clearHardwareDevice() {
     compassSensor = null;
   }
 }
