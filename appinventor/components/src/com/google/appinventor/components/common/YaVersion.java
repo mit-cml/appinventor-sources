@@ -336,8 +336,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 130:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 131:
+  // - BLOCKS_LANGUAGE_VERSION = was incremented to 20
 
-  public static final int YOUNG_ANDROID_VERSION = 130;
+  public static final int YOUNG_ANDROID_VERSION = 131;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -395,7 +397,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 19:
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  // For BLOCKS_LANGUAGE_VERSION 20:
+  // The list-to-string and list-from-json-string blocks were added
+  public static final int BLOCKS_LANGUAGE_VERSION = 20;
   
   // ................................. Component Version Numbers ..................................
 

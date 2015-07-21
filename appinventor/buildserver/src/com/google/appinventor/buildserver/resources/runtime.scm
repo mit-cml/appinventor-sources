@@ -2158,6 +2158,21 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; EMERY
+(define (yail-list-join-with-separator ylist sep)
+        (if (not (yail-list? ylist))
+            (signal-runtime-error "Argument value to \"list join\" must be a list" "Expecting list")
+            (if (not (string? sep))
+                (signal-runtime-error "Argument value to \"list join\" must be a text" "Expecting text")
+                (convert-yail-list-to-string (yail-list->kawa-list ylist) (coerce-to-string sep) ""))))
+
+;;; EMERY
+(define (convert-yail-list-to-string ylist sep str)
+        (if (null? ylist)
+          str
+          (if (null? (cdr ylist))
+            (convert-yail-list-to-string (cdr ylist) sep (string-append str (coerce-to-string (car ylist))))
+            (convert-yail-list-to-string (cdr ylist) sep (string-append str (coerce-to-string (car ylist)) sep)))))
 
 (define (make-disjunct x)
   (cond ((null? (cdr x)) (Pattern:quote (car x)))
