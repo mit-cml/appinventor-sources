@@ -56,8 +56,18 @@ public interface FileExporter {
                                           boolean includeAndroidKeystore, @Nullable String zipName,
                                           boolean fatalError)
       throws IOException;
+  
+  /**
+   * Exports projects selected by the user as a zip.
+   * 
+   * @param userId the userId
+   * @param zipName the desired name for the zip
+   * @param projectIds the list of project ids corresponding to selected projects
+   */
 
-  ProjectSourceZip exportSelectedProjectsSourceZip(String userId, String zipName, List<Long> projectIds)
+  ProjectSourceZip exportSelectedProjectsSourceZip(String userId, String zipName,
+		                                  List<Long> projectIds)
+      throws IOException;
 
   /**
    * Exports all of the user's projects' source files as a zip of zips.

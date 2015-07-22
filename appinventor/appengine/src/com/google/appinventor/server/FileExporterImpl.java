@@ -72,9 +72,10 @@ public final class FileExporterImpl implements FileExporter {
     }
   }
 
-  @Override
   public ProjectSourceZip exportSelectedProjectsSourceZip(String userId,
-                                                     String zipName, List<>) throws IOException {
+                                                     String zipName,
+                                                     List<Long> selectedProjects)
+                                                    		 throws IOException {
     // Create a zip file for each project's sources.
     List<Long> projectIds = storageIo.getProjects(userId);
     if (projectIds.size() == 0) {
