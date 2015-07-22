@@ -6,7 +6,7 @@
 
 package com.google.appinventor.shared.rpc.component;
 
-import com.google.appinventor.shared.rpc.project.ComponentNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -22,7 +22,6 @@ public interface ComponentServiceAsync {
   /**
    * @see ComponentService#importComponentToProject(ComponentInfo, long, String)
    */
-  void importComponentToProject(ComponentInfo info, long projectId, String folderPath,
-      AsyncCallback<ComponentNode> callback);
+  void importComponentToProject(ComponentInfo info, long projectId, String folderPath, AsyncCallback<List<ProjectNode>> callback);
 
 }

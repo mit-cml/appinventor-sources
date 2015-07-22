@@ -10,8 +10,8 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
 import com.google.appinventor.shared.rpc.component.ComponentService;
-import com.google.appinventor.shared.rpc.project.ComponentNode;
 import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.io.ByteStreams;
@@ -19,6 +19,7 @@ import com.google.common.io.ByteStreams;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,14 +41,15 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
   }
 
   @Override
-  public ComponentNode importComponentToProject(ComponentInfo info, long projectId, String folderPath) {
+  public List<ProjectNode> importComponentToProject(ComponentInfo info, long projectId, String folderPath) {
     String gcsPath = storageIo.getGcsPath(info);
-    ComponentNode compNode = new ComponentNode(info.getName(), folderPath +
-        "/external_comps/" + info.getFullyQualifiedName());
+    ArrayList<ProjectNode> childNodes = new ArrayList<ProjectNode>();
 
     if (gcsPath == null) {
       // info may not come from the datastore so gcsPath is null
-      return compNode;
+      // return an empty ArrayList rathan than null because
+      // the ensuing code will not return an empty ArrayList
+      return childNodes;
     }
 
     byte[] fileContent = storageIo.getGcsFileContent(gcsPath);
@@ -60,13 +62,15 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
         ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
         ByteStreams.copy(zip, contentStream);
 
-        String destination = compNode.getFileId() + "/" + entry.getName();
-        compNode.addChild(new FileNode(entry.getName(), destination));
+        String basename = StorageUtil.basename(entry.getName());
+
+        FileNode fileNode = new FileNode(basename, folderPath + "/" + basename);
+        childNodes.add(fileNode);
 
         fileImporter.importFile(
             userInfoProvider.getUserId(),
             projectId,
-            destination,
+            folderPath + "/" + basename,
             new ByteArrayInputStream(contentStream.toByteArray()));
       }
       zip.close();
@@ -81,7 +85,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet implements Com
           collectImportErrorInfo(gcsPath, projectId), e);
     }
 
-    return compNode;
+    return childNodes;
   }
 
   private String collectImportErrorInfo(String gcsPath, long projectId) {
