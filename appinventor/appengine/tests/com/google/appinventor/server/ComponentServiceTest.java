@@ -10,12 +10,9 @@ import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
-import com.google.appinventor.shared.rpc.project.ComponentNode;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
-import com.google.common.collect.Iterators;
 import com.google.common.io.ByteStreams;
 
 import org.junit.After;
@@ -106,16 +103,12 @@ public class ComponentServiceTest {
     ComponentInfo info = storageIo.getComponentInfos(USER_ID).get(0);
     long projectId = user1Project1;
     String folderPath = "awesomeFolder";
-    ComponentNode compNode = compServiceImpl.importComponentToProject(info, projectId, folderPath);
-
-    assertTrue(Iterators.size(compNode.getChildren().iterator()) > 0);
-    for (ProjectNode node : compNode.getChildren()) {
-      assertTrue(node.getFileId().startsWith(folderPath));
-    }
+    boolean isSuccessful = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    assertTrue(isSuccessful);
 
     info = new ComponentInfo("fakeAuthorId", "fakeFullName", 0);
-    compNode = compServiceImpl.importComponentToProject(info, projectId, folderPath);
-    assertEquals(0, Iterators.size(compNode.getChildren().iterator()));
+    isSuccessful = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    assertFalse(isSuccessful);
 
     PowerMock.verifyAll();
   }
