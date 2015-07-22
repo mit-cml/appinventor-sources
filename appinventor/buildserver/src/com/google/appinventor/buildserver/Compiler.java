@@ -1255,9 +1255,13 @@ public final class Compiler {
           extCompsBuildInfo.join(",") + "]");
 
       for (int i = 0; i < buildInfo.length(); ++i) {
-        JSONObject comp = buildInfo.getJSONObject(i);
-        JSONArray infoArray = comp.getJSONArray(targetInfo);
-        String name = comp.getString("name");
+        JSONObject compJson = buildInfo.getJSONObject(i);
+        JSONArray infoArray = compJson.getJSONArray(targetInfo);
+        String name = compJson.getString("name");
+
+        if (!simpleCompTypes.contains(name) && !extCompTypes.contains(name)) {
+          continue;
+        }
 
         Set<String> infoSet = Sets.newHashSet();
         for (int j = 0; j < infoArray.length(); ++j) {
