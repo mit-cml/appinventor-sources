@@ -7,7 +7,6 @@
 package com.google.appinventor.shared.rpc.component;
 
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -24,13 +23,13 @@ public interface ComponentService extends RemoteService {
 
   /**
    * Import the component to the project in the server and
-   * return a list of ProjectNode that can be added to the client
+   * return true on success
    *
    * @param info info about the component
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
-   * @return a list of ProjectNode created from the component
+   * @return true if importing is successful; false otherwise
    */
-  List<ProjectNode> importComponentToProject(ComponentInfo info, long projectId, String folderPath);
+  boolean importComponentToProject(ComponentInfo info, long projectId, String folderPath);
 
 }

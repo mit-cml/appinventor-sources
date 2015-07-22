@@ -11,12 +11,9 @@ import com.google.appinventor.client.OdeAsyncCallback;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.component.ComponentInfo;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.cell.client.AbstractCell;
@@ -27,8 +24,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
-
-import java.util.List;
 
 public class ComponentImportWizard extends Wizard {
   static class ComponentCell extends AbstractCell<ComponentInfo> {
@@ -89,17 +84,10 @@ public class ComponentImportWizard extends Wizard {
             toImport,
             projectId,
             assetsFolderNode.getFileId(),
-            new OdeAsyncCallback<List<ProjectNode>>() {
+            new OdeAsyncCallback<Boolean>() {
               @Override
-              public void onSuccess(List<ProjectNode> result) {
-                YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
-                for (ProjectNode node : result) {
-                  project.addNode(assetsFolderNode,
-                      new YoungAndroidAssetNode(node.getName(), node.getFileId()));
-                  if (node.getName().endsWith(".json")) {
-                    projectEditor.addComponent(node, null);
-                  }
-                }
+              public void onSuccess(Boolean result) {
+                // to be implemented
               }
             });
       }

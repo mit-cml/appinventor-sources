@@ -22,6 +22,7 @@ public interface ComponentServiceAsync {
   /**
    * @see ComponentService#importComponentToProject(ComponentInfo, long, String)
    */
-  void importComponentToProject(ComponentInfo info, long projectId, String folderPath, AsyncCallback<List<ProjectNode>> callback);
+  void importComponentToProject(ComponentInfo info, long projectId,
+      String folderPath, AsyncCallback<Boolean> callback);
 
 }
