@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcGyroSensor extends FtcHardwareDevice<GyroSensor> {
+public final class FtcGyroSensor extends FtcHardwareDevice {
 
   private volatile GyroSensor gyroSensor;
 

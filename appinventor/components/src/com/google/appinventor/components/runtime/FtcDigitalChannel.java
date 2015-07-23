@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDigitalChannel extends FtcHardwareDevice<DigitalChannel> {
+public final class FtcDigitalChannel extends FtcHardwareDevice {
 
   private volatile DigitalChannel digitalChannel;
 

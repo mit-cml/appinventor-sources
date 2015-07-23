@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcAnalogInput extends FtcHardwareDevice<AnalogInput> {
+public final class FtcAnalogInput extends FtcHardwareDevice {
 
   private volatile AnalogInput analogInput;
 

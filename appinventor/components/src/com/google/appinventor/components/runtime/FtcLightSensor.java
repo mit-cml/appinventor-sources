@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.LightSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLightSensor extends FtcHardwareDevice<LightSensor> {
+public final class FtcLightSensor extends FtcHardwareDevice {
 
   private volatile boolean enableLed;
   private volatile LightSensor lightSensor;

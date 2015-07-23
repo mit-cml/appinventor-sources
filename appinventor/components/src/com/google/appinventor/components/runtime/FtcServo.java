@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.hardware.Servo.Direction;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcServo extends FtcHardwareDevice<Servo> {
+public final class FtcServo extends FtcHardwareDevice {
 
   private volatile Servo servo;
 

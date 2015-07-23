@@ -25,7 +25,7 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 @SimpleObject
-public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleComponent
+public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
@@ -67,10 +67,10 @@ public abstract class FtcHardwareDevice<DEVICE_TYPE> extends AndroidNonvisibleCo
     return hardwareMap;
   }
 
-  protected final void deviceNotFound(String type, DeviceMapping<DEVICE_TYPE> deviceMapping) {
+  protected final void deviceNotFound(String type, DeviceMapping<? extends Object> deviceMapping) {
     StringBuilder names = new StringBuilder();
     String delimiter = "";
-    for (Map.Entry<String, DEVICE_TYPE> entry : deviceMapping.entrySet()) {
+    for (Map.Entry<String, ? extends Object> entry : deviceMapping.entrySet()) {
       names.append(delimiter).append(entry.getKey());
       delimiter = ", ";
     }

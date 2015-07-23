@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
+public final class FtcTouchSensor extends FtcHardwareDevice {
 
   private volatile TouchSensor touchSensor;
 

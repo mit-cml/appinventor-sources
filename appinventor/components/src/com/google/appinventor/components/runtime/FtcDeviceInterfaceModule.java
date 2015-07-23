@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDeviceInterfaceModule extends FtcHardwareDevice<DeviceInterfaceModule> {
+public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
 
   private volatile DeviceInterfaceModule deviceInterfaceModule;
 

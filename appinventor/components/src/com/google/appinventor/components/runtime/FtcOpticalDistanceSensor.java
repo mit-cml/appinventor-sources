@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDistanceSensor> {
+public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
 
   private volatile OpticalDistanceSensor opticalDistanceSensor;
 

@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcUltrasonicSensor extends FtcHardwareDevice<UltrasonicSensor> {
+public final class FtcUltrasonicSensor extends FtcHardwareDevice {
 
   private volatile UltrasonicSensor ultrasonicSensor;
 

@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
+public final class FtcIrSeekerSensor extends FtcHardwareDevice {
 
   private volatile IrSeekerSensor irSeekerSensor;
 

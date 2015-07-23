@@ -28,7 +28,7 @@ import com.qualcomm.robotcore.hardware.LegacyModule;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLegacyModule extends FtcHardwareDevice<LegacyModule> {
+public final class FtcLegacyModule extends FtcHardwareDevice {
 
   private volatile LegacyModule legacyModule;
 
