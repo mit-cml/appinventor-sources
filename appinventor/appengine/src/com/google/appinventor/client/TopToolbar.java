@@ -897,6 +897,8 @@ public class TopToolbar extends Composite {
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
+      fileDropDown.setItemEnabled(MESSAGES.exportSelectedProjectsMenuItem(),
+              Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
@@ -906,6 +908,7 @@ public class TopToolbar extends Composite {
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportSelectedProjectsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
