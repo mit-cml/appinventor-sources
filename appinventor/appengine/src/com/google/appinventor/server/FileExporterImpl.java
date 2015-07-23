@@ -73,10 +73,10 @@ public final class FileExporterImpl implements FileExporter {
   }
 
   public ProjectSourceZip exportSelectedProjectsSourceZip(String userId,
-                                                          String zipName)
+                                                          String zipName,
+                                                          List<Long> projectIds)
                                                           throws IOException {
     // Create a zip file for each project's sources.
-    List<Long> projectIds = storageIo.getProjects(userId);
     if (projectIds.size() == 0) {
       throw new IllegalArgumentException("No projects to download");
     }

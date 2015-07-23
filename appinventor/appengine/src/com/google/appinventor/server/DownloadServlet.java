@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Servlet for downloading project source and output files.
@@ -178,8 +180,13 @@ public class DownloadServlet extends OdeServlet {
         downloadableFile = zipFile.getRawFile();
         
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE)) {
+    	  String[] projectIdStrings = uriComponents[PROJECT_ID_INDEX].split("-");
+    	  List<Long> projectIds = new ArrayList<Long>();
+    	  for (String projectId : projectIdStrings) {
+    		projectIds.add(Long.valueOf(projectId));  
+    	  }
     	  ProjectSourceZip zipFile = fileExporter.exportSelectedProjectsSourceZip(
-    			  userId, "selected-projects.zip");
+    			  userId, "selected-projects.zip", projectIds);
     	  downloadableFile = zipFile.getRawFile();
       
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
