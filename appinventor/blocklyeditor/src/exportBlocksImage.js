@@ -19,6 +19,7 @@ goog.require('goog.Timer');
 /**
  * saveSvgAsPng
  * Copyright (c) 2014 Eric Shull
+ * Released under The MIT License (MIT)
  */
 
 (function() {
