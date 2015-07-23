@@ -32,4 +32,15 @@ public interface ComponentService extends RemoteService {
    */
   boolean importComponentToProject(ComponentInfo info, long projectId, String folderPath);
 
+  /**
+   * Import the component to the project in the server and
+   * return true on success
+   *
+   * @param url the url of the componenet file
+   * @param projectId id of the project to which the component will be added
+   * @param folderPath folder to which the component will be stored
+   * @return true if importing is successful; false otherwise
+   */
+  boolean importComponentToProject(String url, long projectId, String folderPath);
+
 }

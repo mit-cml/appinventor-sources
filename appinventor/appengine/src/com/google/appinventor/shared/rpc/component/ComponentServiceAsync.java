@@ -25,4 +25,10 @@ public interface ComponentServiceAsync {
   void importComponentToProject(ComponentInfo info, long projectId,
       String folderPath, AsyncCallback<Boolean> callback);
 
+  /**
+   * @see ComponentService#importComponentToProject(String, long, String)
+   */
+  void importComponentToProject(String url, long projectId, String folderPath,
+      AsyncCallback<Boolean> callback);
+
 }
