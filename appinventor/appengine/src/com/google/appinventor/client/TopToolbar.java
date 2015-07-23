@@ -453,7 +453,7 @@ public class TopToolbar extends Composite {
           Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
 
       String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/";
+          ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
 
       for(Project project : projects) {
         selectedProjPath += project.getProjectId() + "/";
