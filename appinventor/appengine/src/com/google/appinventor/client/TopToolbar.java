@@ -456,7 +456,7 @@ public class TopToolbar extends Composite {
           ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
 
       for(Project project : projects) {
-        selectedProjPath += project.getProjectId() + "/";
+        selectedProjPath += project.getProjectId() + "-";
       }
 
       Downloader.getInstance().download(selectedProjPath);
