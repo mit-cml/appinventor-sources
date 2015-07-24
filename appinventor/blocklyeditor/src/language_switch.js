@@ -34,6 +34,9 @@ Blockly.language_switch = {
       case 'zh_CN':
         Blockly.Msg.zh_cn.switch_language_to_chinese_cn.init();
         break;
+      case 'fr_FR':
+        Blockly.Msg.fr_fr.switch_language_to_french.init();
+        break;
       case 'it_IT':
         Blockly.Msg.it_it.switch_language_to_italian.init()
         break;
