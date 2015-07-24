@@ -115,7 +115,6 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_START_NEW_COMPONENT = "StartNewComponent";
   private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
   private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
-  private static final String WIDGET_NAME_INSTALL_COMPONENT = "InstallComponent";
   private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
@@ -174,10 +173,10 @@ public class TopToolbar extends Composite {
         new UploadKeystoreAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),
         new DownloadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_INSTALL_COMPONENT, MESSAGES.deleteKeystoreMenuItem(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
         new DeleteKeystoreAction()));
 
-    // Components -> {My components; Start new component; Import component; Build component; Install component}
+    // Components -> {My components; Start new component; Import component; Build component}
     componentItems.add(new DropDownItem(WIDGET_NAME_MY_COMPONENTS, MESSAGES.myComponentsMenuItem(),
         new MyComponentsAction()));
     componentItems.add(null);
@@ -187,8 +186,6 @@ public class TopToolbar extends Composite {
         new ImportComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
         new BuildComponentAction()));
-    componentItems.add(new DropDownItem(WIDGET_NAME_INSTALL_COMPONENT, MESSAGES.installComponentMenuItem(),
-        new InstallComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_COMPONENT, MESSAGES.uploadComponentMenuItem(),
         new UploadComponentAction()));
 
@@ -831,13 +828,6 @@ public class TopToolbar extends Composite {
   }
 
   private static class BuildComponentAction implements Command {
-    @Override
-    public void execute() {
-      // to be added
-    }
-  }
-
-  private static class InstallComponentAction implements Command {
     @Override
     public void execute() {
       // to be added
