@@ -22,7 +22,7 @@ import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -600,12 +600,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(VERSION + 1, newData.version);
   }
 
-  public void testGetComponentInfos() {
+  public void testGetComponents() {
     final String USER_ID = "246";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
 
-    assertEquals(2, storage.getComponentInfos(USER_ID).size());
+    assertEquals(2, storage.getComponents(USER_ID).size());
 
     final String FULL_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
@@ -615,15 +615,15 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     final long INIT_VERSION = 0;
 
-    ComponentInfo compInfo1 = storage.getComponentInfos(USER_ID).get(0);
-    assertEquals(USER_ID, compInfo1.getAuthorId());
-    assertEquals(FULL_NAME_1, compInfo1.getFullyQualifiedName());
-    assertEquals(INIT_VERSION, compInfo1.getVersion());
+    Component comp1 = storage.getComponents(USER_ID).get(0);
+    assertEquals(USER_ID, comp1.getAuthorId());
+    assertEquals(FULL_NAME_1, comp1.getFullyQualifiedName());
+    assertEquals(INIT_VERSION, comp1.getVersion());
 
-    ComponentInfo compInfo2 = storage.getComponentInfos(USER_ID).get(1);
-    assertEquals(USER_ID, compInfo2.getAuthorId());
-    assertEquals(FULL_NAME_2, compInfo2.getFullyQualifiedName());
-    assertEquals(INIT_VERSION, compInfo2.getVersion());
+    Component comp2 = storage.getComponents(USER_ID).get(1);
+    assertEquals(USER_ID, comp2.getAuthorId());
+    assertEquals(FULL_NAME_2, comp2.getFullyQualifiedName());
+    assertEquals(INIT_VERSION, comp2.getVersion());
   }
 
   public void testGetGcsFileContent() throws Exception {
@@ -640,11 +640,11 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String USER_ID = "135";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
-    ComponentInfo compInfo = storage.getComponentInfos(USER_ID).get(0);
-    assertNotNull(storage.getGcsPath(compInfo));
+    Component comp = storage.getComponents(USER_ID).get(0);
+    assertNotNull(storage.getGcsPath(comp));
 
-    ComponentInfo fakeInfo = new ComponentInfo("fakeId", "fakeFullName", 456);
-    assertNull(storage.getGcsPath(fakeInfo));
+    Component fakeComp = new Component("fakeId", "fakeFullName", 456);
+    assertNull(storage.getGcsPath(fakeComp));
   }
 
 

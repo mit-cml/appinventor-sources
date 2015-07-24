@@ -8,7 +8,7 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.storage.StorageUtil;
 
@@ -37,17 +37,17 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   private final FileImporter fileImporter = new FileImporterImpl();
 
   @Override
-  public List<ComponentInfo> getComponentInfos() {
-    return storageIo.getComponentInfos(userInfoProvider.getUserId());
+  public List<Component> getComponents() {
+    return storageIo.getComponents(userInfoProvider.getUserId());
   }
 
   @Override
-  public boolean importComponentToProject(ComponentInfo info, long projectId,
+  public boolean importComponentToProject(Component component, long projectId,
       String folderPath) {
-    String gcsPath = storageIo.getGcsPath(info);
+    String gcsPath = storageIo.getGcsPath(component);
 
     if (gcsPath == null) {
-      // info may not come from the datastore so gcsPath is null
+      // component may not come from the datastore so gcsPath is null
       return false;
     }
 

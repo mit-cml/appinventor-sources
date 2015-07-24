@@ -44,7 +44,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -1670,11 +1670,11 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public List<ComponentInfo> getComponentInfos(String userId) {
-    ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
+  public List<Component> getComponents(String userId) {
+    ArrayList<Component> results = new ArrayList<Component>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new ComponentInfo(compData.userId, compData.fullyQualifiedName,
+      results.add(new Component(compData.userId, compData.fullyQualifiedName,
           compData.version));
     }
     return results;
@@ -1699,10 +1699,10 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public String getGcsPath(ComponentInfo compInfo) {
+  public String getGcsPath(Component component) {
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    ComponentData result = query.filter("fullyQualifiedName", compInfo.getFullyQualifiedName()).
-        filter("version", compInfo.getVersion()).get();
+    ComponentData result = query.filter("fullyQualifiedName", component.getFullyQualifiedName()).
+        filter("version", component.getVersion()).get();
     return result == null ? null : result.gcsPath;
   }
 

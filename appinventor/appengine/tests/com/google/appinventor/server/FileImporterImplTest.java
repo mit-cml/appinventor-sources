@@ -203,11 +203,11 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
     String fileName = "package.Component.aix";
     File compFile = new File(TESTING_SOURCE_PATH + fileName);
 
-    assertEquals(0, storageIo.getComponentInfos(userId).size());
+    assertEquals(0, storageIo.getComponents(userId).size());
 
     fileImporter.importComponentArchive(userId, fileName, new FileInputStream(compFile));
 
-    assertEquals(1, storageIo.getComponentInfos(userId).size());
+    assertEquals(1, storageIo.getComponents(userId).size());
 
     // more tests in ObjectifyStorageIoTest.testUploadComponentFile()
   }

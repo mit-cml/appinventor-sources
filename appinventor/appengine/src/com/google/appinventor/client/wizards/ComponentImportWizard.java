@@ -11,7 +11,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
@@ -63,7 +63,7 @@ public class ComponentImportWizard extends Wizard {
     setPixelSize(400, 400);
     setStylePrimaryName("ode-DialogBox");
 
-    ListDataProvider<ComponentInfo> dataProvider = provideData();
+    ListDataProvider<Component> dataProvider = provideData();
     dataProvider.addDataDisplay(compTable);
 
     initFinishCommand(new Command() {
@@ -75,9 +75,9 @@ public class ComponentImportWizard extends Wizard {
             ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
 
         if (tabPanel.getTabBar().getSelectedTab() == MY_COMPONENT_TAB) {
-          SingleSelectionModel<ComponentInfo> selectionModel =
-              (SingleSelectionModel<ComponentInfo>) compTable.getSelectionModel();
-          ComponentInfo toImport = selectionModel.getSelectedObject();
+          SingleSelectionModel<Component> selectionModel =
+              (SingleSelectionModel<Component>) compTable.getSelectionModel();
+          Component toImport = selectionModel.getSelectedObject();
 
           if (toImport == null) {
             showAlert(MESSAGES.noComponentSelectedError());
@@ -104,31 +104,31 @@ public class ComponentImportWizard extends Wizard {
   }
 
   private CellTable createCompTable() {
-    final SingleSelectionModel<ComponentInfo> selectionModel =
-        new SingleSelectionModel<ComponentInfo>();
+    final SingleSelectionModel<Component> selectionModel =
+        new SingleSelectionModel<Component>();
 
-    CellTable<ComponentInfo> compTable = new CellTable<ComponentInfo>();
+    CellTable<Component> compTable = new CellTable<Component>();
     compTable.setSelectionModel(selectionModel);
 
-    Column<ComponentInfo, Boolean> checkColumn =
-        new Column<ComponentInfo, Boolean>(new CheckboxCell(true, false)) {
+    Column<Component, Boolean> checkColumn =
+        new Column<Component, Boolean>(new CheckboxCell(true, false)) {
           @Override
-          public Boolean getValue(ComponentInfo object) {
-            return selectionModel.isSelected(object);
+          public Boolean getValue(Component comp) {
+            return selectionModel.isSelected(comp);
           }
         };
-    Column<ComponentInfo, String> nameColumn =
-        new Column<ComponentInfo, String>(new TextCell()) {
+    Column<Component, String> nameColumn =
+        new Column<Component, String>(new TextCell()) {
           @Override
-          public String getValue(ComponentInfo compInfo) {
-            return compInfo.getName();
+          public String getValue(Component comp) {
+            return comp.getName();
           }
         };
-    Column<ComponentInfo, Number> versionColumn =
-        new Column<ComponentInfo, Number>(new NumberCell()) {
+    Column<Component, Number> versionColumn =
+        new Column<Component, Number>(new NumberCell()) {
           @Override
-          public Number getValue(ComponentInfo compInfo) {
-            return compInfo.getVersion();
+          public Number getValue(Component comp) {
+            return comp.getVersion();
           }
         };
 
@@ -146,10 +146,10 @@ public class ComponentImportWizard extends Wizard {
     return grid;
   }
 
-  private ListDataProvider<ComponentInfo> provideData() {
-    ListDataProvider<ComponentInfo> provider = new ListDataProvider<ComponentInfo>();
-    for (ComponentInfo compInfo : ode.getComponentManager().getRetrivedComponentInfos()) {
-      provider.getList().add(compInfo);
+  private ListDataProvider<Component> provideData() {
+    ListDataProvider<Component> provider = new ListDataProvider<Component>();
+    for (Component comp : ode.getComponentManager().getRetrivedComponents()) {
+      provider.getList().add(comp);
     }
     return provider;
   }

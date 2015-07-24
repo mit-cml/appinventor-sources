@@ -17,20 +17,20 @@ import java.util.List;
 public interface ComponentService extends RemoteService {
 
   /**
-   * @return A list of info of user's components
+   * @return A list of user's components
    */
-  List<ComponentInfo> getComponentInfos();
+  List<Component> getComponents();
 
   /**
    * Import the component to the project in the server and
    * return true on success
    *
-   * @param info info about the component
+   * @param component the component to import
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
    * @return true if importing is successful; false otherwise
    */
-  boolean importComponentToProject(ComponentInfo info, long projectId, String folderPath);
+  boolean importComponentToProject(Component component, long projectId, String folderPath);
 
   /**
    * Import the component to the project in the server and

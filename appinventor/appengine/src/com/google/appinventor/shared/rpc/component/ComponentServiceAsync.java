@@ -6,8 +6,6 @@
 
 package com.google.appinventor.shared.rpc.component;
 
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
@@ -15,14 +13,14 @@ import java.util.List;
 public interface ComponentServiceAsync {
 
   /**
-   * @see ComponentService#getComponentInfos()
+   * @see ComponentService#getComponents()
    */
-  void getComponentInfos(AsyncCallback<List<ComponentInfo>> callback);
+  void getComponents(AsyncCallback<List<Component>> callback);
 
   /**
-   * @see ComponentService#importComponentToProject(ComponentInfo, long, String)
+   * @see ComponentService#importComponentToProject(Component, long, String)
    */
-  void importComponentToProject(ComponentInfo info, long projectId,
+  void importComponentToProject(Component info, long projectId,
       String folderPath, AsyncCallback<Boolean> callback);
 
   /**

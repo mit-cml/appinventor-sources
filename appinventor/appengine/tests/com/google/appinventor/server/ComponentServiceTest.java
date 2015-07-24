@@ -9,7 +9,7 @@ package com.google.appinventor.server;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
@@ -100,14 +100,14 @@ public class ComponentServiceTest {
 
     storageIo.uploadComponentFile(USER_ID, fileName, content);
 
-    ComponentInfo info = storageIo.getComponentInfos(USER_ID).get(0);
+    Component comp = storageIo.getComponents(USER_ID).get(0);
     long projectId = user1Project1;
     String folderPath = "awesomeFolder";
-    boolean isSuccessful = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    boolean isSuccessful = compServiceImpl.importComponentToProject(comp, projectId, folderPath);
     assertTrue(isSuccessful);
 
-    info = new ComponentInfo("fakeAuthorId", "fakeFullName", 0);
-    isSuccessful = compServiceImpl.importComponentToProject(info, projectId, folderPath);
+    comp = new Component("fakeAuthorId", "fakeFullName", 0);
+    isSuccessful = compServiceImpl.importComponentToProject(comp, projectId, folderPath);
     assertFalse(isSuccessful);
 
     PowerMock.verifyAll();

@@ -8,32 +8,32 @@ package com.google.appinventor.client.explorer.component;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ComponentManager {
-  private final List<ComponentInfo> compInfos = new ArrayList<ComponentInfo>();
+  private final List<Component> components = new ArrayList<Component>();
 
   public ComponentManager() {
-    pullComponentInfos();
+    pullComponents();
   }
 
   /**
-   * Returns a list of all component info already retrived by this manager
+   * Returns a list of all components already retrived by this manager
    */
-  public List<ComponentInfo> getRetrivedComponentInfos() {
-    return compInfos;
+  public List<Component> getRetrivedComponents() {
+    return components;
   }
 
-  public void pullComponentInfos() {
-    Ode.getInstance().getComponentService().getComponentInfos(
-      new OdeAsyncCallback<List<ComponentInfo>>() {
+  public void pullComponents() {
+    Ode.getInstance().getComponentService().getComponents(
+      new OdeAsyncCallback<List<Component>>() {
         @Override
-        public void onSuccess(List<ComponentInfo> compInfos) {
-          ComponentManager.this.compInfos.clear();
-          ComponentManager.this.compInfos.addAll(compInfos);
+        public void onSuccess(List<Component> components) {
+          ComponentManager.this.components.clear();
+          ComponentManager.this.components.addAll(components);
         }
       });
   }

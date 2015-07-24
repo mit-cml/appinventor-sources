@@ -56,7 +56,7 @@ public class ComponentUploadWizard extends Wizard {
           new OdeAsyncCallback<UploadResponse>() {
             @Override
             public void onSuccess(UploadResponse uploadResponse) {
-              Ode.getInstance().getComponentManager().pullComponentInfos();
+              Ode.getInstance().getComponentManager().pullComponents();
               ErrorReporter.reportInfo("Uploaded successfully");
             }
           });

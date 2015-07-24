@@ -9,20 +9,20 @@ package com.google.appinventor.shared.rpc.component;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Info of a component stored in the server
+ * Component stored in the server
  */
-public class ComponentInfo implements IsSerializable {
+public class Component implements IsSerializable {
 
   private String authorId;
   private String fullyQualifiedName;
   private String name;
   private long version;
 
-  private ComponentInfo() {
+  private Component() {
     // no-op
   }
 
-  public ComponentInfo(String authorId, String fullyQualifiedName, long version) {
+  public Component(String authorId, String fullyQualifiedName, long version) {
     this.authorId = authorId;
     this.fullyQualifiedName = fullyQualifiedName;
     this.name = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
