@@ -180,12 +180,12 @@ public class TopToolbar extends Composite {
     componentItems.add(new DropDownItem(WIDGET_NAME_MY_COMPONENTS, MESSAGES.myComponentsMenuItem(),
         new MyComponentsAction()));
     componentItems.add(null);
-    componentItems.add(new DropDownItem(WIDGET_NAME_START_NEW_COMPONENT, MESSAGES.startNewComponentMenuItem(),
-        new StartNewComponentAction()));
+    // componentItems.add(new DropDownItem(WIDGET_NAME_START_NEW_COMPONENT, MESSAGES.startNewComponentMenuItem(),
+    //     new StartNewComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_IMPORT_COMPONENT, MESSAGES.importComponentMenuItem(),
         new ImportComponentAction()));
-    componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
-        new BuildComponentAction()));
+    // componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
+    //     new BuildComponentAction()));
     componentItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_COMPONENT, MESSAGES.uploadComponentMenuItem(),
         new UploadComponentAction()));
 
