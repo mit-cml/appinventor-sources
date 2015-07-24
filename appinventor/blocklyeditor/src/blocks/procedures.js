@@ -252,11 +252,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
 
       var callers = Blockly.Procedures.getCallers(procName, procWorkspace);
       for (var x = 0; x < callers.length; x++) {
-           var block = callers[x];
-           Blockly.Blocks.Utilities.renameCollapsed(block, 0);
-      //     if (block.isCollapsed()) {
-      //     block.moveInputBefore(COLLAPSED_INPUT_NAME, 'ARG0');
-      //   }
+        var block = callers[x];
+        Blockly.Blocks.Utilities.renameCollapsed(block, 0);      
       }
 
       // 2. If there's an open mutator, change the name in the corresponding slot.
