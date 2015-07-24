@@ -538,6 +538,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when no component is selected to import.")
   String noComponentSelectedError();
 
+  @DefaultMessage("Please enter a url")
+  @Description("Error message reported when no url is entered.")
+  String noUrlError();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
@@ -2081,7 +2085,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
-  
+
   @DefaultMessage("External")
   @Description("")
   String externalComponentPallette();
