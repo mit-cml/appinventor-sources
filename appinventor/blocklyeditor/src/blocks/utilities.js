@@ -75,6 +75,9 @@ Blockly.Blocks.Utilities.wrapSentence = function(str, len) {
   }
 };
 
+// Change the text of collapsed blocks on rename
+// Recurse to fix collapsed parents
+
 Blockly.Blocks.Utilities.MAX_COLLAPSE = 4;
 
 Blockly.Blocks.Utilities.renameCollapsed = function(block, n) {
