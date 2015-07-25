@@ -51,7 +51,7 @@ public class ComponentUploadWizard extends Wizard {
         String url = GWT.getModuleBaseURL() +
           ServerLayout.UPLOAD_SERVLET + "/" +
           ServerLayout.UPLOAD_COMPONENT + "/" +
-          trimPathAndExtension(uploadWiget.getFilename());
+          trimLeadingPath(uploadWiget.getFilename());
 
         Uploader.getInstance().upload(uploadWiget, url,
           new OdeAsyncCallback<UploadResponse>() {
@@ -64,7 +64,7 @@ public class ComponentUploadWizard extends Wizard {
           });
       }
 
-      private String trimPathAndExtension(String filename) {
+      private String trimLeadingPath(String filename) {
         // Strip leading path off filename.
         // We need to support both Unix ('/') and Windows ('\\') separators.
         return filename.substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
