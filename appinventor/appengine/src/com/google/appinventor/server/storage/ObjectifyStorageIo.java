@@ -1649,8 +1649,10 @@ public class ObjectifyStorageIo implements  StorageIo {
         if (info == null) {
           info = new JSONObject();
           info.put("nextVersion", 1L);
+          info.put("numOfVersions", 1);
         } else {
           info.put("nextVersion", compData.version + 1);
+          info.put("numOfVersions", info.getInt("numOfVersions") + 1);
         }
 
         setGcsFileContent(getInfoFilePath(compData), info.toString().getBytes());

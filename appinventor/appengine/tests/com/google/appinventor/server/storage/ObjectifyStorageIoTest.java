@@ -590,14 +590,20 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // the version of the newly uploaded component is based on nextVersion in info.json
     final String INFO_PATH = "external_comps" + "/" + FULL_NAME + "/" + "info.json";
     final long VERSION = 10;
+    final long NUM_OF_VERSIONS = 5;
     JSONObject info = new JSONObject();
     info.put("nextVersion", VERSION);
+    info.put("numOfVersions", NUM_OF_VERSIONS);
     storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
 
     Component justAdded = storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1,
         RAW_FILE_CONTENT1);
     assertNotNull(justAdded);
     assertEquals(VERSION, justAdded.getVersion());
+
+    byte[] infoContent = storage.getGcsFileContent(INFO_PATH);
+    JSONObject updatedInfo = new JSONObject(new String(infoContent));
+    assertEquals(NUM_OF_VERSIONS + 1, updatedInfo.getInt("numOfVersions"));
   }
 
   public void testGetComponents() {
