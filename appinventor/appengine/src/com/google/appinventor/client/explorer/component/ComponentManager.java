@@ -30,6 +30,7 @@ public final class ComponentManager {
         @Override
         public void onSuccess(List<Component> components) {
           ComponentManager.this.components.addAll(components);
+          fireComponentsLoaded();
         }
       });
   }
@@ -68,6 +69,12 @@ public final class ComponentManager {
    */
   public void addEventListener(ComponentManagerEventListener listener) {
     eventListeners.add(listener);
+  }
+
+  private void fireComponentsLoaded() {
+    for (ComponentManagerEventListener listener : eventListeners) {
+      listener.onComponentsLoaded();
+    }
   }
 
   private void fireComponentAdded(Component component) {

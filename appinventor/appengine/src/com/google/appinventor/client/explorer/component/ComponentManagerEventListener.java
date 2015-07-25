@@ -36,4 +36,10 @@ public interface ComponentManagerEventListener {
    * @param component  component removed
    */
   void onComponentRemoved(Component component);
+
+  /**
+   * Invoked after all components have been loaded by ComponentManager
+   *
+   */
+  void onComponentsLoaded();
 }
