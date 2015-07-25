@@ -14,6 +14,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.component.Component;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -56,7 +57,8 @@ public class ComponentUploadWizard extends Wizard {
           new OdeAsyncCallback<UploadResponse>() {
             @Override
             public void onSuccess(UploadResponse uploadResponse) {
-              Ode.getInstance().getComponentManager().pullComponents();
+              Component component = Component.valueOf(uploadResponse.getInfo());
+              Ode.getInstance().getComponentManager().addComponent(component);
               ErrorReporter.reportInfo("Uploaded successfully");
             }
           });
