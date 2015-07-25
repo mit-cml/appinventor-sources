@@ -18,15 +18,12 @@ public class Component implements IsSerializable {
   private String name;
   private long version;
 
-  private Component() {
+  public Component() {
     // no-op
   }
 
   public Component(String authorId, String fullyQualifiedName, long version) {
-    this.authorId = authorId;
-    this.fullyQualifiedName = fullyQualifiedName;
-    this.name = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
-    this.version = version;
+    set(authorId, fullyQualifiedName, version);
   }
 
   public String getAuthorId() {
@@ -43,5 +40,12 @@ public class Component implements IsSerializable {
 
   public long getVersion() {
     return version;
+  }
+
+  public void set(String authorId, String fullyQualifiedName, long version) {
+    this.authorId = authorId;
+    this.fullyQualifiedName = fullyQualifiedName;
+    this.name = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
+    this.version = version;
   }
 }

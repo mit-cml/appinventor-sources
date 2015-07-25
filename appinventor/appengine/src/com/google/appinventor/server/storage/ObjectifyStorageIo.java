@@ -1606,7 +1606,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
+  public Component uploadComponentFile(final String userId, final String fileName, final byte[] content) {
+    final Component addedComponent = new Component();
+
     JobRetryHelper helper = new JobRetryHelper() {
       private static final String EXTERNAL_COMP_DIR = "external_comps";
       private static final String EXTERNAL_COMP_EXTENSION = ".aix";
@@ -1624,6 +1626,9 @@ public class ObjectifyStorageIo implements  StorageIo {
             "/" + compData.version + "/" + fileName;
 
         datastore.put(compData);
+
+        addedComponent.set(compData.userId, compData.fullyQualifiedName,
+            compData.version);
 
         try {
           setGcsFileContent(compData.gcsPath, content);
@@ -1663,6 +1668,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
     try {
       runJobWithRetries(helper, true);
+      return addedComponent;
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
         collectComponentErrorInfo(userId, fileName), e);

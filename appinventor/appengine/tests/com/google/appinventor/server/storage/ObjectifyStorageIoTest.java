@@ -594,10 +594,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     info.put("versionCounter", VERSION);
     storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
 
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-    compDataList = storage.getCompDataList(FULL_NAME);
-    ComponentData newData = compDataList.get(compDataList.size() - 1);
-    assertEquals(VERSION + 1, newData.version);
+    Component justAdded = storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1,
+        RAW_FILE_CONTENT1);
+    assertNotNull(justAdded);
+    assertEquals(VERSION + 1, justAdded.getVersion());
   }
 
   public void testGetComponents() {

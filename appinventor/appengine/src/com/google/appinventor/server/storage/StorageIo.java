@@ -465,8 +465,9 @@ public interface StorageIo {
    * @param userId the user who owns the file
    * @param fileName the file name with the extension
    * @param content  file content
+   * @return the component just uploaded
    */
-  void uploadComponentFile(final String userId, final String fileName, final byte[] content);
+  Component uploadComponentFile(final String userId, final String fileName, final byte[] content);
 
   /**
    * Returns a list of components uploaded by the user
