@@ -850,7 +850,7 @@ Blockly.Versioning.findAllMethodCalls = function (dom, componentType, methodName
 /**
  * @param elem: an HTML element
  * @param tag: string thats a tag name
- * @returns the first child of elem with the given tag name (case insenstive)
+ * @returns the first child of elem with the given tag name (case insensitive)
  *  or null if there is no such element.
  *
  * @author fturbak@wellesley.edu (Lyn Turbak)
@@ -860,7 +860,7 @@ Blockly.Versioning.firstChildWithTagName = function (elem, tag) {
   var upcaseTag = tag.toUpperCase();
   var children = goog.dom.getChildren(elem);
   for (var c = 0, child; child = children[c]; c++) {
-    if (child.tagName == upcaseTag) {
+    if (child.tagName.toUpperCase() == upcaseTag) {
       return child;
     }
   }
@@ -974,9 +974,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // screen animation type. No blocks need to be modified to upgrade to version 4.
     4: "noUpgrade",
 
-    // Extras property was added
-    5: "noUpgrade"
+    // AI2: The ActivityStarter.ActivityCanceled event was added.
+    // No blocks need to be modified to upgrade to version 5.
+    5: "noUpgrade",
 
+    // Extras property was added
+    6: "noUpgrade"
+    
   }, // End ActivityStarter upgraders
 
   "Ball": {
@@ -1181,7 +1185,22 @@ Blockly.Versioning.AllUpgradeMaps =
   "Clock": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: The patterm pattermeter was added to FormatDate and FormatDateTime.
+    // * FormatDate(instant) to FormatDate(instant, pattern)
+    // * FormatDateTime(instant) to FormatDateTime(instant, pattern)
+    2:
+      [  // Set the default argument for parameter to be an empty string.
+         Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDateTime", 1,
+         '<block type="text">' +
+         '  <field name="TEXT">MMM d, yyyy HH:mm:ss a</field>' +
+         '</block>'),
+         Blockly.Versioning.addDefaultMethodArgument("Clock", "FormatDate", 1,
+         '<block type="text">' +
+         '  <field name="TEXT">MMM d, yyyy</field>' +
+         '</block>')
+      ]
 
   }, // End Clock upgraders
 
@@ -1418,7 +1437,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // In BLOCKS_LANGUAGE_VERSION 12, we changed the multiply
     // symbol from * star to times, and the subtract symbol
-    // from hypen to minus
+    // from hyphen to minus
     /* From BlockSaveFile.java:
         changeStarAndHyphenToTimesAndMinusForMultiplyAndSubtractBlocks();
         // Blocks have now been upgraded to language version 12.
@@ -1454,7 +1473,15 @@ Blockly.Versioning.AllUpgradeMaps =
     17: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // AI2: Jeff Schiller's new Obfuscate Text block added
-    18: "noUpgrade"
+    18: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 19
+    // is-number?, was extended with a dropdown to include base10, bin, and hex
+    // The existing block from an old project apparently does not need to be modified to
+    // see these new options.  (Hal is not sure why not, but it seems to work.)
+    // The math convert block was added
+    // No language blocks need to be modified to upgrade to version 16.
+    19: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -1504,7 +1531,10 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
     // AI2:
     // - Added TextSize Property
-    4: "noUpgrade"
+    4: "noUpgrade",
+    // AI2:
+    // - Added SelectionColor Property
+    5: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -1778,7 +1808,15 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 14:
     // - The Screen1.AppName was added and no block need to be changed.
-    14: "noUpgrade"
+    14: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 15:
+    // - The Screen1.ShowStatusBar was added and no block needs to be changed.
+    15: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 16:
+    // - The Screen1.TitleVisible was added and no block needs to be changed.
+    16: "noUpgrade"
 
   }, // End Screen
 
@@ -1895,7 +1933,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // the AvailableLanguages property was added
     // the AvailableCountries property was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // the Country designer property was changed to use a ChoicePropertyEditor
+    // the Language designer property was changed to use a ChoicePropertyEditor
+    4: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 

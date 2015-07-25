@@ -1,0 +1,27 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="math_convert_number" id="1" inline="false" x="71" y="62">
+    <field name="OP">BIN_TO_DEC</field>
+    <value name="NUM">
+      <block type="math_number" id="2">
+        <field name="NUM">0</field>
+      </block>
+    </value>
+  </block>
+  <block type="math_convert_number" id="3" inline="false" x="69" y="125">
+    <field name="OP">DEC_TO_HEX</field>
+    <value name="NUM">
+      <block type="math_number" id="4">
+        <field name="NUM">10</field>
+      </block>
+    </value>
+  </block>
+  <block type="math_convert_number" id="5" inline="false" x="76" y="192">
+    <field name="OP">DEC_TO_BIN</field>
+    <value name="NUM">
+      <block type="math_number" id="6">
+        <field name="NUM">34</field>
+      </block>
+    </value>
+  </block>
+  <yacodeblocks ya-version="123" language-version="18"></yacodeblocks>
+</xml>

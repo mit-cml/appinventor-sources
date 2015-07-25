@@ -174,6 +174,9 @@ public class StoredData {
     // The Blobstore path to use to get the data from Blobstore
     String blobstorePath;
 
+    // The Blobstore key. This is filled in by a MapReduce job run outside of App Inventor
+    String blobKey;
+
     // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
     // GCS file name (sans bucket).
     boolean isGCS;
@@ -258,4 +261,15 @@ public class StoredData {
     public String fileId;
     public String message;
   }
+
+  @Cached(expirationSeconds=60)
+  @Unindexed
+  static final class SplashData {
+    @Id Long id;
+    public int version;
+    public String content;
+    public int height;
+    public int width;
+  }
+
 }

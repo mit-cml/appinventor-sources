@@ -29,11 +29,11 @@ import java.util.Calendar;
  */
 
 @DesignerComponent(version = YaVersion.CLOCK_COMPONENT_VERSION,
-    description = "Non-visible component that provides the instant in "
-    + "time using the internal clock on the phone. It can fire a "
-    + "timer at regularly set intervals and perform time "
-    + "calculations, manipulations, and conversions. Methods to "
-    + "format the date and time are also available.",
+    description = "<p>Non-visible component that provides the instant in time using the internal clock on th"
+    + "e phone. It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p> "
+    + "<p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy"
+    + "HH:mm. The empty string will provide the default format, which is \"MMM d, yyyy HH:mm:ss a\" for FormatDateTime \"MMM d, yyyy\" for FormatDate. "
+    + "To see all possible format, please see <a href=\"https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\" _target=\"_blank\">here</a>. </p> ",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/clock.png")
@@ -196,7 +196,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @return  date
    */
   @SimpleFunction(
-      description = "An instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm")
+      description = "An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm")
   public static Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
@@ -394,26 +394,42 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats the given instant into a string.   *
+   * Converts and formats an instant into a string of date and time with the specified pattern.   *
    *
    * @param instant  instant to format
+   * @param pattern format of the date and time e.g. MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date and time of an"
-      + " instant")
-  public static String FormatDateTime(Calendar instant) {
-    return Dates.FormatDateTime(instant);
+      + " instant in the specifed pattern")
+  public static String FormatDateTime(Calendar instant, String pattern) {
+    try {
+      return Dates.FormatDateTime(instant, pattern);
+    } catch (IllegalArgumentException e){
+      throw new YailRuntimeError(
+        "Illegal argument for pattern in Clock.FormatDateTime. Acceptable values are empty string, MM/DD/YYYY HH:mm:ss a, MMM d, yyyy HH:mm "
+        + "For all possible patterns, see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html",
+        "Sorry to be so picky.");
+    }
   }
 
   /**
-   * Converts and formats the given instant into a string.
+   * Converts and formats an instant into a string of date with the specified pattern.
    *
    * @param instant  instant to format
+   * @param pattern format of the date e.g. MM/DD/YYYY or MMM d, yyyy
    * @return  formatted instant
    */
-  @SimpleFunction (description = "Text representing the date of an instant")
-  public static String FormatDate(Calendar instant) {
-    return Dates.FormatDate(instant);
+  @SimpleFunction (description = "Text representing the date of an instant in the specified pattern")
+  public static String FormatDate(Calendar instant, String pattern) {
+    try {
+      return Dates.FormatDate(instant, pattern);
+    } catch (IllegalArgumentException e){
+      throw new YailRuntimeError(
+        "Illegal argument for pattern in Clock.FormatDate. Acceptable values are empty string, MM/dd/YYYY, or MMM d, yyyy. "
+        + "For all possible patterns, see https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html"
+        ,"Sorry to be so picky.");
+    }
   }
 
   /**
