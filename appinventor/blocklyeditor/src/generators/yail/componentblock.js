@@ -33,11 +33,28 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
+  var header;
+  var eventName = (this.isMulti) ? ("MultiGeneric-" + this.typeName + "-" + this.eventName) : this.eventName
+  if (this.isMulti) {
+    header = Blockly.Yail.YAIL_DEFINE_MULTI_EVENT + eventName;
+  } else {
+    var instance;
+    if (this.isGeneric) {
+      var selector = this.getInputTargetBlock("COMPONENT");
+      instance = callPrefix = Blockly.Yail.YAIL_SPACER
+        + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
+        + Blockly.Yail.YAIL_SPACER;
+    } else {
+      instance = this.instanceName;
+    }
+    var defineType = this.isGeneric ? Blockly.Yail.YAIL_SET_GENERIC_EVENT : Blockly.Yail.YAIL_DEFINE_EVENT;
+    header = defineType
+      + instance
+      + Blockly.Yail.YAIL_SPACER
+      + eventName;
+  }
 
-  var code = Blockly.Yail.YAIL_DEFINE_EVENT
-    + this.getFieldValue("COMPONENT_SELECTOR")
-    + Blockly.Yail.YAIL_SPACER
-    + this.eventName
+  var code = header
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     + this.declaredNames()

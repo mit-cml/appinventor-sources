@@ -50,6 +50,8 @@ Blockly.Yail.YAIL_COMPONENT_REMOVE = "(remove-component ";
 Blockly.Yail.YAIL_COMPONENT_TYPE = "component";
 Blockly.Yail.YAIL_DEFINE = "(def ";
 Blockly.Yail.YAIL_DEFINE_EVENT = "(define-event ";
+Blockly.Yail.YAIL_SET_GENERIC_EVENT = "(set-generic-event! ";
+Blockly.Yail.YAIL_DEFINE_MULTI_EVENT = "(define-multi-event ";
 Blockly.Yail.YAIL_DEFINE_FORM = "(define-form ";
 Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION = "(do-after-form-creation ";
 Blockly.Yail.YAIL_DOUBLE_QUOTE = "\"";
@@ -163,7 +165,6 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
     // 
     // finalCode = code.join('\n').replace(/\\(set-property.*\"\"\\)\\n*/mg, "");
   }
-  
   return code.join('\n');  // Blank line between each section.
 };
 
@@ -267,7 +268,6 @@ Blockly.Yail.getComponentLines = function(formName, componentJson, parentName, c
   } else {
     code = Blockly.Yail.getComponentPropertiesLines(formName, componentJson, parentName, !forRepl);
   }
-
   if (!forRepl) {
     // Generate code for all top-level blocks related to this component
     if (componentMap.components && componentMap.components[componentName]) {

@@ -466,6 +466,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final SortedMap<String, Event> events;
 
     /**
+     * Multi-Events provided by this component.
+     */
+    protected final SortedMap<String, Event> multiEvents;
+
+    /**
      * Whether this component is abstract (such as
      * {@link com.google.appinventor.components.runtime.Sprite}) or concrete.
      */
@@ -479,6 +484,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected final String displayName;
 
+    private Element element;
     private String helpDescription;  // Shorter popup description
     private String category;
     private String categoryString;
@@ -493,6 +499,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       super(element.getSimpleName().toString(),  // Short name
             elementUtils.getDocComment(element),
             "Component");
+      this.element = element;
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
       libraries = Sets.newHashSet();
@@ -502,6 +509,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       properties = Maps.newTreeMap();
       methods = Maps.newTreeMap();
       events = Maps.newTreeMap();
+      multiEvents = Maps.newTreeMap();
       abstractClass = element.getModifiers().contains(Modifier.ABSTRACT);
       for (AnnotationMirror am : element.getAnnotationMirrors()) {
         DeclaredType dt = am.getAnnotationType();
@@ -536,6 +544,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           iconName = designerComponentAnnotation.iconName();
         }
       }
+    }
+
+    protected Element getElement() {
+      return element;
     }
 
     /**
@@ -753,6 +765,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         // that Event/Property/Method.
         for (Map.Entry<String, Event> entry : parentComponent.events.entrySet()) {
           componentInfo.events.put(entry.getKey(), entry.getValue().clone());
+        }
+        for (Map.Entry<String, Event> entry : parentComponent.multiEvents.entrySet()) {
+          componentInfo.multiEvents.put(entry.getKey(), entry.getValue().clone());
         }
         for (Map.Entry<String, Property> entry : parentComponent.properties.entrySet()) {
           componentInfo.properties.put(entry.getKey(), entry.getValue().clone());
@@ -985,7 +1000,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         boolean userVisible = simpleEventAnnotation.userVisible();
         Event event = new Event(eventName, eventDescription, userVisible);
+        Event genericMultiEvent = new Event(eventName, eventDescription, userVisible);
         componentInfo.events.put(event.name, event);
+        componentInfo.multiEvents.put(genericMultiEvent.name, genericMultiEvent);
 
         // Verify that this element has an ExecutableType.
         if (!(element instanceof ExecutableElement)) {
@@ -995,10 +1012,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         ExecutableElement e = (ExecutableElement) element;
 
+        // The generic multi event will all return the component that the event triggered on
+        genericMultiEvent.addParameter("component",
+                componentInfo.getElement().asType().toString());
         // Extract the parameters.
         for (VariableElement ve : e.getParameters()) {
           event.addParameter(ve.getSimpleName().toString(),
                              ve.asType().toString());
+          genericMultiEvent.addParameter(ve.getSimpleName().toString(),
+                  ve.asType().toString());
         }
       }
     }

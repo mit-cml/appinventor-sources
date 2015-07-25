@@ -112,6 +112,13 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       outputBlockEvent(event.name, event, sb, !event.userVisible);
       separator = ",\n    ";
     }
+    sb.append("],\n  \"multiEvents\": [");
+    separator = "";
+    for (Event event : component.multiEvents.values()) {
+      sb.append(separator);
+      outputBlockEvent(event.name, event, sb, !event.userVisible);
+      separator = ",\n    ";
+    }
     sb.append("],\n  \"methods\": [");
     separator = "";
     for (Method method : component.methods.values()) {
