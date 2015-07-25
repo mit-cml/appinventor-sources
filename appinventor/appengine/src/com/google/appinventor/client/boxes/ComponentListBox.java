@@ -23,7 +23,7 @@ public final class ComponentListBox extends Box {
   /**
    * Returns the singleton components list box.
    *
-   * @return  project list box
+   * @return  component list box
    */
   public static ComponentListBox getComponentListBox() {
     return INSTANCE;

@@ -196,6 +196,7 @@ public class Ode implements EntryPoint {
   private static final int USERPROFILE = 4;
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
+  static final int COMPONENTS = 7;
   private static int currentView = DESIGNER;
 
   /*
@@ -392,11 +393,10 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Switch to the Projects tab
+   * Switch to the Components tab
    */
   public void switchToComponentsView() {
-    currentView = PROJECTS;
-    getTopToolbar().updateFileMenuButtons(currentView);
+    currentView = COMPONENTS;
     deckPanel.showWidget(componentsTabIndex);
   }
 
@@ -1220,10 +1220,19 @@ public class Ode implements EntryPoint {
   /**
    * Returns the component manager.
    *
-   * @return  {@link CopmponentManager}
+   * @return  {@link ComponentManager}
    */
   public ComponentManager getComponentManager() {
     return componentManager;
+  }
+
+  /**
+   * Returns the component tool bar.
+   *
+   * @return  {@link ComponentToolbar}
+   */
+  public ComponentToolbar getComponentToolbar() {
+    return componentToolbar;
   }
 
   /**

@@ -809,7 +809,7 @@ public class TopToolbar extends Composite {
   private static class MyComponentsAction implements Command {
     @Override
     public void execute() {
-      // to be added
+      Ode.getInstance().switchToComponentsView();
     }
   }
 

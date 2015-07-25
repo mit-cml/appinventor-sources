@@ -538,6 +538,14 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when no url is entered.")
   String noUrlError();
 
+  @DefaultMessage("Name")
+  @Description("Header for name column of component table")
+  String componentNameHeader();
+
+  @DefaultMessage("Version")
+  @Description("Header for version column of component table")
+  String componentVersionHeader();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
