@@ -4,6 +4,7 @@ import android.R;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.media.SoundPool;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -17,6 +18,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.Notifier;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This class is used to display a Slider.
@@ -39,7 +42,8 @@ import com.google.appinventor.components.common.YaVersion;
         "As the Slider thumb is dragged, it will trigger the PositionChanged event, " +
         "reporting the position of the Slider thumb. The reported position of the " +
         "Slider thumb can be used to dynamically update another component " +
-        "attribute, such as the font size of a TextBox or the radius of a Ball.",
+        "attribute, such as the font size of a TextBox or the radius of a Ball. " +
+        "Sliders require Android version at least 4.1 (API Level 16).",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarChangeListener {
@@ -68,6 +72,23 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private final static String initialRightColorString = Component.DEFAULT_VALUE_COLOR_GRAY;
   private final static int initialLeftColor = Component.COLOR_ORANGE;
   private final static String initialLeftColorString = Component.DEFAULT_VALUE_COLOR_ORANGE;
+
+  // seekbar.getThumb was introduced in API level 16 and the component warns the user
+  // that apps using Sliders won't work if the API level is below 16.  But for very old systems the
+  // app won't even *load* because the verifier will reject getThumb.  I don't know how old - the
+  // rejection happens on Donut but not on Gingerbread.
+  // The purpose of SeekBarHelper class is to avoid getting rejected by the Android verifier when the
+  // Slider component code is loaded into a device with API level less than Gingerbread.
+  // We do this trick by putting the use of getThumb in the class SeekBarHelper and arranging for
+  // the class to be compiled only if the API level is at least Gingerbread.  This same trick is
+  // used in implementing the Sound component.
+  private class SeekBarHelper {
+    public void getThumb(int alpha) {
+      seekbar.getThumb().mutate().setAlpha(alpha);
+    }
+  }
+
+  public final boolean referenceGetThumb = (SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD);
 
   /**
    * Creates a new Slider component.
@@ -109,6 +130,25 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       Log.d(LOG_TAG, "Slider initial min, max, thumb values are: " +
           MinValue() + "/" + MaxValue() + "/" + ThumbPosition());
     }
+
+    if (DEBUG) {
+      Log.d(LOG_TAG, "API level is " + SdkLevel.getLevel());
+    }
+
+
+    // Warn the user if the API level is less than Jellybean, since getThumb
+    // does not work before API level 16.  Note that this is *not* sufficient in dealing
+    // with very old phones.   See the SeekBarHelper class above.
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_JELLYBEAN) {
+      // TODO(hal): Figure out how to internationalize messages like this.
+      String message = "This app uses a slider.  The operating system on this device is too old " +
+          "to support sliders. Sliders require at least Android system 4.1. " +
+          "You can continue to load the app, but it will probably fail.";
+      String title = "Warning: Operating system out of date";
+      String buttonText = "Continue";
+      Notifier.oneButtonAlert(container.$context(), message, title, buttonText);
+    }
+
   }
 
   // NOTE(hal): On old phones, up through 2.2.2 and maybe higher, the color of the bar doesn't
@@ -154,7 +194,9 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   public void ThumbEnabled(boolean enabled) {
     thumbEnabled = enabled;
     int alpha = thumbEnabled ? 255 : 0;
-    seekbar.getThumb().mutate().setAlpha(alpha);
+    if (referenceGetThumb) {
+      new SeekBarHelper().getThumb(alpha);
+    }
     seekbar.setEnabled(thumbEnabled);
   }
 
