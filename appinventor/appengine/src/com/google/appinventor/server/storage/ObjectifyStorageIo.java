@@ -1627,7 +1627,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
         datastore.put(compData);
 
-        addedComponent.set(compData.userId, compData.fullyQualifiedName,
+        addedComponent.set(compData.id, compData.userId, compData.fullyQualifiedName,
             compData.version);
 
         try {
@@ -1682,8 +1682,8 @@ public class ObjectifyStorageIo implements  StorageIo {
     ArrayList<Component> results = new ArrayList<Component>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new Component(compData.userId, compData.fullyQualifiedName,
-          compData.version));
+      results.add(new Component(compData.id, compData.userId,
+          compData.fullyQualifiedName, compData.version));
     }
     return results;
   }
@@ -1708,9 +1708,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String getGcsPath(Component component) {
-    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    ComponentData result = query.filter("fullyQualifiedName", component.getFullyQualifiedName()).
-        filter("version", component.getVersion()).get();
+    Objectify datastore = ObjectifyService.begin();
+    ComponentData result = datastore.find(componentKey(component.getId()));
     return result == null ? null : result.gcsPath;
   }
 

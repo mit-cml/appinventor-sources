@@ -106,7 +106,7 @@ public class ComponentServiceTest {
     boolean isSuccessful = compServiceImpl.importComponentToProject(comp, projectId, folderPath);
     assertTrue(isSuccessful);
 
-    comp = new Component("fakeAuthorId", "fakeFullName", 0);
+    comp = new Component(123, "fakeAuthorId", "fakeFullName", 0);
     isSuccessful = compServiceImpl.importComponentToProject(comp, projectId, folderPath);
     assertFalse(isSuccessful);
 

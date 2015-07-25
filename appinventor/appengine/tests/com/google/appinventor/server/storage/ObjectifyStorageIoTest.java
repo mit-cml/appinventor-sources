@@ -649,7 +649,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     Component comp = storage.getComponents(USER_ID).get(0);
     assertNotNull(storage.getGcsPath(comp));
 
-    Component fakeComp = new Component("fakeId", "fakeFullName", 456);
+    Component fakeComp = new Component(123, "fakeId", "fakeFullName", 456);
     assertNull(storage.getGcsPath(fakeComp));
   }
 
