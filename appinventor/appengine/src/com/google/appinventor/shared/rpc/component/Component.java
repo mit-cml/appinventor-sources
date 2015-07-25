@@ -8,6 +8,8 @@ package com.google.appinventor.shared.rpc.component;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import com.google.common.primitives.Longs;
+
 /**
  * Component stored in the server
  */
@@ -17,6 +19,8 @@ public class Component implements IsSerializable {
   private String fullyQualifiedName;
   private String name;
   private long version;
+
+  private static final String DELIM = "#DELIM#";
 
   public Component() {
     // no-op
@@ -47,5 +51,26 @@ public class Component implements IsSerializable {
     this.fullyQualifiedName = fullyQualifiedName;
     this.name = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".") + 1);
     this.version = version;
+  }
+
+  public static Component valueOf(String text) {
+    String[] parts = text.split(DELIM);
+    if (parts.length != 3) {
+      throw new IllegalArgumentException();
+    }
+
+    String authorId = parts[0];
+    String fullyQualifiedName = parts[1];
+    Long version = Longs.tryParse(parts[2]);
+    if (version == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return new Component(authorId, fullyQualifiedName, version);
+  }
+
+  @Override
+  public String toString() {
+    return getAuthorId() + DELIM + getFullyQualifiedName() + DELIM + getVersion();
   }
 }
