@@ -976,8 +976,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The ActivityStarter.ActivityCanceled event was added.
     // No blocks need to be modified to upgrade to version 5.
-    5: "noUpgrade"
+    5: "noUpgrade",
 
+    // Extras property was added
+    6: "noUpgrade"
+    
   }, // End ActivityStarter upgraders
 
   "Ball": {
@@ -2117,4 +2120,3 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
-

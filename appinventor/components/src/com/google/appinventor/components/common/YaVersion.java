@@ -323,6 +323,11 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 124:
+<<<<<<< HEAD
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 5
+
+  public static final int YOUNG_ANDROID_VERSION = 124;
+=======
   // - FORM_COMPONENT_VERSION was incremented to 15.
   // For YOUNG_ANDROID_VERSION 125:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 5
@@ -338,6 +343,7 @@ public class YaVersion {
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
 
   public static final int YOUNG_ANDROID_VERSION = 130;
+>>>>>>> master
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -396,7 +402,7 @@ public class YaVersion {
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
   public static final int BLOCKS_LANGUAGE_VERSION = 19;
-  
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
@@ -454,7 +460,9 @@ public class YaVersion {
   //   animation to transition to next activity.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
   // - The ActivityStarter.ActivityCanceled event was added.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
+  // - Extras property was added to accept a list of key-value pairs to put to the intent
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
