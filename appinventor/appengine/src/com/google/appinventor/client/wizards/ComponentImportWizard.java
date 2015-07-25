@@ -148,7 +148,7 @@ public class ComponentImportWizard extends Wizard {
 
   private ListDataProvider<Component> provideData() {
     ListDataProvider<Component> provider = new ListDataProvider<Component>();
-    for (Component comp : ode.getComponentManager().getRetrivedComponents()) {
+    for (Component comp : ode.getComponentManager().getComponents()) {
       provider.getList().add(comp);
     }
     return provider;
