@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcVoltageSensor extends FtcHardwareDevice<VoltageSensor> {
+public final class FtcVoltageSensor extends FtcHardwareDevice {
 
   private volatile VoltageSensor voltageSensor;
 
@@ -60,11 +60,10 @@ public final class FtcVoltageSensor extends FtcHardwareDevice<VoltageSensor> {
     return 0;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
       if (voltageSensor == null) {

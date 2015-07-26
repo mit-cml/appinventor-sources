@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
+public final class FtcIrSeekerSensor extends FtcHardwareDevice {
 
   private volatile IrSeekerSensor irSeekerSensor;
 
@@ -80,7 +80,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Mode.MODE_1200HZ_AC.toString();
+    return "";
   }
 
   /**
@@ -165,11 +165,10 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice<IrSeekerSensor> {
     return 0;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
       if (irSeekerSensor == null) {

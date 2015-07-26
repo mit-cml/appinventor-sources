@@ -60,10 +60,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
+import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
+/* Removed for App Inventor
+import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
+*/
 import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
@@ -71,6 +76,8 @@ import com.qualcomm.robotcore.util.Dimmer;
 /* Removed for App Inventor
 import com.qualcomm.robotcore.util.ImmersiveMode;
 */
+import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister; // Added for App Inventor
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;  // Added for App Inventor
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
@@ -88,10 +95,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
 
-  public static final int CONFIGURE_ROBOT = 3;
   public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
-
-  protected static final String VIEW_LOGS_ACTION = "com.qualcomm.ftcrobotcontroller.VIEW_LOGS";
 
   protected SharedPreferences preferences;
 
@@ -190,7 +194,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
 
     hittingMenuButtonBrightensScreen();
 
-    //if (USE_DEVICE_EMULATION) { ModernRoboticsHardwareFactory.enableDeviceEmulation(); }
+    if (USE_DEVICE_EMULATION) { ModernRoboticsHardwareFactory.enableDeviceEmulation(); }
   }
 
   @Override
@@ -271,9 +275,12 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         requestRobotRestart();
         return true;
       case R.id_action_settings:
-        startActivityForResult(new Intent(getBaseContext(), FtcRobotControllerSettingsActivity.class), CONFIGURE_ROBOT);
+        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+        Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
+        startActivityForResult(settingsIntent, LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
         return true;
       case R.id_action_about:
+        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
         Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
         startActivity(intent);
         return true;
@@ -283,13 +290,10 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         return true;
         */
       case R.id_action_view_logs:
-        // TODO(lizlooney): Add code for action_view_logs after the ViewLogsActivity is moved to
-        // FtcCommon.
-        /*
-        Intent viewLogsIntent = new Intent(VIEW_LOGS_ACTION);
-        viewLogsIntent.putExtra(ViewLogsActivity.FILENAME, RobotLog.getLogFilename(this));
+        // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+        Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
+        viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(thisActivity));
         startActivity(viewLogsIntent);
-        */
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -311,7 +315,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         showToast(toast);
       }
     }
-    if (request == CONFIGURE_ROBOT) {
+    if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
       if (result == RESULT_OK) {
         Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
         if (extra != null) {
@@ -347,8 +351,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     modernRoboticsFactory.setXmlInputStream(fis);
     factory = modernRoboticsFactory;
 
-    // Modified for App Inventor
-    eventLoop = new FtcEventLoop(factory, callback, thisActivity, aiFtcRobotController);
+    eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, thisActivity);
 
     controllerService.setCallback(callback);
 
@@ -433,6 +436,12 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     if (!configuration.isEmpty()) {
       utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
       callback.restartRobot();
+    }
+  }
+
+  class FtcOpModeRegister implements OpModeRegister {
+    public void register(OpModeManager manager) {
+      aiFtcRobotController.register(manager);
     }
   }
 }

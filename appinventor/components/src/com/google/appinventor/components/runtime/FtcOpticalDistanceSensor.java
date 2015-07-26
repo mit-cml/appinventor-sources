@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDistanceSensor> {
+public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
 
   private volatile OpticalDistanceSensor opticalDistanceSensor;
 
@@ -100,11 +100,10 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice<OpticalDis
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
       if (opticalDistanceSensor == null) {

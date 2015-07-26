@@ -50,7 +50,7 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     opMode = new OpMode() {
       @Override
       public void init() {
-        FtcRobotController.beforeOpModeInit(form);
+        FtcRobotController.beforeOpModeInit(this);
         Init();
       }
 
@@ -61,17 +61,18 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
 
       @Override
       public void loop() {
+        FtcRobotController.beforeOpModeLoop(this);
         Loop();
       }
 
       @Override
       public void stop() {
         Stop();
-        FtcRobotController.afterOpModeStop(form);
+        FtcRobotController.afterOpModeStop(this);
       }
     };
 
-    FtcRobotController.addOpModeWrapper(form, this);
+    FtcRobotController.addOpMode(this);
   }
 
   // Properties
@@ -104,46 +105,14 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     return opMode.getRuntime();
   }
 
-  @SimpleFunction(description = "Adds a text data point to the telemetry for this op mode.")
-  public void TelemetryAddTextData(String key, String text) {
-    try {
-      opMode.telemetry.addData(key, text);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "TelemetryAddTextData",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
-  @SimpleFunction(description = "Adds a numeric data point to the telemetry for this op mode.")
-  public void TelemetryAddNumericData(String key, String number) {
-    // Try to parse the number as a float, but if that fails, fallback to text.
-    try {
-      opMode.telemetry.addData(key, Float.parseFloat(number));
-      return;
-    } catch (Throwable e) {
-      // Exception is ignored. Fallback to treating number as text.
-    }
-
-    try {
-      opMode.telemetry.addData(key, number);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "TelemetryAddNumericData",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
   // Events
 
-  @SimpleEvent(description =
-      "This event is triggered when this op mode is armed.")
+  @SimpleEvent(description = "This event is triggered when this op mode is armed.")
   public void Init() {
     EventDispatcher.dispatchEvent(this, "Init");
   }
 
-  @SimpleEvent(description =
-      "This event is triggered when this op mode is first enabled.")
+  @SimpleEvent(description = "This event is triggered when this op mode is first enabled.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }
@@ -158,11 +127,19 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Stop");
   }
 
+  // TODO(lizlooney): remove these deprecated functions.
+  @SimpleFunction(description = "TelemetryAddTextData", userVisible = false)
+  public void TelemetryAddTextData(String key, String text) {
+  }
+  @SimpleFunction(description = "TelemetryAddNumericData", userVisible = false)
+  public void TelemetryAddNumericData(String key, String number) {
+  }
+
   // Deleteable implementation
 
   @Override
   public void onDelete() {
-    FtcRobotController.removeOpModeWrapper(form, this);
+    FtcRobotController.removeOpMode(this);
   }
 
   // FtcRobotController.OpModeWrapper implementation

@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcAccelerationSensor extends FtcHardwareDevice<AccelerationSensor> {
+public final class FtcAccelerationSensor extends FtcHardwareDevice {
 
   private volatile AccelerationSensor accelerationSensor;
 
@@ -127,11 +127,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice<AccelerationS
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
       if (accelerationSensor == null) {

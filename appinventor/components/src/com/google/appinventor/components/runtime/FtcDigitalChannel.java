@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDigitalChannel extends FtcHardwareDevice<DigitalChannel> {
+public final class FtcDigitalChannel extends FtcHardwareDevice {
 
   private volatile DigitalChannel digitalChannel;
 
@@ -80,7 +80,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice<DigitalChannel> {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Mode.INPUT.toString();
+    return "";
   }
 
   /**
@@ -143,11 +143,10 @@ public final class FtcDigitalChannel extends FtcHardwareDevice<DigitalChannel> {
     }
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
       if (digitalChannel == null) {

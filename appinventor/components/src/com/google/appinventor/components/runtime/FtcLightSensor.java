@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.LightSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLightSensor extends FtcHardwareDevice<LightSensor> {
+public final class FtcLightSensor extends FtcHardwareDevice {
 
   private volatile boolean enableLed;
   private volatile LightSensor lightSensor;
@@ -127,11 +127,10 @@ public final class FtcLightSensor extends FtcHardwareDevice<LightSensor> {
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       lightSensor = hardwareMap.lightSensor.get(getDeviceName());
       if (lightSensor == null) {

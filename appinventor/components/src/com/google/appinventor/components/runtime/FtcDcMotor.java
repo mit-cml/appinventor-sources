@@ -19,9 +19,9 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;
 import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
 
 /**
  * A component for a DC motor of an FTC robot.
@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
+public final class FtcDcMotor extends FtcHardwareDevice {
 
   private volatile DcMotor dcMotor;
 
@@ -102,7 +102,7 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return RunMode.RUN_USING_ENCODERS.toString();
+    return "";
   }
 
   /**
@@ -124,6 +124,69 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ChannelMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * DeviceMode_READ_ONLY property getter.
+   */
+  @SimpleProperty(description = "The constant for DeviceMode_READ_ONLY.",
+      category = PropertyCategory.BEHAVIOR)
+  public String DeviceMode_READ_ONLY() {
+    return DeviceMode.READ_ONLY.toString();
+  }
+
+  /**
+   * DeviceMode_WRITE_ONLY property getter.
+   */
+  @SimpleProperty(description = "The constant for DeviceMode_WRITE_ONLY.",
+  category = PropertyCategory.BEHAVIOR)
+  public String DeviceMode_WRITE_ONLY() {
+    return DeviceMode.WRITE_ONLY.toString();
+  }
+
+  /**
+   * MotorControllerDeviceMode property getter.
+   */
+  @SimpleProperty(description = "The motor controller device mode.",
+      category = PropertyCategory.BEHAVIOR)
+  public String MotorControllerDeviceMode() {
+    if (dcMotor != null && dcMotor.getController() != null) {
+      try {
+        DeviceMode mode = dcMotor.getController().getMotorControllerDeviceMode();
+        if (mode != null) {
+          return mode.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
+  /**
+   * MotorControllerDeviceMode property setter.
+   */
+  @SimpleProperty
+  public void MotorControllerDeviceMode(String modeString) {
+    if (dcMotor != null && dcMotor.getController() != null) {
+      try {
+        for (DeviceMode mode : DeviceMode.values()) {
+          if (mode.toString().equalsIgnoreCase(modeString)) {
+            dcMotor.getController().setMotorControllerDeviceMode(mode);
+            return;
+          }
+        }
+
+        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
+            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE, modeString);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -165,7 +228,7 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Direction.FORWARD.toString();
+    return "";
   }
 
   /**
@@ -292,138 +355,6 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
     return 0;
   }
 
-  /**
-   * GearRatio property getter.
-   */
-  @SimpleProperty(description = "The gear ratio, from -1.0 to 1.0.",
-      category = PropertyCategory.BEHAVIOR)
-  public double GearRatio() {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          return dcMotorController.getGearRatio(dcMotor.getPortNumber());
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GearRatio",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0.0;
-  }
-
-  /**
-   * GearRatio property setter.
-   */
-  @SimpleProperty
-  public void GearRatio(double ratio) {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          dcMotorController.setGearRatio(dcMotor.getPortNumber(), ratio);
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GearRatio",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  /**
-   * DifferentialControlLoopCoefficientP property getter.
-   */
-  @SimpleProperty(description = "The differential control loop coefficient P.",
-      category = PropertyCategory.BEHAVIOR)
-  public double DifferentialControlLoopCoefficientP() {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          DifferentialControlLoopCoefficients differentialControlLoopCoefficients =
-              dcMotorController.getDifferentialControlLoopCoefficients(dcMotor.getPortNumber());
-          if (differentialControlLoopCoefficients != null) {
-            return differentialControlLoopCoefficients.p;
-          }
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "DifferentialControlLoopCoefficientP",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0.0;
-  }
-
-  /**
-   * DifferentialControlLoopCoefficientI property getter.
-   */
-  @SimpleProperty(description = "The differential control loop coefficient I.",
-      category = PropertyCategory.BEHAVIOR)
-  public double DifferentialControlLoopCoefficientI() {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          DifferentialControlLoopCoefficients differentialControlLoopCoefficients =
-              dcMotorController.getDifferentialControlLoopCoefficients(dcMotor.getPortNumber());
-          if (differentialControlLoopCoefficients != null) {
-            return differentialControlLoopCoefficients.i;
-          }
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "DifferentialControlLoopCoefficientI",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0.0;
-  }
-
-  /**
-   * DifferentialControlLoopCoefficientD property getter.
-   */
-  @SimpleProperty(description = "The differential control loop coefficient D.",
-      category = PropertyCategory.BEHAVIOR)
-  public double DifferentialControlLoopCoefficientD() {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          DifferentialControlLoopCoefficients differentialControlLoopCoefficients =
-              dcMotorController.getDifferentialControlLoopCoefficients(dcMotor.getPortNumber());
-          if (differentialControlLoopCoefficients != null) {
-            return differentialControlLoopCoefficients.d;
-          }
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "DifferentialControlLoopCoefficientD",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0.0;
-  }
-
-  @SimpleFunction(description = "Set the differential control loop coefficients.")
-  public void SetDifferentialControlLoopCoefficients(double p, double i, double d) {
-    if (dcMotor != null) {
-      try {
-        DcMotorController dcMotorController = dcMotor.getController();
-        if (dcMotorController != null) {
-          dcMotorController.setDifferentialControlLoopCoefficients(dcMotor.getPortNumber(),
-              new DifferentialControlLoopCoefficients(p, i, d));
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetDifferentialControlLoopCoefficients",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
   @SimpleFunction(description = "Whether the motor is busy.")
   public boolean IsBusy() {
     if (dcMotor != null) {
@@ -465,11 +396,10 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
     return true;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       dcMotor = hardwareMap.dcMotor.get(getDeviceName());
       if (dcMotor == null) {
@@ -481,5 +411,29 @@ public final class FtcDcMotor extends FtcHardwareDevice<DcMotor> {
   @Override
   public void clearHardwareDevice() {
     dcMotor = null;
+  }
+
+  // TODO(lizlooney): remove these deprecated properties and functions.
+  @SimpleProperty(description = "GearRatio", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public double GearRatio() {
+    return 0.0;
+  }
+  @SimpleProperty
+  public void GearRatio(double ratio) {
+  }
+  @SimpleProperty(description = "DifferentialControlLoopCoefficientP", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public double DifferentialControlLoopCoefficientP() {
+    return 0.0;
+  }
+  @SimpleProperty(description = "DifferentialControlLoopCoefficientI", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public double DifferentialControlLoopCoefficientI() {
+    return 0.0;
+  }
+  @SimpleProperty(description = "DifferentialControlLoopCoefficientD", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public double DifferentialControlLoopCoefficientD() {
+    return 0.0;
+  }
+  @SimpleFunction(description = "SetDifferentialControlLoopCoefficients", userVisible = false)
+  public void SetDifferentialControlLoopCoefficients(double p, double i, double d) {
   }
 }

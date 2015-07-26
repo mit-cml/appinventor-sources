@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcCompassSensor extends FtcHardwareDevice<CompassSensor> {
+public final class FtcCompassSensor extends FtcHardwareDevice {
 
   private volatile CompassSensor compassSensor;
   // We need a backing field for the Mode property because CompassSensor doesn't have a getMode
@@ -101,7 +101,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice<CompassSensor> {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return CompassMode.MEASUREMENT_MODE.toString();
+    return "";
   }
 
   /**
@@ -170,11 +170,10 @@ public final class FtcCompassSensor extends FtcHardwareDevice<CompassSensor> {
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
       if (compassSensor == null) {

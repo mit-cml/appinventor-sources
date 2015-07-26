@@ -194,6 +194,8 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2810;
   public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2811;
   public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2812;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2813;
+  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2814;
 
   // Please start the next group of error numbers at 2901.
 
@@ -500,6 +502,11 @@ public final class ErrorMessages {
         "MEASUREMENT_MODE and CALIBRATION_MODE.");
     errorMessages.put(ERROR_FTC_INVALID_DEVICE_NAME,
         "There is no %s named %s. Valid names are %s.");
+    errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE,
+        "The specified motor controller device mode \"%s\" is not valid. The valid modes are " +
+        "READ_ONLY and WRITE_ONLY.");
+    errorMessages.put(ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS,
+        "An FTC Robot Controller app should contain exactly one FtcRobotController component.");
   }
 
   private ErrorMessages() {

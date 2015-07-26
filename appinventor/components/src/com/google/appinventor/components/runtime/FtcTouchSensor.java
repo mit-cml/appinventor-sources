@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
+public final class FtcTouchSensor extends FtcHardwareDevice {
 
   private volatile TouchSensor touchSensor;
 
@@ -80,11 +80,10 @@ public final class FtcTouchSensor extends FtcHardwareDevice<TouchSensor> {
     return false;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       touchSensor = hardwareMap.touchSensor.get(getDeviceName());
       if (touchSensor == null) {

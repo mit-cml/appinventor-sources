@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 
 import com.google.appinventor.components.runtime.FtcRobotController;
 import com.google.appinventor.components.runtime.collect.Maps;
@@ -41,13 +42,17 @@ class ActivityGlue {
     thisActivity = activity;
     this.aiFtcRobotController = aiFtcRobotController;
 
-    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureRobot,
-        FtcRobotControllerActivity.CONFIGURE_ROBOT);
-    requestCodeToConstant.put(aiFtcRobotController.requestCodeConfigureWifiChannel,
-        FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL);
-    constantToRequestCode.put(FtcRobotControllerActivity.CONFIGURE_ROBOT,
+    requestCodeToConstant.put(
+        aiFtcRobotController.requestCodeConfigureRobot,
+        LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
+    constantToRequestCode.put(
+        LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT,
         aiFtcRobotController.requestCodeConfigureRobot);
-    constantToRequestCode.put(FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL,
+    requestCodeToConstant.put(
+        aiFtcRobotController.requestCodeConfigureWifiChannel,
+        FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL);
+    constantToRequestCode.put(
+        FtcRobotControllerActivity.REQUEST_CONFIG_WIFI_CHANNEL,
         aiFtcRobotController.requestCodeConfigureWifiChannel);
   }
 
