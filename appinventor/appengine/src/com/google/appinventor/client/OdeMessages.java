@@ -1089,7 +1089,7 @@ public interface OdeMessages extends Messages {
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
 
-  @DefaultMessage("The value must be a number greater than or equal to 0")
+  @DefaultMessage("The value must be an integer greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
 
