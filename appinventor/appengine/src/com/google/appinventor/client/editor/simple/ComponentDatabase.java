@@ -448,13 +448,13 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   
   private void fireComponentsAdded(List<String> componentTypes) {
     for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
-      listener.onComponentsAdded(componentTypes);
+      listener.onComponentTypeAdded(componentTypes);
     }
   }
   
   private void fireComponentsRemoved(List<String> componentTypes) {
     for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
-      listener.onComponentsRemoved(componentTypes);
+      listener.onComponentTypeRemoved(componentTypes);
     }
   }
   

@@ -64,8 +64,7 @@ import java.util.Map;
 public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
 
   // Component database: information about components (including their properties and events)
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-    SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   // Associated editor
   private final YaFormEditor editor;
@@ -84,6 +83,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new StackPanel();
 
@@ -262,16 +262,14 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   @Override
-  public void onComponentsAdded(List<String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+  public void onComponentTypeAdded(List<String> componentTypes) {
     for (String componentType : componentTypes) {
       this.addComponent(componentType);
     }
   }
   
   @Override
-  public void onComponentsRemoved(List<String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+  public void onComponentTypeRemoved(List<String> componentTypes) {
     for (String componentType : componentTypes) {
       this.removeComponent(componentType);
     }
@@ -279,7 +277,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   
   @Override
   public void onResetDatabase() {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     reloadComponents();
   }
 

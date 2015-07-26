@@ -67,5 +67,4 @@ public abstract class SimpleEditor extends FileEditor {
    */
   public abstract boolean isScreen1();
   
-  public abstract ComponentDatabaseChangeListener getComponentDatabaseChangeListener();
 }
