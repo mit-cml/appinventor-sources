@@ -25,7 +25,7 @@ public final class ComponentListBox extends Box {
    *
    * @return  component list box
    */
-  public static ComponentListBox getComponentListBox() {
+  public static ComponentListBox getInstance() {
     return INSTANCE;
   }
 
