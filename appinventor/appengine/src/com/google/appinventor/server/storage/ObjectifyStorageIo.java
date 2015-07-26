@@ -1713,6 +1713,64 @@ public class ObjectifyStorageIo implements  StorageIo {
     return result == null ? null : result.gcsPath;
   }
 
+  @Override
+  public void deleteComponent(final Component component) {
+    JobRetryHelper helper = new JobRetryHelper() {
+      private static final String EXTERNAL_COMP_DIR = "external_comps";
+      private static final String INFO_FILE_NAME = "info.json";
+
+      @Override
+      public void run(Objectify datastore) {
+        datastore.delete(componentKey(component.getId()));
+
+        String gcsPath = getGcsPath(component);
+        if (gcsPath == null) {
+          throw CrashReport.createAndLogError(LOG, null, "gcs path of " +
+              component.getFullyQualifiedName() + " of version " + component.getVersion() +
+              " is null", new NullPointerException());
+        }
+
+        try {
+          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, gcsPath));
+          updateInfoFile(component);
+        } catch (IOException e) {
+          LOG.log(Level.WARNING, "Unable to delete " + component.getFullyQualifiedName(), e);
+        }
+      }
+
+      private void updateInfoFile(Component comp) throws IOException {
+        JSONObject info = getInfoJson(comp);
+        if (info == null) {
+          throw CrashReport.createAndLogError(LOG, null, "Error reading info.json of " +
+              comp.getFullyQualifiedName(), new NullPointerException());
+        }
+
+        if (info.getInt("numOfVersions") == 1) {
+          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, getInfoFilePath(comp)));
+        } else {
+          info.put("numOfVersions", info.getInt("numOfVersions") - 1);
+          setGcsFileContent(getInfoFilePath(comp), info.toString().getBytes());
+        }
+      }
+
+      private JSONObject getInfoJson(Component comp) {
+        byte[] infoContent = getGcsFileContent(getInfoFilePath(comp));
+        return infoContent == null ? null : new JSONObject(new String(infoContent));
+      }
+
+      private String getInfoFilePath(Component comp) {
+        return EXTERNAL_COMP_DIR + "/" + comp.getFullyQualifiedName() + "/" + INFO_FILE_NAME;
+      }
+    };
+
+    try {
+      runJobWithRetries(helper, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectComponentErrorInfo(component.getAuthorId(), component.getFullyQualifiedName()), e);
+    }
+  }
+
   protected void deleteBlobstoreFile(String blobstorePath) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.

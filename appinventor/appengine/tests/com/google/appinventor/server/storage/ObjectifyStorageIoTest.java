@@ -653,6 +653,32 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNull(storage.getGcsPath(fakeComp));
   }
 
+  public void testDeleteComponent() {
+    Component comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
+        RAW_FILE_CONTENT1);
+    String infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() +
+        "/" + "info.json";
+
+    assertNotNull(storage.getGcsFileContent(infoPath));
+    assertNotNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
+    storage.deleteComponent(comp);
+    assertTrue(storage.getCompDataList(comp.getFullyQualifiedName()).isEmpty());
+    assertNull(storage.getGcsFileContent(infoPath));
+    assertNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
+
+    final int NUM_OF_VERSIONS = 5;
+    for (int i = 0; i < NUM_OF_VERSIONS; ++i) {
+      comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
+          RAW_FILE_CONTENT1);
+    }
+
+    storage.deleteComponent(comp);
+    infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() + "/" +
+        "info.json";
+    byte[] infoContent = storage.getGcsFileContent(infoPath);
+    JSONObject updatedInfo = new JSONObject(new String(infoContent));
+    assertEquals(NUM_OF_VERSIONS - 1, updatedInfo.getInt("numOfVersions"));
+  }
 
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the

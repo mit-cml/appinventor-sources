@@ -491,6 +491,13 @@ public interface StorageIo {
   String getGcsPath(Component component);
 
   /**
+   * Delete the component from gcs and datastore
+   *
+   * @param component the component to be deleted
+   */
+  void deleteComponent(final Component component);
+
+  /**
    * Deletes a file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project ID
