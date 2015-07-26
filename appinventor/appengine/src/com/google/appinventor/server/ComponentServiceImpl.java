@@ -95,7 +95,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   public void deleteComponent(Component component) {
     if (!component.getAuthorId().equals(userInfoProvider.getUserId())) {
       throw CrashReport.createAndLogError(LOG, null,
-          "The user who is deleting the component with id " + component.id() +
+          "The user who is deleting the component with id " + component.getId() +
           " is not the author.", null);
     }
     storageIo.deleteComponent(component);
