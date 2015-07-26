@@ -574,8 +574,11 @@ abstract class MockHVLayoutBase extends MockLayout {
       int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
       int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
 
-      // The middle of the child needs to be at centerY, so the
-      // top of the child is above that by childHeightWithBorder/2
+      // topY is where the top of each component goes.  It starts out either at zero, or offset
+      // so the entire stack is vertically centered in the arrangement (i.e., offset by
+      // (containerLayoutInfo.height / 2) - (childHeightWithBorder / 2)) or offset so that
+      // the bottom of the stack of components is at the bottom of the layout
+      // (i.e., offset by containerLayoutInfo.height - childHeightWithBorder).
       int topY = 0;
 
       switch (alignV) {
