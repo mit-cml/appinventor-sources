@@ -406,6 +406,12 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
 
   @Override
   public void clearHardwareDevice() {
+    synchronized (portsRegisteredForPortReadyCallbackLock) {
+      for (Integer port : portsRegisteredForPortReadyCallback) {
+        legacyModule.deregisterForPortReadyCallback(port);
+      }
+      portsRegisteredForPortReadyCallback.clear();
+    }
     legacyModule = null;
   }
 

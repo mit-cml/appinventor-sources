@@ -127,14 +127,6 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Stop");
   }
 
-  // TODO(lizlooney): remove these deprecated functions.
-  @SimpleFunction(description = "TelemetryAddTextData", userVisible = false)
-  public void TelemetryAddTextData(String key, String text) {
-  }
-  @SimpleFunction(description = "TelemetryAddNumericData", userVisible = false)
-  public void TelemetryAddNumericData(String key, String number) {
-  }
-
   // Deleteable implementation
 
   @Override
@@ -152,5 +144,13 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
   @Override
   public OpMode getOpMode() {
     return opMode;
+  }
+
+  // TODO(lizlooney): remove these deprecated functions.
+  @SimpleFunction(description = "TelemetryAddTextData", userVisible = false)
+  public void TelemetryAddTextData(String key, String text) {
+  }
+  @SimpleFunction(description = "TelemetryAddNumericData", userVisible = false)
+  public void TelemetryAddNumericData(String key, String number) {
   }
 }
