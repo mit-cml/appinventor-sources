@@ -91,6 +91,16 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     return true;
   }
 
+  @Override
+  public void deleteComponent(Component component) {
+    if (!component.getAuthorId().equals(userInfoProvider.getUserId())) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "The user who is deleting the component with id " + component.id() +
+          " is not the author.", null);
+    }
+    storageIo.deleteComponent(component);
+  }
+
   private Map<String, byte[]> extractContents(InputStream inputStream)
       throws IOException {
     Map<String, byte[]> contents = new HashMap<String, byte[]>();

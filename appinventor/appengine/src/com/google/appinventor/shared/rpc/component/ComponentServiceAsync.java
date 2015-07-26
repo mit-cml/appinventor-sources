@@ -29,4 +29,8 @@ public interface ComponentServiceAsync {
   void importComponentToProject(String url, long projectId, String folderPath,
       AsyncCallback<Boolean> callback);
 
+  /**
+   * @see ComponentService#deleteComponent(Component)
+   */
+  void deleteComponent(Component component, AsyncCallback<Void> callback);
 }
