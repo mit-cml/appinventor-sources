@@ -43,4 +43,11 @@ public interface ComponentService extends RemoteService {
    */
   boolean importComponentToProject(String url, long projectId, String folderPath);
 
+  /**
+   * Delete the component uploaded by the user
+   *
+   * @param component the component to be deleted
+   */
+  void deleteComponent(Component component);
+
 }

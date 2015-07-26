@@ -832,7 +832,7 @@ public class Ode implements EntryPoint {
     HorizontalPanel componentInnerPanel = new HorizontalPanel();
     componentInnerPanel.setWidth("100%");
     componentToolbar = new ComponentToolbar();
-    componentInnerPanel.add(ComponentListBox.getComponentListBox());
+    componentInnerPanel.add(ComponentListBox.getInstance());
     componentOuterPanel.add(componentToolbar);
     componentOuterPanel.add(componentInnerPanel);
     componentsTabIndex = deckPanel.getWidgetCount();

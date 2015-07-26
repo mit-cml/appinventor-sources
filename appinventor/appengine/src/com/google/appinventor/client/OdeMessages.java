@@ -546,6 +546,10 @@ public interface OdeMessages extends Messages {
   @Description("Header for version column of component table")
   String componentVersionHeader();
 
+  @DefaultMessage("Are you really sure you want to delete the component(s): {0}?")
+  @Description("Confirmation message for deleting component(s)")
+  String confirmDeleteComponents(String componentNames);
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
