@@ -120,8 +120,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
 
   @SimpleFunction(description = "Enable a physical port in NXT I2C write mode and enable the " +
       "I2cPortIsReady event.")
-  public void EnableNxtI2cWriteMode(int port, int i2cAddress, int memAddress,
-      int length) {
+  public void EnableNxtI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
     if (legacyModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {

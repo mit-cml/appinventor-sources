@@ -274,8 +274,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Enable a physical port in I2C write mode and enable the " +
       "I2cPortIsReady event.")
-  public void EnableI2cWriteMode(int port, int i2cAddress, int memAddress,
-      int length) {
+  public void EnableI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
     if (deviceInterfaceModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {

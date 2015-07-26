@@ -4054,37 +4054,53 @@ public interface OdeMessages extends Messages {
   String textToTranslateParams();
 
   // FIRST Tech Challenge parameters
-  @DefaultMessage("d")
+  @DefaultMessage("bigEndian")
   @Description("")
-  String dParams();
+  String bigEndianParams();
 
-  @DefaultMessage("data")
+  @DefaultMessage("bitPosition")
   @Description("")
-  String dataParams();
+  String bitPositionParams();
+
+  @DefaultMessage("byteArray")
+  @Description("")
+  String byteArrayParams();
+
+  @DefaultMessage("channel")
+  @Description("")
+  String channelParams();
+
+  @DefaultMessage("destinationByteArray")
+  @Description("")
+  String destinationByteArrayParams();
+
+  @DefaultMessage("destinationPosition")
+  @Description("")
+  String destinationPositionParams();
 
   @DefaultMessage("enable")
   @Description("")
   String enableParams();
 
-  @DefaultMessage("i")
+  @DefaultMessage("frequency")
   @Description("")
-  String iParams();
-
-  @DefaultMessage("initialValue")
-  @Description("")
-  String initialValueParams();
-
-  @DefaultMessage("initialValues")
-  @Description("")
-  String initialValuesParams();
+  String frequencyParams();
 
   @DefaultMessage("i2cAddress")
   @Description("")
   String i2cAddressParams();
 
+  @DefaultMessage("input")
+  @Description("")
+  String inputParams();
+
   @DefaultMessage("key")
   @Description("")
   String keyParams();
+
+  @DefaultMessage("length")
+  @Description("")
+  String lengthParams();
 
   @DefaultMessage("line")
   @Description("")
@@ -4098,26 +4114,49 @@ public interface OdeMessages extends Messages {
   @Description("")
   String memAddressParams();
 
-  @DefaultMessage("memLength")
-  @Description("")
-  String memLengthParams();
-
   @DefaultMessage("min")
   @Description("")
   String minParams();
 
-  @DefaultMessage("p")
+  @DefaultMessage("period")
   @Description("")
-  String pParams();
+  String periodParams();
 
-  @DefaultMessage("physicalPort")
+  @DefaultMessage("port")
   @Description("")
-  String physicalPortParams();
+  String portParams();
+
+  @DefaultMessage("position")
+  @Description("")
+  String positionParams();
 
   @DefaultMessage("set")
   @Description("")
   String setParams();
 
+  @DefaultMessage("sourceByteArray")
+  @Description("")
+  String sourceByteArrayParams();
+
+  @DefaultMessage("sourcePosition")
+  @Description("")
+  String sourcePositionParams();
+
+  @DefaultMessage("state")
+  @Description("")
+  String stateParams();
+
+  @DefaultMessage("time")
+  @Description("")
+  String timeParams();
+
+  @DefaultMessage("unsigned")
+  @Description("")
+  String unsignedParams();
+
+  @DefaultMessage("voltage")
+  @Description("")
+  String voltageParams();
 
   //Events
   @DefaultMessage("AccelerationChanged")
@@ -5556,64 +5595,6 @@ public interface OdeMessages extends Messages {
   String WriteI2cPortFlagOnlyFromModuleMethods();
 
 
-  // TODO(lizlooney): remove deprecated properties/functions.
-  @DefaultMessage("DifferentialControlLoopCoefficientD")
-  @Description("")
-  String DifferentialControlLoopCoefficientDProperties();
-  @DefaultMessage("DifferentialControlLoopCoefficientI")
-  @Description("")
-  String DifferentialControlLoopCoefficientIProperties();
-  @DefaultMessage("DifferentialControlLoopCoefficientP")
-  @Description("")
-  String DifferentialControlLoopCoefficientPProperties();
-  @DefaultMessage("GearRatio")
-  @Description("")
-  String GearRatioProperties();
-  @DefaultMessage("SetDifferentialControlLoopCoefficients")
-  @Description("")
-  String SetDifferentialControlLoopCoefficientsMethods();
-  @DefaultMessage("FetchLegacyModuleWriteCache")
-  @Description("")
-  String FetchLegacyModuleWriteCacheMethods();
-  @DefaultMessage("GetAnalogOutputVoltage")
-  @Description("")
-  String GetAnalogOutputVoltageMethods();
-  @DefaultMessage("GetAnalogOutputFrequency")
-  @Description("")
-  String GetAnalogOutputFrequencyMethods();
-  @DefaultMessage("GetAnalogOutputMode")
-  @Description("")
-  String GetAnalogOutputModeMethods();
-  @DefaultMessage("GetPulseWidthOutputTime")
-  @Description("")
-  String GetPulseWidthOutputTimeMethods();
-  @DefaultMessage("GetPulseWidthPeriod")
-  @Description("")
-  String GetPulseWidthPeriodMethods();
-  @DefaultMessage("IsPortReady")
-  @Description("")
-  String IsPortReadyMethods();
-  @DefaultMessage("ReadI2c")
-  @Description("")
-  String ReadI2cMethods();
-  @DefaultMessage("ReadDeviceInterfaceModuleI2cCache")
-  @Description("")
-  String ReadDeviceInterfaceModuleI2cCacheMethods();
-  @DefaultMessage("ReadLegacyModuleCache")
-  @Description("")
-  String ReadLegacyModuleCacheMethods();
-  @DefaultMessage("WriteI2c")
-  @Description("")
-  String WriteI2cMethods();
-  @DefaultMessage("WriteDeviceInterfaceModuleI2cCache")
-  @Description("")
-  String WriteDeviceInterfaceModuleI2cCacheMethods();
-  @DefaultMessage("WriteLegacyModuleCache")
-  @Description("")
-  String WriteLegacyModuleCacheMethods();
-
-
-
   //Mock Components
   @DefaultMessage("add items...")
   @Description("")
@@ -6239,4 +6220,60 @@ public interface OdeMessages extends Messages {
   @Description("")
   String XMLTextDecodeMethods();
 
+
+  // TODO(lizlooney): remove deprecated properties/functions.
+  @DefaultMessage("DifferentialControlLoopCoefficientD")
+  @Description("")
+  String DifferentialControlLoopCoefficientDProperties();
+  @DefaultMessage("DifferentialControlLoopCoefficientI")
+  @Description("")
+  String DifferentialControlLoopCoefficientIProperties();
+  @DefaultMessage("DifferentialControlLoopCoefficientP")
+  @Description("")
+  String DifferentialControlLoopCoefficientPProperties();
+  @DefaultMessage("GearRatio")
+  @Description("")
+  String GearRatioProperties();
+  @DefaultMessage("SetDifferentialControlLoopCoefficients")
+  @Description("")
+  String SetDifferentialControlLoopCoefficientsMethods();
+  @DefaultMessage("FetchLegacyModuleWriteCache")
+  @Description("")
+  String FetchLegacyModuleWriteCacheMethods();
+  @DefaultMessage("GetAnalogOutputVoltage")
+  @Description("")
+  String GetAnalogOutputVoltageMethods();
+  @DefaultMessage("GetAnalogOutputFrequency")
+  @Description("")
+  String GetAnalogOutputFrequencyMethods();
+  @DefaultMessage("GetAnalogOutputMode")
+  @Description("")
+  String GetAnalogOutputModeMethods();
+  @DefaultMessage("GetPulseWidthOutputTime")
+  @Description("")
+  String GetPulseWidthOutputTimeMethods();
+  @DefaultMessage("GetPulseWidthPeriod")
+  @Description("")
+  String GetPulseWidthPeriodMethods();
+  @DefaultMessage("IsPortReady")
+  @Description("")
+  String IsPortReadyMethods();
+  @DefaultMessage("ReadI2c")
+  @Description("")
+  String ReadI2cMethods();
+  @DefaultMessage("ReadDeviceInterfaceModuleI2cCache")
+  @Description("")
+  String ReadDeviceInterfaceModuleI2cCacheMethods();
+  @DefaultMessage("ReadLegacyModuleCache")
+  @Description("")
+  String ReadLegacyModuleCacheMethods();
+  @DefaultMessage("WriteI2c")
+  @Description("")
+  String WriteI2cMethods();
+  @DefaultMessage("WriteDeviceInterfaceModuleI2cCache")
+  @Description("")
+  String WriteDeviceInterfaceModuleI2cCacheMethods();
+  @DefaultMessage("WriteLegacyModuleCache")
+  @Description("")
+  String WriteLegacyModuleCacheMethods();
 }
