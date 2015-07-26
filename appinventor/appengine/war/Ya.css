@@ -230,6 +230,52 @@ select {
 }
 
 /*
+ * ComponentList
+ */
+.ode-ComponentNameLabel {
+  font-weight: bold;
+  font-size: small;
+  color: #555;
+}
+
+.ode-ComponentTable {
+  padding: 0px;
+  margin: 0px;
+  border: 1px;
+}
+
+.ode-ComponentTable td {
+  border-collapse: collapse;
+  font-size: small;
+  color: #555;
+  text-align: left;
+  margin: 0px;
+}
+
+.ode-ComponentRowHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: #fff6c3;
+  border-collapse: collapse;
+}
+
+.ode-ComponentRowUnHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: white
+}
+
+.ode-ComponentHeaderRow {
+  background: url(images/toolbarBG.png) repeat;
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
+}
+
+.ode-ComponentHeaderLabel {
+  color: #112abb;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/*
  * TopPanel
  */
 
@@ -2088,7 +2134,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-tags {
   max-width: 100%;
   display: block;
-  margin: 10px 0 0; 
+  margin: 10px 0 0;
 }
 .gallery-app-details .app-tags .gwt-Label {
   display: inline-block;

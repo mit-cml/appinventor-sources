@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.io.File;
@@ -84,9 +85,10 @@ public interface FileImporter {
    * @param userId the userId
    * @param fileName file name
    * @param uploadedFileStream uploaded file
+   * @return the component just imported
    * @throws IOException if any file operation fails
    */
-  void importComponentArchive(String userId, String fileName,
+  Component importComponentArchive(String userId, String fileName,
       InputStream uploadedFileStream) throws IOException;
 
   /**

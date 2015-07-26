@@ -6,21 +6,15 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.appinventor.client.explorer.component.ComponentComparators;
+import com.google.appinventor.client.explorer.component.ComponentManagerEventListener;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -31,7 +25,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,61 +32,43 @@ import java.util.Map;
 /**
  * The component list shows all components in a table.
  *
- * <p> The component name, date created, date modified, date built, published will be shown in the table.
+ * <p> The component name and version will be shown in the table.
  *
  */
-public class ComponentList extends Composite implements ProjectManagerEventListener {
+public class ComponentList extends Composite implements ComponentManagerEventListener {
   private enum SortField {
     NAME,
-    DATE_CREATED,
-    DATE_MODIFIED,
-    DATE_BUILT,
-    PUBLISHED,
+    VERSION
   }
   private enum SortOrder {
     ASCENDING,
     DESCENDING,
   }
 
-  // TODO: add these to OdeMessages.java
-  private static final String NOT_PUBLISHED = "No";
-  private static final String PUBLISHED = "Yes";
-  private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
-  private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
-
-
-  private final List<Project> projects;
-  private final List<Project> selectedProjects;
-  private final Map<Project, ProjectWidgets> projectWidgets;
+  private final List<Component> components;
+  private final List<Component> selectedComponents;
+  private final Map<Component, ComponentWidgets> componentWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
 
-  // UI elements
   private final Grid table;
   private final Label nameSortIndicator;
-  private final Label dateCreatedSortIndicator;
-  private final Label dateModifiedSortIndicator;
-  private final Label publishedSortIndicator;
-
-  GalleryClient gallery = null;
+  private final Label versionSortIndicator;
 
   public ComponentList() {
-    projects = new ArrayList<Project>();
-    selectedProjects = new ArrayList<Project>();
-    projectWidgets = new HashMap<Project, ProjectWidgets>();
+    components = new ArrayList<Component>();
+    selectedComponents = new ArrayList<Component>();
+    componentWidgets = new HashMap<Component, ComponentWidgets>();
 
-    sortField = SortField.DATE_MODIFIED;
-    sortOrder = SortOrder.DESCENDING;
+    sortField = SortField.NAME;
+    sortOrder = SortOrder.ASCENDING;
 
-    // Initialize UI
-    table = new Grid(1, 5); // The table initially contains just the header row.
-    table.addStyleName("ode-ProjectTable");
+    table = new Grid(1, 3); // The table initially contains just the header row.
+    table.addStyleName("ode-ComponentTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
     nameSortIndicator = new Label("");
-    dateCreatedSortIndicator = new Label("");
-    dateModifiedSortIndicator = new Label("");
-    publishedSortIndicator = new Label("");
+    versionSortIndicator = new Label("");
     refreshSortIndicators();
     setHeaderRow();
 
@@ -103,10 +78,8 @@ public class ComponentList extends Composite implements ProjectManagerEventListe
     panel.add(table);
     initWidget(panel);
 
-    // It is important to listen to project manager events as soon as possible.
-    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
-
-    gallery = GalleryClient.getInstance();
+    // It is important to listen to component manager events as soon as possible.
+    Ode.getInstance().getComponentManager().addEventListener(this);
   }
 
   /**
@@ -114,39 +87,23 @@ public class ComponentList extends Composite implements ProjectManagerEventListe
    *
    */
   private void setHeaderRow() {
-    table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
+    table.getRowFormatter().setStyleName(0, "ode-ComponentHeaderRow");
 
     HorizontalPanel nameHeader = new HorizontalPanel();
-    final Label nameHeaderLabel = new Label(MESSAGES.projectNameHeader());
-    nameHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    final Label nameHeaderLabel = new Label(MESSAGES.componentNameHeader());
+    nameHeaderLabel.addStyleName("ode-ComponentHeaderLabel");
     nameHeader.add(nameHeaderLabel);
-    nameSortIndicator.addStyleName("ode-ProjectHeaderLabel");
+    nameSortIndicator.addStyleName("ode-ComponentHeaderLabel");
     nameHeader.add(nameSortIndicator);
     table.setWidget(0, 1, nameHeader);
 
-    HorizontalPanel dateCreatedHeader = new HorizontalPanel();
-    final Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
-    dateCreatedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    dateCreatedHeader.add(dateCreatedHeaderLabel);
-    dateCreatedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    dateCreatedHeader.add(dateCreatedSortIndicator);
-    table.setWidget(0, 2, dateCreatedHeader);
-
-    HorizontalPanel dateModifiedHeader = new HorizontalPanel();
-    final Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
-    dateModifiedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    dateModifiedHeader.add(dateModifiedHeaderLabel);
-    dateModifiedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    dateModifiedHeader.add(dateModifiedSortIndicator);
-    table.setWidget(0, 3, dateModifiedHeader);
-
-    HorizontalPanel publishedHeader = new HorizontalPanel();
-    final Label publishedHeaderLabel = new Label(MESSAGES.projectPublishedHeader());
-    publishedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    publishedHeader.add(publishedHeaderLabel);
-    publishedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    publishedHeader.add(publishedSortIndicator);
-    table.setWidget(0, 4, publishedHeader);
+    HorizontalPanel versionHeader = new HorizontalPanel();
+    final Label versionHeaderLabel = new Label(MESSAGES.componentVersionHeader());
+    versionHeaderLabel.addStyleName("ode-ComponentHeaderLabel");
+    versionHeader.add(versionHeaderLabel);
+    versionSortIndicator.addStyleName("ode-ComponentHeaderLabel");
+    versionHeader.add(versionSortIndicator);
+    table.setWidget(0, 2, versionHeader);
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
@@ -154,24 +111,16 @@ public class ComponentList extends Composite implements ProjectManagerEventListe
         SortField clickedSortField;
         if (e.getSource() == nameHeaderLabel || e.getSource() == nameSortIndicator) {
           clickedSortField = SortField.NAME;
-        } else if (e.getSource() == dateCreatedHeaderLabel || e.getSource() == dateCreatedSortIndicator) {
-          clickedSortField = SortField.DATE_CREATED;
-        } else if (e.getSource() == dateModifiedHeaderLabel || e.getSource() == dateModifiedSortIndicator){
-          clickedSortField = SortField.DATE_MODIFIED;
-        }else{
-          clickedSortField = SortField.PUBLISHED;
+        } else {
+          clickedSortField = SortField.VERSION;
         }
         changeSortOrder(clickedSortField);
       }
     };
     nameHeaderLabel.addMouseDownHandler(mouseDownHandler);
     nameSortIndicator.addMouseDownHandler(mouseDownHandler);
-    dateCreatedHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    dateCreatedSortIndicator.addMouseDownHandler(mouseDownHandler);
-    dateModifiedHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    dateModifiedSortIndicator.addMouseDownHandler(mouseDownHandler);
-    publishedHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    publishedSortIndicator.addMouseDownHandler(mouseDownHandler);
+    versionHeaderLabel.addMouseDownHandler(mouseDownHandler);
+    versionSortIndicator.addMouseDownHandler(mouseDownHandler);
   }
 
   private void changeSortOrder(SortField clickedSortField) {
@@ -195,196 +144,136 @@ public class ComponentList extends Composite implements ProjectManagerEventListe
     switch (sortField) {
       case NAME:
         nameSortIndicator.setText(text);
-        dateCreatedSortIndicator.setText("");
-        dateModifiedSortIndicator.setText("");
+        versionSortIndicator.setText("");
         break;
-      case DATE_CREATED:
-        dateCreatedSortIndicator.setText(text);
-        dateModifiedSortIndicator.setText("");
+      case VERSION:
         nameSortIndicator.setText("");
-        break;
-      case DATE_MODIFIED:
-        dateModifiedSortIndicator.setText(text);
-        dateCreatedSortIndicator.setText("");
-        nameSortIndicator.setText("");
-        break;
-      case PUBLISHED:
-        publishedSortIndicator.setText(text);
-        nameSortIndicator.setText("");
-        dateCreatedSortIndicator.setText("");
-        dateModifiedSortIndicator.setText("");
+        versionSortIndicator.setText(text);
     }
   }
 
-  private class ProjectWidgets {
+  private class ComponentWidgets {
     final CheckBox checkBox;
     final Label nameLabel;
-    final Label dateCreatedLabel;
-    final Label dateModifiedLabel;
-    final Label publishedLabel;
+    final Label versionLabel;
 
-    private ProjectWidgets(final Project project) {
+    private ComponentWidgets(final Component component) {
       checkBox = new CheckBox();
       checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + projects.indexOf(project);
+          int row = 1 + components.indexOf(component);
           if (isChecked) {
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-            selectedProjects.add(project);
+            table.getRowFormatter().setStyleName(row, "ode-ComponentRowHighlighted");
+            selectedComponents.add(component);
           } else {
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-            selectedProjects.remove(project);
+            table.getRowFormatter().setStyleName(row, "ode-ComponentRowUnHighlighted");
+            selectedComponents.remove(component);
           }
-          Ode.getInstance().getProjectToolbar().updateButtons();
+          Ode.getInstance().getComponentToolbar().updateButtons();
         }
       });
 
-      nameLabel = new Label(project.getProjectName());
-      nameLabel.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          Ode ode = Ode.getInstance();
-          if (ode.screensLocked()) {
-            return;             // i/o in progress, ignore request
-          }
-          ode.openYoungAndroidProjectInDesigner(project);
-        }
-      });
-      nameLabel.addStyleName("ode-ProjectNameLabel");
+      nameLabel = new Label(component.getName());
+      nameLabel.addStyleName("ode-ComponentNameLabel");
 
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
-
-      Date dateCreated = new Date(project.getDateCreated());
-      dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
-
-      Date dateModified = new Date(project.getDateModified());
-      dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
-
-      publishedLabel = new Label();
+      versionLabel = new Label(Long.toString(component.getVersion()));
     }
   }
 
   private void refreshTable(boolean needToSort) {
     if (needToSort) {
-      // Sort the projects.
-      Comparator<Project> comparator;
+      Comparator<Component> comparator;
       switch (sortField) {
         default:
         case NAME:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_NAME_ASCENDING
-              : ProjectComparators.COMPARE_BY_NAME_DESCENDING;
+              ? ComponentComparators.COMPARE_BY_NAME_ASCENDING
+              : ComponentComparators.COMPARE_BY_NAME_DESCENDING;
           break;
-        case DATE_CREATED:
+        case VERSION:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
-          break;
-        case DATE_MODIFIED:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
-          break;
-        case PUBLISHED:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_PUBLISHED_ASCENDING
-              : ProjectComparators.COMPARE_BY_PUBLISHED_DESCENDING;
+              ? ComponentComparators.COMPARE_BY_VERSION_ASCENDING
+              : ComponentComparators.COMPARE_BY_VERSION_DESCENDING;
           break;
       }
-      Collections.sort(projects, comparator);
+      Collections.sort(components, comparator);
     }
 
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 5);
+    table.resize(1 + components.size(), 5);
     int row = 1;
-    for (Project project : projects) {
-      ProjectWidgets pw = projectWidgets.get(project);
-      if (selectedProjects.contains(project)) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        pw.checkBox.setValue(true);
+    for (Component component : components) {
+      ComponentWidgets cw = componentWidgets.get(component);
+      if (selectedComponents.contains(component)) {
+        table.getRowFormatter().setStyleName(row, "ode-ComponentRowHighlighted");
+        cw.checkBox.setValue(true);
       } else {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        pw.checkBox.setValue(false);
+        table.getRowFormatter().setStyleName(row, "ode-ComponentRowUnHighlighted");
+        cw.checkBox.setValue(false);
       }
-      table.setWidget(row, 0, pw.checkBox);
-      table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row, 2, pw.dateCreatedLabel);
-      table.setWidget(row, 3, pw.dateModifiedLabel);
-      table.setWidget(row, 4, pw.publishedLabel);
-      if(Ode.getGallerySettings().galleryEnabled()){
-        if (project.isPublished()) {
-          pw.publishedLabel.setText(PUBLISHED);
-        }
-        else {
-          pw.publishedLabel.setText(NOT_PUBLISHED);
-        }
-      }
+      table.setWidget(row, 0, cw.checkBox);
+      table.setWidget(row, 1, cw.nameLabel);
+      table.setWidget(row, 2, cw.versionLabel);
 
       row++;
     }
 
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getComponentToolbar().updateButtons();
   }
 
   /**
-   * Gets the number of projects
+   * Gets the number of selected components
    *
-   * @return the number of projects
+   * @return the number of selected components
    */
-  public int getNumProjects() {
-    return projects.size();
+  public int getNumSelectedComponents() {
+    return selectedComponents.size();
   }
 
   /**
-   * Gets the number of selected projects
+   * Returns the list of selected components
    *
-   * @return the number of selected projects
+   * @return the selected components
    */
-  public int getNumSelectedProjects() {
-    return selectedProjects.size();
+  public List<Component> getSelectedComponents() {
+    return selectedComponents;
   }
 
-  /**
-   * Returns the list of selected projects
-   *
-   * @return the selected projects
-   */
-  public List<Project> getSelectedProjects() {
-    return selectedProjects;
-  }
-
-  // ProjectManagerEventListener implementation
+  // ComponentManagerEventListener implementation
 
   @Override
-  public void onProjectAdded(Project project) {
-    projects.add(project);
-    projectWidgets.put(project, new ProjectWidgets(project));
+  public void onComponentAdded(Component component) {
+    components.add(component);
+    componentWidgets.put(component, new ComponentWidgets(component));
     refreshTable(true);
   }
+
   @Override
-  public void onProjectRemoved(Project project) {
-    projects.remove(project);
-    projectWidgets.remove(project);
+  public void onComponentRemoved(Component component) {
+    components.remove(component);
+    componentWidgets.remove(component);
+    selectedComponents.remove(component);
 
     refreshTable(false);
 
-    selectedProjects.remove(project);
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    Ode.getInstance().getComponentToolbar().updateButtons();
   }
 
   @Override
-  public void onProjectsLoaded() {
-    // This can be empty
-  }
-  public void onProjectPublishedOrUnpublished() {
-    refreshTable(false);
-  }
+  public void onComponentsLoaded() {
+    components.clear();
+    selectedComponents.clear();
+    componentWidgets.clear();
 
-  public void setPublishedHeaderVisible(boolean visible){
-    table.getWidget(0, 4).setVisible(visible);
+    for (Component comp : Ode.getInstance().getComponentManager().getComponents()) {
+      components.add(comp);
+      componentWidgets.put(comp, new ComponentWidgets(comp));
+    }
+
+    refreshTable(true);
   }
 }

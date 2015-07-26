@@ -9,7 +9,7 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -465,16 +465,17 @@ public interface StorageIo {
    * @param userId the user who owns the file
    * @param fileName the file name with the extension
    * @param content  file content
+   * @return the component just uploaded
    */
-  void uploadComponentFile(final String userId, final String fileName, final byte[] content);
+  Component uploadComponentFile(final String userId, final String fileName, final byte[] content);
 
   /**
-   * Returns a list of info about the components uploaded by the user
+   * Returns a list of components uploaded by the user
    *
    * @param userId unique user id
-   * @return list of component info
+   * @return list of components
    */
-  List<ComponentInfo> getComponentInfos(String userId);
+  List<Component> getComponents(String userId);
 
   /**
    * Returns the content of a file from gcs
@@ -487,7 +488,7 @@ public interface StorageIo {
   /**
    * @return gcs path to the component file
    */
-  String getGcsPath(ComponentInfo compInfo);
+  String getGcsPath(Component component);
 
   /**
    * Deletes a file.

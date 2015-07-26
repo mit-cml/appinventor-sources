@@ -505,7 +505,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of Start new component menuitem")
   String startNewComponentMenuItem();
 
-  @DefaultMessage("Import component (.aix) to project ...")
+  @DefaultMessage("Import component to project ...")
   @Description("Name of Import component menuitem")
   String importComponentMenuItem();
 
@@ -513,11 +513,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of Build component menuitem")
   String buildComponentMenuItem();
 
-  @DefaultMessage("Install component")
-  @Description("Name of Install component menuitem")
-  String installComponentMenuItem();
-
-  @DefaultMessage("Upload component")
+  @DefaultMessage("Upload component (.aix) from my computer ...")
   @Description("Name of Upload component menuitem")
   String uploadComponentMenuItem();
 
@@ -537,6 +533,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Please select a component to import")
   @Description("Error message reported when no component is selected to import.")
   String noComponentSelectedError();
+
+  @DefaultMessage("Please enter a url")
+  @Description("Error message reported when no url is entered.")
+  String noUrlError();
+
+  @DefaultMessage("Name")
+  @Description("Header for name column of component table")
+  String componentNameHeader();
+
+  @DefaultMessage("Version")
+  @Description("Header for version column of component table")
+  String componentVersionHeader();
 
   //Connect
   @DefaultMessage("Connect")
@@ -2081,7 +2089,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
-  
+
   @DefaultMessage("External")
   @Description("")
   String externalComponentPallette();
