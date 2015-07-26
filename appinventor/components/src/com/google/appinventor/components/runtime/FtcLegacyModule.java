@@ -6,15 +6,23 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
+import com.qualcomm.robotcore.hardware.LegacyModule.PortReadyCallback;
+
+import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 /**
  * A component for a legacy module of an FTC robot.
@@ -28,9 +36,11 @@ import com.qualcomm.robotcore.hardware.LegacyModule;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLegacyModule extends FtcHardwareDevice {
+public final class FtcLegacyModule extends FtcHardwareDevice implements PortReadyCallback{
 
   private volatile LegacyModule legacyModule;
+  private final Object portsRegisteredForPortReadyCallbackLock = new Object();
+  private final List<Integer> portsRegisteredForPortReadyCallback = Lists.newArrayList();
 
   /**
    * Creates a new FtcLegacyModule component.
@@ -39,11 +49,67 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  @SimpleFunction(description = "Enable a physical port in NXT I2C read mode.")
-  public void EnableNxtI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int memLength) {
+  // Events
+
+  @SimpleEvent(description = "This event is triggered when an I2C port is ready. This event is " +
+      "only enabled if EnableNxtI2cReadMode or EnableNxtI2cWriteMode is used.")
+  public void I2cPortIsReady(int port) {
+    EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
+  }
+
+  // Properties
+
+  /**
+   * Version property getter.
+   */
+  @SimpleProperty(description = "The version of this device.",
+      category = PropertyCategory.BEHAVIOR)
+  public int Version() {
     if (legacyModule != null) {
       try {
-        legacyModule.enableNxtI2cReadMode(physicalPort, i2cAddress, memAddress, memLength);
+        return legacyModule.getVersion();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Version",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * Device property getter.
+   */
+  @SimpleProperty(description = "The name of the legacy module device.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Device() {
+    if (legacyModule != null) {
+      try {
+        String name = legacyModule.getDeviceName();
+        if (name != null) {
+          return name;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Device",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
+  @SimpleFunction(description = "Enable a physical port in NXT I2C read mode and enable the " +
+      "I2cPortIsReady event.")
+  public void EnableNxtI2cReadMode(int port, int i2cAddress, int memAddress, int length) {
+    if (legacyModule != null) {
+      try {
+        synchronized (portsRegisteredForPortReadyCallbackLock) {
+          if (!portsRegisteredForPortReadyCallback.contains(port)) {
+            legacyModule.registerForPortReadyCallback(this, port);
+            portsRegisteredForPortReadyCallback.add(port);
+          }
+        }
+        legacyModule.enableNxtI2cReadMode(port, i2cAddress, memAddress, length);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cReadMode",
@@ -52,37 +118,18 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description =
-      "Read the device memory map and return a byte array; only works in NXT I2C read mode.")
-  public Object ReadLegacyModuleCache(int physicalPort) {
+  @SimpleFunction(description = "Enable a physical port in NXT I2C write mode and enable the " +
+      "I2cPortIsReady event.")
+  public void EnableNxtI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
     if (legacyModule != null) {
       try {
-        byte[] data = legacyModule.readLegacyModuleCache(physicalPort);
-        if (data != null) {
-          return data;
+        synchronized (portsRegisteredForPortReadyCallbackLock) {
+          if (!portsRegisteredForPortReadyCallback.contains(port)) {
+            legacyModule.registerForPortReadyCallback(this, port);
+            portsRegisteredForPortReadyCallback.add(port);
+          }
         }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadLegacyModuleCache",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return new byte[0];
-  }
-
-
-  @SimpleFunction(description = "Enable a physical port in NXT I2C write mode.")
-  public void EnableNxtI2cWriteMode(int physicalPort, int i2cAddress, int memAddress,
-      Object byteArray) {
-    if (legacyModule != null) {
-      try {
-        if (byteArray instanceof byte[]) {
-          legacyModule.enableNxtI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              (byte[]) byteArray);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode",
-              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-        }
+        legacyModule.enableNxtI2cWriteMode(port, i2cAddress, memAddress, length);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableNxtI2cWriteMode",
@@ -91,30 +138,11 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Write to the device memory map; only works in NXT I2C write mode.")
-  public void WriteLegacyModuleCache(int physicalPort, Object byteArray) {
-    if (legacyModule != null) {
-      try {
-        if (byteArray instanceof byte[]) {
-          legacyModule.writeLegacyModuleCache(physicalPort, (byte[]) byteArray);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "WriteLegacyModuleCache",
-              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteLegacyModuleCache",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-
   @SimpleFunction(description = "Enable a physical port in analog read mode.")
-  public void EnableAnalogReadMode(int physicalPort) {
+  public void EnableAnalogReadMode(int port) {
     if (legacyModule != null) {
       try {
-        legacyModule.enableAnalogReadMode(physicalPort);
+        legacyModule.enableAnalogReadMode(port);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableAnalogReadMode",
@@ -123,14 +151,42 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description =
-      "Read an analog value from a device and return a byte array; only works in analog read mode.")
-  public Object ReadAnalog(int physicalPort) {
+  @SimpleFunction(description = "Enable or disable 9V power on a port.")
+  public void Enable9v(int port, boolean enable) {
     if (legacyModule != null) {
       try {
-        byte[] data = legacyModule.readAnalog(physicalPort);
-        if (data != null) {
-          return data;
+        legacyModule.enable9v(port, enable);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Enable9v",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Set the value of digital line 0 or 1 while in analog mode.")
+  public void SetDigitalLine(int port, int line, boolean set) {
+    if (legacyModule != null) {
+      try {
+        legacyModule.setDigitalLine(port, line, set);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDigitalLine",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description =
+      "Read an analog value from a device and return a byte array; only works in analog read mode.")
+  public Object ReadAnalog(int port) {
+    if (legacyModule != null) {
+      try {
+        byte[] src = legacyModule.readAnalog(port);
+        if (src != null) {
+          byte[] dest = new byte[src.length];
+          System.arraycopy(src, 0, dest, 0, src.length);
+          return dest;
         }
       } catch (Throwable e) {
         e.printStackTrace();
@@ -141,68 +197,204 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Fetch the cache that is about to be written.")
-  public Object FetchLegacyModuleWriteCache(int physicalPort) {
+  @SimpleFunction(description = "Get the contents of the I2C read cache; return a byte array.")
+  public Object GetI2cReadCache(int port) {
     if (legacyModule != null) {
       try {
-        byte[] data = legacyModule.fetchLegacyModuleWriteCache(physicalPort);
-        if (data != null) {
-          return data;
+        Lock lock = legacyModule.getI2cReadCacheLock(port);
+        lock.lock();
+        try {
+          byte[] src = legacyModule.getI2cReadCache(port);
+          if (src != null) {
+            byte[] dest = new byte[src.length];
+            System.arraycopy(src, 0, dest, 0, src.length);
+            return dest;
+          }
+        } finally {
+          lock.unlock();
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "FetchLegacyModuleWriteCache",
+        form.dispatchErrorOccurredEvent(this, "GetI2cReadCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Set the value of digital line 0 or 1 while in analog mode.")
-  public void SetDigitalLine(int physicalPort, int line, boolean set) {
+  @SimpleFunction(description = "Get the contents of the I2C write cache; return a byte array.")
+  public Object GetI2cWriteCache(int port) {
     if (legacyModule != null) {
       try {
-        legacyModule.setDigitalLine(physicalPort, line, set);
+        Lock lock = legacyModule.getI2cWriteCacheLock(port);
+        lock.lock();
+        try {
+          byte[] src = legacyModule.getI2cWriteCache(port);
+          if (src != null) {
+            byte[] dest = new byte[src.length];
+            System.arraycopy(src, 0, dest, 0, src.length);
+            return dest;
+          }
+        } finally {
+          lock.unlock();
+        }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetDigitalLine",
+        form.dispatchErrorOccurredEvent(this, "GetI2cWriteCache",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return new byte[0];
+  }
+
+  @SimpleFunction(description = "Set the contents of the I2C write cache.")
+  public void SetI2cWriteCache(int port, Object byteArray) {
+    if (legacyModule != null) {
+      try {
+        if (byteArray instanceof byte[]) {
+          byte[] src = (byte[]) byteArray;
+          Lock lock = legacyModule.getI2cWriteCacheLock(port);
+          lock.lock();
+          try {
+            byte[] dest = legacyModule.getI2cWriteCache(port);
+            if (dest != null) {
+              System.arraycopy(src, 0, dest, 0, Math.min(src.length, dest.length));
+            }
+          } finally {
+            lock.unlock();
+          }
+        } else {
+          form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
+              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
-  @SimpleFunction(description = "Enable or disable 9V power on a port.")
-  public void Enable9v(int physicalPort, boolean enable) {
+  @SimpleFunction(description = "Set the port action flag; this flag tells the Device Interface " +
+      "Module to send the current data in its buffer to the I2C device.")
+  public void SetNxtI2cPortActionFlag(int port) {
     if (legacyModule != null) {
       try {
-        legacyModule.enable9v(physicalPort, enable);
+        legacyModule.setNxtI2cPortActionFlag(port);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Enable9v",
+        form.dispatchErrorOccurredEvent(this, "SetNxtI2cPortActionFlag",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
-
-  @SimpleFunction(description = "Determine if a physical port is ready.")
-  public boolean IsPortReady(int physicalPort) {
+  
+  @SimpleFunction(description = "Get the port action flag; this flag is set if the particular port is busy.")
+  public boolean IsNxtI2cPortActionFlagSet(int port) {
     if (legacyModule != null) {
       try {
-        return legacyModule.isPortReady(physicalPort);
+        return legacyModule.isNxtI2cPortActionFlagSet(port);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "IsPortReady",
+        form.dispatchErrorOccurredEvent(this, "IsNxtI2cPortActionFlagSet",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return false;
   }
 
-  // HardwareDevice implementation
+  @SimpleFunction(description = "Read from the Device Interface Module to the I2C read cache.")
+  public void ReadI2cCacheFromModule(int port) {
+    if (legacyModule != null) {
+      try {
+        legacyModule.readI2cCacheFromModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Write from the I2C write cache to the Device Interface Module.")
+  public void WriteI2cCacheToModule(int port) {
+    if (legacyModule != null) {
+      try {
+        legacyModule.writeI2cCacheToModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Write just the port action flag in the Device Interface Module's cache to the I2C device.")
+  public void WriteI2cPortFlagOnlyFromModule(int port) {
+    if (legacyModule != null) {
+      try {
+        legacyModule.writeI2cPortFlagOnlyFromModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyFromModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Is the port in read mode?")
+  public boolean IsI2cPortInReadMode(int port) {
+    if (legacyModule != null) {
+      try {
+        return legacyModule.isI2cPortInReadMode(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortInReadMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  @SimpleFunction(description = "Is the port in write mode?")
+  public boolean IsI2cPortInWriteMode(int port) {
+    if (legacyModule != null) {
+      try {
+        return legacyModule.isI2cPortInWriteMode(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortInWriteMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  @SimpleFunction(description = "Determine if a physical port is ready.")
+  public boolean IsI2cPortReady(int port) {
+    if (legacyModule != null) {
+      try {
+        return legacyModule.isI2cPortReady(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortReady",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  // PortReadyCallback implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void portIsReady(int port) {
+    I2cPortIsReady(port);
+  }
+
+  // FtcRobotController.HardwareDevice implementation
+
+  @Override
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       legacyModule = hardwareMap.legacyModule.get(getDeviceName());
       if (legacyModule == null) {
@@ -213,6 +405,12 @@ public final class FtcLegacyModule extends FtcHardwareDevice {
 
   @Override
   public void clearHardwareDevice() {
+    synchronized (portsRegisteredForPortReadyCallbackLock) {
+      for (Integer port : portsRegisteredForPortReadyCallback) {
+        legacyModule.deregisterForPortReadyCallback(port);
+      }
+      portsRegisteredForPortReadyCallback.clear();
+    }
     legacyModule = null;
   }
 }

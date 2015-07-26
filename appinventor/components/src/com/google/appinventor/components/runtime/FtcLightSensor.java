@@ -127,11 +127,10 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       lightSensor = hardwareMap.lightSensor.get(getDeviceName());
       if (lightSensor == null) {

@@ -80,7 +80,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Mode.INPUT.toString();
+    return "";
   }
 
   /**
@@ -143,11 +143,10 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
     }
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
       if (digitalChannel == null) {

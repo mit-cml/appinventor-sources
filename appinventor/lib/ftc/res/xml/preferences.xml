@@ -5,13 +5,12 @@
     android:title="@string/pref_wifi_channel_selection_title">
 
     <PreferenceScreen
-      android:title="Change Wifi Channel"
-      android:key="pref_launch_settings">
+      android:title="@string/pref_change_wifi_channel"
+      android:key="@string/pref_launch_settings">
       <intent
-        android:action="android.intent.action.VIEW"
-        android:data="com.qualcomm.ftcrobotcontroller.FtcWifiChannelSelectorActivity"
-        android:targetPackage="com.qualcomm.ftcrobotcontroller"
-        android:targetClass="com.qualcomm.ftcrobotcontroller.FtcWifiChannelSelectorActivity" />
+        android:action="com.qualcomm.ftccommon.configuration.FtcWifiChannelSelectorActivity.intent.action.Launch"
+        android:targetPackage="com.qualcomm.ftccommon"
+        android:targetClass="com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity" />
     </PreferenceScreen>
   </PreferenceCategory>
 

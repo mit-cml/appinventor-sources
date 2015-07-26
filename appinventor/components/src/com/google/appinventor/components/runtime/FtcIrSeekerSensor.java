@@ -80,7 +80,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Mode.MODE_1200HZ_AC.toString();
+    return "";
   }
 
   /**
@@ -165,11 +165,10 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
       if (irSeekerSensor == null) {

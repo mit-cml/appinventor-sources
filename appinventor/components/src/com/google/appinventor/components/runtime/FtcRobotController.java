@@ -24,10 +24,10 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.TypeConversion;
@@ -38,6 +38,7 @@ import android.graphics.Typeface;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +49,7 @@ import android.widget.LinearLayout;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * FtcRobotController component
@@ -79,14 +81,14 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     ActivityResultListener, OnNewIntentListener, OnCreateOptionsMenuListener,
     OnOptionsItemSelectedListener, OnDestroyListener, Deleteable, OpModeRegister {
 
-  interface HardwareDevice {
-    void setHardwareMap(HardwareMap hardwareMap);
-    void initHardwareDevice();
-    void clearHardwareDevice();
+  interface GamepadDevice {
+    void initGamepadDevice(Gamepad gamepad1, Gamepad gamepad2);
+    void clearGamepadDevice();
   }
 
-  interface GamepadDevice {
-    void setEventLoopManager(EventLoopManager eventLoopManager);
+  interface HardwareDevice {
+    void initHardwareDevice(HardwareMap hardwareMap);
+    void clearHardwareDevice();
   }
 
   interface OpModeWrapper {
@@ -97,12 +99,14 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
   private static final String DEFAULT_CONFIGURATION = "";
 
-  private static final Map<Form, List<HardwareDevice>> hardwareDevices = Maps.newHashMap();
-  private static final Object hardwareDevicesLock = new Object();
-  private static final Map<Form, List<GamepadDevice>> gamepadDevices = Maps.newHashMap();
+  private static final AtomicInteger robotControllersCounter = new AtomicInteger(0);
   private static final Object gamepadDevicesLock = new Object();
-  private static final Map<Form, List<OpModeWrapper>> opModeWrappers = Maps.newHashMap();
+  private static final List<GamepadDevice> gamepadDevices = Lists.newArrayList();
+  private static final Object hardwareDevicesLock = new Object();
+  private static final List<HardwareDevice> hardwareDevices = Lists.newArrayList();
   private static final Object opModeWrappersLock = new Object();
+  private static final List<OpModeWrapper> opModeWrappers = Lists.newArrayList();
+  private static volatile OpMode activeOpMode;
 
   private final Form form;
   public final LinearLayout view;
@@ -131,6 +135,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
     container.$add(this);
 
+    robotControllersCounter.incrementAndGet();
+
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
     int preferredWidth = display.getWidth();
@@ -158,16 +164,22 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void onInitialize() {
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
-      PowerManager powerManager = (PowerManager) form.getSystemService(Context.POWER_SERVICE);
-      wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRoboController");
-      wakeLock.acquire();
+    Log.e("HeyLiz", "FtcRobotController onInitialize");
+    if (robotControllersCounter.get() == 1) {
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
+        PowerManager powerManager = (PowerManager) form.getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRobotController");
+        wakeLock.acquire();
 
-      ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form, configuration);
-      view.requestLayout();
+        ftcRobotControllerActivity = new FtcRobotControllerActivity(this, form, configuration);
+        view.requestLayout();
+      } else {
+        form.dispatchErrorOccurredEvent(this, "FtcRobotController",
+            ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT);
+      }
     } else {
       form.dispatchErrorOccurredEvent(this, "FtcRobotController",
-          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT);
+          ErrorMessages.ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS);
     }
   }
 
@@ -223,6 +235,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void onDelete() {
     prepareToDie();
+    robotControllersCounter.decrementAndGet();
   }
 
   // OpModeRegister implementation
@@ -230,37 +243,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void register(OpModeManager opModeManager) {
     synchronized (opModeWrappersLock) {
-      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
-      if (opModeWrappersForForm != null) {
-        for (OpModeWrapper opModeWrapper : opModeWrappersForForm) {
-          opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
-        }
-      }
-    }
-  }
-
-  /**
-   * Adds a {@link HardwareDevice} to the hardware devices.
-   */
-  static void addHardwareDevice(Form form, HardwareDevice hardwareDevice) {
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm == null) {
-        hardwareDevicesForForm = Lists.newArrayList();
-        hardwareDevices.put(form, hardwareDevicesForForm);
-      }
-      hardwareDevicesForForm.add(hardwareDevice);
-    }
-  }
-
-  /**
-   * Removes a {@link HardwareDevice} from the hardware devices.
-   */
-  static void removeHardwareDevice(Form form, HardwareDevice hardwareDevice) {
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        hardwareDevicesForForm.remove(hardwareDevice);
+      for (OpModeWrapper opModeWrapper : opModeWrappers) {
+        opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
       }
     }
   }
@@ -268,28 +252,38 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   /**
    * Adds a {@link GamepadDevice} to the gamepad devices.
    */
-  static void addGamepadDevice(Form form, GamepadDevice gamepadDevice) {
+  static void addGamepadDevice(GamepadDevice gamepadDevice) {
+    Log.e("HeyLiz", "addGamepadDevice gamepadDevice");
     synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm == null) {
-        gamepadDevicesForForm = Lists.newArrayList();
-        gamepadDevices.put(form, gamepadDevicesForForm);
-      }
-      gamepadDevicesForForm.add(gamepadDevice);
-      // TODO(lizlooney): if onEventLoopInit has already been called, we should call
-      // gamepadDevice.setEventLoopManager() now.
+      gamepadDevices.add(gamepadDevice);
     }
   }
 
   /**
    * Removes a {@link GamepadDevice} from the gamepad devices.
    */
-  static void removeGamepadDevice(Form form, GamepadDevice gamepadDevice) {
+  static void removeGamepadDevice(GamepadDevice gamepadDevice) {
+    Log.e("HeyLiz", "removeGamepadDevice gamepadDevice");
     synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        gamepadDevicesForForm.remove(gamepadDevice);
-      }
+      gamepadDevices.remove(gamepadDevice);
+    }
+  }
+
+  /**
+   * Adds a {@link HardwareDevice} to the hardware devices.
+   */
+  static void addHardwareDevice(HardwareDevice hardwareDevice) {
+    synchronized (hardwareDevicesLock) {
+      hardwareDevices.add(hardwareDevice);
+    }
+  }
+
+  /**
+   * Removes a {@link HardwareDevice} from the hardware devices.
+   */
+  static void removeHardwareDevice(HardwareDevice hardwareDevice) {
+    synchronized (hardwareDevicesLock) {
+      hardwareDevices.remove(hardwareDevice);
     }
   }
 
@@ -298,16 +292,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
    *
    * @param opModeWrapper  the {@code OpModeWrapper} to be added
    */
-  static void addOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
+  static void addOpMode(OpModeWrapper opModeWrapper) {
     synchronized (opModeWrappersLock) {
-      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
-      if (opModeWrappersForForm == null) {
-        opModeWrappersForForm = Lists.newArrayList();
-        opModeWrappers.put(form, opModeWrappersForForm);
-      }
-      opModeWrappersForForm.add(opModeWrapper);
-      // TODO(lizlooney): if register has already been called, we should call
-      // opModeManager.register() now.
+      opModeWrappers.add(opModeWrapper);
     }
   }
 
@@ -316,12 +303,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
    *
    * @param opModeWrapper  the {@code OpModeWrapper} to be removed
    */
-  static void removeOpModeWrapper(Form form, OpModeWrapper opModeWrapper) {
+  static void removeOpMode(OpModeWrapper opModeWrapper) {
     synchronized (opModeWrappersLock) {
-      List<OpModeWrapper> opModeWrappersForForm = opModeWrappers.get(form);
-      if (opModeWrappersForForm != null) {
-        opModeWrappersForForm.remove(opModeWrapper);
-      }
+      opModeWrappers.remove(opModeWrapper);
     }
   }
 
@@ -335,66 +319,41 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     }
   }
 
-  // Called from FtcEventLoop.init
-  public void onEventLoopInit(EventLoopManager eventLoopManager, HardwareMap hardwareMap) {
-    synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
-          gamepadDevice.setEventLoopManager(eventLoopManager);
-        }
-      }
-    }
+  // Called before an FtcOpMode's Init event is triggered.
+  static void beforeOpModeInit(OpMode opMode) {
+    Log.e("HeyLiz", "beforeOpModeInit opMode");
+    activeOpMode = opMode;
     synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.setHardwareMap(hardwareMap);
-        }
+      for (HardwareDevice hardwareDevice : hardwareDevices) {
+        Log.e("HeyLiz", "beforeOpModeInit initHardwareDevice");
+        hardwareDevice.initHardwareDevice(opMode.hardwareMap);
       }
     }
   }
 
-  // Called before an FtcOpMode's Init event is triggered.
-  static void beforeOpModeInit(Form form) {
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.initHardwareDevice();
-        }
+  // Called before an FtcOpMode's Loop event is triggered.
+  static void beforeOpModeLoop(OpMode opMode) {
+    Log.e("HeyLiz", "beforeOpModeLoop opMode: " + opMode);
+    synchronized (gamepadDevicesLock) {
+      for (GamepadDevice gamepadDevice : gamepadDevices) {
+        Log.e("HeyLiz", "beforeOpModeLoop initGamepadDevice");
+        gamepadDevice.initGamepadDevice(opMode.gamepad1, opMode.gamepad2);
       }
     }
   }
 
   // Called after an FtcOpMode's Stop event is triggered.
-  static void afterOpModeStop(Form form) {
-    synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.clearHardwareDevice();
-        }
-      }
-    }
-  }
-
-  // Called from FtcEventLoop.teardown
-  public void onEventLoopTeardown() {
+  static void afterOpModeStop(OpMode opMode) {
     synchronized (gamepadDevicesLock) {
-      List<GamepadDevice> gamepadDevicesForForm = gamepadDevices.get(form);
-      if (gamepadDevicesForForm != null) {
-        for (GamepadDevice gamepadDevice : gamepadDevicesForForm) {
-          gamepadDevice.setEventLoopManager(null);
-        }
+      for (GamepadDevice gamepadDevice : gamepadDevices) {
+        Log.e("HeyLiz", "afterOpModeStop clearGamepadDevice");
+        gamepadDevice.clearGamepadDevice();
       }
     }
     synchronized (hardwareDevicesLock) {
-      List<HardwareDevice> hardwareDevicesForForm = hardwareDevices.get(form);
-      if (hardwareDevicesForForm != null) {
-        for (HardwareDevice hardwareDevice : hardwareDevicesForForm) {
-          hardwareDevice.setHardwareMap(null);
-        }
+      for (HardwareDevice hardwareDevice : hardwareDevices) {
+        Log.e("HeyLiz", "afterOpModeStop clearHardwareDevice");
+        hardwareDevice.clearHardwareDevice();
       }
     }
   }
@@ -453,6 +412,42 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   }
 
   // Functions
+
+  @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")
+  public void TelemetryAddTextData(String key, String text) {
+    OpMode activeOpMode = this.activeOpMode;
+    if (activeOpMode != null) {
+      try {
+        activeOpMode.telemetry.addData(key, text);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "TelemetryAddTextData",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Adds a numeric data point to the telemetry for the active op mode.")
+  public void TelemetryAddNumericData(String key, String number) {
+    OpMode activeOpMode = this.activeOpMode;
+    if (activeOpMode != null) {
+      // Try to parse the number as a float, but if that fails, fallback to text.
+      try {
+        activeOpMode.telemetry.addData(key, Float.parseFloat(number));
+        return;
+      } catch (Throwable e) {
+        // Exception is ignored. Fallback to treating number as text.
+      }
+
+      try {
+        activeOpMode.telemetry.addData(key, number);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "TelemetryAddNumericData",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
 
   @SimpleFunction(description = "Clip number if number is less than min or greater than max")
   public double RangeClip(double number, double min, double max) {

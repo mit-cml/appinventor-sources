@@ -81,7 +81,7 @@ public final class FtcServo extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return Direction.FORWARD.toString();
+    return "";
   }
 
   /**
@@ -174,11 +174,10 @@ public final class FtcServo extends FtcHardwareDevice {
     }
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       servo = hardwareMap.servo.get(getDeviceName());
       if (servo == null) {

@@ -69,15 +69,9 @@ class R {
   }
   static class Strings {
     final int pref_hardware_config_filename;
-    final int pref_launch_autoconfigure;
-    final int pref_launch_configure;
-    final int pref_launch_settings;
 
     Strings(Resources resources, String packageName) {
       pref_hardware_config_filename =  getIdentifier(resources, "pref_hardware_config_filename", "string", packageName);
-      pref_launch_autoconfigure = getIdentifier(resources, "pref_launch_autoconfigure", "string", packageName);
-      pref_launch_configure = getIdentifier(resources, "pref_launch_configure", "string", packageName);
-      pref_launch_settings = getIdentifier(resources, "pref_launch_settings", "string", packageName);
     }
   }
   static class Xmls {

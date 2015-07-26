@@ -15,8 +15,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping;
 
-import android.util.Log;
-
 import java.util.Map;
 
 /**
@@ -29,11 +27,10 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
-  private volatile HardwareMap hardwareMap;
 
   protected FtcHardwareDevice(ComponentContainer container) {
     super(container.$form());
-    FtcRobotController.addHardwareDevice(form, this);
+    FtcRobotController.addHardwareDevice(this);
   }
 
   // Properties
@@ -63,10 +60,6 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     return deviceName;
   }
 
-  protected final HardwareMap getHardwareMap() {
-    return hardwareMap;
-  }
-
   protected final void deviceNotFound(String type, DeviceMapping<? extends Object> deviceMapping) {
     StringBuilder names = new StringBuilder();
     String delimiter = "";
@@ -82,22 +75,13 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
 
   @Override
   public void onDelete() {
-    FtcRobotController.removeHardwareDevice(form, this);
+    FtcRobotController.removeHardwareDevice(this);
     clearHardwareDevice();
-    hardwareMap = null;
   }
 
   // FtcRobotController.HardwareDevice implementation
 
-  @Override
-  public void setHardwareMap(HardwareMap hardwareMap) {
-    if (this.hardwareMap != null) {
-      clearHardwareDevice();
-    }
-    this.hardwareMap = hardwareMap;
-  }
-
-  public abstract void initHardwareDevice();
+  public abstract void initHardwareDevice(HardwareMap hardwareMap);
 
   public abstract void clearHardwareDevice();
 }

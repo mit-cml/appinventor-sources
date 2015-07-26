@@ -194,22 +194,31 @@ public class TranslationComponentParams {
     map.put("textToTranslate", MESSAGES.textToTranslateParams());
 
     // ========== FTC
-    map.put("d", MESSAGES.dParams());
-    map.put("data", MESSAGES.dataParams());
+    map.put("bigEndian", MESSAGES.bigEndianParams());
+    map.put("bitPosition", MESSAGES.bitPositionParams());
+    map.put("byteArray", MESSAGES.byteArrayParams());
+    map.put("channel", MESSAGES.channelParams());
+    map.put("destinationByteArray", MESSAGES.destinationByteArrayParams());
+    map.put("destinationPosition", MESSAGES.destinationPositionParams());
     map.put("enable", MESSAGES.enableParams());
-    map.put("i", MESSAGES.iParams());
-    map.put("initialValue", MESSAGES.initialValueParams());
-    map.put("initialValues", MESSAGES.initialValuesParams());
+    map.put("frequency", MESSAGES.frequencyParams());
     map.put("i2cAddress", MESSAGES.i2cAddressParams());
+    map.put("input", MESSAGES.inputParams());
     map.put("key", MESSAGES.keyParams());
     map.put("line", MESSAGES.lineParams());
     map.put("max", MESSAGES.maxParams());
     map.put("memAddress", MESSAGES.memAddressParams());
-    map.put("memLength", MESSAGES.memLengthParams());
     map.put("min", MESSAGES.minParams());
-    map.put("p", MESSAGES.pParams());
-    map.put("physicalPort", MESSAGES.physicalPortParams());
+    map.put("period", MESSAGES.periodParams());
+    map.put("port", MESSAGES.portParams());
+    map.put("position", MESSAGES.positionParams());
     map.put("set", MESSAGES.setParams());
+    map.put("sourceByteArray", MESSAGES.sourceByteArrayParams());
+    map.put("sourcePosition", MESSAGES.sourcePositionParams());
+    map.put("state", MESSAGES.stateParams());
+    map.put("time", MESSAGES.timeParams());
+    map.put("unsigned", MESSAGES.unsignedParams());
+    map.put("voltage", MESSAGES.voltageParams());
     return map;
   }
 }

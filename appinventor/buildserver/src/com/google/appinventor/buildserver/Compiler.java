@@ -489,11 +489,16 @@ public final class Compiler {
       // component is used in the app.
       if (componentTypes.contains("FtcRobotController")) {
         out.write("    <activity\n");
-        out.write("      android:name=\"com.google.appinventor.components.runtime.ftc.FtcRobotControllerSettingsActivity\"\n");
-        out.write("      android:label=\"@string/settings_activity\" />\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity\"\n");
+        out.write("      android:label=\"@string/settings_activity\" >\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity\"\n");
-        out.write("      android:label=\"@string/title_activity_load\">\n");
+        out.write("      android:label=\"@string/title_activity_load\" >\n");
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcLoadFileActivity.intent.action.Launch\" />\n");
         out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
@@ -501,7 +506,7 @@ public final class Compiler {
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.AutoConfigureActivity\"\n");
-        out.write("      android:label=\"@string/title_activity_autoconfigure\">\n");
+        out.write("      android:label=\"@string/title_activity_autoconfigure\" >\n");
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"com.qualcomm.ftccommon.configuration.FtcAutoconfigureActivity.intent.action.Launch\" />\n");
         out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
@@ -510,6 +515,18 @@ public final class Compiler {
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
         out.write("      android:label=\"@string/app_name\" >\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
+        out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
+        out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.ViewLogsActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/view_logs_activity\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.AboutActivity\"\n");

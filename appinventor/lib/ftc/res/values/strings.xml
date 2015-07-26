@@ -6,42 +6,18 @@
   -->
   <string name="ok">OK</string>
 
-  <!-- Wifi Channel Selector -->
-  <string-array name="wifi_direct_channels">
-    <item>Auto - device selects channel</item>
-    <item>2.4GHz, Channel 1</item>
-    <item>2.4GHz, Channel 6</item>
-    <item>2.4GHz, Channel 11</item>
-    <!--
-    <item>5GHz, Channel 36</item>
-    <item>5GHz, Channel 40</item>
-    <item>5GHz, Channel 44</item>
-    <item>5GHz, Channel 48</item>
-    -->
-    <item>5GHz, Channel 149</item>
-    <item>5GHz, Channel 153</item>
-    <item>5GHz, Channel 157</item>
-    <item>5GHz, Channel 161</item>
-  </string-array>
-
   <!-- also defined in FtcCommon/res/values/values.xml
   <string name="pref_configure_robot_title">Robot Configuration Settings</string>
   <string name="configure_activity">Configure Robot</string>
   -->
-  <string name="pref_launch_configure">pref_launch_configure</string>
-  <string name="pref_launch_autoconfigure">pref_launch_autoconfigure</string>
-
-  <string name="action_wifi_channel_selector">Wifi Channel Selection</string>
-  <string name="configure_settings">Configure</string>
-  <string name="launch_wifi_settings">Launch WiFi Settings</string>
-  <string name="restore_settings">Restore Saved WiFi Settings</string>
-  <string name="pref_wifi_channel_selection_title">Wifi Channel Selection</string>
 
   <string name="restart_robot_menu_item">Restart Robot</string>
   <string name="action_exit_app">Exit</string>
   <!-- Modified for App Inventor -->
   <string name="about_menu_item">About FtcRobotController</string>
+  <!-- also defined in FtcCommon/res/values/values.xml
   <string name="settings_activity">Settings</string>
+  -->
   <string name="settings_menu_item">Settings</string>
   <!-- also defined in FtcCommon/res/values/values.xml
   <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
@@ -50,10 +26,9 @@
   -->
 
   <!-- Fix Misconfigured Wifi Direct -->
+  <!-- also defined in FtcCommon/res/values/values.xml
   <string name="title_activity_config_wifi_direct">Configure Wifi Direct</string>
-  <string name="wifi_direct_update_settings">
-    Please wait while we update the Wifi Direct settings on this device.
-  </string>
+  -->
 
   <!-- View Logs -->
   <string name="view_logs_menu_item">View logs</string>
@@ -62,6 +37,11 @@
   <string name="button_text_clear_logs">Clear Logs</string>
 
   <!-- Preferences -->
+  <!-- also defined in FtcCommon/res/values/values.xml
   <string name="pref_launch_settings">pref_launch_settings</string>
+  <string name="pref_change_wifi_channel">Change Wifi Channel</string>
+  <string name="pref_launch_configure">pref_launch_configure</string>
+  <string name="pref_launch_autoconfigure">pref_launch_autoconfigure</string>
+  -->
 
 </resources>

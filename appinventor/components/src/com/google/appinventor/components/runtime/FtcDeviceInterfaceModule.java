@@ -6,17 +6,21 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule.I2CPortReadyCallback;
+
+import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 /**
  * A component for a device interface module of an FTC robot.
@@ -30,9 +34,12 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
+public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
+    implements I2CPortReadyCallback {
 
   private volatile DeviceInterfaceModule deviceInterfaceModule;
+  private final Object portsRegisteredForPortReadyCallbackLock = new Object();
+  private final List<Integer> portsRegisteredForPortReadyCallback = Lists.newArrayList();
 
   /**
    * Creates a new FtcDeviceInterfaceModule component.
@@ -41,67 +48,15 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Fuctions
+  // Events
 
-  @SimpleFunction(description = "Enable a physical port in I2C read mode.")
-  public void EnableI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int memLength) {
-    if (deviceInterfaceModule != null) {
-      try {
-        deviceInterfaceModule.enableI2cReadMode(physicalPort, i2cAddress, memAddress, memLength);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableI2cReadMode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
+  @SimpleEvent(description = "This event is triggered when an I2C port is ready. This event is " +
+      "only enabled if EnableI2cReadMode or EnableI2cWriteMode is used.")
+  public void I2cPortIsReady(int port) {
+    EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
   }
 
-  @SimpleFunction(description = "Enable a physical port in I2C write mode.")
-  public void EnableI2cWriteMode(int physicalPort, int i2cAddress, int memAddress,
-      Object byteArray) {
-    if (deviceInterfaceModule != null) {
-      try {
-        if (byteArray instanceof byte[]) {
-          deviceInterfaceModule.enableI2cWriteMode(physicalPort, i2cAddress, memAddress,
-              (byte[]) byteArray);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "EnableI2cWriteMode",
-              ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableI2cWriteMode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description = "Indicates whether the LED on the given channel is on or not")
-  public boolean GetLEDState(int channel) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getLEDState(channel);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetLEDState",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return false;
-  }
-
-  @SimpleFunction(description = "Turn on or off a particular LED.")
-  public void SetLED(int channel, boolean state) {
-    if (deviceInterfaceModule != null) {
-      try {
-        deviceInterfaceModule.setLED(channel, state);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetLED",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
+  // Functions
 
   @SimpleFunction(description = "Return the current ADC results from the A0-A7 channel input pins.")
   public int GetAnalogInputValue(int channel) {
@@ -133,6 +88,20 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     return 0;
   }
 
+  @SimpleFunction(description = "If a particular bit is set to one, the corresponding channel " +
+      "pin will be in output mode; else it will be in input mode.")
+  public void SetDigitalIOControlByte(int input) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setDigitalIOControlByte((byte) input);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDigitalIOControlByte",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
   @SimpleFunction(description = "If a particular bit is one, the corresponding channel " +
       "pin is in output mode; else it is in input mode.")
   public int GetDigitalIOControlByte() {
@@ -146,20 +115,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
       }
     }
     return 0;
-  }
-
-  @SimpleFunction(description = "If a particular bit is set to one, the corresponding channel " +
-      "pin will be in output mode; else it will be in input mode.")
-  public void SetDigitalIOControlByte(int input) {
-    if (deviceInterfaceModule != null) {
-      try {
-        deviceInterfaceModule.setDigitalIOControlByte((byte) input);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetDigitalIOControlByte",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
   }
 
   @SimpleFunction(description = "If a particular control field bit is set to one, the channel " +
@@ -193,18 +148,31 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Returns the channel output voltage.")
-  public int GetAnalogOutputVoltage(int port) {
+  @SimpleFunction(description = "Indicates whether the LED on the given channel is on or not.")
+  public boolean GetLEDState(int channel) {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.getAnalogOutputVoltage(port);
+        return deviceInterfaceModule.getLEDState(channel);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetAnalogOutputVoltage",
+        form.dispatchErrorOccurredEvent(this, "GetLEDState",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0;
+    return false;
+  }
+
+  @SimpleFunction(description = "Turn on or off a particular LED.")
+  public void SetLED(int channel, boolean state) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setLED(channel, state);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetLED",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   @SimpleFunction(description = "Sets the channel output voltage. " +
@@ -222,20 +190,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Returns the channel output frequency in the range of 1-5,000 Hz.")
-  public int GetAnalogOutputFrequency(int port) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getAnalogOutputFrequency(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetAnalogOutputFrequency",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
-  }
-
   @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
       "mode 1, 2 or 3. If mode 0 is selected, this field will be over-written to 0.")
   public void SetAnalogOutputFrequency(int port, int frequency) {
@@ -248,21 +202,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-  }
-
-
-  @SimpleFunction(description = "Returns the channel operating mode.")
-  public int GetAnalogOutputMode(int port) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getAnalogOutputMode(port) & 0xFF;
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetAnalogOutputMode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
   }
 
   @SimpleFunction(description = "Sets the channel operating mode. " +
@@ -282,21 +221,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Returns the pulse width for the chanel output in units of 1 " +
-      "microsecond.")
-  public int GetPulseWidthOutputTime(int port) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getPulseWidthOutputTime(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetPulseWidthOutputTime",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
-  }
-
   @SimpleFunction(description = "Sets the pulse width for the channel output in units of 1 " +
       "microsecond. Setting a value greater than the output period will result in the output " +
       "being permanently set to 1.")
@@ -310,21 +234,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-  }
-
-  @SimpleFunction(description = "Returns the pulse repetition period for the channel output in " +
-      "units of 1 microsecond.")
-  public int GetPulseWidthPeriod(int port) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getPulseWidthPeriod(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetPulseWidthPeriod",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
   }
 
   @SimpleFunction(description = "Sets the pulse repetition period for the channel output in " +
@@ -343,64 +252,244 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description =
-      "Read the device memory map and return a byte array; only works in I2C read mode.")
-  public Object ReadDeviceInterfaceModuleI2cCache(int physicalPort) {
+  @SimpleFunction(description = "Enable a physical port in I2C read mode and enable the " +
+      "I2cPortIsReady event.")
+  public void EnableI2cReadMode(int port, int i2cAddress, int memAddress, int length) {
     if (deviceInterfaceModule != null) {
       try {
-        byte[] data = deviceInterfaceModule.readDeviceInterfaceModuleI2cCache(physicalPort);
-        if (data != null) {
-          return data;
+        synchronized (portsRegisteredForPortReadyCallbackLock) {
+          if (!portsRegisteredForPortReadyCallback.contains(port)) {
+            deviceInterfaceModule.registerForI2cPortReadyCallback(this, port);
+            portsRegisteredForPortReadyCallback.add(port);
+          }
+        }
+        deviceInterfaceModule.enableI2cReadMode(port, i2cAddress, memAddress, length);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableI2cReadMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Enable a physical port in I2C write mode and enable the " +
+      "I2cPortIsReady event.")
+  public void EnableI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
+    if (deviceInterfaceModule != null) {
+      try {
+        synchronized (portsRegisteredForPortReadyCallbackLock) {
+          if (!portsRegisteredForPortReadyCallback.contains(port)) {
+            deviceInterfaceModule.registerForI2cPortReadyCallback(this, port);
+            portsRegisteredForPortReadyCallback.add(port);
+          }
+        }
+        deviceInterfaceModule.enableI2cWriteMode(port, i2cAddress, memAddress, length);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableI2cWriteMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Get the contents of the I2C read cache; return a byte array.")
+  public Object GetI2cReadCache(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        Lock lock = deviceInterfaceModule.getI2cReadCacheLock(port);
+        lock.lock();
+        try {
+          byte[] src = deviceInterfaceModule.getI2cReadCache(port);
+          if (src != null) {
+            byte[] dest = new byte[src.length];
+            System.arraycopy(src, 0, dest, 0, src.length);
+            return dest;
+          }
+        } finally {
+          lock.unlock();
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadDeviceInterfaceModuleI2cCache",
+        form.dispatchErrorOccurredEvent(this, "GetI2cReadCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
+  @SimpleFunction(description = "Get the contents of the I2C write cache; return a byte array.")
+  public Object GetI2cWriteCache(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        Lock lock = deviceInterfaceModule.getI2cWriteCacheLock(port);
+        lock.lock();
+        try {
+          byte[] src = deviceInterfaceModule.getI2cWriteCache(port);
+          if (src != null) {
+            byte[] dest = new byte[src.length];
+            System.arraycopy(src, 0, dest, 0, src.length);
+            return dest;
+          }
+        } finally {
+          lock.unlock();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetI2cWriteCache",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return new byte[0];
+  }
 
-  @SimpleFunction(description =
-      "Write to the device memory map; only works in I2C write mode.")
-  public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object byteArray) {
+  @SimpleFunction(description = "Set the contents of the I2C write cache.")
+  public void SetI2cWriteCache(int port, Object byteArray) {
     if (deviceInterfaceModule != null) {
       try {
         if (byteArray instanceof byte[]) {
-          deviceInterfaceModule.writeDeviceInterfaceModuleI2cCache(physicalPort,
-              (byte[]) byteArray);
+          byte[] src = (byte[]) byteArray;
+          Lock lock = deviceInterfaceModule.getI2cWriteCacheLock(port);
+          lock.lock();
+          try {
+            byte[] dest = deviceInterfaceModule.getI2cWriteCache(port);
+            if (dest != null) {
+              System.arraycopy(src, 0, dest, 0, Math.min(src.length, dest.length));
+            }
+          } finally {
+            lock.unlock();
+          }
         } else {
-          form.dispatchErrorOccurredEvent(this, "WriteDeviceInterfaceModuleI2cCache",
+          form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
               ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteDeviceInterfaceModuleI2cCache",
+        form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
-  @SimpleFunction(description = "Determine if a physical port is ready.")
-  public boolean IsPortReady(int physicalPort) {
+  @SimpleFunction(description = "Set the port action flag; this flag tells the Device Interface " +
+      "Module to send the current data in its buffer to the I2C device.")
+  public void SetI2cPortActionFlag(int port) {
     if (deviceInterfaceModule != null) {
       try {
-        return deviceInterfaceModule.isPortReady(physicalPort);
+        deviceInterfaceModule.setI2cPortActionFlag(port);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "IsPortReady",
+        form.dispatchErrorOccurredEvent(this, "SetI2cPortActionFlag",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+  
+  @SimpleFunction(description = "Get the port action flag; this flag is set if the particular port is busy.")
+  public boolean IsI2cPortActionFlagSet(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.isI2cPortActionFlagSet(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortActionFlagSet",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return false;
   }
 
-  // HardwareDevice implementation
+  @SimpleFunction(description = "Read from the Device Interface Module to the I2C read cache.")
+  public void ReadI2cCacheFromModule(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.readI2cCacheFromModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Write from the I2C write cache to the Device Interface Module.")
+  public void WriteI2cCacheToModule(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.writeI2cCacheToModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Write just the port action flag in the Device Interface Module's cache to the I2C device.")
+  public void WriteI2cPortFlagOnlyFromModule(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.writeI2cPortFlagOnlyFromModule(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyFromModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Is the port in read mode?")
+  public boolean IsI2cPortInReadMode(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.isI2cPortInReadMode(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortInReadMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  @SimpleFunction(description = "Is the port in write mode?")
+  public boolean IsI2cPortInWriteMode(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.isI2cPortInWriteMode(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortInWriteMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  @SimpleFunction(description = "Determine if a physical port is ready.")
+  public boolean IsI2cPortReady(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.isI2cPortReady(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsI2cPortReady",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  // I2CPortReadyCallback implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void portIsReady(int port) {
+    I2cPortIsReady(port);
+  }
+
+  // FtcRobotController.HardwareDevice implementation
+
+  @Override
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
       if (deviceInterfaceModule == null) {
@@ -411,6 +500,12 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice {
 
   @Override
   public void clearHardwareDevice() {
+    synchronized (portsRegisteredForPortReadyCallbackLock) {
+      for (Integer port : portsRegisteredForPortReadyCallback) {
+        deviceInterfaceModule.deregisterForPortReadyCallback(port);
+      }
+      portsRegisteredForPortReadyCallback.clear();
+    }
     deviceInterfaceModule = null;
   }
 }

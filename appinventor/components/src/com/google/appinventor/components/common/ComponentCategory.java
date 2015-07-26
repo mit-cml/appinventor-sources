@@ -49,6 +49,7 @@ import java.util.Map;
 
   public enum ComponentCategory {
     // TODO(user): i18n category names
+    FIRSTTECHCHALLENGE("FIRST\u00AE Tech Challenge"),
     USERINTERFACE("User Interface"),
     LAYOUT("Layout"),
     MEDIA("Media"),
@@ -58,7 +59,6 @@ import java.util.Map;
     STORAGE("Storage"),
     CONNECTIVITY("Connectivity"),
     LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
-    FIRSTTECHCHALLENGE("FIRST\u00AE Tech Challenge"),
     //EXPERIMENTAL("Experimental"),
     INTERNAL("For internal use only"),
     // UNINITIALIZED is used as a default value so Swing libraries can still compile

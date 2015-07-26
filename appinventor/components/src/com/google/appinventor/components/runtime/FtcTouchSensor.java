@@ -80,11 +80,10 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
     return false;
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       touchSensor = hardwareMap.touchSensor.get(getDeviceName());
       if (touchSensor == null) {

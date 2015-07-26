@@ -101,7 +101,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return CompassMode.MEASUREMENT_MODE.toString();
+    return "";
   }
 
   /**
@@ -170,11 +170,10 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return "";
   }
 
-  // HardwareDevice implementation
+  // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice() {
-    HardwareMap hardwareMap = getHardwareMap();
+  public void initHardwareDevice(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
       if (compassSensor == null) {
