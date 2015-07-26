@@ -535,27 +535,6 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
     }
 
-    // centerY is where the middle of each child should be: either vertically
-    // centered at the top of the arrangement, or each child at the middle of the
-    // arrangement.
-
-   //we have to initialize this, or else Eclipse will whine at us
-    int centerY = 0;
-
-    switch (alignV) {
-    case Top:
-      centerY = maxHeight / 2;
-      break;
-    case Center:
-      centerY = containerLayoutInfo.height / 2;
-      break;
-    case Bottom:
-      centerY = containerLayoutInfo.height - (maxHeight / 2);
-    default:
-      OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
-    }
-
-
     // NOTE(hal) What is this for?
     layoutHeight = 0;
 
@@ -597,7 +576,20 @@ abstract class MockHVLayoutBase extends MockLayout {
 
       // The middle of the child needs to be at centerY, so the
       // top of the child is above that by childHeightWithBorder/2
-      int topY = centerY - (childHeightWithBorder / 2);
+      int topY = 0;
+
+      switch (alignV) {
+        case Top:
+          topY = 0;
+          break;
+        case Center:
+          topY = (containerLayoutInfo.height / 2) - (childHeightWithBorder / 2);
+          break;
+        case Bottom:
+          topY = containerLayoutInfo.height - childHeightWithBorder;
+        default:
+          OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+      }
 
       container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
       layoutHeight = Math.max(layoutHeight, topY + childHeightWithBorder);
