@@ -345,8 +345,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 134:
   // - DATEPICKER_COMPONENT_VERSION was incremented to 3
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 135:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 6
 
-  public static final int YOUNG_ANDROID_VERSION = 134;
+  public static final int YOUNG_ANDROID_VERSION = 135;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -463,7 +465,9 @@ public class YaVersion {
   //   animation to transition to next activity.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
   // - The ActivityStarter.ActivityCanceled event was added.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
+  // - Extras property was added to accept a list of key-value pairs to put to the intent
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
