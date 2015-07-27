@@ -68,20 +68,25 @@ public class ProjectToolbar extends Toolbar {
   private static class DeleteAction implements Command {
     @Override
     public void execute() {
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() > 0) {
-        // Show one confirmation window for selected projects.
-        if (deleteConfirmation(selectedProjects)) {
-          for (Project project : selectedProjects) {
-            deleteProject(project);
+      Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+        @Override
+        public void execute() {
+          List<Project> selectedProjects =
+              ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          if (selectedProjects.size() > 0) {
+            // Show one confirmation window for selected projects.
+            if (deleteConfirmation(selectedProjects)) {
+              for (Project project : selectedProjects) {
+                deleteProject(project);
+              }
+            }
+          } else {
+            // The user can select a project to resolve the
+            // error.
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
           }
         }
-      } else {
-        // The user can select a project to resolve the
-        // error.
-        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-      }
+      });
     }
 
     private boolean deleteConfirmation(List<Project> projects) {
