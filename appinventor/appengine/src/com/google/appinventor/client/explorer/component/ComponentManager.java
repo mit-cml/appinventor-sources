@@ -8,33 +8,84 @@ package com.google.appinventor.client.explorer.component;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class manages {@link com.google.appinventor.shared.rpc.component.Component}.
+ *
+ */
 public final class ComponentManager {
-  private final List<ComponentInfo> compInfos = new ArrayList<ComponentInfo>();
+  private final List<Component> components;
+  private final List<ComponentManagerEventListener> eventListeners;
 
   public ComponentManager() {
-    pullComponentInfos();
+    components = new ArrayList<Component>();
+    eventListeners = new ArrayList<ComponentManagerEventListener>();
+
+    Ode.getInstance().getComponentService().getComponents(
+      new OdeAsyncCallback<List<Component>>() {
+        @Override
+        public void onSuccess(List<Component> components) {
+          ComponentManager.this.components.addAll(components);
+          fireComponentsLoaded();
+        }
+      });
   }
 
   /**
-   * Returns a list of all component info already retrived by this manager
+   * Returns a list of all components
    */
-  public List<ComponentInfo> getRetrivedComponentInfos() {
-    return compInfos;
+  public List<Component> getComponents() {
+    return components;
   }
 
-  public void pullComponentInfos() {
-    Ode.getInstance().getComponentService().getComponentInfos(
-      new OdeAsyncCallback<List<ComponentInfo>>() {
-        @Override
-        public void onSuccess(List<ComponentInfo> compInfos) {
-          ComponentManager.this.compInfos.clear();
-          ComponentManager.this.compInfos.addAll(compInfos);
-        }
-      });
+  /**
+   * Adds a new component to this component manager.
+   *
+   * @param component the component to be added
+   */
+  public void addComponent(Component component) {
+    components.add(component);
+    fireComponentAdded(component);
+  }
+
+  /**
+   * Removes the given component.
+   *
+   * @param component the component to be removed
+   */
+  public void removeComponent(Component component) {
+    components.remove(component);
+    fireComponentRemoved(component);
+  }
+
+  /**
+   * Adds a {@link ComponentManagerEventListener} to the listener list.
+   *
+   * @param listener  the {@code ComponentManagerEventListener} to be added
+   */
+  public void addEventListener(ComponentManagerEventListener listener) {
+    eventListeners.add(listener);
+  }
+
+  private void fireComponentsLoaded() {
+    for (ComponentManagerEventListener listener : eventListeners) {
+      listener.onComponentsLoaded();
+    }
+  }
+
+  private void fireComponentAdded(Component component) {
+    for (ComponentManagerEventListener listener : eventListeners) {
+      listener.onComponentAdded(component);
+    }
+  }
+
+  private void fireComponentRemoved(Component component) {
+    for (ComponentManagerEventListener listener : eventListeners) {
+      listener.onComponentRemoved(component);
+    }
   }
 }

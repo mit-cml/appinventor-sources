@@ -89,6 +89,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // Project folder prefixes
   public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
   protected static final String ASSETS_FOLDER = "assets";
+  private static final String EXTERNAL_COMPS_FOLDER = "external_comps";
   static final String PROJECT_DIRECTORY = "youngandroidproject";
 
   // TODO(user) Source these from a common constants library.
@@ -286,7 +287,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
     String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
-    
+
     String yailFileName = YoungAndroidYailNode.getYailFileId(qualifiedFormName);
     String yailFileContents = "";
 
@@ -387,7 +388,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
     for (String fileId : sourceFiles) {
       if (fileId.startsWith(ASSETS_FOLDER + '/')) {
-        // Assets is a flat folder
+        if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER)) {
+          continue;
+        }
         assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
 
       } else if (fileId.startsWith(SRC_FOLDER + '/')) {
@@ -398,8 +401,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         } else if (fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
           sourceNode = new YoungAndroidBlocksNode(fileId);
         } else if (fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
-          String blocklyFileName = 
-              fileId.substring(0, fileId.lastIndexOf(CODEBLOCKS_SOURCE_EXTENSION)) 
+          String blocklyFileName =
+              fileId.substring(0, fileId.lastIndexOf(CODEBLOCKS_SOURCE_EXTENSION))
               + BLOCKLY_SOURCE_EXTENSION;
           if (!sourceFiles.contains(blocklyFileName)) {
             // This is an old project that hasn't been converted yet. Convert
@@ -429,12 +432,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     return rootNode;
   }
-  
+
   /*
    * Convert the contents of the codeblocks file named codeblocksFileId
    * to blockly format and return the blockly contents.
    */
-  private String convertCodeblocksToBlockly(String userId, long projectId, 
+  private String convertCodeblocksToBlockly(String userId, long projectId,
       String codeblocksFileId) {
     // TODO(sharon): implement this!
     return "";
@@ -777,4 +780,3 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return formatter.format(input);
   }
 }
-

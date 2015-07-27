@@ -61,7 +61,7 @@ import java.util.Map;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YaFormEditor extends SimpleEditor implements FormChangeListener {
+public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener {
 
   private static class FileContentHolder {
     private String content;
@@ -82,8 +82,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // JSON parser
   private static final JSONParser JSON_PARSER = new ClientJsonParser();
 
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   private final YoungAndroidFormNode formNode;
 
@@ -113,6 +112,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // and we rely on the pre-upgraded .scm file for this info.
   private String preUpgradeJsonString;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
 
   /**
    * Creates a new YaFormEditor.
@@ -124,6 +124,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     super(projectEditor, formNode);
 
     this.formNode = formNode;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());
 
     // Get reference to the source structure explorer
     sourceStructureExplorer =
@@ -153,11 +154,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     });
     palettePanel.setSize("100%", "100%");
+    addComponentDatabaseChangeListener(palettePanel);
 
     // Create designProperties, which will be used as the content of the PropertiesBox.
     designProperties = new PropertiesPanel();
     designProperties.setSize("100%", "100%");
-
     initWidget(componentsPanel);
     setSize("100%", "100%");
   }
@@ -269,11 +270,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public SimplePalettePanel getComponentPalettePanel() {
-    return palettePanel;
-  }
-
-  @Override
-  public ComponentDatabaseChangeListener getComponentDatabaseChangeListener() {
     return palettePanel;
   }
   
@@ -653,4 +649,39 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     blockEditor.onBlocksAreaChanged(getProjectId() + "_" + formNode.getFormName());
   }
 
+  private void addComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.add(cdbChangeListener);
+  }
+
+  private void removeComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
+  private void clearComponentDatabaseChangeListener() {
+    componentDatabaseChangeListeners.clear();
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
+  }
+
+  @Override
+  public void onComponentTypeRemoved(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
+  }
+
+  @Override
+  public void onResetDatabase() {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
+  }
 }

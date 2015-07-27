@@ -10,6 +10,7 @@ import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import org.apache.commons.fileupload.FileItemStream;
@@ -149,14 +150,17 @@ public class UploadServlet extends OdeServlet {
 
         InputStream uploadedStream;
         try {
-          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
+          uploadedStream = getRequestStream(req,
+              ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
         } catch (Exception e) {
           throw CrashReport.createAndLogError(LOG, req, null, e);
         }
 
         String fileName = uriComponents[COMPONENT_PATH_INDEX];
-        fileImporter.importComponentArchive(userInfoProvider.getUserId(), fileName, uploadedStream);
-        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+        Component component = fileImporter.importComponentArchive(
+            userInfoProvider.getUserId(), fileName, uploadedStream);
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
+            component.toString());
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

@@ -11,12 +11,12 @@ public interface ComponentDatabaseChangeListener {
   /**
    * Invoked after one or more components are added
    */
-  void onComponentsAdded(List<String> componentTypes);
+  void onComponentTypeAdded(List<String> componentTypes);
   
   /**
    * Invoked after one or more components are removed
    */
-  void onComponentsRemoved(List<String> componentTypes);
+  void onComponentTypeRemoved(List<String> componentTypes);
   
   /**
    * Called when database is reset to contain only internal components

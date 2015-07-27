@@ -64,8 +64,7 @@ import java.util.Map;
 public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
 
   // Component database: information about components (including their properties and events)
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-    SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   // Associated editor
   private final YaFormEditor editor;
@@ -84,6 +83,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new StackPanel();
 
@@ -134,13 +134,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       this.addComponent(component);
     }
   }
-  
+
   public void loadComponents() {
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       this.addComponent(component);
     }
   }
-  
+
   @Override
   public void configureComponent(MockComponent mockComponent) {
     String componentType = mockComponent.getType();
@@ -156,7 +156,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Loads a single Component to Palette. Used for adding External Components. 
+   *  Loads a single Component to Palette. Used for adding External Components.
    */
   @Override
   public void addComponent(String componentTypeName) {
@@ -176,7 +176,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       addPaletteItem(item, category);
     }
   }
-  
+
   public void removeComponent(String componentTypeName) {
     String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
@@ -255,31 +255,28 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     VerticalPanel panel = categoryPanels.get(category);
     panel.add(component);
   }
-  
+
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
     panel.remove(component);
   }
 
   @Override
-  public void onComponentsAdded(List<String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+  public void onComponentTypeAdded(List<String> componentTypes) {
     for (String componentType : componentTypes) {
       this.addComponent(componentType);
     }
   }
-  
+
   @Override
-  public void onComponentsRemoved(List<String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+  public void onComponentTypeRemoved(List<String> componentTypes) {
     for (String componentType : componentTypes) {
       this.removeComponent(componentType);
     }
   }
-  
+
   @Override
   public void onResetDatabase() {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     reloadComponents();
   }
 
@@ -290,11 +287,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       panel.clear();
     }
   }
-  
+
   @Override
   public void reloadComponents() {
     clearComponents();
     loadComponents();
-  } 
+  }
 
 }

@@ -31,8 +31,8 @@ public interface SimplePalettePanel {
   void configureComponent(MockComponent mockComponent);
 
   void addComponent(String componentTypeName);
-  
+
   void clearComponents();
-  
+
   void reloadComponents();
 }
