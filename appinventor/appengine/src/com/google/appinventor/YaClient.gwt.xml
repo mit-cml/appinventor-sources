@@ -113,6 +113,8 @@
   <extend-property name="locale" values="zh_TW"/>
   <!-- Spanish from Spain -->
   <extend-property name="locale" values="es_ES"/>
+  <!-- French -->
+  <extend-property name="locale" values="fr_FR"/>
   <!-- Italian -->
   <extend-property name="locale" values="it_IT"/>
   <!-- Russian -->
