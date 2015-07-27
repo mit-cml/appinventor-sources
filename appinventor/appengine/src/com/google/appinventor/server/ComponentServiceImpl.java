@@ -10,7 +10,8 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.component.ComponentService;
-import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 
 import com.google.common.io.ByteStreams;
 
@@ -19,10 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -42,20 +45,21 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   }
 
   @Override
-  public boolean importComponentToProject(Component component, long projectId,
+  public List<ProjectNode> importComponentToProject(Component component, long projectId,
       String folderPath) {
+    List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     String gcsPath = storageIo.getGcsPath(component);
 
     if (gcsPath == null) {
       // component may not come from the datastore so gcsPath is null
-      return false;
+      return compNodes;
     }
 
     try {
       byte[] compContent = storageIo.getGcsFileContent(gcsPath);
       Map<String, byte[]> contents =
           extractContents(new ByteArrayInputStream(compContent));
-      importToProject(contents, projectId, folderPath);
+      compNodes = importToProject(contents, projectId, folderPath);
 
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -65,20 +69,21 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
           collectImportErrorInfo(gcsPath, projectId), e);
     }
 
-    return true;
+    return compNodes;
   }
 
   @Override
-  public boolean importComponentToProject(String url, long projectId,
+  public List<ProjectNode> importComponentToProject(String url, long projectId,
       String folderPath) {
+    List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     if (isUnknownSource(url)) {
-      return false;
+      return compNodes;
     }
 
     try {
       URL compUrl = new URL(url);
       Map<String, byte[]> contents = extractContents(compUrl.openStream());
-      importToProject(contents, projectId, folderPath);
+      compNodes = importToProject(contents, projectId, folderPath);
 
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -88,14 +93,14 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
           collectImportErrorInfo(url, projectId), e);
     }
 
-    return true;
+    return compNodes;
   }
 
   @Override
   public void deleteComponent(Component component) {
     if (!component.getAuthorId().equals(userInfoProvider.getUserId())) {
       throw CrashReport.createAndLogError(LOG, null,
-          "The user who is deleting the component with id " + component.id() +
+          "The user who is deleting the component with id " + component.getId() +
           " is not the author.", null);
     }
     storageIo.deleteComponent(component);
@@ -109,6 +114,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     ZipInputStream zip = new ZipInputStream(inputStream);
     ZipEntry entry;
     while ((entry = zip.getNextEntry()) != null) {
+      if (entry.isDirectory())  continue;
       ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
       ByteStreams.copy(zip, contentStream);
       contents.put(entry.getName(), contentStream.toByteArray());
@@ -118,14 +124,19 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     return contents;
   }
 
-  private void importToProject(Map<String, byte[]> contents, long projectId,
+  private List<ProjectNode> importToProject(Map<String, byte[]> contents, long projectId,
       String folderPath) throws FileImporterException, IOException {
+    List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     for (String name : contents.keySet()) {
       String destination = folderPath + "/external_comps/" + name;
+      FileNode fileNode = new FileNode(name, destination);
       fileImporter.importFile(userInfoProvider.getUserId(), projectId,
           destination, new ByteArrayInputStream(contents.get(name)));
+      compNodes.add(fileNode);
     }
+    return compNodes;
   }
+
 
   private String collectImportErrorInfo(String path, long projectId) {
     return "Error importing " + path + " to project " + projectId;

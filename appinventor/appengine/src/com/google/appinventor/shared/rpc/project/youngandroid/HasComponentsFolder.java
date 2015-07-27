@@ -1,7 +1,8 @@
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
-/**
- * Created by quixotic on 27/7/15.
- */
-public interface HasComponentsFolder {
+import com.google.appinventor.shared.rpc.project.FolderNode;
+
+
+public interface HasComponentsFolder<T extends FolderNode> {
+    T getComponentsFolder();
 }

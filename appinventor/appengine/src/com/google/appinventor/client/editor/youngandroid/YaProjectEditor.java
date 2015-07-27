@@ -22,12 +22,13 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
@@ -43,7 +44,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -470,7 +470,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     };
     Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
-  
+
   private void callLoadProject() {
     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
       @Override
@@ -487,12 +487,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void loadExternalComponents() {
     //Get the list of all ComponentNodes to be Added
     List<ProjectNode> componentNodes = new ArrayList<ProjectNode>();
-    YoungAndroidAssetsFolder assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
-    if (assetsFolder != null) {
-      for (ProjectNode node : assetsFolder.getChildren()) {
-        // Find all assets that are json files. 
+    YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    if (componentsFolder != null) {
+      for (ProjectNode node : componentsFolder.getChildren()) {
+        // Find all components that are json files.
         final String nodeName = node.getName();
-        if (nodeName.endsWith(".json")) {
+        if (nodeName.endsWith(".json") && StringUtils.countMatches(node.getFileId(), "/") == 3 ) {
           componentNodes.add(node);
         }
       }

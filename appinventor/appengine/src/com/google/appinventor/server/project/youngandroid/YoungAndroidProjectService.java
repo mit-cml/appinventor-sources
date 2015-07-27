@@ -35,6 +35,8 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -50,7 +52,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -224,20 +225,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Extract the new icon from the projectSettings parameter.
     Settings settings = new Settings(JSON_PARSER, projectSettings);
     String newIcon = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON));
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON));
     String newVCode = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE));
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE));
     String newVName = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME));
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME));
     String newUsesLocation = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION));
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION));
     String newAName = Strings.nullToEmpty(settings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -377,9 +378,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
                                     projectId);
     ProjectNode assetsNode = new YoungAndroidAssetsFolder(ASSETS_FOLDER);
     ProjectNode sourcesNode = new YoungAndroidSourceFolderNode(SRC_FOLDER);
+    ProjectNode compsNode = new YoungAndroidComponentsFolder(EXTERNAL_COMPS_FOLDER);
 
     rootNode.addChild(assetsNode);
     rootNode.addChild(sourcesNode);
+    rootNode.addChild(compsNode);
 
     // Sources contains nested folders that are interpreted as packages
     Map<String, ProjectNode> packagesMap = Maps.newHashMap();
@@ -388,11 +391,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
     for (String fileId : sourceFiles) {
       if (fileId.startsWith(ASSETS_FOLDER + '/')) {
-        if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER)) {
-          continue;
+        if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER + '/')) {
+          compsNode.addChild(new YoungAndroidComponentNode(StorageUtil.basename(fileId), fileId));
         }
-        assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
-
+        else {
+          assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
+        }
       } else if (fileId.startsWith(SRC_FOLDER + '/')) {
         // We send form (.scm), blocks (.blk), and yail (.yail) nodes to the ODE client.
         YoungAndroidSourceNode sourceNode = null;

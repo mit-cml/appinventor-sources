@@ -7,12 +7,17 @@
 package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.allen_sauer.gwt.dnd.client.util.StringUtil;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.component.Component;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
 import com.google.gwt.user.cellview.client.CellTable;
@@ -30,19 +35,35 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
 
+import java.util.List;
+
 public class ComponentImportWizard extends Wizard {
 
-  private static class ImportComponentCallback extends OdeAsyncCallback<Boolean> {
+
+
+  private static class ImportComponentCallback extends OdeAsyncCallback<List<ProjectNode>> {
     @Override
-    public void onSuccess(Boolean result) {
-      // to be implemented
+    public void onSuccess(List<ProjectNode> compNodes) {
+      if (compNodes.isEmpty())  return;
+      long projectId = ode.getCurrentYoungAndroidProjectId();
+      Project project = ode.getProjectManager().getProject(projectId);
+      YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+      YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
+
+      for (ProjectNode node : compNodes) {
+        project.addNode(componentsFolder,node);
+        if (node.getName().endsWith(".json") && StringUtils.countMatches(node.getFileId(),"/") == 3) {
+          projectEditor.addComponent(node, null);
+        }
+      }
+
     }
   }
 
   private static int MY_COMPONENT_TAB = 0;
   private static int URL_TAB = 1;
 
-  private final Ode ode = Ode.getInstance();
+  private static final Ode ode = Ode.getInstance();
 
   public ComponentImportWizard() {
     super(MESSAGES.componentImportWizardCaption(), true, false);

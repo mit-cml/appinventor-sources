@@ -9,6 +9,8 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
@@ -23,7 +25,7 @@ import java.util.HashMap;
 import java.util.Collection;
 
 /**
- * Manage known assets for a project and arrange to send them to the
+ * Manage known assets and components for a project and arrange to send them to the
  * attached phone as necessary.
  *
  * @author jis@mit.edu (Jeffrey I. Schiller)
@@ -42,8 +44,11 @@ public final class AssetManager implements ProjectChangeListener {
   private long projectId;
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
+  private YoungAndroidComponentsFolder componentsFolder;
   private static AssetManager INSTANCE;
   private static boolean DEBUG = false;
+  private static final String ASSETS_FOLDER = "assets";
+  private static final String EXTERNAL_COMPS_FOLDER = "external_comps";
 
   private AssetManager() {
     exportMethodsToJavascript();
@@ -67,14 +72,32 @@ public final class AssetManager implements ProjectChangeListener {
     if (projectId != 0) {
       project = Ode.getInstance().getProjectManager().getProject(projectId);
       assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+      componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
       project.addProjectChangeListener(this);
       assets = new HashMap<String,AssetInfo>();
+      // Add Asset Files
       for (ProjectNode node : assetsFolder.getChildren()) {
-        if (node.getChildren().iterator().hasNext()) {  // is a directory
-          loadAssets(node);  // setup files inside it
-          continue;
+        if (nodeFilter(node)) {
+          if (node.getChildren().iterator().hasNext()) {
+            loadAssets(node);
+            continue;
+          }
+          else {
+            assetSetup(node);
+          }
         }
-        assetSetup(node); // is a file
+      }
+      // Add Component Files
+      for (ProjectNode node : componentsFolder.getChildren()) {
+        if (nodeFilter(node)) {
+          if (node.getChildren().iterator().hasNext()) {
+            loadAssets(node);
+            continue;
+          }
+          else {
+            assetSetup(node);
+          }
+        }
       }
     } else {
       project = null;
@@ -83,13 +106,17 @@ public final class AssetManager implements ProjectChangeListener {
     }
   }
 
-  public void loadAssets(ProjectNode assetFolder) {
-    long targetProjectId = assetFolder.getProjectId();
+  /**
+   * Recursively add
+   * @param nodeFolder
+   */
+  public void loadAssets(ProjectNode nodeFolder) {
+    long targetProjectId = nodeFolder.getProjectId();
     if (this.projectId != targetProjectId) { // We are on a different project so stop and change project
       loadAssets(targetProjectId); // redo
       return;
     }
-    for (ProjectNode node : assetFolder.getChildren()) {
+    for (ProjectNode node : nodeFolder.getChildren()) {
       if (node.getChildren().iterator().hasNext()) {  // is a directory
         loadAssets(node); // setup files inside it
         continue;
@@ -106,6 +133,37 @@ public final class AssetManager implements ProjectChangeListener {
     assetInfo.loaded = false; // Set to true when it is loaded to the repl
     assetInfo.transferred = false; // Set to true when asset is received on phone
     assets.put(fileId, assetInfo);
+  }
+
+  /**
+   * Filter that allows only specific nodes to be sent to AssetManager for Transfer
+   * @param node
+   * @return true to allow transfer
+   */
+  private boolean nodeFilter(ProjectNode node) {
+    boolean allowAll = true; // Set to true to allow all Asset and Component Files!
+    boolean allow = false;
+    String fileId = node.getFileId();
+    // Fitler : For files in ASSETS_FOLDER
+    if (fileId.startsWith(ASSETS_FOLDER)) {
+      allow = true;
+
+      // Filter : For files in EXTERNAL_COMPS_FOLDER
+      if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER + '/')) {
+        allow = false;
+
+        // Filter : For files in directly in EXTERNAL_COMPS_FOLDER
+        if (StringUtils.countMatches(fileId, "/") == 3) {
+
+          // Filter : For .dex Files
+          if (fileId.endsWith(".dex")) {
+            allow = true;
+
+          }
+        }
+      }
+    }
+    return allow | allowAll;
   }
 
   private void readIn(final AssetInfo assetInfo, final String formName) {

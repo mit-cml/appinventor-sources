@@ -6,6 +6,7 @@
 
 package com.google.appinventor.shared.rpc.component;
 
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public interface ComponentServiceAsync {
    * @see ComponentService#importComponentToProject(Component, long, String)
    */
   void importComponentToProject(Component info, long projectId,
-      String folderPath, AsyncCallback<Boolean> callback);
+      String folderPath, AsyncCallback<List<ProjectNode>> callback);
 
   /**
    * @see ComponentService#importComponentToProject(String, long, String)
    */
   void importComponentToProject(String url, long projectId, String folderPath,
-      AsyncCallback<Boolean> callback);
+      AsyncCallback<List<ProjectNode>> callback);
 
   /**
    * @see ComponentService#deleteComponent(Component)
