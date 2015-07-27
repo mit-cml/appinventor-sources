@@ -22,7 +22,7 @@ import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -55,8 +55,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String FILE_NAME2 = "src/File2.blk";
   private static final String RAW_FILE_NAME1 = "assets/File1.jpg";
   private static final String RAW_FILE_NAME2 = "assets/File2.wav";
-  private static final String COMPONENT_FILE_NAME1 = "twitter.aix";
-  private static final String COMPONENT_FILE_NAME2 = "facebook.aix";
+  private static final String COMPONENT_FILE_NAME1 = "com.package.Twitter.aix";
+  private static final String COMPONENT_FILE_NAME2 = "com.package.Facebook.aix";
   private static final String COMPONENT_EXTENSION_NAME = ".aix";
   private static final String FILE_NAME_OUTPUT = "File.apk";
   private static final String FILE_CONTENT1 = "The quick onyx goblin jumps over the lazy dwarf";
@@ -571,58 +571,65 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUploadComponentFile() throws Exception {
     final String USER_ID = "369";
-    final String COMP_NAME = COMPONENT_FILE_NAME1.substring(0,
+    final String FULL_NAME = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
     final long INIT_VERSION = 0;
-    final String PATH_SUFFIX = USER_ID + "/" + COMP_NAME + "/" + INIT_VERSION +
-        "/" + COMPONENT_FILE_NAME1;
+    final String PATH_SUFFIX = FULL_NAME + "/" + INIT_VERSION + "/" + COMPONENT_FILE_NAME1;
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
-    List<ComponentData> compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
+    List<ComponentData> compDataList = storage.getCompDataList(FULL_NAME);
     assertFalse(compDataList.isEmpty());
 
     ComponentData firstData = compDataList.get(0);
     assertEquals(USER_ID, firstData.userId);
-    assertEquals(COMP_NAME, firstData.name);
+    assertEquals(FULL_NAME, firstData.fullyQualifiedName);
     assertEquals(INIT_VERSION, firstData.version);
     assertTrue(firstData.gcsPath.endsWith(PATH_SUFFIX));
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
 
-    // the version of the newly uploaded component is based on versionCounter in info.json
-    final String INFO_PATH = "external_comps" + "/" + USER_ID + "/" + COMP_NAME +
-        "/" + "info.json";
+    // the version of the newly uploaded component is based on nextVersion in info.json
+    final String INFO_PATH = "external_comps" + "/" + FULL_NAME + "/" + "info.json";
     final long VERSION = 10;
+    final long NUM_OF_VERSIONS = 5;
     JSONObject info = new JSONObject();
-    info.put("versionCounter", VERSION);
+    info.put("nextVersion", VERSION);
+    info.put("numOfVersions", NUM_OF_VERSIONS);
     storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-    compDataList = storage.getCompDataList(USER_ID, COMP_NAME);
-    ComponentData newData = compDataList.get(compDataList.size() - 1);
-    assertEquals(VERSION + 1, newData.version);
+
+    Component justAdded = storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1,
+        RAW_FILE_CONTENT1);
+    assertNotNull(justAdded);
+    assertEquals(VERSION, justAdded.getVersion());
+
+    byte[] infoContent = storage.getGcsFileContent(INFO_PATH);
+    JSONObject updatedInfo = new JSONObject(new String(infoContent));
+    assertEquals(NUM_OF_VERSIONS + 1, updatedInfo.getInt("numOfVersions"));
   }
 
-  public void testGetComponentInfos() {
+  public void testGetComponents() {
     final String USER_ID = "246";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
 
-    assertEquals(2, storage.getComponentInfos(USER_ID).size());
+    assertEquals(2, storage.getComponents(USER_ID).size());
 
-    final String COMP_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
+    final String FULL_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
-    final String COMP_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
+
+    final String FULL_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
         COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
+
     final long INIT_VERSION = 0;
 
-    ComponentInfo compInfo1 = storage.getComponentInfos(USER_ID).get(0);
-    assertEquals(USER_ID, compInfo1.getAuthorId());
-    assertEquals(COMP_NAME_1, compInfo1.getName());
-    assertEquals(INIT_VERSION, compInfo1.getVersion());
+    Component comp1 = storage.getComponents(USER_ID).get(0);
+    assertEquals(USER_ID, comp1.getAuthorId());
+    assertEquals(FULL_NAME_1, comp1.getFullyQualifiedName());
+    assertEquals(INIT_VERSION, comp1.getVersion());
 
-    ComponentInfo compInfo2 = storage.getComponentInfos(USER_ID).get(1);
-    assertEquals(USER_ID, compInfo2.getAuthorId());
-    assertEquals(COMP_NAME_2, compInfo2.getName());
-    assertEquals(INIT_VERSION, compInfo2.getVersion());
+    Component comp2 = storage.getComponents(USER_ID).get(1);
+    assertEquals(USER_ID, comp2.getAuthorId());
+    assertEquals(FULL_NAME_2, comp2.getFullyQualifiedName());
+    assertEquals(INIT_VERSION, comp2.getVersion());
   }
 
   public void testGetGcsFileContent() throws Exception {
@@ -638,13 +645,40 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   public void testGetGcsPath() {
     final String USER_ID = "135";
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-    ComponentInfo compInfo = storage.getComponentInfos(USER_ID).get(0);
-    assertNotNull(storage.getGcsPath(compInfo));
 
-    ComponentInfo fakeInfo = new ComponentInfo(123, "fakeId", "fakeName", 456);
-    assertNull(storage.getGcsPath(fakeInfo));
+    Component comp = storage.getComponents(USER_ID).get(0);
+    assertNotNull(storage.getGcsPath(comp));
+
+    Component fakeComp = new Component(123, "fakeId", "fakeFullName", 456);
+    assertNull(storage.getGcsPath(fakeComp));
   }
 
+  public void testDeleteComponent() {
+    Component comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
+        RAW_FILE_CONTENT1);
+    String infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() +
+        "/" + "info.json";
+
+    assertNotNull(storage.getGcsFileContent(infoPath));
+    assertNotNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
+    storage.deleteComponent(comp);
+    assertTrue(storage.getCompDataList(comp.getFullyQualifiedName()).isEmpty());
+    assertNull(storage.getGcsFileContent(infoPath));
+    assertNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
+
+    final int NUM_OF_VERSIONS = 5;
+    for (int i = 0; i < NUM_OF_VERSIONS; ++i) {
+      comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
+          RAW_FILE_CONTENT1);
+    }
+
+    storage.deleteComponent(comp);
+    infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() + "/" +
+        "info.json";
+    byte[] infoContent = storage.getGcsFileContent(infoPath);
+    JSONObject updatedInfo = new JSONObject(new String(infoContent));
+    assertEquals(NUM_OF_VERSIONS - 1, updatedInfo.getInt("numOfVersions"));
+  }
 
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the

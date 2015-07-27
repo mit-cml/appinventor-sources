@@ -242,7 +242,7 @@ public class ReplForm extends Form {
     File assetFolder = new File(REPL_ASSET_DIR );
     checkAssetDir();
     // Current Thread Class Loader
-    ClassLoader parentClassLoader = activeForm.$context().getClassLoader();
+    ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
     for (File assetFile : assetFolder.listFiles()) {
       if (assetFile.getName().endsWith(".dex")) {
         DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
@@ -251,6 +251,29 @@ public class ReplForm extends Form {
         Thread.currentThread().setContextClassLoader(parentClassLoader);
       }
     }
+  }
+
+  /**
+   * This is the single specific dex file version of the loadComponents()
+   * @param dexFile
+   */
+  public boolean loadComponent(String dexFile) {
+    Log.d("CDK","loadComp is called="+dexFile);
+    File assetFile = new File(dexFile);
+    if (!assetFile.exists()) {
+      return false;
+    }
+    if (!assetFile.getName().endsWith(".dex")) {
+      return  false;
+    }
+    // Store the loaded dex files in the private storage of the App for stable optimization
+    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
+    // Current Thread Class Loader
+    ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+    DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
+            null, parentClassLoader);
+    Thread.currentThread().setContextClassLoader(dexCloader);
+    return true;
   }
 
 }

@@ -44,7 +44,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.component.ComponentInfo;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -1606,9 +1606,12 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public void uploadComponentFile(final String userId, final String fileName, final byte[] content) {
+  public Component uploadComponentFile(final String userId, final String fileName, final byte[] content) {
+    final Component addedComponent = new Component();
+
     JobRetryHelper helper = new JobRetryHelper() {
       private static final String EXTERNAL_COMP_DIR = "external_comps";
+      private static final String EXTERNAL_COMP_EXTENSION = ".aix";
       private static final String INFO_FILE_NAME = "info.json";
 
       @Override
@@ -1616,12 +1619,16 @@ public class ObjectifyStorageIo implements  StorageIo {
         ComponentData compData = new ComponentData();
         compData.id = null;
         compData.userId = userId;
-        compData.name = fileName.substring(0, fileName.length() - ".aix".length());
+        compData.fullyQualifiedName = fileName.substring(0,
+            fileName.length() - EXTERNAL_COMP_EXTENSION.length());
         compData.version = getNextVersion(compData);
-        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + compData.version + "/" + fileName;
+        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
+            "/" + compData.version + "/" + fileName;
 
         datastore.put(compData);
+
+        addedComponent.set(compData.id, compData.userId, compData.fullyQualifiedName,
+            compData.version);
 
         try {
           setGcsFileContent(compData.gcsPath, content);
@@ -1634,35 +1641,36 @@ public class ObjectifyStorageIo implements  StorageIo {
 
       private long getNextVersion(ComponentData compData) {
         JSONObject info = getInfoJson(compData);
-        return info == null ? 0 : info.getLong("versionCounter") + 1;
+        return info == null ? 0 : info.getLong("nextVersion");
       }
 
       private void updateInfoFile(ComponentData compData) throws IOException {
         JSONObject info = getInfoJson(compData);
         if (info == null) {
           info = new JSONObject();
-          info.put("versionCounter", 0L);
+          info.put("nextVersion", 1L);
+          info.put("numOfVersions", 1);
         } else {
-          info.put("versionCounter", compData.version);
+          info.put("nextVersion", compData.version + 1);
+          info.put("numOfVersions", info.getInt("numOfVersions") + 1);
         }
 
-        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + INFO_FILE_NAME;
-        setGcsFileContent(infoFilePath, info.toString().getBytes());
+        setGcsFileContent(getInfoFilePath(compData), info.toString().getBytes());
       }
 
       private JSONObject getInfoJson(ComponentData compData) {
-        String infoFilePath = EXTERNAL_COMP_DIR + "/" + compData.userId + "/" +
-            compData.name + "/" + INFO_FILE_NAME;
-
-        byte[] infoContent = getGcsFileContent(infoFilePath);
-
+        byte[] infoContent = getGcsFileContent(getInfoFilePath(compData));
         return infoContent == null ? null : new JSONObject(new String(infoContent));
+      }
+
+      private String getInfoFilePath(ComponentData compData) {
+        return EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName + "/" + INFO_FILE_NAME;
       }
     };
 
     try {
       runJobWithRetries(helper, true);
+      return addedComponent;
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
         collectComponentErrorInfo(userId, fileName), e);
@@ -1670,11 +1678,12 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public List<ComponentInfo> getComponentInfos(String userId) {
-    ArrayList<ComponentInfo> results = new ArrayList<ComponentInfo>();
+  public List<Component> getComponents(String userId) {
+    ArrayList<Component> results = new ArrayList<Component>();
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
     for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new ComponentInfo(compData.id, compData.userId, compData.name, compData.version));
+      results.add(new Component(compData.id, compData.userId,
+          compData.fullyQualifiedName, compData.version));
     }
     return results;
   }
@@ -1698,9 +1707,68 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public String getGcsPath(ComponentInfo compInfo) {
-    ComponentData result = ObjectifyService.begin().find(componentKey(compInfo.getId()));
+  public String getGcsPath(Component component) {
+    Objectify datastore = ObjectifyService.begin();
+    ComponentData result = datastore.find(componentKey(component.getId()));
     return result == null ? null : result.gcsPath;
+  }
+
+  @Override
+  public void deleteComponent(final Component component) {
+    JobRetryHelper helper = new JobRetryHelper() {
+      private static final String EXTERNAL_COMP_DIR = "external_comps";
+      private static final String INFO_FILE_NAME = "info.json";
+
+      @Override
+      public void run(Objectify datastore) {
+        datastore.delete(componentKey(component.getId()));
+
+        String gcsPath = getGcsPath(component);
+        if (gcsPath == null) {
+          throw CrashReport.createAndLogError(LOG, null, "gcs path of " +
+              component.getFullyQualifiedName() + " of version " + component.getVersion() +
+              " is null", new NullPointerException());
+        }
+
+        try {
+          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, gcsPath));
+          updateInfoFile(component);
+        } catch (IOException e) {
+          LOG.log(Level.WARNING, "Unable to delete " + component.getFullyQualifiedName(), e);
+        }
+      }
+
+      private void updateInfoFile(Component comp) throws IOException {
+        JSONObject info = getInfoJson(comp);
+        if (info == null) {
+          throw CrashReport.createAndLogError(LOG, null, "Error reading info.json of " +
+              comp.getFullyQualifiedName(), new NullPointerException());
+        }
+
+        if (info.getInt("numOfVersions") == 1) {
+          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, getInfoFilePath(comp)));
+        } else {
+          info.put("numOfVersions", info.getInt("numOfVersions") - 1);
+          setGcsFileContent(getInfoFilePath(comp), info.toString().getBytes());
+        }
+      }
+
+      private JSONObject getInfoJson(Component comp) {
+        byte[] infoContent = getGcsFileContent(getInfoFilePath(comp));
+        return infoContent == null ? null : new JSONObject(new String(infoContent));
+      }
+
+      private String getInfoFilePath(Component comp) {
+        return EXTERNAL_COMP_DIR + "/" + comp.getFullyQualifiedName() + "/" + INFO_FILE_NAME;
+      }
+    };
+
+    try {
+      runJobWithRetries(helper, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectComponentErrorInfo(component.getAuthorId(), component.getFullyQualifiedName()), e);
+    }
   }
 
   protected void deleteBlobstoreFile(String blobstorePath) {
@@ -2558,9 +2626,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @VisibleForTesting
-  List<ComponentData> getCompDataList(String userId, String name) {
+  List<ComponentData> getCompDataList(String fullyQualifiedName) {
     Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    return query.filter("userId", userId).filter("name", name).list();
+    return query.filter("fullyQualifiedName", fullyQualifiedName).list();
   }
 
   @VisibleForTesting

@@ -266,12 +266,13 @@ public class StoredData {
 
     @Indexed String userId;
 
-    @Indexed String name;
+    @Indexed String fullyQualifiedName;
 
-    long version;
+    @Indexed long version;
 
     String gcsPath;
   }
+
   @Cached(expirationSeconds=60)
   @Unindexed
   static final class SplashData {

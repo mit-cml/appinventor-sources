@@ -76,8 +76,7 @@ public final class SimpleComponentDescriptor {
   private MockComponent cachedMockComponent = null;
 
   // Component database: information about components (including their properties and events)
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   /* We keep a static map of image names to images in the image bundle so
    * that we can avoid making individual calls to the server for static image
@@ -148,7 +147,8 @@ public final class SimpleComponentDescriptor {
     this.categoryDocUrlString = categoryDocUrlString;
     this.showOnPalette = showOnPalette;
     this.nonVisible = nonVisible;
-    this.external = external; 
+    this.external = external;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
   }
 
   /**
@@ -270,9 +270,9 @@ public final class SimpleComponentDescriptor {
    * Instantiates mock component by name.
    */
   public static MockComponent createMockComponent(String name, SimpleEditor editor) {
-    if (COMPONENT_DATABASE.getNonVisible(name)) {
+    if (SimpleComponentDatabase.getInstance(editor.getProjectId()).getNonVisible(name)) {
       return new MockNonVisibleComponent(editor, name,
-          getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name)));
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
     } else if (name.equals(MockCanvas.TYPE)) {

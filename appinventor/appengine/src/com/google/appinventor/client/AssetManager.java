@@ -35,6 +35,7 @@ public final class AssetManager implements ProjectChangeListener {
     String fileId;
     byte [] fileContent;
     boolean loaded;         // true if already loaded to the repl (phone)
+    boolean transferred;           // true if asset received on phone
   }
 
   private HashMap<String, AssetInfo> assets = null;
@@ -69,12 +70,31 @@ public final class AssetManager implements ProjectChangeListener {
       project.addProjectChangeListener(this);
       assets = new HashMap<String,AssetInfo>();
       for (ProjectNode node : assetsFolder.getChildren()) {
-        assetSetup(node);
+        if (node.getChildren().iterator().hasNext()) {  // is a directory
+          loadAssets(node);  // setup files inside it
+          continue;
+        }
+        assetSetup(node); // is a file
       }
     } else {
       project = null;
       assetsFolder = null;
       assets = null;
+    }
+  }
+
+  public void loadAssets(ProjectNode assetFolder) {
+    long targetProjectId = assetFolder.getProjectId();
+    if (this.projectId != targetProjectId) { // We are on a different project so stop and change project
+      loadAssets(targetProjectId); // redo
+      return;
+    }
+    for (ProjectNode node : assetFolder.getChildren()) {
+      if (node.getChildren().iterator().hasNext()) {  // is a directory
+        loadAssets(node); // setup files inside it
+        continue;
+      }
+      assetSetup(node); // is a file
     }
   }
 
@@ -84,6 +104,7 @@ public final class AssetManager implements ProjectChangeListener {
     assetInfo.fileId = fileId;
     assetInfo.fileContent = null;
     assetInfo.loaded = false; // Set to true when it is loaded to the repl
+    assetInfo.transferred = false; // Set to true when asset is received on phone
     assets.put(fileId, assetInfo);
   }
 
@@ -92,10 +113,11 @@ public final class AssetManager implements ProjectChangeListener {
       new AsyncCallback<String>() {
         @Override
           public void onSuccess(String data) {
-          assetInfo.fileContent = Base64Util.decodeLines(data);
-          assetInfo.loaded = false; // Set to true when it is loaded to the repl
-          refreshAssets1(formName);
-        }
+            assetInfo.fileContent = Base64Util.decodeLines(data);
+            assetInfo.loaded = false; // Set to true when it is loaded to the repl
+            assetInfo.transferred = false; // Set to true when file is received on phone
+            refreshAssets1(formName);
+          }
         @Override
           public void onFailure(Throwable ex) {
           OdeLog.elog("Failed to load asset.");
@@ -138,7 +160,36 @@ public final class AssetManager implements ProjectChangeListener {
     OdeLog.log("AssetManager: formName = " + formName + " received reset.");
     for (AssetInfo a: assets.values()) {
       a.loaded = false;
+      a.transferred = false;
     }
+  }
+
+  public static boolean markAssetTransferred(String transferredAsset) {
+    if (INSTANCE == null)
+      return false;
+    INSTANCE.markAssetTransferred1(transferredAsset);
+    return true;
+  }
+
+  public boolean markAssetTransferred1(String transferredAsset) {
+    if (transferredAsset == null)
+      return false;
+    AssetInfo tAssetInfo = INSTANCE.assets.get(transferredAsset);
+    tAssetInfo.transferred = true;
+    return  true;
+  }
+
+  public static boolean checkAssetsTransferred() {
+    if (INSTANCE == null)
+      return false;
+    return INSTANCE.checkAssetsTransferred1();
+  }
+
+  public boolean checkAssetsTransferred1() {
+    for (AssetInfo a : assets.values()) {
+      if (!a.transferred)  return false;
+    }
+    return true;
   }
 
   @Override
@@ -173,10 +224,14 @@ public final class AssetManager implements ProjectChangeListener {
       $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;));
     $wnd.AssetManager_reset =
       $entry(@com.google.appinventor.client.AssetManager::reset(Ljava/lang/String;));
+    $wnd.AssetManager_markAssetTransferred =
+      $entry(@com.google.appinventor.client.AssetManager::markAssetTransferred(Ljava/lang/String;));
+    $wnd.AssetManager_checkAssetsTransferred =
+      $entry(@com.google.appinventor.client.AssetManager::checkAssetsTransferred());
   }-*/;
 
   private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{
-    return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content);
+    return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
   }-*/;
 
 }
