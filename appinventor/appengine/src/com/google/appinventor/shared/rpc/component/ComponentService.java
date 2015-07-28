@@ -8,6 +8,7 @@ package com.google.appinventor.shared.rpc.component;
 
 import com.google.appinventor.shared.rpc.ServerLayout;
 
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -30,7 +31,7 @@ public interface ComponentService extends RemoteService {
    * @param folderPath folder to which the component will be stored
    * @return true if importing is successful; false otherwise
    */
-  boolean importComponentToProject(Component component, long projectId, String folderPath);
+  List<ProjectNode> importComponentToProject(Component component, long projectId, String folderPath);
 
   /**
    * Import the component to the project in the server and
@@ -41,7 +42,7 @@ public interface ComponentService extends RemoteService {
    * @param folderPath folder to which the component will be stored
    * @return true if importing is successful; false otherwise
    */
-  boolean importComponentToProject(String url, long projectId, String folderPath);
+  List<ProjectNode> importComponentToProject(String url, long projectId, String folderPath);
 
   /**
    * Delete the component uploaded by the user

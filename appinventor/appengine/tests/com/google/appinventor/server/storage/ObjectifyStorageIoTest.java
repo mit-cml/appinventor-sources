@@ -573,7 +573,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String USER_ID = "369";
     final String FULL_NAME = COMPONENT_FILE_NAME1.substring(0,
         COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
-    final long INIT_VERSION = 0;
+    final long INIT_VERSION = 1;
     final String PATH_SUFFIX = FULL_NAME + "/" + INIT_VERSION + "/" + COMPONENT_FILE_NAME1;
     storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
 
@@ -619,7 +619,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String FULL_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
         COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
 
-    final long INIT_VERSION = 0;
+    final long INIT_VERSION = 1;
 
     Component comp1 = storage.getComponents(USER_ID).get(0);
     assertEquals(USER_ID, comp1.getAuthorId());

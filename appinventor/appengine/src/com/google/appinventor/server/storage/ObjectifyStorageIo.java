@@ -1641,14 +1641,14 @@ public class ObjectifyStorageIo implements  StorageIo {
 
       private long getNextVersion(ComponentData compData) {
         JSONObject info = getInfoJson(compData);
-        return info == null ? 0 : info.getLong("nextVersion");
+        return info == null ? 1 : info.getLong("nextVersion");
       }
 
       private void updateInfoFile(ComponentData compData) throws IOException {
         JSONObject info = getInfoJson(compData);
         if (info == null) {
           info = new JSONObject();
-          info.put("nextVersion", 1L);
+          info.put("nextVersion", 2L);
           info.put("numOfVersions", 1);
         } else {
           info.put("nextVersion", compData.version + 1);
