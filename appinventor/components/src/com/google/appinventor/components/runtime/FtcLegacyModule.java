@@ -328,13 +328,13 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
   }
 
   @SimpleFunction(description = "Write just the port action flag in the Device Interface Module's cache to the I2C device.")
-  public void WriteI2cPortFlagOnlyFromModule(int port) {
+  public void WriteI2cPortFlagOnlyToModule(int port) {
     if (legacyModule != null) {
       try {
         legacyModule.writeI2cPortFlagOnlyFromModule(port);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyFromModule",
+        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -434,5 +434,8 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
   }
   @SimpleFunction(description = "WriteLegacyModuleCache", userVisible = false)
   public void WriteLegacyModuleCache(int physicalPort, Object byteArray) {
+  }
+  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
+  public void WriteI2cPortFlagOnlyFromModule(int port) {
   }
 }
