@@ -343,6 +343,7 @@
                     JsonComponentDescription,XmlComponentDescription,
                     ComponentList,ComponentTranslation">
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
+     <mkdir dir="${ExternalComponentAsset.dir}" />
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
        <include name="${components.pkg}/scripts/ExternalComponentListGenerator.java" />
        <classpath>
@@ -364,8 +365,9 @@
   <!-- =====================================================================
        JsonExternalComponentDescription: create ExternalComponentName.json
                                         for each external component.
-       ===================================================================== -->
-   <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors"
+       =====================================================================
+   <target name="ExternalComponentJsonProcessing"
+           description="create ExternalComponentName.json"
            depends="ExternalComponentListGenerator">
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
        <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
@@ -382,13 +384,37 @@
          <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
        </classpath>
      </java>
-     <mkdir dir="${ExternalComponentAsset.dir}" />
      <move todir="${ExternalComponentAsset.dir}">
        <fileset dir=".">
          <include name="*.json" />
        </fileset>
      </move>
    </target>
+ -->
+
+   <target name="ExternalComponentJsonProcessing"
+           description="create ExternalComponentName.json for each AI extensions"
+           depends="ExternalComponentListGenerator">
+     <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
+     <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
+       <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
+       <classpath>
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+       </classpath>
+     </ai.javac5>
+     <java classname="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator">
+       <arg value="${public.build.dir}/simple_components.json"/>
+       <arg value="${ExternalComponentAsset.dir}/external_components.txt"/>
+       <arg value="${ExternalComponentAsset.dir}"/>
+       <classpath>
+         <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+       </classpath>
+     </java>
+   </target>
+
 
    <!-- =====================================================================
         ExternalComponentComponentBuildInfo: create Extension_build_info.json
