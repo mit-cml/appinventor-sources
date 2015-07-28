@@ -5606,9 +5606,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteI2cCacheToModuleMethods();
 
-  @DefaultMessage("WriteI2cPortFlagOnlyFromModule")
+  @DefaultMessage("WriteI2cPortFlagOnlyToModule")
   @Description("")
-  String WriteI2cPortFlagOnlyFromModuleMethods();
+  String WriteI2cPortFlagOnlyToModuleMethods();
 
 
   //Mock Components
