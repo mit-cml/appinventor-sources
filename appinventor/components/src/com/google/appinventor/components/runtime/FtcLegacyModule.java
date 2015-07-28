@@ -49,15 +49,11 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     super(container.$form());
   }
 
-  // Events
-
   @SimpleEvent(description = "This event is triggered when an I2C port is ready. This event is " +
       "only enabled if EnableNxtI2cReadMode or EnableNxtI2cWriteMode is used.")
   public void I2cPortIsReady(int port) {
     EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
   }
-
-  // Properties
 
   /**
    * Version property getter.
@@ -190,14 +186,15 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadNumberFromAnalog",
+        form.dispatchErrorOccurredEvent(this, "ReadAnalog",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get the contents of the I2C read cache; return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the I2C read cache; " +
+      "return a byte array.")
   public Object GetI2cReadCache(int port) {
     if (legacyModule != null) {
       try {
@@ -222,7 +219,8 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get the contents of the I2C write cache; return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache; " +
+      "return a byte array.")
   public Object GetI2cWriteCache(int port) {
     if (legacyModule != null) {
       try {

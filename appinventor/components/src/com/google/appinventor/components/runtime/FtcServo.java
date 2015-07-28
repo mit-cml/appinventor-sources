@@ -43,8 +43,6 @@ public final class FtcServo extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Direction_FORWARD property getter.
    */
@@ -61,27 +59,6 @@ public final class FtcServo extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public String Direction_REVERSE() {
     return Direction.REVERSE.toString();
-  }
-
-  /**
-   * Direction property getter.
-   */
-  @SimpleProperty(description = "Whether this servo should spin forward or reverse.",
-      category = PropertyCategory.BEHAVIOR)
-  public String Direction() {
-    if (servo != null) {
-      try {
-        Direction direction = servo.getDirection();
-        if (direction != null) {
-          return direction.toString();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Direction",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return "";
   }
 
   /**
@@ -123,21 +100,42 @@ public final class FtcServo extends FtcHardwareDevice {
   }
 
   /**
-   * Position property getter.
+   * Direction property getter.
    */
-  @SimpleProperty(description = "The current servo position, between 0.0 and 1.0.",
+  @SimpleProperty(description = "Whether this servo should spin forward or reverse.",
       category = PropertyCategory.BEHAVIOR)
-  public double Position() {
+  public String Direction() {
     if (servo != null) {
       try {
-        return servo.getPosition();
+        Direction direction = servo.getDirection();
+        if (direction != null) {
+          return direction.toString();
+        }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Position",
+        form.dispatchErrorOccurredEvent(this, "Direction",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return 0.0;
+    return "";
+  }
+
+  /**
+   * PortNumber property getter.
+   */
+  @SimpleProperty(description = "The port number.",
+      category = PropertyCategory.BEHAVIOR)
+  public int PortNumber() {
+    if (servo != null) {
+      try {
+        return servo.getPortNumber();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "PortNumber",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -156,7 +154,23 @@ public final class FtcServo extends FtcHardwareDevice {
     }
   }
 
-  // Functions
+  /**
+   * Position property getter.
+   */
+  @SimpleProperty(description = "The current servo position, between 0.0 and 1.0.",
+      category = PropertyCategory.BEHAVIOR)
+  public double Position() {
+    if (servo != null) {
+      try {
+        return servo.getPosition();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Position",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
 
   @SimpleFunction(description = "Sets the scale range of this servo.")
   public void ScaleRange(double min, double max) {

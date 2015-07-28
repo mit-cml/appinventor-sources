@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -17,6 +18,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor.IrSensor;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
 
 /**
@@ -42,8 +44,6 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Mode_600HZ_DC property getter.
    */
@@ -60,27 +60,6 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
       category = PropertyCategory.BEHAVIOR)
   public String Mode_1200HZ_AC() {
     return Mode.MODE_1200HZ_AC.toString();
-  }
-
-  /**
-   * Mode property getter.
-   */
-  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ_DC or MODE_1200HZ_AC.",
-      category = PropertyCategory.BEHAVIOR)
-  public String Mode() {
-    if (irSeekerSensor != null) {
-      try {
-        Mode mode = irSeekerSensor.getMode();
-        if (mode != null) {
-          return mode.toString();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return "";
   }
 
   /**
@@ -105,6 +84,27 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+  }
+
+  /**
+   * Mode property getter.
+   */
+  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ_DC or MODE_1200HZ_AC.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode() {
+    if (irSeekerSensor != null) {
+      try {
+        Mode mode = irSeekerSensor.getMode();
+        if (mode != null) {
+          return mode.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Mode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   /**
@@ -159,6 +159,73 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Strength",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * SensorCount property getter.
+   */
+  @SimpleProperty(description = "The number of individual IR sensors attached to this seeker.",
+      category = PropertyCategory.BEHAVIOR)
+  public int IndividualSensorCount() {
+    if (irSeekerSensor != null) {
+      try {
+        IrSensor[] sensors = irSeekerSensor.getSensors();
+        if (sensors != null) {
+          return sensors.length;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IndividualSensorCount",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "The angle of the individual IR sensor with the given " +
+      "zero-based position.")
+  public double IndividualSensorAngle(int position) {
+    if (irSeekerSensor != null) {
+      try {
+        IrSensor[] sensors = irSeekerSensor.getSensors();
+        if (sensors != null) {
+          if (position >= 0 && position < sensors.length) {
+            return sensors[position].getSensorAngle();
+          } else {
+            form.dispatchErrorOccurredEvent(this, "SensorAngle",
+                ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IndividualSensorAngle",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "The strength of the individual IR sensor with the given " +
+      "zero-based position.")
+  public double IndividualSensorStrength(int position) {
+    if (irSeekerSensor != null) {
+      try {
+        IrSensor[] sensors = irSeekerSensor.getSensors();
+        if (sensors != null) {
+          if (position >= 0 && position < sensors.length) {
+            return sensors[position].getSensorStrength();
+          } else {
+            form.dispatchErrorOccurredEvent(this, "IndividualSensorStrength",
+                ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IndividualSensorStrength",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }

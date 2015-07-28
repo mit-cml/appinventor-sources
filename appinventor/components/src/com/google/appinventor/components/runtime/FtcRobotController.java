@@ -96,7 +96,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     OpMode getOpMode();
   }
 
-  private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 2;
+  private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 0;
   private static final String DEFAULT_CONFIGURATION = "";
 
   private static final AtomicInteger robotControllersCounter = new AtomicInteger(0);
@@ -311,9 +311,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   // Called from FtcRobotControllerActivity.requestRobotSetup
   public void beforeSetupRobot() {
-    if (usbScanTimeInSeconds > 2) {
+    if (usbScanTimeInSeconds > 0) {
       try {
-        Thread.sleep((usbScanTimeInSeconds - 2) * 1000);
+        Thread.sleep(usbScanTimeInSeconds * 1000);
       } catch (InterruptedException e) {
       }
     }
@@ -357,8 +357,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       }
     }
   }
-
-  // Properties
 
   /**
    * Configuration property getter.
@@ -410,8 +408,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   public void UsbScanTimeInSeconds(int usbScanTimeInSeconds) {
     this.usbScanTimeInSeconds = usbScanTimeInSeconds;
   }
-
-  // Functions
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")
   public void TelemetryAddTextData(String key, String text) {

@@ -59,6 +59,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.appinventor.components.runtime.FtcRobotController; // Added for App Inventor
+
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
@@ -66,16 +68,14 @@ import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder
 import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
-/* Removed for App Inventor
-import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
-*/
+// Removed for App Inventor
+//import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
 import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.Dimmer;
-/* Removed for App Inventor
-import com.qualcomm.robotcore.util.ImmersiveMode;
-*/
+// Removed for App Inventor
+//import com.qualcomm.robotcore.util.ImmersiveMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister; // Added for App Inventor
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;  // Added for App Inventor
 import com.qualcomm.robotcore.util.RobotLog;
@@ -84,9 +84,6 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
-
-// Added for App Inventor
-import com.google.appinventor.components.runtime.FtcRobotController;
 
 public class FtcRobotControllerActivity extends ActivityGlue {
 
@@ -110,9 +107,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
   protected TextView textOpMode;
   protected TextView textErrorMessage;
-  /* Removed for App Inventor
-  protected ImmersiveMode immersion;
-  */
+  // Removed for App Inventor
+  //protected ImmersiveMode immersion;
 
   protected UpdateUI updateUI;
   protected Dimmer dimmer;
@@ -176,9 +172,8 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
     textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-    /* Removed for App Inventor
-    immersion = new ImmersiveMode(getWindow().getDecorView());
-    */
+    // Removed for App Inventor
+    //immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(thisActivity);
     dimmer.longBright();
     Restarter restarter = new RobotRestarter();

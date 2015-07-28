@@ -42,8 +42,6 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Mode_INPUT property getter.
    */

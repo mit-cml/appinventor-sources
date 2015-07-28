@@ -41,8 +41,6 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * LightDetected property getter.
    */
