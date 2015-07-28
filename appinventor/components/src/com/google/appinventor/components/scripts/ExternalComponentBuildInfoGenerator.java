@@ -42,6 +42,7 @@ public class ExternalComponentBuildInfoGenerator {
     * args[0]: the path to simple_component_build_info.json
     * args[1]: the path to external_components.txt
     * args[2]: the path to ExternalComponents folder
+    * args[2]: the path to /build/classes/BuildServer/files
     */
     JSONParser parser = new JSONParser();
     String jsonText = readFile(args[0], Charset.defaultCharset());
@@ -49,20 +50,32 @@ public class ExternalComponentBuildInfoGenerator {
     JSONArray array = (JSONArray) obj;
     ArrayList<String> components = fileToArray(args[1]);
     for (int i = 0; i < array.size(); i++) {
-        JSONObject component = (JSONObject) array.get(i);
-        if(components.contains(component.get("name"))) { //The external component we want to create the build_info.json
-            new File(args[2]+File.separator+component.get("name")+"/files").mkdirs();
-            FileWriter file = new FileWriter(args[2]+File.separator+ component.get("name") + "/files/" + component.get("name") + "_build_info.json");
+      JSONObject component = (JSONObject) array.get(i);
+      String componentFileDirectory = args[2]+File.separator+ component.get("name") + File.separator+"files";
+        if(components.contains(component.get("name"))) {
+            new File(componentFileDirectory).mkdirs();
+            FileWriter file = new FileWriter(componentFileDirectory+File.separator+component.get("name") + "_build_info.json");
             try {
                 file.write(component.toJSONString());
-                System.out.println("Successfully created " + component.get("name") + " build info JSON Object to File...");
+                System.out.println("Successfully created "+component.get("name")+"build_info.json ");
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 file.flush();
                 file.close();
             }
+
+          // Copying related libraries to a given extension into his files folder
+          JSONArray libraryArray = (JSONArray)component.get("libraries");
+          for(int j = 0; j<libraryArray.size();j++){
+            Object library = libraryArray.get(j);
+            copyFile(new File(args[3]+File.separator+library.toString()),
+                     new File(componentFileDirectory+File.separator+library.toString()));
+          }
         }
+
+
+
     }
   }
 
@@ -79,4 +92,22 @@ public class ExternalComponentBuildInfoGenerator {
     }
     return components;
   }
+
+  private static void copyFile(File source, File dest) throws IOException {
+      InputStream is = null;
+      OutputStream os = null;
+      try {
+          is = new FileInputStream(source);
+          os = new FileOutputStream(dest);
+          byte[] buffer = new byte[1024];
+          int length;
+          while ((length = is.read(buffer)) > 0) {
+              os.write(buffer, 0, length);
+          }
+      } finally {
+          is.close();
+          os.close();
+      }
+  }
+
 }
