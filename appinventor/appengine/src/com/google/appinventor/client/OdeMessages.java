@@ -3292,6 +3292,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GuideProperties();
 
+  @DefaultMessage("IndividualSensorCount")
+  @Description("")
+  String IndividualSensorCountProperties();
+
   @DefaultMessage("IsPressed")
   @Description("")
   String IsPressedProperties();
@@ -3379,6 +3383,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("OpModeName")
   @Description("")
   String OpModeNameProperties();
+
+  @DefaultMessage("PortNumber")
+  @Description("")
+  String PortNumberProperties();
 
   @DefaultMessage("Position")
   @Description("")
@@ -5461,6 +5469,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GetRuntime")
   @Description("")
   String GetRuntimeMethods();
+
+  @DefaultMessage("IndividualSensorAngle")
+  @Description("")
+  String IndividualSensorAngleMethods();
+
+  @DefaultMessage("IndividualSensorStrength")
+  @Description("")
+  String IndividualSensorStrengthMethods();
 
   @DefaultMessage("IsBitSet")
   @Description("")

@@ -37,9 +37,12 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
 
   private static final float DEFAULT_JOYSTICK_DEADZONE = 0.2f;
 
-  private volatile float joystickDeadzone = DEFAULT_JOYSTICK_DEADZONE;
   private volatile int gamepadNumber = 1;
   private volatile Gamepad gamepad;
+
+  // We need a backing field for the JoystickDeadzone property because Gamepad doesn't have a
+  // getJoystickDeadzone method.
+  private volatile float joystickDeadzone = DEFAULT_JOYSTICK_DEADZONE;
 
   /**
    * Creates a new FtcGamepad component.
@@ -48,8 +51,6 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
     super(container.$form());
     FtcRobotController.addGamepadDevice(this);
   }
-
-  // Properties
 
   /**
    * GamepadNumber property getter.
@@ -70,52 +71,6 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @SimpleProperty(userVisible = false)
   public void GamepadNumber(int gamepadNumber) {
     this.gamepadNumber = gamepadNumber;
-  }
-
-  /**
-   * JoystickDeadzone property getter.
-   */
-  @SimpleProperty(description = "The joystick deadzone, between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR)
-  public float JoystickDeadzone() {
-    return joystickDeadzone;
-  }
-
-  /**
-   * JoystickDeadzone property setter.
-   */
-  @SimpleProperty
-  public void JoystickDeadzone(float joystickDeadzone) {
-    if (joystickDeadzone >= 0.0f && joystickDeadzone <= 1.0f) {
-      this.joystickDeadzone = joystickDeadzone;
-      try {
-        if (gamepad != null) {
-          gamepad.setJoystickDeadzone(joystickDeadzone);
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  /**
-   * AtRest property getter.
-   */
-  @SimpleProperty(description = "Are all analog sticks and triggers in their rest position?",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean AtRest() {
-    try {
-      if (gamepad != null) {
-        return gamepad.atRest();
-      }
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "AtRest",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return true;
   }
 
   /**
@@ -498,6 +453,61 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   }
 
   /**
+   * JoystickDeadzone property getter.
+   */
+  @SimpleProperty(description = "The joystick deadzone, between 0.0 and 1.0.",
+      category = PropertyCategory.BEHAVIOR)
+  public float JoystickDeadzone() {
+    if (gamepad != null) {
+      try {
+        // Gamepad doesn't have a getJoystickDeadzone method. Use our backing field instead.
+        return joystickDeadzone;
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return DEFAULT_JOYSTICK_DEADZONE;
+  }
+
+  /**
+   * JoystickDeadzone property setter.
+   */
+  @SimpleProperty
+  public void JoystickDeadzone(float joystickDeadzone) {
+    if (gamepad != null) {
+      try {
+        gamepad.setJoystickDeadzone(joystickDeadzone);
+        // Set our backing field.
+        this.joystickDeadzone = joystickDeadzone;
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * AtRest property getter.
+   */
+  @SimpleProperty(description = "Are all analog sticks and triggers in their rest position?",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean AtRest() {
+    try {
+      if (gamepad != null) {
+        return gamepad.atRest();
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "AtRest",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return true;
+  }
+
+  /**
    * Status property getter.
    */
   @SimpleProperty(description = "The status of the gamepad.",
@@ -528,9 +538,6 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @Override
   public void initGamepadDevice(Gamepad gamepad1, Gamepad gamepad2) {
     gamepad = (gamepadNumber == 2) ? gamepad2 : gamepad1;
-    if (gamepad != null) {
-      gamepad.setJoystickDeadzone(joystickDeadzone);
-    }
   }
 
   @Override

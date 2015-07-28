@@ -33,8 +33,6 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     FtcRobotController.addHardwareDevice(this);
   }
 
-  // Properties
-
   /**
    * DeviceName property getter.
    * Not visible in blocks.

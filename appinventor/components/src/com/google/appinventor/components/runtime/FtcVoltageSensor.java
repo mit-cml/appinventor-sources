@@ -40,8 +40,6 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Voltage property getter.
    */

@@ -48,15 +48,11 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     super(container.$form());
   }
 
-  // Events
-
   @SimpleEvent(description = "This event is triggered when an I2C port is ready. This event is " +
       "only enabled if EnableI2cReadMode or EnableI2cWriteMode is used.")
   public void I2cPortIsReady(int port) {
     EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
   }
-
-  // Functions
 
   @SimpleFunction(description = "Return the current ADC results from the A0-A7 channel input pins.")
   public int GetAnalogInputValue(int channel) {
@@ -292,7 +288,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Get the contents of the I2C read cache; return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the I2C read cache; " +
+      "return a byte array.")
   public Object GetI2cReadCache(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -317,7 +314,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get the contents of the I2C write cache; return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache; " +
+      "return a byte array.")
   public Object GetI2cWriteCache(int port) {
     if (deviceInterfaceModule != null) {
       try {

@@ -75,8 +75,6 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     FtcRobotController.addOpMode(this);
   }
 
-  // Properties
-
   /**
    * OpModeName property getter.
    * Not visible in blocks.
@@ -98,15 +96,6 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
     this.opModeName = opModeName;
   }
 
-  // Functions
-
-  @SimpleFunction(description = "Get the number of seconds this op mode has been running.")
-  public double GetRuntime() {
-    return opMode.getRuntime();
-  }
-
-  // Events
-
   @SimpleEvent(description = "This event is triggered when this op mode is armed.")
   public void Init() {
     EventDispatcher.dispatchEvent(this, "Init");
@@ -125,6 +114,11 @@ public final class FtcOpMode extends AndroidNonvisibleComponent
   @SimpleEvent(description = "This event is triggered when this op mode is first disabled.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
+  }
+
+  @SimpleFunction(description = "Get the number of seconds this op mode has been running.")
+  public double GetRuntime() {
+    return opMode.getRuntime();
   }
 
   // Deleteable implementation

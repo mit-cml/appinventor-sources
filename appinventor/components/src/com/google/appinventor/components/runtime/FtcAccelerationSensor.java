@@ -41,8 +41,6 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * X Acceleration property getter.
    */

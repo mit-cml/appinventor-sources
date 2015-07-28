@@ -40,8 +40,6 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Rotation property getter.
    */

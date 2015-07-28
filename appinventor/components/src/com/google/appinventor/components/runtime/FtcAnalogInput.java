@@ -41,8 +41,6 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * Value property getter.
    */

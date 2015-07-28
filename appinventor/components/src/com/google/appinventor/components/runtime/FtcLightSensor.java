@@ -42,34 +42,6 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
-  /**
-   * EnableLed property getter.
-   */
-  @SimpleProperty(description = "Whether to enable the LED light.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean EnableLed() {
-    return enableLed;
-  }
-
-  /**
-   * EnableLed property setter.
-   */
-  @SimpleProperty
-  public void EnableLed(boolean enableLed) {
-    if (lightSensor != null) {
-      try {
-        lightSensor.enableLed(enableLed);
-        this.enableLed = enableLed;
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableLed",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
   /**
    * LightDetected property getter.
    */
@@ -104,6 +76,32 @@ public final class FtcLightSensor extends FtcHardwareDevice {
       }
     }
     return 0;
+  }
+
+  /**
+   * EnableLed property getter.
+   */
+  @SimpleProperty(description = "Whether to enable the LED light.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean EnableLed() {
+    return enableLed;
+  }
+
+  /**
+   * EnableLed property setter.
+   */
+  @SimpleProperty
+  public void EnableLed(boolean enableLed) {
+    if (lightSensor != null) {
+      try {
+        lightSensor.enableLed(enableLed);
+        this.enableLed = enableLed;
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableLed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   /**

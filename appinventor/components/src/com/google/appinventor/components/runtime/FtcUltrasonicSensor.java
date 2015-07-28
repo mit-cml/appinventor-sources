@@ -40,8 +40,6 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
     super(container.$form());
   }
 
-  // Properties
-
   /**
    * UltrasonicLevel property getter.
    */
