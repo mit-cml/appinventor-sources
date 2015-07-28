@@ -749,9 +749,10 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     return 0;
   }
 
-  @SimpleFunction(description = "Checks the state of a bit. Returns true if the target bit is true")
-  public boolean IsBitSet(long number, int bitPosition) {
-    return ((number >> bitPosition) & 1) == 1;
+  @SimpleFunction(description = "Checks the state of a bit in a bit field. " +
+      "Returns true if the target bit is one.")
+  public boolean IsBitSet(long bitField, int bitPosition) {
+    return ((bitField >> bitPosition) & 1) == 1;
   }
 
   // TODO(lizlooney): Consider adding support for com.qualcomm.robotcore.uti.RollingAverage
