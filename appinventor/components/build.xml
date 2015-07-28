@@ -360,6 +360,11 @@
      </move>
    </target>
 
+   <!-- =====================================================================
+        ExternalComponentComponentBuildInfo: create Extension_build_info.json
+        ===================================================================== -->
+        
+
 
    <!-- =====================================================================
         DexingExternalComponent: create ExternalComponentName.dex
