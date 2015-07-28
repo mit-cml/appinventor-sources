@@ -32,6 +32,12 @@
   <property name="components.pkg" value="com/google/appinventor/components" />
 
   <!-- =====================================================================
+       Define external components properties.
+       ===================================================================== -->
+  <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
+  <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
+
+  <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
        ===================================================================== -->
   <target name="CommonConstants"
@@ -284,6 +290,7 @@
       <include name="${components.pkg}/scripts/*.java" />
       <exclude name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
       <exclude name="${components.pkg}/scripts/ExternalComponentBuildInfoGenerator.java" />
+      <exclude name="${components.pkg}/scripts/ExternalComponentListGenerator.java" />
       <classpath>
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
@@ -326,18 +333,40 @@
           todir="${public.build.dir}"/>
   </target>
 
+  <!-- =====================================================================
+       ExternalComponentList: create external_components.txt
+       ===================================================================== -->
+
+   <target name="ExternalComponentListGenerator"
+           description="external_components.txt"
+           depends="CommonConstants,AndroidRuntime,
+                    JsonComponentDescription,XmlComponentDescription,
+                    ComponentList,ComponentTranslation">
+     <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
+     <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
+       <include name="${components.pkg}/scripts/ExternalComponentListGenerator.java" />
+       <classpath>
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+       </classpath>
+     </ai.javac5>
+     <java classname="com.google.appinventor.components.scripts.ExternalComponentListGenerator">
+       <arg value="${public.build.dir}/simple_components.json"/>
+       <arg value="${ExternalComponentAsset.dir}"/>
+       <classpath>
+         <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
+         <pathelement location="${lib.dir}/json-java/java-json.jar" />
+         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+       </classpath>
+     </java>
+   </target>
 
   <!-- =====================================================================
        JsonExternalComponentDescription: create ExternalComponentName.json
                                         for each external component.
        ===================================================================== -->
-
-   <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
-
    <target name="ExternalComponentJsonProcessing" description="Generate library for external component individual annotation processors"
-           depends="all">
-     <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
-     <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
+           depends="ExternalComponentListGenerator">
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
        <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
        <classpath>
