@@ -16,7 +16,10 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
-
+import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.io.File;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,16 +40,17 @@ public class ExternalComponentBuildInfoGenerator {
 
     /*
     * args[0]: the path to simple_component_build_info.json
-    * args[1]: the external component's name
+    * args[1]: the path to external_components.txt
     * args[2]: the path to ExternalComponents folder
     */
     JSONParser parser = new JSONParser();
     String jsonText = readFile(args[0], Charset.defaultCharset());
     Object obj = parser.parse(jsonText);
     JSONArray array = (JSONArray) obj;
+    ArrayList<String> components = fileToArray(args[1]);
     for (int i = 0; i < array.size(); i++) {
         JSONObject component = (JSONObject) array.get(i);
-        if (component.get("name").equals(args[1])) { //The external component we want to create the build_info.json
+        if(components.contains(component.get("name"))) { //The external component we want to create the build_info.json
             new File(args[2]+File.separator+component.get("name")+"/files").mkdirs();
             FileWriter file = new FileWriter(args[2]+File.separator+ component.get("name") + "/files/" + component.get("name") + "_build_info.json");
             try {
@@ -65,5 +69,14 @@ public class ExternalComponentBuildInfoGenerator {
   private static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
+  }
+
+  private static ArrayList<String> fileToArray(String fileName) throws FileNotFoundException{
+    Scanner sc = new Scanner(new File(fileName));
+    ArrayList<String> components = new ArrayList<String>();
+    while (sc.hasNextLine()) {
+      components.add(sc.nextLine());
+    }
+    return components;
   }
 }

@@ -420,7 +420,7 @@
         ===================================================================== -->
   <target name="ExternalComponentBuildInfo"
           description="create ExternalComponent_build_info.json"
-          depends="AnnotationProcessors,AndroidRuntime,ComponentList,ExternalComponentJsonProcessing">
+          depends="ExternalComponentListGenerator">
     <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
       <include name="${components.pkg}/scripts/ExternalComponentBuildInfoGenerator.java" />
       <classpath>
@@ -430,7 +430,7 @@
     </ai.javac5>
     <java classname="com.google.appinventor.components.scripts.ExternalComponentBuildInfoGenerator">
       <arg value="${public.build.dir}/simple_components_build_info.json" />
-      <arg value="SoundAnalysis"/>
+      <arg value="${ExternalComponentAsset.dir}/external_components.txt"/>
       <arg value="${ExternalComponentAsset.dir}"/>
       <classpath>
         <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
