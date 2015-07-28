@@ -30,7 +30,7 @@ import org.json.simple.parser.ParseException;
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
 */
 
-public class ExtensionBuildInfoGenerator {
+public class ExternalComponentBuildInfoGenerator {
 
 
   public static void main(String[] args) throws IOException, ParseException, JSONException {
@@ -38,6 +38,7 @@ public class ExtensionBuildInfoGenerator {
     /*
     * args[0]: the path to simple_component_build_info.json
     * args[1]: the external component's name
+    * args[2]: the path to ExternalComponents folder
     */
     JSONParser parser = new JSONParser();
     String jsonText = readFile(args[0], Charset.defaultCharset());
@@ -46,7 +47,8 @@ public class ExtensionBuildInfoGenerator {
     for (int i = 0; i < array.size(); i++) {
         JSONObject component = (JSONObject) array.get(i);
         if (component.get("name").equals(args[1])) { //The external component we want to create the build_info.json
-            FileWriter file = new FileWriter("" + component.get("name") + "/files/" + component.get("name") + "_build_info.json");
+            new File(args[2]+File.separator+component.get("name")+"/files").mkdirs();
+            FileWriter file = new FileWriter(args[2]+File.separator+ component.get("name") + "/files/" + component.get("name") + "_build_info.json");
             try {
                 file.write(component.toJSONString());
                 System.out.println("Successfully created " + component.get("name") + " build info JSON Object to File...");
@@ -59,7 +61,7 @@ public class ExtensionBuildInfoGenerator {
         }
     }
   }
-  
+
   private static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
