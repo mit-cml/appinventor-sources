@@ -1358,7 +1358,8 @@ public final class Compiler {
         String jsonFileName = getCompName(type) + "_build_info.json";
         File jsonFile = new File(extCompRuntimeFileDir, jsonFileName);
 
-        extCompsBuildInfo.put(Resources.toString(jsonFile.toURI().toURL(), Charsets.UTF_8));
+        extCompsBuildInfo.put(new JSONObject(Resources.toString(
+            jsonFile.toURI().toURL(), Charsets.UTF_8)));
       }
     } catch (Exception e) {
       e.printStackTrace();

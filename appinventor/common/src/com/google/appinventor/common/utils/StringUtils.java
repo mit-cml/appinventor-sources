@@ -292,4 +292,20 @@ public final class StringUtils {
       return null;
     }
   }
+
+  /**
+   * Returns the number of times sub occurs in str
+   * @param str
+   * @param sub
+   * @return
+   */
+  public static int countMatches(String str, String sub) {
+    int count = 0;
+    int initpos = 0;
+    while (str.indexOf(sub, initpos) != -1) {
+      count = count + 1;
+      initpos = str.indexOf(sub, initpos) + 1;
+    }
+    return count;
+  }
 }
