@@ -507,6 +507,15 @@
        </unzip>
     </target>
 
+    <target name="unjarAll">
+     <foreach target="unjar" param="theComponent" inheritall="true">
+        <path>
+           <dirset dir="${ExternalComponentTemp.dir}">
+              <include name="*" />
+           </dirset>
+        </path>
+     </foreach>
+  </target>
 
    <!-- =====================================================================
         DexingExternalComponent: create ExternalComponentName.dex
