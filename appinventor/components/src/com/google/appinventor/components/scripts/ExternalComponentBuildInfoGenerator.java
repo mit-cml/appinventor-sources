@@ -42,7 +42,8 @@ public class ExternalComponentBuildInfoGenerator {
     * args[0]: the path to simple_component_build_info.json
     * args[1]: the path to external_components.txt
     * args[2]: the path to ExternalComponents folder
-    * args[2]: the path to /build/classes/BuildServer/files
+    * args[3]: the path to /build/classes/BuildServer/files
+    * args[4]: the path to external componentsTemp directory
     */
     JSONParser parser = new JSONParser();
     String jsonText = readFile(args[0], Charset.defaultCharset());
@@ -72,9 +73,12 @@ public class ExternalComponentBuildInfoGenerator {
             copyFile(new File(args[3]+File.separator+library.toString()),
                      new File(componentFileDirectory+File.separator+library.toString()));
           }
+
+          // Copying ComponentName.jar into his files folder
+            copyFile(new File(args[4]+File.separator+component.get("name")+".jar"),
+                     new File(componentFileDirectory+File.separator+component.get("name")+".jar"));
+
         }
-
-
 
     }
   }
