@@ -143,6 +143,15 @@ public interface ProjectService extends RemoteService {
   long deleteFiles(String sessionId, long projectId, String directory) throws InvalidSessionException;
 
   /**
+   * Deletes all files and folders that are contained in the given directory.The given directory itself is deleted.
+   * @param sessionId current session id
+   * @param projectId project ID
+   * @param directory path of the directory
+   * @return modification date for project
+   */
+  long deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException;
+
+  /**
    * Loads the file information associated with a node in the project tree. The
    * actual return value depends on the file kind. Source (text) files should
    * typically return their contents. Image files will be more likely to return
