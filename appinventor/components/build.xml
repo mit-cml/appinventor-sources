@@ -498,6 +498,15 @@
    <!-- =====================================================================
         Unjaring extension's library in order for the extensions'dex to work properly
         ===================================================================== -->
+    <target name="unjar">
+       <basename property="filename" file="${theComponent}" />
+       <unzip dest="${ExternalComponentTemp.dir}/${filename}">
+          <fileset dir="${ExternalComponentTemp.dir}/${filename}">
+             <include name="**/*.jar" />
+          </fileset>
+       </unzip>
+    </target>
+
 
    <!-- =====================================================================
         DexingExternalComponent: create ExternalComponentName.dex
