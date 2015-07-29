@@ -447,13 +447,6 @@
        ExternalComponentPackaging: create ExternalComponent.jar
                                         for each external component.
        ===================================================================== -->
-
-    <!--   * args[0]: the path to simple_component_build_info.json
-       * args[1]: the path to external_components.txt
-       * args[2]: the path to "${AndroidRuntime-class.dir}/${components.pkg}/runtime"
-       * args[3]: the path to /build/classes/BuildServer/files
-       * args[4]: the path to ExternalComponentTemp directory -->
-
        <target name="ExternalComponentPackaging"
                description="create ExternalComponent.jar"
                depends="ExternalComponentListGenerator">
@@ -478,6 +471,33 @@
            </classpath>
          </java>
        </target>
+
+       <target name="Jaring"  depends="ExternalComponentPackaging" >
+         <taskdef resource="net/sf/antcontrib/antlib.xml">
+           <classpath>
+             <pathelement location="${lib.dir}/ant-contrib/ant-contrib-1.0b3.jar"/>
+           </classpath>
+         </taskdef>
+       <for param="dir" parallel="true">
+           <dirset id="projects" dir="${ExternalComponentTemp.dir}" >
+               <include name="*" />
+           </dirset>
+           <sequential>
+             <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+                 classpath="${lib.dir}/jarjar-1.4.jar"/>
+             <jarjar jarfile="@{dir}.jar" >
+                 <fileset dir="@{dir}" >
+                   <include name="**/*.jar"/>
+                 </fileset>
+             </jarjar>
+             <echo> @{dir} </echo>
+           </sequential>
+       </for>
+       </target>
+
+   <!-- =====================================================================
+        Unjaring extension's library in order for the extensions'dex to work properly
+        ===================================================================== -->
 
    <!-- =====================================================================
         DexingExternalComponent: create ExternalComponentName.dex
