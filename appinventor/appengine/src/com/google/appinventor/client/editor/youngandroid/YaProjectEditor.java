@@ -471,6 +471,35 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
 
+  /**
+   * To remove Component Files from the Project!
+   * @param componentTypes
+   */
+  public  void removeComponent(List<String> componentTypes) {
+    final Ode ode = Ode.getInstance();
+    final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    for (String componentType : componentTypes) {
+      final String directory = componentsFolder.getFileId() + "/" + componentType + "/";
+      ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
+          new AsyncCallback<Long>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+            @Override
+            public void onSuccess(Long date) {
+              Iterable<ProjectNode> nodes = componentsFolder.getChildren();
+              for (ProjectNode node : nodes) {
+                if (node.getFileId().startsWith(directory)) {
+                  ode.getProjectManager().getProject(node).deleteNode(node);
+                  ode.updateModificationDate(node.getProjectId(), date);
+                }
+              }
+            }
+          });
+    }
+  }
+
   private void callLoadProject() {
     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
       @Override
@@ -573,6 +602,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editors.formEditor.onComponentTypeRemoved(componentTypes);
       editors.blocksEditor.onComponentTypeRemoved(componentTypes);
     }
+    removeComponent(componentTypes);
   }
 
   @Override
