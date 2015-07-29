@@ -156,7 +156,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   /**
-   *  Loads a single Component to Palette. Used for adding External Components.
+   *  Loads a single Component to Palette. Used for adding Components.
    */
   @Override
   public void addComponent(String componentTypeName) {

@@ -125,7 +125,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/externalComponent.png", images.externalComponent());
-    
+
     imagesInitialized = true;
   }
 
