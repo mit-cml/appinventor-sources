@@ -2,12 +2,17 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Defines a widget that has the appearance of a red close button.
@@ -16,17 +21,28 @@ import com.google.gwt.user.client.ui.Widget;
 public class ComponentRemoveWidget extends Image {
     private static ImageResource imageResource = null;
 
-    public ComponentRemoveWidget(SimpleComponentDescriptor scd) {
+    private static Ode ode = Ode.getInstance();
+
+    private final SimpleComponentDescriptor scd;
+
+    public ComponentRemoveWidget(SimpleComponentDescriptor simpleComponentDescriptor) {
         if (imageResource == null) {
             Images images = Ode.getImageBundle();
             imageResource = images.deleteComponent();
         }
+        this.scd = simpleComponentDescriptor;
         AbstractImagePrototype.create(imageResource).applyTo(this);
         addClickListener(new ClickListener() {
 
             @Override
             public void onClick(Widget widget) {
-                Window.confirm("Delete Coming Soooon!!!");
+                if (Window.confirm(MESSAGES.reallyRemoveComponent())) {
+                    long projectId = ode.getCurrentYoungAndroidProjectId();
+                    YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
+                    SimpleComponentDatabase componentDatabase = SimpleComponentDatabase.getInstance();
+                    componentDatabase.addComponentDatabaseListener(projectEditor);
+                    componentDatabase.removeComponent(scd.getName());
+                }
             }
         });
     }

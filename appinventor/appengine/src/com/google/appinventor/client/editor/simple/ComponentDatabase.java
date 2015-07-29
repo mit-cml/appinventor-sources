@@ -139,10 +139,13 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   public boolean removeComponent(String componentTypeName) {
+    List<String> removedComponents = new ArrayList<String>();
+    removedComponents.add(componentTypeName);
+    if (!fireBeforeComponentsRemoved(removedComponents)) {
+      throw new IllegalStateException("Failed to remove Component!");
+    }
     if (components.remove(componentTypeName) != null) {
       componentsJSONString = generateComponentsJSON();
-      List<String> removedComponents = new ArrayList<String>();
-      removedComponents.add(componentTypeName);
       fireComponentsRemoved(removedComponents);
       return true;
     }
@@ -450,6 +453,14 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
       listener.onComponentTypeAdded(componentTypes);
     }
+  }
+
+  private boolean fireBeforeComponentsRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      result = result & listener.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
   }
 
   private void fireComponentsRemoved(List<String> componentTypes) {

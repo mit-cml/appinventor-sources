@@ -527,6 +527,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     componentDatabaseChangeListeners.add(cdbChangeListener);
   }
 
+  public void removeComponentDatbaseListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
   public void clearComponentDatabaseListeners() {
     componentDatabaseChangeListeners.clear();
   }
@@ -534,6 +538,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   @Override
   public void onComponentTypeAdded(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
     for (String formName : editorMap.keySet()) {
       EditorSet editors = editorMap.get(formName);
       editors.formEditor.onComponentTypeAdded(componentTypes);
@@ -542,8 +549,25 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    for (String formName : editorMap.keySet()) {
+      EditorSet editors = editorMap.get(formName);
+      result = result & editors.formEditor.beforeComponentTypeRemoved(componentTypes);
+      result = result & editors.blocksEditor.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
+  }
+
+  @Override
   public void onComponentTypeRemoved(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
     for (String formName : editorMap.keySet()) {
       EditorSet editors = editorMap.get(formName);
       editors.formEditor.onComponentTypeRemoved(componentTypes);
@@ -554,6 +578,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   @Override
   public void onResetDatabase() {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
     for (String formName : editorMap.keySet()) {
       EditorSet editors = editorMap.get(formName);
       editors.formEditor.onResetDatabase();

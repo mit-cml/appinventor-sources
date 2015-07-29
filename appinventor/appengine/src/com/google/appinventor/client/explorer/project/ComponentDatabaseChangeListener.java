@@ -12,9 +12,16 @@ public interface ComponentDatabaseChangeListener {
    * Invoked after one or more components are added
    */
   void onComponentTypeAdded(List<String> componentTypes);
-  
+
   /**
-   * Invoked after one or more components are removed
+   * Invoked just before one or more components are removed <br>
+   * Must Return true for successful removal of Component!
+   */
+  boolean beforeComponentTypeRemoved(List<String> componentTypes);
+
+  /**
+   * Invoked after one or more components are removed <br>
+   * Invoked only after beforeComponentTypeRemoved returns true
    */
   void onComponentTypeRemoved(List<String> componentTypes);
   

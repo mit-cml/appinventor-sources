@@ -638,6 +638,15 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
+  }
+
+  @Override
   public void onComponentTypeRemoved(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
