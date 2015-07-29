@@ -443,7 +443,6 @@
       </classpath>
     </java>
   </target>
-
   <!-- =====================================================================
        ExternalComponentPackaging: create ExternalComponent.jar
                                         for each external component.
@@ -479,7 +478,6 @@
            </classpath>
          </java>
        </target>
-
 
    <!-- =====================================================================
         DexingExternalComponent: create ExternalComponentName.dex
