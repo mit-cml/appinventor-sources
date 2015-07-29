@@ -903,8 +903,13 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
-  @Description("Confirmation query for removing a component")
+  @Description("Confirmation query for deleting a component")
   String reallyDeleteComponent();
+
+  @DefaultMessage("Removing this component will delete all components and blocks associated with them in the " +
+          "Project. Are you sure you want to delete?")
+  @Description("Confirmation query for removing a component")
+  String reallyRemoveComponent();
 
   // Used in editor/simple/components/MockButtonBase.java, MockCheckBox.java, MockLabel.java, and
   // MockRadioButton.java
