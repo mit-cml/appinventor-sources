@@ -447,58 +447,54 @@
        ExternalComponentPackaging: create ExternalComponent.jar
                                         for each external component.
        ===================================================================== -->
-       <target name="ExternalComponentPackaging"
-               description="create ExternalComponent.jar"
-               depends="ExternalComponentListGenerator">
-         <mkdir dir="${ExternalComponentTemp.dir}"/>
-         <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
-           <include name="${components.pkg}/scripts/ExternalComponentPackaging.java" />
-           <classpath>
-             <pathelement location="${lib.dir}/json-java/java-json.jar" />
-             <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
-           </classpath>
-         </ai.javac5>
-         <java classname="com.google.appinventor.components.scripts.ExternalComponentPackaging">
-           <arg value="${public.build.dir}/simple_components_build_info.json" />
-           <arg value="${ExternalComponentAsset.dir}/external_components.txt"/>
-           <arg value="${AndroidRuntime-class.dir}/${components.pkg}/runtime"/>
-           <arg value="${buildserver.files.library.dir}"/>
-           <arg value="${ExternalComponentTemp.dir}"/>
-           <classpath>
-             <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
-             <pathelement location="${lib.dir}/json-java/java-json.jar" />
-             <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
-           </classpath>
-         </java>
-       </target>
+  <target name="ExternalComponentPackaging" description="create ExternalComponent.jar"
+          depends="ExternalComponentListGenerator">
+     <mkdir dir="${ExternalComponentTemp.dir}" />
+     <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
+        <include name="${components.pkg}/scripts/ExternalComponentPackaging.java" />
+        <classpath>
+           <pathelement location="${lib.dir}/json-java/java-json.jar" />
+           <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+        </classpath>
+     </ai.javac5>
+     <java classname="com.google.appinventor.components.scripts.ExternalComponentPackaging">
+        <arg value="${public.build.dir}/simple_components_build_info.json" />
+        <arg value="${ExternalComponentAsset.dir}/external_components.txt" />
+        <arg value="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
+        <arg value="${buildserver.files.library.dir}" />
+        <arg value="${ExternalComponentTemp.dir}" />
+        <classpath>
+           <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
+           <pathelement location="${lib.dir}/json-java/java-json.jar" />
+           <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
+        </classpath>
+     </java>
+  </target>
 
-       <target name="Jaring"  depends="ExternalComponentPackaging" >
-         <taskdef resource="net/sf/antcontrib/antlib.xml">
-           <classpath>
-             <pathelement location="${lib.dir}/ant-contrib/ant-contrib-1.0b3.jar"/>
-           </classpath>
-         </taskdef>
-       <for param="dir" parallel="true">
-           <dirset id="projects" dir="${ExternalComponentTemp.dir}" >
-               <include name="*" />
-           </dirset>
-           <sequential>
-             <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
-                 classpath="${lib.dir}/jarjar-1.4.jar"/>
-             <jarjar jarfile="@{dir}.jar" >
-                 <fileset dir="@{dir}" >
-                   <include name="**/*.jar"/>
-                 </fileset>
-             </jarjar>
-             <echo> @{dir} </echo>
-           </sequential>
-       </for>
-       </target>
+  <target name="Jaring" depends="unjarAll" >
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+      <classpath>
+         <pathelement location="${lib.dir}/ant-contrib/ant-contrib-1.0b3.jar" />
+      </classpath>
+    </taskdef>
+    <for param="dir" parallel="true">
+      <dirset id="projects" dir="${ExternalComponentTemp.dir}">
+         <include name="*" />
+      </dirset>
+      <sequential>
+         <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${lib.dir}/jarjar-1.4.jar" />
+         <jarjar jarfile="@{dir}.jar">
+            <fileset dir="@{dir}" excludes="*.jar"/>
+         </jarjar>
+         <echo>@{dir}</echo>
+      </sequential>
+    </for>
+    </target>
 
    <!-- =====================================================================
         Unjaring extension's library in order for the extensions'dex to work properly
         ===================================================================== -->
-    <target name="unjar">
+    <target name="unjar" depends="ExternalComponentPackaging">
        <basename property="filename" file="${theComponent}" />
        <unzip dest="${ExternalComponentTemp.dir}/${filename}">
           <fileset dir="${ExternalComponentTemp.dir}/${filename}">
@@ -507,7 +503,7 @@
        </unzip>
     </target>
 
-    <target name="unjarAll">
+    <target name="unjarAll" depends="ExternalComponentPackaging">
      <foreach target="unjar" param="theComponent" inheritall="true">
         <path>
            <dirset dir="${ExternalComponentTemp.dir}">
@@ -521,54 +517,6 @@
         DexingExternalComponent: create ExternalComponentName.dex
                                          for each external component.
         ===================================================================== -->
-    <property name="post.dex.dir"
-              location="${ExternalComponentAsset.dir}"/>
-    <property name="pre.dex.dir"
-              location="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
-
-    <target name="dexAll">
-      <foreach target="dexit" param="theComponent">
-        <fileset dir="${ExternalComponentAsset.dir}" >
-          <include name="*.class"/>
-        </fileset>
-      </foreach>
-    </target>
-
-    <target name="dexit" depends= "copyExternalComponentClasses">
-      <basename property="filename" file="${theComponent}" suffix=".class"/>
-      <java jar="${lib.dir}/android/tools/dx.jar"
-        fork="true"
-        failonerror="true">
-        <arg value="--dex"/>
-        <arg value="--no-strict"/>
-        <arg value="--output"/>
-        <arg value="${ExternalComponentAsset.dir}/${filename}.dex"/>
-        <arg value="${ExternalComponentAsset.dir}/${filename}.class"/>
-      </java>
-      <echo>Dexing External Component:${filename}</echo>
-    </target>
-
-    <target name="copyExternalComponentClasses">
-      <foreach target="copyExternalComponentClass" param="theComponent">
-        <fileset dir="${ExternalComponentAsset.dir}">
-          <include name="*.json" />
-          <exclude name="*.class" />
-        </fileset>
-      </foreach>
-    </target>
-
-    <target name="externalComponent.check" depends="ExternalComponentJsonProcessing">
-      <basename property="filename" file="${theComponent}" suffix=".json" />
-      <available file="${ExternalComponentAsset.dir}/${filename}.json"
-                 type="file" property="isExternalComponent" />
-    </target>
-
-    <target name="copyExternalComponentClass"
-            depends="externalComponent.check"
-            if="isExternalComponent">
-      <basename property="filename" file="${theComponent}" suffix=".class" />
-      <copy file="${pre.dex.dir}/${filename}.class" todir="${ExternalComponentAsset.dir}" />
-    </target>
 
     <!-- =====================================================================
         PackagingExternalComponent: create ExternalComponentName.aix

@@ -27,7 +27,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
-* Tool to package external Component
+* Tool to create the folder structure for packaging the external components.
 *
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
 */
