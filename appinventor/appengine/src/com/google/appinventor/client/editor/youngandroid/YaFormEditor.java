@@ -670,6 +670,23 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    List<MockComponent> mockComponents = new ArrayList<MockComponent>(getForm().getChildren());
+    for (String compType : componentTypes) {
+      for (MockComponent mockComp : mockComponents) {
+        if (mockComp.getType().equals(compType)) {
+          mockComp.delete();
+        }
+      }
+    }
+    return result;
+  }
+
+  @Override
   public void onComponentTypeRemoved(List<String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {

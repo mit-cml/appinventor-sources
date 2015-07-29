@@ -802,6 +802,10 @@ select {
   color: #555;
 }
 
+.ode-SimplePalleteItem-button {
+  padding: 2px;
+}
+
 .gwt-SimplePanel {
   border: 1px solid #67A7E3;
   background-color: white;
