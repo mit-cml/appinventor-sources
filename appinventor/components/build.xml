@@ -517,6 +517,27 @@
         DexingExternalComponent: create ExternalComponentName.dex
                                          for each external component.
         ===================================================================== -->
+    <target name="dexAll" depends="Jaring,ExternalComponentJsonProcessing">
+      <foreach target="dexit" param="theComponent">
+        <fileset dir="${ExternalComponentTemp.dir}" >
+          <include name="*.jar"/>
+        </fileset>
+      </foreach>
+    </target>
+
+    <target name="dexit" depends="Jaring,ExternalComponentJsonProcessing">
+      <basename property="filename" file="${theComponent}" suffix=".jar"/>
+      <java jar="${lib.dir}/android/tools/dx.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--dex"/>
+        <arg value="--no-strict"/>
+        <arg value="--output"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}/${filename}.dex"/>
+        <arg value="${ExternalComponentTemp.dir}/${filename}.jar"/>
+      </java>
+      <echo>Dexing External Component:${filename}</echo>
+    </target>
 
     <!-- =====================================================================
         PackagingExternalComponent: create ExternalComponentName.aix
@@ -531,7 +552,7 @@
        excludes="${filename}.class,${filename}.aix"/>
      </target>
 
-     <target name="zipExternalComponent" depends="all,ExternalComponentJsonProcessing,copyExternalComponentClasses,dexAll">
+     <target name="zipExternalComponent" depends="all,ExternalComponentJsonProcessing,dexAll">
        <foreach target="zipit" param="theComponent">
          <fileset dir="${ExternalComponentAsset.dir}">
            <include name="*.*" />
