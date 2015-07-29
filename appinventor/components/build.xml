@@ -37,6 +37,7 @@
   <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
   <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
   <property name="ExternalComponentTemp.dir" location="${local.build.dir}/ExternalComponentsTemp" />
+  <property name="Extensions.dir" location="${local.build.dir}/AIExtensions" />
 
   <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
@@ -514,28 +515,6 @@
     </target>
 
     <!-- =====================================================================
-        PackagingExternalComponent: create ExternalComponentName.aix
-                                          for each external component.
-         ===================================================================== -->
-
-     <target name="zipit">
-       <basename property="filename" file="${theComponent}" suffix=".class" />
-       <zip destfile="${ExternalComponentAsset.dir}/${filename}.aix"
-       basedir="${ExternalComponentAsset.dir}"
-       includes="${filename}.*"
-       excludes="${filename}.class,${filename}.aix"/>
-     </target>
-
-     <target name="zipExternalComponent" depends="all,ExternalComponentJsonProcessing,dexAll">
-       <foreach target="zipit" param="theComponent">
-         <fileset dir="${ExternalComponentAsset.dir}">
-           <include name="*.*" />
-         </fileset>
-       </foreach>
-       <echo> Find external components into "${ExternalComponentAsset.dir}"</echo>
-     </target>
-
-    <!-- =====================================================================
          ExternalComponentComponentBuildInfo: create Extension_build_info.json
          ===================================================================== -->
    <property  name="buildserver.files.library.dir" location="../buildserver/build/classes/BuildServer/files"/>
@@ -562,6 +541,26 @@
        </classpath>
      </java>
    </target>
+
+     <!-- =====================================================================
+         ZippingExternalComponent: create ExternalComponentName.aix
+                                           for each external component.
+          ===================================================================== -->
+    <target name="zipit" depends="ExternalComponentBuildInfo">
+      <mkdir dir="${Extensions.dir}" />
+      <basename property="filename" file="${theComponent}" />
+      <zip destfile="${Extensions.dir}/${filename}.aix" basedir="${ExternalComponentAsset.dir}/${filename}" />
+    </target>
+
+    <target name="zipExtensions" depends="ExternalComponentBuildInfo">
+      <foreach target="zipit" param="theComponent" inheritall="true">
+        <path>
+          <dirset dir="${ExternalComponentAsset.dir}">
+            <include name="*" />
+          </dirset>
+        </path>
+      </foreach>
+    </target>
     <!-- =====================================================================
          XmlComponentDescription: create lang_def.xml for Blocks Editor.
          ===================================================================== -->
