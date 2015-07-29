@@ -552,7 +552,7 @@
       <zip destfile="${Extensions.dir}/${filename}.aix" basedir="${ExternalComponentAsset.dir}/${filename}" />
     </target>
 
-    <target name="zipExtensions" depends="dexAll,ExternalComponentBuildInfo">
+    <target name="extensions" depends="dexAll,ExternalComponentBuildInfo">
       <foreach target="zipit" param="theComponent" inheritall="true">
         <path>
           <dirset dir="${ExternalComponentAsset.dir}">
