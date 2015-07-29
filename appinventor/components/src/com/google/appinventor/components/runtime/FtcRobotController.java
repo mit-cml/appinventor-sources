@@ -541,109 +541,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     }
   }
 
-  @SimpleFunction(description = "Put a 1-byte number into a byte array.")
-  public void Put1ByteNumberIntoByteArray(String number, Object byteArray, int position) {
-    // The number parameter is a String, which allows decimal, hexadecimal, and octal numbers to be
-    // given, for example "32", "0x20", or "040".
-    try {
-      byte b = Byte.decode(number);
-      if (byteArray instanceof byte[]) {
-        byte[] dest = (byte[]) byteArray;
-        if (position >= 0 && position + 1 <= dest.length) {
-          dest[position] = b;
-        } else {
-          form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
-              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
-        }
-      } else {
-        form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-      }
-    } catch (NumberFormatException e) {
-      form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
-          ErrorMessages.ERROR_FTC_INVALID_NUMBER, number);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
-  @SimpleFunction(description = "Put a 2-byte number into a byte array.")
-  public void Put2ByteNumberIntoByteArray(short number, Object byteArray, int position,
-      boolean bigEndian) {
-    try {
-      byte[] source = TypeConversion.shortToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-      if (byteArray instanceof byte[]) {
-        byte[] dest = (byte[]) byteArray;
-        if (position >= 0 && position + 2 <= dest.length) {
-          System.arraycopy(source, 0, dest, position, 2);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
-              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
-        }
-      } else {
-        form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-      }
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
-  @SimpleFunction(description = "Put a 4-byte number into a byte array.")
-  public void Put4ByteNumberIntoByteArray(int number, Object byteArray, int position,
-      boolean bigEndian) {
-    try {
-      byte[] source = TypeConversion.intToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-      if (byteArray instanceof byte[]) {
-        byte[] dest = (byte[]) byteArray;
-        if (position >= 0 && position + 4 <= dest.length) {
-          System.arraycopy(source, 0, dest, position, 4);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
-              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
-        }
-      } else {
-        form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-      }
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
-  @SimpleFunction(description = "Put a 8-byte number into a byte array.")
-  public void Put8ByteNumberIntoByteArray(long number, Object byteArray, int position,
-      boolean bigEndian) {
-    try {
-      byte[] source = TypeConversion.longToByteArray(number,
-          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-      if (byteArray instanceof byte[]) {
-        byte[] dest = (byte[]) byteArray;
-        if (position >= 0 && position + 8 <= dest.length) {
-          System.arraycopy(source, 0, dest, position, 8);
-        } else {
-          form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
-              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
-        }
-      } else {
-        form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
-            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
-      }
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-  }
-
   @SimpleFunction(description = "Get a 1-byte number from a byte array.")
   public int Get1ByteNumberFromByteArray(Object byteArray, int position, boolean unsigned) {
     try {
@@ -747,6 +644,109 @@ public final class FtcRobotController extends AndroidViewComponent implements On
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
+  }
+
+  @SimpleFunction(description = "Put a 1-byte number into a byte array.")
+  public void Put1ByteNumberIntoByteArray(String number, Object byteArray, int position) {
+    // The number parameter is a String, which allows decimal, hexadecimal, and octal numbers to be
+    // given, for example "32", "0x20", or "040".
+    try {
+      byte b = Byte.decode(number);
+      if (byteArray instanceof byte[]) {
+        byte[] dest = (byte[]) byteArray;
+        if (position >= 0 && position + 1 <= dest.length) {
+          dest[position] = b;
+        } else {
+          form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
+              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+        }
+      } else {
+        form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+      }
+    } catch (NumberFormatException e) {
+      form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
+          ErrorMessages.ERROR_FTC_INVALID_NUMBER, number);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Put1ByteNumberIntoByteArray",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
+
+  @SimpleFunction(description = "Put a 2-byte number into a byte array.")
+  public void Put2ByteNumberIntoByteArray(short number, Object byteArray, int position,
+      boolean bigEndian) {
+    try {
+      byte[] source = TypeConversion.shortToByteArray(number,
+          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+      if (byteArray instanceof byte[]) {
+        byte[] dest = (byte[]) byteArray;
+        if (position >= 0 && position + 2 <= dest.length) {
+          System.arraycopy(source, 0, dest, position, 2);
+        } else {
+          form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
+              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+        }
+      } else {
+        form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Put2ByteNumberIntoByteArray",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
+
+  @SimpleFunction(description = "Put a 4-byte number into a byte array.")
+  public void Put4ByteNumberIntoByteArray(int number, Object byteArray, int position,
+      boolean bigEndian) {
+    try {
+      byte[] source = TypeConversion.intToByteArray(number,
+          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+      if (byteArray instanceof byte[]) {
+        byte[] dest = (byte[]) byteArray;
+        if (position >= 0 && position + 4 <= dest.length) {
+          System.arraycopy(source, 0, dest, position, 4);
+        } else {
+          form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
+              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+        }
+      } else {
+        form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Put4ByteNumberIntoByteArray",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
+
+  @SimpleFunction(description = "Put a 8-byte number into a byte array.")
+  public void Put8ByteNumberIntoByteArray(long number, Object byteArray, int position,
+      boolean bigEndian) {
+    try {
+      byte[] source = TypeConversion.longToByteArray(number,
+          bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+      if (byteArray instanceof byte[]) {
+        byte[] dest = (byte[]) byteArray;
+        if (position >= 0 && position + 8 <= dest.length) {
+          System.arraycopy(source, 0, dest, position, 8);
+        } else {
+          form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
+              ErrorMessages.ERROR_FTC_INVALID_POSITION, "position", position);
+        }
+      } else {
+        form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
+            ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Put8ByteNumberIntoByteArray",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
   }
 
   @SimpleFunction(description = "Checks the state of a bit in a bit field. " +
