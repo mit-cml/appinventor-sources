@@ -195,6 +195,7 @@ public class TranslationComponentParams {
 
     // ========== FTC
     map.put("bigEndian", MESSAGES.bigEndianParams());
+    map.put("bitField", MESSAGES.bitFieldParams());
     map.put("bitPosition", MESSAGES.bitPositionParams());
     map.put("byteArray", MESSAGES.byteArrayParams());
     map.put("channel", MESSAGES.channelParams());
@@ -204,11 +205,14 @@ public class TranslationComponentParams {
     map.put("frequency", MESSAGES.frequencyParams());
     map.put("i2cAddress", MESSAGES.i2cAddressParams());
     map.put("input", MESSAGES.inputParams());
+    map.put("joystickDeadzone", MESSAGES.joystickDeadzoneParams());
     map.put("key", MESSAGES.keyParams());
+    map.put("length", MESSAGES.lengthParams());
     map.put("line", MESSAGES.lineParams());
     map.put("max", MESSAGES.maxParams());
     map.put("memAddress", MESSAGES.memAddressParams());
     map.put("min", MESSAGES.minParams());
+    map.put("motor", MESSAGES.motorParams());
     map.put("period", MESSAGES.periodParams());
     map.put("port", MESSAGES.portParams());
     map.put("position", MESSAGES.positionParams());

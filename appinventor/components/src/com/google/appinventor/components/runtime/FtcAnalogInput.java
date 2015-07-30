@@ -11,7 +11,6 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -19,12 +18,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 
 /**
- * A component for an analog input of an FTC robot.
+ * A component for an analog input device of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_ANALOG_INPUT_COMPONENT_VERSION,
-    description = "A component for an analog input of an FTC robot.",
+    description = "A component for an analog input device of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
@@ -44,7 +43,7 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
   /**
    * Value property getter.
    */
-  @SimpleProperty(description = "The channel state.",
+  @SimpleProperty(description = "The current ADC results from the A0-A7 channel input pins.",
       category = PropertyCategory.BEHAVIOR)
   public int Value() {
     if (analogInput != null) {
@@ -62,13 +61,14 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       analogInput = hardwareMap.analogInput.get(getDeviceName());
       if (analogInput == null) {
         deviceNotFound("AnalogInput", hardwareMap.analogInput);
       }
     }
+    return analogInput;
   }
 
   @Override

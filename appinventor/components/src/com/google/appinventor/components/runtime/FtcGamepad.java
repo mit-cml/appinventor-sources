@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -35,14 +36,8 @@ import android.util.Log;
 public final class FtcGamepad extends AndroidNonvisibleComponent
     implements Component, Deleteable, FtcRobotController.GamepadDevice {
 
-  private static final float DEFAULT_JOYSTICK_DEADZONE = 0.2f;
-
   private volatile int gamepadNumber = 1;
   private volatile Gamepad gamepad;
-
-  // We need a backing field for the JoystickDeadzone property because Gamepad doesn't have a
-  // getJoystickDeadzone method.
-  private volatile float joystickDeadzone = DEFAULT_JOYSTICK_DEADZONE;
 
   /**
    * Creates a new FtcGamepad component.
@@ -452,38 +447,14 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
     return 0f;
   }
 
-  /**
-   * JoystickDeadzone property getter.
-   */
-  @SimpleProperty(description = "The joystick deadzone, between 0.0 and 1.0.",
-      category = PropertyCategory.BEHAVIOR)
-  public float JoystickDeadzone() {
-    if (gamepad != null) {
-      try {
-        // Gamepad doesn't have a getJoystickDeadzone method. Use our backing field instead.
-        return joystickDeadzone;
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return DEFAULT_JOYSTICK_DEADZONE;
-  }
-
-  /**
-   * JoystickDeadzone property setter.
-   */
-  @SimpleProperty
-  public void JoystickDeadzone(float joystickDeadzone) {
+  @SimpleFunction(description = "Set the joystick deadzone. Must be between 0 and 1.")
+  public void SetJoystickDeadzone(float joystickDeadzone) {
     if (gamepad != null) {
       try {
         gamepad.setJoystickDeadzone(joystickDeadzone);
-        // Set our backing field.
-        this.joystickDeadzone = joystickDeadzone;
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "JoystickDeadzone",
+        form.dispatchErrorOccurredEvent(this, "SetJoystickDeadzone",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -515,7 +486,10 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   public String Status() {
     try {
       if (gamepad != null) {
-        return gamepad.toString();
+        String status = gamepad.toString();
+        if (status != null) {
+          return status;
+        }
       }
     } catch (Throwable e) {
       e.printStackTrace();
@@ -543,5 +517,14 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   @Override
   public void clearGamepadDevice() {
     gamepad = null;
+  }
+
+  // TODO(lizlooney): remove these
+  @SimpleProperty(description = "JoystickDeadzone", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public float JoystickDeadzone() {
+    return 0.0f;
+  }
+  @SimpleProperty(description = "JoystickDeadzone", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public void JoystickDeadzone(float joystickDeadzone) {
   }
 }

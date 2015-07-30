@@ -8,7 +8,6 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -164,7 +163,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void onInitialize() {
-    Log.e("HeyLiz", "FtcRobotController onInitialize");
     if (robotControllersCounter.get() == 1) {
       if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
         PowerManager powerManager = (PowerManager) form.getSystemService(Context.POWER_SERVICE);
@@ -253,7 +251,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
    * Adds a {@link GamepadDevice} to the gamepad devices.
    */
   static void addGamepadDevice(GamepadDevice gamepadDevice) {
-    Log.e("HeyLiz", "addGamepadDevice gamepadDevice");
     synchronized (gamepadDevicesLock) {
       gamepadDevices.add(gamepadDevice);
     }
@@ -263,7 +260,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
    * Removes a {@link GamepadDevice} from the gamepad devices.
    */
   static void removeGamepadDevice(GamepadDevice gamepadDevice) {
-    Log.e("HeyLiz", "removeGamepadDevice gamepadDevice");
     synchronized (gamepadDevicesLock) {
       gamepadDevices.remove(gamepadDevice);
     }
@@ -321,11 +317,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   // Called before an FtcOpMode's Init event is triggered.
   static void beforeOpModeInit(OpMode opMode) {
-    Log.e("HeyLiz", "beforeOpModeInit opMode");
     activeOpMode = opMode;
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
-        Log.e("HeyLiz", "beforeOpModeInit initHardwareDevice");
         hardwareDevice.initHardwareDevice(opMode.hardwareMap);
       }
     }
@@ -333,10 +327,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   // Called before an FtcOpMode's Loop event is triggered.
   static void beforeOpModeLoop(OpMode opMode) {
-    Log.e("HeyLiz", "beforeOpModeLoop opMode: " + opMode);
     synchronized (gamepadDevicesLock) {
       for (GamepadDevice gamepadDevice : gamepadDevices) {
-        Log.e("HeyLiz", "beforeOpModeLoop initGamepadDevice");
         gamepadDevice.initGamepadDevice(opMode.gamepad1, opMode.gamepad2);
       }
     }
@@ -346,13 +338,11 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   static void afterOpModeStop(OpMode opMode) {
     synchronized (gamepadDevicesLock) {
       for (GamepadDevice gamepadDevice : gamepadDevices) {
-        Log.e("HeyLiz", "afterOpModeStop clearGamepadDevice");
         gamepadDevice.clearGamepadDevice();
       }
     }
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
-        Log.e("HeyLiz", "afterOpModeStop clearHardwareDevice");
         hardwareDevice.clearHardwareDevice();
       }
     }

@@ -55,45 +55,6 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
   }
 
-  /**
-   * Version property getter.
-   */
-  @SimpleProperty(description = "The version of this device.",
-      category = PropertyCategory.BEHAVIOR)
-  public int Version() {
-    if (legacyModule != null) {
-      try {
-        return legacyModule.getVersion();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Version",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
-  }
-
-  /**
-   * Device property getter.
-   */
-  @SimpleProperty(description = "The name of the legacy module device.",
-      category = PropertyCategory.BEHAVIOR)
-  public String Device() {
-    if (legacyModule != null) {
-      try {
-        String name = legacyModule.getDeviceName();
-        if (name != null) {
-          return name;
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Device",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return "";
-  }
-
   @SimpleFunction(description = "Enable a physical port in NXT I2C read mode and enable the " +
       "I2cPortIsReady event.")
   public void EnableNxtI2cReadMode(int port, int i2cAddress, int memAddress, int length) {
@@ -273,7 +234,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     }
   }
 
-  @SimpleFunction(description = "Set the port action flag; this flag tells the Device Interface " +
+  @SimpleFunction(description = "Set the port action flag; this flag tells the Legacy " +
       "Module to send the current data in its buffer to the I2C device.")
   public void SetNxtI2cPortActionFlag(int port) {
     if (legacyModule != null) {
@@ -301,7 +262,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     return false;
   }
 
-  @SimpleFunction(description = "Read from the Device Interface Module to the I2C read cache.")
+  @SimpleFunction(description = "Read from the Legacy Module to the I2C read cache.")
   public void ReadI2cCacheFromModule(int port) {
     if (legacyModule != null) {
       try {
@@ -314,7 +275,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     }
   }
 
-  @SimpleFunction(description = "Write from the I2C write cache to the Device Interface Module.")
+  @SimpleFunction(description = "Write from the I2C write cache to the Legacy Module.")
   public void WriteI2cCacheToModule(int port) {
     if (legacyModule != null) {
       try {
@@ -327,7 +288,8 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
     }
   }
 
-  @SimpleFunction(description = "Write just the port action flag in the Device Interface Module's cache to the I2C device.")
+  @SimpleFunction(description = "Write just the port action flag in the Legacy Module's cache " +
+      "to the I2C device.")
   public void WriteI2cPortFlagOnlyToModule(int port) {
     if (legacyModule != null) {
       try {
@@ -392,13 +354,14 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       legacyModule = hardwareMap.legacyModule.get(getDeviceName());
       if (legacyModule == null) {
         deviceNotFound("LegacyModule", hardwareMap.legacyModule);
       }
     }
+    return legacyModule;
   }
 
   @Override
