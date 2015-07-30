@@ -1,7 +1,8 @@
-#Welcome to MIT App Inventor
+#Welcome to MIT App Inventor, Extensions version
+
+
 
 ##Introduction
-
 Learn more about [MIT App Inventor](http://appinventor.mit.edu).
 
 This code is designed to be run in Google's App Engine. MIT runs a
@@ -13,6 +14,10 @@ We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
 This code is tested and known to work with Java 7.
+
+In order to be in context of this version of MIT App inventor, we invite you to have a read at this document:
+[App Inventor extensions] (https://docs.google.com/document/d/1orlYWGlHOY0hmAC0zjadQ4DET2K8U34C8hv5zmuxZLU/)
+
 
 ##Contributors
 The best way to go about integrating changes in App Inventor is to start a conversation in the [Open Source forum](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) about whatever you intend to change or add.
@@ -89,6 +94,7 @@ You should now be up and running; you can test this by pointing your browser to:
 The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
+
 
 ##Need help?
 Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) or [G+ community](https://plus.google.com/u/0/b/116831753302186936352/116831753302186936352/posts).
