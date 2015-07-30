@@ -13,8 +13,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.AnalogOutput;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
  * A component for an analog output device of an FTC robot.

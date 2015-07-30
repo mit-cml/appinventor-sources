@@ -14,9 +14,9 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
  * A component for a single digital channel of an FTC robot.
