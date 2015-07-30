@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * FtcRobotController component
+ * The primary FTC Robot Controller component.
  *
  * @author lizlooney@google.com (Liz Looney)
  */

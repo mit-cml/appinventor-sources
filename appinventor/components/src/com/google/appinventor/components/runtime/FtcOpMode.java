@@ -21,12 +21,12 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
- * A component for an Operational Mode for an FTC robot.
+ * A component for an operational mode for an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.FTC_OP_MODE_COMPONENT_VERSION,
-    description = "A component for an Operational Mode for an FTC robot.",
+    description = "A component for an operational mode for an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")

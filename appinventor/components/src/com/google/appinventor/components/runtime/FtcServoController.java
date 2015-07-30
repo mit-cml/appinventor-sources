@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoController.PwmStatus;
 
 /**
- * A component for a servo controller input of an FTC robot.
+ * A component for a servo controller of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */

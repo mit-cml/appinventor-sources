@@ -2298,6 +2298,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcAnalogInputComponentPallette();
 
+  @DefaultMessage("FtcAnalogOutput")
+  @Description("")
+  String ftcAnalogOutputComponentPallette();
+
   @DefaultMessage("FtcCompassSensor")
   @Description("")
   String ftcCompassSensorComponentPallette();
@@ -2326,6 +2330,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcGyroSensorComponentPallette();
 
+  @DefaultMessage("FtcI2cDevice")
+  @Description("")
+  String ftcI2cDeviceComponentPallette();
+
   @DefaultMessage("FtcIrSeekerSensor")
   @Description("")
   String ftcIrSeekerSensorComponentPallette();
@@ -2346,6 +2354,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcOpticalDistanceSensorComponentPallette();
 
+  @DefaultMessage("FtcPwmOutput")
+  @Description("")
+  String ftcPwmOutputComponentPallette();
+
   @DefaultMessage("FtcRobotController")
   @Description("")
   String ftcRobotControllerComponentPallette();
@@ -2353,6 +2365,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcServo")
   @Description("")
   String ftcServoComponentPallette();
+
+  @DefaultMessage("FtcServoController")
+  @Description("")
+  String ftcServoControllerComponentPallette();
 
   @DefaultMessage("FtcTouchSensor")
   @Description("")
@@ -6001,9 +6017,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcAccelerationSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component for an analog input of an FTC robot.")
+  @DefaultMessage("A component for an analog input device of an FTC robot.")
   @Description("")
   String FtcAnalogInputHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an analog output device of an FTC robot.")
+  @Description("")
+  String FtcAnalogOutputHelpStringComponentPallette();
 
   @DefaultMessage("A component for a compass sensor of an FTC robot.")
   @Description("")
@@ -6033,6 +6053,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcGyroSensorHelpStringComponentPallette();
 
+  @DefaultMessage("A component for an I2C device of an FTC robot.")
+  @Description("")
+  String FtcI2cDeviceHelpStringComponentPallette();
+
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")
   String FtcIrSeekerSensorHelpStringComponentPallette();
@@ -6053,6 +6077,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcOpticalDistanceSensorHelpStringComponentPallette();
 
+  @DefaultMessage("A component for a PWM output device of an FTC robot.")
+  @Description("")
+  String FtcPwmOutputHelpStringComponentPallette();
+
   @DefaultMessage("The primary FTC Robot Controller component.")
   @Description("")
   String FtcRobotControllerHelpStringComponentPallette();
@@ -6060,6 +6088,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a servo of an FTC robot.")
   @Description("")
   String FtcServoHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a servo controller of an FTC robot.")
+  @Description("")
+  String FtcServoControllerHelpStringComponentPallette();
 
   @DefaultMessage("A component for a touch sensor of an FTC robot.")
   @Description("")
