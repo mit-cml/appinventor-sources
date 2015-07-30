@@ -110,7 +110,6 @@
         <pathelement location="lib/twitter/twitter4j-media-support-3.0.5.jar" />
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
-        <pathelement location="lib/TarsosDSP-1.7.jar"/>
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
         <!-- oauth libs -->
         <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />

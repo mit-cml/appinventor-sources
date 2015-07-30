@@ -141,7 +141,6 @@
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
-        <pathelement location="${lib.dir}/TarsosDSP-1.7.jar" />
       </classpath>
     </ai.javac5>
 
@@ -242,7 +241,6 @@
           <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-          <pathelement location="${lib.dir}/TarsosDSP-1.7.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
