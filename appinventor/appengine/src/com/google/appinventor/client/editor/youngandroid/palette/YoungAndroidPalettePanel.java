@@ -148,15 +148,15 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     // Configure properties
     for (PropertyDefinition property : COMPONENT_DATABASE.getPropertyDefinitions(componentType)) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          ComponentsTranslation.getPropertyName(property.getCaption()),
-          createPropertyEditor(property.getEditorType()));
+              ComponentsTranslation.getPropertyName(property.getCaption()),
+              createPropertyEditor(property.getEditorType()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
   }
 
   /**
-   *  Loads a single Component to Palette. Used for adding External Components.
+   *  Loads a single Component to Palette. Used for adding Components.
    */
   @Override
   public void addComponent(String componentTypeName) {
@@ -269,10 +269,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   @Override
-  public void onComponentTypeRemoved(List<String> componentTypes) {
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
     for (String componentType : componentTypes) {
       this.removeComponent(componentType);
     }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(List<String> componentTypes) {
+
   }
 
   @Override
