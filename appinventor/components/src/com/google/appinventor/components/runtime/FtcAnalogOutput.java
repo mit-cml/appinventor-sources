@@ -59,8 +59,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   public void SetAnalogOutputFrequency(int frequency) {
     if (analogOutput != null) {
       try {
-        // AnalogOutput.setAnalogOutputFrequency is not public!
-        //analogOutput.setAnalogOutputFrequency(frequency);
+        analogOutput.setAnalogOutputFrequency(frequency);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetAnalogOutputFrequency",
@@ -77,8 +76,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   public void SetAnalogOutputMode(int mode) {
     if (analogOutput != null) {
       try {
-        // AnalogOutput.setAnalogOutputMode is not public!
-        //analogOutput.setAnalogOutputMode((byte) mode);
+        analogOutput.setAnalogOutputMode((byte) mode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetAnalogOutputMode",
