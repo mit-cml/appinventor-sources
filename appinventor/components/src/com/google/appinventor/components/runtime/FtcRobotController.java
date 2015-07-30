@@ -46,9 +46,10 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The primary FTC Robot Controller component.
@@ -98,7 +99,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private static final int DEFAULT_USB_SCAN_TIME_IN_SECONDS = 0;
   private static final String DEFAULT_CONFIGURATION = "";
 
-  private static final AtomicInteger robotControllersCounter = new AtomicInteger(0);
+  private static final Object robotControllersLock = new Object();
+  private static final List<FtcRobotController> robotControllers = Lists.newArrayList();
   private static final Object gamepadDevicesLock = new Object();
   private static final List<GamepadDevice> gamepadDevices = Lists.newArrayList();
   private static final Object hardwareDevicesLock = new Object();
@@ -134,7 +136,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
     container.$add(this);
 
-    robotControllersCounter.incrementAndGet();
+    synchronized (robotControllersLock) {
+      robotControllers.add(this);
+    }
 
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
@@ -163,7 +167,11 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void onInitialize() {
-    if (robotControllersCounter.get() == 1) {
+    int robotControllersCount;
+    synchronized (robotControllersLock) {
+      robotControllersCount = robotControllers.size();
+    }
+    if (robotControllersCount == 1) {
       if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH) {
         PowerManager powerManager = (PowerManager) form.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FtcRobotController");
@@ -226,6 +234,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void onDestroy() {
     prepareToDie();
+    synchronized (robotControllersLock) {
+      robotControllers.remove(this);
+    }
   }
 
   // Deleteable implementation
@@ -233,7 +244,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void onDelete() {
     prepareToDie();
-    robotControllersCounter.decrementAndGet();
+    synchronized (robotControllersLock) {
+      robotControllers.remove(this);
+    }
   }
 
   // OpModeRegister implementation
@@ -241,6 +254,12 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void register(OpModeManager opModeManager) {
     synchronized (opModeWrappersLock) {
+      Collections.sort(opModeWrappers, new Comparator<OpModeWrapper>() {
+        @Override
+        public int compare(OpModeWrapper o1, OpModeWrapper o2) {
+          return o1.getOpModeName().compareToIgnoreCase(o2.getOpModeName());
+        }
+      });
       for (OpModeWrapper opModeWrapper : opModeWrappers) {
         opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
       }
