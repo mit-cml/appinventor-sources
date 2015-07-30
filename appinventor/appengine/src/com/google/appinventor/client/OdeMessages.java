@@ -3304,10 +3304,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DpadUpProperties();
 
-  @DefaultMessage("EnableLed")
-  @Description("")
-  String EnableLedProperties();
-
   @DefaultMessage("GamepadNumber")
   @Description("")
   String GamepadNumberProperties();
@@ -5458,6 +5454,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EnableI2cWriteModeMethods();
 
+  @DefaultMessage("EnableLed")
+  @Description("")
+  String EnableLedMethods();
+
   @DefaultMessage("EnableNxtI2cReadMode")
   @Description("")
   String EnableNxtI2cReadModeMethods();
@@ -6439,4 +6439,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WriteI2cPortFlagOnlyFromModule")
   @Description("")
   String WriteI2cPortFlagOnlyFromModuleMethods();
+  @DefaultMessage("EnableLed")
+  @Description("")
+  String EnableLedProperties();
 }

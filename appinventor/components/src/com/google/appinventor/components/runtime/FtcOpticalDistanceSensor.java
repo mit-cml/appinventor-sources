@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -74,6 +75,19 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
       }
     }
     return 0;
+  }
+
+  @SimpleFunction(description = "Enable the LED light.")
+  public void EnableLed(boolean enable) {
+    if (opticalDistanceSensor != null) {
+      try {
+        opticalDistanceSensor.enableLed(enable);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "EnableLed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   /**

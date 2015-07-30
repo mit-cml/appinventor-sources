@@ -293,7 +293,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements PortRead
   public void WriteI2cPortFlagOnlyToModule(int port) {
     if (legacyModule != null) {
       try {
-        legacyModule.writeI2cPortFlagOnlyFromModule(port);
+        legacyModule.writeI2cPortFlagOnlyToModule(port);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",

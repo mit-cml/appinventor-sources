@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -31,7 +32,6 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcLightSensor extends FtcHardwareDevice {
 
-  private volatile boolean enableLed;
   private volatile LightSensor lightSensor;
 
   /**
@@ -77,24 +77,11 @@ public final class FtcLightSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  /**
-   * EnableLed property getter.
-   */
-  @SimpleProperty(description = "Whether to enable the LED light.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean EnableLed() {
-    return enableLed;
-  }
-
-  /**
-   * EnableLed property setter.
-   */
-  @SimpleProperty
-  public void EnableLed(boolean enableLed) {
+  @SimpleFunction(description = "Enable the LED light.")
+  public void EnableLed(boolean enable) {
     if (lightSensor != null) {
       try {
-        lightSensor.enableLed(enableLed);
-        this.enableLed = enableLed;
+        lightSensor.enableLed(enable);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableLed",
@@ -140,5 +127,11 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @Override
   public void clearHardwareDevice() {
     lightSensor = null;
+  }
+
+  // TODO(lizlooney): remove these
+  @SimpleProperty(description = "EnableLed", userVisible = false, category = PropertyCategory.BEHAVIOR)
+  public boolean EnableLed() {
+    return false;
   }
 }
