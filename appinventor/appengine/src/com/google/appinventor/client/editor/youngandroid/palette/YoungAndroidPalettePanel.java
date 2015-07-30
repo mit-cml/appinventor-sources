@@ -234,6 +234,66 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
+    // NOTE(lizlooney): This is only for the ftc branch of my fork.
+    if (category == ComponentCategory.FIRSTTECHCHALLENGE) {
+      addFtcPaletteItem(panel, component);
+      return;
+    }
     panel.add(component);
   }
+
+  // NOTE(lizlooney): This is only for the ftc branch of my fork.
+  private void addFtcPaletteItem(VerticalPanel panel, SimplePaletteItem component) {
+    int index = Collections.binarySearch(ftcComponentsSoFar, component, ftcComponentsComparator);
+    int insertionPos = - index - 1;
+    ftcComponentsSoFar.add(insertionPos, component);
+    panel.insert(component, insertionPos);
+  }
+
+  private final java.util.List<SimplePaletteItem> ftcComponentsSoFar = new java.util.ArrayList<SimplePaletteItem>();
+
+  private static final Map<String, Integer> ftcComponentNamesMap = new HashMap<String, Integer>();
+  static {
+    int value = 0;
+    ftcComponentNamesMap.put("FtcRobotController", value++);
+    ftcComponentNamesMap.put("FtcOpMode", value++);
+    ftcComponentNamesMap.put("FtcGamepad", value++);
+    ftcComponentNamesMap.put("FtcDcMotor", value++);
+    ftcComponentNamesMap.put("FtcDcMotorController", value++);
+    ftcComponentNamesMap.put("FtcServo", value++);
+    ftcComponentNamesMap.put("FtcServoController", value++);
+    ftcComponentNamesMap.put("FtcAccelerationSensor", value++);
+    ftcComponentNamesMap.put("FtcCompassSensor", value++);
+    ftcComponentNamesMap.put("FtcGyroSensor", value++);
+    ftcComponentNamesMap.put("FtcIrSeekerSensor", value++);
+    ftcComponentNamesMap.put("FtcLightSensor", value++);
+    ftcComponentNamesMap.put("FtcOpticalDistanceSensor", value++);
+    ftcComponentNamesMap.put("FtcTouchSensor", value++);
+    ftcComponentNamesMap.put("FtcUltrasonicSensor", value++);
+    ftcComponentNamesMap.put("FtcVoltageSensor", value++);
+    ftcComponentNamesMap.put("FtcAnalogInput", value++);
+    ftcComponentNamesMap.put("FtcAnalogOutput", value++);
+    ftcComponentNamesMap.put("FtcDigitalChannel", value++);
+    ftcComponentNamesMap.put("FtcI2cDevice", value++);
+    ftcComponentNamesMap.put("FtcPwmOutput", value++);
+    ftcComponentNamesMap.put("FtcDeviceInterfaceModule", value++);
+    ftcComponentNamesMap.put("FtcLegacyModule", value++);
+  }
+
+  private static final java.util.Comparator<SimplePaletteItem> ftcComponentsComparator = new java.util.Comparator<SimplePaletteItem>() {
+    @Override
+    public int compare(SimplePaletteItem spi1, SimplePaletteItem spi2) {
+      String name1 = spi1.getName();
+      Integer value1 = ftcComponentNamesMap.get(name1);
+      if (value1 == null) {
+        value1 = -1;
+      }
+      String name2 = spi2.getName();
+      Integer value2 = ftcComponentNamesMap.get(name2);
+      if (value2 == null) {
+        value2 = -1;
+      }
+      return Integer.signum(value1 - value2);
+    }
+  };
 }
