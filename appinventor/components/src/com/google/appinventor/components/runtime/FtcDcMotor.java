@@ -12,14 +12,12 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.Direction;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;
 import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -269,38 +267,38 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * Mode_RUN_USING_ENCODERS property getter.
+   * RunMode_RUN_USING_ENCODERS property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_RUN_USING_ENCODERS.",
+  @SimpleProperty(description = "The constant for RunMode_RUN_USING_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_RUN_USING_ENCODERS() {
+  public String RunMode_RUN_USING_ENCODERS() {
     return RunMode.RUN_USING_ENCODERS.toString();
   }
 
   /**
-   * Mode_RUN_WITHOUT_ENCODERS property getter.
+   * RunMode_RUN_WITHOUT_ENCODERS property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_RUN_WITHOUT_ENCODERS.",
+  @SimpleProperty(description = "The constant for RunMode_RUN_WITHOUT_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_RUN_WITHOUT_ENCODERS() {
+  public String RunMode_RUN_WITHOUT_ENCODERS() {
     return RunMode.RUN_WITHOUT_ENCODERS.toString();
   }
 
   /**
-   * Mode_RUN_TO_POSITION property getter.
+   * RunMode_RUN_TO_POSITION property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_RUN_TO_POSITION.",
+  @SimpleProperty(description = "The constant for RunMode_RUN_TO_POSITION.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_RUN_TO_POSITION() {
+  public String RunMode_RUN_TO_POSITION() {
     return RunMode.RUN_TO_POSITION.toString();
   }
 
   /**
-   * Mode_RESET_ENCODERS property getter.
+   * RunMode_RESET_ENCODERS property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_RESET_ENCODERS.",
+  @SimpleProperty(description = "The constant for RunMode_RESET_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_RESET_ENCODERS() {
+  public String RunMode_RESET_ENCODERS() {
     return RunMode.RESET_ENCODERS.toString();
   }
 
@@ -349,79 +347,17 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     return "";
   }
 
-  /**
-   * DeviceMode_READ_ONLY property getter.
-   */
-  @SimpleProperty(description = "The constant for DeviceMode_READ_ONLY.",
-      category = PropertyCategory.BEHAVIOR)
-  public String DeviceMode_READ_ONLY() {
-    return DeviceMode.READ_ONLY.toString();
-  }
-
-  /**
-   * DeviceMode_WRITE_ONLY property getter.
-   */
-  @SimpleProperty(description = "The constant for DeviceMode_WRITE_ONLY.",
-  category = PropertyCategory.BEHAVIOR)
-  public String DeviceMode_WRITE_ONLY() {
-    return DeviceMode.WRITE_ONLY.toString();
-  }
-
-  /**
-   * MotorControllerDeviceMode property setter.
-   */
-  @SimpleProperty
-  public void MotorControllerDeviceMode(String modeString) {
-    if (dcMotor != null && dcMotor.getController() != null) {
-      try {
-        for (DeviceMode mode : DeviceMode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            dcMotor.getController().setMotorControllerDeviceMode(mode);
-            return;
-          }
-        }
-
-        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
-            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE, modeString);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  /**
-   * MotorControllerDeviceMode property getter.
-   */
-  @SimpleProperty(description = "The motor controller device mode.",
-      category = PropertyCategory.BEHAVIOR)
-  public String MotorControllerDeviceMode() {
-    if (dcMotor != null && dcMotor.getController() != null) {
-      try {
-        DeviceMode mode = dcMotor.getController().getMotorControllerDeviceMode();
-        if (mode != null) {
-          return mode.toString();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return "";
-  }
-
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       dcMotor = hardwareMap.dcMotor.get(getDeviceName());
       if (dcMotor == null) {
         deviceNotFound("DcMotor", hardwareMap.dcMotor);
       }
     }
+    return dcMotor;
   }
 
   @Override

@@ -15,113 +15,97 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.PWMOutput;
 
 /**
- * A component for a light sensor of an FTC robot.
+ * A component for a PWM output device of an FTC robot.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-@DesignerComponent(version = YaVersion.FTC_LIGHT_SENSOR_COMPONENT_VERSION,
-    description = "A component for a light sensor of an FTC robot.",
+@DesignerComponent(version = YaVersion.FTC_PWM_OUTPUT_COMPONENT_VERSION,
+    description = "A component for a PWM output device of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
-public final class FtcLightSensor extends FtcHardwareDevice {
+public final class FtcPwmOutput extends FtcHardwareDevice {
 
-  private volatile boolean enableLed;
-  private volatile LightSensor lightSensor;
+  private volatile PWMOutput pwmOutput;
 
   /**
-   * Creates a new FtcLightSensor component.
+   * Creates a new FtcPwmOutput component.
    */
-  public FtcLightSensor(ComponentContainer container) {
+  public FtcPwmOutput(ComponentContainer container) {
     super(container.$form());
   }
 
   /**
-   * LightDetected property getter.
-   */
-  @SimpleProperty(description = "The light detected by the sensor, on a scale of 0 to 1.",
-      category = PropertyCategory.BEHAVIOR)
-  public double LightDetected() {
-    if (lightSensor != null) {
-      try {
-        return lightSensor.getLightDetected();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "LightDetected",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
-  }
-
-  /**
-   * LightDetectedRaw property getter.
-   */
-  @SimpleProperty(description = "The light detected by the sensor, as an integer.",
-      category = PropertyCategory.BEHAVIOR)
-  public int LightDetectedRaw() {
-    if (lightSensor != null) {
-      try {
-        return lightSensor.getLightDetectedRaw();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "LightDetectedRaw",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
-  }
-
-  /**
-   * EnableLed property getter.
-   */
-  @SimpleProperty(description = "Whether to enable the LED light.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean EnableLed() {
-    return enableLed;
-  }
-
-  /**
-   * EnableLed property setter.
+   * PulseWidthOutputTime property setter.
    */
   @SimpleProperty
-  public void EnableLed(boolean enableLed) {
-    if (lightSensor != null) {
+  public void PulseWidthOutputTime(double time) {
+    if (pwmOutput != null) {
       try {
-        lightSensor.enableLed(enableLed);
-        this.enableLed = enableLed;
+        pwmOutput.setPulseWidthOutputTime((int) time);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "EnableLed",
+        form.dispatchErrorOccurredEvent(this, "PulseWidthOutputTime",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
   /**
-   * Status property getter.
+   * PulseWidthOutputTime property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The pulse width output time for this channel.",
       category = PropertyCategory.BEHAVIOR)
-  public String Status() {
-    if (lightSensor != null) {
+  public double PulseWidthOutputTime() {
+    if (pwmOutput != null) {
       try {
-        String status = lightSensor.status();
-        if (status != null) {
-          return status;
-        }
+        return pwmOutput.getPulseWidthOutputTime();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Status",
+        form.dispatchErrorOccurredEvent(this, "PulseWidthOutputTime",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-    return "";
+    return 0;
+  }
+
+  /**
+   * PulseWidthOutputPeriod property setter.
+   */
+  @SimpleProperty
+  public void PulseWidthPeriod(double period) {
+    if (pwmOutput != null) {
+      try {
+        pwmOutput.setPulseWidthPeriod((int) period);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "PulseWidthPeriod",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * PulseWidthOutputPeriod property getter.
+   */
+  @SimpleProperty(description = "The pulse width output.",
+      category = PropertyCategory.BEHAVIOR)
+  public double PulseWidthPeriod() {
+    if (pwmOutput != null) {
+      try {
+        return pwmOutput.getPulseWidthPeriod();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "PulseWidthPeriod",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   // FtcRobotController.HardwareDevice implementation
@@ -129,16 +113,16 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @Override
   public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      lightSensor = hardwareMap.lightSensor.get(getDeviceName());
-      if (lightSensor == null) {
-        deviceNotFound("LightSensor", hardwareMap.lightSensor);
+      pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
+      if (pwmOutput == null) {
+        deviceNotFound("PWMOutput", hardwareMap.pwmOutput);
       }
     }
-    return lightSensor;
+    return pwmOutput;
   }
 
   @Override
   public void clearHardwareDevice() {
-    lightSensor = null;
+    pwmOutput = null;
   }
 }

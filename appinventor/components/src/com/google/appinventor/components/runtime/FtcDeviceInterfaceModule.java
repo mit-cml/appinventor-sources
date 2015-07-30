@@ -6,8 +6,10 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -15,9 +17,11 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule.I2CPortReadyCallback;
+import com.qualcomm.robotcore.hardware.DigitalChannelController.Mode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cController.I2cPortReadyCallback;
+import com.qualcomm.robotcore.util.SerialNumber;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -35,7 +39,7 @@ import java.util.concurrent.locks.Lock;
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
-    implements I2CPortReadyCallback {
+    implements I2cPortReadyCallback {
 
   private volatile DeviceInterfaceModule deviceInterfaceModule;
   private final Object portsRegisteredForPortReadyCallbackLock = new Object();
@@ -52,20 +56,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "only enabled if EnableI2cReadMode or EnableI2cWriteMode is used.")
   public void I2cPortIsReady(int port) {
     EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
-  }
-
-  @SimpleFunction(description = "Return the current ADC results from the A0-A7 channel input pins.")
-  public int GetAnalogInputValue(int channel) {
-    if (deviceInterfaceModule != null) {
-      try {
-        return deviceInterfaceModule.getAnalogInputValue(channel);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetAnalogInputValue",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0;
   }
 
   @SimpleFunction(description = "A byte containing the current logic levels present in the " +
@@ -98,8 +88,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "If a particular bit is one, the corresponding channel " +
-      "pin is in output mode; else it is in input mode.")
+  @SimpleFunction(description = "Get the digital IO control byte.")
   public int GetDigitalIOControlByte() {
     if (deviceInterfaceModule != null) {
       try {
@@ -171,59 +160,137 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Sets the channel output voltage. " +
-      "If mode == 0: takes input from -1023-1023, output in the range -4 to +4 volts. " +
-      "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts.")
-  public void SetAnalogOutputVoltage(int port, int voltage) {
+  @SimpleProperty(description = "Get the USB serial number of this device.",
+      category = PropertyCategory.BEHAVIOR)
+  public String SerialNumber() {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setAnalogOutputVoltage(port, voltage);
+        SerialNumber serialNumber = deviceInterfaceModule.getSerialNumber();
+        if (serialNumber != null) {
+          return serialNumber.toString();
+        }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputVoltage",
+        form.dispatchErrorOccurredEvent(this, "SerialNumber",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
+  // for DigitalChannelController
+
+  /**
+   * Mode_INPUT property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_INPUT.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_INPUT() {
+    return Mode.INPUT.toString();
+  }
+
+  /**
+   * Mode_OUTPUT property getter.
+   */
+  @SimpleProperty(description = "The constant for Mode_OUTPUT.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Mode_OUTPUT() {
+    return Mode.OUTPUT.toString();
+  }
+
+  @SimpleFunction(description = "Get the mode of a digital channel; INPUT or OUTPUT.")
+  public String GetDigitalChannelMode(int channel) {
+    if (deviceInterfaceModule != null) {
+      try {
+        Mode mode = deviceInterfaceModule.getDigitalChannelMode(channel);
+        if (mode != null) {
+          return mode.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetDigitalChannelMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
+  @SimpleFunction(description = "Set the mode of a digital channel; INPUT or OUTPUT.")
+  public void SetDigitalChannelMode(int channel, String mode) {
+    if (deviceInterfaceModule != null) {
+      try {
+        for (Mode modeEnum : Mode.values()) {
+          if (modeEnum.toString().equalsIgnoreCase(mode)) {
+            deviceInterfaceModule.setDigitalChannelMode(channel, modeEnum);
+            return;
+          }
+        }
+
+        form.dispatchErrorOccurredEvent(this, "SetDigitalChannelMode",
+            ErrorMessages.ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE, mode);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDigitalChannelMode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
-  @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
-      "mode 1, 2 or 3. If mode 0 is selected, this field will be over-written to 0.")
-  public void SetAnalogOutputFrequency(int port, int frequency) {
+  @SimpleFunction(description = "Get the state of a digital channel.\n" +
+      "If it's in OUTPUT mode, this will return the output bit.\n" + 
+      "If the channel is in INPUT mode, this will return the input bit.")
+  public boolean GetDigitalChannelState(int channel) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setAnalogOutputFrequency(port, frequency);
+        return deviceInterfaceModule.getDigitalChannelState(channel);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputFrequency",
+        form.dispatchErrorOccurredEvent(this, "GetDigitalChannelState",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
+  @SimpleFunction(description = "Set the state of a digital channel.\n" +
+      "The behavior of this method is undefined for digital channels in INPUT mode.")
+  public void SetDigitalChannelState(int channel, boolean state) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setDigitalChannelState(channel, state);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDigitalChannelState",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
-  @SimpleFunction(description = "Sets the channel operating mode. " +
-      "Mode 0: Voltage output. Range: -4V - 4V. " +
-      "Mode 1: Sine wave output. Range: 0 - 8V. " +
-      "Mode 2: Square wave output. Range: 0 - 8V. " +
-      "Mode 3: Triangle wave output. Range: 0 - 8V.")
-  public void SetAnalogOutputMode(int port, int mode) {
+  // For AnalogInputController
+
+  @SimpleFunction(description = "Return the current ADC results from the A0-A7 channel input pins.")
+  public int GetAnalogInputValue(int channel) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setAnalogOutputMode(port, (byte) mode);
+        return deviceInterfaceModule.getAnalogInputValue(channel);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputMode",
+        form.dispatchErrorOccurredEvent(this, "GetAnalogInputValue",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+    return 0;
   }
+
+  // for PWMOutputController
 
   @SimpleFunction(description = "Sets the pulse width for the channel output in units of 1 " +
       "microsecond. Setting a value greater than the output period will result in the output " +
       "being permanently set to 1.")
-  public void SetPulseWidthOutputTime(int port, int time) {
+  public void SetPulseWidthOutputTime(int port, double time) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setPulseWidthOutputTime(port, time);
+        deviceInterfaceModule.setPulseWidthOutputTime(port, (int) time);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetPulseWidthOutputTime",
@@ -236,10 +303,10 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "units of 1 microsecond. If the pwm feature is being used to generate pulses for a " +
       "standard R/C style servo, the output period should be set to 20,000 and the output on " +
       "time should be set within the range 750-2,250.")
-  public void SetPulseWidthPeriod(int port, int period) {
+  public void SetPulseWidthPeriod(int port, double period) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setPulseWidthPeriod(port, period);
+        deviceInterfaceModule.setPulseWidthPeriod(port, (int) period);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetPulseWidthPeriod",
@@ -248,8 +315,40 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Enable a physical port in I2C read mode and enable the " +
-      "I2cPortIsReady event.")
+  @SimpleFunction(description = "Gets the pulse width for the channel output in units of 1 " +
+      "microsecond.")
+  public double GetPulseWidthOutputTime(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.getPulseWidthOutputTime(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetPulseWidthOutputTime",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Gets the pulse repetition period for the channel output in " +
+      "units of 1 microsecond.")
+  public double GetPulseWidthPeriod(int port) {
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.getPulseWidthPeriod(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetPulseWidthPeriod",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  // I2cController
+
+  @SimpleFunction(description = "Enable read mode for a particular I2C device and enable the " +
+      "I2cPortIsReady event for the given port.")
   public void EnableI2cReadMode(int port, int i2cAddress, int memAddress, int length) {
     if (deviceInterfaceModule != null) {
       try {
@@ -268,8 +367,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Enable a physical port in I2C write mode and enable the " +
-      "I2cPortIsReady event.")
+  @SimpleFunction(description = "Enable write mode for a particular I2C device and enable the " +
+      "I2cPortIsReady event for the given port.")
   public void EnableI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
     if (deviceInterfaceModule != null) {
       try {
@@ -288,8 +387,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the I2C read cache; " +
-      "return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the cache that I2C reads will be " +
+      "populated into. (byte array)")
   public Object GetI2cReadCache(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -314,8 +413,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache; " +
-      "return a byte array.")
+  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache. " +
+      "(byte array)")
   public Object GetI2cWriteCache(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -422,11 +521,12 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Write just the port action flag in the Device Interface Module's cache to the I2C device.")
+  @SimpleFunction(description = "Write just the port action flag in the Device Interface " +
+      "Module's cache to the I2C device.")
   public void WriteI2cPortFlagOnlyToModule(int port) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.writeI2cPortFlagOnlyFromModule(port);
+        deviceInterfaceModule.writeI2cPortFlagOnlyToModule(port);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
@@ -477,6 +577,54 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return false;
   }
 
+  // for AnalogOutputController 
+
+  @SimpleFunction(description = "Sets the channel output voltage.\n" +
+      "If mode == 0: takes input from -1023-1023, output in the range -4 to +4 volts.\n" +
+      "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts.")
+  public void SetAnalogOutputVoltage(int port, int voltage) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setAnalogOutputVoltage(port, voltage);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputVoltage",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
+      "mode 1, 2 or 3.")
+  public void SetAnalogOutputFrequency(int port, int frequency) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setAnalogOutputFrequency(port, frequency);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputFrequency",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Sets the channel operating mode.\n" +
+      "Mode 0: Voltage output. Range: -4V - 4V.\n" +
+      "Mode 1: Sine wave output. Range: 0 - 8V.\n" +
+      "Mode 2: Square wave output. Range: 0 - 8V.\n" +
+      "Mode 3: Triangle wave output. Range: 0 - 8V.")
+  public void SetAnalogOutputMode(int port, int mode) {
+    if (deviceInterfaceModule != null) {
+      try {
+        deviceInterfaceModule.setAnalogOutputMode(port, (byte) mode);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetAnalogOutputMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
   // I2CPortReadyCallback implementation
 
   @Override
@@ -487,13 +635,14 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
       if (deviceInterfaceModule == null) {
         deviceNotFound("DeviceInterfaceModule", hardwareMap.deviceInterfaceModule);
       }
     }
+    return deviceInterfaceModule;
   }
 
   @Override

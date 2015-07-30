@@ -12,13 +12,12 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
-import com.qualcomm.robotcore.hardware.IrSeekerSensor.IrSensor;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor.IrSeekerIndividualSensor;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
 
 /**
@@ -173,7 +172,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   public int IndividualSensorCount() {
     if (irSeekerSensor != null) {
       try {
-        IrSensor[] sensors = irSeekerSensor.getSensors();
+        IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
         if (sensors != null) {
           return sensors.length;
         }
@@ -191,7 +190,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   public double IndividualSensorAngle(int position) {
     if (irSeekerSensor != null) {
       try {
-        IrSensor[] sensors = irSeekerSensor.getSensors();
+        IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
         if (sensors != null) {
           if (position >= 0 && position < sensors.length) {
             return sensors[position].getSensorAngle();
@@ -214,7 +213,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   public double IndividualSensorStrength(int position) {
     if (irSeekerSensor != null) {
       try {
-        IrSensor[] sensors = irSeekerSensor.getSensors();
+        IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
         if (sensors != null) {
           if (position >= 0 && position < sensors.length) {
             return sensors[position].getSensorStrength();
@@ -235,13 +234,14 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
       if (irSeekerSensor == null) {
         deviceNotFound("IrSeekerSensor", hardwareMap.irSeekerSensor);
       }
     }
+    return irSeekerSensor;
   }
 
   @Override

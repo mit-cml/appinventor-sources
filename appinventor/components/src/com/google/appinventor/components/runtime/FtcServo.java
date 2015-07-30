@@ -12,7 +12,6 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -191,13 +190,14 @@ public final class FtcServo extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       servo = hardwareMap.servo.get(getDeviceName());
       if (servo == null) {
         deviceNotFound("Servo", hardwareMap.servo);
       }
     }
+    return servo;
   }
 
   @Override

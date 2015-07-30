@@ -61,13 +61,14 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
       if (voltageSensor == null) {
         deviceNotFound("VoltageSensor", hardwareMap.voltageSensor);
       }
     }
+    return voltageSensor;
   }
 
   @Override

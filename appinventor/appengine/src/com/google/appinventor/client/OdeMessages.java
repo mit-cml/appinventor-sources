@@ -2298,6 +2298,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcAnalogInputComponentPallette();
 
+  @DefaultMessage("FtcAnalogOutput")
+  @Description("")
+  String ftcAnalogOutputComponentPallette();
+
   @DefaultMessage("FtcCompassSensor")
   @Description("")
   String ftcCompassSensorComponentPallette();
@@ -2305,6 +2309,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcDcMotor")
   @Description("")
   String ftcDcMotorComponentPallette();
+
+  @DefaultMessage("FtcDcMotorController")
+  @Description("")
+  String ftcDcMotorControllerComponentPallette();
 
   @DefaultMessage("FtcDeviceInterfaceModule")
   @Description("")
@@ -2321,6 +2329,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcGyroSensor")
   @Description("")
   String ftcGyroSensorComponentPallette();
+
+  @DefaultMessage("FtcI2cDevice")
+  @Description("")
+  String ftcI2cDeviceComponentPallette();
 
   @DefaultMessage("FtcIrSeekerSensor")
   @Description("")
@@ -2342,6 +2354,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcOpticalDistanceSensorComponentPallette();
 
+  @DefaultMessage("FtcPwmOutput")
+  @Description("")
+  String ftcPwmOutputComponentPallette();
+
   @DefaultMessage("FtcRobotController")
   @Description("")
   String ftcRobotControllerComponentPallette();
@@ -2349,6 +2365,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FtcServo")
   @Description("")
   String ftcServoComponentPallette();
+
+  @DefaultMessage("FtcServoController")
+  @Description("")
+  String ftcServoControllerComponentPallette();
 
   @DefaultMessage("FtcTouchSensor")
   @Description("")
@@ -3232,6 +3252,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ConfigurationProperties();
 
+  @DefaultMessage("ConnectionInfo")
+  @Description("")
+  String ConnectionInfoProperties();
+
   @DefaultMessage("CurrentPosition")
   @Description("")
   String CurrentPositionProperties();
@@ -3300,10 +3324,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsPressedProperties();
 
-  @DefaultMessage("JoystickDeadzone")
-  @Description("")
-  String JoystickDeadzoneProperties();
-
   @DefaultMessage("LeftBumper")
   @Description("")
   String LeftBumperProperties();
@@ -3352,22 +3372,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Mode_OUTPUTProperties();
 
-  @DefaultMessage("Mode_RESET_ENCODERS")
-  @Description("")
-  String Mode_RESET_ENCODERSProperties();
-
-  @DefaultMessage("Mode_RUN_TO_POSITION")
-  @Description("")
-  String Mode_RUN_TO_POSITIONProperties();
-
-  @DefaultMessage("Mode_RUN_USING_ENCODERS")
-  @Description("")
-  String Mode_RUN_USING_ENCODERSProperties();
-
-  @DefaultMessage("Mode_RUN_WITHOUT_ENCODERS")
-  @Description("")
-  String Mode_RUN_WITHOUT_ENCODERSProperties();
-
   @DefaultMessage("Mode_600HZ_DC")
   @Description("")
   String Mode_600HZ_DCProperties();
@@ -3396,6 +3400,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PowerProperties();
 
+  @DefaultMessage("PulseWidthPeriod")
+  @Description("")
+  String PulseWidthPeriodProperties();
+
+  @DefaultMessage("PulseWidthOutputTime")
+  @Description("")
+  String PulseWidthOutputTimeProperties();
+
+  @DefaultMessage("PwmStatus_DISABLED")
+  @Description("")
+  String PwmStatus_DISABLEDProperties();
+
+  @DefaultMessage("PwmStatus_ENABLED")
+  @Description("")
+  String PwmStatus_ENABLEDProperties();
+
   @DefaultMessage("RightBumper")
   @Description("")
   String RightBumperProperties();
@@ -3419,6 +3439,26 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Rotation")
   @Description("")
   String RotationProperties();
+
+  @DefaultMessage("RunMode_RESET_ENCODERS")
+  @Description("")
+  String RunMode_RESET_ENCODERSProperties();
+
+  @DefaultMessage("RunMode_RUN_TO_POSITION")
+  @Description("")
+  String RunMode_RUN_TO_POSITIONProperties();
+
+  @DefaultMessage("RunMode_RUN_USING_ENCODERS")
+  @Description("")
+  String RunMode_RUN_USING_ENCODERSProperties();
+
+  @DefaultMessage("RunMode_RUN_WITHOUT_ENCODERS")
+  @Description("")
+  String RunMode_RUN_WITHOUT_ENCODERSProperties();
+
+  @DefaultMessage("SerialNumber")
+  @Description("")
+  String SerialNumberProperties();
 
   @DefaultMessage("SignalDetected")
   @Description("")
@@ -4066,6 +4106,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String bigEndianParams();
 
+  @DefaultMessage("bitField")
+  @Description("")
+  String bitFieldParams();
+
   @DefaultMessage("bitPosition")
   @Description("")
   String bitPositionParams();
@@ -4102,6 +4146,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String inputParams();
 
+  @DefaultMessage("joystickDeadzone")
+  @Description("")
+  String joystickDeadzoneParams();
+
   @DefaultMessage("key")
   @Description("")
   String keyParams();
@@ -4125,6 +4173,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("min")
   @Description("")
   String minParams();
+
+  @DefaultMessage("motor")
+  @Description("")
+  String motorParams();
 
   @DefaultMessage("period")
   @Description("")
@@ -5442,6 +5494,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetDigitalInputStateByteMethods();
 
+  @DefaultMessage("GetDigitalChannelMode")
+  @Description("")
+  String GetDigitalChannelModeMethods();
+
+  @DefaultMessage("GetDigitalChannelState")
+  @Description("")
+  String GetDigitalChannelStateMethods();
+
   @DefaultMessage("GetDigitalIOControlByte")
   @Description("")
   String GetDigitalIOControlByteMethods();
@@ -5462,13 +5522,45 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetI2cWriteCacheMethods();
 
+  @DefaultMessage("GetMotorCurrentPosition")
+  @Description("")
+  String GetMotorCurrentPositionMethods();
+
+  @DefaultMessage("GetMotorPower")
+  @Description("")
+  String GetMotorPowerMethods();
+
+  @DefaultMessage("GetMotorPowerFloat")
+  @Description("")
+  String GetMotorPowerFloatMethods();
+
+  @DefaultMessage("GetMotorTargetPosition")
+  @Description("")
+  String GetMotorTargetPositionMethods();
+
   @DefaultMessage("GetPowerFloat")
   @Description("")
   String GetPowerFloatMethods();
 
+  @DefaultMessage("GetPulseWidthOutputTime")
+  @Description("")
+  String GetPulseWidthOutputTimeMethods();
+
+  @DefaultMessage("GetPulseWidthPeriod")
+  @Description("")
+  String GetPulseWidthPeriodMethods();
+
   @DefaultMessage("GetRuntime")
   @Description("")
   String GetRuntimeMethods();
+
+  @DefaultMessage("GetPwmStatus")
+  @Description("")
+  String GetPwmStatusMethods();
+
+  @DefaultMessage("GetServoPosition")
+  @Description("")
+  String GetServoPositionMethods();
 
   @DefaultMessage("IndividualSensorAngle")
   @Description("")
@@ -5522,6 +5614,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Put8ByteNumberIntoByteArrayMethods();
 
+  @DefaultMessage("PwmDisable")
+  @Description("")
+  String PwmDisableMethods();
+
+  @DefaultMessage("PwmEnable")
+  @Description("")
+  String PwmEnableMethods();
+
   @DefaultMessage("RangeClip")
   @Description("")
   String RangeClipMethods();
@@ -5554,6 +5654,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetAnalogOutputVoltageMethods();
 
+  @DefaultMessage("SetDigitalChannelMode")
+  @Description("")
+  String SetDigitalChannelModeMethods();
+
+  @DefaultMessage("SetDigitalChannelState")
+  @Description("")
+  String SetDigitalChannelStateMethods();
+
   @DefaultMessage("SetDigitalIOControlByte")
   @Description("")
   String SetDigitalIOControlByteMethods();
@@ -5574,9 +5682,29 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetI2cWriteCacheMethods();
 
+  @DefaultMessage("SetJoystickDeadzone")
+  @Description("")
+  String SetJoystickDeadzoneMethods();
+
   @DefaultMessage("SetLED")
   @Description("")
   String SetLEDMethods();
+
+  @DefaultMessage("SetMode")
+  @Description("")
+  String SetModeMethods();
+
+  @DefaultMessage("SetMotorPower")
+  @Description("")
+  String SetMotorPowerMethods();
+
+  @DefaultMessage("SetMotorPowerFloat")
+  @Description("")
+  String SetMotorPowerFloatMethods();
+
+  @DefaultMessage("SetMotorTargetPosition")
+  @Description("")
+  String SetMotorTargetPositionMethods();
 
   @DefaultMessage("SetNxtI2cPortActionFlag")
   @Description("")
@@ -5593,6 +5721,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetPulseWidthPeriod")
   @Description("")
   String SetPulseWidthPeriodMethods();
+
+  @DefaultMessage("SetServoPosition")
+  @Description("")
+  String SetServoPositionMethods();
 
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")
@@ -5885,9 +6017,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcAccelerationSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component for an analog input of an FTC robot.")
+  @DefaultMessage("A component for an analog input device of an FTC robot.")
   @Description("")
   String FtcAnalogInputHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an analog output device of an FTC robot.")
+  @Description("")
+  String FtcAnalogOutputHelpStringComponentPallette();
 
   @DefaultMessage("A component for a compass sensor of an FTC robot.")
   @Description("")
@@ -5896,6 +6032,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a DC motor of an FTC robot.")
   @Description("")
   String FtcDcMotorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a DC motor controller of an FTC robot.")
+  @Description("")
+  String FtcDcMotorControllerHelpStringComponentPallette();
 
   @DefaultMessage("A component for a device interface module of an FTC robot.")
   @Description("")
@@ -5912,6 +6052,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a gyro sensor of an FTC robot.")
   @Description("")
   String FtcGyroSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an I2C device of an FTC robot.")
+  @Description("")
+  String FtcI2cDeviceHelpStringComponentPallette();
 
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")
@@ -5933,6 +6077,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcOpticalDistanceSensorHelpStringComponentPallette();
 
+  @DefaultMessage("A component for a PWM output device of an FTC robot.")
+  @Description("")
+  String FtcPwmOutputHelpStringComponentPallette();
+
   @DefaultMessage("The primary FTC Robot Controller component.")
   @Description("")
   String FtcRobotControllerHelpStringComponentPallette();
@@ -5940,6 +6088,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a servo of an FTC robot.")
   @Description("")
   String FtcServoHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a servo controller of an FTC robot.")
+  @Description("")
+  String FtcServoControllerHelpStringComponentPallette();
 
   @DefaultMessage("A component for a touch sensor of an FTC robot.")
   @Description("")

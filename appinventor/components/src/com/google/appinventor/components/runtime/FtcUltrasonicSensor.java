@@ -82,13 +82,14 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
       if (ultrasonicSensor == null) {
         deviceNotFound("UltrasonicSensor", hardwareMap.ultrasonicSensor);
       }
     }
+    return ultrasonicSensor;
   }
 
   @Override

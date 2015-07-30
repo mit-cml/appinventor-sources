@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -33,9 +34,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public final class FtcCompassSensor extends FtcHardwareDevice {
 
   private volatile CompassSensor compassSensor;
-  // We need a backing field for the Mode property because CompassSensor doesn't have a getMode
-  // method.
-  private volatile CompassMode mode = CompassMode.MEASUREMENT_MODE;
 
   /**
    * Creates a new FtcCompassSensor component.
@@ -101,52 +99,25 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return CompassMode.CALIBRATION_MODE.toString();
   }
 
-  /**
-   * Mode property setter.
-   */
-  @SimpleProperty
-  public void Mode(String modeString) {
+  @SimpleFunction(description = "Change to calibration or measurement mode.")
+  public void SetMode(String mode) {
     if (compassSensor != null) {
       try {
-        for (CompassMode mode : CompassMode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            compassSensor.setMode(mode);
-            // Set our backing field.
-            this.mode = mode;
+        for (CompassMode compassMode : CompassMode.values()) {
+          if (compassMode.toString().equalsIgnoreCase(mode)) {
+            compassSensor.setMode(compassMode);
             return;
           }
         }
 
-        form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_INVALID_COMPASS_MODE, modeString);
+        form.dispatchErrorOccurredEvent(this, "SetMode",
+            ErrorMessages.ERROR_FTC_INVALID_COMPASS_MODE, mode);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Mode",
+        form.dispatchErrorOccurredEvent(this, "SetMode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
-  }
-
-  /**
-   * Mode property getter.
-   */
-  @SimpleProperty(description = "The mode: MEASUREMENT_MODE or CALIBRATION_MODE.",
-      category = PropertyCategory.BEHAVIOR)
-  public String Mode() {
-    if (compassSensor != null) {
-      try {
-        // CompassSensor doesn't have a getMode method. Use our backing field instead.
-        CompassMode mode = this.mode;
-        if (mode != null) {
-          return mode.toString();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return "";
   }
 
   /**
@@ -170,13 +141,14 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
+  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
       if (compassSensor == null) {
         deviceNotFound("CompassSensor", hardwareMap.compassSensor);
       }
     }
+    return compassSensor;
   }
 
   @Override

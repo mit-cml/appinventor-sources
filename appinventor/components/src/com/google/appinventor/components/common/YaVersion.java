@@ -339,19 +339,24 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 131:
   // - The FtcAccelerationSensor component was added.
   // - The FtcAnalogInput component was added.
+  // - The FtcAnalogOutput component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
+  // - The FtcDcMotorController component was added.
   // - The FtcDeviceInterfaceModule component was added.
   // - The FtcDigitalChannel component was added.
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
+  // - The FtcI2cDevice component was added.
   // - The FtcIrSeekerSensor component was added.
   // - The FtcLegacyModule component was added.
   // - The FtcLightSensor component was added.
   // - The FtcOpMode component was added.
   // - The FtcOpticalDistanceSensor was added.
+  // - The FtcPwmOutput was added.
   // - The FtcRobotController component was added.
   // - The FtcServo component was added.
+  // - The FtcServoController component was added.
   // - The FtcTouchSensor component was added.
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
@@ -630,9 +635,13 @@ public class YaVersion {
 
   public static final int FTC_ANALOG_INPUT_COMPONENT_VERSION = 1;
 
+  public static final int FTC_ANALOG_OUTPUT_COMPONENT_VERSION = 1;
+
   public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
 
   public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 1;
 
   public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 1;
 
@@ -641,6 +650,8 @@ public class YaVersion {
   public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
 
   public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 1;
 
   public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 1;
 
@@ -652,9 +663,13 @@ public class YaVersion {
 
   public static final int FTC_OPTICAL_DISTANCE_SENSOR_COMPONENT_VERSION = 1;
 
+  public static final int FTC_PWM_OUTPUT_COMPONENT_VERSION = 1;
+
   public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 1;
 
   public static final int FTC_SERVO_COMPONENT_VERSION = 1;
+
+  public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 1;
 
   public static final int FTC_TOUCH_SENSOR_COMPONENT_VERSION = 1;
 
