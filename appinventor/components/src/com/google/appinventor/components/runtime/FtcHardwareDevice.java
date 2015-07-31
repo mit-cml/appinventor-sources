@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping;
@@ -136,8 +137,8 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
-    Object hardwareDevice = initHardwareDeviceImpl(hardwareMap);
+  public void initHardwareDevice(OpMode opMode) {
+    Object hardwareDevice = initHardwareDeviceImpl(opMode.hardwareMap);
     this.hardwareDevice = (hardwareDevice instanceof HardwareDevice) ?
         ((HardwareDevice) hardwareDevice) : null;
   }

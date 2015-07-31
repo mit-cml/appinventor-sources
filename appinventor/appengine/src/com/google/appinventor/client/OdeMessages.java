@@ -6095,7 +6095,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("A component for a linear operation mode for an FTC robot.")
   @Description("")
-  String FtcLinerarOpModeHelpStringComponentPallette();
+  String FtcLinearOpModeHelpStringComponentPallette();
 
   @DefaultMessage("A component for an operation mode for an FTC robot.")
   @Description("")
