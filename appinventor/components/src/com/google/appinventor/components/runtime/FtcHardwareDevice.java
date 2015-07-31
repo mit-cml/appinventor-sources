@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping;
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 @SimpleObject
 public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
-    implements Component, Deleteable, FtcRobotController.HardwareDevice {
+    implements Component, OnDestroyListener, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
   protected volatile HardwareDevice hardwareDevice;
@@ -33,6 +34,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   protected FtcHardwareDevice(ComponentContainer container) {
     super(container.$form());
     FtcRobotController.addHardwareDevice(this);
+    form.registerForOnDestroy(this);
   }
 
   /**
@@ -116,6 +118,14 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     return 0;
   }
 
+  // OnDestroyListener implementation
+
+  @Override
+  public void onDestroy() {
+    FtcRobotController.removeHardwareDevice(this);
+    clearHardwareDevice();
+  }
+
   // Deleteable implementation
 
   @Override
@@ -127,8 +137,8 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   // FtcRobotController.HardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(HardwareMap hardwareMap) {
-    Object hardwareDevice = initHardwareDeviceImpl(hardwareMap);
+  public void initHardwareDevice(OpMode opMode) {
+    Object hardwareDevice = initHardwareDeviceImpl(opMode.hardwareMap);
     this.hardwareDevice = (hardwareDevice instanceof HardwareDevice) ?
         ((HardwareDevice) hardwareDevice) : null;
   }

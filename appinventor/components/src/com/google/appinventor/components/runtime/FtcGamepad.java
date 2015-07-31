@@ -17,6 +17,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import android.util.Log;
@@ -34,10 +35,10 @@ import android.util.Log;
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcGamepad extends AndroidNonvisibleComponent
-    implements Component, Deleteable, FtcRobotController.GamepadDevice {
+    implements Component, OnDestroyListener, Deleteable, FtcRobotController.GamepadDevice {
 
   private volatile int gamepadNumber = 1;
-  private volatile Gamepad gamepad;
+  private volatile OpMode opMode;
 
   /**
    * Creates a new FtcGamepad component.
@@ -45,6 +46,14 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   public FtcGamepad(ComponentContainer container) {
     super(container.$form());
     FtcRobotController.addGamepadDevice(this);
+    form.registerForOnDestroy(this);
+  }
+
+  private Gamepad getGamepad() {
+    if (opMode != null) {
+      return (gamepadNumber == 2) ? opMode.gamepad2 : opMode.gamepad1;
+    }
+    return null;
   }
 
   /**
@@ -75,6 +84,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickX() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.left_stick_x;
       }
@@ -93,6 +103,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickY() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.left_stick_y;
       }
@@ -111,6 +122,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float RightStickX() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.right_stick_x;
       }
@@ -129,6 +141,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float RightStickY() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.right_stick_y;
       }
@@ -147,6 +160,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadUp() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.dpad_up;
       }
@@ -165,6 +179,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadDown() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.dpad_down;
       }
@@ -183,6 +198,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadLeft() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.dpad_left;
       }
@@ -201,6 +217,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadRight() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.dpad_right;
       }
@@ -219,6 +236,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean A() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.a;
       }
@@ -237,6 +255,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean B() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.b;
       }
@@ -255,6 +274,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean X() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.x;
       }
@@ -273,6 +293,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean Y() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.y;
       }
@@ -292,6 +313,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean Guide() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.guide;
       }
@@ -310,6 +332,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean Start() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.start;
       }
@@ -328,6 +351,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean Back() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.back;
       }
@@ -346,6 +370,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean LeftBumper() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.left_bumper;
       }
@@ -364,6 +389,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean RightBumper() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.right_bumper;
       }
@@ -382,6 +408,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean LeftStickButton() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.left_stick_button;
       }
@@ -400,6 +427,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean RightStickButton() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.right_stick_button;
       }
@@ -418,6 +446,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float LeftTrigger() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.left_trigger;
       }
@@ -436,6 +465,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float RightTrigger() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.right_trigger;
       }
@@ -449,14 +479,15 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
 
   @SimpleFunction(description = "Set the joystick deadzone. Must be between 0 and 1.")
   public void SetJoystickDeadzone(float joystickDeadzone) {
-    if (gamepad != null) {
-      try {
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
         gamepad.setJoystickDeadzone(joystickDeadzone);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetJoystickDeadzone",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "SetJoystickDeadzone",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
   }
 
@@ -467,6 +498,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public boolean AtRest() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         return gamepad.atRest();
       }
@@ -485,6 +517,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     try {
+      Gamepad gamepad = getGamepad();
       if (gamepad != null) {
         String status = gamepad.toString();
         if (status != null) {
@@ -499,23 +532,31 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
     return "";
   }
 
+  // OnDestroyListener implementation
+
+  @Override
+  public void onDestroy() {
+    FtcRobotController.removeGamepadDevice(this);
+    opMode = null;
+  }
+
   // Deleteable implementation
 
   @Override
   public void onDelete() {
     FtcRobotController.removeGamepadDevice(this);
-    gamepad = null;
+    opMode = null;
   }
 
   // FtcRobotController.GamepadDevice implementation
 
   @Override
-  public void initGamepadDevice(Gamepad gamepad1, Gamepad gamepad2) {
-    gamepad = (gamepadNumber == 2) ? gamepad2 : gamepad1;
+  public void initGamepadDevice(OpMode opMode) {
+    this.opMode = opMode;
   }
 
   @Override
   public void clearGamepadDevice() {
-    gamepad = null;
+    opMode = null;
   }
 }

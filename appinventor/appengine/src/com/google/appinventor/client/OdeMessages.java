@@ -2346,6 +2346,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcLightSensorComponentPallette();
 
+  @DefaultMessage("FtcLinearOpMode")
+  @Description("")
+  String ftcLinearOpModeComponentPallette();
+
   @DefaultMessage("FtcOpMode")
   @Description("")
   String ftcOpModeComponentPallette();
@@ -4596,6 +4600,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LoopEvents();
 
+  @DefaultMessage("RunOpMode")
+  @Description("")
+  String RunOpModeEvents();
+
   @DefaultMessage("Start")
   @Description("")
   String StartEvents();
@@ -5598,6 +5606,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsNxtI2cPortActionFlagSetMethods();
 
+  @DefaultMessage("OpModeIsActive")
+  @Description("")
+  String OpModeIsActiveMethods();
+
   @DefaultMessage("Put1ByteNumberIntoByteArray")
   @Description("")
   String Put1ByteNumberIntoByteArrayMethods();
@@ -5726,6 +5738,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetServoPositionMethods();
 
+  @DefaultMessage("Sleep")
+  @Description("")
+  String SleepMethods();
+
   @DefaultMessage("TelemetryAddNumericData")
   @Description("")
   String TelemetryAddNumericDataMethods();
@@ -5733,6 +5749,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("TelemetryAddTextData")
   @Description("")
   String TelemetryAddTextDataMethods();
+
+  @DefaultMessage("WaitForStart")
+  @Description("")
+  String WaitForStartMethods();
+
+  @DefaultMessage("WaitOneHardwareCycle")
+  @Description("")
+  String WaitOneHardwareCycleMethods();
 
   @DefaultMessage("WriteI2cCacheToModule")
   @Description("")
@@ -6069,7 +6093,11 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcLightSensorHelpStringComponentPallette();
 
-  @DefaultMessage("A component for an operational mode for an FTC robot.")
+  @DefaultMessage("A component for a linear operation mode for an FTC robot.")
+  @Description("")
+  String FtcLinearOpModeHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an operation mode for an FTC robot.")
   @Description("")
   String FtcOpModeHelpStringComponentPallette();
 
