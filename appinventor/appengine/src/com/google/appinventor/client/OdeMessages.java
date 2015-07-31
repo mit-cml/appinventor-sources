@@ -6467,7 +6467,4 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WriteI2cPortFlagOnlyFromModule")
   @Description("")
   String WriteI2cPortFlagOnlyFromModuleMethods();
-  @DefaultMessage("EnableLed")
-  @Description("")
-  String EnableLedProperties();
 }

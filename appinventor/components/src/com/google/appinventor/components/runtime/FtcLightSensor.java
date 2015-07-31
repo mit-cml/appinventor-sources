@@ -128,10 +128,4 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   public void clearHardwareDevice() {
     lightSensor = null;
   }
-
-  // TODO(lizlooney): remove these
-  @SimpleProperty(description = "EnableLed", userVisible = false, category = PropertyCategory.BEHAVIOR)
-  public boolean EnableLed() {
-    return false;
-  }
 }
