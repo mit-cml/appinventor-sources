@@ -17,7 +17,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
-import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.ftc.FtcRobotControllerActivity;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -26,8 +25,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.TypeConversion;
 
@@ -46,10 +43,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import java.nio.ByteOrder;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The primary FTC Robot Controller component.
@@ -82,12 +76,12 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     OnOptionsItemSelectedListener, OnDestroyListener, Deleteable, OpModeRegister {
 
   interface GamepadDevice {
-    void initGamepadDevice(Gamepad gamepad1, Gamepad gamepad2);
+    void initGamepadDevice(OpMode opMode);
     void clearGamepadDevice();
   }
 
   interface HardwareDevice {
-    void initHardwareDevice(HardwareMap hardwareMap);
+    void initHardwareDevice(OpMode opMode);
     void clearHardwareDevice();
   }
 
@@ -254,12 +248,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void register(OpModeManager opModeManager) {
     synchronized (opModeWrappersLock) {
-      Collections.sort(opModeWrappers, new Comparator<OpModeWrapper>() {
-        @Override
-        public int compare(OpModeWrapper o1, OpModeWrapper o2) {
-          return o1.getOpModeName().compareToIgnoreCase(o2.getOpModeName());
-        }
-      });
       for (OpModeWrapper opModeWrapper : opModeWrappers) {
         opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
       }
@@ -334,35 +322,34 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     }
   }
 
-  // Called before an FtcOpMode's Init event is triggered.
-  static void beforeOpModeInit(OpMode opMode) {
+  static void activateOpMode(OpMode opMode) {
     activeOpMode = opMode;
+
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
-        hardwareDevice.initHardwareDevice(opMode.hardwareMap);
+        hardwareDevice.initHardwareDevice(opMode);
+      }
+    }
+
+    synchronized (gamepadDevicesLock) {
+      for (GamepadDevice gamepadDevice : gamepadDevices) {
+        gamepadDevice.initGamepadDevice(opMode);
       }
     }
   }
 
-  // Called before an FtcOpMode's Loop event is triggered.
-  static void beforeOpModeLoop(OpMode opMode) {
-    synchronized (gamepadDevicesLock) {
-      for (GamepadDevice gamepadDevice : gamepadDevices) {
-        gamepadDevice.initGamepadDevice(opMode.gamepad1, opMode.gamepad2);
-      }
-    }
-  }
+  static void deactivateOpMode() {
+    activeOpMode = null;
 
-  // Called after an FtcOpMode's Stop event is triggered.
-  static void afterOpModeStop(OpMode opMode) {
-    synchronized (gamepadDevicesLock) {
-      for (GamepadDevice gamepadDevice : gamepadDevices) {
-        gamepadDevice.clearGamepadDevice();
-      }
-    }
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
         hardwareDevice.clearHardwareDevice();
+      }
+    }
+
+    synchronized (gamepadDevicesLock) {
+      for (GamepadDevice gamepadDevice : gamepadDevices) {
+        gamepadDevice.clearGamepadDevice();
       }
     }
   }

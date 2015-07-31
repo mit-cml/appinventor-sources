@@ -257,6 +257,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     int value = 0;
     ftcComponentNamesMap.put("FtcRobotController", value++);
     ftcComponentNamesMap.put("FtcOpMode", value++);
+    ftcComponentNamesMap.put("FtcLinearOpMode", value++);
     ftcComponentNamesMap.put("FtcGamepad", value++);
     ftcComponentNamesMap.put("FtcDcMotor", value++);
     ftcComponentNamesMap.put("FtcDcMotorController", value++);

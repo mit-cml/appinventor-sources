@@ -206,6 +206,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcLegacyModuleComponentPallette();
     } else if (key.equals("FtcLightSensor")) {
       value = MESSAGES.ftcLightSensorComponentPallette();
+    } else if (key.equals("FtcLinearOpMode")) {
+      value = MESSAGES.ftcLinearOpModeComponentPallette();
     } else if (key.equals("FtcOpMode")) {
       value = MESSAGES.ftcOpModeComponentPallette();
     } else if (key.equals("FtcOpticalDistanceSensor")) {
@@ -384,6 +386,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcLegacyModuleHelpStringComponentPallette();
     } else if (key.equals("FtcLightSensor-helpString")) {
       value = MESSAGES.FtcLightSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcLinearOpMode-helpString")) {
+      value = MESSAGES.FtcLinearOpModeHelpStringComponentPallette();
     } else if (key.equals("FtcOpMode-helpString")) {
       value = MESSAGES.FtcOpModeHelpStringComponentPallette();
     } else if (key.equals("FtcOpticalDistanceSensor-helpString")) {

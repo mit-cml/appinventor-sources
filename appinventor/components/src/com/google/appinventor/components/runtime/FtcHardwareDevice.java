@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @SimpleObject
 public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
-    implements Component, Deleteable, FtcRobotController.HardwareDevice {
+    implements Component, OnDestroyListener, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
   protected volatile HardwareDevice hardwareDevice;
@@ -33,6 +33,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   protected FtcHardwareDevice(ComponentContainer container) {
     super(container.$form());
     FtcRobotController.addHardwareDevice(this);
+    form.registerForOnDestroy(this);
   }
 
   /**
@@ -114,6 +115,14 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
       }
     }
     return 0;
+  }
+
+  // OnDestroyListener implementation
+
+  @Override
+  public void onDestroy() {
+    FtcRobotController.removeHardwareDevice(this);
+    clearHardwareDevice();
   }
 
   // Deleteable implementation
