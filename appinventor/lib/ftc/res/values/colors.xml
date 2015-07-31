@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!-- From FtcRobotCore -->
   <color name="black">#000000</color>
   <color name="bright_red">#A6040E</color>
   <color name="bright_red_text">#ff0a19</color>
