@@ -34,10 +34,16 @@ goog.require('goog.userAgent');
 /**
  * Class for a comment.
  * @param {!Blockly.Block} block The block associated with this comment.
+ * [08/05/14, lyn] Added 2nd param to support multiple text bubbles on blocks.
+ * @param {!String} opt_iconChar: A single character for icon.
+ * //above added
  * @extends {Blockly.Icon}
  * @constructor
  */
-Blockly.Comment = function(block) {
+Blockly.Comment = function(block, opt_iconChar) {
+  // options added for different comment boxes: Yail, Watch, DoIt, Standard Comment
+  this.myblock = block; // added for tracking which block the comment is on
+  this.iconChar = opt_iconChar ? opt_iconChar : '?';      //added for tracking which comment on the block we are on
   Blockly.Comment.superClass_.constructor.call(this, block);
   this.createIcon_();
 };
@@ -81,7 +87,8 @@ Blockly.Comment.prototype.createIcon_ = function() {
       {'class': 'blocklyIconMark',
        'x': Blockly.Icon.RADIUS,
        'y': 2 * Blockly.Icon.RADIUS - 3}, this.iconGroup_);
-  this.iconMark_.appendChild(document.createTextNode('?'));
+  // this.iconMark_.appendChild(document.createTextNode('?'));
+  this.iconMark_.appendChild(document.createTextNode(this.iconChar));
 };
 
 /**
@@ -105,6 +112,63 @@ Blockly.Comment.prototype.createEditor_ = function() {
   var body = document.createElementNS(Blockly.HTML_NS, 'body');
   body.setAttribute('xmlns', Blockly.HTML_NS);
   body.className = 'blocklyMinimalBody';
+
+  //[emery, 06/10/2015] new close button
+  this.closeButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+  if (this.iconChar == Blockly.BlocklyEditor.watchChar) {
+  this.closeButton_.appendChild(document.createTextNode('Remove Watch'));
+} else if (this.iconChar == Blockly.BlocklyEditor.doitChar) {
+  this.closeButton_.appendChild(document.createTextNode('Remove Do It'));
+} else if (this.iconChar == Blockly.BlocklyEditor.yailChar) {
+  this.closeButton_.appendChild(document.createTextNode('Remove Yail'));
+} else {
+  this.closeButton_.appendChild(document.createTextNode('Remove Comment'));
+}
+  body.appendChild(this.closeButton_);
+  Blockly.bindEvent_(this.closeButton_, 'mouseup', this, this.closeButtonClick_);  //emery
+
+  //[emery, 06/10/2015] new hide button
+  this.hideButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+  this.hideButton_.appendChild(document.createTextNode('Hide'));
+  body.appendChild(this.hideButton_);
+  Blockly.bindEvent_(this.hideButton_, 'mouseup', this, Blockly.Icon.prototype.iconClick_ );
+
+  // [lyn, 08/18/2014] [edited by emery, 06/2015] new clear button
+    this.clearButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+    this.clearButton_.appendChild(document.createTextNode('Clear'));
+    body.appendChild(this.clearButton_);
+    Blockly.bindEvent_(this.clearButton_, 'mouseup', this, this.clearButtonClick_);  //emery
+
+  // [emery, 06/10/2015] new toggle watch button
+  if (this.iconChar == Blockly.BlocklyEditor.watchChar) {
+    this.toggleButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+    this.toggleButton_.appendChild(document.createTextNode('Turn Watch Off'));
+    body.appendChild(this.toggleButton_);
+    Blockly.bindEvent_(this.toggleButton_, 'mouseup', this, this.toggleButtonClick_);  //emery
+
+    this.orderButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+    this.orderButton_.appendChild(document.createTextNode('Print From Bottom'));
+    body.appendChild(this.orderButton_);
+    Blockly.bindEvent_(this.orderButton_, 'mouseup', this, this.orderButtonClick_);
+    this.myblock.order = true;
+  }
+
+  // [emery, 06/2015[ new Do It Again button
+  if (this.iconChar == Blockly.BlocklyEditor.doitChar) {
+    this.doitButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+    this.doitButton_.appendChild(document.createTextNode('Do It Again'));
+    body.appendChild(this.doitButton_);
+    Blockly.bindEvent_(this.doitButton_, 'mouseup', this, this.doitAgainButtonClick_);  //emery
+  }
+
+  // [emery, 06/2015[ new Regenerate Yail Button
+  if (this.iconChar == Blockly.BlocklyEditor.yailChar) {
+    this.yailButton_ = document.createElementNS(Blockly.HTML_NS, 'button');
+    this.yailButton_.appendChild(document.createTextNode('Regenerate'));
+    body.appendChild(this.yailButton_);
+    Blockly.bindEvent_(this.yailButton_, 'mouseup', this, this.yailButtonClick_);
+  }
+
   this.textarea_ = document.createElementNS(Blockly.HTML_NS, 'textarea');
   this.textarea_.className = 'blocklyCommentTextarea';
   this.textarea_.setAttribute('dir', Blockly.RTL ? 'RTL' : 'LTR');
@@ -113,6 +177,98 @@ Blockly.Comment.prototype.createEditor_ = function() {
   Blockly.bindEvent_(this.textarea_, 'mouseup', this, this.textareaFocus_);
   return this.foreignObject_;
 };
+
+/*
+ * Close Button: Emery 6/9/15
+ */
+Blockly.Comment.prototype.closeButtonClick_ = function(e) {
+  if (this.iconChar == Blockly.BlocklyEditor.watchChar) {
+    this.myblock.watch = false;
+  }
+  if (this.iconChar == Blockly.BlocklyEditor.commentChar) {
+    this.myblock.setCommentText(null);
+  } else {
+  this.myblock.setTextBubbleText(this.iconChar, null);
+  }
+}
+
+
+/*
+ * Clear Button: Emery 6/9/15
+ */
+Blockly.Comment.prototype.clearButtonClick_ = function(e) {
+  this.setText("");
+}
+
+/*
+ * Toggle Watch Button: Emery 6/10/15
+ */
+Blockly.Comment.prototype.toggleButtonClick_ = function(e) {
+  if (this.myblock.watch) {
+    this.myblock.watch = false;
+    var text = this.myblock.getTextBubbleText(Blockly.BlocklyEditor.watchChar)
+    if (this.myblock.order) {
+      this.myblock.setTextBubbleText(Blockly.BlocklyEditor.watchChar, "------\n" + text);
+    } else {
+      this.myblock.setTextBubbleText(Blockly.BlocklyEditor.watchChar, text + "\n------");
+    }
+    this.toggleButton_.innerHTML = "Turn Watch On";
+  } else {
+    this.toggleButton_.innerHTML = "Turn Watch Off";
+    this.myblock.watch = true;
+  }
+}
+
+/*
+ * Order Button: Emery 6/16/15
+ */
+Blockly.Comment.prototype.orderButtonClick_ = function(e) {
+  this.myblock.order = !this.myblock.order;
+  var text = this.getText();
+  var split = text.split("\n");
+  var string = "";
+  for (var i = 0; i < split.length; i++) {
+    string = split[i] + "\n" + string;
+  }
+  this.setText(string);
+  if (this.orderButton_.innerHTML == "Print From Bottom") {
+    this.orderButton_.innerHTML = "Print From Top";
+  } else {
+    this.orderButton_.innerHTML = "Print From Bottom";
+  }
+}
+
+/*
+ * Do It Again Button: Emery 6/10/15
+ */
+Blockly.Comment.prototype.doitAgainButtonClick_ = function(e) {
+  this.myblock.doit = true;
+  var yailText;
+  var yailTextOrArray = Blockly.Yail.blockToCode1(this.myblock);
+  if (yailTextOrArray instanceof Array) {
+    yailText = yailTextOrArray[0];
+  } else {
+    yailText = yailTextOrArray;
+  }
+  Blockly.ReplMgr.putYail(yailText, this.myblock);
+}
+
+/*
+ * Regenerate Yail Button: Emery 6/10/15
+ */
+Blockly.Comment.prototype.yailButtonClick_ = function(e) {
+  var yailText;
+  //Blockly.Yail.blockToCode1 returns a string if the block is a statement
+  //and an array if the block is a value
+  var yailTextOrArray = Blockly.Yail.blockToCode1(this.myblock);
+  if (yailTextOrArray instanceof Array) {
+    yailText = yailTextOrArray[0];
+  } else {
+    yailText = yailTextOrArray;
+  }
+  this.setText(yailText);
+}
+
 
 /**
  * Add or remove editability of the comment.
@@ -247,8 +403,13 @@ Blockly.Comment.prototype.setText = function(text) {
 
 /**
  * Dispose of this comment.
+ * [edited by emery, 6/15/15], include textBubble case
  */
 Blockly.Comment.prototype.dispose = function() {
+  if (this.iconChar == Blockly.BlocklyEditor.commentChar) {
   this.block_.comment = null;
+  } else {
+    this.block_.textBubbles[this.iconChar] = null;
+  }
   Blockly.Icon.prototype.dispose.call(this);
 };

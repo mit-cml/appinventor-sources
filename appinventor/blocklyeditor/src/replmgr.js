@@ -287,6 +287,11 @@ Blockly.ReplMgr.putYail = (function() {
                     return;
                 }
             }
+           /* var work = rs.phoneState.phoneQueue.shift();
+            if (!work) {
+                rs.phoneState.ioRunning = false;
+                return;
+            }*/
             var encoder = new goog.Uri.QueryData();
             conn = goog.net.XmlHttp();
             var blockid;
@@ -572,14 +577,21 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         console.log("processRetVals: " + JSON.stringify(r));
         switch(r.type) {
         case "return":
+            console.log("return case: r.blockid = " + r.blockid + "; r.status = " + r.status + "; r.value = " + r.value);
             if (r.blockid != "-1") {
                 block = Blockly.mainWorkspace.getBlockById(r.blockid);
-                if (r.status == "OK") {
-                    block.replError = null;
-                    if (r.value && (r.value != '*nothing*')) {
-                        this.setDoitResult(block, r.value);
-                    }
-                } else {
+               if (r.status == "OK") {
+                   block.replError = null;
+                   if (r.value && (r.value != '*nothing*')) {
+                       if (block.doit) {
+                           this.setDoitResult(block, r.value);
+                           block.doit = false;
+                       }
+                   }
+                   //add watch case
+               } else if (r.status == "WATCH") {
+                   this.appendToWatchResult(block, r.value);
+               } else {
                     if (r.value) {
                         block.replError = Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value;
                     } else {
@@ -606,29 +618,34 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 };
 
-Blockly.ReplMgr.setDoitResult = function(block, value) {
-    var patt = /Do It Result:.*?\n---\n/m;
-    var comment = "";
-    var result = 'Do It Result: ' + value + '\n---\n';
-    if (block.comment) {
-        comment = block.comment.getText();
+// [johanna, edited by emery, 6/15] places the given value in the textBubble connected to the tagged block
+Blockly.ReplMgr.appendToWatchResult = function(block, value) {
+    var text = "";
+    if (block.getTextBubbleText(Blockly.BlocklyEditor.watchChar)) {
+        text = block.getTextBubbleText(Blockly.BlocklyEditor.watchChar);
     }
-    if (!comment) {
-        comment = result;
+    if (block.order) {
+        // if the order is most recent at top (default)
+        block.setTextBubbleText(Blockly.BlocklyEditor.watchChar, value + "\n" + text);
     } else {
-        if (patt.test(comment)) { // Already a doit there!
-            comment = comment.replace(patt, result);
+        // if the order is most recent at bottom
+        if (!text) {
+            // because we are splitting around spaces, need to rid of initial blank line
+            block.setTextBubbleText(Blockly.BlocklyEditor.watchChar, value);
         } else {
-            comment = result + comment;
+            block.setTextBubbleText(Blockly.BlocklyEditor.watchChar, text + "\n" + value);
         }
     }
-    // If we don't set visible to false, the comment
-    // doesn't always change when it should...
-    if (block.comment) {
-        block.comment.setVisible(false);
+}
+
+// [edited by emery, 6/15] places the value in the doit textBubble. Consecutive do its can be seen at once.
+Blockly.ReplMgr.setDoitResult = function(block, value) {
+    var text = "";
+    if  (block.getTextBubbleText(Blockly.BlocklyEditor.doitChar)) {
+    text = "\n" + block.getTextBubbleText(Blockly.BlocklyEditor.doitChar);
+
     }
-    block.setCommentText(comment);
-    block.comment.setVisible(true);
+  block.setTextBubbleText(Blockly.BlocklyEditor.doitChar, value + text);
 };
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
