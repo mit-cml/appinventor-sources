@@ -4,6 +4,8 @@ package edu.mills.feeney.thesis.aimerger;
  * A representation of an App Inventor asset (media file).
  * 
  * @author feeney.kate@gmail.com (Kate Feeney)
+ * 
+ * Modified by Arezu Esmaili (arezuesmaili1@gmail.com) - July 2015
  */
 public class AIAsset {
 
@@ -34,7 +36,7 @@ public class AIAsset {
    * @return AIAsset's name
    */
   public String getName() {
-    // The assetName is the name of the asset's file.
-    return assetPath.substring(assetPath.lastIndexOf('/') + 1, assetPath.lastIndexOf('.'));
+	// Name includes extension.
+    return assetPath.substring(assetPath.lastIndexOf('/') + 1);
   }
 }
