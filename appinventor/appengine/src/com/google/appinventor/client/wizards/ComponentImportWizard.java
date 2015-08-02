@@ -71,9 +71,9 @@ public class ComponentImportWizard extends Wizard {
     final CellTable compTable = createCompTable();
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
-    tabPanel.add(compTable, "My components");
+    // tabPanel.add(compTable, "My components");
     tabPanel.add(urlGrid, "URL");
-    tabPanel.selectTab(MY_COMPONENT_TAB);
+    tabPanel.selectTab(URL_TAB);
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(tabPanel);
