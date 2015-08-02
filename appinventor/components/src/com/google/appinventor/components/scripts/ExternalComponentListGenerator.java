@@ -40,7 +40,7 @@ public class ExternalComponentListGenerator {
     ArrayList<String> externalComponents = new ArrayList<String>();
     for(int i = 0; i<array.size();i++){
       JSONObject component = (JSONObject)array.get(i);
-      if(component.get("categoryString").toString().equals("EXTERNAL")){  // TODO(Mos): Should test the external boolean here instead.
+      if(component.get("categoryString").toString().equals("EXTENSION")){  // TODO(Mos): Should test the external boolean here instead ?
          externalComponents.add(component.get("name").toString());
        }
     }
