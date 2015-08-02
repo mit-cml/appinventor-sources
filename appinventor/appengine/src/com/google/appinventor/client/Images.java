@@ -138,7 +138,7 @@ public interface Images extends Resources {
    * Designer palette item: Extension Component
    */
   @Source("com/google/appinventor/images/extension.png")
-  ImageResource extensionComponent();
+  ImageResource extension();
 
   /**
    * Designer palette item: form component
