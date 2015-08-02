@@ -547,7 +547,9 @@
     <target name="zipit" depends="ExternalComponentBuildInfo">
       <mkdir dir="${Extensions.dir}" />
       <basename property="filename" file="${theComponent}" />
-      <zip destfile="${Extensions.dir}/${filename}.aix" basedir="${ExternalComponentAsset.dir}/${filename}" />
+      <zip destfile="${Extensions.dir}/${filename}.aix">
+        <zipfileset dir="${ExternalComponentAsset.dir}/${filename}" prefix="${filename}"/>
+      </zip>
     </target>
 
     <target name="extensions" depends="dexAll,ExternalComponentBuildInfo">
