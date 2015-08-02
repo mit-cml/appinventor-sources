@@ -14,12 +14,16 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.client.utils.Uploader;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Command;
@@ -27,6 +31,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -60,8 +65,11 @@ public class ComponentImportWizard extends Wizard {
     }
   }
 
-  private static int MY_COMPONENT_TAB = 0;
+  private static int MY_COMPONENT_TAB = 2;
+  private static int FROM_MY_COMPUTER_TAB = 0;
   private static int URL_TAB = 1;
+
+  private static final String COMPONENT_ARCHIVE_EXTENSION = ".aix";
 
   private static final Ode ode = Ode.getInstance();
 
@@ -69,19 +77,24 @@ public class ComponentImportWizard extends Wizard {
     super(MESSAGES.componentImportWizardCaption(), true, false);
 
     final CellTable compTable = createCompTable();
+    final FileUpload fileUpload = createFileUpload();
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
-    tabPanel.add(compTable, "My components");
+    // tabPanel.add(compTable, "My components");
+    tabPanel.add(fileUpload, "From my computer");
     tabPanel.add(urlGrid, "URL");
-    tabPanel.selectTab(MY_COMPONENT_TAB);
+    tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
+    tabPanel.addStyleName("ode-Tabpanel");
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(tabPanel);
 
     addPage(panel);
 
-    setPagePanelHeight(400);
-    setPixelSize(400, 400);
+    getConfirmButton().setText("Import");
+
+    setPagePanelHeight(150);
+    setPixelSize(200, 150);
     setStylePrimaryName("ode-DialogBox");
 
     ListDataProvider<Component> dataProvider = provideData();
@@ -119,7 +132,35 @@ public class ComponentImportWizard extends Wizard {
 
           ode.getComponentService().importComponentToProject(url, projectId,
               assetsFolderNode.getFileId(), new ImportComponentCallback());
+        } else if (tabPanel.getTabBar().getSelectedTab() == FROM_MY_COMPUTER_TAB) {
+          if (!fileUpload.getFilename().endsWith(COMPONENT_ARCHIVE_EXTENSION)) {
+            Window.alert(MESSAGES.notComponentArchiveError());
+            return;
+          }
+
+          String url = GWT.getModuleBaseURL() +
+            ServerLayout.UPLOAD_SERVLET + "/" +
+            ServerLayout.UPLOAD_COMPONENT + "/" +
+            trimLeadingPath(fileUpload.getFilename());
+
+          Uploader.getInstance().upload(fileUpload, url,
+            new OdeAsyncCallback<UploadResponse>() {
+              @Override
+              public void onSuccess(UploadResponse uploadResponse) {
+                Component toImport = Component.valueOf(uploadResponse.getInfo());
+                ode.getComponentManager().addComponent(toImport);
+
+                ode.getComponentService().importComponentToProject(toImport, projectId,
+                    assetsFolderNode.getFileId(), new ImportComponentCallback());
+              }
+            });
         }
+      }
+
+      private String trimLeadingPath(String filename) {
+        // Strip leading path off filename.
+        // We need to support both Unix ('/') and Windows ('\\') separators.
+        return filename.substring(Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
       }
     });
   }
@@ -161,10 +202,18 @@ public class ComponentImportWizard extends Wizard {
   }
 
   private Grid createUrlGrid() {
+    TextBox urlTextBox = new TextBox();
+    urlTextBox.setWidth("100%");
     Grid grid = new Grid(2, 1);
     grid.setWidget(0, 0, new Label("Url:"));
-    grid.setWidget(1, 0, new TextBox());
+    grid.setWidget(1, 0, urlTextBox);
     return grid;
+  }
+
+  private FileUpload createFileUpload() {
+    FileUpload upload = new FileUpload();
+    upload.setName(ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
+    return upload;
   }
 
   private ListDataProvider<Component> provideData() {
