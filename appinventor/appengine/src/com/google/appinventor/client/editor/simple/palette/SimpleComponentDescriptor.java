@@ -58,10 +58,10 @@ public final class SimpleComponentDescriptor {
 
   // Help information to display for component
   private final String helpString;
-  
+
   // Whether External Component
   private final boolean external;
-  
+
   // Goto documentation category URL piece
   private final String categoryDocUrlString;
 
@@ -124,7 +124,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/listView.png", images.listview());
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
-    bundledImages.put("images/externalComponent.png", images.externalComponent());
+    bundledImages.put("images/extension.png", images.extensionComponent());
 
     imagesInitialized = true;
   }
@@ -170,7 +170,7 @@ public final class SimpleComponentDescriptor {
   public String getHelpString() {
     return helpString;
   }
-  
+
   /**
    * Returns the origin of the component
    * @return true if component is external

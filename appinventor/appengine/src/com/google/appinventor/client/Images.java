@@ -135,11 +135,11 @@ public interface Images extends Resources {
   ImageResource deleteComponent();
 
   /**
-   * Designer palette item: External Component
+   * Designer palette item: Extension Component
    */
-  @Source("com/google/appinventor/images/externalComponent.png")
-  ImageResource externalComponent();
-  
+  @Source("com/google/appinventor/images/extension.png")
+  ImageResource extensionComponent();
+
   /**
    * Designer palette item: form component
    */
