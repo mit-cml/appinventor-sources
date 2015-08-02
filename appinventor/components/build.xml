@@ -37,7 +37,7 @@
   <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
   <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
   <property name="ExternalComponentTemp.dir" location="${local.build.dir}/ExternalComponentsTemp" />
-  <property name="Extensions.dir" location="${local.build.dir}/MyExtensions" />
+  <property name="Extensions.dir" location="${local.build.dir}/extensions" />
 
   <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
