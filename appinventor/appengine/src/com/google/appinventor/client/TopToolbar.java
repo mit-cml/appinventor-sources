@@ -255,7 +255,7 @@ public class TopToolbar extends Composite {
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    toolbar.add(componentsDropDown);
+    // toolbar.add(componentsDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
 
