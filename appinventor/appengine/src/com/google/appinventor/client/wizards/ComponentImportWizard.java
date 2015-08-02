@@ -81,6 +81,8 @@ public class ComponentImportWizard extends Wizard {
 
     addPage(panel);
 
+    getConfirmButton().setText("Import");
+
     setPagePanelHeight(150);
     setPixelSize(200, 150);
     setStylePrimaryName("ode-DialogBox");
