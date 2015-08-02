@@ -42,11 +42,17 @@ import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextAreaPropertyEditor;
+import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
+import com.google.gwt.dom.client.Style.FontStyle;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -99,6 +105,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
             TranslationDesignerPallete.getCorrespondingString(category.getName()));
       }
     }
+
+    initExtensionPanel();
 
     stackPalette.setWidth("100%");
     initWidget(stackPalette);
@@ -259,6 +267,22 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
     panel.remove(component);
+  }
+
+  private void initExtensionPanel() {
+    Anchor addComponentAnchor = new Anchor("Add extension");
+    addComponentAnchor.getElement().getStyle().setFontStyle(FontStyle.ITALIC);
+    addComponentAnchor.getElement().getStyle().setColor("#999");
+    addComponentAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        new ComponentImportWizard().center();
+      }
+    });
+
+    categoryPanels.get(ComponentCategory.EXTENSION).add(addComponentAnchor);
+    categoryPanels.get(ComponentCategory.EXTENSION).setCellHorizontalAlignment(
+        addComponentAnchor, HasHorizontalAlignment.ALIGN_CENTER);
   }
 
   @Override
