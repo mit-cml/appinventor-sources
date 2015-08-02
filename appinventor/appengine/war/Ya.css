@@ -1201,6 +1201,10 @@ select.ode-PropertyEditor[disabled] {
   margin: 10px;
 }
 
+.ode-DialogBox table {
+  width: 100%;
+}
+
 /* Settings dialog boxes */
 
 .ode-Settings {

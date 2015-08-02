@@ -60,8 +60,8 @@ public class ComponentImportWizard extends Wizard {
     }
   }
 
-  private static int MY_COMPONENT_TAB = 0;
-  private static int URL_TAB = 1;
+  private static int MY_COMPONENT_TAB = 1;
+  private static int URL_TAB = 0;
 
   private static final Ode ode = Ode.getInstance();
 
@@ -74,14 +74,15 @@ public class ComponentImportWizard extends Wizard {
     // tabPanel.add(compTable, "My components");
     tabPanel.add(urlGrid, "URL");
     tabPanel.selectTab(URL_TAB);
+    tabPanel.addStyleName("ode-Tabpanel");
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(tabPanel);
 
     addPage(panel);
 
-    setPagePanelHeight(400);
-    setPixelSize(400, 400);
+    setPagePanelHeight(150);
+    setPixelSize(200, 150);
     setStylePrimaryName("ode-DialogBox");
 
     ListDataProvider<Component> dataProvider = provideData();
@@ -161,9 +162,11 @@ public class ComponentImportWizard extends Wizard {
   }
 
   private Grid createUrlGrid() {
+    TextBox urlTextBox = new TextBox();
+    urlTextBox.setWidth("100%");
     Grid grid = new Grid(2, 1);
     grid.setWidget(0, 0, new Label("Url:"));
-    grid.setWidget(1, 0, new TextBox());
+    grid.setWidget(1, 0, urlTextBox);
     return grid;
   }
 
