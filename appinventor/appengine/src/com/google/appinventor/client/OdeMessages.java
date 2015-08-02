@@ -521,7 +521,7 @@ public interface OdeMessages extends Messages {
   @Description("Caption for component upload wizard.")
   String componentUploadWizardCaption();
 
-  @DefaultMessage("Import Component...")
+  @DefaultMessage("Import an extension into project")
   @Description("Caption for component import wizard.")
   String componentImportWizardCaption();
 
