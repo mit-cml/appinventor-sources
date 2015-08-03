@@ -233,6 +233,8 @@ public class ProjectToolbar extends Toolbar {
         numSelectedProjects > 0);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
         numSelectedProjects > 0);
+    Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportSelectedProjectsMenuItem(),
+            numSelectedProjects > 1);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
         numSelectedProjects > 0);
   }
