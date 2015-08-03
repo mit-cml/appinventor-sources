@@ -329,6 +329,12 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "AfterActivity", result);
   }
 
+  @SimpleEvent(description =
+      "Event raised if this ActivityStarter returns because the activity was canceled.")
+  public void ActivityCanceled() {
+    EventDispatcher.dispatchEvent(this, "ActivityCanceled");
+  }
+
   /**
    * Returns the MIME type from the activity.
    */
@@ -442,6 +448,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
         }
         // call user's AfterActivity event handler
         AfterActivity(result);
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        ActivityCanceled();
       }
     }
   }

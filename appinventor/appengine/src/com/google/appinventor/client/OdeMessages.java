@@ -625,6 +625,10 @@ public interface OdeMessages extends Messages {
   @Description("Information about the Companion")
   String companionInformation();
 
+  @DefaultMessage("Show Splash Screen")
+  @Description("Redisplay the Splash Screen")
+  String showSplashMenuItem();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();
@@ -1160,7 +1164,7 @@ public interface OdeMessages extends Messages {
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
 
-  @DefaultMessage("The value must be a number greater than or equal to 0")
+  @DefaultMessage("The value must be an integer greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
 
@@ -2372,6 +2376,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("AboutScreen")
   @Description("")
   String AboutScreenProperties();
+
+  @DefaultMessage("ShowStatusBar")
+  @Description("")
+  String ShowStatusBarProperties();
+
+  @DefaultMessage("TitleVisible")
+  @Description("")
+  String TitleVisibleProperties();
 
   @DefaultMessage("AboveRangeEventEnabled")
   @Description("")
@@ -3803,6 +3815,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AccelerationChangedEvents();
 
+  @DefaultMessage("ActivityCanceled")
+  @Description("")
+  String ActivityCanceledEvents();
+
   @DefaultMessage("AfterActivity")
   @Description("")
   String AfterActivityEvents();
@@ -5039,11 +5055,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CheckBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Non-visible component that provides the instant in time"+
-      "using the internal clock on the phone. It can fire a timer at " +
-      "regularly set intervals and perform time calculations, " +
-      "manipulations, and conversions. Methods to format the date and " +
-      "time are also available.")
+  @DefaultMessage("Non-visible component that provides the instant in time "
+    + "using the internal clock on the phone. It can fire a timer at "
+    + "regularly set intervals and perform time calculations, "
+    + "manipulations, and conversions.</p> <p>Methods to convert an "
+    + "instant to text are also available. Acceptable patterns are "
+    + "empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy "
+    + "HH:mm. The empty string will provide the default format, "
+    + "which is \"MMM d, yyyy HH:mm:ss a\" for FormatDateTime \"MMM "
+    + "d, yyyy\" for FormatDate.  To see all possible format, "
+    + "please see <a "
+    + "href=\"https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\" "
+    + "target=\"_blank\"> here</a>.")
   @Description("")
   String ClockHelpStringComponentPallette();
 
@@ -5257,15 +5280,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("<p>You do not have any projects in App Inventor 2 yet. " +
+  @DefaultMessage("You do not have any projects in App Inventor 2. " +
       "To learn how to use App Inventor, click the \"Guide\" " +
-      "link at the upper right of the window; or to start your first project, " +
-      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
-      "<strong>Where did my projects go?</strong> " +
-      "If you had projects but now they are missing, " +
-      "you are probably looking for App Inventor version 1. " +
-      "It is still available here: " +
-      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
+      "link at the top of the window; or to start your first project, " +
+      "click the \"Start New Project\" button at the upper left of the window.")
   @Description("")
   String createNoProjectsDialogMessage1();
 
@@ -5430,9 +5448,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToSpanish();
 
+  @DefaultMessage("Français")
+  @Description("")
+  String SwitchToFrench();
+
   @DefaultMessage("Italiano")
   @Description("")
   String SwitchToItalian();
+
+  @DefaultMessage("Pусский")
+  @Description("")
+  String SwitchToRussian();
 
   @DefaultMessage("Progress Bar")
   @Description("")
@@ -5479,6 +5505,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Error on Fusion Tables query")
   @Description("")
   String FusionTablesStandardErrorMessage();
+
+  @DefaultMessage("SelectionColor")
+  @Description("")
+  String SelectionColorProperties();
 
   // Missing translations from 4/8/2015 -- Should sort into appropriate place
 
