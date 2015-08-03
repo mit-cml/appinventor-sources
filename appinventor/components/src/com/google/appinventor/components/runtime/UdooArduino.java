@@ -4,6 +4,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.udoo.UdooConnectionFactory;
+import com.google.appinventor.components.runtime.udoo.UdooConnectionInterface;
+import com.google.appinventor.components.runtime.udoo.UdooConnectedInterface;
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -117,9 +120,13 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     boolean isc = getTransport().isConnected();
     if (!isc) {
-      Log.d(TAG, "[isConnected] not connected, try to reconnect");
-      getTransport().disconnect();
-      getTransport().connect();
+      if (getTransport().isConnecting()) {
+        Log.d(TAG, "isConnected: is already connecting, do nothing");
+      } else {
+        Log.d(TAG, "[isConnected] not connected, try to reconnect");
+        getTransport().disconnect();
+        getTransport().connect(); 
+      }
     }
     return isc;
   }
@@ -159,8 +166,11 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     Log.d(TAG, "onDestroy");
     
-    getTransport().disconnect();
-    getTransport().onDestroy();
+    Log.d(TAG, "A");
+//    getTransport().disconnect();
+//    Log.d(TAG, "B");
+//    getTransport().onDestroy();
+//    Log.d(TAG, "C");
   }
 
   @SimpleFunction

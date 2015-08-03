@@ -2,9 +2,11 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.udoo;
 
 import android.util.Log;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import java.util.HashMap;
@@ -12,20 +14,29 @@ import java.util.HashMap;
 /**
  * @author francesco.monte@gmail.com
  */
-class UdooConnectionFactory
+public class UdooConnectionFactory
 {
   private static String TAG = "UdooConnectionFactory";
 
   private static HashMap<String, UdooTcpRedirector> connections = new HashMap<String, UdooTcpRedirector>();
-
-  static UdooConnectionInterface getConnection(UdooConnectedInterface component, Form form)
+  
+  private static UdooAdkBroadcastReceiver adkInstance = null;
+  
+  public static UdooConnectionInterface getConnection(UdooConnectedInterface component, Form form)
   {
     if (component.isLocal()) {
-      Log.d(TAG, "Creating local UdooAdkBroadcastReceiver");
-      if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
-        form.dispatchErrorOccurredEvent((Component)component, "getTransport", ErrorMessages.ERROR_UDOO_ADK_UNAVAILABLE);
+      if (adkInstance == null) {
+        if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+          form.dispatchErrorOccurredEvent((Component)component, "getTransport", ErrorMessages.ERROR_UDOO_ADK_UNAVAILABLE);
+          return null;
+        }
+
+        Log.d(TAG, "Creating local UdooAdkBroadcastReceiver");
+        adkInstance = new UdooAdkBroadcastReceiver();
       }
-      return UdooAdkBroadcastReceiver.getInstance();
+      
+      return adkInstance;
+      
     } else {
       String key = component.getRemoteAddress() + component.getRemotePort();
       UdooTcpRedirector conn = connections.get(key);

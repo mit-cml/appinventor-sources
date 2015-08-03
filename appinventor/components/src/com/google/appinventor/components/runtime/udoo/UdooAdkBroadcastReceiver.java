@@ -2,7 +2,7 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.udoo;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -19,6 +19,8 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,18 +40,9 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   private boolean connected = false;
   List<UdooConnectedInterface> connectedComponents = new ArrayList<UdooConnectedInterface>();
   Form form;
-  private boolean waitForResponse = false;
+  private boolean isConnecting;
 
-  private static UdooAdkBroadcastReceiver instance = null;
-  protected UdooAdkBroadcastReceiver() {
-  }
-  public static UdooAdkBroadcastReceiver getInstance() {
-    if (instance == null) {
-      instance = new UdooAdkBroadcastReceiver();
-    }
-    return instance;
-  }
-
+  @Override
   public void onCreate(ContextWrapper wrapper)
   {
     activity = wrapper;
@@ -57,6 +50,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     registerReceiver();
   }
 
+  @Override
   public void onDestroy()
   {
     unregisterReceiver();
@@ -78,9 +72,16 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     }
   }
 
+  @Override
   public synchronized void disconnect()
   {
+    if (this.arduino != null) {
+      this.arduino.stop();
+      this.arduino = null;
+    }
+    
     this.connected = false;
+    this.isConnecting = false;
     notifyAll();
 
     if (fileDescriptor != null) {
@@ -98,14 +99,13 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     }
   }
 
+  @Override
   public synchronized void connect()
   {
     Log.d(TAG, "[UdooAdkBroadcastReceiver] Connect");
 
-    if (!this.waitForResponse) {
-      this.connected = false;
-      tryOpen();
-    }
+    this.connected = false;
+    tryOpen();
   }
 
   private boolean tryOpen()
@@ -132,6 +132,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     if (!usbManager.hasPermission(accessory)) {
       Log.v(TAG, "No permissions, requesting");
       if (pendingIntent == null) {
+        this.isConnecting = true;
         Log.v(TAG, "Requesting permission.");
         pendingIntent = PendingIntent.getBroadcast(activity, 0, new Intent(ACTION_USB_PERMISSION), 0);
         usbManager.requestPermission(accessory, pendingIntent);
@@ -139,8 +140,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       return false;
     }
     
-    boolean success = false;
-
     try {
       fileDescriptor = usbManager.openAccessory(accessory);
       if (fileDescriptor == null) {
@@ -148,68 +147,32 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         return false;
       }
 
-      try {
-        FileDescriptor fd = fileDescriptor.getFileDescriptor();
-        inputStream = new FileInputStream(fd);
-        outputStream = new FileOutputStream(fd);
+      FileDescriptor fd = fileDescriptor.getFileDescriptor();
+      inputStream = new FileInputStream(fd);
+      outputStream = new FileOutputStream(fd);
 
-        this.waitForResponse = true;
-
-        outputStream.write('H');
-        outputStream.flush();
-
-        Log.d(TAG, "Connecting...");
-
-        // We're going to block now. We're counting on the IOIO to
-        // write back a byte, or otherwise we're locked until
-        // physical disconnection. This is a known OpenAccessory
-        // bug:
-        // http://code.google.com/p/android/issues/detail?id=20545
-        while (inputStream.read() < 0) {
-          trySleep(500);
-        }
-
-        this.waitForResponse = false;
-
-        Log.d(TAG, "Connected!");
-
-        this.arduino = new UdooArduinoManager(outputStream, inputStream, this);
-        this.arduino.hi();
-        this.connected = true;
-
-        for (UdooConnectedInterface c : connectedComponents) {
-          c.Connected();
-        }
-
-        success = true;
-        return true;
-      } catch (IOException e) {
+      Log.d(TAG, "Connected!");
+      
+      this.arduino = new UdooArduinoManager(outputStream, inputStream, this);
+      if (!this.arduino.hi()) {
         this.connected = false;
-        Log.v(TAG, "Failed to open streams", e);
+        this.isConnecting = false;
         return false;
-      } finally {
-        if (!success) {
-          try {
-            fileDescriptor.close();
-          } catch (IOException e) {
-            Log.e(TAG, "Failed to close file descriptor.", e);
-          }
-          fileDescriptor = null;
-        }
       }
+      
+      this.connected = true;
+      this.isConnecting = false;
+
+      for (UdooConnectedInterface c : connectedComponents) {
+        c.Connected();
+      }
+
+      return true;
+        
     } finally {
-      if (!success && pendingIntent != null) {
+      if (pendingIntent != null) {
         pendingIntent.cancel();
         pendingIntent = null;
-      }
-    }
-  }
-    
-  private void trySleep(long time) {
-    synchronized (UdooAdkBroadcastReceiver.this) {
-      try {
-        UdooAdkBroadcastReceiver.this.wait(time);
-      } catch (InterruptedException e) {
       }
     }
   }
@@ -227,11 +190,13 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     }
   }
 
+  @Override
   public boolean isConnected()
   {
     return this.connected;
   }
 
+  @Override
   public void registerComponent(UdooConnectedInterface component, Form form)
   {
     this.connectedComponents.add(component);
@@ -241,5 +206,10 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   @Override
   public UdooArduinoManager arduino() {
     return this.arduino;
+  }
+
+  @Override
+  public boolean isConnecting() {
+    return this.isConnecting;
   }
 }

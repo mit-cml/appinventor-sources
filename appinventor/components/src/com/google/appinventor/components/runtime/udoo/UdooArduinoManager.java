@@ -2,38 +2,34 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.udoo;
 
-import android.os.AsyncTask;
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.util.Log;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UdooArduinoManager
 {
-  private OutputStream outputStream;
-  private InputStream inputStream;
-  private UdooConnectionInterface udooConnection;
+  private final OutputStream outputStream;
+  private final UdooConnectionInterface udooConnection;
+  private final UdooArduinoReader udooArduinoReader;
   
   public final int MIN_SKETCH_VERSION = 1;
-
+  private Random rand;
+  
   public UdooArduinoManager(OutputStream outputStream, InputStream inputStream, UdooConnectionInterface udooConnection)
   {
     this.outputStream = outputStream;
-    this.inputStream = inputStream;
     this.udooConnection = udooConnection;
+    this.udooArduinoReader = new UdooArduinoReader(inputStream);
   }
 
   public static final int HIGH = 1;
@@ -41,7 +37,7 @@ public class UdooArduinoManager
   public static final int OUTPUT = 1;
   public static final int INPUT = 0;
   
-  public void hi()
+  public boolean hi()
   {
     JSONObject json = new JSONObject();
     try {
@@ -54,14 +50,15 @@ public class UdooArduinoManager
     
     try {
       boolean success = ((Boolean) response.get("success")).booleanValue();
-      int version = (Integer) response.get("version");
       
       if (success) {
+        int version = (Integer) response.get("version");
         if (version < MIN_SKETCH_VERSION) {
           throw new RuntimeException("Arduino sketch too old.");
         }
-        return;
+        return true;
       }
+      return false;
       
     } catch (JSONException e) {
       e.printStackTrace();
@@ -189,7 +186,7 @@ public class UdooArduinoManager
     throw new Exception("Invalid response from ADK");
   }
   
-  int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
+  public int map(int value, int fromLow, int fromHigh, int toLow, int toHigh) throws Exception
   {
     JSONObject json = new JSONObject();
     try {
@@ -248,78 +245,61 @@ public class UdooArduinoManager
   
   private JSONObject sendJson(JSONObject json)
   {
+    int id = generateId();
     try {
-      return new JsonWriterTask().execute(json.toString()+'\n').get(5000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (ExecutionException ex) {
-      Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (TimeoutException ex) {
-      Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
+      json.put("id", id);
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     
-    return null;
-  }
+    String request = json.toString()+'\n';
+    BlockingQueue<JSONObject> queue = new ArrayBlockingQueue(1);
+    UdooRequestsRegistry.register(id, queue);
+    
+    try {
+      Log.d("UdooREQUEST", request);
+      outputStream.write(request.getBytes());
+      outputStream.flush();
 
-  private class JsonWriterTask extends AsyncTask<String, Void, JSONObject>
-  {
-    protected JSONObject doInBackground(String... args)
-    {
-      try {
-        Log.d("UdooREQUEST", args[0]);
-        outputStream.write(args[0].getBytes());
-        outputStream.flush();
-
-        String readResponse = this.read().trim();
-        Log.d("UdooRESPONSE", readResponse);
-        return new JSONObject(readResponse);
-        
-      } catch (IOException e) {
-        udooConnection.disconnect();
+    } catch (IOException e) {
+      
+      String enodev = "ENODEV (No such device)";
+      if (e.getMessage().contains(enodev)) {
+        JSONObject err = new JSONObject();
         try {
-          Thread.sleep(100);
-        } catch (InterruptedException ex) {
+          err.put("success", false);
+          err.put("message", e.getMessage());
+        } catch (JSONException ex) {
+          ex.printStackTrace();
         }
-        udooConnection.connect();
-
-        e.printStackTrace();
-      } catch (JSONException e) {
-        e.printStackTrace();
+    
+        return err;
       }
       
+      Log.d("Udoo", "XXX" + e.getMessage() + "XXX");
+      Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, e);
+      udooConnection.disconnect();
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException ex) {
+      }
+      udooConnection.connect();
+
+      e.printStackTrace();
+      Log.d("MANNAGGIA", "cagnastoriaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       return null;
     }
     
-    private String read()
-    {
-      byte[] buffer = new byte[256];
-      byte[] response;
-      String message = "";
-      int mByteRead = -1;
-
-      try {
-        if (inputStream instanceof FileInputStream) {
-          mByteRead = inputStream.read(buffer, 0, buffer.length);
-          if (mByteRead != -1) {
-            response = Arrays.copyOfRange(buffer, 0, mByteRead);
-            message = new String(response);
-          } else {
-            message = new String();
-          }        
-        } else {
-          do {
-            mByteRead = inputStream.read(buffer, 0, buffer.length);
-            message += new String(Arrays.copyOfRange(buffer, 0, mByteRead));
-          } while (!message.contains("\n"));
-        }
-
-      } catch (IOException e) {
-        Log.e("ARDUINO IO Exception", e.getMessage());
-        message = null;
-      }
-
-      return message;
+    try {
+      JSONObject obj = queue.take();
+      Log.d("UdooRESPONSE", obj.toString());
+      return obj;
+    } catch (InterruptedException ex) {
+      Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
+    Log.d("MANNAGGIA", "bruttissima storiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    return null;
   }
   
   private int pinNameToInt(String name)
@@ -345,5 +325,22 @@ public class UdooArduinoManager
     } else {
       return Integer.parseInt(name);
     }
+  }
+  
+  public int generateId()
+  {
+    if (rand == null) {
+      rand = new Random();
+    }
+    
+    int min=100000000;
+    int max=999999999;
+
+    return rand.nextInt((max - min) + 1) + min;
+}
+
+  void stop()
+  {
+    this.udooArduinoReader.stop();
   }
 }

@@ -2,11 +2,13 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.components.runtime;
+package com.google.appinventor.components.runtime.udoo;
 
 import android.content.ContextWrapper;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,6 +103,12 @@ public class UdooTcpRedirector implements UdooConnectionInterface
     this.arduino = new UdooArduinoManager(out, in, this);
     this.arduino.hi();
     this.connected = true;
+  }
+
+  @Override
+  public boolean isConnecting() {
+    return false;
+    // @todo: impelemtn this
   }
   
   

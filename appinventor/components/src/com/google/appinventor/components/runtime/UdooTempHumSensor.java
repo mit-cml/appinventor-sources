@@ -4,6 +4,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.udoo.UdooConnectionFactory;
+import com.google.appinventor.components.runtime.udoo.UdooConnectionInterface;
+import com.google.appinventor.components.runtime.udoo.UdooConnectedInterface;
 import android.util.Log;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
