@@ -111,6 +111,12 @@ public class ServerLayout {
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading selectedof a user's projects' sources.
+   */
+  public static final String DOWNLOAD_SELECTED_PROJECTS_SOURCE = 
+		  "selected-projects-source";
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading all of a user's projects' sources.
    */
   public static final String DOWNLOAD_ALL_PROJECTS_SOURCE = "all-projects-source";

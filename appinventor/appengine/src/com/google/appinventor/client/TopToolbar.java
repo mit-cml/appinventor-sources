@@ -108,6 +108,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
+  private static final String WIDGET_NAME_EXPORTSELECTEDPROJECTS = "ExportSelectedProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
@@ -157,6 +158,8 @@ public class TopToolbar extends Composite {
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTSELECTEDPROJECTS, MESSAGES.exportSelectedProjectsMenuItem(),
+        new ExportSelectedProjectsAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
         new ExportAllProjectsAction()));
     fileItems.add(null);
@@ -406,11 +409,12 @@ public class TopToolbar extends Composite {
       }
     }
   }
+
   private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
         //If we are in the projects view
         if (selectedProjects.size() == 1) {
@@ -427,10 +431,35 @@ public class TopToolbar extends Composite {
 
     private void exportProject(Project project) {
       Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
+        Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
 
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+        ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+    }
+  }
+
+  private static class ExportSelectedProjectsAction implements Command {
+    @Override
+    public void execute() {
+      List<Project> selectedProjects =
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        exportProject(selectedProjects);
+      }
+    }
+
+    private void exportProject(List<Project> projects) {
+      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_DOWNLOAD_SELECTED_PROJECTS_SOURCE_YA);
+
+      String selectedProjPath = ServerLayout.DOWNLOAD_SERVLET_BASE +
+        ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE + "/";
+
+      for(Project project : projects) {
+        selectedProjPath += project.getProjectId() + "-";
+      }
+
+      Downloader.getInstance().download(selectedProjPath);
     }
   }
 
@@ -868,6 +897,8 @@ public class TopToolbar extends Composite {
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
+      fileDropDown.setItemEnabled(MESSAGES.exportSelectedProjectsMenuItem(),
+          Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
@@ -877,6 +908,7 @@ public class TopToolbar extends Composite {
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportSelectedProjectsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
