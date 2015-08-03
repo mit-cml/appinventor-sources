@@ -1089,7 +1089,7 @@ public interface OdeMessages extends Messages {
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
 
-  @DefaultMessage("The value must be a number greater than or equal to 0")
+  @DefaultMessage("The value must be an integer greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
 
@@ -5197,15 +5197,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("<p>You do not have any projects in App Inventor 2 yet. " +
+  @DefaultMessage("You do not have any projects in App Inventor 2. " +
       "To learn how to use App Inventor, click the \"Guide\" " +
-      "link at the upper right of the window; or to start your first project, " +
-      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
-      "<strong>Where did my projects go?</strong> " +
-      "If you had projects but now they are missing, " +
-      "you are probably looking for App Inventor version 1. " +
-      "It is still available here: " +
-      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
+      "link at the top of the window; or to start your first project, " +
+      "click the \"Start New Project\" button at the upper left of the window.")
   @Description("")
   String createNoProjectsDialogMessage1();
 
@@ -5370,9 +5365,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToSpanish();
 
+  @DefaultMessage("Français")
+  @Description("")
+  String SwitchToFrench();
+
   @DefaultMessage("Italiano")
   @Description("")
   String SwitchToItalian();
+
+  @DefaultMessage("Pусский")
+  @Description("")
+  String SwitchToRussian();
 
   @DefaultMessage("Progress Bar")
   @Description("")

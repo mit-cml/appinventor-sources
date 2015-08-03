@@ -6,11 +6,16 @@
 
 package com.google.appinventor.client.wizards.youngandroid;
 
+import java.util.regex.Pattern;
+
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
+import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.wizards.NewProjectWizard;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
@@ -20,6 +25,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -34,6 +41,7 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
   // UI element for project name
   private LabeledTextBox projectNameTextBox;
 
+
   /**
    * Creates a new YoungAndroid project wizard.
    */
@@ -43,7 +51,36 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     // Initialize the UI
     setStylePrimaryName("ode-DialogBox");
 
-    projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
+    projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
+      @Override
+      public boolean validate(String value) {
+        //Pattern validText = Pattern.compile("[\\p{L}][\\p{L}0-9_]*", Pattern.UNICODE_CHARACTER_CLASS);
+        //String newString = validText.toString();
+        if(!value.matches("[A-Za-z][A-Za-z0-9_]*") && value.length() > 0) {
+          disableOkButton();
+          String noWhitespace = "[\\S]+";
+          String firstCharacterLetter = "[A-Za-z].*";
+          if(!value.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
+            errorMessage = "Project names cannot contain spaces";
+          } else if (!value.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
+            errorMessage = "Project names must begin with a letter";
+          } else { //The text contains a character that is not a letter, number, or underscore
+            errorMessage = "Invalid character. Project names can only contain letters, numbers, and underscores";
+          }
+          return false;
+        } else { //this is valid text, return true
+          enableOkButton();
+          errorMessage = "";
+          return true;
+        }
+      }
+
+      @Override
+      public String getErrorMessage() {
+        return errorMessage;
+      }
+    });
+
     projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
@@ -53,6 +90,13 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
         } else if (keyCode == KeyCodes.KEY_ESCAPE) {
           handleCancelClick();
         }
+      }
+    });
+
+    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
+        projectNameTextBox.validate();
       }
     });
 
@@ -104,12 +148,12 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
   public void show() {
     super.show();
     // Wizard size (having it resize between page changes is quite annoying)
-    int width = 320;
+    int width = 340;
     int height = 40;
     this.center();
 
     setPixelSize(width, height);
-    super.setPagePanelHeight(40);
+    super.setPagePanelHeight(85);
 
     DeferredCommand.addCommand(new Command() {
       public void execute() {
