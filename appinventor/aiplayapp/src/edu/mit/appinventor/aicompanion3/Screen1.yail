@@ -369,7 +369,7 @@ $Source $Yail
 
 ;;; BarcodeScanner1
 
-(add-component MainPanel com.google.appinventor.components.runtime.BarcodeScanner BarcodeScanner1 
+(add-component MainPanel com.google.appinventor.components.runtime.BarcodeScanner BarcodeScanner1 (set-and-coerce-property! 'BarcodeScanner1 'UseExternalScanner #f 'boolean)
 )
 
 (define-event BarcodeScanner1 AfterScan($result)(set-this-form)
