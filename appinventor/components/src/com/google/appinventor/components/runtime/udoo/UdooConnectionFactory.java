@@ -12,14 +12,14 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import java.util.HashMap;
 
 /**
- * @author francesco.monte@gmail.com
+ * Factory to create UdooConnectionInterface objects.
+ * 
+ * @author Francesco Montefoschi francesco.monte@gmail.com
  */
 public class UdooConnectionFactory
 {
-  private static String TAG = "UdooConnectionFactory";
-
+  private static final String TAG = "UdooConnectionFactory";
   private static HashMap<String, UdooTcpRedirector> connections = new HashMap<String, UdooTcpRedirector>();
-  
   private static UdooAdkBroadcastReceiver adkInstance = null;
   
   public static UdooConnectionInterface getConnection(UdooConnectedInterface component, Form form)

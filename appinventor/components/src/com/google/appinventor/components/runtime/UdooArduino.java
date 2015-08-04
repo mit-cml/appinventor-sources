@@ -35,7 +35,7 @@ import java.util.TimerTask;
 public class UdooArduino extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
 {
-  private String TAG = "UdooArduino";
+  private final String TAG = "UdooArduino";
   private UdooConnectionInterface connection = null;
   
   private String transport = "local";
@@ -55,6 +55,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.transport = transport;
   }
   
+  @Override
   public boolean isLocal() {
     return this.transport.equals("local");
   }
@@ -74,6 +75,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.remoteAddress = remoteAddress;
   }
  
+  @Override
   public String getRemoteAddress() {
     return this.remoteAddress;
   }
@@ -93,6 +95,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.remotePort = remotePort;
   }
   
+  @Override
   public String getRemotePort() {
     return this.remotePort;
   }
@@ -112,6 +115,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     this.remoteSecret = remoteSecret;
   }
 
+  @Override
   public String getRemoteSecret() {
     return this.remoteSecret;
   }
@@ -134,8 +138,6 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   public UdooArduino(final Form form)
   {
     super(form);
-    
-    Log.d(TAG, "UdooArduino");
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
@@ -166,11 +168,8 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   {
     Log.d(TAG, "onDestroy");
     
-    Log.d(TAG, "A");
-//    getTransport().disconnect();
-//    Log.d(TAG, "B");
-//    getTransport().onDestroy();
-//    Log.d(TAG, "C");
+    getTransport().disconnect();
+    getTransport().onDestroy();
   }
 
   @SimpleFunction
@@ -236,6 +235,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
   }
   
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
+  @Override
   public void Connected()
   {
     Log.d(TAG, "Connected EVENT");

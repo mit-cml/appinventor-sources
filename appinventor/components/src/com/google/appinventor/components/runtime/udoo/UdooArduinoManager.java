@@ -16,6 +16,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Sends commands to the Arduino using the given UdooConnectionInterface (ADK or
+ * TCP socket).
+ * 
+ * @author Francesco Montefoschi francesco.monte@gmail.com
+ */
 public class UdooArduinoManager
 {
   private final OutputStream outputStream;
@@ -58,6 +64,7 @@ public class UdooArduinoManager
         }
         return true;
       }
+      Log.d("IUDUUU", "HI method returned false.");
       return false;
       
     } catch (JSONException e) {
@@ -65,6 +72,18 @@ public class UdooArduinoManager
     }
     
     throw new RuntimeException("Invalid response from ADK");
+  }
+  
+  public void disconnect()
+  {
+    JSONObject json = new JSONObject();
+    try {
+      json.put("method", "disconnect");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    
+    sendJson(json);
   }
   
   public void digitalWrite(String pin, String value)

@@ -9,19 +9,31 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class UdooArduinoReader
 {
-  private final InputStream is;
   private Thread thread;
   private boolean running;
   
-  public UdooArduinoReader(InputStream is) {
-    this.is = is;
-    this.registerReader(this.is);
+  public UdooArduinoReader(InputStream inputStream) {
+    this.registerReader(inputStream);
     this.running = true;
   }
   
+  /**
+   * Given an InputStream (created by USB/ADK or network socket) creates a thread,
+   * continuously reading from such stream.
+   * 
+   * ADK: in order to avoid a bug in Android (USB file descriptor not correctly
+   * closed), we stop the thread before calling is.read() again. This is achieved
+   * by the fake "disconnect" method on the Arduino.
+   * @see https://code.google.com/p/android/issues/detail?id=20545
+   * @param inputStream 
+   */
   private void registerReader(final InputStream inputStream)
   {
     this.thread = new Thread(new Runnable() {
@@ -30,13 +42,21 @@ public class UdooArduinoReader
         while (running) {
           String readResponse = this.read();
           if (readResponse != null) {
-//            Log.d("Pushing: ", readResponse);
-            UdooRequestsRegistry.onRead(readResponse);
-          }
+            
+            JSONObject response = null;
+            Integer id = null;
+            try {
+              response = new JSONObject(readResponse);
+              id = (Integer) response.get("id");
+              if (response.has("disconnected")) {
+                Log.d("UdooArduinoReader", "Got disconnected request! Stopping read thread.");
+                stop();
+              }
+            } catch (JSONException ex) {
+              Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-          try {
-            Thread.sleep(50);
-          } catch (InterruptedException ex) {
+            UdooRequestsRegistry.onRead(response, id);
           }
         }
       }
@@ -80,6 +100,4 @@ public class UdooArduinoReader
   void stop() {
     this.running = false;
   }
-
-  
 }

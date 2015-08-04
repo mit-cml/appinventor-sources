@@ -25,6 +25,11 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ADK/USB for local App Iventor <-> UDOO connections.
+ * 
+ * @author Francesco Montefoschi francesco.monte@gmail.com
+ */
 public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooConnectionInterface
 {
   private static final String TAG = "UDOOBroadcastReceiver";
@@ -76,6 +81,8 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   public synchronized void disconnect()
   {
     if (this.arduino != null) {
+      Log.d(TAG, "Stopping ArduinoManager");
+      this.arduino.disconnect();
       this.arduino.stop();
       this.arduino = null;
     }
@@ -86,6 +93,9 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
     if (fileDescriptor != null) {
       try {
+        Log.d(TAG, "Closing file descriptor and streams");
+        inputStream.close();
+        outputStream.close();
         fileDescriptor.close();
       } catch (IOException e) {
         Log.e(TAG, "Failed to close file descriptor.", e);
@@ -102,7 +112,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   @Override
   public synchronized void connect()
   {
-    Log.d(TAG, "[UdooAdkBroadcastReceiver] Connect");
+    Log.d(TAG, "Connecting UdooAdkBroadcastReceiver");
 
     this.connected = false;
     tryOpen();
@@ -151,8 +161,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       inputStream = new FileInputStream(fd);
       outputStream = new FileOutputStream(fd);
 
-      Log.d(TAG, "Connected!");
-      
       this.arduino = new UdooArduinoManager(outputStream, inputStream, this);
       if (!this.arduino.hi()) {
         this.connected = false;
@@ -162,7 +170,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       
       this.connected = true;
       this.isConnecting = false;
-
       for (UdooConnectedInterface c : connectedComponents) {
         c.Connected();
       }

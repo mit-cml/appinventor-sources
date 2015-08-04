@@ -4,14 +4,17 @@
 
 package com.google.appinventor.components.runtime.udoo;
 
-import android.util.Log;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Keeps track of request ID and the corresponding response queue.
+ * 
+ * @author Francesco Montefoschi francesco.monte@gmail.com
+ */
 class UdooRequestsRegistry
 {
   private static final HashMap<Integer, BlockingQueue<JSONObject>> registry = new HashMap();
@@ -20,16 +23,7 @@ class UdooRequestsRegistry
     registry.put(id, queue);
   }
   
-  public static void onRead(String json) {
-    JSONObject response = null;
-    Integer id = null;
-    try {
-      response = new JSONObject(json);
-      id = (Integer) response.get("id");
-    } catch (JSONException ex) {
-      Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    
+  public static void onRead(JSONObject response, Integer id) {
     BlockingQueue<JSONObject> queue = registry.get(id);
     if (queue != null) {
       try {
