@@ -22,13 +22,13 @@ import android.provider.ContactsContract.Data;
 import java.io.InputStream;
 
 /**
- * Helper methods for calling methods added in Honeycomb (3.0, API level 12)
+ * Helper methods for calling methods added in HONEYCOMB_MR1 (3.1, API level 12)
  *
  *
  */
-public class HoneycombUtil {
+public class HoneycombMR1Util {
 
-  private HoneycombUtil() {
+  private HoneycombMR1Util() {
   }
 
   /**
