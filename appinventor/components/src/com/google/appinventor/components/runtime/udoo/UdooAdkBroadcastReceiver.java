@@ -109,7 +109,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     }
   }
 
-  @Override
   public synchronized void connect()
   {
     Log.d(TAG, "Connecting UdooAdkBroadcastReceiver");
@@ -118,14 +117,14 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     tryOpen();
   }
 
-  private boolean tryOpen()
+  private void tryOpen()
   {
     UsbAccessory[] accessories = usbManager.getAccessoryList();
     UsbAccessory accessory = null;
     if (accessories == null) {
       Log.v(TAG, "No accessories found!");
       form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
-      return false;
+      return;
     }
     for (UsbAccessory iaccessory : accessories) {
       if (iaccessory != null && iaccessory.getManufacturer().equals("UDOO")) {
@@ -136,7 +135,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     if (accessory == null) {
       Log.v(TAG, "No accessory found.");
       form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
-      return false;
+      return;
     }
     
     if (!usbManager.hasPermission(accessory)) {
@@ -147,14 +146,14 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         pendingIntent = PendingIntent.getBroadcast(activity, 0, new Intent(ACTION_USB_PERMISSION), 0);
         usbManager.requestPermission(accessory, pendingIntent);
       }
-      return false;
+      return;
     }
     
     try {
       fileDescriptor = usbManager.openAccessory(accessory);
       if (fileDescriptor == null) {
         Log.v(TAG, "Failed to open file descriptor.");
-        return false;
+        return;
       }
 
       FileDescriptor fd = fileDescriptor.getFileDescriptor();
@@ -165,7 +164,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       if (!this.arduino.hi()) {
         this.connected = false;
         this.isConnecting = false;
-        return false;
+        return;
       }
       
       this.connected = true;
@@ -174,14 +173,23 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         c.Connected();
       }
 
-      return true;
-        
     } finally {
       if (pendingIntent != null) {
         pendingIntent.cancel();
         pendingIntent = null;
       }
     }
+  }
+  
+  @Override
+  public void reconnect()
+  {
+    this.disconnect();
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+    }
+    this.connect();
   }
 
   private void registerReceiver() {

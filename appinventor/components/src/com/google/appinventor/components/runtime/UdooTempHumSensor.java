@@ -140,8 +140,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     boolean isc = getTransport().isConnected();
     if (!isc) {
       Log.d(TAG, "isConnected called, but disconnected!");
-      getTransport().disconnect();
-      getTransport().connect();
+      getTransport().reconnect();
     }
     return isc;
   }

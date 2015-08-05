@@ -11,8 +11,8 @@ public interface UdooConnectionInterface
 {
   public boolean isConnected();
   public boolean isConnecting();
+  public void reconnect();
   public void disconnect();
-  public void connect();
   
   public UdooArduinoManager arduino();
   public void registerComponent(UdooConnectedInterface component, Form form);

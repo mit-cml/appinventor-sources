@@ -47,11 +47,15 @@ public class UdooArduinoReader
             Integer id = null;
             try {
               response = new JSONObject(readResponse);
+              if (!response.has("id")) {
+                Log.d("UdooArduinoReader", "Ignored response: " + readResponse);
+                return;
+              }
               id = (Integer) response.get("id");
               if (response.has("disconnected")) {
                 Log.d("UdooArduinoReader", "Got disconnected request! Stopping read thread.");
                 stop();
-              }
+              }              
             } catch (JSONException ex) {
               Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
             }

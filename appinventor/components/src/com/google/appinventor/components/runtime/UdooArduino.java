@@ -128,8 +128,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
         Log.d(TAG, "isConnected: is already connecting, do nothing");
       } else {
         Log.d(TAG, "[isConnected] not connected, try to reconnect");
-        getTransport().disconnect();
-        getTransport().connect(); 
+        getTransport().reconnect();
       }
     }
     return isc;
