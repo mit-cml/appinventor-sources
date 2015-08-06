@@ -50,20 +50,17 @@ public class ComponentImportWizard extends Wizard {
   private static class ImportComponentCallback extends OdeAsyncCallback<List<ProjectNode>> {
     @Override
     public void onSuccess(List<ProjectNode> compNodes) {
-      if (compNodes.isEmpty())  return;
-      long projectId = ode.getCurrentYoungAndroidProjectId();
-      Project project = ode.getProjectManager().getProject(projectId);
-      YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
-      YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
-
+      if (compNodes.isEmpty()){
+        Window.alert(MESSAGES.componentImportError());
+        return;
+      }
       for (ProjectNode node : compNodes) {
-        OdeLog.wlog("nodeName ="+node.getName() + " FID="+node.getFileId());
-        if (node.getName().equals("component.json")) { //
+        if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
           String fileId = node.getFileId();
           int start = fileId.indexOf(external_components) + external_components.length();
           int end = fileId.indexOf('/', start);
           String typeName = fileId.substring(start, end);
-          new ComponentRenameWizard(typeName).center();
+          new ComponentRenameWizard(typeName, compNodes).center();
 
         }
       }
@@ -160,6 +157,7 @@ public class ComponentImportWizard extends Wizard {
                     assetsFolderNode.getFileId(), new ImportComponentCallback());
               }
             });
+          return;
         }
       }
 

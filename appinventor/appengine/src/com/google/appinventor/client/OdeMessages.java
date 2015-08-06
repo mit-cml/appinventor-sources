@@ -533,6 +533,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption for component Name Label in rename wizard.")
   String componentNameLabel();
 
+  @DefaultMessage("Import Extension Failed!")
+  @Description("Error message reported when the component import failed")
+  String componentImportError();
+
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
   @Description("Error message reported when the file selected for upload is not a component archive.")
