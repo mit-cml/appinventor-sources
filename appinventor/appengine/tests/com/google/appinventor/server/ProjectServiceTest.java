@@ -337,7 +337,8 @@ public class ProjectServiceTest {
         "versioncode=1\n" +
         "versionname=1.0\n" +
         "useslocation=false\n" +
-        "aname=Project1\n");
+        "aname=Project1\n" +
+        "compatibilitymode=false\n");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
@@ -483,7 +484,8 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"1\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"1.0\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\"}}",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\",\"" +
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE + "\":\"false\"}}",
         loadedSettings);
 
     String storedSettings =

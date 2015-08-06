@@ -985,6 +985,11 @@ select.ode-PropertyEditor[disabled] {
   outline: 1px solid lightgray;
 }
 
+/* class for the Image Mock component */
+.imageComponentCenterPanel {
+    text-align: center;
+}
+
 /* Component Help */
 
 .ode-ComponentHelpPopup {

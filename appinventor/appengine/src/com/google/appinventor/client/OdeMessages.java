@@ -808,6 +808,14 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
+  @DefaultMessage("Check to see Preview on Tablet size.")
+  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  String previewTabletSize();
+
+  @DefaultMessage("Un-check to see Preview on Phone size.")
+  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  String previewPhoneSize();
+
   // Used in editor/simple/components/MockComponent.java
 
   @DefaultMessage("Rename Component")
@@ -916,6 +924,16 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("strong")
   @Description("Text for accelerometer sensitivity choice 'strong'")
   String strongAccelerometerSensitivity();
+
+  // Used in editor/youngandroid/properties/YoungAndroidSizingChoicePropertyEditor.java
+
+  @DefaultMessage("Fixed")
+  @Description("Text for Sizing choice 'fixed' -- scale to fit device screen")
+  String fixedSizing();
+
+  @DefaultMessage("Responsive")
+  @Description("Text for Sizing choice 'responsive' -- size based on device type")
+  String responsiveSizing();
 
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
@@ -1081,6 +1099,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption and summary for Fill Parent choice")
   String fillParentCaption();
 
+  @DefaultMessage("percent")
+  @Description("Caption for percent label")
+  String percentCaption();
+
   @DefaultMessage("pixels")
   @Description("Caption for pixels label")
   String pixelsCaption();
@@ -1089,9 +1111,17 @@ public interface OdeMessages extends Messages {
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
 
+  @DefaultMessage("{0} percent")
+  @Description("Summary for length in percent")
+  String percentSummary(String percent);
+
   @DefaultMessage("The value must be a number greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
+
+  @DefaultMessage("Percentage input values should be between 1 and 100")
+  @Description("Error shown after validation of percentage input fields.")
+  String nonvalidPercentValue();
 
   // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
 
@@ -2738,6 +2768,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String VersionNameProperties();
 
+  @DefaultMessage("Sizing")
+  @Description("")
+  String SizingProperties();
+
   @DefaultMessage("Visible")
   @Description("")
   String VisibleProperties();
@@ -3006,6 +3040,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HeightProperties();
 
+  @DefaultMessage("HeightPercent")
+  @Description("")
+  String HeightPercentProperties();
+
   @DefaultMessage("InstanceId")
   @Description("")
   String InstanceIdProperties();
@@ -3141,6 +3179,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Width")
   @Description("")
   String WidthProperties();
+
+  @DefaultMessage("WidthPercent")
+  @Description("")
+  String WidthPercentProperties();
 
   @DefaultMessage("WebViewString")
   @Description("")

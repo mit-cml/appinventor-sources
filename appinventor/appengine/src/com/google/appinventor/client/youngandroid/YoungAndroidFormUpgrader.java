@@ -847,15 +847,37 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 13;
     }
-    if (srcCompVersion < 14) {
+
+    if (srcCompVersion < 15) {
       // The AppName property was added.
-      srcCompVersion = 14;
+      // The Compatibility Mode property was added. No properties need to be modified to update to
+      // version 7.
+      srcCompVersion = 15;
     }
     if (srcCompVersion < 16) {
       // The ShowStatusBar property was added.
       // The TitleVisible property was added.
       srcCompVersion = 16;
     }
+    if (srcCompVersion < 17) {
+      // The CompatibilityMode property was added
+      // When upgrading projects, turn on Compatbility Mode
+      // NOTE: This change never saw production, but was on various
+      // Test Instances
+      componentProperties.put("CompatibilityMode", new ClientJsonString("True"));
+      srcCompVersion = 17;
+    }
+
+    if (srcCompVersion < 18) {
+      // Compatilibity Mode property turned into the Sizing property
+      if (componentProperties.containsKey("CompatibilityMode")) {
+        componentProperties.remove("CompatibilityMode");
+      } else {
+        componentProperties.put("Sizing", new ClientJsonString("Responsive"));
+      }
+      srcCompVersion = 18;
+    }
+
     return srcCompVersion;
   }
 

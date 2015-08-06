@@ -214,8 +214,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       // view and ends outside of it.  Because negative coordinates would
       // probably confuse the user (as they did me) and would not be useful,
       // we replace any negative values with zero.
-      float x = Math.max(0, (int) event.getX());
-      float y = Math.max(0, (int) event.getY());
+      float x = Math.max(0, (int) event.getX() / $form().deviceDensity());
+      float y = Math.max(0, (int) event.getY() / $form().deviceDensity());
 
       // Also make sure that by adding or subtracting a half finger that
       // we don't go out of bounds.
@@ -667,6 +667,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     container.$add(this);
 
     paint = new Paint();
+    paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
     // Set default properties.
     paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
@@ -836,7 +837,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
  /**
   * Set the canvas width
-  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent).
+  *
+  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent)
+  * or to a value less then or equal to LENGTH_PERCENT_TAG (which is later
+  * converted to pixels.
   *
   * @param width
   */
@@ -844,18 +848,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
-    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED)) {
-       super.Width(width);
+    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED) ||
+        (width <= LENGTH_PERCENT_TAG)) {
+      super.Width(width);
     }
     else {
-       container.$form().dispatchErrorOccurredEvent(this, "Width",
-            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
+      container.$form().dispatchErrorOccurredEvent(this, "Width",
+          ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
     }
   }
 
   /**
    * Set the canvas height
-   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent)
+   *
+   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent) or
+   * to a value less then or equal to LENGTH_PERCENT_TAG (which is later
+   * converted to pixels.
    *
    * @param height
    */
@@ -863,7 +871,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the height is set to 0
    public void Height(int height) {
-     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED)) {
+     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED) ||
+         (height <= LENGTH_PERCENT_TAG)) {
        super.Height(height);
      }
      else {
@@ -977,14 +986,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The font size of text drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float FontSize() {
-    return paint.getTextSize();
+    float scale = $form().deviceDensity();
+    return paint.getTextSize() / scale;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-    paint.setTextSize(size);
+    float scale = $form().deviceDensity();
+    paint.setTextSize(size * scale);
   }
 
   /**
@@ -995,7 +1006,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The width of lines drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float LineWidth() {
-    return paint.getStrokeWidth();
+    return paint.getStrokeWidth() / $form().deviceDensity();
   }
 
   /**
@@ -1007,7 +1018,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
   public void LineWidth(float width) {
-    paint.setStrokeWidth(width);
+    paint.setStrokeWidth(width * $form().deviceDensity());
   }
 
   /**
@@ -1168,7 +1179,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawPoint(int x, int y) {
-    view.canvas.drawPoint(x, y, paint);
+    float correctedX = x * $form().deviceDensity();
+    float correctedY = y * $form().deviceDensity();
+    view.canvas.drawPoint(correctedX, correctedY, paint);
     view.invalidate();
   }
 
@@ -1182,13 +1195,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawCircle(int centerX, int centerY, float radius, boolean fill) {
-    // Log.i(LOG_TAG, String.format("fill = " + fill));
-    // Log.i(LOG_TAG, String.format("PaintSyle.FILL = " + Paint.Style.FILL));
-    //Log.i(LOG_TAG, String.format("PaintSyle.STROKE = " + Paint.Style.STROKE));
+    float correctedX = centerX * $form().deviceDensity();
+    float correctedY = centerY * $form().deviceDensity();
+    float correctedR = radius * $form().deviceDensity();
     Paint p = new Paint(paint);
     p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
-    // Log.i(LOG_TAG, String.format("PaintSyle = " + p.getStyle()));
-    view.canvas.drawCircle(centerX, centerY, radius, p);
+    view.canvas.drawCircle(correctedX, correctedY, correctedR, p);
     view.invalidate();
   }
 
@@ -1202,7 +1214,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawLine(int x1, int y1, int x2, int y2) {
-    view.canvas.drawLine(x1, y1, x2, y2, paint);
+    float correctedX1 = x1 * $form().deviceDensity();
+    float correctedY1 = y1 * $form().deviceDensity();
+    float correctedX2 = x2 * $form().deviceDensity();
+    float correctedY2 = y2 * $form().deviceDensity();
+    view.canvas.drawLine(correctedX1, correctedY1, correctedX2, correctedY2, paint);
     view.invalidate();
   }
 
@@ -1218,7 +1234,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
   public void DrawText(String text, int x, int y) {
-    view.canvas.drawText(text, x, y, paint);
+    float fontScalingFactor = $form().deviceDensity();
+    float correctedX = x * fontScalingFactor;
+    float correctedY = y * fontScalingFactor;
+    view.canvas.drawText(text, correctedX, correctedY, paint);
     view.invalidate();
   }
 
@@ -1235,7 +1254,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text starting at the specified coordinates "
       + "at the specified angle using the values of the FontSize and TextAlignment properties.")
   public void DrawTextAtAngle(String text, int x, int y, float angle) {
-    view.drawTextAtAngle(text, x, y, angle);
+    int correctedX = (int) (x * $form().deviceDensity());
+    int correctedY = (int) (y * $form().deviceDensity());
+    view.drawTextAtAngle(text, correctedX, correctedY, angle);
   }
 
   /**
@@ -1250,7 +1271,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       + "This includes the background and any drawn points, lines, or "
       + "circles but not sprites.")
   public int GetBackgroundPixelColor(int x, int y) {
-    return view.getBackgroundPixelColor(x, y);
+    int correctedX = (int) (x * $form().deviceDensity());
+    int correctedY = (int) (y * $form().deviceDensity());
+    return view.getBackgroundPixelColor(correctedX, correctedY);
   }
 
   /**
@@ -1266,7 +1289,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   public void SetBackgroundPixelColor(int x, int y, int color) {
     Paint pixelPaint = new Paint();
     PaintUtil.changePaint(pixelPaint, color);
-    view.canvas.drawPoint(x, y, pixelPaint);
+    int correctedX = (int) (x * $form().deviceDensity());
+    int correctedY = (int) (y * $form().deviceDensity());
+    view.canvas.drawPoint(correctedX, correctedY, pixelPaint);
     view.invalidate();
   }
 
@@ -1280,7 +1305,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Gets the color of the specified point.")
   public int GetPixelColor(int x, int y) {
-    return view.getPixelColor(x, y);
+    int correctedX = (int) (x * $form().deviceDensity());
+    int correctedY = (int) (y * $form().deviceDensity());
+    return view.getPixelColor(correctedX, correctedY);
   }
 
   /**
@@ -1376,12 +1403,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
     return "";
   }
+
   class FlingGestureListener extends GestureDetector.SimpleOnGestureListener {
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
         float velocityY) {
-      float x = Math.max(0, (int) e1.getX()); // set to zero if negative
-      float y = Math.max(0, (int) e1.getY()); // set to zero if negative
+      float x = Math.max(0, (int)(e1.getX() / $form().deviceDensity())); // set to zero if negative
+      float y = Math.max(0, (int)(e1.getY() / $form().deviceDensity())); // set to zero if negative
 
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;

@@ -1823,7 +1823,15 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 16:
     // - The Screen1.TitleVisible was added and no block needs to be changed.
-    16: "noUpgrade"
+    16: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 17:
+    // - Screen.CompatibilityMode property was added no block needs to be changed.
+    17: "noUpgrade",
+
+    // Screen.CompatibililtyMode replaced with Screen.Sizing no blocks need to be
+    // changed.
+    18: "noUpgrade"
 
   }, // End Screen
 

@@ -70,12 +70,17 @@ public class ImageSprite extends Sprite {
     rotates = true;
   }
 
+  /**
+   * This method uses getWidth and getHeight directly from the bitmap,
+   * so we apply corrections for density for coordinates and size.
+   * @param canvas the canvas on which to draw
+   */
   public void onDraw(android.graphics.Canvas canvas) {
     if (drawable != null && visible) {
-      int xinit = (int) Math.round(xLeft);
-      int yinit = (int) Math.round(yTop);
-      int w = Width();
-      int h = Height();
+      int xinit = (int) (Math.round(xLeft) * form.deviceDensity());
+      int yinit = (int) (Math.round(yTop) * form.deviceDensity());
+      int w = (int)(Width() * form.deviceDensity());
+      int h = (int)(Height() * form.deviceDensity());
       drawable.setBounds(xinit, yinit, xinit + w, yinit + h);
       // If the sprite doesn't rotate, just draw the drawable
       // within the bounds of the sprite rectangle
@@ -136,9 +141,9 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Height() {
-    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
+    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getHeight();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
     }
     return heightHint;
   }
@@ -151,11 +156,16 @@ public class ImageSprite extends Sprite {
   }
 
   @Override
+  public void HeightPercent(int pCent) {
+    // Ignore
+  }
+
+  @Override
   @SimpleProperty
   public int Width() {
-    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
+    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getWidth();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
     }
     return widthHint;
   }
@@ -165,6 +175,11 @@ public class ImageSprite extends Sprite {
   public void Width(int width) {
     widthHint = width;
     registerChange();
+  }
+
+  @Override
+  public void WidthPercent(int pCent) {
+    // Ignore
   }
 
   /**

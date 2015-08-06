@@ -105,9 +105,16 @@ public interface Component {
   /*
    * Length constants (for width and height).
    */
+
+  // Note: the values below are duplicated in MockVisibleComponent.java
+  // If you change them here, change them there!
+
   static final int LENGTH_PREFERRED = -1;
   static final int LENGTH_FILL_PARENT = -2;
   static final int LENGTH_UNKNOWN = -3;
+  // If the length is <= -1000 then add 1000 and change the sign to
+  // get the length is percent of Screen1
+  static final int LENGTH_PERCENT_TAG = -1000;
 
   /*
    * Length constants for toast.
