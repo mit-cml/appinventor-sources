@@ -1047,8 +1047,10 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     var conn = goog.net.XmlHttp();
     var rs = window.parent.ReplState;
     var encoder = new goog.Uri.QueryData();
-    var z = filename.split('/'); // Remove any directory components
-    encoder.add('filename', z[z.length-1]);
+    //var z = filename.split('/'); // Remove any directory components
+    //encoder.add('filename', z[z.length-1]); // remove directory structure
+    var z = filename.slice(filename.indexOf('/') + 1, filename.length); // remove the asset directory
+    encoder.add('filename', z); // keep directory structure
     conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
     conn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
