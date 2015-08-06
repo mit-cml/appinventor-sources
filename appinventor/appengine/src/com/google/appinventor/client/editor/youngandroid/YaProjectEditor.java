@@ -313,6 +313,27 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
   }
 
+  /**
+   * @return a list of component instance names
+   */
+  public List<String> getComponentInstances(String formName) {
+    List<String> components = new ArrayList<String>();
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null) {
+      return components;
+    }
+    components.addAll(editorSet.formEditor.getComponents().keySet());
+    return  components;
+  }
+
+  public List<String> getComponentInstances() {
+    List<String> components = new ArrayList<String>();
+    for (String formName : editorMap.keySet()) {
+      components.addAll(getComponentInstances(formName));
+    }
+    return components;
+  }
+
   // Private methods
 
   private static Comparator<String> getFileIdComparator() {
@@ -479,7 +500,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
     for (String componentType : componentTypes) {
-      final String directory = componentsFolder.getFileId() + "/" + componentType + "/";
+      final String directory = componentsFolder.getFileId() + "/" + COMPONENT_DATABASE.getComponentType(componentType) + "/";
       ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
           new AsyncCallback<Long>() {
             @Override

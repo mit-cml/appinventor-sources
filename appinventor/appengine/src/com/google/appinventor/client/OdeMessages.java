@@ -525,6 +525,14 @@ public interface OdeMessages extends Messages {
   @Description("Caption for component import wizard.")
   String componentImportWizardCaption();
 
+  @DefaultMessage("Rename extension")
+  @Description("Caption for component rename wizard.")
+  String componentRenameWizardCaption();
+
+  @DefaultMessage("Extension name")
+  @Description("Caption for component Name Label in rename wizard.")
+  String componentNameLabel();
+
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
   @Description("Error message reported when the file selected for upload is not a component archive.")
@@ -893,6 +901,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Component instance names cannot be the same as a component type")
   @Description("Error shown when a new component name would be the same as a component type name")
   String sameAsComponentTypeNameError();
+
+  @DefaultMessage("Component names cannot be the same as that of a component instance")
+  @Description("Error shown when a new component type would be the same as a component instance name")
+  String sameAsComponentInstanceNameError();
 
   @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
