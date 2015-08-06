@@ -78,6 +78,7 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
       String items[] = getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_NAME);
       listView = new ListView(this);
       listView.setOnItemClickListener(this);
+      listView.setScrollingCacheEnabled(false);
 
       itemColor = myIntent.getIntExtra(ListPicker.LIST_ACTIVITY_ITEM_TEXT_COLOR, ListPicker.DEFAULT_ITEM_TEXT_COLOR);
       backgroundColor = myIntent.getIntExtra(ListPicker.LIST_ACTIVITY_BACKGROUND_COLOR, ListPicker.DEFAULT_ITEM_BACKGROUND_COLOR);

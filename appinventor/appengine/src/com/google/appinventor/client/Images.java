@@ -123,7 +123,7 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
-   * Designer palette item: TimePicker Component
+   * Designer palette item: DatePicker Component
    */
   @Source("com/google/appinventor/images/datePicker.png")
   ImageResource datePickerComponent();

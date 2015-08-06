@@ -24,23 +24,23 @@ public interface ComponentService extends RemoteService {
 
   /**
    * Import the component to the project in the server and
-   * return true on success
+   * return a list of ProjectNode that can be added to the client
    *
    * @param component the component to import
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
-   * @return true if importing is successful; false otherwise
+   * @return a list of ProjectNode created from the component
    */
   List<ProjectNode> importComponentToProject(Component component, long projectId, String folderPath);
 
   /**
    * Import the component to the project in the server and
-   * return true on success
+   * return a list of ProjectNode that can be added to the client
    *
    * @param url the url of the componenet file
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
-   * @return true if importing is successful; false otherwise
+   * @return a list of ProjectNode created from the component
    */
   List<ProjectNode> importComponentToProject(String url, long projectId, String folderPath);
 
@@ -50,5 +50,14 @@ public interface ComponentService extends RemoteService {
    * @param component the component to be deleted
    */
   void deleteComponent(Component component);
+
+  /**
+   * Rename the short name of an imported component
+   *
+   * @param fullyQualifiedName the fully qualified name of the component
+   * @param newName new short name
+   * @param projectId id of the project where the component was imported
+   */
+  void renameImportedComponent(String fullyQualifiedName, String newName, long projectId);
 
 }

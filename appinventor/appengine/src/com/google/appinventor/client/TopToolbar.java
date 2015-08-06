@@ -102,6 +102,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_LIBRARY = "Library";
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
+  private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
@@ -213,7 +214,8 @@ public class TopToolbar extends Composite {
           new GenerateYailAction()));
     }
 
-    // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue}
+    // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
+    //  Companion Information, Show Splash Screen}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
@@ -233,6 +235,8 @@ public class TopToolbar extends Composite {
     helpItems.add(null);
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
         new AboutCompanionAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
+        new ShowSplashAction()));
 
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
@@ -760,6 +764,13 @@ public class TopToolbar extends Composite {
       DialogBoxContents.add(holder);
       db.setWidget(DialogBoxContents);
       db.show();
+    }
+  }
+
+  private static class ShowSplashAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().showWelcomeDialog();
     }
   }
 

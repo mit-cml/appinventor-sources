@@ -179,4 +179,16 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXT_RECEIVING = "text_receiving";
 
+  /**
+   * Choices of text-to-speech countries. {@link
+   * com.google.appinventor.client.widgets.properties.CountryChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_TEXT_TO_SPEECH_COUNTRIES = "countries";
+
+  /**
+   * Choices of text-to-speech languages. {@link
+   * com.google.appinventor.client.widgets.properties.LanguageChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_TEXT_TO_SPEECH_LANGUAGES = "languages";
+
 }

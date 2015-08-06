@@ -279,6 +279,14 @@ public abstract class Wizard extends DialogBox {
     return okButton;
   }
 
+  protected void disableOkButton() {
+    okButton.setEnabled(false);
+  }
+
+  protected void enableOkButton() {
+    okButton.setEnabled(true);
+  }
+
   /*
    * Hides the wizard.
    * Note that we are not overriding hide() because it is called by center() which can some

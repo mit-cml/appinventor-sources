@@ -1550,11 +1550,105 @@
             " as the number of decimal places.  This number must be a non-negative integer.")
            (string-append "Bad number of decimal places for format as decimal")))))
 
+
+;;; We need to explicitly return #t or #f because the value
+;;; gets passed to a receiving block.
 (define (is-number? arg)
   (if (or (number? arg)
           (and (string? arg) (padded-string->number arg)))
       #t
       #f))
+
+
+
+;;; We can call the patterrn matcher here, becuase the blocks declare the arg type to
+;;; be text and therefore the arg will be a string when the procedure is called.
+
+(define (is-base10? arg)
+  (and (Pattern:matches "[0123456789]*" arg) (not (string-empty? arg))))
+
+(define (is-hexadecimal? arg)
+  (and (Pattern:matches "[0-9a-fA-F]*" arg) (not (string-empty? arg))))
+
+(define (is-binary? arg)
+  (and (Pattern:matches "[01]*" arg) (not (string-empty? arg))))
+
+;;; Math-convert procedures do not need their arg explicitly sanitized because
+;;; the blocks delare the arg type as string
+
+(define (math-convert-dec-hex x)
+  (if (is-base10? x)
+    (string-to-upper-case (number->string (string->number x) 16))
+    (signal-runtime-error
+      (format #f "Convert base 10 to hex: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+(define (math-convert-hex-dec x)
+  (if (is-hexadecimal? x)
+    (string->number (string-to-upper-case x) 16)
+    (signal-runtime-error
+      (format #f "Convert hex to base 10: '~A' is not a hexadecimal number"
+       (get-display-representation x)
+      )
+      "Invalid hexadecimal number"
+    )
+  )
+)
+
+(define (math-convert-bin-dec x)
+  (if (is-binary? x)
+    (string->number x 2)
+    (signal-runtime-error
+      (format #f "Convert binary to base 10: '~A' is not a  binary number"
+       (get-display-representation x)
+      )
+      "Invalid binary number"
+    )
+  )
+)
+
+(define (math-convert-dec-bin x)
+  (if (is-base10? x)
+    (patched-number->string-binary (string->number x))
+    (signal-runtime-error
+      (format #f "Convert base 10 to binary: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+;;; Kawa number->string has a bug where converting large numbers to binary
+;;; produces zero-divides errors.  We canPatch around this by
+;;; doing the conversion in Scheme when the numbers are large.
+;;; Some day we might fix kawa and then we can get rid of this patch.
+(define (patched-number->string-binary x)
+  (if (< (abs x) 1.e18)
+      (number->string x 2)
+      (alternate-number->string-binary x)))
+
+
+(define (alternate-number->string-binary x)
+  ;; ensure the arg is a positive integer
+  (let* ((clean-x (floor (abs x)))
+         (converted-clean-x (internal-binary-convert clean-x)))
+    (if (>= clean-x 0)
+        converted-clean-x
+        (string-append "-" converted-clean-x))))
+
+(define (internal-binary-convert x)
+  (cond ((= x 0) "0")
+        ((= x 1) "1")
+        (else
+            (string-append (internal-binary-convert (quotient x 2))
+                           (internal-binary-convert (remainder x 2))))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation

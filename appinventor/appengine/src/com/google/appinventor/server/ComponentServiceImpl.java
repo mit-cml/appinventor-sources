@@ -8,6 +8,8 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -29,6 +31,8 @@ import java.util.logging.Logger;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.json.JSONObject;
 
 public class ComponentServiceImpl extends OdeRemoteServiceServlet
     implements ComponentService {
@@ -105,6 +109,25 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
           " is not the author.", null);
     }
     storageIo.deleteComponent(component);
+  }
+
+  @Override
+  public void renameImportedComponent(String fullyQualifiedName, String newName,
+      long projectId) {
+    String fileName = "assets/external_comps/" + fullyQualifiedName + "/component.json";
+
+    JSONObject compJson = new JSONObject(storageIo.downloadFile(
+        userInfoProvider.getUserId(), projectId, fileName, StorageUtil.DEFAULT_CHARSET));
+    compJson.put("name", newName);
+
+    try {
+      storageIo.uploadFile(projectId, fileName, userInfoProvider.getUserId(),
+          compJson.toString(2), StorageUtil.DEFAULT_CHARSET);
+    } catch (BlocksTruncatedException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "Error renaming the short name of " + fullyQualifiedName + " to " +
+          newName + " in project " + projectId, e);
+    }
   }
 
   private Map<String, byte[]> extractContents(InputStream inputStream)
