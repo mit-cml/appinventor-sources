@@ -1588,6 +1588,14 @@ public interface OdeMessages extends Messages {
   @Description("Text for gallery Unfeature Text")
   String galleryUnfeaturedText();
 
+  @DefaultMessage("Tutorial")
+  @Description("Text for gallery Tutorial  Text")
+  String galleryTutorialText();
+
+  @DefaultMessage("Untutorial")
+  @Description("Text for gallery Untutorial Text")
+  String galleryUntutorialText();
+
   @DefaultMessage(" ")
   @Description("Text for gallery Single Space Text")
   String gallerySingleSpaceText();
@@ -1767,6 +1775,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not retrieve featured apps from gallery")
   @Description("Error message reported when can't get featured on server.")
   String galleryFeaturedAppError();
+
+  @DefaultMessage("Server error: could not retrieve tutorial apps from gallery")
+  @Description("Error message reported when can't get tutorial on server.")
+  String galleryTutorialAppError();
 
   @DefaultMessage("Server error: could not complete a search of gallery")
   @Description("Error message reported when can't search on server.")
