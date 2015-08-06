@@ -647,7 +647,7 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   @Override
-  public void onComponentTypeRemoved(List<String> componentTypes) {
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onComponentTypeRemoved(componentTypes);

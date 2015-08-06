@@ -141,12 +141,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public boolean removeComponent(String componentTypeName) {
     List<String> removedComponents = new ArrayList<String>();
     removedComponents.add(componentTypeName);
+    Map<String, String> removedComponentsMap = new HashMap<String, String>();
+    for (String componentType : removedComponents) {
+      removedComponentsMap.put(componentType, getComponentType(componentType));
+    }
     if (!fireBeforeComponentsRemoved(removedComponents)) {
       throw new IllegalStateException("Failed to remove Component!");
     }
     if (components.remove(componentTypeName) != null) {
       componentsJSONString = generateComponentsJSON();
-      fireComponentsRemoved(removedComponents);
+      fireComponentsRemoved(removedComponentsMap);
       return true;
     }
     return false;
@@ -463,7 +467,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return result;
   }
 
-  private void fireComponentsRemoved(List<String> componentTypes) {
+  private void fireComponentsRemoved(Map<String, String> componentTypes) {
     for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
       listener.onComponentTypeRemoved(componentTypes);
     }

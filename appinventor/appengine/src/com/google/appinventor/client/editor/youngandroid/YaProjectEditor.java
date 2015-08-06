@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -496,11 +497,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    * To remove Component Files from the Project!
    * @param componentTypes
    */
-  public  void removeComponent(List<String> componentTypes) {
+  public  void removeComponent(Map<String, String> componentTypes) {
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
-    for (String componentType : componentTypes) {
-      final String directory = componentsFolder.getFileId() + "/" + COMPONENT_DATABASE.getComponentType(componentType) + "/";
+    for (String componentType : componentTypes.keySet()) {
+      final String directory = componentsFolder.getFileId() + "/" + componentTypes.get(componentType) + "/";
       ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
           new AsyncCallback<Long>() {
             @Override
@@ -613,7 +614,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   @Override
-  public void onComponentTypeRemoved(List<String> componentTypes) {
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
     COMPONENT_DATABASE.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onComponentTypeRemoved(componentTypes);
