@@ -34,4 +34,10 @@ public interface ComponentServiceAsync {
    * @see ComponentService#deleteComponent(Component)
    */
   void deleteComponent(Component component, AsyncCallback<Void> callback);
+
+  /**
+   * @see ComponentService#renameImportedComponent(String, String, long)
+   */
+  void renameImportedComponent(String fullyQualifiedName, String newName,
+      long projectId, AsyncCallback<Void> callback);
 }
