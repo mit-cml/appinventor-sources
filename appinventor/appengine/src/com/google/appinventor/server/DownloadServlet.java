@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Servlet for downloading project source and output files.
@@ -42,7 +44,7 @@ public class DownloadServlet extends OdeServlet {
   // Constants for accessing split URI
   /*
    * Download kind can be: "project-output", "project-source",
-   * "all-projects-source", "file", or "userfile".
+   * "selected-projects-source", "all-projects-source", "file", or "userfile".
    * Constants for these are defined in ServerLayout.
    */
   private static final int DOWNLOAD_KIND_INDEX = 3;
@@ -177,6 +179,16 @@ public class DownloadServlet extends OdeServlet {
             projectId, /* include history*/ true, /* include keystore */ true, zipName, false);
         downloadableFile = zipFile.getRawFile();
         
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE)) {
+    	  String[] projectIdStrings = uriComponents[PROJECT_ID_INDEX].split("-");
+    	  List<Long> projectIds = new ArrayList<Long>();
+    	  for (String projectId : projectIdStrings) {
+    		projectIds.add(Long.valueOf(projectId));  
+    	  }
+    	  ProjectSourceZip zipFile = fileExporter.exportSelectedProjectsSourceZip(
+    		userId, "selected-projects.zip", projectIds);
+    	  downloadableFile = zipFile.getRawFile();
+      
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
         // Download all project source files as a zip of zips.
         ProjectSourceZip zipFile = fileExporter.exportAllProjectsSourceZip(
