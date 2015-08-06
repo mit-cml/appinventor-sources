@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
@@ -127,9 +128,10 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   private List<ProjectNode> importToProject(Map<String, byte[]> contents, long projectId,
       String folderPath) throws FileImporterException, IOException {
     List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId);
     for (String name : contents.keySet()) {
       String destination = folderPath + "/external_comps/" + name;
-      FileNode fileNode = new FileNode(name, destination);
+      FileNode fileNode = new FileNode(StorageUtil.basename(name), destination);
       fileImporter.importFile(userInfoProvider.getUserId(), projectId,
           destination, new ByteArrayInputStream(contents.get(name)));
       compNodes.add(fileNode);

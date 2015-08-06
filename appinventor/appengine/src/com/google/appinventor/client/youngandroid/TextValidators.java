@@ -9,11 +9,8 @@ package com.google.appinventor.client.youngandroid;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
-import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 

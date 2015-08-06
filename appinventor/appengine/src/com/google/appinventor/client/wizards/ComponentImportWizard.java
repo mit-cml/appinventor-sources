@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -44,7 +45,7 @@ import java.util.List;
 
 public class ComponentImportWizard extends Wizard {
 
-
+  final static String external_components = "assets/external_comps/";
 
   private static class ImportComponentCallback extends OdeAsyncCallback<List<ProjectNode>> {
     @Override
@@ -56,9 +57,14 @@ public class ComponentImportWizard extends Wizard {
       YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
 
       for (ProjectNode node : compNodes) {
-        project.addNode(componentsFolder,node);
-        if (node.getName().endsWith(".json") && StringUtils.countMatches(node.getFileId(),"/") == 3) {
-          projectEditor.addComponent(node, null);
+        OdeLog.wlog("nodeName ="+node.getName() + " FID="+node.getFileId());
+        if (node.getName().equals("component.json")) { //
+          String fileId = node.getFileId();
+          int start = fileId.indexOf(external_components) + external_components.length();
+          int end = fileId.indexOf('/', start);
+          String typeName = fileId.substring(start, end);
+          new ComponentRenameWizard(typeName).center();
+
         }
       }
 
