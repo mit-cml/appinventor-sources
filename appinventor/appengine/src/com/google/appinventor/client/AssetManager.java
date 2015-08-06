@@ -141,10 +141,11 @@ public final class AssetManager implements ProjectChangeListener {
    * @return true to allow transfer
    */
   private boolean nodeFilter(ProjectNode node) {
-    boolean allowAll = true; // Set to true to allow all Asset and Component Files!
+    boolean allowAll = false; // Set to true to allow all Asset and Component Files!
     boolean allow = false;
+    String name = node.getName();
     String fileId = node.getFileId();
-    // Fitler : For files in ASSETS_FOLDER
+    // Filter : For files in ASSETS_FOLDER
     if (fileId.startsWith(ASSETS_FOLDER)) {
       allow = true;
 
@@ -152,11 +153,11 @@ public final class AssetManager implements ProjectChangeListener {
       if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER + '/')) {
         allow = false;
 
-        // Filter : For files in directly in EXTERNAL_COMPS_FOLDER
+        // Filter : For files in directly in EXTERNAL_COMPS_FOLDER/COMP_FOLDER
         if (StringUtils.countMatches(fileId, "/") == 3) {
 
           // Filter : For .dex Files
-          if (fileId.endsWith(".dex")) {
+          if (name.equals("classes.dex")) {
             allow = true;
 
           }
