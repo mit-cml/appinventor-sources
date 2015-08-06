@@ -150,10 +150,10 @@ public abstract class CommonProjectService {
    * @param projectId project ID
    * @param directoy path of the directory
    */
-  public long deleteFolder(String userId, long projectId, String directoy) {
+  public long deleteFolder(String userId, long projectId, String directory) {
     // TODO(user) : This is also not efficient
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
-      if (fileId.startsWith(directoy)) {
+      if (fileId.startsWith(directory)) {
         storageIo.deleteFile(userId, projectId, fileId);
         storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
       }

@@ -60,4 +60,12 @@ public interface ComponentService extends RemoteService {
    */
   void renameImportedComponent(String fullyQualifiedName, String newName, long projectId);
 
+  /**
+   * Delete the files of an imported component
+   *
+   * @param fullyQualifiedName the fully qualified name of the component
+   * @param projectId id of the project where the component was imported
+   */
+  void deleteImportedComponent(String fullyQualifiedName, long projectId);
+
 }

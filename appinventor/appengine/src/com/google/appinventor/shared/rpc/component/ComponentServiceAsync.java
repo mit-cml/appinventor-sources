@@ -40,4 +40,9 @@ public interface ComponentServiceAsync {
    */
   void renameImportedComponent(String fullyQualifiedName, String newName,
       long projectId, AsyncCallback<Void> callback);
+
+  /**
+   * @see ComponentService#deleteImportedComponent(String, long)
+   */
+   void deleteImportedComponent(String fullyQualifiedName, long projectId, AsyncCallback<Void> callback);
 }

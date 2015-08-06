@@ -49,6 +49,7 @@ public class ReplForm extends Form {
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
+  private static final String REPL_COMP_DIR = "/sdcard/AppInventor/assets/external_comps/";
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
@@ -65,7 +66,7 @@ public class ReplForm extends Form {
     super.onCreate(icicle);
     Log.d("ReplForm", "onCreate");
     Intent intent = getIntent();
-    //loadComponents(); // find a better place for this to be called, to fix first time failure!! 
+    //loadComponents(); // find a better place for this to be called, to fix first time failure!!
     processExtras(intent, false);
   }
 
@@ -218,6 +219,12 @@ public class ReplForm extends Form {
         f.mkdirs();             // Create the directory and all parents
   }
 
+  private void checkComponentDir() {
+    File f = new File(REPL_COMP_DIR);
+    if (!f.exists())
+      f.mkdirs();
+  }
+
   // We return true if the assets for the Companion have been loaded and
   // displayed so we should look for all future assets in the sdcard which
   // is where assets are placed for the companion.
@@ -230,25 +237,28 @@ public class ReplForm extends Form {
   public void setAssetsLoaded() {
     assetsLoaded = true;
   }
-  
+
   /**
-   * This is a nasty hack. For loading external component's dex file so that they can be accessible for 
+   * This is a nasty hack. For loading external component's dex file so that they can be accessible for
    * kawa to load it, when required. This assumes classloader checks class via delegation through the parent
-   * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy 
+   * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
   public void loadComponents() {
     // Store the loaded dex files in the private storage of the App for stable optimization
     File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
-    File assetFolder = new File(REPL_ASSET_DIR );
-    checkAssetDir();
+    File componentFolder = new File(REPL_COMP_DIR );
+    checkComponentDir();
     // Current Thread Class Loader
     ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
-    for (File assetFile : assetFolder.listFiles()) {
-      if (assetFile.getName().endsWith(".dex")) {
-        DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
-            null, parentClassLoader);
-        parentClassLoader = dexCloader;
-        Thread.currentThread().setContextClassLoader(parentClassLoader);
+    for (File compFolder : componentFolder.listFiles()) {
+      if (compFolder.isDirectory()) {
+        File component = new File(compFolder.getPath() + File.separator + "classes.dex");
+        if (component.exists()) {
+          DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
+                  null, parentClassLoader);
+          parentClassLoader = dexCloader;
+          Thread.currentThread().setContextClassLoader(parentClassLoader);
+        }
       }
     }
   }
@@ -258,19 +268,18 @@ public class ReplForm extends Form {
    * @param dexFile
    */
   public boolean loadComponent(String dexFile) {
-    Log.d("CDK","loadComp is called="+dexFile);
-    File assetFile = new File(dexFile);
-    if (!assetFile.exists()) {
+    File component = new File(dexFile);
+    if (!component.exists()) {
       return false;
     }
-    if (!assetFile.getName().endsWith(".dex")) {
+    if (!component.getName().endsWith(".dex")) {
       return  false;
     }
     // Store the loaded dex files in the private storage of the App for stable optimization
     File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
     // Current Thread Class Loader
     ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
-    DexClassLoader dexCloader = new DexClassLoader(assetFile.getAbsolutePath(), dexOutput.getAbsolutePath(),
+    DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
             null, parentClassLoader);
     Thread.currentThread().setContextClassLoader(dexCloader);
     return true;

@@ -308,7 +308,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   @Override
-  public void onComponentTypeRemoved(List<String> componentTypes) {
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
 
   }
 
