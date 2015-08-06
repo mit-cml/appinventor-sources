@@ -4,15 +4,12 @@
 
 package com.google.appinventor.components.runtime.udoo;
 
-import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Log;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -33,6 +30,7 @@ public class UdooArduinoManager
   
   public final int MIN_SKETCH_VERSION = 1;
   private Random rand = new Random();
+  private UdooInterruptibleInterface interruptible;
   
   public UdooArduinoManager(OutputStream outputStream, InputStream inputStream, UdooConnectionInterface udooConnection)
   {
@@ -252,6 +250,24 @@ public class UdooArduinoManager
     throw new Exception("Invalid response from ADK");
   }
   
+  public void attachInterrupt(String pin, int mode)
+  {
+    int interruptId = rand.nextInt((99999 - 10000) + 1) + 10000;
+    UdooRequestsRegistry.registerInterrupt(interruptId, this.interruptible);
+    
+    JSONObject json = new JSONObject();
+    try {
+      json.put("method", "attachInterrupt");
+      json.put("pin", pinNameToInt(pin));
+      json.put("mode", mode);
+      json.put("interrupt_id", interruptId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    
+    sendJson(json);
+  }
+  
   public JSONObject sensor(String pin, String sensorName) throws Exception
   {
     JSONObject json = new JSONObject();
@@ -328,5 +344,10 @@ public class UdooArduinoManager
   void stop()
   {
     this.udooArduinoReader.stop();
+  }
+
+  public void setInterruptible(UdooInterruptibleInterface component)
+  {
+    this.interruptible = component;
   }
 }

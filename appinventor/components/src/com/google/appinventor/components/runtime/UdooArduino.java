@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.udoo.UdooInterruptibleInterface;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,7 +34,7 @@ import java.util.TimerTask;
     iconName = "images/udoo.png")
 @SimpleObject
 public class UdooArduino extends AndroidNonvisibleComponent
-implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
+implements OnResumeListener, OnDestroyListener, UdooConnectedInterface, UdooInterruptibleInterface
 {
   private final String TAG = "UdooArduino";
   private UdooConnectionInterface connection = null;
@@ -231,6 +232,24 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     }
     
     throw new Exception("Not connected");
+  }
+  
+  @SimpleFunction
+  public void attachInterrupt(String pin, int mode) throws Exception
+  {
+    if (this.isConnected()) {
+      getTransport().arduino().setInterruptible(this);
+      Log.d(TAG, "Attaching interrupt");
+      getTransport().arduino().attachInterrupt(pin, mode);
+    }
+  }
+  
+  @SimpleEvent(description = "Fires when the Arduino triggers an interrupt routine.")
+  public void InterruptFired()
+  {
+    Log.d(TAG, "InterruptFired");
+    
+    EventDispatcher.dispatchEvent(this, "InterruptFired");
   }
   
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")

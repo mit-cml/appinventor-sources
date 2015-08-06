@@ -18,20 +18,34 @@ import org.json.JSONObject;
 class UdooRequestsRegistry
 {
   private static final HashMap<Integer, BlockingQueue<JSONObject>> registry = new HashMap();
+  private static final HashMap<Integer, UdooInterruptibleInterface> interrupts = new HashMap();
   
   public static void register(int id, BlockingQueue<JSONObject> queue) {
     registry.put(id, queue);
   }
   
+  static void registerInterrupt(int interruptId, UdooInterruptibleInterface interruptible) {
+    interrupts.put(interruptId, interruptible);
+  }
+  
   public static void onRead(JSONObject response, Integer id) {
     BlockingQueue<JSONObject> queue = registry.get(id);
-    if (queue != null) {
-      try {
-        queue.put(response);
+    if (queue == null) {
+      UdooInterruptibleInterface component = interrupts.get(id);
+      if (component == null) {
         return;
-      } catch (InterruptedException ex) {
-        Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
       }
+      
+      component.InterruptFired();
+      return;
+    }
+    
+    try {
+      queue.put(response);
+      registry.remove(id);
+      return;
+    } catch (InterruptedException ex) {
+      Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 }
