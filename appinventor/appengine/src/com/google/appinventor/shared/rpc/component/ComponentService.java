@@ -24,23 +24,23 @@ public interface ComponentService extends RemoteService {
 
   /**
    * Import the component to the project in the server and
-   * return true on success
+   * return a list of ProjectNode that can be added to the client
    *
    * @param component the component to import
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
-   * @return true if importing is successful; false otherwise
+   * @return a list of ProjectNode created from the component
    */
   List<ProjectNode> importComponentToProject(Component component, long projectId, String folderPath);
 
   /**
    * Import the component to the project in the server and
-   * return true on success
+   * return a list of ProjectNode that can be added to the client
    *
    * @param url the url of the componenet file
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
-   * @return true if importing is successful; false otherwise
+   * @return a list of ProjectNode created from the component
    */
   List<ProjectNode> importComponentToProject(String url, long projectId, String folderPath);
 
