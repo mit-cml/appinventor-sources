@@ -792,7 +792,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }
 
   @Override
-  public void onComponentTypeRemoved(List<String> componentTypes) {
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
     populateComponentTypes(formName);
   }
 

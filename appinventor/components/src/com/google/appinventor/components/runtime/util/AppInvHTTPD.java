@@ -331,6 +331,10 @@ public class AppInvHTTPD extends NanoHTTPD {
         if (filename != null) { // We have a filename and it has not been declared
                                 // invalid by the code above
           File fileTo = new File(rootDir + "/" + filename);
+          File parentFileTo = fileTo.getParentFile();
+          if (!parentFileTo.exists()) {
+            parentFileTo.mkdirs();
+          }
           if (!fileFrom.renameTo(fileTo)) { // First try rename
             copyFile(fileFrom, fileTo);
             fileFrom.delete();  // Remove temp file

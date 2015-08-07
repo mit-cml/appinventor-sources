@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -44,21 +45,23 @@ import java.util.List;
 
 public class ComponentImportWizard extends Wizard {
 
-
+  final static String external_components = "assets/external_comps/";
 
   private static class ImportComponentCallback extends OdeAsyncCallback<List<ProjectNode>> {
     @Override
     public void onSuccess(List<ProjectNode> compNodes) {
-      if (compNodes.isEmpty())  return;
-      long projectId = ode.getCurrentYoungAndroidProjectId();
-      Project project = ode.getProjectManager().getProject(projectId);
-      YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
-      YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
-
+      if (compNodes.isEmpty()){
+        Window.alert(MESSAGES.componentImportError());
+        return;
+      }
       for (ProjectNode node : compNodes) {
-        project.addNode(componentsFolder,node);
-        if (node.getName().endsWith(".json") && StringUtils.countMatches(node.getFileId(),"/") == 3) {
-          projectEditor.addComponent(node, null);
+        if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
+          String fileId = node.getFileId();
+          int start = fileId.indexOf(external_components) + external_components.length();
+          int end = fileId.indexOf('/', start);
+          String typeName = fileId.substring(start, end);
+          new ComponentRenameWizard(typeName, compNodes).center();
+
         }
       }
 
@@ -154,6 +157,7 @@ public class ComponentImportWizard extends Wizard {
                     assetsFolderNode.getFileId(), new ImportComponentCallback());
               }
             });
+          return;
         }
       }
 
