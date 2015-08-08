@@ -277,8 +277,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private void initExtensionPanel() {
     Anchor addComponentAnchor = new Anchor("Import extension");
-    addComponentAnchor.getElement().getStyle().setFontStyle(FontStyle.ITALIC);
-    addComponentAnchor.getElement().getStyle().setColor("#999");
+    addComponentAnchor.setStylePrimaryName("ode-ExtensionAnchor");
     addComponentAnchor.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
