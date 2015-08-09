@@ -119,9 +119,11 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    * @return  savedRecording path to recording
    */
   @SimpleProperty(
-      description = "Specifies the path to the file where the recording is stored. " +
+      description = "Specifies the path to the file where the recording should be stored. " +
           "If this proprety is the empty string, then starting a recording will create a file in " +
-          "an appropriate location.",
+          "an appropriate location.  If the property is not the emppty string, it should specify " +
+          "a complete path to a file in an existing directory, including a file name with the " +
+          "extension .3gp." ,
           category = PropertyCategory.BEHAVIOR)
   public String SavedRecording() {
     return savedRecording;
