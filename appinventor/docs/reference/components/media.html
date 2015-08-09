@@ -651,8 +651,18 @@ none
                   <h2 id="SoundRecorder"> SoundRecorder </h2>
                     <img src="images/soundRecorder.png" alt="Picture of Sound Recorder component">
                     <p> Multimedia component that records audio. </p>
-                    <h3> Properties </h3>
-                    none
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>SavedRecording</code></dt>
+                      <dd>Specifies the path to the file where the
+                      recording should be stored. If this proprety is
+                      the empty string, then starting a recording will
+                      create a file in an appropriate location.  If
+                      the property is not the empty string, it should
+                      specify a complete path to a file in an existing
+                      directory, including a file name with the
+                      extension .3gp.</dd>
+                    </dl>
                     <h3> Events </h3>
                     <dl>
                       <dt> <code> AfterSoundRecorded(text sound) </code> </dt>
