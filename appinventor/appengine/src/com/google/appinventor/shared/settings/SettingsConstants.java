@@ -11,6 +11,7 @@ package com.google.appinventor.shared.settings;
  *
  */
 public class SettingsConstants {
+
   private SettingsConstants() {
   }
 
@@ -42,8 +43,10 @@ public class SettingsConstants {
   // Project settings
   public static final String YOUNG_ANDROID_SETTINGS_ICON = "Icon";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS = "ShowHiddenComponents";
+  public static final String YOUNG_ANDROID_SETTINGS_PHONE_TABLET = "PhoneTablet";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_CODE = "VersionCode";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_NAME = "VersionName";
   public static final String YOUNG_ANDROID_SETTINGS_USES_LOCATION = "UsesLocation";
+  public static final String YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE = "CompatibilityMode";
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
 }

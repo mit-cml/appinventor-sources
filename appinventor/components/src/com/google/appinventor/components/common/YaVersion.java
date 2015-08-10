@@ -336,8 +336,23 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 130:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 131:
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 132:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 133:
+  // - FILE_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 134:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 3
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 135:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 136:
+  // - FORM_COMPONENT_VERSION was incremented to 17.
+  // For YOUNG_ANDROID_VERSION 137:
+  // - FORM_COMPONENT_VERSION was incremented to 18.
 
-  public static final int YOUNG_ANDROID_VERSION = 130;
+  public static final int YOUNG_ANDROID_VERSION = 137;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -396,7 +411,7 @@ public class YaVersion {
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
   public static final int BLOCKS_LANGUAGE_VERSION = 19;
-  
+
   // ................................. Component Version Numbers ..................................
 
   // NOTE(lizlooney,user) - when a new component is added:
@@ -425,7 +440,7 @@ public class YaVersion {
   //   second time). To add the "Foo" property you would add:
 
   //         @defaultMessage("Foo")
-  //         @description(""
+  //         @description("")
   //         String FooProperties();
 
   //   If you edit the description of a component (but not yet a
@@ -454,7 +469,9 @@ public class YaVersion {
   //   animation to transition to next activity.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 5:
   // - The ActivityStarter.ActivityCanceled event was added.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 5;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 6:
+  // - Extras property was added to accept a list of key-value pairs to put to the intent
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 6;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -553,7 +570,9 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 5:
   // - Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
   // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
+  // For CONTACTPICKER_COMPONENT_VERSION 6:
+  // - The ContactUri property was added
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
 
   // For DATEPICKER_COMPONENT_VERSION 2:
   // The datepicker dialog was updated to show the current date
@@ -561,7 +580,9 @@ public class YaVersion {
   // The SetDateToDisplay and LaunchPicker methods were added to
   // give the user more control of what time is displayed in the
   // datepicker dialog.
-  public static final int DATEPICKER_COMPONENT_VERSION = 2;
+  // For DATEPICKER_COMPONENT_VERSION 3:
+  // - SetDateToDisplayFromInstant, and Instant property are added.
+  public static final int DATEPICKER_COMPONENT_VERSION = 3;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -569,8 +590,9 @@ public class YaVersion {
   // - RequestFocus function was added (via TextBoxBase)
   public static final int EMAILPICKER_COMPONENT_VERSION = 3;
 
-  // For FILE_COMPONENT_VERSION 1:
-  public static final int FILE_COMPONENT_VERSION = 1;
+  // For FILE_COMPONENT_VERSION 2:
+  // - The AfterFileSaved event was added.
+  public static final int FILE_COMPONENT_VERSION = 2;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -605,8 +627,13 @@ public class YaVersion {
   // - The Screen.ShowStatusBar was added.
   // For FORM_COMPONENT_VERSION 16:
   // - TitleVisible property was added
+  // For FORM_COMPONENT_VERSION 17:
+  // - The Screen.CompatibilityMode property was added
+  // For FORM_COMPONENT_VERSION 18:
+  // - Screen.CompatibilityMode property morphed into the
+  //   Sizing property
+  public static final int FORM_COMPONENT_VERSION = 18;
 
-  public static final int FORM_COMPONENT_VERSION = 16;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -818,7 +845,10 @@ public class YaVersion {
   // For TEXTTOSPEECH_COMPONENT_VERSION 4:
   // - the Country designer property was changed to use a ChoicePropertyEditor
   // - the Language designer property was changed to use a ChoicePropertyEditor
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 4;
+  // For TEXTTOSPEECH_COMPONENT_VERSION 5:
+  // - default value was added to the Country designer property
+  // - default value was added to the Language designer property
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 5;
 
   // For TIMEPICKER_COMPONENT_VERSION 2:
   // After feedback from the forum, the timepicker dialog was updated
@@ -826,7 +856,9 @@ public class YaVersion {
   // The SetTimeToDisplay and LaunchPicker methods were added to
   // give the user more control of what time is displayed in the
   // timepicker dialog.
-  public static final int TIMEPICKER_COMPONENT_VERSION = 2;
+  // For TIMEPICKER_COMPONENT_VERSION 3:
+  // - SetTimeToDisplayFromInstant, and Instant property are added.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 3;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 

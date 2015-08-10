@@ -25,10 +25,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
 abstract class MockImageBase extends MockVisibleComponent {
   // Property names
   private static final String PROPERTY_NAME_PICTURE = "Picture";
+  private static final String PROPERTY_SCALE_PICTURE_TO_FIT = "ScalePictureToFit";
 
   // Widget for showing the image.
   private final Image image;
   private String picturePropValue;
+  private boolean fitToScale;
 
   MockImageBase(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, icon);
@@ -47,13 +49,12 @@ abstract class MockImageBase extends MockVisibleComponent {
     image.addLoadHandler(new LoadHandler() {
       @Override
       public void onLoad(LoadEvent event) {
-        // Resize to outer container, fixes issue with setting precise size in designer
-        image.setSize("100%", "100%");
         refreshForm();
       }
     });
     SimplePanel simplePanel = new SimplePanel();
     simplePanel.setStylePrimaryName("ode-SimpleMockComponent");
+    simplePanel.addStyleName("imageComponentCenterPanel");
     simplePanel.setWidget(image);
     initComponent(simplePanel);
   }
@@ -95,6 +96,22 @@ abstract class MockImageBase extends MockVisibleComponent {
     return height;
   }
 
+  /**
+   * property to make the picture scale to fit its parents width and height
+   * @param newValue true will scale the picture
+   */
+  private void setScalingProperty(String newValue) {
+    if (newValue.equals("True")){
+      fitToScale = true;
+      image.setSize("100%", "100%");
+    }
+
+    else {
+      fitToScale = false;
+      image.setSize(getPreferredWidth() + "px", getPreferredHeight() + "px");
+    }
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -104,6 +121,20 @@ abstract class MockImageBase extends MockVisibleComponent {
     // Apply changed properties to the mock component
     if (propertyName.equals(PROPERTY_NAME_PICTURE)) {
       setPictureProperty(newValue);
+      refreshForm();
+    }
+    else if (propertyName.equals(PROPERTY_SCALE_PICTURE_TO_FIT)) {
+      setScalingProperty(newValue);
+      refreshForm();
+
+    }
+    else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      image.setWidth(newValue + "px");
+      refreshForm();
+
+    }
+    else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      image.setHeight(newValue + "px");
       refreshForm();
     }
   }

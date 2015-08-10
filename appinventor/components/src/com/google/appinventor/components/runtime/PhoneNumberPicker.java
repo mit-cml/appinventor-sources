@@ -13,7 +13,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.HoneycombUtil;
+import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -110,7 +110,7 @@ public class PhoneNumberPicker extends ContactPicker {
       Uri phoneUri = data.getData();
 
       String desiredPhoneUri = "";
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
         desiredPhoneUri = "//com.android.contacts/data";
       } else {
         desiredPhoneUri = "//contacts/phones";
@@ -120,14 +120,14 @@ public class PhoneNumberPicker extends ContactPicker {
         Cursor contactCursor = null;
         Cursor dataCursor = null;
         try {
-          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
-            NAME_PROJECTION = HoneycombUtil.getNameProjection();
+          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+            NAME_PROJECTION = HoneycombMR1Util.getNameProjection();
             contactCursor = activityContext.getContentResolver().query(phoneUri,
                 NAME_PROJECTION, null, null, null);
             String id = postHoneycombGetContactNameAndPicture(contactCursor);
 
-            DATA_PROJECTION = HoneycombUtil.getDataProjection();
-            dataCursor = HoneycombUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
+            DATA_PROJECTION = HoneycombMR1Util.getDataProjection();
+            dataCursor = HoneycombMR1Util.getDataCursor(id, activityContext, DATA_PROJECTION);
             postHoneycombGetContactEmailsAndPhones(dataCursor);
           } else {
             contactCursor = activityContext.getContentResolver().query(phoneUri,
@@ -180,10 +180,10 @@ public class PhoneNumberPicker extends ContactPicker {
   public String postHoneycombGetContactNameAndPicture(Cursor contactCursor) {
     String id = "";
     if (contactCursor.moveToFirst()) {
-      final int CONTACT_ID_INDEX = HoneycombUtil.getContactIdIndex(contactCursor);
-      final int NAME_INDEX = HoneycombUtil.getNameIndex(contactCursor);
-      final int PHOTO_INDEX = HoneycombUtil.getThumbnailIndex(contactCursor);
-      final int PHONE_INDEX = HoneycombUtil.getPhoneIndex(contactCursor);
+      final int CONTACT_ID_INDEX = HoneycombMR1Util.getContactIdIndex(contactCursor);
+      final int NAME_INDEX = HoneycombMR1Util.getNameIndex(contactCursor);
+      final int PHOTO_INDEX = HoneycombMR1Util.getThumbnailIndex(contactCursor);
+      final int PHONE_INDEX = HoneycombMR1Util.getPhoneIndex(contactCursor);
       phoneNumber = guardCursorGetString(contactCursor, PHONE_INDEX);
       id = guardCursorGetString(contactCursor, CONTACT_ID_INDEX);
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
@@ -200,12 +200,12 @@ public class PhoneNumberPicker extends ContactPicker {
     List<String> phoneListToStore = new ArrayList<String>();
     List<String> emailListToStore = new ArrayList<String>();
     if (dataCursor.moveToFirst()) {
-      final int PHONE_INDEX = HoneycombUtil.getPhoneIndex(dataCursor);
-      final int EMAIL_INDEX = HoneycombUtil.getEmailIndex(dataCursor);
-      final int MIME_INDEX = HoneycombUtil.getMimeIndex(dataCursor);
+      final int PHONE_INDEX = HoneycombMR1Util.getPhoneIndex(dataCursor);
+      final int EMAIL_INDEX = HoneycombMR1Util.getEmailIndex(dataCursor);
+      final int MIME_INDEX = HoneycombMR1Util.getMimeIndex(dataCursor);
 
-      String phoneType = HoneycombUtil.getPhoneType();
-      String emailType = HoneycombUtil.getEmailType();
+      String phoneType = HoneycombMR1Util.getPhoneType();
+      String emailType = HoneycombMR1Util.getEmailType();
 
       // Get the first (default) email and phone number associated with the contact.
       while (!dataCursor.isAfterLast()) {
