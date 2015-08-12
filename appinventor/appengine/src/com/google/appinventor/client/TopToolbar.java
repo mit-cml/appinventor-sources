@@ -171,15 +171,15 @@ public class TopToolbar extends Composite {
         new HardResetAction()));
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
-        new BarcodeAction()));
+//    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
+//        new BarcodeAction()));
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
         new DownloadAction()));
-    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
-      buildItems.add(null);
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
-          new GenerateYailAction()));
-    }
+//    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
+//      buildItems.add(null);
+//      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
+//          new GenerateYailAction()));
+//    }
 
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
     //  Companion Information, Show Splash Screen}
