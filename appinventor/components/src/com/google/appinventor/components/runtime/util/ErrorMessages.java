@@ -181,24 +181,26 @@ public final class ErrorMessages {
   //TextToSpeech errors
   public static final int ERROR_TTS_NOT_READY = 2701;
 
+  // AndroidViewComponent errors
+  public static final int ERROR_BAD_PERCENT = 2801;
+
   // FTC errors
-  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2801;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2802;
-  public static final int ERROR_FTC_INVALID_DIRECTION = 2803;
-  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2804;
-  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2805;
-  public static final int ERROR_FTC_INVALID_NUMBER = 2806;
-  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2807;
-  public static final int ERROR_FTC_INVALID_POSITION = 2808;
-  public static final int ERROR_FTC_INVALID_LENGTH = 2809;
-  public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2810;
-  public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2811;
-  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2812;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2813;
-  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2814;
+  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2901;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2902;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2903;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2904;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2905;
+  public static final int ERROR_FTC_INVALID_NUMBER = 2906;
+  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2907;
+  public static final int ERROR_FTC_INVALID_POSITION = 2908;
+  public static final int ERROR_FTC_INVALID_LENGTH = 2909;
+  public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2910;
+  public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2911;
+  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2912;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2913;
+  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2914;
 
-  // Please start the next group of error numbers at 2901.
-
+  // Please start the next group of error numbers at 3001.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -472,6 +474,8 @@ public final class ErrorMessages {
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    // AndroidViewComponent errors
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
     // FTC errors
     errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
         "An unexpected error occurred: %s");
