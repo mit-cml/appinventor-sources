@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.text.DateFormatSymbols;
@@ -39,6 +40,7 @@ public class DatePicker extends ButtonBase {
   private DatePickerDialog date;
   //month is the property that AI devs see, and it's always javaMonth + 1; month is 0-based in Java
   private int year, month, javaMonth, day;
+  private Calendar instant;
   private String [] localizedMonths = new DateFormatSymbols().getMonths();
   private boolean customDate = false;
   private Form form;
@@ -57,6 +59,7 @@ public class DatePicker extends ButtonBase {
     javaMonth = c.get(Calendar.MONTH);
     month = javaMonth + 1;
     day = c.get(Calendar.DAY_OF_MONTH);
+    instant = Dates.DateInstant(year, month, day);
     date = new DatePickerDialog(this.container.$context(), datePickerListener, year, javaMonth,
         day);
 
@@ -101,9 +104,19 @@ public class DatePicker extends ButtonBase {
    * @return the day in numeric format
    */
   @SimpleProperty(description = "the Day of the month that was last picked using the DatePicker.",
-      category = PropertyCategory.APPEARANCE)
+    category = PropertyCategory.APPEARANCE)
   public int Day() {
     return day;
+  }
+
+  /**
+   * Returns instant of the date that was last picked using the DatePicker.
+   * @return instant of the date
+   */
+  @SimpleProperty(description = "the instant of the date that was last picked using the DatePicker.",
+    category = PropertyCategory.APPEARANCE)
+  public Calendar Instant() {
+    return instant;
   }
 
   @SimpleFunction(description = "Allows the user to set the date to be displayed when the date picker opens.\n" +
@@ -118,6 +131,17 @@ public class DatePicker extends ButtonBase {
       form.dispatchErrorOccurredEvent(this, "SetDateToDisplay", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
     date.updateDate(year, jMonth, day);
+    instant = Dates.DateInstant(year, month, day);
+    customDate = true;
+  }
+
+  @SimpleFunction(description = "Allows the user to set the date from the instant to be displayed when the date picker opens.")
+  public void SetDateToDisplayFromInstant(Calendar instant) {
+    int year = Dates.Year(instant);
+    int month = Dates.Month(instant);
+    int day = Dates.Day(instant);
+    date.updateDate(year, month, day);
+    instant = Dates.DateInstant(year, month, day);
     customDate = true;
   }
 
@@ -137,6 +161,7 @@ public class DatePicker extends ButtonBase {
       int jMonth = c.get(Calendar.MONTH);
       int day = c.get(Calendar.DAY_OF_MONTH);
       date.updateDate(year, jMonth, day);
+      instant = Dates.DateInstant(year, jMonth+1, day);
     } else {
       customDate = false;
     }
@@ -157,6 +182,7 @@ public class DatePicker extends ButtonBase {
             month = javaMonth + 1;
             day = selectedDay;
             date.updateDate(year, javaMonth, day);
+            instant = Dates.DateInstant(year, month, day);
             // We post an event to the Android handler to do the App Inventor
             // event dispatch. This way it gets called outside of the context
             // of the datepicker's event. This permits the App Inventor dispatch

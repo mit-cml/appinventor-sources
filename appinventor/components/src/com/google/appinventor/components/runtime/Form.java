@@ -12,6 +12,7 @@ package com.google.appinventor.components.runtime;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,9 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -98,6 +101,9 @@ public class Form extends Activity
   // Timer event will still fire, even when the activity is no longer in the foreground. For this
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
+
+  private float deviceDensity;
+  private float compatScalingFactor;
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
@@ -140,6 +146,9 @@ public class Form extends Activity
   private FrameLayout frameLayout;
   private boolean scrollable;
 
+  private ScaledFrameLayout scaleLayout;
+  private static boolean sCompatibilityMode;
+
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
@@ -166,6 +175,23 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  public static class PercentStorageRecord {
+    public enum Dim {
+      HEIGHT, WIDTH };
+
+    public PercentStorageRecord(AndroidViewComponent component, int length, Dim dim) {
+      this.component = component;
+      this.length = length;
+      this.dim = dim;
+    }
+
+    AndroidViewComponent component;
+    int length;
+    Dim dim;
+  }
+  private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -180,6 +206,10 @@ public class Form extends Activity
     activeForm = this;
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
 
+    deviceDensity = this.getResources().getDisplayMetrics().density;
+    Log.d(LOG_TAG, "deviceDensity = " + deviceDensity);
+    compatScalingFactor = ScreenDensityUtil.computeCompatibleScaling(this);
+    Log.i(LOG_TAG, "compatScalingFactor = " + compatScalingFactor);
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
 
@@ -213,6 +243,8 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
+    Sizing("Fixed");
+    BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
@@ -249,6 +281,18 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
+            ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                     // needs to recompute objects sizes etc.
+            final FrameLayout savedLayout = frameLayout;
+            androidUIHandler.postDelayed(new Runnable() {
+                public void run() {
+                  if (frameLayout != null) {
+                    frameLayout.invalidate();
+                  }
+                }
+              }, 100);          // Redraw the whole screen in 1/10 second
+                                // we do this to avoid screen artifacts left
+                                // left by the Android runtime.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -349,6 +393,26 @@ public class Form extends Activity
     for (Integer key : keysToDelete) {
       activityResultMap.remove(key);
     }
+  }
+
+  void ReplayFormOrientation() {
+    // We first make a copy of the existing dimChanges list
+    // because while we are replaying it, it is being appended to
+    ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
+    dimChanges.clear();         // Empties it out
+    for (int i = 0; i < temp.size(); i++) {
+      // Iterate over the list...
+      PercentStorageRecord r = temp.get(i);
+      if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
+        r.component.Height(r.length);
+      } else {
+        r.component.Width(r.length);
+      }
+    }
+  }
+
+  public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
+    dimChanges.add(new PercentStorageRecord(component, length, dim));
   }
 
   private static int generateNewRequestCode() {
@@ -517,6 +581,11 @@ public class Form extends Activity
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
           screenInitialized = true;
 
           //  Call all apps registered to be notified when Initialize Event is dispatched
@@ -661,7 +730,12 @@ public class Form extends Activity
 
     setBackground(frameLayout);
 
-    setContentView(frameLayout);
+    scaleLayout = new ScaledFrameLayout(this);
+    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    setContentView(scaleLayout);
+
     frameLayout.requestLayout();
   }
 
@@ -769,7 +843,7 @@ public class Form extends Activity
    * AboutScreen property setter method: sets a new aboutApp string for the form in the
    * form's "About this application" menu.
    *
-   * @param title  new form caption
+   * @param aboutScreen content to be displayed in aboutApp
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
@@ -1124,6 +1198,34 @@ public class Form extends Activity
   }
 
   /**
+   * Sizing Property Setter
+   *
+   * @param
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
+      defaultValue = "Fixed")
+  @SimpleProperty(userVisible = false,
+    description = "Determine whether or not we will auto scale to make all devices appear the same size")
+  public void Sizing(String value) {
+    // This is used by the project and build server.
+    // We also use it to adjust sizes
+    if (value.equals("Fixed")) {
+      sCompatibilityMode = true;
+    } else {
+      sCompatibilityMode = false;
+    }
+    scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
+  }
+
+  // public String Sizing() {
+  //   if (compatibilityMode) {
+  //     return "Fixed";
+  //   } else {
+  //     return "Responsive";
+  //   }
+  // }
+
+  /**
    * Specifies the App Name.
    *
    * @param aName the display name of the installed application in the phone
@@ -1145,7 +1247,12 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return frameLayout.getWidth();
+    int retval = (int)(scaleLayout.getWidth() / this.deviceDensity);
+    if (sCompatibilityMode) {
+      retval /= compatScalingFactor;
+    }
+    Log.d(LOG_TAG, "Width = " + retval);
+    return retval;
   }
 
   /**
@@ -1156,7 +1263,12 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return frameLayout.getHeight();
+    int retval = (int)(scaleLayout.getHeight() / this.deviceDensity);
+    if (sCompatibilityMode) {
+      retval /= compatScalingFactor;
+    }
+    Log.d(LOG_TAG, "Height = " + retval);
+    return retval;
   }
 
   /**
@@ -1273,14 +1385,58 @@ public class Form extends Activity
     viewLayout.add(component);
   }
 
+  public float deviceDensity(){
+    return this.deviceDensity;
+  }
+
+  public float compatScalingFactor() {
+    return this.compatScalingFactor;
+  }
+
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent component, int width) {
+    int cWidth = Width();
+    if (cWidth == 0) {          // We're not really ready yet...
+      final int fWidth = width;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(Form)Width not stable yet... trying again");
+            setChildWidth(component, fWidth);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+    if (width <= LENGTH_PERCENT_TAG) {
+      width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
+//      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
+    }
+
+    component.setLastWidth(width);
+
     // A form is a vertical layout.
     ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
   }
 
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent component, int height) {
+    int cHeight = Height();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(Form)Height not stable yet... trying again");
+            setChildHeight(component, fHeight);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    if (height <= LENGTH_PERCENT_TAG) {
+      height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
+    }
+
+    component.setLastHeight(height);
+
     // A form is a vertical layout.
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
@@ -1498,6 +1654,7 @@ public class Form extends Activity
     // Set all screen properties to default values.
     defaultPropertyValues();
     screenInitialized = false;
+    dimChanges.clear();
   }
 
   public void deleteComponent(Object component) {

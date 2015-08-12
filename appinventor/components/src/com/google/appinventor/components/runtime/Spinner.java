@@ -42,9 +42,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private final android.widget.Spinner view;
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
-  private String selection;
-  private int selectionIndex;
-  private boolean isInitialized=false;
+  private int oldAdapterCount;
+  private int oldSelectionIndex;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -57,6 +56,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     view.setOnItemSelectedListener(this);
 
     container.$add(this);
+
+    Prompt("");
+    oldSelectionIndex = SelectionIndex();
   }
 
   @Override
@@ -70,7 +72,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Returns the current selected item in the spinner ",
       category = PropertyCategory.BEHAVIOR)
   public String Selection(){
-    return selection;
+    return SelectionIndex() == 0 ? "" : (String) view.getItemAtPosition(SelectionIndex() - 1);
   }
 
   /**
@@ -80,10 +82,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "Set the selected item in the spinner",
       category = PropertyCategory.BEHAVIOR)
   public void Selection(String value){
-    selection = value;
-    view.setSelection(adapter.getPosition(value));
-    // Now, we need to change SelectionIndex to correspond to Selection.
-    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
+    SelectionIndex(ElementsUtil.setSelectedIndexFromValue(value, items));
   }
 
   /**
@@ -92,7 +91,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "The index of the currently selected item, starting at 1. If no " +
       "item is selected, the value will be 0.", category = PropertyCategory.BEHAVIOR)
   public int SelectionIndex(){
-    return selectionIndex;
+    return ElementsUtil.selectionIndex(view.getSelectedItemPosition() + 1, items);
   }
 
   /**
@@ -104,10 +103,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       "items in the Spinner, SelectionIndex will be set to 0, and Selection will be set to empty.",
       category = PropertyCategory.BEHAVIOR)
   public void SelectionIndex(int index){
-    selectionIndex = ElementsUtil.selectionIndex(index, items);
-    view.setSelection(selectionIndex - 1); // AI lists are 1-based
-    // Now, we need to change Selection to correspond to SelectionIndex.
-    selection = ElementsUtil.setSelectionFromIndex(index, items);
+    oldSelectionIndex = SelectionIndex();
+    view.setSelection(ElementsUtil.selectionIndex(index, items) - 1); // AI lists are 1-based
   }
 
   /**
@@ -125,11 +122,14 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "adds the passed text element to the Spinner list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
+    // The following conditional handles special cases for the fact that
+    // spinners automatically select an item when non-empty data is fed
+    if (itemList.size() == 0) {
+      SelectionIndex(0);
+    } else if (itemList.size() < items.size() && SelectionIndex() == items.size()) {
+      SelectionIndex(itemList.size());
+    }
     items = ElementsUtil.elements(itemList, "Spinner");
-
-    //avoid firing off the OnItemSelect when component is initialized or data is changed
-    isInitialized = false;
-
     setAdapterData(itemList.toStringArray());
   }
 
@@ -140,11 +140,11 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @SimpleProperty(description = "sets the Spinner list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring){
-    items = ElementsUtil.elementsFromString(itemstring);
-    setAdapterData(itemstring.split(" *, *"));
+    Elements(ElementsUtil.elementsFromString(itemstring));
   }
 
   private void setAdapterData(String[] theItems) {
+    oldAdapterCount = adapter.getCount();
     adapter.clear();
     for (int i = 0; i < theItems.length; i++){
       adapter.add(theItems[i]);
@@ -188,14 +188,20 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
-    //prevent AfterPicking triggering when component has just been instantiated.
-    if (!isInitialized) {
-      isInitialized = true;
-      return;
+    // special case 1:
+    // onItemSelected is fired when the adapter goes from empty to non-empty AND
+    // SelectionIndex was not set, i.e. oldSelectionIndex == 0
+    // special case 2:
+    // onItemSelected is fired when the adapter goes from larger size to smaller size AND
+    // the old selection position (one-based) is larger than the size of the new adapter
+    if (oldAdapterCount == 0 && adapter.getCount() > 0 && oldSelectionIndex == 0 ||
+        oldAdapterCount > adapter.getCount() && oldSelectionIndex > adapter.getCount()) {
+      SelectionIndex(position + 1);  // AI lists are 1-based
+      oldAdapterCount = adapter.getCount();
+    } else {
+      SelectionIndex(position + 1); // AI lists are 1-based
+      AfterSelecting(Selection());
     }
-
-    SelectionIndex(position + 1); // AI lists are 1-based
-    AfterSelecting(selection);
   }
 
   public void onNothingSelected(AdapterView<?> parent){

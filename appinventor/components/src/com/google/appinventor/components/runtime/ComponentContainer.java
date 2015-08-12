@@ -43,4 +43,9 @@ public interface ComponentContainer {
   void setChildWidth(AndroidViewComponent component, int width);
 
   void setChildHeight(AndroidViewComponent component, int height);
+
+  int Width();
+
+  int Height();
+
 }

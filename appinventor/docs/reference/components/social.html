@@ -488,6 +488,7 @@
  <li> <code>ContactName</code>: the contact's name </li>
  <li> <code>EmailAddress</code>: the contact's primary email address </li>
  <li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>
+ <li> <code>ContactUri</code>: the contact's URI on the device </li>
  <li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>
  <li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>
  <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>
@@ -504,6 +505,8 @@ numbers, and the list of email addresses will contain only one email.</p>
   <dd></dd>
   <dt><code><em>EmailAddress</em></code></dt>
   <dd></dd>
+  <dt><code><em>ContactUri</em></code></dt>
+  <dd>URI that specifies the location of the contact on the device.</dd>
   <dt><code>Enabled</code></dt>
   <dd></dd>
   <dt><code>FontBold</code> (designer only)</dt>
@@ -556,6 +559,8 @@ numbers, and the list of email addresses will contain only one email.</p>
 <dl>
   <dt><code>Open()</code></dt>
   <dd>Opens the picker, as though the user clicked on it.</dd>
+  <dt><code>ViewContact(uri)</code></dt>
+  <dd>Views a contact given its URI.</dd>
 </dl>
 
 

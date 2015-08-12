@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -41,6 +42,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private int horizontalAlignment;
   private int verticalAlignment;
 
+  private final Handler androidUIHandler = new Handler();
+
   /**
    * Creates a new HVArrangement component.
    *
@@ -57,6 +60,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
+    viewLayout.setBaselineAligned(false);
     alignmentSetter = new AlignmentUtil(viewLayout);
 
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
@@ -85,7 +89,29 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent component, int width) {
+    setChildWidth(component, width, 0);
+  }
+
+  public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
+    int cWidth = container.$form().Width();
+    if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
+      final int fWidth = width;            // but give up after two tries...
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(HVArrangement)Width not stable yet... trying again");
+            setChildWidth(component, fWidth, trycount + 1);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    if (width <= LENGTH_PERCENT_TAG) {
+      System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
+    }
+
+    component.setLastWidth(width);
+
     if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildWidthForHorizontalLayout(component.getView(), width);
     } else {
@@ -94,7 +120,24 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent component, int height) {
+    int cHeight = container.$form().Height();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(HVArrangement)Height not stable yet... trying again");
+            setChildHeight(component, fHeight);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    if (height <= LENGTH_PERCENT_TAG) {
+      height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
+    }
+
+    component.setLastHeight(height);
+
     if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildHeightForHorizontalLayout(component.getView(), height);
     } else {

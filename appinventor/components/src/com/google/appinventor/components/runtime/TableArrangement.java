@@ -112,12 +112,43 @@ public class TableArrangement extends AndroidViewComponent
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
+
+    System.err.println("TableArrangment.setChildWidth: width = " + width + " component = " + component);
+    if (width <= LENGTH_PERCENT_TAG) {
+
+      int cWidth = container.$form().Width();
+
+      if ((cWidth > LENGTH_PERCENT_TAG) && (cWidth <= 0)) {
+        // FILL_PARENT OR LENGTH_PREFERRED
+        width = LENGTH_PREFERRED;
+      } else {
+        System.err.println("%%TableArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+        width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
+      }
+    }
+
+    component.setLastWidth(width);
+
     ViewUtil.setChildWidthForTableLayout(component.getView(), width);
   }
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
+    if (height <= LENGTH_PERCENT_TAG) {
+      int cHeight = container.$form().Height();
+
+      if ((cHeight > LENGTH_PERCENT_TAG) && (cHeight <= 0)) {
+        // FILL_PARENT OR LENGTH_PREFERRED
+        height = LENGTH_PREFERRED;
+      } else {
+        height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
+      }
+    }
+
+    component.setLastHeight(height);
+
     ViewUtil.setChildHeightForTableLayout(component.getView(), height);
+
   }
 
   // AndroidViewComponent implementation

@@ -122,8 +122,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   public TextToSpeech(ComponentContainer container) {
     super(container.$form());
     result = false;
-    Language("en");
-    Country("USA");
+    Language(Component.DEFAULT_VALUE_TEXT_TO_SPEECH_LANGUAGE);
+    Country(Component.DEFAULT_VALUE_TEXT_TO_SPEECH_COUNTRY);
     /* Determine which TTS library to use */
     boolean useExternalLibrary = SdkLevel.getLevel() < SdkLevel.LEVEL_DONUT;
     Log.v(LOG_TAG, "Using " + (useExternalLibrary ? "external" : "internal") + " TTS library.");

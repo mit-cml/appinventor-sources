@@ -471,7 +471,7 @@ public final class Player extends AndroidNonvisibleComponent
     if (audioFocusSupported && focusOn) {
       abandonFocus();
     }
-    if (playerState != State.INITIAL) {
+    if ((player != null) && (playerState != State.INITIAL)) {
       player.stop();
     }
     playerState = State.INITIAL;
