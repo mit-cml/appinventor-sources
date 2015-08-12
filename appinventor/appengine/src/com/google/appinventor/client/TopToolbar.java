@@ -37,7 +37,9 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -63,18 +65,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
 public class TopToolbar extends Composite {
-  private static final String KNOWN_ISSUES_LINK_URL =
-      Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
-  private static final String RELEASE_NOTES_LINK_URL =
-      Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
-  private static final String KNOWN_ISSUES_LINK_AND_TEXT =
-      "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
-  private static final String RELEASE_NOTES_LINK_AND_TEXT =
-      "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
-  private static final String termsOfServiceText =
-      "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
-          " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
-
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
@@ -196,20 +186,39 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
-    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
-        new LibraryAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
-        new GetStartedAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
-        new TutorialsAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
-        new TroubleShootingAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
-        new ForumsAction()));
+    Config config = Ode.getInstance().getSystemConfig();
+    String libraryUrl = config.getLibraryUrl();
+    if (!Strings.isNullOrEmpty(libraryUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
+          new WindowOpenAction(libraryUrl, "_ai2", "scrollbars=1")));
+    }
+    String getStartedUrl = config.getGetStartedUrl();
+    if (!Strings.isNullOrEmpty(getStartedUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
+          new WindowOpenAction(getStartedUrl, "_ai2", "scrollbars=1")));
+    }
+    String tutorialsUrl = config.getTutorialsUrl();
+    if (!Strings.isNullOrEmpty(tutorialsUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
+          new WindowOpenAction(tutorialsUrl, "_ai2", "scrollbars=1")));
+    }
+    String troubleshootingUrl = config.getTroubleshootingUrl();
+    if (!Strings.isNullOrEmpty(troubleshootingUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
+          new WindowOpenAction(troubleshootingUrl, "_ai2", "scrollbars=1")));
+    }
+    String forumsUrl = config.getForumsUrl();
+    if (!Strings.isNullOrEmpty(forumsUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
+          new WindowOpenAction(forumsUrl, "_ai2", "scrollbars=1")));
+    }
     helpItems.add(null);
-    helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
-        new FeedbackAction()));
-    helpItems.add(null);
+    String feedbackUrl = config.getFeedbackUrl();
+    if (!Strings.isNullOrEmpty(feedbackUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
+          new WindowOpenAction(feedbackUrl, "_blank", "scrollbars=1")));
+      helpItems.add(null);
+    }
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
         new AboutCompanionAction()));
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
@@ -679,12 +688,20 @@ public class TopToolbar extends Composite {
       db.center();
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
-      HTML message = new HTML(
-          MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-              "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
-              "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
-              "<BR/><BR/>" + termsOfServiceText
-      );
+      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
+          "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
+      Config config = Ode.getInstance().getSystemConfig();
+      String releaseNotesUrl = config.getReleaseNotesUrl();
+      if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
+        html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
+            "\" target=\"_blank\">release notes</a>";
+      }
+      String tosUrl = config.getTosUrl();
+      if (!Strings.isNullOrEmpty(tosUrl)) {
+        html += "<BR/><BR/><a href=\"" + tosUrl +
+            "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
+      }
+      HTML message = new HTML(html);
 
       SimplePanel holder = new SimplePanel();
       Button ok = new Button("Close");
@@ -747,46 +764,20 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private static class LibraryAction implements Command {
-    @Override
-    public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "scrollbars=1");
-    }
-  }
+  private static class WindowOpenAction implements Command {
+    private final String url;
+    private final String name;
+    private final String features;
 
-  private static class GetStartedAction implements Command {
-    @Override
-    public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/get-started", "_ai2", "scrollbars=1");
+    WindowOpenAction(String url, String name, String features) {
+      this.url = url;
+      this.name = name;
+      this.features = features;
     }
-  }
 
-  private static class TutorialsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/ai2/tutorials", "_ai2", "scrollbars=1");
-    }
-  }
-
-  private static class TroubleShootingAction implements Command {
-    @Override
-    public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/ai2/support/troubleshooting", "_ai2",
-          "scrollbars=1");
-    }
-  }
-
-  private static class ForumsAction implements Command {
-    @Override
-    public void execute() {
-      Window.open("https://groups.google.com/forum/#!forum/mitappinventortest", "_ai2", "scrollbars=1");
-    }
-  }
-
-  private static class FeedbackAction implements Command {
-    @Override
-    public void execute() {
-      Window.open("http://something.example.com", "_blank", "scrollbars=1");
+      Window.open(url, name, features);
     }
   }
 

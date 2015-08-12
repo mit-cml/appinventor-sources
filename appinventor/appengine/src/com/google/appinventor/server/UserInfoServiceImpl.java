@@ -47,6 +47,18 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     // Fetch the current splash screen version
     config.setSplashConfig(storageIo.getSplashConfig());
 
+    config.setLibraryUrl(Flag.createFlag("library.url", "").get());
+    config.setGetStartedUrl(Flag.createFlag("getstarted.url", "").get());
+    config.setTutorialsUrl(Flag.createFlag("tutorials.url", "").get());
+    config.setTroubleshootingUrl(Flag.createFlag("troubleshooting.url", "").get());
+    config.setForumsUrl(Flag.createFlag("forums.url", "").get());
+    config.setFeedbackUrl(Flag.createFlag("feedback.url", "").get());
+    config.setReleaseNotesUrl(Flag.createFlag("release.notes.url", "").get());
+    config.setTosUrl(Flag.createFlag("tos.url", "").get());
+    config.setLogoUrl(Flag.createFlag("logo.url", "").get());
+    config.setGuideUrl(Flag.createFlag("guide.url", "").get());
+    config.setReferenceComponentsUrl(Flag.createFlag("reference.components.url", "").get());
+
     // Check to see if we need to upgrade this user's project to GCS
     storageIo.checkUpgrade(userInfoProvider.getUserId());
     return config;
