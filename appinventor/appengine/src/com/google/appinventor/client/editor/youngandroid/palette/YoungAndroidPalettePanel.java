@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -103,9 +104,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     if (category == ComponentCategory.UNINITIALIZED) {
       return false;
     }
-    //if (category == ComponentCategory.FIRSTTECHCHALLENGE) {
-    //  return false;
-    //}
+    if (category == ComponentCategory.FIRSTTECHCHALLENGE) {
+      return Ode.getInstance().getSystemConfig().getFtcEnabled();
+    }
     if (category == ComponentCategory.INTERNAL &&
         !AppInventorFeatures.showInternalComponentsCategory()) {
       return false;
