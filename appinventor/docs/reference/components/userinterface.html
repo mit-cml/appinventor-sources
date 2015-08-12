@@ -586,6 +586,8 @@
                     <dd></dd>
                     <dt><code>Image</code></dt>
                     <dd>Image to display on button.</dd>
+                    <dt><code>Instant</code></dt>
+                    <dd>Instant of date. This instant can be used with <a href="http://ai2.appinventor.mit.edu/reference/components/sensors.html#Clock">Clock</a> component for date documentation, conversion, and matriculation.</dd>
                     <dt><code><em>Month</em></code></dt>
                     <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 1 = January, 12 = December.</dd>
                     <dt><code><em>MonthInText</em></code></dt>
@@ -629,6 +631,10 @@
                     <dt><code>SetDateToDisplay(number year, number month, number day)</code></dt>
                     <dd>Allows the user to set the date to be displayed when the date picker opens.
                       Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
+                    <dt><code>SetDateToDisplayFromInstant(InstantInTime instant)</code></dt>
+                    <dd>Allows the instant to set the year, month, and day to
+                    be displayed when the date picker opens. Instants are used in Clock, DatePicker,
+                    and TimePicker components.</dd>
                   </dl>
 
                  <h2 id="Image">Image</h2>
@@ -1200,6 +1206,8 @@ none
                     <dd>The hour of the last time set using the time picker. The hour is in a 24 hour format. If the last time set was 11:53 pm, this property will return 23.</dd>
                     <dt><code>Image</code></dt>
                     <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code>Instant</code></dt>
+                    <dd>Instant of time. This instant can be used with <a href="http://ai2.appinventor.mit.edu/reference/components/sensors.html#Clock">Clock</a> component for time documentation, conversion, and matriculation.</dd>
                     <dt><code><em>Minute</em></code></dt>
                     <dd>The minute of the last time set using the time picker</dd>
                     <dt><code>Shape</code> (designer only)</dt>
@@ -1231,7 +1239,17 @@ none
                   </dl>
 
                   <h3>Methods</h3>
-                  none
+                  <dl>
+                    <dt><code>LaunchPicker()</code></dt>
+                    <dd>Launches the TimePicker popup.</dd>
+                    <dt><code>SetTimeToDisplay(number hour, number minute)</code></dt>
+                    <dd>Allows the user to set the time to be displayed when the time picker opens.
+                      Valid values for the hour field are 0-23 and 0-59 for the second field.</dd>
+                    <dt><code>SetTimeToDisplayFromInstant(InstantInTime instant)</code></dt>
+                    <dd>Allows the instant to set the hour and minute to
+                    be displayed when the time picker opens. Instants are used in Clock, DatePicker,
+                    and TimePicker components.</dd>
+                  </dl>
 
 <h2 id="WebViewer"> WebViewer </h2>
 <img src="images/webviewer.png" alt="Picture of WebViewer component" />

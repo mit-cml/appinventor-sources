@@ -6,16 +6,9 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.HoneycombUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.SdkLevel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,15 +17,25 @@ import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * Component enabling a user to select a contact.
  *
  * @author sharon@google.com (Sharon Perl)
  * @author markf@google.com (Mark Friedman)
+ * @author: Yifan(Evan) Li (for contact Uri)
+
  */
 @DesignerComponent(version = YaVersion.CONTACTPICKER_COMPONENT_VERSION,
     description = "A button that, when clicked on, displays a list of " +
@@ -41,6 +44,7 @@ import java.util.List;
     "the chosen contact: <ul>\n" +
     "<li> <code>ContactName</code>: the contact's name </li>\n "  +
     "<li> <code>EmailAddress</code>: the contact's primary email address </li>\n " +
+    "<li> <code>ContactUri</code>: the contact's URI on the device </li>\n"+
     "<li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>\n " +
     "<li> <code>PhoneNumber</code>: the contact's primary phone number (on Later Android Verisons)</li>\n " +
     "<li> <code>PhoneNumberList</code>: a list of the contact's phone numbers (on Later Android Versions)</li>\n " +
@@ -74,6 +78,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
 
   protected String contactName;
   protected String emailAddress;
+  protected String contactUri;
   protected String contactPictureUri;
   protected String phoneNumber;
 
@@ -93,10 +98,10 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     super(container);
     activityContext = container.$context();
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB && intentUri.equals(Contacts.People.CONTENT_URI)) {
-      this.intentUri = HoneycombUtil.getContentUri();
-    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB && intentUri.equals(Contacts.Phones.CONTENT_URI)) {
-      this.intentUri = HoneycombUtil.getPhoneContentUri();
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1 && intentUri.equals(Contacts.People.CONTENT_URI)) {
+      this.intentUri = HoneycombMR1Util.getContentUri();
+    } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1 && intentUri.equals(Contacts.Phones.CONTENT_URI)) {
+      this.intentUri = HoneycombMR1Util.getPhoneContentUri();
     } else {
       this.intentUri = intentUri;
     }
@@ -139,6 +144,15 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
+   * "URI that specifies the location of the contact on the device.",
+   */
+  @SimpleProperty(description = "URI that specifies the location of the contact on the device.",
+      category = PropertyCategory.BEHAVIOR)
+  public String ContactUri() {
+    return ensureNotNull(contactUri);
+  }
+
+  /**
    * EmailAddressList property getter method.
    */
   @SimpleProperty(
@@ -165,6 +179,19 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     return ensureNotNull(phoneNumberList);
   }
 
+  /**
+   *  return nothing, just call another activity which is view contact
+   */
+  @SimpleFunction(description = "view a contact via its URI")
+  public void ViewContact(String uri) {
+    if(contactUri != null){
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(uri));
+        if (intent.resolveActivity(this.activityContext.getPackageManager()) != null) {
+            this.activityContext.startActivity(intent);
+        }
+    }
+  }
+
   @Override
   protected Intent getIntent() {
     return new Intent(Intent.ACTION_PICK, intentUri);
@@ -182,37 +209,40 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
       Log.i("ContactPicker", "received intent is " + data);
-      Uri contactUri = data.getData();
+      Uri receivedContactUri = data.getData();
 
       // Pre- and post-Honeycomb need different URIs.
       String desiredContactUri = "";
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
         desiredContactUri = "//com.android.contacts/contact";
       } else {
         desiredContactUri = "//contacts/people";
       }
 
-      if (checkContactUri(contactUri, desiredContactUri)) {
+      if (checkContactUri(receivedContactUri, desiredContactUri)) {
         Cursor contactCursor = null;
         Cursor dataCursor = null;
         try {
-          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
-            CONTACT_PROJECTION = HoneycombUtil.getContactProjection();
-            contactCursor = activityContext.getContentResolver().query(contactUri,
+          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+            CONTACT_PROJECTION = HoneycombMR1Util.getContactProjection();
+            contactCursor = activityContext.getContentResolver().query(receivedContactUri,
                 CONTACT_PROJECTION, null, null, null);
 
             String id = postHoneycombGetContactNameAndPicture(contactCursor);
 
-            DATA_PROJECTION = HoneycombUtil.getDataProjection();
-            dataCursor = HoneycombUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
+            DATA_PROJECTION = HoneycombMR1Util.getDataProjection();
+            dataCursor = HoneycombMR1Util.getDataCursor(id, activityContext, DATA_PROJECTION);
             postHoneycombGetContactEmailAndPhone(dataCursor);
+
+            //explicit set TextContactUri
+            contactUri = receivedContactUri.toString();
           } else {
-            contactCursor = activityContext.getContentResolver().query(contactUri,
+            contactCursor = activityContext.getContentResolver().query(receivedContactUri,
                 PROJECTION, null, null, null);
-            preHoneycombGetContactInfo(contactCursor, contactUri);
+            preHoneycombGetContactInfo(contactCursor, receivedContactUri);
           }
           Log.i("ContactPicker",
-                "Contact name = " + contactName + ", email address = " + emailAddress +
+                "Contact name = " + contactName + ", email address = " + emailAddress + ",contact Uri = " + contactUri +
                 ", phone number = " + phoneNumber + ", contactPhotoUri = " +  contactPictureUri);
         } catch (Exception e) {
           // There was an exception in trying to extract the cursor from the activity context.
@@ -236,12 +266,13 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   /**
    * For versions before Honeycomb, we get all the contact info from the same table.
    */
-  public void preHoneycombGetContactInfo(Cursor contactCursor, Uri contactUri) {
+  public void preHoneycombGetContactInfo(Cursor contactCursor, Uri theContactUri) {
     if (contactCursor.moveToFirst()) {
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
       String emailId = guardCursorGetString(contactCursor, EMAIL_INDEX);
       emailAddress = getEmailAddress(emailId);
-      contactPictureUri = contactUri.toString();
+      contactUri = theContactUri.toString();
+      contactPictureUri = theContactUri.toString();
       emailAddressList = emailAddress.equals("") ? new ArrayList() : Arrays.asList(emailAddress);
     }
   }
@@ -253,10 +284,10 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   public String postHoneycombGetContactNameAndPicture(Cursor contactCursor) {
     String id = "";
     if (contactCursor.moveToFirst()) {
-      final int ID_INDEX = HoneycombUtil.getIdIndex(contactCursor);
-      final int NAME_INDEX = HoneycombUtil.getNameIndex(contactCursor);
-      final int THUMBNAIL_INDEX = HoneycombUtil.getThumbnailIndex(contactCursor);
-      final int PHOTO_INDEX = HoneycombUtil.getPhotoIndex(contactCursor);
+      final int ID_INDEX = HoneycombMR1Util.getIdIndex(contactCursor);
+      final int NAME_INDEX = HoneycombMR1Util.getNameIndex(contactCursor);
+      final int THUMBNAIL_INDEX = HoneycombMR1Util.getThumbnailIndex(contactCursor);
+      final int PHOTO_INDEX = HoneycombMR1Util.getPhotoIndex(contactCursor);
       id = guardCursorGetString(contactCursor, ID_INDEX);
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
       contactPictureUri = guardCursorGetString(contactCursor, THUMBNAIL_INDEX);
@@ -277,12 +308,12 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     List<String> emailListToStore = new ArrayList<String>();
 
     if (dataCursor.moveToFirst()) {
-      final int PHONE_INDEX = HoneycombUtil.getPhoneIndex(dataCursor);
-      final int EMAIL_INDEX = HoneycombUtil.getEmailIndex(dataCursor);
-      final int MIME_INDEX = HoneycombUtil.getMimeIndex(dataCursor);
+      final int PHONE_INDEX = HoneycombMR1Util.getPhoneIndex(dataCursor);
+      final int EMAIL_INDEX = HoneycombMR1Util.getEmailIndex(dataCursor);
+      final int MIME_INDEX = HoneycombMR1Util.getMimeIndex(dataCursor);
 
-      String phoneType = HoneycombUtil.getPhoneType();
-      String emailType = HoneycombUtil.getEmailType();
+      String phoneType = HoneycombMR1Util.getPhoneType();
+      String emailType = HoneycombMR1Util.getEmailType();
 
       while (!dataCursor.isAfterLast()) {
         String type = guardCursorGetString(dataCursor, MIME_INDEX);

@@ -18,6 +18,10 @@ import com.google.gwt.i18n.client.Messages;
 public interface OdeMessages extends Messages {
   // Used in multiple files
 
+  @DefaultMessage("Default")
+  @Description("Text for property editors")
+  String defaultText();
+
   @DefaultMessage("Cancel")
   @Description("Text on \"Cancel\" button.")
   String cancelButton();
@@ -808,6 +812,14 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
+  @DefaultMessage("Check to see Preview on Tablet size.")
+  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  String previewTabletSize();
+
+  @DefaultMessage("Un-check to see Preview on Phone size.")
+  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  String previewPhoneSize();
+
   // Used in editor/simple/components/MockComponent.java
 
   @DefaultMessage("Rename Component")
@@ -916,6 +928,16 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("strong")
   @Description("Text for accelerometer sensitivity choice 'strong'")
   String strongAccelerometerSensitivity();
+
+  // Used in editor/youngandroid/properties/YoungAndroidSizingChoicePropertyEditor.java
+
+  @DefaultMessage("Fixed")
+  @Description("Text for Sizing choice 'fixed' -- scale to fit device screen")
+  String fixedSizing();
+
+  @DefaultMessage("Responsive")
+  @Description("Text for Sizing choice 'responsive' -- size based on device type")
+  String responsiveSizing();
 
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
@@ -1081,6 +1103,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption and summary for Fill Parent choice")
   String fillParentCaption();
 
+  @DefaultMessage("percent")
+  @Description("Caption for percent label")
+  String percentCaption();
+
   @DefaultMessage("pixels")
   @Description("Caption for pixels label")
   String pixelsCaption();
@@ -1089,9 +1115,17 @@ public interface OdeMessages extends Messages {
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
 
-  @DefaultMessage("The value must be a number greater than or equal to 0")
+  @DefaultMessage("{0} percent")
+  @Description("Summary for length in percent")
+  String percentSummary(String percent);
+
+  @DefaultMessage("The value must be an integer greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
+
+  @DefaultMessage("Percentage input values should be between 1 and 100")
+  @Description("Error shown after validation of percentage input fields.")
+  String nonvalidPercentValue();
 
   // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
 
@@ -2535,6 +2569,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ExtraValueProperties();
 
+  @DefaultMessage("Extras")
+  @Description("")
+  String ExtrasProperties();
+
   @DefaultMessage("FollowLinks")
   @Description("")
   String FollowLinksProperties();
@@ -2594,6 +2632,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Icon")
   @Description("")
   String IconProperties();
+
+  @DefaultMessage("Instant")
+  @Description("")
+  String InstantProperties();
 
   @DefaultMessage("IgnoreSslErrors")
   @Description("")
@@ -2827,6 +2869,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String VersionNameProperties();
 
+  @DefaultMessage("Sizing")
+  @Description("")
+  String SizingProperties();
+
   @DefaultMessage("Visible")
   @Description("")
   String VisibleProperties();
@@ -3051,6 +3097,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BallotQuestionProperties();
 
+  @DefaultMessage("ContactUri")
+  @Description("")
+  String ContactUriProperties();
+
   @DefaultMessage("EmailAddress")
   @Description("")
   String EmailAddressProperties();
@@ -3090,6 +3140,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Height")
   @Description("")
   String HeightProperties();
+
+  @DefaultMessage("HeightPercent")
+  @Description("")
+  String HeightPercentProperties();
 
   @DefaultMessage("InstanceId")
   @Description("")
@@ -3191,6 +3245,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SelectionIndexProperties();
 
+  @DefaultMessage("uri")
+  @Description("")
+  String uriParams();
+
   @DefaultMessage("UserChoice")
   @Description("")
   String UserChoiceProperties();
@@ -3222,6 +3280,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Width")
   @Description("")
   String WidthProperties();
+
+  @DefaultMessage("WidthPercent")
+  @Description("")
+  String WidthPercentProperties();
 
   @DefaultMessage("WebViewString")
   @Description("")
@@ -4291,6 +4353,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LostFocusEvents();
 
+  @DefaultMessage("ViewContact")
+  @Description("")
+  String ViewContactMethods();
+
   @DefaultMessage("AfterRecording")
   @Description("")
   String AfterRecordingEvents();
@@ -4554,6 +4620,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GotText")
   @Description("")
   String GotTextEvents();
+
+  @DefaultMessage("AfterFileSaved")
+  @Description("")
+  String AfterFileSavedEvents();
 
   @DefaultMessage("AfterDateSet")
   @Description("")
@@ -5832,7 +5902,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ClockHelpStringComponentPallette();
 
-  @DefaultMessage("A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact\"s name </li>\n <li> <code>EmailAddress</code>: the contact\"s primary email address </li>\n <li> <code>Picture</code>: the name of the file containing the contact\"s image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).\n</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.")
+  @DefaultMessage("A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact's name </li>\n <li> <code>EmailAddress</code>: the contact's primary email address </li>\n <li> <code>ContactUri</code>: the contact's URI on the device </li>\n <li> <code>Picture</code>: the name of the file containing the contact's image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).\n</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.")
   @Description("")
   String ContactPickerHelpStringComponentPallette();
 
@@ -5960,7 +6030,12 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SharingHelpStringComponentPallette();
 
-  @DefaultMessage("A Slider is a progress bar that adds a draggable thumb. You can touch the thumb and drag left or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the PositionChanged event, reporting the position of the Slider thumb. The reported position of the Slider thumb can be used to dynamically update another component attribute, such as the font size of a TextBox or the radius of a Ball.")
+  @DefaultMessage("A Slider is a progress bar that adds a draggable thumb. You can touch " +
+        "the thumb and drag left or right to set the slider thumb position. " +
+        "As the Slider thumb is dragged, it will trigger the PositionChanged event, " +
+        "reporting the position of the Slider thumb. The reported position of the " +
+        "Slider thumb can be used to dynamically update another component " +
+        "attribute, such as the font size of a TextBox or the radius of a Ball.")
   @Description("")
   String SliderHelpStringComponentPallette();
 
@@ -6379,6 +6454,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetDateToDisplayMethods();
 
+  @DefaultMessage("SetDateToDisplayFromInstant")
+  @Description("")
+  String SetDateToDisplayFromInstantMethods();
+
   @DefaultMessage("IncomingCallAnswered")
   @Description("")
   String IncomingCallAnsweredEvents();
@@ -6411,8 +6490,25 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetTimeToDisplayMethods();
 
+  @DefaultMessage("SetTimeToDisplayFromInstant")
+  @Description("")
+  String SetTimeToDisplayFromInstantMethods();
+
   @DefaultMessage("XMLTextDecode")
   @Description("")
   String XMLTextDecodeMethods();
+
+  @DefaultMessage("ExtraKey and ExtraValue are deprecated and will not be supported. " +
+      "Please use the new Extras property in Blocks.\n")
+  @Description("")
+  String extraKeyValueWarning();
+
+  @DefaultMessage("MediaStored")
+  @Description("")
+  String MediaStoredEvents();
+
+  @DefaultMessage("PostMedia")
+  @Description("")
+  String PostMediaMethods();
 
 }

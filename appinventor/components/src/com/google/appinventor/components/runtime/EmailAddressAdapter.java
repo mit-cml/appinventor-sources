@@ -19,7 +19,7 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.util.Log;
 
-import com.google.appinventor.components.runtime.util.HoneycombUtil;
+import com.google.appinventor.components.runtime.util.HoneycombMR1Util;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
@@ -53,14 +53,14 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     ContactMethods.DATA,   // 2
   };
 
-  private static final String[] POST_HONEYCOMB_PROJECTION = HoneycombUtil.getEmailAdapterProjection();
+  private static final String[] POST_HONEYCOMB_PROJECTION = HoneycombMR1Util.getEmailAdapterProjection();
 
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
     this.context = context;
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
-      SORT_ORDER = HoneycombUtil.getTimesContacted() + " DESC, " + HoneycombUtil.getDisplayName();
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+      SORT_ORDER = HoneycombMR1Util.getTimesContacted() + " DESC, " + HoneycombMR1Util.getDisplayName();
     } else {
       SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
     }
@@ -69,12 +69,12 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   @Override
   public final String convertToString(Cursor cursor) {
 
-    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombUtil.getDisplayName());
-    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombUtil.getEmailAddress());
+    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombMR1Util.getDisplayName());
+    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombMR1Util.getEmailAddress());
     String name = "";
     String address = "";
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
       name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
       address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
     } else {
@@ -87,14 +87,14 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private final String makeDisplayString(Cursor cursor) {
 
-    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombUtil.getDisplayName());
-    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombUtil.getEmailAddress());
+    int POST_HONEYCOMB_NAME_INDEX = cursor.getColumnIndex(HoneycombMR1Util.getDisplayName());
+    int POST_HONEYCOMB_EMAIL_INDEX = cursor.getColumnIndex(HoneycombMR1Util.getEmailAddress());
     StringBuilder s = new StringBuilder();
     boolean flag = false;
     String name = "";
     String address = "";
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
       name = cursor.getString(POST_HONEYCOMB_NAME_INDEX);
       address = cursor.getString(POST_HONEYCOMB_EMAIL_INDEX);
     } else {
@@ -135,9 +135,9 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
 
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
-        db = HoneycombUtil.getDataContentUri();
-        s.append("(" + HoneycombUtil.getDataMimeType() + "='" + HoneycombUtil.getEmailType() + "')");
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
+        db = HoneycombMR1Util.getDataContentUri();
+        s.append("(" + HoneycombMR1Util.getDataMimeType() + "='" + HoneycombMR1Util.getEmailType() + "')");
         s.append(" AND ");
         s.append("(display_name LIKE ");
         s.append(filter);
@@ -163,7 +163,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
       }
     }
 
-    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB_MR1) {
       return contentResolver.query(db, POST_HONEYCOMB_PROJECTION,
           where, null, SORT_ORDER);
     } else {
