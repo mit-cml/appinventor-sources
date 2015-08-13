@@ -27,9 +27,10 @@
   <import file="../build-common.xml" />
 
   <!-- =====================================================================
-       Define base package path.
+       Define base package path for internal components.
        ===================================================================== -->
   <property name="components.pkg" value="com/google/appinventor/components" />
+  <property name="zxing.pkg" value="com/google/zxing" />
 
   <!-- =====================================================================
        Define external components properties.
@@ -119,8 +120,12 @@
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
     <ai.javac5 destdir="${AndroidRuntime-class.dir}">
-      <include name="${components.pkg}/annotations/*.java" />
-      <include name="${components.pkg}/runtime/**/*.java" />
+      <include name="**/*.java" /> <!-- include all java files -->
+      <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
+      <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
+      <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+      <!--<include name="${components.pkg}/annotations/*.java" /> -->
+      <!--<include name="${components.pkg}/runtime/**/*.java" /> -->
       <classpath>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
@@ -205,7 +210,7 @@
       changes to the Java files in the annotations, common, runtime, and scripts packages and .txt
       files in scripts/templates. -->
       <uptodate property="target.uptodate" targetfile="@{apt-target}">
-        <srcfiles dir="${src.dir}" includes="${components.pkg}/**/*"/>
+        <srcfiles dir="${src.dir}" />
       </uptodate>
       <!-- We need to delete all the classes before running javac below. Otherwise, javac will only
       process the Java files whose classes are not up-to-date and we'll end up with only a subset
@@ -220,7 +225,11 @@
              sourcepath=""
              srcdir="${src.dir}"
              includeantruntime="false">
-        <include name="${components.pkg}/runtime/*.java" />
+        <include name="**/*.java" /> <!-- include all java files -->
+        <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
+        <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
+        <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+        <exclude name="${components.pkg}/annotations/**/*.java" /> <!-- exclude components/annotations package -->
         <classpath>
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
@@ -561,6 +570,7 @@
         </path>
       </foreach>
     </target>
+
     <!-- =====================================================================
          XmlComponentDescription: create lang_def.xml for Blocks Editor.
          ===================================================================== -->

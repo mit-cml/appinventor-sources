@@ -21,6 +21,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
   private static final String OUTPUT_FILE_NAME = "ComponentsTranslation.java";
 
   private void outputComponent(ComponentInfo component, StringBuilder sb) {
+    if (component.getExternal()) { // Avoid adding entries for external components
+      return;
+    }
     sb.append("\n\n/* Component: " + component.name + " */\n\n");
     sb.append("\n\n/* Properties */\n\n");
     for (Property prop : component.properties.values()) {
