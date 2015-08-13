@@ -38,7 +38,7 @@ public class ExternalComponentPackaging {
       /*
       * args[0]: the path to simple_component_build_info.json
       * args[1]: the path to external_components.txt
-      * args[2]: the path to "${AndroidRuntime-class.dir}/${components.pkg}/runtime"
+      * args[2]: the path to "${AndroidRuntime-class.dir}"
       * args[3]: the path to /build/classes/BuildServer/files
       * args[4]: the path to ExternalComponentTemp directory
       */
@@ -62,7 +62,7 @@ public class ExternalComponentPackaging {
                        new File(componentTempDirectory+File.separator+library.toString()));
             }
 
-            // Copying related libraries to a given extension into his package Name folder in (ExternalComponentTemp dir)
+            // Copying related compiled files to a given extension into his package folder in (ExternalComponentTemp dir)
             copyRelatedExternalClasses(new File(args[2]),component.get("name").toString(),componentClassPathDirectory);
           }
       }
@@ -100,12 +100,15 @@ public class ExternalComponentPackaging {
     }
 
     private static void copyRelatedExternalClasses(final File srcfolder, String externalComponentName,final String destPath) throws IOException {
-          for (File fileEntry : srcfolder.listFiles()){
-              if (fileEntry.getName().contains(externalComponentName)){
-              System.out.println(fileEntry.toString()/*fileEntry.getName()*/);
-              copyFile(fileEntry,new File (destPath+File.separator+fileEntry.getName()));
-              }
+      for (File fileEntry : srcfolder.listFiles()){
+        if (fileEntry.isFile()) {
+          if (fileEntry.getName().contains(externalComponentName)){
+            System.out.println(fileEntry.toString());
+            copyFile(fileEntry,new File (destPath+File.separator+fileEntry.getName()));
           }
+        } else if (fileEntry.isDirectory()) {
+          copyRelatedExternalClasses(new File(fileEntry.getAbsolutePath()),externalComponentName, destPath);
+        }
+      }
     }
-
 }

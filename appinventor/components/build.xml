@@ -442,7 +442,7 @@
      <java classname="com.google.appinventor.components.scripts.ExternalComponentPackaging">
         <arg value="${public.build.dir}/simple_components_build_info.json" />
         <arg value="${ExternalComponentAsset.dir}/external_components.txt" />
-        <arg value="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
+        <arg value="${AndroidRuntime-class.dir}" />
         <arg value="${buildserver.files.library.dir}" />
         <arg value="${ExternalComponentTemp.dir}" />
         <classpath>
