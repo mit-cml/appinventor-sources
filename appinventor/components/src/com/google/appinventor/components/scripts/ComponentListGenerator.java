@@ -43,7 +43,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
 
-      componentList.append(listSeparator).append(component.name);
+      componentList.append(listSeparator).append(component.type);
       listSeparator = "\n";
 
       componentBuildInfo.append(jsonSeparator);
