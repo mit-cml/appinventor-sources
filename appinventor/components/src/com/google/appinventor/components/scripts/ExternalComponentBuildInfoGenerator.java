@@ -44,6 +44,7 @@ public class ExternalComponentBuildInfoGenerator {
     * args[2]: the path to ExternalComponents folder
     * args[3]: the path to /build/classes/BuildServer/files
     * args[4]: the path to external componentsTemp directory
+    * args[5]: the path to simple_component.json
     */
     JSONParser parser = new JSONParser();
     String jsonText = readFile(args[0], Charset.defaultCharset());
@@ -78,8 +79,19 @@ public class ExternalComponentBuildInfoGenerator {
             copyFile(new File(args[4]+File.separator+component.get("name")+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
         }
-
     }
+      // Renaming folder accordingly
+      String simple_component_text = readFile(args[5], Charset.defaultCharset());
+      Object simple_component_obj = parser.parse(simple_component_text);
+      JSONArray simple_component_array = (JSONArray) simple_component_obj;
+      for (int i = 0; i < simple_component_array.size(); i++) {
+        JSONObject component = (JSONObject) simple_component_array.get(i);
+        if(components.contains(component.get("name"))) {
+            File extensionDir = new File(args[2]+File.separator + component.get("name"));
+            File newExtensionDir = new File(args[2]+File.separator + component.get("classpath"));
+            extensionDir.renameTo(newExtensionDir);
+        }
+      }
   }
 
   private static String readFile(String path, Charset encoding) throws IOException {
