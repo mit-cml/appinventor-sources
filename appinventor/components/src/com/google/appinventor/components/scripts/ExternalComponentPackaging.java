@@ -41,30 +41,42 @@ public class ExternalComponentPackaging {
       * args[2]: the path to "${AndroidRuntime-class.dir}"
       * args[3]: the path to /build/classes/BuildServer/files
       * args[4]: the path to ExternalComponentTemp directory
+      * args[5]: the path to simple_component.json
       */
       JSONParser parser = new JSONParser();
-      String jsonText = readFile(args[0], Charset.defaultCharset());
-      Object obj = parser.parse(jsonText);
-      JSONArray array = (JSONArray) obj;
       ArrayList<String> components = fileToArray(args[1]);
-      for (int i = 0; i < array.size(); i++) {
-        JSONObject component = (JSONObject) array.get(i);
-        String componentClassPath = "com/google/appinventor/components/runtime"; //TODO(Mos): Is this fixed or variable ?
-        String componentTempDirectory = args[4]+File.separator+ component.get("name");
-        String componentClassPathDirectory = componentTempDirectory + File.separator+componentClassPath;
-          if(components.contains(component.get("name"))) {
-              new File(componentClassPathDirectory).mkdirs();
-            // Copying related libraries to a given extension into his files folder  in (ExternalComponentTemp dir)
-            JSONArray libraryArray = (JSONArray)component.get("libraries");
-            for(int j = 0; j<libraryArray.size();j++){
-              Object library = libraryArray.get(j);
-              copyFile(new File(args[3]+File.separator+library.toString()),
-                       new File(componentTempDirectory+File.separator+library.toString()));
-            }
 
-            // Copying related compiled files to a given extension into his package folder in (ExternalComponentTemp dir)
-            copyRelatedExternalClasses(new File(args[2]),component.get("name").toString(),componentClassPathDirectory);
+      // Copying related libraries to a given extension into his files folder in (ExternalComponentTemp dir)
+      String simple_component_build_info_text = readFile(args[0], Charset.defaultCharset());
+      Object simple_component_build_info_obj = parser.parse(simple_component_build_info_text);
+      JSONArray simple_component_build_info_array = (JSONArray) simple_component_build_info_obj;
+      for (int i = 0; i < simple_component_build_info_array.size(); i++) {
+        JSONObject component = (JSONObject) simple_component_build_info_array.get(i);
+        if(components.contains(component.get("name"))) {
+          String componentTempDirectory = args[4]+File.separator+ component.get("name");
+          JSONArray libraryArray = (JSONArray)component.get("libraries");
+          for(int j = 0; j<libraryArray.size();j++){
+            Object library = libraryArray.get(j);
+            copyFile(new File(args[3]+File.separator+library.toString()),
+            new File(componentTempDirectory+File.separator+library.toString()));
           }
+        }
+      }
+
+      // Copying related compiled files to a given extension into his package folder in (ExternalComponentTemp dir)
+      String simple_component_text = readFile(args[5], Charset.defaultCharset());
+      Object simple_component_obj = parser.parse(simple_component_text);
+      JSONArray simple_component_array = (JSONArray) simple_component_obj;
+      for (int i = 0; i < simple_component_array.size(); i++) {
+        JSONObject component = (JSONObject) simple_component_array.get(i);
+        if(components.contains(component.get("name"))) {
+          String componentClassPath = component.get("classpath").toString();//.replace('.','/'); //"com/google/appinventor/components/runtime"; //TODO(Mos): Is this fixed or variable ?
+          componentClassPath = componentClassPath.substring(0,componentClassPath.lastIndexOf(".")).replace('.','/');
+          String componentTempDirectory = args[4]+File.separator+ component.get("name");
+          String componentClassPathDirectory = componentTempDirectory + File.separator+componentClassPath;
+          new File(componentClassPathDirectory).mkdirs();
+          copyRelatedExternalClasses(new File(args[2]),component.get("name").toString(),componentClassPathDirectory);
+        }
       }
     }
 

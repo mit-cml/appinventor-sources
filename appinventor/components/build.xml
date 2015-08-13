@@ -445,6 +445,7 @@
         <arg value="${AndroidRuntime-class.dir}" />
         <arg value="${buildserver.files.library.dir}" />
         <arg value="${ExternalComponentTemp.dir}" />
+        <arg value="${public.build.dir}/simple_components.json" />
         <classpath>
            <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
            <pathelement location="${lib.dir}/json-java/java-json.jar" />
