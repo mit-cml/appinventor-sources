@@ -21,4 +21,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface SimpleObject {
+
+    /**
+     * True if this component is an external component.
+     * Setting to True is mandatory for packing Extensions (aix)
+     */
+    boolean external() default false;
+
 }
