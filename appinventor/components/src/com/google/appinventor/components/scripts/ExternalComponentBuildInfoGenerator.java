@@ -55,7 +55,7 @@ public class ExternalComponentBuildInfoGenerator {
       String componentFileDirectory = args[2]+File.separator+ component.get("name") + File.separator+"files";
         if(components.contains(component.get("name"))) {
             new File(componentFileDirectory).mkdirs();
-            FileWriter file = new FileWriter(componentFileDirectory+File.separator+component.get("name") + "_build_info.json");
+            FileWriter file = new FileWriter(componentFileDirectory + File.separator + "component_build_info.json");
             try {
                 file.write(component.toJSONString());
                 System.out.println("Successfully created "+component.get("name")+"build_info.json ");
@@ -76,8 +76,7 @@ public class ExternalComponentBuildInfoGenerator {
 
           // Copying ComponentName.jar into his files folder
             copyFile(new File(args[4]+File.separator+component.get("name")+".jar"),
-                     new File(componentFileDirectory+File.separator+component.get("name")+".jar"));
-
+                     new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
         }
 
     }

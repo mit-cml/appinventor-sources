@@ -516,7 +516,7 @@
         <arg value="--dex"/>
         <arg value="--no-strict"/>
         <arg value="--output"/>
-        <arg value="${ExternalComponentAsset.dir}/${filename}/${filename}.dex"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}/classes.dex"/>
         <arg value="${ExternalComponentTemp.dir}/${filename}.jar"/>
       </java>
       <echo>Dexing External Component:${filename}</echo>
