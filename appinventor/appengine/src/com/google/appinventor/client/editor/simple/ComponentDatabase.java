@@ -332,7 +332,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     if(components.containsKey(name))  return false;
     Component component = new Component(name,
         Integer.parseInt(properties.get("version").asString().getString()),
-        properties.get("classpath").asString().getString(),
+        properties.get("type").asString().getString(),
         Boolean.valueOf(properties.get("external").asString().getString()),
         properties.get("categoryString").asString().getString(),
         properties.get("helpString").asString().getString(),
