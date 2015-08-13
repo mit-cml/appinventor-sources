@@ -21,7 +21,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
-* Tool to generate a list of the external component types.
+* Tool to generate the list of the external component.
 *
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
 */

@@ -59,7 +59,7 @@ public class ExternalComponentBuildInfoGenerator {
             FileWriter file = new FileWriter(componentFileDirectory + File.separator + "component_build_info.json");
             try {
                 file.write(component.toJSONString());
-                System.out.println("Successfully created "+component.get("name")+"build_info.json ");
+                System.out.println("Successfully created build_info.json for "+component.get("name"));
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
