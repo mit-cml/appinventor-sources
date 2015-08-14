@@ -8,6 +8,7 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.component.Component;
@@ -15,7 +16,6 @@ import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 
-import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -169,7 +168,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
         compNodes.clear();
         return compNodes; // Fail the Import!!
       }
-      FileNode fileNode = new FileNode(StorageUtil.basename(name), destination);
+      FileNode fileNode = new YoungAndroidComponentNode(StorageUtil.basename(name), destination);
       fileImporter.importFile(userInfoProvider.getUserId(), projectId,
           destination, new ByteArrayInputStream(contents.get(name)));
       compNodes.add(fileNode);
