@@ -88,7 +88,7 @@ public class ExternalComponentBuildInfoGenerator {
         JSONObject component = (JSONObject) simple_component_array.get(i);
         if(components.contains(component.get("name"))) {
             File extensionDir = new File(args[2]+File.separator + component.get("name"));
-            File newExtensionDir = new File(args[2]+File.separator + component.get("classpath"));
+            File newExtensionDir = new File(args[2]+File.separator + component.get("type"));
             extensionDir.renameTo(newExtensionDir);
         }
       }
