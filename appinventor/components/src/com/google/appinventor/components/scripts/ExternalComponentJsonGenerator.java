@@ -45,7 +45,7 @@ public class ExternalComponentJsonGenerator {
       JSONObject component = (JSONObject)array.get(i);
       if(components.contains(component.get("name"))){  //TODO(Mos): Should test the external boolean here instead
         new File(args[2]+"/"+component.get("name").toString()).mkdirs();
-        FileWriter file = new FileWriter(args[2]+"/"+component.get("name")+"/"+component.get("name")+".json");
+        FileWriter file = new FileWriter(args[2]+"/"+component.get("name")+"/"+"component.json");
         try {
           file.write(component.toJSONString());
           System.out.println("Successfully created "+ component.get("name") +" JSON Object to File...");

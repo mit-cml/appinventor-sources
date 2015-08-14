@@ -375,32 +375,7 @@
   <!-- =====================================================================
        JsonExternalComponentDescription: create ExternalComponentName.json
                                         for each external component.
-       =====================================================================
-   <target name="ExternalComponentJsonProcessing"
-           description="create ExternalComponentName.json"
-           depends="ExternalComponentListGenerator">
-     <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
-       <include name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
-       <classpath>
-         <pathelement location="${lib.dir}/json-java/java-json.jar" />
-         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
-       </classpath>
-     </ai.javac5>
-     <java classname="com.google.appinventor.components.scripts.ExternalComponentJsonGenerator">
-       <arg value="${public.build.dir}/simple_components.json" />
-       <classpath>
-         <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
-         <pathelement location="${lib.dir}/json-java/java-json.jar" />
-         <pathelement location="${lib.dir}/json-simple/json-simple-1.1.1.jar" />
-       </classpath>
-     </java>
-     <move todir="${ExternalComponentAsset.dir}">
-       <fileset dir=".">
-         <include name="*.json" />
-       </fileset>
-     </move>
-   </target>
- -->
+       ===================================================================== -->
 
  <target name="ExternalComponentJsonProcessing"
          description="create ExternalComponentName.json for each AI extensions"
@@ -429,6 +404,7 @@
        ExternalComponentPackaging: create ExternalComponent.jar
                                         for each external component.
        ===================================================================== -->
+<property name="extensionPackage" value="${extPack}"/>
   <target name="ExternalComponentPackaging" description="create ExternalComponent.jar"
           depends="ExternalComponentListGenerator">
      <mkdir dir="${ExternalComponentTemp.dir}" />
@@ -442,9 +418,10 @@
      <java classname="com.google.appinventor.components.scripts.ExternalComponentPackaging">
         <arg value="${public.build.dir}/simple_components_build_info.json" />
         <arg value="${ExternalComponentAsset.dir}/external_components.txt" />
-        <arg value="${AndroidRuntime-class.dir}/${components.pkg}/runtime" />
+        <arg value="${AndroidRuntime-class.dir}" />
         <arg value="${buildserver.files.library.dir}" />
         <arg value="${ExternalComponentTemp.dir}" />
+        <arg value="${public.build.dir}/simple_components.json" />
         <classpath>
            <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
            <pathelement location="${lib.dir}/json-java/java-json.jar" />
@@ -515,10 +492,10 @@
         <arg value="--dex"/>
         <arg value="--no-strict"/>
         <arg value="--output"/>
-        <arg value="${ExternalComponentAsset.dir}/${filename}/${filename}.dex"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}/classes.dex"/>
         <arg value="${ExternalComponentTemp.dir}/${filename}.jar"/>
       </java>
-      <echo>Dexing External Component:${filename}</echo>
+      <echo>Dexing external component:${filename}</echo>
     </target>
 
     <!-- =====================================================================
@@ -541,6 +518,7 @@
        <arg value="${ExternalComponentAsset.dir}"/>
        <arg value="${buildserver.files.library.dir}"/>
        <arg value="${ExternalComponentTemp.dir}"/>
+       <arg value="${public.build.dir}/simple_components.json" />
        <classpath>
          <pathelement location="${ExternalComponentJsonProcessingLib-class.dir}" />
          <pathelement location="${lib.dir}/json-java/java-json.jar" />
