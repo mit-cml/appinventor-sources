@@ -6,23 +6,21 @@
 
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.util.Base64Util;
 import com.google.appinventor.client.output.OdeLog;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.HashMap;
-import java.util.Collection;
 
 /**
  * Manage known assets and components for a project and arrange to send them to the
@@ -156,7 +154,7 @@ public final class AssetManager implements ProjectChangeListener {
         // Filter : For files in directly in EXTERNAL_COMPS_FOLDER/COMP_FOLDER
         if (StringUtils.countMatches(fileId, "/") == 3) {
 
-          // Filter : For .dex Files
+          // Filter : For classes.dex File
           if (name.equals("classes.dex")) {
             allow = true;
 
@@ -233,8 +231,8 @@ public final class AssetManager implements ProjectChangeListener {
   public boolean markAssetTransferred1(String transferredAsset) {
     if (transferredAsset == null)
       return false;
-    AssetInfo tAssetInfo = INSTANCE.assets.get(transferredAsset);
-    tAssetInfo.transferred = true;
+    AssetInfo assetInfo = INSTANCE.assets.get(transferredAsset);
+    assetInfo.transferred = true;
     return  true;
   }
 
@@ -263,7 +261,7 @@ public final class AssetManager implements ProjectChangeListener {
     if (DEBUG)
       OdeLog.log("AssetManager: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
-    if (node instanceof YoungAndroidAssetNode) {
+    if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
     }
   }
@@ -273,7 +271,7 @@ public final class AssetManager implements ProjectChangeListener {
     if (DEBUG)
       OdeLog.log("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
-    if (node instanceof YoungAndroidAssetNode) {
+    if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
     }
   }
