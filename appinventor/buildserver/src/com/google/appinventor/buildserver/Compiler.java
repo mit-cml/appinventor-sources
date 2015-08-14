@@ -406,7 +406,8 @@ public final class Compiler {
         // TODO:  Check that this doesn't screw up other components.  Also, it might be
         // better to do this programmatically when the NearField component is created, rather
         // than here in the manifest.
-        if (simpleCompTypes.contains("NearField") && !isForCompanion && isMain) {
+        if (simpleCompTypes.contains("com.google.appinventor.components.runtime.NearField") &&
+            !isForCompanion && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
         } else if (isMain && isForCompanion) {
           out.write("android:launchMode=\"singleTop\" ");
@@ -422,7 +423,8 @@ public final class Compiler {
         }
         out.write("      </intent-filter>\n");
 
-        if (simpleCompTypes.contains("NearField") && !isForCompanion && isMain) {
+        if (simpleCompTypes.contains("com.google.appinventor.components.runtime.NearField") &&
+            !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
           //  this will trigger the form's onResume method
           //  For now, we're handling text/plain only,but we can add more and make the Nearfield
@@ -437,7 +439,7 @@ public final class Compiler {
       }
 
       // Add ListPickerActivity to the manifest only if a ListPicker component is used in the app
-      if (simpleCompTypes.contains("ListPicker")){
+      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.ListPicker")){
         // TODO(sharon): temporary until we add support for new activities
         String LIST_ACTIVITY_CLASS =
             "com.google.appinventor.components.runtime.ListPickerActivity";
@@ -449,7 +451,7 @@ public final class Compiler {
       }
 
       // Add WebViewActivity to the manifest only if a Twitter component is used in the app
-      if (simpleCompTypes.contains("Twitter")){
+      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.Twitter")){
         String WEBVIEW_ACTIVITY_CLASS =
             "com.google.appinventor.components.runtime.WebViewActivity";
 
@@ -462,7 +464,7 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
-      if (simpleCompTypes.contains("BarcodeScanner")) {
+      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.BarcodeScanner")) {
         // Barcode Activity
         out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
         out.write("              android:screenOrientation=\"landscape\"\n");
@@ -473,7 +475,7 @@ public final class Compiler {
       }
 
       // BroadcastReceiver for Texting Component
-      if (simpleCompTypes.contains("Texting")) {
+      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.Texting")) {
         System.out.println("Android Manifest: including <receiver> tag");
         out.write(
             "<receiver \n" +
@@ -793,8 +795,7 @@ public final class Compiler {
 
       // attach the jars of external comps
       for (String type : extCompTypes) {
-        String sourcePath = getExtCompDirPath(type) + RUNTIME_FILES_DIR +
-            getCompName(type) + ".jar";
+        String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
         classpath += sourcePath + COLON;
       }
 
@@ -1257,9 +1258,9 @@ public final class Compiler {
       for (int i = 0; i < buildInfo.length(); ++i) {
         JSONObject compJson = buildInfo.getJSONObject(i);
         JSONArray infoArray = compJson.getJSONArray(targetInfo);
-        String name = compJson.getString("name");
+        String type = compJson.getString("type");
 
-        if (!simpleCompTypes.contains(name) && !extCompTypes.contains(name)) {
+        if (!simpleCompTypes.contains(type) && !extCompTypes.contains(type)) {
           continue;
         }
 
@@ -1270,7 +1271,7 @@ public final class Compiler {
         }
 
         if (!infoSet.isEmpty()) {
-          infoMap.put(name, infoSet);
+          infoMap.put(type, infoSet);
         }
       }
     }
@@ -1353,9 +1354,9 @@ public final class Compiler {
 
       extCompsBuildInfo = new JSONArray();
       for (String type : extCompTypes) {
-        // .../assets/external_comps/com.package.MyExtComp/files/MyExtComp_build_info.json
+        // .../assets/external_comps/com.package.MyExtComp/files/component_build_info.json
         File extCompRuntimeFileDir = new File(getExtCompDirPath(type) + RUNTIME_FILES_DIR);
-        String jsonFileName = getCompName(type) + "_build_info.json";
+        String jsonFileName = "component_build_info.json";
         File jsonFile = new File(extCompRuntimeFileDir, jsonFileName);
 
         extCompsBuildInfo.put(new JSONObject(Resources.toString(
@@ -1374,7 +1375,7 @@ public final class Compiler {
       Set<String> allSimpleTypes = Sets.newHashSet();
       for (int i = 0; i < buildInfo.length(); ++i) {
         JSONObject comp = buildInfo.getJSONObject(i);
-        allSimpleTypes.add(comp.getString("name"));
+        allSimpleTypes.add(comp.getString("type"));
       }
 
       simpleCompTypes = Sets.newHashSet(neededTypes);
