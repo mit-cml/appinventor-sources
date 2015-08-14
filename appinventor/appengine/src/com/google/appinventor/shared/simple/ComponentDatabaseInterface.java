@@ -188,13 +188,13 @@ public interface ComponentDatabaseInterface {
   Set<String> getComponentNames();
 
   /**
-   *Returns the full classpath of a component
+   *Returns the type of a component
    *
    *@param componentTypeName name of component to query
-   *@return classpath of the component
+   *@return type of the component
    */
   String getComponentType(String componentTypeName);
-  
+
   /**
    *
    *Returns the whether a component is external or not
@@ -203,7 +203,7 @@ public interface ComponentDatabaseInterface {
    *@return true if componentTypeName is external false otherwise
    */
   boolean getComponentExternal(String componentTypeName);
-  
+
   /**
    * Returns the version number of a component.
    *
