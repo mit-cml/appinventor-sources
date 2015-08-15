@@ -27,8 +27,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
-* Tool to generate externalComponent.build_info.json.
-* And put the libraries used by the extensions in the correct directory.
+* Tool to generate component.build_info.json for extensions.
+* And put the libraries used by the extension in the correct directory for packaging.
 *
 * @author mouha.oumar@gmail.com (Mouhamadou O. Sall)
 */
@@ -36,32 +36,33 @@ import org.json.simple.parser.ParseException;
 public class ExternalComponentBuildInfoGenerator {
 
 
+  /**
+  * The definitions of the arguments used by this script
+  *
+  * args[0]: the path to simple_component_build_info.json
+  * args[1]: the path to external_components.txt
+  * args[2]: the path to ExternalComponents folder
+  * args[3]: the path to /build/classes/BuildServer/files
+  * args[4]: the path to external componentsTemp directory
+  * args[5]: the path to simple_component.json
+  */
   public static void main(String[] args) throws IOException, ParseException, JSONException {
-
-    /*
-    * args[0]: the path to simple_component_build_info.json
-    * args[1]: the path to external_components.txt
-    * args[2]: the path to ExternalComponents folder
-    * args[3]: the path to /build/classes/BuildServer/files
-    * args[4]: the path to external componentsTemp directory
-    * args[5]: the path to simple_component.json
-    */
     JSONParser parser = new JSONParser();
-    String jsonText = readFile(args[0], Charset.defaultCharset());
-    Object obj = parser.parse(jsonText);
-    JSONArray array = (JSONArray) obj;
+    String simple_component_build_text = readFile(args[0], Charset.defaultCharset());
+    Object simple_component_build_obj = parser.parse(simple_component_build_text);
+    JSONArray simple_component_build_info_array = (JSONArray) simple_component_build_obj;
     ArrayList<String> components = fileToArray(args[1]);
-    for (int i = 0; i < array.size(); i++) {
-      JSONObject component = (JSONObject) array.get(i);
-      String componentFileDirectory = args[2]+File.separator+ component.get("name") + File.separator+"files";
+    for (int i = 0; i < simple_component_build_info_array.size(); i++) {
+      JSONObject component = (JSONObject)simple_component_build_info_array.get(i);
       String componentType = component.get("type").toString();
       String componentName = componentType.substring(componentType.lastIndexOf(".") + 1);
+      String componentFileDirectory = args[2]+File.separator+ componentName+ File.separator+"files";
         if(components.contains(componentName)) {
             new File(componentFileDirectory).mkdirs();
             FileWriter file = new FileWriter(componentFileDirectory + File.separator + "component_build_info.json");
             try {
                 file.write(component.toJSONString());
-                System.out.println("Successfully created build_info.json for "+component.get("name"));
+                System.out.println("Successfully created component_build_info.json for "+componentName);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -78,29 +79,35 @@ public class ExternalComponentBuildInfoGenerator {
           }
 
           // Copying ComponentName.jar into his files folder
-            copyFile(new File(args[4]+File.separator+component.get("name")+".jar"),
+          copyFile(new File(args[4]+File.separator+componentName+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
+
+          // Renaming folder accordingly
+          File extensionDir = new File(args[2] + File.separator + componentName);
+          File newExtensionDir = new File(args[2] + File.separator + componentType);
+          extensionDir.renameTo(newExtensionDir);
         }
     }
-      // Renaming folder accordingly
-      String simple_component_text = readFile(args[5], Charset.defaultCharset());
-      Object simple_component_obj = parser.parse(simple_component_text);
-      JSONArray simple_component_array = (JSONArray) simple_component_obj;
-      for (int i = 0; i < simple_component_array.size(); i++) {
-        JSONObject component = (JSONObject) simple_component_array.get(i);
-        if(components.contains(component.get("name"))) {
-            File extensionDir = new File(args[2]+File.separator + component.get("name"));
-            File newExtensionDir = new File(args[2]+File.separator + component.get("type"));
-            extensionDir.renameTo(newExtensionDir);
-        }
-      }
+
   }
 
+  /**
+   * Read a file and returns its content
+   *
+   * @param path the path of the file to be read
+   * @param encoding the encoding system
+   */
   private static String readFile(String path, Charset encoding) throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
   }
 
+  /**
+   * Read external_components.txt (a file containing the name of the extension)
+   * and returns an ArrayList containing those components
+   *
+   * @param fileName the path of the file to be read
+   */
   private static ArrayList<String> fileToArray(String fileName) throws FileNotFoundException{
     Scanner sc = new Scanner(new File(fileName));
     ArrayList<String> components = new ArrayList<String>();
@@ -110,6 +117,12 @@ public class ExternalComponentBuildInfoGenerator {
     return components;
   }
 
+  /**
+   * Copy a file from a given source to a given destination
+   *
+   * @param source the file to be copied
+   * @param dest where the file will be copied
+   */
   private static void copyFile(File source, File dest) throws IOException {
       InputStream is = null;
       OutputStream os = null;
