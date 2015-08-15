@@ -1042,7 +1042,7 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
 Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     if (window.parent.ReplState === undefined)
         return false;
-    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTING))
+    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTING && window.parent.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
     var rs = window.parent.ReplState;
