@@ -77,6 +77,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static void outputComponentBuildInfo(ComponentInfo component, StringBuilder sb) {
     sb.append("{\"type\": \"");
     sb.append(component.type + "\"");
+    sb.append("\"name\": \"");
+    sb.append(component.name + "\"");
     appendComponentInfo(sb, PERMISSIONS_TARGET, component.permissions);
     appendComponentInfo(sb, LIBRARIES_TARGET, component.libraries);
     appendComponentInfo(sb, NATIVE_TARGET, component.nativeLibraries);
