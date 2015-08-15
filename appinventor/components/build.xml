@@ -36,8 +36,8 @@
        Define external components properties.
        ===================================================================== -->
   <property name="ExternalComponentJsonProcessingLib-class.dir" location="${class.dir}/ExternalComponentJsonProcessingLib" />
-  <property name="ExternalComponentAsset.dir" location="${local.build.dir}/ExternalComponents" />
-  <property name="ExternalComponentTemp.dir" location="${local.build.dir}/ExternalComponentsTemp" />
+  <property name="ExternalComponentAsset.dir" location="${local.build.dir}/externalComponents" />
+  <property name="ExternalComponentTemp.dir" location="${local.build.dir}/externalComponentsTemp" />
   <property name="Extensions.dir" location="${local.build.dir}/extensions" />
 
   <!-- =====================================================================
@@ -404,7 +404,6 @@
        ExternalComponentPackaging: create ExternalComponent.jar
                                         for each external component.
        ===================================================================== -->
-<property name="extensionPackage" value="${extPack}"/>
   <target name="ExternalComponentPackaging" description="create ExternalComponent.jar"
           depends="ExternalComponentListGenerator">
      <mkdir dir="${ExternalComponentTemp.dir}" />
@@ -445,13 +444,13 @@
          <jarjar jarfile="@{dir}.jar">
             <fileset dir="@{dir}" excludes="*.jar"/>
          </jarjar>
-         <echo>@{dir}</echo>
+         <echo>Jaring: @{dir}</echo>
       </sequential>
     </for>
     </target>
 
    <!-- =====================================================================
-        Unjaring extension's library in order for the extensions'dex to work properly
+        Unjaring extension's library in order for the extensions'dex to work properly.
         ===================================================================== -->
     <target name="unjar" depends="ExternalComponentPackaging">
        <basename property="filename" file="${theComponent}" />
@@ -473,7 +472,7 @@
   </target>
 
    <!-- =====================================================================
-        DexingExternalComponent: create ExternalComponentName.dex
+        DexingExternalComponent: create classes.dex
                                          for each external component.
         ===================================================================== -->
     <target name="dexAll" depends="Jaring,ExternalComponentJsonProcessing">
@@ -495,11 +494,13 @@
         <arg value="${ExternalComponentAsset.dir}/${filename}/classes.dex"/>
         <arg value="${ExternalComponentTemp.dir}/${filename}.jar"/>
       </java>
-      <echo>Dexing external component:${filename}</echo>
+      <echo>Dexing extension: ${filename}</echo>
     </target>
 
     <!-- =====================================================================
-         ExternalComponentComponentBuildInfo: create Extension_build_info.json
+         ExternalComponentComponentBuildInfo: create component_build_info.json
+                                               and copy files related to the buildserver
+                                               for each extension
          ===================================================================== -->
    <property  name="buildserver.files.library.dir" location="../buildserver/build/classes/BuildServer/files"/>
    <target name="ExternalComponentBuildInfo"
@@ -528,7 +529,7 @@
    </target>
 
      <!-- =====================================================================
-         ZippingExternalComponent: create ExternalComponentName.aix
+         ZippingExternalComponent: create extensionPackage.aix
                                            for each external component.
           ===================================================================== -->
     <target name="zipit" depends="ExternalComponentBuildInfo">
