@@ -70,7 +70,7 @@ public class ExternalComponentPackaging {
       for (int i = 0; i < simple_component_array.size(); i++) {
         JSONObject component = (JSONObject) simple_component_array.get(i);
         if(components.contains(component.get("name"))) {
-          String componentClassPath = component.get("classpath").toString();
+          String componentClassPath = component.get("type").toString();
           componentClassPath = componentClassPath.substring(0,componentClassPath.lastIndexOf(".")).replace('.','/');
           String componentTempDirectory = args[4]+File.separator+ component.get("name");
           String componentClassPathDirectory = componentTempDirectory + File.separator+componentClassPath;

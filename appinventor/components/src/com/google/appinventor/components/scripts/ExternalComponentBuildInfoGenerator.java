@@ -54,7 +54,9 @@ public class ExternalComponentBuildInfoGenerator {
     for (int i = 0; i < array.size(); i++) {
       JSONObject component = (JSONObject) array.get(i);
       String componentFileDirectory = args[2]+File.separator+ component.get("name") + File.separator+"files";
-        if(components.contains(component.get("name"))) {
+      String componentType = component.get("type").toString();
+      String componentName = componentType.substring(componentType.lastIndexOf(".") + 1);
+        if(components.contains(componentName)) {
             new File(componentFileDirectory).mkdirs();
             FileWriter file = new FileWriter(componentFileDirectory + File.separator + "component_build_info.json");
             try {
@@ -88,7 +90,7 @@ public class ExternalComponentBuildInfoGenerator {
         JSONObject component = (JSONObject) simple_component_array.get(i);
         if(components.contains(component.get("name"))) {
             File extensionDir = new File(args[2]+File.separator + component.get("name"));
-            File newExtensionDir = new File(args[2]+File.separator + component.get("classpath"));
+            File newExtensionDir = new File(args[2]+File.separator + component.get("type"));
             extensionDir.renameTo(newExtensionDir);
         }
       }
