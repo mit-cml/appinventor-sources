@@ -26,6 +26,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
 
+  <target name="extensions">
+    <ant inheritAll="false" useNativeBasedir="true" dir="components" target="extensions"/>
+  </target>
+
   <target name="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
