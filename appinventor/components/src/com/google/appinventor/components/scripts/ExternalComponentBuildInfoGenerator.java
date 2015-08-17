@@ -75,17 +75,16 @@ public class ExternalComponentBuildInfoGenerator {
           for(int j = 0; j<libraryArray.size();j++){
             Object library = libraryArray.get(j);
             copyFile(new File(args[3]+File.separator+library.toString()),
-                     new File(componentFileDirectory+File.separator+library.toString()));
+                    new File(componentFileDirectory+File.separator+library.toString()));
           }
 
           // Copying ComponentName.jar into his files folder
           copyFile(new File(args[4]+File.separator+componentName+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
 
-          // Renaming folder accordingly
+          //Renaming folder accordingly
           File extensionDir = new File(args[2] + File.separator + componentName);
           File newExtensionDir = new File(args[2] + File.separator + componentType);
-          if(newExtensionDir.exists()) deleteDirectory(newExtensionDir);
           extensionDir.renameTo(newExtensionDir);
         }
     }

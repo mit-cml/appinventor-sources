@@ -54,13 +54,16 @@ public class ExternalComponentPackaging {
     JSONArray simple_component_build_info_array = (JSONArray) simple_component_build_info_obj;
     for (int i = 0; i < simple_component_build_info_array.size(); i++) {
       JSONObject component = (JSONObject) simple_component_build_info_array.get(i);
-      if(components.contains(component.get("name"))) {
-        String componentTempDirectory = args[4]+File.separator+ component.get("name");
+      String componentType = component.get("type").toString();
+      String componentName = componentType.substring(componentType.lastIndexOf(".") + 1);
+      if(components.contains(componentName)) {
+        String componentTempDirectory = args[4]+File.separator+ componentName;
+        new File(componentTempDirectory).mkdirs();
         JSONArray libraryArray = (JSONArray)component.get("libraries");
         for(int j = 0; j<libraryArray.size();j++){
           Object library = libraryArray.get(j);
-          copyFile(new File(args[3]+File.separator+library.toString()),
-          new File(componentTempDirectory+File.separator+library.toString()));
+            copyFile(new File(args[3]+File.separator+library.toString()),
+            new File(componentTempDirectory+File.separator+library.toString()));
         }
       }
     }
@@ -151,5 +154,5 @@ public class ExternalComponentPackaging {
       }
     }
   }
-  
+
 }
