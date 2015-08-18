@@ -93,6 +93,7 @@
 
     <property name="wifi.enabled" value="true" />
 
+    <!-- 
     <property name="library.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="get_started.url" value="http://appinventor.mit.edu/explore/get-started" />
     <property name="tutorials.url" value="http://appinventor.mit.edu/explore/ai2/tutorials" />
@@ -104,9 +105,10 @@
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="http://ai2.appinventor.mit.edu/reference/components/" />
+    -->
 
     <!-- Set this to true to enable support for FIRST Tech Challenge. -->
-    <property name="ftc.enabled" value="false" />
+    <property name="ftc.enabled" value="true" />
 
   </system-properties>
 
