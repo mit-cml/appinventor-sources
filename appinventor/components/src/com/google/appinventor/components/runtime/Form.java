@@ -1793,4 +1793,8 @@ public class Form extends Activity
     bgview.invalidate();
   }
 
+  public static boolean getCompatibilityMode() {
+    return sCompatibilityMode;
+  }
+
 }
