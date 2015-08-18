@@ -421,11 +421,14 @@
                                    #t)
                                  (exception java.lang.Throwable
                                   (begin
-                                    (android-log-form (exception:getMessage))
+                                    (if (instance? exception java.lang.InterruptedException)
+                                      (primitive-throw exception)
+                                      (begin
+                                        (android-log-form (exception:getMessage))
 ;;; Comment out the line below to inhibit a stack trace on a RunTimeError
-                                    (exception:printStackTrace)
-                                    (process-exception exception)
-                                    #f))))
+                                        (exception:printStackTrace)
+                                        (process-exception exception)
+                                        #f))))))
                         #f)
                      ;; else unregister event for registeredComponentName
                      (begin

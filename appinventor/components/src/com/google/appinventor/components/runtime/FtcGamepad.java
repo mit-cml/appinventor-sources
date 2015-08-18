@@ -20,8 +20,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import android.util.Log;
-
 /**
  * A component for a gamepad of an FTC robot.
  *

@@ -42,10 +42,13 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
   protected OpMode createOpMode() {
     linearOpMode = new LinearOpMode() {
       @Override
-      public void runOpMode() {
+      public void runOpMode() throws InterruptedException {
         FtcRobotController.activateOpMode(this);
-        RunOpMode();
-        FtcRobotController.deactivateOpMode();
+        try {
+          RunOpMode();
+        } finally {
+          FtcRobotController.deactivateOpMode();
+        }
       }
     };
     return linearOpMode;
