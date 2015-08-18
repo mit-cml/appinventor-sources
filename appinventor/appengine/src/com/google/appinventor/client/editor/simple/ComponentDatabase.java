@@ -138,9 +138,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return compsAdded;
   }
 
-  public boolean removeComponent(String componentTypeName) {
+  public boolean removeComponent(String componentName) {
     List<String> removedComponents = new ArrayList<String>();
-    removedComponents.add(componentTypeName);
+    removedComponents.add(componentName);
     Map<String, String> removedComponentsMap = new HashMap<String, String>();
     for (String componentType : removedComponents) {
       removedComponentsMap.put(componentType, getComponentType(componentType));
@@ -148,7 +148,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     if (!fireBeforeComponentsRemoved(removedComponents)) {
       throw new IllegalStateException("Failed to remove Component!");
     }
-    if (components.remove(componentTypeName) != null) {
+    if (components.remove(componentName) != null) {
       componentsJSONString = generateComponentsJSON();
       fireComponentsRemoved(removedComponentsMap);
       return true;
@@ -171,8 +171,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public int getComponentVersion(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public int getComponentVersion(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -181,8 +181,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getComponentType(String componentTypeName){
-    Component component = components.get(componentTypeName);
+  public String getComponentType(String componentName){
+    Component component = components.get(componentName);
     if(component == null){
       throw new IllegalArgumentException();
     }
@@ -191,8 +191,19 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public boolean getComponentExternal(String componentTypeName){
-    Component component = components.get(componentTypeName);
+  public String getComponentName(String componentType) {
+    for (String componentName : components.keySet()) {
+      Component component = components.get(componentName);
+      if (component.type == componentType) {
+        return componentName;
+      }
+    }
+    return "";
+  }
+
+  @Override
+  public boolean getComponentExternal(String componentName){
+    Component component = components.get(componentName);
     if(component == null){
       throw new IllegalArgumentException();
     }
@@ -201,8 +212,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getCategoryString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getCategoryString(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -211,8 +222,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getCategoryDocUrlString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getCategoryDocUrlString(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -221,8 +232,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getHelpString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getHelpString(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -231,8 +242,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public boolean getShowOnPalette(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean getShowOnPalette(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -241,8 +252,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public boolean getNonVisible(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean getNonVisible(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -250,8 +261,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getIconName(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getIconName(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -259,8 +270,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public List<PropertyDefinition> getPropertyDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<PropertyDefinition> getPropertyDefinitions(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -269,8 +280,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -279,8 +290,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public List<EventDefinition> getEventDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<EventDefinition> getEventDefinitions(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -289,8 +300,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public List<MethodDefinition> getMethodDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<MethodDefinition> getMethodDefinitions(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -299,8 +310,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public Map<String, String> getPropertyTypesByName(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public Map<String, String> getPropertyTypesByName(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -309,8 +320,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public String getTypeDescription(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getTypeDescription(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
@@ -432,8 +443,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
-  public boolean isComponent(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean isComponent(String componentName) {
+    Component component = components.get(componentName);
     if (component == null) {
       return false;
     }

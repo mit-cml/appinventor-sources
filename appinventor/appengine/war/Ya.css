@@ -797,6 +797,11 @@ select {
   padding-bottom: 10px;
 }
 
+.ode-SimplePaletteItem-icon {
+  height: 16px;
+  width: 16px;
+}
+
 .ode-SimplePaletteItem-caption {
   font-size: 12px;
   color: #555;

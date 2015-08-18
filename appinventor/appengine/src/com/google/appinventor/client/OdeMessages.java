@@ -537,6 +537,14 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the component import failed")
   String componentImportError();
 
+  @DefaultMessage("Extension Import failed due to unknown URL")
+  @Description("Error message reported when the component import failed due to unknown url")
+  String componentImportUnknownURLError();
+
+  @DefaultMessage("This Extension is already imported! Use ")
+  @Description("Error message reported when the component import due to already imported extension")
+  String componentAlreadyImportedError();
+
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
   @Description("Error message reported when the file selected for upload is not a component archive.")

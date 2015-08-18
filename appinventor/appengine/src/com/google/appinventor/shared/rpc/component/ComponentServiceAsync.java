@@ -22,13 +22,13 @@ public interface ComponentServiceAsync {
    * @see ComponentService#importComponentToProject(Component, long, String)
    */
   void importComponentToProject(Component info, long projectId,
-      String folderPath, AsyncCallback<List<ProjectNode>> callback);
+      String folderPath, AsyncCallback<ComponentImportResponse> callback);
 
   /**
    * @see ComponentService#importComponentToProject(String, long, String)
    */
   void importComponentToProject(String url, long projectId, String folderPath,
-      AsyncCallback<List<ProjectNode>> callback);
+      AsyncCallback<ComponentImportResponse> callback);
 
   /**
    * @see ComponentService#deleteComponent(Component)
