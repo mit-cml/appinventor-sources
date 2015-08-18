@@ -49,6 +49,7 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.setStylePrimaryName("ode-SimplePaletteItem");
 
     Image image = scd.getImage();
+    image.setStylePrimaryName("ode-SimplePaletteItem-icon");
     panel.add(image);
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
     panel.setCellWidth(image, "30px");
