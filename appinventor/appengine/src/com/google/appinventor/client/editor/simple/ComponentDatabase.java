@@ -190,6 +190,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return component.type;
   }
 
+  @Override
   public String getComponentName(String componentType) {
     for (String componentName : components.keySet()) {
       Component component = components.get(componentName);
