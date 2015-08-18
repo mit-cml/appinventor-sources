@@ -31,7 +31,7 @@ public interface ComponentService extends RemoteService {
    * @param folderPath folder to which the component will be stored
    * @return a list of ProjectNode created from the component
    */
-  List<ProjectNode> importComponentToProject(Component component, long projectId, String folderPath);
+  ComponentImportResponse importComponentToProject(Component component, long projectId, String folderPath);
 
   /**
    * Import the component to the project in the server and
@@ -42,7 +42,7 @@ public interface ComponentService extends RemoteService {
    * @param folderPath folder to which the component will be stored
    * @return a list of ProjectNode created from the component
    */
-  List<ProjectNode> importComponentToProject(String url, long projectId, String folderPath);
+  ComponentImportResponse importComponentToProject(String url, long projectId, String folderPath);
 
   /**
    * Delete the component uploaded by the user

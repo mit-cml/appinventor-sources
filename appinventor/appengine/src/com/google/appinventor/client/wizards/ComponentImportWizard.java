@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.allen_sauer.gwt.dnd.client.util.StringUtil;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
@@ -19,6 +20,7 @@ import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.component.Component;
+import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
@@ -47,13 +49,26 @@ public class ComponentImportWizard extends Wizard {
 
   final static String external_components = "assets/external_comps/";
 
-  private static class ImportComponentCallback extends OdeAsyncCallback<List<ProjectNode>> {
+  private static class ImportComponentCallback extends OdeAsyncCallback<ComponentImportResponse> {
     @Override
-    public void onSuccess(List<ProjectNode> compNodes) {
-      if (compNodes.isEmpty()){
+    public void onSuccess(ComponentImportResponse response) {
+      if (response.getStatus() == ComponentImportResponse.Status.FAILED){
         Window.alert(MESSAGES.componentImportError());
         return;
       }
+      else if (response.getStatus() == ComponentImportResponse.Status.ALREADY_IMPORTED) {
+        String componentName = SimpleComponentDatabase.getInstance().getComponentName(response.getComponentType());
+        Window.alert(MESSAGES.componentAlreadyImportedError() + componentName + ".");
+        return;
+      }
+      else if (response.getStatus() == ComponentImportResponse.Status.UNKNOWN_URL) {
+        Window.alert(MESSAGES.componentImportUnknownURLError());
+      }
+      else if (response.getStatus() != ComponentImportResponse.Status.SUCCESS) {
+        Window.alert(MESSAGES.componentImportError());
+        return;
+      }
+      List<ProjectNode> compNodes = response.getNodes();
       for (ProjectNode node : compNodes) {
         if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
           String fileId = node.getFileId();

@@ -8,6 +8,7 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
@@ -43,27 +44,31 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
 
   private final FileImporter fileImporter = new FileImporterImpl();
 
+
   @Override
   public List<Component> getComponents() {
     return storageIo.getComponents(userInfoProvider.getUserId());
   }
 
   @Override
-  public List<ProjectNode> importComponentToProject(Component component, long projectId,
+  public ComponentImportResponse importComponentToProject(Component component, long projectId,
       String folderPath) {
     List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     String gcsPath = storageIo.getGcsPath(component);
+    ComponentImportResponse response = new ComponentImportResponse(ComponentImportResponse.Status.FAILED);
+    response.setComponentType(component.getFullyQualifiedName());
 
     if (gcsPath == null) {
       // component may not come from the datastore so gcsPath is null
-      return compNodes;
+      response.setStatus(ComponentImportResponse.Status.NOT_GCS);
+      return response;
     }
 
     try {
       byte[] compContent = storageIo.getGcsFileContent(gcsPath);
       Map<String, byte[]> contents =
           extractContents(new ByteArrayInputStream(compContent));
-      compNodes = importToProject(contents, projectId, folderPath);
+      importToProject(contents, projectId, folderPath, response);
 
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -73,21 +78,23 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
           collectImportErrorInfo(gcsPath, projectId), e);
     }
 
-    return compNodes;
+    return response;
   }
 
   @Override
-  public List<ProjectNode> importComponentToProject(String url, long projectId,
+  public ComponentImportResponse importComponentToProject(String url, long projectId,
       String folderPath) {
-    List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
+    ComponentImportResponse response = new ComponentImportResponse(ComponentImportResponse.Status.FAILED);
+
     if (isUnknownSource(url)) {
-      return compNodes;
+      response.setStatus(ComponentImportResponse.Status.UNKNOWN_URL);
+      return response;
     }
 
     try {
       URL compUrl = new URL(url);
       Map<String, byte[]> contents = extractContents(compUrl.openStream());
-      compNodes = importToProject(contents, projectId, folderPath);
+      importToProject(contents, projectId, folderPath, response);
 
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -97,7 +104,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
           collectImportErrorInfo(url, projectId), e);
     }
 
-    return compNodes;
+    return response;
   }
 
   @Override
@@ -158,22 +165,29 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     return contents;
   }
 
-  private List<ProjectNode> importToProject(Map<String, byte[]> contents, long projectId,
-      String folderPath) throws FileImporterException, IOException {
+  private void importToProject(Map<String, byte[]> contents, long projectId,
+      String folderPath, ComponentImportResponse response) throws FileImporterException, IOException {
     List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     List<String> sourceFiles = storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId);
     for (String name : contents.keySet()) {
       String destination = folderPath + "/external_comps/" + name;
       if (sourceFiles.contains(destination)) {  // Check if source File already contains component files
-        compNodes.clear();
-        return compNodes; // Fail the Import!!
+        response.setStatus(ComponentImportResponse.Status.ALREADY_IMPORTED);
+        return; // Fail the Import!!
       }
       FileNode fileNode = new YoungAndroidComponentNode(StorageUtil.basename(name), destination);
       fileImporter.importFile(userInfoProvider.getUserId(), projectId,
           destination, new ByteArrayInputStream(contents.get(name)));
       compNodes.add(fileNode);
     }
-    return compNodes;
+
+    String type = contents.keySet().iterator().next(); // get an element
+    type = type.substring(0, type.indexOf('/')); // get the type
+
+    response.setStatus(ComponentImportResponse.Status.SUCCESS);
+    response.setComponentType(type);
+    response.setNodes(compNodes);
+    return;
   }
 
 
