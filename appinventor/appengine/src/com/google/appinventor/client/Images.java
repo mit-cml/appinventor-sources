@@ -485,6 +485,12 @@ public interface Images extends Resources {
   ImageResource sharingComponent();
 
   /**
+   * Designer palette item: SimpleMenu component
+   */
+  @Source("com/google/appinventor/images/simpleMenu.png")
+  ImageResource simpleMenu();
+
+  /**
     * Designer palette item: Spinner
     */
   @Source("com/google/appinventor/images/spinner.png")

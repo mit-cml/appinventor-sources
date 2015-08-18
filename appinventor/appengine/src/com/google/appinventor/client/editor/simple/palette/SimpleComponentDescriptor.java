@@ -119,6 +119,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/mediastore.png", images.mediastore());
     bundledImages.put("images/sharing.png", images.sharingComponent());
+    bundledImages.put("images/simpeMenu.png", images.simpleMenu());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
     bundledImages.put("images/yandex.png", images.yandex());
