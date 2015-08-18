@@ -75,14 +75,14 @@ public class ExternalComponentBuildInfoGenerator {
           for(int j = 0; j<libraryArray.size();j++){
             Object library = libraryArray.get(j);
             copyFile(new File(args[3]+File.separator+library.toString()),
-                     new File(componentFileDirectory+File.separator+library.toString()));
+                    new File(componentFileDirectory+File.separator+library.toString()));
           }
 
           // Copying ComponentName.jar into his files folder
           copyFile(new File(args[4]+File.separator+componentName+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
 
-          // Renaming folder accordingly
+          //Renaming folder accordingly
           File extensionDir = new File(args[2] + File.separator + componentName);
           File newExtensionDir = new File(args[2] + File.separator + componentType);
           extensionDir.renameTo(newExtensionDir);
@@ -138,6 +138,29 @@ public class ExternalComponentBuildInfoGenerator {
           is.close();
           os.close();
       }
+  }
+
+  /**
+  * Delete a directory
+  *
+  * Code posted on http://stackoverflow.com/questions/3775694/deleting-folder-from-java
+  * @param directory the folder to be removed
+  */
+  public static boolean deleteDirectory(File directory) {
+    if(directory.exists()){
+      File[] files = directory.listFiles();
+      if(null!=files){
+        for(int i=0; i<files.length; i++) {
+          if(files[i].isDirectory()) {
+            deleteDirectory(files[i]);
+          }
+          else {
+            files[i].delete();
+          }
+        }
+      }
+    }
+    return(directory.delete());
   }
 
 }

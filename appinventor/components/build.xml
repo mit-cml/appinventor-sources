@@ -349,9 +349,9 @@
 
    <target name="ExternalComponentListGenerator"
            description="external_components.txt"
-           depends="CommonConstants,AndroidRuntime,
-                    JsonComponentDescription,XmlComponentDescription,
-                    ComponentList,ComponentTranslation">
+           depends="AndroidRuntime,
+                    JsonComponentDescription,
+                    ComponentList">
      <mkdir dir="${ExternalComponentJsonProcessingLib-class.dir}" />
      <mkdir dir="${ExternalComponentAsset.dir}" />
      <ai.javac5 destdir="${ExternalComponentJsonProcessingLib-class.dir}">
