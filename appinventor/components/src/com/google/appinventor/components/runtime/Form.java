@@ -1205,7 +1205,11 @@ public class Form extends Activity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Fixed")
   @SimpleProperty(userVisible = false,
-    description = "Determine whether or not we will auto scale to make all devices appear the same size")
+    // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
+    description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
+                  "If set to responsive, screen layouts will use the actual resolution of the device.  " +
+                  "See the documentation on responsive design in App Inventor for more information. " +
+                  "This property appears on Screen1 only and controls the sizing for all screens in the app.")
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
