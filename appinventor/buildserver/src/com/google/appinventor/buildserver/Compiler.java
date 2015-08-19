@@ -1019,8 +1019,7 @@ public final class Compiler {
 
     // attach the jars of external comps
     for (String type : extCompTypes) {
-      String sourcePath = getExtCompDirPath(type) + RUNTIME_FILES_DIR +
-          getCompName(type) + ".jar";
+      String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
       inputList.add(new File(sourcePath));
     }
 
@@ -1393,9 +1392,5 @@ public final class Compiler {
     createDir(project.getAssetsDirectory());
     return project.getAssetsDirectory().getAbsolutePath() + SLASH +
         EXT_COMPS_DIR_NAME + SLASH + type;
-  }
-
-  private static String getCompName(String type) {
-    return type.substring(type.lastIndexOf(".") + 1);
   }
 }
