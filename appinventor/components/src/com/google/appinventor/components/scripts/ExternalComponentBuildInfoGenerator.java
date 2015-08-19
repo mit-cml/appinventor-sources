@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.util.Properties;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -82,10 +83,30 @@ public class ExternalComponentBuildInfoGenerator {
           copyFile(new File(args[4]+File.separator+componentName+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
 
-          //Renaming folder accordingly
-          File extensionDir = new File(args[2] + File.separator + componentName);
-          File newExtensionDir = new File(args[2] + File.separator + componentType);
-          extensionDir.renameTo(newExtensionDir);
+         //Adding extension.properties
+         String componentDirectory = args[2]+File.separator+ componentName;
+         Properties extensionProperties = new Properties();
+         OutputStream output = null;
+         try {
+           output = new FileOutputStream(componentDirectory+File.separator+"extension.properties");
+           extensionProperties.setProperty("type", "external");
+           extensionProperties.store(output, null);
+         }catch (IOException e) {
+            e.printStackTrace();
+         }finally {
+           if (output != null) {
+             try {
+               output.close();
+             } catch (IOException e) {
+               e.printStackTrace();
+             }
+          }
+        }
+
+        //Renaming folder accordingly
+        File extensionDir = new File(args[2] + File.separator + componentName);
+        File newExtensionDir = new File(args[2] + File.separator + componentType);
+        extensionDir.renameTo(newExtensionDir);
         }
     }
 
