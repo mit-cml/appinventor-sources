@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
+import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -507,14 +508,14 @@ public final class MockForm extends MockContainer {
     }
   }
 
-  private void setCompatibilityProperty(String compatibilityProperty) {
+  private void setSizingProperty(String sizingProperty) {
     // The Compatibility property actually applies to the application and is only visible on
     // Screen1. When we load a form that is not Screen1, this method will be called with the
     // default value for CompatibilityProperty (false). We need to ignore that.
     if (editor.isScreen1()) {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_COMPATIBILITY_MODE, compatibilityProperty);
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, sizingProperty);
     }
   }
 
@@ -722,7 +723,7 @@ public final class MockForm extends MockContainer {
       else {
         editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
       }
-      setCompatibilityProperty(newValue);
+      setSizingProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
       setIconProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_VCODE)) {
@@ -756,4 +757,21 @@ public final class MockForm extends MockContainer {
       myVAlignmentPropertyEditor.enable();
     }
   }
+
+  @Override
+  public EditableProperties getProperties() {
+    // Before we return the Properties object, we make sure that the
+    // Sizing property has the value from the project's properties
+    // this is because Sizing is per project, not per Screen(Form)
+    // We only have to do this on screens other then screen1 because
+    // screen1's value is definitive.
+    if(!editor.isScreen1()) {
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
+        editor.getProjectEditor().getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
+    }
+    return properties;
+  }
+
 }
