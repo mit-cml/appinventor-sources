@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.RetValManager;
@@ -55,6 +56,7 @@ public class ReplForm extends Form {
   private boolean isDirect = false; // True for USB and emulator (AI2)
   private Object replResult = null; // Return result when closing screen in Repl
   private String replResultFormName = null;
+  private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
 
   public ReplForm() {
     super();
@@ -65,8 +67,8 @@ public class ReplForm extends Form {
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
     Log.d("ReplForm", "onCreate");
+    loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
-    //loadComponents(); // find a better place for this to be called, to fix first time failure!!
     processExtras(intent, false);
   }
 
@@ -244,6 +246,8 @@ public class ReplForm extends Form {
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
   public void loadComponents() {
+    // Store the loaded dex files in the private storage of the App for stable optimization
+    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
     File componentFolder = new File(REPL_COMP_DIR );
     checkComponentDir();
     // Current Thread Class Loader
@@ -251,10 +255,11 @@ public class ReplForm extends Form {
     for (File compFolder : componentFolder.listFiles()) {
       if (compFolder.isDirectory()) {
         File component = new File(compFolder.getPath() + File.separator + "classes.dex");
-        if (component.exists()) {
-          // Store the loaded dex files in the private storage of the App for stable optimization
-          File dexOutput = activeForm.$context().getDir(compFolder.getName(), activeForm.$context().MODE_PRIVATE);
-          DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
+        File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".dex");
+        component.renameTo(loadComponent);
+        if (loadComponent.exists() && !loadedExternalDexs.contains(loadComponent.getName())) {
+          loadedExternalDexs.add(loadComponent.getName());
+          DexClassLoader dexCloader = new DexClassLoader(loadComponent.getAbsolutePath(), dexOutput.getAbsolutePath(),
                   null, parentClassLoader);
           parentClassLoader = dexCloader;
           Thread.currentThread().setContextClassLoader(parentClassLoader);
