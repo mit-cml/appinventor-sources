@@ -244,8 +244,6 @@ public class ReplForm extends Form {
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
   public void loadComponents() {
-    // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
     File componentFolder = new File(REPL_COMP_DIR );
     checkComponentDir();
     // Current Thread Class Loader
@@ -254,6 +252,8 @@ public class ReplForm extends Form {
       if (compFolder.isDirectory()) {
         File component = new File(compFolder.getPath() + File.separator + "classes.dex");
         if (component.exists()) {
+          // Store the loaded dex files in the private storage of the App for stable optimization
+          File dexOutput = activeForm.$context().getDir(compFolder.getName(), activeForm.$context().MODE_PRIVATE);
           DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
                   null, parentClassLoader);
           parentClassLoader = dexCloader;
@@ -276,7 +276,7 @@ public class ReplForm extends Form {
       return  false;
     }
     // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
+    File dexOutput = activeForm.$context().getDir(component.getParentFile().getName(), activeForm.$context().MODE_PRIVATE);
     // Current Thread Class Loader
     ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
     DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
