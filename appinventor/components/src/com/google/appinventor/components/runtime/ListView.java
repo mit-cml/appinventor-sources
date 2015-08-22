@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.util.Log;
+import java.util.ArrayList;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -63,6 +65,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private YailList items;
   private int selectionIndex;
   private String selection;
+
+  // An Array holding iDs for each item
+  // An iD have this form: itemName_position
+  private ArrayList<String> itemsIds;
+
   private boolean showFilter = false;
   private static final boolean DEFAULT_ENABLED = false;
 
@@ -218,6 +225,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     items = ElementsUtil.elements(itemsList, "Listview");
+    itemsIds = new ArrayList<String>();
+    for(int i=0; i<items.size(); i++){
+      String itemString= YailList.YailListElementToString(items.get(i));
+      itemsIds.add(itemString + "_" + i);
+    }
     setAdapterData();
   }
 
@@ -242,6 +254,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       "list.",  category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
     items = ElementsUtil.elementsFromString(itemstring);
+    itemsIds = new ArrayList<String>();
+    for(int i=1; i<=items.size(); i++){
+      String itemString= YailList.YailListElementToString(items.get(i));
+      itemsIds.add(itemString + "_" + i);
+    }
     setAdapterData();
   }
 
@@ -335,7 +352,13 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     this.selection = parent.getAdapter().getItem(position).toString();
-    this.selectionIndex = position + 1; // AI lists are 1-based
+    // To have the appopriate selectionIndex we need to test if the user is
+    // filtering the list or not and adjust the selectionIndex based on that.
+    if (txtSearchBox.length() == 0){
+      this.selectionIndex = position + 1; // AI lists are 1-based
+    }else{
+      this.selectionIndex = getRealIndex(this.selection, parent, position);
+    }
     AfterPicking();
   }
 
@@ -485,4 +508,41 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       setAdapterData();
   }
 
+  /**
+   * Filter the ArrayList of itemsIds given an item
+   *
+   * @param itemName the name of the item.
+   * @return the filtered ArrayList
+   */
+   private ArrayList<String> filterItemsIds(String itemName) {
+     ArrayList<String> filteredItemsIds = new ArrayList<String>();
+     for (int i=0; i<itemsIds.size(); i++) {
+       String itemId = itemsIds.get(i);
+       String item = itemId.substring(0,itemId.lastIndexOf("_"));
+       if(item.equals(itemName)){
+         filteredItemsIds.add(itemId);
+       }
+     }
+     return filteredItemsIds;
+   }
+
+   /**
+    * Returns the real selectionIndex of a given item
+    *
+    * @param itemName the name of the item.
+    * @param parent the AdapterView where the click happened.
+    * @param position the filtered index.
+    * @return the unfiltered index
+    */
+    private int getRealIndex(String itemName, AdapterView<?> parent, int position) {
+      int itemIdPosition=0;
+      for(int i=0; i<position; i++){
+        if(itemName.equals(parent.getAdapter().getItem(i).toString())){
+          itemIdPosition++;
+        }
+      }
+      ArrayList<String> filteredItemsIds = filterItemsIds(itemName);
+      String itemId = filteredItemsIds.get(itemIdPosition);
+      return Integer.parseInt(itemId.substring(itemId.lastIndexOf('_') + 1));
+    }
 }
