@@ -157,11 +157,12 @@ public class ReplForm extends Form {
           public boolean onMenuItemClick(MenuItem item) {
             String reportId = genReportId();
             ReplApplication.reportError(null, reportId);
-            Notifier.oneButtonAlert(activeForm, "Your Report Id is:\n" + reportId, "Error Report Id", "OK");
+            Notifier.oneButtonAlert(activeForm, "Your Report Id is: " + reportId +
+              "<br />Use this ID when reporting this error.", "Error Report Id", "OK");
             return true;
           }
         });
-    showSettingsItem.setIcon(android.R.drawable.sym_def_app_icon);
+    showSettingsItem.setIcon(android.R.drawable.stat_sys_warning);
   }
 
   @Override
