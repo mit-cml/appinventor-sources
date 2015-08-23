@@ -338,9 +338,6 @@ public class MediaUtil {
       //   4. create a new bitmap drawable with the scaled bitmap
       //   5. set the density in the scaled bitmap.
 
-      // Note: The log line below requires HoneycombMR1, but we may not keep it, so punting for now
-      Log.d(LOG_TAG, "originalBitmap.getByteCount() = " + originalBitmapDrawable.getBitmap().getByteCount());
-
       originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
       if (options.inSampleSize != 1) {
         return originalBitmapDrawable;
