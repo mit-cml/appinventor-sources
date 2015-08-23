@@ -339,7 +339,7 @@ public class MediaUtil {
       //   5. set the density in the scaled bitmap.
 
       originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-      if (options.inSampleSize != 1) {
+      if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
         return originalBitmapDrawable;
       }
       int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
@@ -351,8 +351,6 @@ public class MediaUtil {
           scaledWidth, scaledHeight, false);
       BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(scaledBitmap);
       scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-      originalBitmapDrawable.getBitmap().recycle(); // Free's native resources used by the bitmap
-                                                    // may not really be needed, but it doesn't hurt
       System.gc();              // We likely used a lot of memory, so gc now.
       return scaledBitmapDrawable;
 
