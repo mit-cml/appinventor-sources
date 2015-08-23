@@ -2908,6 +2908,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String YearProperties();
 
+  @DefaultMessage("Instant")
+  @Description("")
+  String InstantProperties();
+
   @DefaultMessage("LastMessage")
   @Description("")
   String LastMessageProperties();
@@ -3396,6 +3400,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("weeks")
   @Description("")
   String weeksParams();
+
+  @DefaultMessage("quantity")
+  @Description("")
+  String quantityParams();
+
+  @DefaultMessage("duration")
+  @Description("")
+  String durationParams();
 
   @DefaultMessage("years")
   @Description("")
@@ -4315,6 +4327,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetBackgroundPixelColorMethods();
 
+  @DefaultMessage("AddDuration")
+  @Description("")
+  String AddDurationMethods();
+
   @DefaultMessage("AddDays")
   @Description("")
   String AddDaysMethods();
@@ -4351,6 +4367,26 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DurationMethods();
 
+  @DefaultMessage("DurationToSeconds")
+  @Description("")
+  String DurationToSecondsMethods();
+
+  @DefaultMessage("DurationToMinutes")
+  @Description("")
+  String DurationToMinutesMethods();
+
+  @DefaultMessage("DurationToHours")
+  @Description("")
+  String DurationToHoursMethods();
+
+  @DefaultMessage("DurationToDays")
+  @Description("")
+  String DurationToDaysMethods();
+
+  @DefaultMessage("DurationToWeeks")
+  @Description("")
+  String DurationToWeeksMethods();
+
   @DefaultMessage("FormatDate")
   @Description("")
   String FormatDateMethods();
@@ -4370,6 +4406,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Hour")
   @Description("")
   String HourMethods();
+
+  @DefaultMessage("Instant")
+  @Description("")
+  String InstantMethods();
 
   @DefaultMessage("MakeInstant")
   @Description("")
