@@ -356,7 +356,9 @@ public final class Player extends AndroidNonvisibleComponent
     if (playerState == State.PLAYING || playerState == State.PAUSED_BY_USER || playerState == State.PAUSED_BY_EVENT) {
       player.stop();
       prepare();
-      player.seekTo(0);
+      if (player != null) {     // If prepare fails, the player is released and set to null
+        player.seekTo(0);       // So we cannot seek
+      }
       // Player should now be in state 1(PREPARED). (If prepare failed, we are in state 0 (INITIAL).)
     }
   }
