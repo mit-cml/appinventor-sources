@@ -175,7 +175,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       inStream.close();
       outStream.close();
       Log.i(LOG_TAG, "Image was copied to " + selectionSavedImage);
-      // this can be uncommented to show the alert, but tha alert
+      // this can be uncommented to show the alert, but the alert
       // is pretty annoying
       // new (container.$form()).ShowAlert("Image was copied to " + selectedImage);
 

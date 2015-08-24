@@ -47,10 +47,6 @@
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
 			<arg line="build ploverConfig.js" />
 		</java>
-                <exec executable="python" failonerror="true">
-		  <arg line="../misc/utils/bomify.py"/>
-                  <arg value="../build/blocklyeditor/blockly-all.js" />
-                </exec>
 	</target>
 
 	<!--  property name="js.tests.dir" location="./tests" /-->

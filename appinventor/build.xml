@@ -117,6 +117,9 @@
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
+        <!-- Apache Http Libraries -->
+        <pathelement location="lib/apache-http/httpcore-4.3.2.jar" />
+        <pathelement location="lib/apache-http/httpmime-4.3.4.jar" />
         <!-- oauth libs -->
         <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
