@@ -281,18 +281,18 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
-            ReplayFormOrientation(); // Re-do Form layout because percentage code
-                                     // needs to recompute objects sizes etc.
-            final FrameLayout savedLayout = frameLayout;
-            androidUIHandler.postDelayed(new Runnable() {
-                public void run() {
-                  if (frameLayout != null) {
-                    frameLayout.invalidate();
+              ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                       // needs to recompute objects sizes etc.
+              final FrameLayout savedLayout = frameLayout;
+              androidUIHandler.postDelayed(new Runnable() {
+                  public void run() {
+                    if (frameLayout != null) {
+                      frameLayout.invalidate();
+                    }
                   }
-                }
-              }, 100);          // Redraw the whole screen in 1/10 second
-                                // we do this to avoid screen artifacts left
-                                // left by the Android runtime.
+                }, 100);          // Redraw the whole screen in 1/10 second
+                                  // we do this to avoid screen artifacts left
+                                  // left by the Android runtime.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -1217,17 +1217,17 @@ public class Form extends Activity
       sCompatibilityMode = true;
     } else {
       sCompatibilityMode = false;
+      scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
     }
-    scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
   }
 
-  // public String Sizing() {
-  //   if (compatibilityMode) {
-  //     return "Fixed";
-  //   } else {
-  //     return "Responsive";
-  //   }
-  // }
+   /*public String Sizing() {
+     if (compatibilityMode) {
+       return "Fixed";
+     } else {
+       return "Responsive";
+     }
+   }*/
 
   /**
    * Specifies the App Name.
