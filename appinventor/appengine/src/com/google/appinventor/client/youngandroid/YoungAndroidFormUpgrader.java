@@ -877,6 +877,11 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 18;
     }
+    
+    if (srcCompVersion < 19) {
+      // Added ShowKeyboard
+      srcCompVersion = 19;
+    }
 
     return srcCompVersion;
   }
