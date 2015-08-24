@@ -23,6 +23,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -39,6 +40,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -46,6 +48,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -123,6 +126,7 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showKeyboard = false;
   private boolean showStatusBar = true;
   private boolean showTitle = true;
 
@@ -251,6 +255,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowKeyboard(false);
     ShowStatusBar(true);
     TitleVisible(true);
   }
@@ -882,6 +887,40 @@ public class Form extends Activity
         }
         showTitle = show;
       }
+    }
+  }
+  
+  /**
+   * ShowKeyboard property getter method.
+   * 
+   * @return showKeyboard boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+	      description = "When checked, the soft keyboard will appear onscreen.")
+	  public boolean ShowKeyboard() {
+	    return showKeyboard;
+  }
+  
+  /**
+   * ShowKeyboard property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowKeyboard(boolean show) {
+    if (show != showKeyboard) {
+      View view = this.getCurrentFocus();
+      if (view != null) {
+    	  InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    	  if (show) {
+    		  imm.showSoftInputFromInputMethod(view.getWindowToken(), 0);
+    	  } else {
+    		  imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    	  }
+      }
+      showKeyboard = show;
     }
   }
 
@@ -1800,5 +1839,4 @@ public class Form extends Activity
   public static boolean getCompatibilityMode() {
     return sCompatibilityMode;
   }
-
 }

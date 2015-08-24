@@ -2328,6 +2328,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AboutScreenProperties();
 
+  @DefaultMessage("ShowKeyboard")
+  @Description("")
+  String ShowKeyboardProperties();
+
   @DefaultMessage("ShowStatusBar")
   @Description("")
   String ShowStatusBarProperties();
@@ -5428,19 +5432,19 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRowsWithConditionsMethods();
 
-  @DefaultMessage("简体中文")
+  @DefaultMessage("������������")
   @Description("")
   String SwitchToSimplifiedChinese();
 
-  @DefaultMessage("繁体中文")
+  @DefaultMessage("������������")
   @Description("")
   String SwitchToTraditionalChinese();
 
-  @DefaultMessage("Español")
+  @DefaultMessage("Espa��ol")
   @Description("")
   String SwitchToSpanish();
 
-  @DefaultMessage("Français")
+  @DefaultMessage("Fran��ais")
   @Description("")
   String SwitchToFrench();
 
@@ -5448,7 +5452,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToItalian();
 
-  @DefaultMessage("Pусский")
+  @DefaultMessage("P������������")
   @Description("")
   String SwitchToRussian();
 
