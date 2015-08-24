@@ -38,7 +38,9 @@ import java.io.IOException;
     nonVisible = true,
     iconName = "images/soundRecorder.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO")
+@UsesPermissions(permissionNames = "android.permission.RECORD_AUDIO," +
+  "android.permission.WRITE_EXTERNAL_STORAGE," +
+  "android.permission.READ_EXTERNAL_STORAGE")
 public final class SoundRecorder extends AndroidNonvisibleComponent
     implements Component, OnErrorListener, OnInfoListener {
 

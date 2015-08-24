@@ -130,7 +130,9 @@ import java.util.ArrayList;
     "android.permission.ACCOUNT_MANAGER," +
     "android.permission.MANAGE_ACCOUNTS," +
     "android.permission.GET_ACCOUNTS," +
-    "android.permission.USE_CREDENTIALS")
+    "android.permission.USE_CREDENTIALS," +
+    "android.permission.WRITE_EXTERNAL_STORAGE," +
+    "android.permission.READ_EXTERNAL_STORAGE")
 @UsesLibraries(libraries =
     "fusiontables.jar," +
     "google-api-client-beta.jar," +

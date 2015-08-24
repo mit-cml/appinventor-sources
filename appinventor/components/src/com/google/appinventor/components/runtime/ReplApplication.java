@@ -51,8 +51,21 @@ public class ReplApplication extends Application {
     }
   }
 
+  public static void reportError(Throwable ex, String reportId) {
+    ACRA.getErrorReporter().putCustomData("reportid", reportId);
+    reportError(ex);
+  }
+
   public static void reportError(Throwable ex) {
     if (thisInstance != null && thisInstance.active)
       ACRA.getErrorReporter().handleException(ex);
+  }
+
+  public static boolean isAcraActive() {
+    if (thisInstance != null && thisInstance.active) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
