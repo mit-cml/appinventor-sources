@@ -382,7 +382,8 @@
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
          ;; The call below is a no-op unless we are in the wireless repl
-         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
+;; Commented out -- we only send reports from the setting menu choice
+;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
              (when ((this):toastAllowed)
                    (begin (send-error (ex:getMessage))
