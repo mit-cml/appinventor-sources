@@ -119,12 +119,16 @@ var server = function(request, response) {
 	    mc.get('rr-' + key, function(err, result) {
 		response.writeHead(200, "OK", { "Content-Type" : "application/json",
 						"Access-Control-Allow-Origin" : "*",
+                                                "Expires" : "Fri, 01 Jan 1990 00:00:00 GMT",
+                                                "Cache-Control" : "no-cache, must-revalidate",
 						"Access-Control-Allow-Headers" : "origin, content-type"});
 //		console.log(request.remote);
 		response.end(result);
 	    });
 	} else {		// Not found
 	    response.writeHead(200, "OK", { "Content-Type" : "application/json",
+                                            "Cache-Control" : "no-cache, must-revalidate",
+                                            "Expires" : "Fri, 01 Jan 1990 00:00:00 GMT",
 					    "Access-Control-Allow-Origin" : "*",
 					    "Access-Control-Allow-Headers" : "origin, content-type"});
 	    response.end("");
