@@ -5,11 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
@@ -17,26 +13,15 @@ import java.util.List;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.RetValManager;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.EclairUtil;
 
 import dalvik.system.DexClassLoader;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Activity;
-import android.content.Context;
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
@@ -254,8 +239,8 @@ public class ReplForm extends Form {
     ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
     for (File compFolder : componentFolder.listFiles()) {
       if (compFolder.isDirectory()) {
-        File component = new File(compFolder.getPath() + File.separator + "classes.dex");
-        File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".dex");
+        File component = new File(compFolder.getPath() + File.separator + "classes.jar");
+        File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".jar");
         component.renameTo(loadComponent);
         if (loadComponent.exists() && !loadedExternalDexs.contains(loadComponent.getName())) {
           loadedExternalDexs.add(loadComponent.getName());
