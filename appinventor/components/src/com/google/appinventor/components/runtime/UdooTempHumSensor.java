@@ -34,7 +34,7 @@ import org.json.JSONObject;
     iconName = "images/udoo.png")
 @SimpleObject
 public class UdooTempHumSensor extends AndroidNonvisibleComponent
-implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
+implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedInterface
 {
   private String TAG = "UdooTempHumSensor";
   private UdooConnectionInterface connection = null;
@@ -153,6 +153,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
+    form.registerForOnPause(this);
     
     new Thread(new Runnable() {
       @Override
@@ -182,6 +183,14 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface
     
     getTransport().disconnect();
     getTransport().onDestroy();
+  }
+  
+  @Override
+  public void onPause()
+  {
+    if (!getTransport().isConnecting()) {
+      getTransport().disconnect();
+    }
   }
 
   @SimpleFunction

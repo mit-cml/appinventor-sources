@@ -34,7 +34,8 @@ import java.util.TimerTask;
     iconName = "images/udoo.png")
 @SimpleObject
 public class UdooArduino extends AndroidNonvisibleComponent
-implements OnResumeListener, OnDestroyListener, UdooConnectedInterface, UdooInterruptibleInterface
+implements OnResumeListener, OnDestroyListener, OnPauseListener,
+           UdooConnectedInterface, UdooInterruptibleInterface
 {
   private final String TAG = "UdooArduino";
   private UdooConnectionInterface connection = null;
@@ -141,6 +142,7 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface, UdooInte
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
+    form.registerForOnPause(this);
     
     new Thread(new Runnable() {
       @Override
@@ -171,7 +173,15 @@ implements OnResumeListener, OnDestroyListener, UdooConnectedInterface, UdooInte
     getTransport().disconnect();
     getTransport().onDestroy();
   }
-
+  
+  @Override
+  public void onPause()
+  {
+    if (!getTransport().isConnecting()) {
+      getTransport().disconnect();
+    }
+  }
+  
   @SimpleFunction
   public void pinMode(String pin, String mode)
   {
