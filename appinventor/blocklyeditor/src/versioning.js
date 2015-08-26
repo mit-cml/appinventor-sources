@@ -1834,7 +1834,7 @@ Blockly.Versioning.AllUpgradeMaps =
     18: "noUpgrade",
     
     // For FORM_COMPONENT_VERSION 19:
-    // - The Screen1.ShowKeyboard was added and no block needs to be changed.
+    // - The Screen1.HideKeyboard method was added and no block needs to be changed.
     19: "noUpgrade"
 
   }, // End Screen
@@ -1926,7 +1926,10 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
 
     // AI2: Added RequestFocus method
-    5: "noUpgrade"
+    5: "noUpgrade",
+    	
+    // AI2: Moved HideKeyboard to Form
+    6: "noUpgrade"
 
   }, // End TextBox upgraders
 

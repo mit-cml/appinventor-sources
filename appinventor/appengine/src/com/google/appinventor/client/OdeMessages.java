@@ -2328,10 +2328,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AboutScreenProperties();
 
-  @DefaultMessage("ShowKeyboard")
-  @Description("")
-  String ShowKeyboardProperties();
-
   @DefaultMessage("ShowStatusBar")
   @Description("")
   String ShowStatusBarProperties();
