@@ -258,7 +258,7 @@ public class Form extends Activity
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-
+    Log.d(LOG_TAG, "onConfigurationChanged() called");
     final int newOrientation = newConfig.orientation;
     if (newOrientation == Configuration.ORIENTATION_LANDSCAPE ||
         newOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -605,6 +605,7 @@ public class Form extends Activity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
+    recomputeLayout();
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -716,12 +717,18 @@ public class Form extends Activity
       return;
     }
 
+    this.scrollable = scrollable;
+    recomputeLayout();
+  }
+
+  private void recomputeLayout() {
+
+    Log.d(LOG_TAG, "recomputeLayout called");
+
     // Remove our view from the current frameLayout.
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
-
-    this.scrollable = scrollable;
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
@@ -730,6 +737,7 @@ public class Form extends Activity
 
     setBackground(frameLayout);
 
+    Log.d(LOG_TAG, "About to create a new ScaledFrameLayout");
     scaleLayout = new ScaledFrameLayout(this);
     scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
