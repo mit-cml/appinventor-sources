@@ -53,6 +53,8 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     activity = wrapper;
     usbManager = (UsbManager)activity.getSystemService(Context.USB_SERVICE);
     registerReceiver();
+    
+    connect();
   }
 
   @Override
@@ -71,7 +73,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         notifyAll();
         connect();
       } else {
-        Log.e(TAG, "Permission denied");
         form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "onReceive", ErrorMessages.ERROR_UDOO_ADK_NO_PERMISSIONS);
       }
     }
@@ -80,8 +81,9 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
   @Override
   public synchronized void disconnect()
   {
+    Log.d(TAG, "Disconnecting...");
+    
     if (this.arduino != null) {
-      Log.d(TAG, "Stopping ArduinoManager");
       this.arduino.disconnect();
       this.arduino.stop();
       this.arduino = null;
@@ -93,12 +95,10 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
     if (fileDescriptor != null) {
       try {
-        Log.d(TAG, "Closing file descriptor and streams");
         inputStream.close();
         outputStream.close();
         fileDescriptor.close();
       } catch (IOException e) {
-        Log.e(TAG, "Failed to close file descriptor.", e);
       }
       fileDescriptor = null;
     }
@@ -114,16 +114,12 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     Log.d(TAG, "Connecting UdooAdkBroadcastReceiver");
 
     this.connected = false;
-    tryOpen();
-  }
 
-  private void tryOpen()
-  {
     UsbAccessory[] accessories = usbManager.getAccessoryList();
     UsbAccessory accessory = null;
     if (accessories == null) {
       Log.v(TAG, "No accessories found!");
-      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
+      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "connect", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
       return;
     }
     for (UsbAccessory iaccessory : accessories) {
@@ -133,8 +129,7 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     }
 
     if (accessory == null) {
-      Log.v(TAG, "No accessory found.");
-      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "tryOpen", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
+      form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "connect", ErrorMessages.ERROR_UDOO_ADK_NO_DEVICE);
       return;
     }
     
@@ -156,6 +151,8 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         return;
       }
 
+      Log.d(TAG, "ok file");
+      
       FileDescriptor fd = fileDescriptor.getFileDescriptor();
       inputStream = new FileInputStream(fd);
       outputStream = new FileOutputStream(fd);
@@ -166,6 +163,8 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         this.isConnecting = false;
         return;
       }
+      
+      Log.d(TAG, "ok conn");
       
       this.connected = true;
       this.isConnecting = false;

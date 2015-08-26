@@ -139,8 +139,9 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
   {
     boolean isc = getTransport().isConnected();
     if (!isc) {
-      Log.d(TAG, "isConnected called, but disconnected!");
-      getTransport().reconnect();
+      if (!getTransport().isConnecting()) {
+        getTransport().reconnect();
+      }
     }
     return isc;
   }
@@ -148,8 +149,6 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
   public UdooTempHumSensor(final Form form)
   {
     super(form);
-    
-    Log.d(TAG, "UdooArduino");
     
     form.registerForOnResume(this);
     form.registerForOnDestroy(this);
@@ -171,16 +170,12 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
   @Override
   public void onResume()
   {
-    Log.d(TAG, "onResume");
-    
     this.isConnected(); //connects, if disconnected
   }
 
   @Override
   public void onDestroy()
   {
-    Log.d(TAG, "onDestroy");
-    
     getTransport().disconnect();
     getTransport().onDestroy();
   }
@@ -216,8 +211,6 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
   @SimpleEvent(description = "Fires when the Arduino returns the temperature and humidity.")
   public void DataReady(int temperature, int humidity)
   {
-    Log.d(TAG, "Data ready");
-    
     EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
   }
   

@@ -43,7 +43,6 @@ class UdooRequestsRegistry
     try {
       queue.put(response);
       registry.remove(id);
-      return;
     } catch (InterruptedException ex) {
       Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
     }

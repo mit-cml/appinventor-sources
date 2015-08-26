@@ -126,10 +126,7 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   {
     boolean isc = getTransport().isConnected();
     if (!isc) {
-      if (getTransport().isConnecting()) {
-        Log.d(TAG, "isConnected: is already connecting, do nothing");
-      } else {
-        Log.d(TAG, "[isConnected] not connected, try to reconnect");
+      if (!getTransport().isConnecting()) {
         getTransport().reconnect();
       }
     }
@@ -160,16 +157,12 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   @Override
   public void onResume()
   {
-    Log.d(TAG, "onResume");
-    
     this.isConnected(); //connects, if disconnected
   }
 
   @Override
   public void onDestroy()
   {
-    Log.d(TAG, "onDestroy");
-    
     getTransport().disconnect();
     getTransport().onDestroy();
   }
@@ -257,7 +250,7 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   @SimpleEvent(description = "Fires when the Arduino triggers an interrupt routine.")
   public void InterruptFired()
   {
-    Log.d(TAG, "InterruptFired");
+    Log.d(TAG, "InterruptFired event");
     
     EventDispatcher.dispatchEvent(this, "InterruptFired");
   }
@@ -266,7 +259,6 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   @Override
   public void Connected()
   {
-    Log.d(TAG, "Connected EVENT");
     EventDispatcher.dispatchEvent(this, "Connected");
   }
   

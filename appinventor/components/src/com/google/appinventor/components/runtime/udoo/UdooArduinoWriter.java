@@ -67,7 +67,6 @@ class UdooArduinoWriter extends AsyncTask<JSONObject, Void, JSONObject>
       udooConnection.reconnect();
 
       e.printStackTrace();
-      Log.d("Udoo", "Epic fail on connection!");
       return null;
     }
     

@@ -53,14 +53,13 @@ public class UdooArduinoReader
               }
               id = (Integer) response.get("id");
               if (response.has("disconnected")) {
-                Log.d("UdooArduinoReader", "Got disconnected request! Stopping read thread.");
                 stop();
-              }              
+              }
+              
+              UdooRequestsRegistry.onRead(response, id);
             } catch (JSONException ex) {
               Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            UdooRequestsRegistry.onRead(response, id);
           }
         }
       }

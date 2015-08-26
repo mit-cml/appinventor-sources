@@ -141,6 +141,7 @@ public class UdooTcpRedirector implements UdooConnectionInterface
 
   @Override
   public void onCreate(ContextWrapper ctx) {
+    connect();
   }
 
   @Override
