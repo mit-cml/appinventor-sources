@@ -743,8 +743,21 @@ public class Form extends Activity
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     setContentView(scaleLayout);
-
     frameLayout.requestLayout();
+    androidUIHandler.post(new Runnable() {
+      public void run() {
+        if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
+        } else {
+          // Try again later.
+          androidUIHandler.post(this);
+        }
+      }
+    });
   }
 
   /**
