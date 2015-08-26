@@ -48,7 +48,6 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -896,9 +895,12 @@ public class Form extends Activity
    * @return showKeyboard boolean
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-	      description = "When checked, the soft keyboard will appear onscreen.")
+	      description = "When checked, the soft keyboard will appear onscreen. " +
+	        "Note: This will only occur if there is a component that can receive keyboard input.")
 	  public boolean ShowKeyboard() {
-	    return showKeyboard;
+      InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+      showKeyboard = imm.isActive(this.getCurrentFocus()); 
+      return showKeyboard; 
   }
   
   /**
@@ -910,15 +912,19 @@ public class Form extends Activity
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowKeyboard(boolean show) {
+    ShowKeyboard(); 
     if (show != showKeyboard) {
       View view = this.getCurrentFocus();
       if (view != null) {
-    	  InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
     	  if (show) {
-    		  imm.showSoftInputFromInputMethod(view.getWindowToken(), 0);
+    	    imm.showSoftInput(view, 0);
     	  } else {
     		  imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     	  }
+      } else {
+        dispatchErrorOccurredEvent(this, "ShowKeyboard",
+            ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND, showKeyboard);
       }
       showKeyboard = show;
     }
