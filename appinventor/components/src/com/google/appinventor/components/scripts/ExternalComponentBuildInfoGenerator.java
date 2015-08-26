@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.scripts;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -83,25 +84,14 @@ public class ExternalComponentBuildInfoGenerator {
           copyFile(new File(args[4]+File.separator+componentName+".jar"),
                      new File(componentFileDirectory+File.separator+"AndroidRuntime.jar"));
 
-         //Adding extension.properties
-         String componentDirectory = args[2]+File.separator+ componentName;
-         Properties extensionProperties = new Properties();
-         OutputStream output = null;
-         try {
-           output = new FileOutputStream(componentDirectory+File.separator+"extension.properties");
-           extensionProperties.setProperty("type", "external");
-           extensionProperties.store(output, null);
-         }catch (IOException e) {
-            e.printStackTrace();
-         }finally {
-           if (output != null) {
-             try {
-               output.close();
-             } catch (IOException e) {
-               e.printStackTrace();
-             }
-          }
-        }
+          //Adding extension.properties
+          String componentDirectory = args[2] + File.separator + componentName;
+          StringBuilder sb = new StringBuilder();
+          sb.append("type=external\n");
+          BufferedWriter writer = new BufferedWriter(new FileWriter(new File(componentDirectory + File.separator + "extension.properties")));
+          writer.write(sb.toString());
+          writer.flush();
+          writer.close();
 
         //Renaming folder accordingly
         File extensionDir = new File(args[2] + File.separator + componentName);
