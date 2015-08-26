@@ -5428,19 +5428,19 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetRowsWithConditionsMethods();
 
-  @DefaultMessage("������������")
+  @DefaultMessage("简体中文")
   @Description("")
   String SwitchToSimplifiedChinese();
 
-  @DefaultMessage("������������")
+  @DefaultMessage("繁体中文")
   @Description("")
   String SwitchToTraditionalChinese();
 
-  @DefaultMessage("Espa��ol")
+  @DefaultMessage("Español")
   @Description("")
   String SwitchToSpanish();
 
-  @DefaultMessage("Fran��ais")
+  @DefaultMessage("Français")
   @Description("")
   String SwitchToFrench();
 
@@ -5448,7 +5448,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToItalian();
 
-  @DefaultMessage("P������������")
+  @DefaultMessage("Pусский")
   @Description("")
   String SwitchToRussian();
 

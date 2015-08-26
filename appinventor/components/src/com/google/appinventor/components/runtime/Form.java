@@ -1798,7 +1798,7 @@ public class Form extends Activity implements Component, ComponentContainer, Han
     return sCompatibilityMode;
   }
 
-f  /**
+  /**
    * Hide the soft keyboard
    */
   @SimpleFunction(description = "Hide the onscreen soft keyboard.")
