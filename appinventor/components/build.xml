@@ -495,7 +495,7 @@
         <arg value="--dex"/>
         <arg value="--no-strict"/>
         <arg value="--output"/>
-        <arg value="${ExternalComponentAsset.dir}/${filename}/classes.dex"/>
+        <arg value="${ExternalComponentAsset.dir}/${filename}/classes.jar"/>
         <arg value="${ExternalComponentTemp.dir}/${filename}.jar"/>
       </java>
       <echo>Dexing extension: ${filename}</echo>
