@@ -154,8 +154,8 @@ public final class AssetManager implements ProjectChangeListener {
         // Filter : For files in directly in EXTERNAL_COMPS_FOLDER/COMP_FOLDER
         if (StringUtils.countMatches(fileId, "/") == 3) {
 
-          // Filter : For classes.dex File
-          if (name.equals("classes.dex")) {
+          // Filter : For classes.jar File
+          if (name.equals("classes.jar")) {
             allow = true;
 
           }
