@@ -74,7 +74,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
- * <p>This is the root container of any Android activity and also the 
+ * <p>This is the root container of any Android activity and also the
  * superclass for Simple/Android UI applications.
  *
  * The main form is always named "Screen1".
@@ -86,7 +86,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
     showOnPalette = false)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
-public class Form extends Activity 
+public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
 
@@ -293,9 +293,9 @@ public class Form extends Activity
                     frameLayout.invalidate();
                   }
                 }
-              }, 100);             // Redraw the whole screen in 1/10 second
-                                   // we do this to avoid screen artifacts left
-                                   // left by the Android runtime.
+              }, 100);          // Redraw the whole screen in 1/10 second
+                                // we do this to avoid screen artifacts left
+                                // left by the Android runtime.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -619,16 +619,16 @@ public class Form extends Activity
       "raise this condition.  For those errors, the system will show a notification " +
       "by default.  You can use this event handler to prescribe an error " +
       "behavior different than the default.")
-  public void ErrorOccurred(Component component, String functionName, int errorNumber, 
+  public void ErrorOccurred(Component component, String functionName, int errorNumber,
       String message) {
     String componentType = component.getClass().getName();
     componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
     Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber +
-        ", componentType = " + componentType + ", functionName = " + functionName + 
+        ", componentType = " + componentType + ", functionName = " + functionName +
         ", messages = " + message);
     if ((!(EventDispatcher.dispatchEvent(
         this, "ErrorOccurred", component, functionName, errorNumber, message)))
-        && screenInitialized) {
+        && screenInitialized)  {
       // If dispatchEvent returned false, then no user-supplied error handler was run.
       // If in addition, the screen initializer was run, then we assume that the
       // user did not provide an error handler.   In this case, we run a default
@@ -637,6 +637,7 @@ public class Form extends Activity
       new Notifier(this).ShowAlert("Error " + errorNumber + ": " + message);
     }
   }
+
 
   public void ErrorOccurredDialog(Component component, String functionName, int errorNumber,
       String message, String title, String buttonText) {
@@ -647,7 +648,7 @@ public class Form extends Activity
         ", messages = " + message);
     if ((!(EventDispatcher.dispatchEvent(
         this, "ErrorOccurred", component, functionName, errorNumber, message)))
-        && screenInitialized) {
+        && screenInitialized)  {
       // If dispatchEvent returned false, then no user-supplied error handler was run.
       // If in addition, the screen initializer was run, then we assume that the
       // user did not provide an error handler.   In this case, we run a default
@@ -657,8 +658,8 @@ public class Form extends Activity
     }
   }
 
-  
-  public void dispatchErrorOccurredEvent(final Component component, final String functionName, 
+
+  public void dispatchErrorOccurredEvent(final Component component, final String functionName,
       final int errorNumber, final Object... messageArgs) {
     runOnUiThread(new Runnable() {
       public void run() {
@@ -688,11 +689,13 @@ public class Form extends Activity
       }
     });
   }
+  
+  
 
   /**
    * Scrollable property getter method.
    *
-   * @return true if the screen is vertically scrollable
+   * @return  true if the screen is vertically scrollable
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "When checked, there will be a vertical scrollbar on the "
@@ -775,11 +778,11 @@ public class Form extends Activity
     return backgroundImagePath;
   }
 
-  
+
   /**
    * Specifies the path of the background image.
    *
-   * <p/> See {@link MediaUtil#determineMediaSource} for information about what
+   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
    * @param path the path of the background image
@@ -816,7 +819,7 @@ public class Form extends Activity
    * Title property setter method: sets a new caption for the form in the
    * form's title bar.
    *
-     * @param title  new form caption
+   * @param title  new form caption
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
@@ -918,9 +921,9 @@ public class Form extends Activity
 
   /**
    * The requested screen orientation. Commonly used values are
-    unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-    "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
-    "complete list of possible settings.
+      unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
+      "complete list of possible settings.
    *
    * ScreenOrientation property getter method.
    *
@@ -928,7 +931,7 @@ public class Form extends Activity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation, specified as a text value.  " +
-      "Commonly used values are " + 
+      "Commonly used values are " +
       "landscape, portrait, sensor, user and unspecified.  " +
       "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
@@ -1015,44 +1018,45 @@ public class Form extends Activity
   // in ComponentConstants
 
   /**
-   * Returns a number that encodes how contents of the screen are aligned horizontally.
-   * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
-   */
+  * Returns a number that encodes how contents of the screen are aligned horizontally.
+  * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
+  */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE, 
-      description = "A number that encodes how contents of the screen are aligned " +
-          " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
-          " 3 = right aligned.")
+     category = PropertyCategory.APPEARANCE,
+     description = "A number that encodes how contents of the screen are aligned " +
+         " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
+         " 3 = right aligned.")
   public int AlignHorizontal() {
     return horizontalAlignment;
   }
 
-  /**
-   * Sets the horizontal alignment for contents of the screen
-   *
-   * @param alignment
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
-      defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
-  @SimpleProperty
-  public void AlignHorizontal(int alignment) {
-    try {
-      // notice that the throw will prevent the alignment from being changed
-      // if the argument is illegal
-      alignmentSetter.setHorizontalAlignment(alignment);
-      horizontalAlignment = alignment;
-    } catch (IllegalArgumentException e) {
-      this.dispatchErrorOccurredEvent(this, "HorizontalAlignment",
-          ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
-    }
-  }
+ /**
+  * Sets the horizontal alignment for contents of the screen
+  *
+  * @param alignment
+  */
+ @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
+     defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
+ @SimpleProperty
+ public void AlignHorizontal(int alignment) {
+   try {
+     // notice that the throw will prevent the alignment from being changed
+     // if the argument is illegal
+     alignmentSetter.setHorizontalAlignment(alignment);
+     horizontalAlignment = alignment;
+   } catch (IllegalArgumentException e) {
+     this.dispatchErrorOccurredEvent(this, "HorizontalAlignment",
+         ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+   }
+ }
 
   /**
    * Returns a number that encodes how contents of the arrangement are aligned vertically. 
    * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom. 
    * Vertical alignment has no effect if the screen is scrollable.
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how the contents of the arrangement are aligned " +
       "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
       "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
@@ -1060,35 +1064,35 @@ public class Form extends Activity
     return verticalAlignment;
   }
 
-  /**
-   * Sets the vertical alignment for contents of the screen
-   *
-   * @param alignment
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
-      defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
-  @SimpleProperty
-  public void AlignVertical(int alignment) {
-    try {
-      // notice that the throw will prevent the alignment from being changed
-      // if the argument is illegal
-      alignmentSetter.setVerticalAlignment(alignment);
-      verticalAlignment = alignment;
-    } catch (IllegalArgumentException e) {
-      this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
-          ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
-    }
-  }
+ /**
+  * Sets the vertical alignment for contents of the screen
+  *
+  * @param alignment
+  */
+ @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+     defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
+ @SimpleProperty
+ public void AlignVertical(int alignment) {
+   try {
+     // notice that the throw will prevent the alignment from being changed
+     // if the argument is illegal
+     alignmentSetter.setVerticalAlignment(alignment);
+     verticalAlignment = alignment;
+   } catch (IllegalArgumentException e) {
+     this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
+         ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+   }
+ }
 
-  /**
-   * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,
-   * slidevertical and none).
-   *
-   * @return open screen animation
-   */
+ /**
+  * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The animation for switching to another screen. Valid" +
-      " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
+    description = "The animation for switching to another screen. Valid" +
+    " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
   public String OpenScreenAnimation() {
     return openAnimType;
   }
@@ -1281,8 +1285,8 @@ public class Form extends Activity
   public static void switchForm(String nextFormName) {
     if (activeForm != null) {
       activeForm.startNewForm(nextFormName, null);
-      } else {
-        throw new IllegalStateException("activeForm is null");
+    } else {
+      throw new IllegalStateException("activeForm is null");
     }
   }
 
@@ -1298,8 +1302,8 @@ public class Form extends Activity
     Log.i(LOG_TAG, "Open another screen with start value:" + nextFormName);
     if (activeForm != null) {
       activeForm.startNewForm(nextFormName, startValue);
-    } else {
-      throw new IllegalStateException("activeForm is null");
+      } else {
+        throw new IllegalStateException("activeForm is null");
     }
   }
 
@@ -1353,7 +1357,7 @@ public class Form extends Activity
     return jsonResult;
   }
 
-  @SimpleEvent(description = "Event raised when another screen has closed and control has "+
+  @SimpleEvent(description = "Event raised when another screen has closed and control has " +
       "returned to this screen.")
   public void OtherScreenClosed(String otherScreenName, Object result) {
     Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " +
@@ -1361,7 +1365,7 @@ public class Form extends Activity
     EventDispatcher.dispatchEvent(this, "OtherScreenClosed", otherScreenName, result);
   }
 
-  
+
   // Component implementation
 
   @Override
@@ -1484,7 +1488,7 @@ public class Form extends Activity
     }
   }
 
-  
+
   /**
    * Closes the current screen, as opposed to finishApplication, which
    * exits the entire application.
@@ -1588,7 +1592,7 @@ public class Form extends Activity
   }
 
   public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, 
+    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
     "Stop this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
@@ -1600,7 +1604,7 @@ public class Form extends Activity
   }
 
   public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2, 
+    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
     "About this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
@@ -1619,8 +1623,8 @@ public class Form extends Activity
     String negativeButton = "Don't stop";
     // These runnables are passed to twoButtonAlert.  They perform the corresponding actions
     // when the button is pressed.   Here there's nothing to do for "don't stop" and cancel
-    Runnable stopApplication = new Runnable () {public void run() {closeApplicationFromMenu();}};
-    Runnable doNothing = new Runnable() {public void run() {}};
+    Runnable stopApplication = new Runnable() {public void run () {closeApplicationFromMenu();}};
+    Runnable doNothing = new Runnable () {public void run() {}};
     Notifier.twoButtonDialog(
         this,
         message,
