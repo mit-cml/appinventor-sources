@@ -30,6 +30,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
@@ -120,6 +121,9 @@ public final class VideoPlayer extends AndroidViewComponent implements
   private boolean delayedStart = false;
 
   private MediaPlayer mPlayer;
+
+  private final Handler androidUIHandler = new Handler();
+
   /**
    * Creates a new VideoPlayer component.
    *
@@ -584,6 +588,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
     }
 
     public void onMeasure(int specwidth, int specheight) {
+      onMeasure(specwidth, specheight, 0);
+    }
+
+    private void onMeasure(final int specwidth, final int specheight, final int trycount) {
       // Since super.onMeasure uses the aspect ratio of the video being
       // played, it is not called.
       // http://grepcode.com/file/repository.grepcode.com/java/ext/
@@ -593,7 +601,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
       // Log messages in this method are not commented out for testing the
       // changes
       // on other devices.
-
+      boolean scaleHeight = false;
+      boolean scaleWidth = false;
+      float deviceDensity = container.$form().deviceDensity();
+      Log.i("VideoPlayer..onMeasure", "Device Density = " + deviceDensity);
       Log.i("VideoPlayer..onMeasure", "AI setting dimensions as:" + forcedWidth
           + ":" + forcedHeight);
       Log.i("VideoPlayer..onMeasure",
@@ -638,7 +649,26 @@ public final class VideoPlayer extends AndroidViewComponent implements
         }
         break;
       default:
+        scaleWidth = true;
         width = forcedWidth;
+      }
+
+      if (forcedWidth <= LENGTH_PERCENT_TAG) {
+        int cWidth = container.$form().Width();
+        if (cWidth == 0 && trycount < 2) {
+          Log.d("VideoPlayer...onMeasure", "Width not stable... trying again (onMeasure " + trycount + ")");
+          androidUIHandler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                onMeasure(specwidth, specheight, trycount + 1);
+              }
+            }, 100);            // Try again in 1/10 of a second
+          setMeasuredDimension(100, 100); // We have to set something or our caller is unhappy
+          return;
+        }
+        width = (int) ((float) (cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100) * deviceDensity);
+      } else if (scaleWidth) {
+        width = (int) ((float) width * deviceDensity);
       }
 
       switch (forcedHeight) {
@@ -670,7 +700,26 @@ public final class VideoPlayer extends AndroidViewComponent implements
         }
         break;
       default:
+        scaleHeight = true;
         height = forcedHeight;
+      }
+
+      if (forcedHeight <= LENGTH_PERCENT_TAG) {
+        int cHeight = container.$form().Height();
+        if (cHeight == 0 && trycount < 2) {
+          Log.d("VideoPlayer...onMeasure", "Height not stable... trying again (onMeasure " + trycount + ")");
+          androidUIHandler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                onMeasure(specwidth, specheight, trycount + 1);
+              }
+            }, 100);            // Try again in 1/10 of a second
+          setMeasuredDimension(100, 100); // We have to set something or our caller is unhappy
+          return;
+        }
+        height = (int) ((float) (cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100) * deviceDensity);
+      } else if (scaleHeight) {
+        height = (int) ((float) height * deviceDensity);
       }
 
       // Forces the video playing in the VideoView to scale.
