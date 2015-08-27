@@ -689,8 +689,8 @@ public class Form extends Activity
       }
     });
   }
-  
-  
+
+
 
   /**
    * Scrollable property getter method.
@@ -827,6 +827,7 @@ public class Form extends Activity
   public void Title(String title) {
     setTitle(title);
   }
+
 
   /**
    * AboutScreen property getter method.
@@ -1011,6 +1012,7 @@ public class Form extends Activity
     }
   }
 
+
   // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
   // I did not see a clean way to abstract it.  Someone should have a look.
 
@@ -1026,9 +1028,9 @@ public class Form extends Activity
      description = "A number that encodes how contents of the screen are aligned " +
          " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
          " 3 = right aligned.")
-  public int AlignHorizontal() {
-    return horizontalAlignment;
-  }
+ public int AlignHorizontal() {
+   return horizontalAlignment;
+ }
 
  /**
   * Sets the horizontal alignment for contents of the screen
@@ -1050,19 +1052,19 @@ public class Form extends Activity
    }
  }
 
-  /**
-   * Returns a number that encodes how contents of the arrangement are aligned vertically. 
-   * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom. 
-   * Vertical alignment has no effect if the screen is scrollable.
-   */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      description = "A number that encodes how the contents of the arrangement are aligned " +
-      "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
-      "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
-  public int AlignVertical() {
-    return verticalAlignment;
-  }
+ /**
+  * Returns a number that encodes how contents of the arrangement are aligned vertically.
+  * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom. 
+  * Vertical alignment has no effect if the screen is scrollable.
+  */
+ @SimpleProperty(
+     category = PropertyCategory.APPEARANCE,
+     description = "A number that encodes how the contents of the arrangement are aligned " +
+     "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
+     "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
+ public int AlignVertical() {
+   return verticalAlignment;
+ }
 
  /**
   * Sets the vertical alignment for contents of the screen
