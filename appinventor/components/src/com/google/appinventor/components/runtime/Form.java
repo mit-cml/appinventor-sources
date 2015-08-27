@@ -74,20 +74,18 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
- * <p>
- * This is the root container of any Android activity and also the 
+ * <p>This is the root container of any Android activity and also the 
  * superclass for Simple/Android UI applications.
  *
  * The main form is always named "Screen1".
  *
  */
-@DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION, 
-      category = ComponentCategory.LAYOUT, 
-      description = "Top-level component containing all other components in the program", 
-      showOnPalette = false)
+@DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
+    category = ComponentCategory.LAYOUT,
+    description = "Top-level component containing all other components in the program",
+    showOnPalette = false)
 @SimpleObject
-@UsesPermissions(permissionNames = 
-"android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity 
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
@@ -196,7 +194,7 @@ public class Form extends Activity
   }
   private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
 
-  
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -265,7 +263,7 @@ public class Form extends Activity
     super.onConfigurationChanged(newConfig);
 
     final int newOrientation = newConfig.orientation;
-    if (newOrientation == Configuration.ORIENTATION_LANDSCAPE || 
+    if (newOrientation == Configuration.ORIENTATION_LANDSCAPE ||
         newOrientation == Configuration.ORIENTATION_PORTRAIT) {
       // At this point, the screen has not be resized to match the new orientation.
       // We use Handler.post so that we'll dispatch the ScreenOrientationChanged event after the
@@ -290,14 +288,14 @@ public class Form extends Activity
                                      // needs to recompute objects sizes etc.
             final FrameLayout savedLayout = frameLayout;
             androidUIHandler.postDelayed(new Runnable() {
-              public void run() {
-                if (frameLayout != null) {
-                  frameLayout.invalidate();
+                public void run() {
+                  if (frameLayout != null) {
+                    frameLayout.invalidate();
+                  }
                 }
-              }
-            }, 100); // Redraw the whole screen in 1/10 second
-                     // we do this to avoid screen artifacts left
-                     // left by the Android runtime.
+              }, 100);             // Redraw the whole screen in 1/10 second
+                                   // we do this to avoid screen artifacts left
+                                   // left by the Android runtime.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -309,7 +307,7 @@ public class Form extends Activity
   }
 
   /*
-   * Here we override the hardware back button, just to make sure 
+   * Here we override the hardware back button, just to make sure
    * that the closing screen animation is applied. (In API level
    * 5, we can simply override the onBackPressed method rather
    * than bothering with onKeyDown)
@@ -340,14 +338,14 @@ public class Form extends Activity
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.i(LOG_TAG, "Form " + formName + " got onActivityResult, requestCode = " + 
+    Log.i(LOG_TAG, "Form " + formName + " got onActivityResult, requestCode = " +
         requestCode + ", resultCode = " + resultCode);
     if (requestCode == SWITCH_FORM_REQUEST_CODE) {
       // Assume this is a multiple screen application, and a secondary
       // screen has closed.  Process the result as a JSON-encoded string.
       // This can also happen if the user presses the back button, in which case
       // there's no data.
-      String resultString;
+     String resultString;
       if (data != null && data.hasExtra(RESULT_NAME)) {
         resultString = data.getStringExtra(RESULT_NAME);
       } else {
@@ -404,7 +402,7 @@ public class Form extends Activity
     // We first make a copy of the existing dimChanges list
     // because while we are replaying it, it is being appended to
     ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
-    dimChanges.clear();       // Empties it out
+    dimChanges.clear();         // Empties it out
     for (int i = 0; i < temp.size(); i++) {
       // Iterate over the list...
       PercentStorageRecord r = temp.get(i);
@@ -541,15 +539,15 @@ public class Form extends Activity
    * {@link com.google.appinventor.components.scripts.LangDefXmlGenerator},
    * respectively.  The actual implementation appears in {@code runtime.scm}.
    */
-  protected void $define() { // This must be declared protected because we are called from Screen1 which subclasses
-                             // us and isn't in our package.
+  protected void $define() {    // This must be declared protected because we are called from Screen1 which subclasses
+                                // us and isn't in our package.
     throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean canDispatchEvent(Component component, String eventName) {
     // Events can only be dispatched after the screen initialized event has completed.
-    boolean canDispatch = screenInitialized || 
+    boolean canDispatch = screenInitialized ||
         (component == this && eventName.equals("Initialize"));
 
     if (canDispatch) {
@@ -563,7 +561,7 @@ public class Form extends Activity
 
   /**
    * A trivial implementation to artificially make this class concrete so
-   * that it is included in the documentation and 
+   * that it is included in the documentation and
    * Codeblocks language definition file generated by
    * {@link com.google.appinventor.components.scripts.DocumentationGenerator} and
    * {@link com.google.appinventor.components.scripts.LangDefXmlGenerator},
@@ -575,7 +573,7 @@ public class Form extends Activity
     throw new UnsupportedOperationException();
   }
 
-  
+
   /**
    * Initialize event handler.
    */
@@ -593,7 +591,7 @@ public class Form extends Activity
           }
           screenInitialized = true;
 
-          // Call all apps registered to be notified when Initialize Event is dispatched
+          //  Call all apps registered to be notified when Initialize Event is dispatched
           for (OnInitializeListener onInitializeListener : onInitializeListeners) {
             onInitializeListener.onInitialize();
           }
@@ -616,9 +614,10 @@ public class Form extends Activity
   /**
    * ErrorOccurred event handler.
    */
-  @SimpleEvent(description = "Event raised when an error occurs. Only some errors will " +
+  @SimpleEvent(
+      description = "Event raised when an error occurs. Only some errors will " +
       "raise this condition.  For those errors, the system will show a notification " +
-      "by default.  You can use this event handler to prescribe an error " + 
+      "by default.  You can use this event handler to prescribe an error " +
       "behavior different than the default.")
   public void ErrorOccurred(Component component, String functionName, int errorNumber, 
       String message) {
@@ -630,10 +629,9 @@ public class Form extends Activity
     if ((!(EventDispatcher.dispatchEvent(
         this, "ErrorOccurred", component, functionName, errorNumber, message)))
         && screenInitialized) {
-      // If dispatchEvent returned false, then no user-supplied error handler
-      // was run.
+      // If dispatchEvent returned false, then no user-supplied error handler was run.
       // If in addition, the screen initializer was run, then we assume that the
-      // user did not provide an error handler. In this case, we run a default
+      // user did not provide an error handler.   In this case, we run a default
       // error handler, namely, showing a notification to the end user of the app.
       // The app writer can override this by providing an error handler.
       new Notifier(this).ShowAlert("Error " + errorNumber + ": " + message);
@@ -644,23 +642,24 @@ public class Form extends Activity
       String message, String title, String buttonText) {
     String componentType = component.getClass().getName();
     componentType = componentType.substring(componentType.lastIndexOf(".") + 1);
-    Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber + 
-        ", componentType = " + componentType + ", functionName = " + functionName + 
+    Log.e(LOG_TAG, "Form " + formName + " ErrorOccurred, errorNumber = " + errorNumber +
+        ", componentType = " + componentType + ", functionName = " + functionName +
         ", messages = " + message);
     if ((!(EventDispatcher.dispatchEvent(
         this, "ErrorOccurred", component, functionName, errorNumber, message)))
         && screenInitialized) {
       // If dispatchEvent returned false, then no user-supplied error handler was run.
       // If in addition, the screen initializer was run, then we assume that the
-      // user did not provide an error handler.  In this case, we run a default
+      // user did not provide an error handler.   In this case, we run a default
       // error handler, namely, showing a message dialog to the end user of the app.
       // The app writer can override this by providing an error handler.
       new Notifier(this).ShowMessageDialog("Error " + errorNumber + ": " + message, title, buttonText);
     }
   }
 
-  public void dispatchErrorOccurredEvent(final Component component, final String functionName, final int errorNumber,
-      final Object... messageArgs) {
+  
+  public void dispatchErrorOccurredEvent(final Component component, final String functionName, 
+      final int errorNumber, final Object... messageArgs) {
     runOnUiThread(new Runnable() {
       public void run() {
         String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
@@ -670,7 +669,7 @@ public class Form extends Activity
   }
 
   // This is like dispatchErrorOccurred, except that it defaults to showing
-  // a message dialog rather than an alert.  The app writer can override either of these behaviors,
+  // a message dialog rather than an alert.   The app writer can override either of these behaviors,
   // but using the event dialog version frees the app writer of the need to explicitly override
   // the alert behavior in the case
   // where a message dialog is what's generally needed.
@@ -680,11 +679,11 @@ public class Form extends Activity
       public void run() {
         String message = ErrorMessages.formatMessage(errorNumber, messageArgs);
         ErrorOccurredDialog(
-            component, 
-            functionName, 
-            errorNumber, 
-            message, 
-            "Error in " + functionName, 
+            component,
+            functionName,
+            errorNumber,
+            message,
+            "Error in " + functionName,
             "Dismiss");
       }
     });
@@ -695,11 +694,11 @@ public class Form extends Activity
    *
    * @return true if the screen is vertically scrollable
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
-      description = "When checked, there will be a vertical scrollbar on the "
-      + "screen, and the height of the application can exceed the physical "
-      + "height of the device. When unchecked, the application height is " 
-      + "constrained to the height of the device.")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "When checked, there will be a vertical scrollbar on the "
+    + "screen, and the height of the application can exceed the physical "
+    + "height of the device. When unchecked, the application height is "
+    + "constrained to the height of the device.")
   public boolean Scrollable() {
     return scrollable;
   }
@@ -709,8 +708,8 @@ public class Form extends Activity
    *
    * @param scrollable  true if the screen should be vertically scrollable
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, 
-      defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable && frameLayout != null) {
@@ -726,14 +725,14 @@ public class Form extends Activity
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, 
+        ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
     setBackground(frameLayout);
 
     scaleLayout = new ScaledFrameLayout(this);
     scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, 
+        ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     setContentView(scaleLayout);
 
@@ -755,13 +754,12 @@ public class Form extends Activity
    *
    * @param argb  background RGB color with alpha
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary
-    // anymore
+    // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
     setBackground(frameLayout);
   }
 
@@ -771,24 +769,25 @@ public class Form extends Activity
    * @return  the path of the background image
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE, 
+      category = PropertyCategory.APPEARANCE,
       description = "The screen background image.")
   public String BackgroundImage() {
     return backgroundImagePath;
   }
 
+  
   /**
    * Specifies the path of the background image.
    *
-   * <p/> See {@link MediaUtil#determineMediaSource} for information about what a
-   * path can be.
+   * <p/> See {@link MediaUtil#determineMediaSource} for information about what
+   * a path can be.
    *
    * @param path the path of the background image
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE, 
+      category = PropertyCategory.APPEARANCE,
       description = "The screen background image.")
   public void BackgroundImage(String path) {
     backgroundImagePath = (path == null) ? "" : path;
@@ -807,19 +806,19 @@ public class Form extends Activity
    *
    * @return  form caption
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The caption for the form, which apears in the title bar")
   public String Title() {
     return getTitle().toString();
   }
 
   /**
-   * Title property setter method: sets a new caption for the form in the 
+   * Title property setter method: sets a new caption for the form in the
    * form's title bar.
    *
      * @param title  new form caption
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Title(String title) {
@@ -831,7 +830,7 @@ public class Form extends Activity
    *
    * @return  AboutScreen string
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Information about the screen.  It appears when \"About this Application\" "
       + "is selected from the system menu. Use it to inform people about your app.  In multiple "
       + "screen apps, each screen has its own AboutScreen info.")
@@ -840,12 +839,12 @@ public class Form extends Activity
   }
 
   /**
-   * AboutScreen property setter method: sets a new aboutApp string for the form in the 
+   * AboutScreen property setter method: sets a new aboutApp string for the form in the
    * form's "About this application" menu.
    *
    * @param aboutScreen content to be displayed in aboutApp
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
@@ -857,7 +856,7 @@ public class Form extends Activity
    *
    * @return  showTitle boolean
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
   public boolean TitleVisible() {
     return showTitle;
@@ -868,7 +867,7 @@ public class Form extends Activity
    *
    * @param show boolean
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void TitleVisible(boolean show) {
@@ -890,7 +889,7 @@ public class Form extends Activity
    *
    * @return  showStatusBar boolean
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
   public boolean ShowStatusBar() {
     return showStatusBar;
@@ -901,7 +900,7 @@ public class Form extends Activity
    *
    * @param show boolean
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowStatusBar(boolean show) {
@@ -918,18 +917,19 @@ public class Form extends Activity
   }
 
   /**
-   * The requested screen orientation. Commonly used values are 
-     unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-     "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
-     "complete list of possible settings.
+   * The requested screen orientation. Commonly used values are
+    unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+    "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
+    "complete list of possible settings.
    *
    * ScreenOrientation property getter method.
    *
    * @return  screen orientation
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation, specified as a text value.  " +
-      "Commonly used values are " + "landscape, portrait, sensor, user and unspecified.  " +
+      "Commonly used values are " + 
+      "landscape, portrait, sensor, user and unspecified.  " +
       "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
       "complete list of possible settings.")
   public String ScreenOrientation() {
@@ -937,7 +937,7 @@ public class Form extends Activity
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
         return "behind";
       case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-         return "landscape";
+        return "landscape";
       case ActivityInfo.SCREEN_ORIENTATION_NOSENSOR:
         return "nosensor";
       case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
@@ -969,7 +969,7 @@ public class Form extends Activity
    *
    * @param screenOrientation  the screen orientation as a string
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScreenOrientation(String screenOrientation) {
@@ -999,28 +999,29 @@ public class Form extends Activity
       } else if (screenOrientation.equalsIgnoreCase("sensorPortrait")) {
         setRequestedOrientation(7); // ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
       } else {
-        dispatchErrorOccurredEvent(this, "ScreenOrientation", 
+        dispatchErrorOccurredEvent(this, "ScreenOrientation",
             ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, screenOrientation);
       }
     } else {
-      dispatchErrorOccurredEvent(this, "ScreenOrientation", 
+      dispatchErrorOccurredEvent(this, "ScreenOrientation",
           ErrorMessages.ERROR_INVALID_SCREEN_ORIENTATION, screenOrientation);
     }
   }
 
   // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
-  // I did not see a clean way to abstract it. Someone should have a look.
+  // I did not see a clean way to abstract it.  Someone should have a look.
 
   // Note(halabelson): The numeric encodings of the alignment specifications are specified
   // in ComponentConstants
 
   /**
-   * Returns a number that encodes how contents of the screen are aligned horizontally. 
+   * Returns a number that encodes how contents of the screen are aligned horizontally.
    * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE, 
       description = "A number that encodes how contents of the screen are aligned " +
-          " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " + 
+          " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
           " 3 = right aligned.")
   public int AlignHorizontal() {
     return horizontalAlignment;
@@ -1031,7 +1032,7 @@ public class Form extends Activity
    *
    * @param alignment
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
   public void AlignHorizontal(int alignment) {
@@ -1051,7 +1052,7 @@ public class Form extends Activity
    * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom. 
    * Vertical alignment has no effect if the screen is scrollable.
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how the contents of the arrangement are aligned " +
       "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
       "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
@@ -1064,7 +1065,7 @@ public class Form extends Activity
    *
    * @param alignment
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
   public void AlignVertical(int alignment) {
@@ -1074,18 +1075,18 @@ public class Form extends Activity
       alignmentSetter.setVerticalAlignment(alignment);
       verticalAlignment = alignment;
     } catch (IllegalArgumentException e) {
-      this.dispatchErrorOccurredEvent(this, "VerticalAlignment", 
+      this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
           ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
     }
   }
 
   /**
-   * Returns the type of open screen animation (default, fade, zoom, slidehorizontal, 
+   * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,
    * slidevertical and none).
    *
    * @return open screen animation
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The animation for switching to another screen. Valid" +
       " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
   public String OpenScreenAnimation() {
@@ -1097,48 +1098,48 @@ public class Form extends Activity
    *
    * @param animType the type of animation to use for the transition
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION, 
-      defaultValue = "default")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+    defaultValue = "default")
   @SimpleProperty
   public void OpenScreenAnimation(String animType) {
-    if ((animType != "default") && 
+    if ((animType != "default") &&
       (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
       (animType != "slidevertical") && (animType != "none")) {
-      this.dispatchErrorOccurredEvent(this, "Screen", 
+      this.dispatchErrorOccurredEvent(this, "Screen",
         ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
       return;
     }
     openAnimType = animType;
   }
 
-  /**
-   * Returns the type of close screen animation (default, fade, zoom, slidehorizontal, 
-   * slidevertical and none).
-   *
-   * @return open screen animation
-   */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
-      description = "The animation for closing current screen and returning " +
-      " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " + 
-          "slidevertical, and none")
+ /**
+  * Returns the type of close screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The animation for closing current screen and returning " +
+    " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
+    "slidevertical, and none")
   public String CloseScreenAnimation() {
     return closeAnimType;
   }
 
   /**
-   * Sets the animation type for the transition of this form closing and returning 
+   * Sets the animation type for the transition of this form closing and returning
    * to a form behind it in the activity stack.
    *
    * @param animType the type of animation to use for the transition
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION, 
-      defaultValue = "default")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+    defaultValue = "default")
   @SimpleProperty
   public void CloseScreenAnimation(String animType) {
-    if ((animType != "default") && 
+    if ((animType != "default") &&
       (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
       (animType != "slidevertical") && (animType != "none")) {
-      this.dispatchErrorOccurredEvent(this, "Screen", 
+      this.dispatchErrorOccurredEvent(this, "Screen",
         ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
       return;
     }
@@ -1146,7 +1147,7 @@ public class Form extends Activity
   }
 
   /*
-   * Used by ListPicker, and ActivityStarter to get this Form's current opening 
+   * Used by ListPicker, and ActivityStarter to get this Form's current opening transition
    * animation
    */
   public String getOpenAnimType() {
@@ -1158,7 +1159,7 @@ public class Form extends Activity
    *
    * @param name the name of the application icon
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(userVisible = false)
   public void Icon(String name) {
@@ -1170,9 +1171,9 @@ public class Form extends Activity
    *
    * @param vCode the version name of the application
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER, 
-      defaultValue = "1")
-  @SimpleProperty(userVisible = false, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+    defaultValue = "1")
+  @SimpleProperty(userVisible = false,
     description = "An integer value which must be incremented each time a new Android "
     +  "Application Package File (APK) is created for the Google Play Store.")
   public void VersionCode(int vCode) {
@@ -1184,9 +1185,9 @@ public class Form extends Activity
    *
    * @param vName the version name of the application
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, 
-      defaultValue = "1.0")
-  @SimpleProperty(userVisible = false, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "1.0")
+  @SimpleProperty(userVisible = false,
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.")
   public void VersionName(String vName) {
@@ -1198,14 +1199,14 @@ public class Form extends Activity
    *
    * @param
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING, 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Fixed")
   @SimpleProperty(userVisible = false,
-  // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
-  description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
-                "If set to responsive, screen layouts will use the actual resolution of the device.  " +
-                "See the documentation on responsive design in App Inventor for more information. " +
-                "This property appears on Screen1 only and controls the sizing for all screens in the app.")
+    // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
+    description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
+                  "If set to responsive, screen layouts will use the actual resolution of the device.  " +
+                  "See the documentation on responsive design in App Inventor for more information. " +
+                  "This property appears on Screen1 only and controls the sizing for all screens in the app.")
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
@@ -1218,11 +1219,11 @@ public class Form extends Activity
   }
 
   // public String Sizing() {
-  //  if (compatibilityMode) {
-  //    return "Fixed";
-  //  } else {
-  //    return "Responsive";
-  //  }
+  //   if (compatibilityMode) {
+  //     return "Fixed";
+  //   } else {
+  //     return "Responsive";
+  //   }
   // }
 
   /**
@@ -1230,11 +1231,11 @@ public class Form extends Activity
    *
    * @param aName the display name of the installed application in the phone
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, 
-      defaultValue = "")
-  @SimpleProperty(userVisible = false, 
-  description = "This is the display name of the installed application in the phone." +
-      "If the AppName is blank, it will be set to the name of the project when the project is built.")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "This is the display name of the installed application in the phone." +
+        "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1244,7 +1245,7 @@ public class Form extends Activity
    *
    * @return  width property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
     int retval = (int)(scaleLayout.getWidth() / this.deviceDensity);
@@ -1260,7 +1261,7 @@ public class Form extends Activity
    *
    * @return  height property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
     int retval = (int)(scaleLayout.getHeight() / this.deviceDensity);
@@ -1280,8 +1281,8 @@ public class Form extends Activity
   public static void switchForm(String nextFormName) {
     if (activeForm != null) {
       activeForm.startNewForm(nextFormName, null);
-    } else {
-      throw new IllegalStateException("activeForm is null");
+      } else {
+        throw new IllegalStateException("activeForm is null");
     }
   }
 
@@ -1292,7 +1293,7 @@ public class Form extends Activity
    * @param startValue the start value to pass to the new form
    */
   // This is called from runtime.scm when a "open another screen with start value" block is
-  // executed. Note that startNewForm will JSON encode the start value
+  // executed.  Note that startNewForm will JSON encode the start value
   public static void switchFormWithStartValue(String nextFormName, Object startValue) {
     Log.i(LOG_TAG, "Open another screen with start value:" + nextFormName);
     if (activeForm != null) {
@@ -1309,7 +1310,7 @@ public class Form extends Activity
     // Note that the following is dependent on form generated class names being the same as
     // their form names and all forms being in the same package.
     activityIntent.setClassName(this, getPackageName() + "." + nextFormName);
-    String functionName = (startupValue == null) ? "open another screen" : 
+    String functionName = (startupValue == null) ? "open another screen" :
       "open another screen with start value";
     String jValue;
     if (startupValue != null) {
@@ -1329,7 +1330,7 @@ public class Form extends Activity
       startActivityForResult(activityIntent, SWITCH_FORM_REQUEST_CODE);
       AnimationUtil.ApplyOpenScreenAnimation(this, openAnimType);
     } catch (ActivityNotFoundException e) {
-      dispatchErrorOccurredEvent(this, functionName, 
+      dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_SCREEN_NOT_FOUND, nextFormName);
     }
   }
@@ -1355,11 +1356,12 @@ public class Form extends Activity
   @SimpleEvent(description = "Event raised when another screen has closed and control has "+
       "returned to this screen.")
   public void OtherScreenClosed(String otherScreenName, Object result) {
-    Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " + otherScreenName + ", result = "
-        + result.toString());
+    Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " +
+        otherScreenName + ", result = " + result.toString());
     EventDispatcher.dispatchEvent(this, "OtherScreenClosed", otherScreenName, result);
   }
 
+  
   // Component implementation
 
   @Override
@@ -1395,7 +1397,7 @@ public class Form extends Activity
   @Override
   public void setChildWidth(final AndroidViewComponent component, int width) {
     int cWidth = Width();
-    if (cWidth == 0) {        // We're not really ready yet...
+    if (cWidth == 0) {          // We're not really ready yet...
       final int fWidth = width;
       androidUIHandler.postDelayed(new Runnable() {
           @Override
@@ -1403,12 +1405,12 @@ public class Form extends Activity
             System.err.println("(Form)Width not stable yet... trying again");
             setChildWidth(component, fWidth);
           }
-        }, 100);              // Try again in 1/10 of a second
+        }, 100);                // Try again in 1/10 of a second
     }
     System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
-//    System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
+//      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
     }
 
     component.setLastWidth(width);
@@ -1450,7 +1452,7 @@ public class Form extends Activity
     return activeForm;
   }
 
-  
+
   /**
    * Returns the string that was passed to this screen when it was opened
    *
@@ -1482,6 +1484,7 @@ public class Form extends Activity
     }
   }
 
+  
   /**
    * Closes the current screen, as opposed to finishApplication, which
    * exits the entire application.
@@ -1499,8 +1502,8 @@ public class Form extends Activity
   public static void finishActivityWithResult(Object result) {
     if (activeForm != null) {
       if (activeForm instanceof ReplForm) {
-        ((ReplForm) activeForm).setResult(result);
-        activeForm.closeForm(null);         // This will call RetValManager.popScreen()
+        ((ReplForm)activeForm).setResult(result);
+        activeForm.closeForm(null);        // This will call RetValManager.popScreen()
       } else {
         String jString = jsonEncodeForForm(result, "close screen with value");
         Intent resultIntent = new Intent();
@@ -1523,7 +1526,7 @@ public class Form extends Activity
     }
   }
 
-  
+
   protected void closeForm(Intent resultIntent) {
     if (resultIntent != null) {
       setResult(Activity.RESULT_OK, resultIntent);
@@ -1562,7 +1565,7 @@ public class Form extends Activity
     if (formName.equals("Screen1")) {
       // I know that this is frowned upon in Android circles but I really think that it's
       // confusing to users if the exit button doesn't really stop everything, including other
-      // forms in the app (when we support them), non-UI threads, etc. We might need to be
+      // forms in the app (when we support them), non-UI threads, etc.  We might need to be
       // careful about this is we ever support services that start up on boot (since it might
       // mean that the only way to restart that service) is to reboot but that's a long way off.
       System.exit(0);
@@ -1586,25 +1589,25 @@ public class Form extends Activity
 
   public void addExitButtonToMenu(Menu menu) {
     MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, 
-        "Stop this application")
-        .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-          public boolean onMenuItemClick(MenuItem item) {
-            showExitApplicationNotification();
-            return true;
-          }
-        });
+    "Stop this application")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        showExitApplicationNotification();
+        return true;
+      }
+    });
     stopApplicationItem.setIcon(android.R.drawable.ic_notification_clear_all);
   }
 
   public void addAboutInfoToMenu(Menu menu) {
     MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2, 
-        "About this application")
-        .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-          public boolean onMenuItemClick(MenuItem item) {
-            showAboutApplicationNotification();
-            return true;
-          }
-        });
+    "About this application")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        showAboutApplicationNotification();
+        return true;
+      }
+    });
     aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
@@ -1614,19 +1617,19 @@ public class Form extends Activity
         "the application to use it again.";
     String positiveButton = "Stop and exit";
     String negativeButton = "Don't stop";
-    // These runnables are passed to twoButtonAlert. They perform the corresponding actions
-    // when the button is pressed. Here there's nothing to do for "don't stop" and cancel
-    Runnable stopApplication = new Runnable() {public void run() {closeApplicationFromMenu();}};
+    // These runnables are passed to twoButtonAlert.  They perform the corresponding actions
+    // when the button is pressed.   Here there's nothing to do for "don't stop" and cancel
+    Runnable stopApplication = new Runnable () {public void run() {closeApplicationFromMenu();}};
     Runnable doNothing = new Runnable() {public void run() {}};
     Notifier.twoButtonDialog(
-        this, 
-        message, 
-        title, 
-        positiveButton, 
-        negativeButton, 
+        this,
+        message,
+        title,
+        positiveButton,
+        negativeButton,
         false, // cancelable is false
-        stopApplication, 
-        doNothing, 
+        stopApplication,
+        doNothing,
         doNothing);
   }
 
@@ -1642,7 +1645,7 @@ public class Form extends Activity
     // Users can hide the taglines by including an HTML open comment <!-- in the about screen message
     String message = aboutScreen + MITtagline + yandexTranslateTagline;
     message = message.replaceAll("\\n", "<br>"); // Allow for line breaks in the string.
-    String buttonText = "Got it";
+    String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
 
@@ -1706,7 +1709,7 @@ public class Form extends Activity
     // onTouchEvent of its View.
     frameLayout.requestDisallowInterceptTouchEvent(true);
   }
-  
+
 
   // This is used by Repl to throttle error messages which can get out of
   // hand, e.g. if triggered by Accelerometer.
