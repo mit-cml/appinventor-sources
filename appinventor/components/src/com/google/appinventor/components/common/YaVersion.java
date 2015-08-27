@@ -639,7 +639,6 @@ public class YaVersion {
   // - Moved HideKeyboard method from TextBox to Form
   public static final int FORM_COMPONENT_VERSION = 19;
 
-
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 3:
