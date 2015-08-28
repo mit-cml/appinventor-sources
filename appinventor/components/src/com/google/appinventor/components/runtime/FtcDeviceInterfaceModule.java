@@ -632,7 +632,15 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     deviceInterfaceModule = null;
   }
 
-  // TODO(lizlooney): remove these deprecated functions.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/07/25.
+  @SimpleFunction(description = "ReadI2c", userVisible = false)
+  public Object ReadI2c(int port) {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "WriteI2c", userVisible = false)
+  public void WriteI2c(int port, Object byteArray) {
+  }
   @SimpleFunction(description = "GetAnalogOutputFrequency", userVisible = false)
   public int GetAnalogOutputFrequency(int port) {
     return 0;
@@ -645,14 +653,6 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   public int GetAnalogOutputVoltage(int port) {
     return 0;
   }
-  @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
-  public Object GetI2cReadCache(int port) {
-    return new byte[0];
-  }
-  @SimpleFunction(description = "GetI2cWriteCache", userVisible = false)
-  public Object GetI2cWritecache(int port) {
-    return new byte[0];
-  }
   @SimpleFunction(description = "IsPortReady", userVisible = false)
   public boolean IsPortReady(int physicalPort) {
     return false;
@@ -661,20 +661,23 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   public Object ReadDeviceInterfaceModuleI2cCache(int physicalPort) {
     return new byte[0];
   }
-  @SimpleFunction(description = "ReadI2c", userVisible = false)
-  public Object ReadI2c(int port) {
+  @SimpleFunction(description = "WriteDeviceInterfaceModuleI2cCache", userVisible = false)
+  public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object byteArray) {
+  }
+  // The following were deprecated on 2015/07/28.
+  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
+  public void WriteI2cPortFlagOnlyFromModule(int port) {
+  }
+  // The following were deprecated on 2015/08/28.
+  @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
+  public Object GetI2cReadCache(int port) {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "GetI2cWriteCache", userVisible = false)
+  public Object GetI2cWriteCache(int port) {
     return new byte[0];
   }
   @SimpleFunction(description = "SetI2cWriteCache", userVisible = false)
   public void SetI2cWriteCache(int port, Object byteArray) {
-  }
-  @SimpleFunction(description = "WriteDeviceInterfaceModuleI2cCache", userVisible = false)
-  public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object byteArray) {
-  }
-  @SimpleFunction(description = "WriteI2c", userVisible = false)
-  public void WriteI2c(int port, Object byteArray) {
-  }
-  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
-  public void WriteI2cPortFlagOnlyFromModule(int port) {
   }
 }

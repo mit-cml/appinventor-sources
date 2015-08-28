@@ -335,7 +335,8 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     irSeekerSensor = null;
   }
 
-  // TODO(lizlooney): remove these deprecated properties.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/08/28.
   @SimpleProperty(description = "Mode_1200HZ_AC", userVisible = false, category = PropertyCategory.BEHAVIOR)
   public String Mode_1200HZ_AC() {
     return Mode.MODE_1200HZ.toString();

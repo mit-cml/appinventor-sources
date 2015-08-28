@@ -290,7 +290,8 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     i2cDevice = null;
   }
 
-  // TODO(lizlooney): remove these deprecated functions.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/08/28.
   @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
   public Object GetI2cReadCache() {
     return new byte[0];

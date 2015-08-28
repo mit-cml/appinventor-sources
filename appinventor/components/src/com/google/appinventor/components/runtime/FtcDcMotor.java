@@ -365,7 +365,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     dcMotor = null;
   }
 
-  // TODO(lizlooney): remove these deprecated properties and functions.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/07/25.
   @SimpleProperty(description = "GearRatio", userVisible = false, category = PropertyCategory.BEHAVIOR)
   public double GearRatio() {
     return 0.0;
@@ -388,6 +389,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleFunction(description = "SetDifferentialControlLoopCoefficients", userVisible = false)
   public void SetDifferentialControlLoopCoefficients(double p, double i, double d) {
   }
+  // The following were deprecated on 2015/07/29.
   @SimpleProperty(description = "Mode_RUN_USING_ENCODERS", userVisible = false, category = PropertyCategory.BEHAVIOR)
   public String Mode_RUN_USING_ENCODERS() {
     return "";

@@ -92,7 +92,8 @@ public final class FtcOpMode extends FtcOpModeBase {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
 
-  // TODO(lizlooney): remove these deprecated functions.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/07/25.
   @SimpleFunction(description = "TelemetryAddTextData", userVisible = false)
   public void TelemetryAddTextData(String key, String text) {
   }

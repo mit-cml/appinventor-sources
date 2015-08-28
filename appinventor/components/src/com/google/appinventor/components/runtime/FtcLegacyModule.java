@@ -356,16 +356,40 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
     legacyModule = null;
   }
 
-  // TODO(lizlooney): remove these deprecated functions.
+  // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/07/25.
+  @SimpleFunction(description = "ReadI2c", userVisible = false)
+  public Object ReadI2c(int port) {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "WriteI2c", userVisible = false)
+  public void WriteI2c(int port, Object byteArray) {
+  }
+  @SimpleFunction(description = "FetchLegacyModuleWriteCache", userVisible = false)
+  public Object FetchLegacyModuleWriteCache(int physicalPort) {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "IsPortReady", userVisible = false)
+  public boolean IsPortReady(int physicalPort) {
+    return false;
+  }
+  @SimpleFunction(description = "ReadLegacyModuleCache", userVisible = false)
+  public Object ReadLegacyModuleCache(int physicalPort) {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "WriteLegacyModuleCache", userVisible = false)
+  public void WriteLegacyModuleCache(int physicalPort, Object byteArray) {
+  }
+  // The following were deprecated on 2015/07/28.
+  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
+  public void WriteI2cPortFlagOnlyFromModule(int port) {
+  }
+  // The following were deprecated on 2015/08/28.
   @SimpleFunction(description = "EnableNxtI2cReadMode", userVisible = false)
   public void EnableNxtI2cReadMode(int port, int i2cAddress, int memAddress, int length) {
   }
   @SimpleFunction(description = "EnableNxtI2cWriteMode", userVisible = false)
   public void EnableNxtI2cWriteMode(int port, int i2cAddress, int memAddress, int length) {
-  }
-  @SimpleFunction(description = "FetchLegacyModuleWriteCache", userVisible = false)
-  public Object FetchLegacyModuleWriteCache(int physicalPort) {
-    return new byte[0];
   }
   @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
   public Object GetI2cReadCache(int port) {
@@ -379,31 +403,10 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   public boolean IsNxtI2cPortActionFlagSet(int port) {
     return false;
   }
-  @SimpleFunction(description = "IsPortReady", userVisible = false)
-  public boolean IsPortReady(int physicalPort) {
-    return false;
-  }
-  @SimpleFunction(description = "ReadI2c", userVisible = false)
-  public Object ReadI2c(int port) {
-    return new byte[0];
-  }
-  @SimpleFunction(description = "ReadLegacyModuleCache", userVisible = false)
-  public Object ReadLegacyModuleCache(int physicalPort) {
-    return new byte[0];
-  }
   @SimpleFunction(description = "SetI2cWriteCache", userVisible = false)
   public void SetI2cWriteCache(int port, Object byteArray) {
   }
   @SimpleFunction(description = "SetNxtI2cPortActionFlag", userVisible = false)
   public void SetNxtI2cPortActionFlag(int port) {
-  }
-  @SimpleFunction(description = "WriteI2c", userVisible = false)
-  public void WriteI2c(int port, Object byteArray) {
-  }
-  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
-  public void WriteI2cPortFlagOnlyFromModule(int port) {
-  }
-  @SimpleFunction(description = "WriteLegacyModuleCache", userVisible = false)
-  public void WriteLegacyModuleCache(int physicalPort, Object byteArray) {
   }
 }

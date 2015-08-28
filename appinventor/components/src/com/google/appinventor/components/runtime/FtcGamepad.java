@@ -559,6 +559,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   }
 
   // TODO(lizlooney): remove these
+  // The following were deprecated on 2015/07/29.
   @SimpleProperty(description = "JoystickDeadzone", userVisible = false, category = PropertyCategory.BEHAVIOR)
   public float JoystickDeadzone() {
     return 0.0f;
