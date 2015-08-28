@@ -3414,6 +3414,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LeftTriggerProperties();
 
+  @DefaultMessage("LIBRARY_VERSION")
+  @Description("")
+  String LIBRARY_VERSIONProperties();
+
   @DefaultMessage("LightDetected")
   @Description("")
   String LightDetectedProperties();
