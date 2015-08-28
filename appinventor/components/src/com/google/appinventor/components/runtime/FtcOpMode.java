@@ -45,6 +45,11 @@ public final class FtcOpMode extends FtcOpModeBase {
       }
 
       @Override
+      public void init_loop() {
+        InitLoop();
+      }
+
+      @Override
       public void start() {
         Start();
       }
@@ -62,12 +67,17 @@ public final class FtcOpMode extends FtcOpModeBase {
     };
   }
 
-  @SimpleEvent(description = "This event is triggered when this op mode is armed.")
+  @SimpleEvent(description = "This event is triggered once when the INIT button is pressed.")
   public void Init() {
     EventDispatcher.dispatchEvent(this, "Init");
   }
 
-  @SimpleEvent(description = "This event is triggered when this op mode is first enabled.")
+  @SimpleEvent(description = "This event is triggered repeatedly when the INIT button is pressed.")
+  public void InitLoop() {
+    EventDispatcher.dispatchEvent(this, "InitLoop");
+  }
+
+  @SimpleEvent(description = "This event is triggered once when the PLAY button is first pressed.")
   public void Start() {
     EventDispatcher.dispatchEvent(this, "Start");
   }

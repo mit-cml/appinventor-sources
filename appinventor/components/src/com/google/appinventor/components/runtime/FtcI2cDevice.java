@@ -20,6 +20,8 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 
 import java.util.concurrent.locks.Lock;
 
+// TODO(lizlooney): What about I2cDeviceReader?
+
 /**
  * A component for an I2C device of an FTC robot.
  *
@@ -53,7 +55,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Enable read mode for the I2C device and enable the " +
       "I2cPortIsReady event.")
-  public void EnableI2cReadMode(int memAddress, int length) {
+  public void EnableI2cReadMode(int i2cAddress, int memAddress, int length) {
     if (i2cDevice != null) {
       try {
         synchronized (registeredForPortReadyCallbackLock) {
@@ -62,7 +64,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
             registeredForPortReadyCallback = true;
           }
         }
-        i2cDevice.enableI2cReadMode(memAddress, length);
+        i2cDevice.enableI2cReadMode(i2cAddress, memAddress, length);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableI2cReadMode",
@@ -73,7 +75,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Enable write mode for the I2C device and enable the " +
       "I2cPortIsReady event.")
-  public void EnableI2cWriteMode(int memAddress, int length) {
+  public void EnableI2cWriteMode(int i2cAddress, int memAddress, int length) {
     if (i2cDevice != null) {
       try {
         synchronized (registeredForPortReadyCallbackLock) {
@@ -82,7 +84,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
             registeredForPortReadyCallback = true;
           }
         }
-        i2cDevice.enableI2cWriteMode(memAddress, length);
+        i2cDevice.enableI2cWriteMode(i2cAddress, memAddress, length);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableI2cWriteMode",
@@ -91,85 +93,63 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     }
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the cache that I2C reads will be " +
-      "populated into. (byte array)")
-  public Object GetI2cReadCache() {
+  /*
+  @SimpleFunction(description = "Get a copy of the most recent data read in " +
+      "from the device. (byte array)")
+  public Object GetCopyOfReadBuffer() {
     if (i2cDevice != null) {
       try {
-        Lock lock = i2cDevice.getI2cReadCacheLock();
-        lock.lock();
-        try {
-          byte[] src = i2cDevice.getI2cReadCache();
-          if (src != null) {
-            byte[] dest = new byte[src.length];
-            System.arraycopy(src, 0, dest, 0, src.length);
-            return dest;
-          }
-        } finally {
-          lock.unlock();
+        byte[] copy = i2cDevice.getCopyOfReadBuffer();
+        if (copy != null) {
+          return copy;
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetI2cReadCache",
+        form.dispatchErrorOccurredEvent(this, "GetCopyOfReadBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache. " +
-      "(byte array)")
-  public Object GetI2cWriteCache() {
+  @SimpleFunction(description = "Get a copy of the data that is set to be " +
+      "written out to the device. (byte array)")
+  public Object GetCopyOfWriteBuffer() {
     if (i2cDevice != null) {
       try {
-        Lock lock = i2cDevice.getI2cWriteCacheLock();
-        lock.lock();
-        try {
-          byte[] src = i2cDevice.getI2cWriteCache();
-          if (src != null) {
-            byte[] dest = new byte[src.length];
-            System.arraycopy(src, 0, dest, 0, src.length);
-            return dest;
-          }
-        } finally {
-          lock.unlock();
+        byte[] copy = i2cDevice.getCopyOfWriteBuffer();
+        if (copy != null) {
+          return copy;
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetI2cWriteCache",
+        form.dispatchErrorOccurredEvent(this, "GetCopyOfWriteBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Set the contents of the I2C write cache.")
-  public void SetI2cWriteCache(Object byteArray) {
+  @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
+      "to be written out to the device")
+  public void CopyBufferIntoWriteBuffer(Object byteArray) {
     if (i2cDevice != null) {
       try {
         if (byteArray instanceof byte[]) {
-          byte[] src = (byte[]) byteArray;
-          Lock lock = i2cDevice.getI2cWriteCacheLock();
-          lock.lock();
-          try {
-            byte[] dest = i2cDevice.getI2cWriteCache();
-            if (dest != null) {
-              System.arraycopy(src, 0, dest, 0, Math.min(src.length, dest.length));
-            }
-          } finally {
-            lock.unlock();
-          }
+          byte[] array = (byte[]) byteArray;
+          i2cDevice.copyBufferIntoWriteBuffer(array);
         } else {
-          form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
+          form.dispatchErrorOccurredEvent(this, "CopyBufferIntoWriteBuffer",
               ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
+        form.dispatchErrorOccurredEvent(this, "CopyBufferIntoWriteBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
+  */
 
   @SimpleFunction(description = "Set the action flag for this I2C port.")
   public void SetI2cPortActionFlag() {
@@ -308,5 +288,18 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
       }
     }
     i2cDevice = null;
+  }
+
+  // TODO(lizlooney): remove these deprecated functions.
+  @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
+  public Object GetI2cReadCache() {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "GetI2cWriteCache", userVisible = false)
+  public Object GetI2cWriteCache() {
+    return new byte[0];
+  }
+  @SimpleFunction(description = "SetI2cWriteCache", userVisible = false)
+  public void SetI2cWriteCache(Object byteArray) {
   }
 }

@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.TypeConversion;
+import com.qualcomm.robotcore.util.Version;
 
 import android.content.Context;
 import android.content.Intent;
@@ -402,6 +403,15 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @SimpleProperty(userVisible = false)
   public void UsbScanTimeInSeconds(int usbScanTimeInSeconds) {
     this.usbScanTimeInSeconds = usbScanTimeInSeconds;
+  }
+
+  /**
+   * LIBRARY_VERSION property getter.
+   */
+  @SimpleProperty(description = "The constant for LIBRARY_VERSION.",
+      category = PropertyCategory.BEHAVIOR)
+  public String LIBRARY_VERSION() {
+    return Version.LIBRARY_VERSION;
   }
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")
