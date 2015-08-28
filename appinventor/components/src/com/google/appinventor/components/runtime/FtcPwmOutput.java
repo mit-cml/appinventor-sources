@@ -44,10 +44,10 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
    * PulseWidthOutputTime property setter.
    */
   @SimpleProperty
-  public void PulseWidthOutputTime(double time) {
+  public void PulseWidthOutputTime(int time) {
     if (pwmOutput != null) {
       try {
-        pwmOutput.setPulseWidthOutputTime((int) time);
+        pwmOutput.setPulseWidthOutputTime(time);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "PulseWidthOutputTime",
@@ -59,9 +59,10 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
   /**
    * PulseWidthOutputTime property getter.
    */
-  @SimpleProperty(description = "The pulse width output time for this channel.",
+  @SimpleProperty(description = "The pulse width output time for this port.\n" +
+      "Typically set to a value between 750 and 2,250 to control a servo.",
       category = PropertyCategory.BEHAVIOR)
-  public double PulseWidthOutputTime() {
+  public int PulseWidthOutputTime() {
     if (pwmOutput != null) {
       try {
         return pwmOutput.getPulseWidthOutputTime();
@@ -78,10 +79,10 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
    * PulseWidthOutputPeriod property setter.
    */
   @SimpleProperty
-  public void PulseWidthPeriod(double period) {
+  public void PulseWidthPeriod(int period) {
     if (pwmOutput != null) {
       try {
-        pwmOutput.setPulseWidthPeriod((int) period);
+        pwmOutput.setPulseWidthPeriod(period);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "PulseWidthPeriod",
@@ -93,9 +94,10 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
   /**
    * PulseWidthOutputPeriod property getter.
    */
-  @SimpleProperty(description = "The pulse width output.",
+  @SimpleProperty(description = "The pulse width output period.\n" +
+      "Typically set to 20,000 to control servo.",
       category = PropertyCategory.BEHAVIOR)
-  public double PulseWidthPeriod() {
+  public int PulseWidthPeriod() {
     if (pwmOutput != null) {
       try {
         return pwmOutput.getPulseWidthPeriod();

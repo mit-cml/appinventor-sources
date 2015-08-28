@@ -375,6 +375,7 @@ public class YaVersion {
   // - The FtcServo component was added.
   // - The FtcServoController component was added.
   // - The FtcTouchSensor component was added.
+  // - The FtcTouchSensorMultiplexer component was added.
   // - The FtcUltrasonicSensor component was added.
   // - The FtcVoltageSensor component was added.
 
@@ -703,6 +704,8 @@ public class YaVersion {
   public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 1;
 
   public static final int FTC_TOUCH_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION = 1;
 
   public static final int FTC_ULTRASONIC_SENSOR_COMPONENT_VERSION = 1;
 

@@ -24,7 +24,6 @@ import com.qualcomm.robotcore.hardware.I2cController.I2cPortReadyCallback;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
 /**
  * A component for a device interface module of an FTC robot.
@@ -52,8 +51,9 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     super(container.$form());
   }
 
-  @SimpleEvent(description = "This event is triggered when an I2C port is ready. This event is " +
-      "only enabled if EnableI2cReadMode or EnableI2cWriteMode is used.")
+  @SimpleEvent(description = "This event is triggered when an I2C port is ready, " +
+      "after the latest data has been read from the I2C Controller.\n" +
+      "This event is only enabled if EnableI2cReadMode or EnableI2cWriteMode is used.")
   public void I2cPortIsReady(int port) {
     EventDispatcher.dispatchEvent(this, "I2cPortIsReady", port);
   }
@@ -284,13 +284,12 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   // for PWMOutputController
 
-  @SimpleFunction(description = "Sets the pulse width for the channel output in units of 1 " +
-      "microsecond. Setting a value greater than the output period will result in the output " +
-      "being permanently set to 1.")
-  public void SetPulseWidthOutputTime(int port, double time) {
+  @SimpleFunction(description = "Set the pulse width output time for this channel.\n" +
+      "Typically set to a value between 750 and 2,250 to control a servo.")
+  public void SetPulseWidthOutputTime(int port, int time) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setPulseWidthOutputTime(port, (int) time);
+        deviceInterfaceModule.setPulseWidthOutputTime(port, time);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetPulseWidthOutputTime",
@@ -299,14 +298,12 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Sets the pulse repetition period for the channel output in " +
-      "units of 1 microsecond. If the pwm feature is being used to generate pulses for a " +
-      "standard R/C style servo, the output period should be set to 20,000 and the output on " +
-      "time should be set within the range 750-2,250.")
-  public void SetPulseWidthPeriod(int port, double period) {
+  @SimpleFunction(description = "Set the pulse width output period.\n" +
+      "Typically set to 20,000 to control servo.")
+  public void SetPulseWidthPeriod(int port, int period) {
     if (deviceInterfaceModule != null) {
       try {
-        deviceInterfaceModule.setPulseWidthPeriod(port, (int) period);
+        deviceInterfaceModule.setPulseWidthPeriod(port, period);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetPulseWidthPeriod",
@@ -315,9 +312,9 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Gets the pulse width for the channel output in units of 1 " +
-      "microsecond.")
-  public double GetPulseWidthOutputTime(int port) {
+  @SimpleFunction(description = "Gets the pulse width for the channel output in " +
+      "units of 1 microsecond.")
+  public int GetPulseWidthOutputTime(int port) {
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getPulseWidthOutputTime(port);
@@ -330,9 +327,9 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return 0;
   }
 
-  @SimpleFunction(description = "Gets the pulse repetition period for the channel output in " +
-      "units of 1 microsecond.")
-  public double GetPulseWidthPeriod(int port) {
+  @SimpleFunction(description = "Gets the pulse repetition period for the " +
+      "channel output in units of 1 microsecond.")
+  public int GetPulseWidthPeriod(int port) {
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getPulseWidthPeriod(port);
@@ -387,88 +384,64 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the cache that I2C reads will be " +
-      "populated into. (byte array)")
-  public Object GetI2cReadCache(int port) {
+  @SimpleFunction(description = "Get a copy of the most recent data read in " +
+      "from the device. (byte array)")
+  public Object GetCopyOfReadBuffer(int port) {
     if (deviceInterfaceModule != null) {
       try {
-        Lock lock = deviceInterfaceModule.getI2cReadCacheLock(port);
-        lock.lock();
-        try {
-          byte[] src = deviceInterfaceModule.getI2cReadCache(port);
-          if (src != null) {
-            byte[] dest = new byte[src.length];
-            System.arraycopy(src, 0, dest, 0, src.length);
-            return dest;
-          }
-        } finally {
-          lock.unlock();
+        byte[] copy = deviceInterfaceModule.getCopyOfReadBuffer(port);
+        if (copy != null) {
+          return copy;
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetI2cReadCache",
+        form.dispatchErrorOccurredEvent(this, "GetCopyOfReadBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Get a copy of the contents of the I2C write cache. " +
-      "(byte array)")
-  public Object GetI2cWriteCache(int port) {
+  @SimpleFunction(description = "Get a copy of the data that is set to be " +
+      "written out to the device. (byte array)")
+  public Object GetCopyOfWriteBuffer(int port) {
     if (deviceInterfaceModule != null) {
       try {
-        Lock lock = deviceInterfaceModule.getI2cWriteCacheLock(port);
-        lock.lock();
-        try {
-          byte[] src = deviceInterfaceModule.getI2cWriteCache(port);
-          if (src != null) {
-            byte[] dest = new byte[src.length];
-            System.arraycopy(src, 0, dest, 0, src.length);
-            return dest;
-          }
-        } finally {
-          lock.unlock();
+        byte[] copy = deviceInterfaceModule.getCopyOfWriteBuffer(port);
+        if (copy != null) {
+          return copy;
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "GetI2cWriteCache",
+        form.dispatchErrorOccurredEvent(this, "GetCopyOfWriteBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
     return new byte[0];
   }
 
-  @SimpleFunction(description = "Set the contents of the I2C write cache.")
-  public void SetI2cWriteCache(int port, Object byteArray) {
+  @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
+      "to be written out to the device")
+  public void CopyBufferIntoWriteBuffer(int port, Object byteArray) {
     if (deviceInterfaceModule != null) {
       try {
         if (byteArray instanceof byte[]) {
-          byte[] src = (byte[]) byteArray;
-          Lock lock = deviceInterfaceModule.getI2cWriteCacheLock(port);
-          lock.lock();
-          try {
-            byte[] dest = deviceInterfaceModule.getI2cWriteCache(port);
-            if (dest != null) {
-              System.arraycopy(src, 0, dest, 0, Math.min(src.length, dest.length));
-            }
-          } finally {
-            lock.unlock();
-          }
+          byte[] array = (byte[]) byteArray;
+          deviceInterfaceModule.copyBufferIntoWriteBuffer(port, array);
         } else {
-          form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
+          form.dispatchErrorOccurredEvent(this, "CopyBufferIntoWriteBuffer",
               ErrorMessages.ERROR_FTC_INVALID_BYTE_ARRAY, "byteArray");
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "SetI2cWriteCache",
+        form.dispatchErrorOccurredEvent(this, "CopyBufferIntoWriteBuffer",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
-  @SimpleFunction(description = "Set the port action flag; this flag tells the Device Interface " +
-      "Module to send the current data in its buffer to the I2C device.")
+  @SimpleFunction(description = "Set the port action flag; this flag tells the " +
+      "controller to send the current data in its buffer to the I2C device.")
   public void SetI2cPortActionFlag(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -481,7 +454,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
   
-  @SimpleFunction(description = "Get the port action flag; this flag is set if the particular port is busy.")
+  @SimpleFunction(description = "Get the port action flag; this flag is set if " +
+      "the particular port is busy.")
   public boolean IsI2cPortActionFlagSet(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -495,7 +469,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return false;
   }
 
-  @SimpleFunction(description = "Read from the Device Interface Module to the I2C read cache.")
+  @SimpleFunction(description = "Read the local cache in from the I2C Controller.\n" +
+      "NOTE: unless this method is called the internal cache isn't updated.")
   public void ReadI2cCacheFromModule(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -508,7 +483,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Write from the I2C write cache to the Device Interface Module.")
+  @SimpleFunction(description = "Write the local cache to the I2C Controller.\n" +
+      "NOTE: unless this method is called the internal cache isn't updated.")
   public void WriteI2cCacheToModule(int port) {
     if (deviceInterfaceModule != null) {
       try {
@@ -521,8 +497,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     }
   }
 
-  @SimpleFunction(description = "Write just the port action flag in the Device Interface " +
-      "Module's cache to the I2C device.")
+  @SimpleFunction(description = "Write just the port action flag in the local " +
+      "cache to the I2C controller.")
   public void WriteI2cPortFlagOnlyToModule(int port) {
     if (deviceInterfaceModule != null) {
       try {

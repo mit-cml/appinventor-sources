@@ -64,11 +64,22 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
     linearOpMode.waitForStart();
   }
 
-  @SimpleFunction(description = "Wait for one cycle of the hardware.\n" +
+  @SimpleFunction(description = "Wait for one full cycle of the hardware.\n" +
       "Each cycle of the hardware your commands are sent out to the hardware;\n" +
-      "and the latest data is read back in.")
-  public void WaitOneHardwareCycle() throws InterruptedException {
-    linearOpMode.waitOneHardwareCycle();
+      "and the latest data is read back in.\n" +
+      "This method has a strong guarantee to wait for at least one full hardware\n" +
+      "hardware cycle.")
+  public void WaitOneFullHardwareCycle() throws InterruptedException {
+    linearOpMode.waitOneFullHardwareCycle();
+  }
+
+  @SimpleFunction(description = "Wait for the start of the next hardware cycle.\n" +
+      "Each cycle of the hardware your commands are sent out to the hardware;\n" +
+      "and the latest data is read back in.\n" +
+      "This method will wait for the current hardware cycle to finish, which is\n" +
+      "also the start of the next hardware cycle.")
+  public void WaitForNextHardwareCycle() throws InterruptedException {
+    linearOpMode.waitForNextHardwareCycle();
   }
 
   @SimpleFunction(description = "Sleep for the given amount of milliseconds.")

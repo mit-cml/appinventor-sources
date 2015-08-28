@@ -2412,6 +2412,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcTouchSensorComponentPallette();
 
+  @DefaultMessage("FtcTouchSensorMultiplexer")
+  @Description("")
+  String ftcTouchSensorMultiplexerComponentPallette();
+
   @DefaultMessage("FtcUltrasonicSensor")
   @Description("")
   String ftcUltrasonicSensorComponentPallette();
@@ -3378,6 +3382,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GuideProperties();
 
+  @DefaultMessage("I2cAddress")
+  @Description("")
+  String I2cAddressProperties();
+
   @DefaultMessage("IndividualSensorCount")
   @Description("")
   String IndividualSensorCountProperties();
@@ -3414,6 +3422,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LightDetectedRawProperties();
 
+  @DefaultMessage("MAX_NEW_I2C_ADDRESS")
+  @Description("")
+  String MAX_NEW_I2C_ADDRESSProperties();
+
+  @DefaultMessage("MIN_NEW_I2C_ADDRESS")
+  @Description("")
+  String MIN_NEW_I2C_ADDRESSProperties();
+
   @DefaultMessage("Mode")
   @Description("")
   String ModeProperties();
@@ -3434,13 +3450,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Mode_OUTPUTProperties();
 
-  @DefaultMessage("Mode_600HZ_DC")
+  @DefaultMessage("Mode_600HZ")
   @Description("")
-  String Mode_600HZ_DCProperties();
+  String Mode_600HZProperties();
 
-  @DefaultMessage("Mode_1200HZ_AC")
+  @DefaultMessage("Mode_1200HZ")
   @Description("")
-  String Mode_1200HZ_ACProperties();
+  String Mode_1200HZProperties();
 
   @DefaultMessage("MotorControllerDeviceMode")
   @Description("")
@@ -3525,6 +3541,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SignalDetected")
   @Description("")
   String SignalDetectedProperties();
+
+  @DefaultMessage("SignalDetectedThreshold")
+  @Description("")
+  String SignalDetectedThresholdProperties();
 
   @DefaultMessage("Start")
   @Description("")
@@ -4268,6 +4288,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String stateParams();
 
+  @DefaultMessage("threshold")
+  @Description("")
+  String thresholdParams();
+
   @DefaultMessage("time")
   @Description("")
   String timeParams();
@@ -4665,6 +4689,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Init")
   @Description("")
   String InitEvents();
+
+  @DefaultMessage("InitLoop")
+  @Description("")
+  String InitLoopEvents();
 
   @DefaultMessage("Loop")
   @Description("")
@@ -5512,6 +5540,10 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
+  @DefaultMessage("CopyBufferIntoWriteBuffer")
+  @Description("")
+  String CopyBufferIntoWriteBufferMethods();
+
   @DefaultMessage("CopyBytes")
   @Description("")
   String CopyBytesMethods();
@@ -5535,14 +5567,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("EnableLed")
   @Description("")
   String EnableLedMethods();
-
-  @DefaultMessage("EnableNxtI2cReadMode")
-  @Description("")
-  String EnableNxtI2cReadModeMethods();
-
-  @DefaultMessage("EnableNxtI2cWriteMode")
-  @Description("")
-  String EnableNxtI2cWriteModeMethods();
 
   @DefaultMessage("Enable9v")
   @Description("")
@@ -5568,6 +5592,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetAnalogInputValueMethods();
 
+  @DefaultMessage("GetCopyOfReadBuffer")
+  @Description("")
+  String GetCopyOfReadBufferMethods();
+
+  @DefaultMessage("GetCopyOfWriteBuffer")
+  @Description("")
+  String GetCopyOfWriteBufferMethods();
+
   @DefaultMessage("GetDigitalInputStateByte")
   @Description("")
   String GetDigitalInputStateByteMethods();
@@ -5591,14 +5623,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GetLEDState")
   @Description("")
   String GetLEDStateMethods();
-
-  @DefaultMessage("GetI2cReadCache")
-  @Description("")
-  String GetI2cReadCacheMethods();
-
-  @DefaultMessage("GetI2cWriteCache")
-  @Description("")
-  String GetI2cWriteCacheMethods();
 
   @DefaultMessage("GetMotorCurrentPosition")
   @Description("")
@@ -5640,6 +5664,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetServoPositionMethods();
 
+  @DefaultMessage("GetSwitches")
+  @Description("")
+  String GetSwitchesMethods();
+
   @DefaultMessage("IndividualSensorAngle")
   @Description("")
   String IndividualSensorAngleMethods();
@@ -5672,9 +5700,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsI2cPortReadyMethods();
 
-  @DefaultMessage("IsNxtI2cPortActionFlagSet")
+  @DefaultMessage("IsTouchSensorPressed")
   @Description("")
-  String IsNxtI2cPortActionFlagSetMethods();
+  String IsTouchSensorPressedMethods();
 
   @DefaultMessage("OpModeIsActive")
   @Description("")
@@ -5760,10 +5788,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetI2cPortActionFlagMethods();
 
-  @DefaultMessage("SetI2cWriteCache")
-  @Description("")
-  String SetI2cWriteCacheMethods();
-
   @DefaultMessage("SetJoystickDeadzone")
   @Description("")
   String SetJoystickDeadzoneMethods();
@@ -5787,10 +5811,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetMotorTargetPosition")
   @Description("")
   String SetMotorTargetPositionMethods();
-
-  @DefaultMessage("SetNxtI2cPortActionFlag")
-  @Description("")
-  String SetNxtI2cPortActionFlagMethods();
 
   @DefaultMessage("SetPowerFloat")
   @Description("")
@@ -5820,13 +5840,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TelemetryAddTextDataMethods();
 
+  @DefaultMessage("WaitForNextHardwareCycle")
+  @Description("")
+  String WaitForNextHardwareCycleMethods();
+
   @DefaultMessage("WaitForStart")
   @Description("")
   String WaitForStartMethods();
 
-  @DefaultMessage("WaitOneHardwareCycle")
+  @DefaultMessage("WaitOneFullHardwareCycle")
   @Description("")
-  String WaitOneHardwareCycleMethods();
+  String WaitOneFullHardwareCycleMethods();
 
   @DefaultMessage("WriteI2cCacheToModule")
   @Description("")
@@ -6199,6 +6223,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a touch sensor of an FTC robot.")
   @Description("")
   String FtcTouchSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a touch sensor multiplexer of an FTC robot.")
+  @Description("")
+  String FtcTouchSensorMultiplexerHelpStringComponentPallette();
 
   @DefaultMessage("A component for an ultrasonic sensor of an FTC robot.")
   @Description("")

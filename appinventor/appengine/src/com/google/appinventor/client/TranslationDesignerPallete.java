@@ -222,6 +222,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcServoControllerComponentPallette();
     } else if (key.equals("FtcTouchSensor")) {
       value = MESSAGES.ftcTouchSensorComponentPallette();
+    } else if (key.equals("FtcTouchSensorMultiplexer")) {
+      value = MESSAGES.ftcTouchSensorMultiplexerComponentPallette();
     } else if (key.equals("FtcUltrasonicSensor")) {
       value = MESSAGES.ftcUltrasonicSensorComponentPallette();
     } else if (key.equals("FtcVoltageSensor")) {
@@ -402,6 +404,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcServoControllerHelpStringComponentPallette();
     } else if (key.equals("FtcTouchSensor-helpString")) {
       value = MESSAGES.FtcTouchSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcTouchSensorMultiplexer-helpString")) {
+      value = MESSAGES.FtcTouchSensorMultiplexerHelpStringComponentPallette();
     } else if (key.equals("FtcUltrasonicSensor-helpString")) {
       value = MESSAGES.FtcUltrasonicSensorHelpStringComponentPallette();
     } else if (key.equals("FtcVoltageSensor-helpString")) {

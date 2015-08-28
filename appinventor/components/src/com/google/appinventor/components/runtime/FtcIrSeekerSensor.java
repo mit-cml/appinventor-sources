@@ -44,21 +44,21 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   }
 
   /**
-   * Mode_600HZ_DC property getter.
+   * Mode_600HZ property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_600HZ_DC.",
+  @SimpleProperty(description = "The constant for Mode_600HZ.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_600HZ_DC() {
-    return Mode.MODE_600HZ_DC.toString();
+  public String Mode_600HZ() {
+    return Mode.MODE_600HZ.toString();
   }
 
   /**
-   * Mode_1200HZ_AC property getter.
+   * Mode_1200HZ property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_1200HZ_AC.",
+  @SimpleProperty(description = "The constant for Mode_1200HZ.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_1200HZ_AC() {
-    return Mode.MODE_1200HZ_AC.toString();
+  public String Mode_1200HZ() {
+    return Mode.MODE_1200HZ.toString();
   }
 
   /**
@@ -88,7 +88,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ_DC or MODE_1200HZ_AC.",
+  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ or MODE_1200HZ.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
     if (irSeekerSensor != null) {
@@ -104,6 +104,40 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
       }
     }
     return "";
+  }
+
+  /**
+   * SignalDetectedThreshold property setter.
+   */
+  @SimpleProperty
+  public void SignalDetectedThreshold(double threshold) {
+    if (irSeekerSensor != null) {
+      try {
+        irSeekerSensor.setSignalDetectedThreshold(threshold);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SignalDetectedThreshold",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * SignalDetectedThreshold property getter.
+   */
+  @SimpleProperty(description = "The signal detection threshold of the IR seeker sensor.",
+      category = PropertyCategory.BEHAVIOR)
+  public double SignalDetectedThreshold() {
+    if (irSeekerSensor != null) {
+      try {
+        return irSeekerSensor.getSignalDetectedThreshold();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SignalDetectedThreshold",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   /**
@@ -225,6 +259,58 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "IndividualSensorStrength",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * MAX_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MAX_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MAX_NEW_I2C_ADDRESS() {
+    return IrSeekerSensor.MAX_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * MIN_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MIN_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MIN_NEW_I2C_ADDRESS() {
+    return IrSeekerSensor.MIN_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * I2cAddress property setter.
+   */
+  @SimpleProperty
+  public void I2cAddress(int newAddress) {
+    if (irSeekerSensor != null) {
+      try {
+        irSeekerSensor.setI2cAddress(newAddress);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * I2cAddress property getter.
+   */
+  @SimpleProperty(description = "The I2C address of the IR seeker sensor.",
+      category = PropertyCategory.BEHAVIOR)
+  public int I2cAddress() {
+    if (irSeekerSensor != null) {
+      try {
+        return irSeekerSensor.getI2cAddress();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
