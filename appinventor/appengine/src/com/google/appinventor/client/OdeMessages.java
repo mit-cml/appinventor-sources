@@ -3414,6 +3414,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LeftTriggerProperties();
 
+  @DefaultMessage("LIBRARY_VERSION")
+  @Description("")
+  String LIBRARY_VERSIONProperties();
+
   @DefaultMessage("LightDetected")
   @Description("")
   String LightDetectedProperties();
@@ -6582,9 +6586,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsPortReady")
   @Description("")
   String IsPortReadyMethods();
-  @DefaultMessage("LIBRARY_VERSION")
-  @Description("")
-  String LIBRARY_VERSIONProperties();
   @DefaultMessage("Mode_600HZ_DC")
   @Description("")
   String Mode_600HZ_DCProperties();
