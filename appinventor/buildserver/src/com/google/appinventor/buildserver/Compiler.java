@@ -409,7 +409,11 @@ public final class Compiler {
         }
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
-        out.write("android:configChanges=\"orientation|keyboardHidden\">\n");
+
+        // The keyboard option prevents the app from stopping when a external (bluetooth)
+        // keyboard is attached.
+        out.write("android:configChanges=\"orientation|keyboardHidden|keyboard\">\n");
+
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
