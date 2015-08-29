@@ -248,10 +248,10 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return 0;
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       dcMotorController = hardwareMap.dcMotorController.get(getDeviceName());
       if (dcMotorController == null) {
@@ -262,7 +262,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     dcMotorController = null;
   }
 }

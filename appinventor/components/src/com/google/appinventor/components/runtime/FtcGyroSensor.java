@@ -79,10 +79,10 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
     return "";
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
       if (gyroSensor == null) {
@@ -93,7 +93,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     gyroSensor = null;
   }
 }

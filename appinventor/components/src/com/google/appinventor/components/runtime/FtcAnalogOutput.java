@@ -85,10 +85,10 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
     }
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       analogOutput = hardwareMap.analogOutput.get(getDeviceName());
       if (analogOutput == null) {
@@ -99,7 +99,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     analogOutput = null;
   }
 }

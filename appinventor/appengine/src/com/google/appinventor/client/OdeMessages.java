@@ -2368,6 +2368,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcI2cDeviceComponentPallette();
 
+  @DefaultMessage("FtcI2cDeviceReader")
+  @Description("")
+  String ftcI2cDeviceReaderComponentPallette();
+
   @DefaultMessage("FtcIrSeekerSensor")
   @Description("")
   String ftcIrSeekerSensorComponentPallette();
@@ -3414,6 +3418,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LeftTriggerProperties();
 
+  @DefaultMessage("Length")
+  @Description("")
+  String LengthProperties();
+
   @DefaultMessage("LIBRARY_VERSION")
   @Description("")
   String LIBRARY_VERSIONProperties();
@@ -3429,6 +3437,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("MAX_NEW_I2C_ADDRESS")
   @Description("")
   String MAX_NEW_I2C_ADDRESSProperties();
+
+  @DefaultMessage("MemAddress")
+  @Description("")
+  String MemAddressProperties();
 
   @DefaultMessage("MIN_NEW_I2C_ADDRESS")
   @Description("")
@@ -5656,6 +5668,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetPulseWidthPeriodMethods();
 
+  @DefaultMessage("GetReadBuffer")
+  @Description("")
+  String GetReadBufferMethods();
+
   @DefaultMessage("GetRuntime")
   @Description("")
   String GetRuntimeMethods();
@@ -6183,6 +6199,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for an I2C device of an FTC robot.")
   @Description("")
   String FtcI2cDeviceHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an I2C device reader of an FTC robot.")
+  @Description("")
+  String FtcI2cDeviceReaderHelpStringComponentPallette();
 
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")

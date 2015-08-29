@@ -130,10 +130,10 @@ public final class FtcServoController extends FtcHardwareDevice {
     return 0.0;
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       servoController = hardwareMap.servoController.get(getDeviceName());
       if (servoController == null) {
@@ -144,7 +144,7 @@ public final class FtcServoController extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     servoController = null;
   }
 }

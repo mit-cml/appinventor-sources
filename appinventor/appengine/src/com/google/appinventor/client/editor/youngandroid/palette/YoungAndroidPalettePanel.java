@@ -280,6 +280,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     ftcComponentNamesMap.put("FtcAnalogInput", value++);
     ftcComponentNamesMap.put("FtcAnalogOutput", value++);
     ftcComponentNamesMap.put("FtcDigitalChannel", value++);
+    ftcComponentNamesMap.put("FtcI2cDeviceReader", value++);
     ftcComponentNamesMap.put("FtcI2cDevice", value++);
     ftcComponentNamesMap.put("FtcPwmOutput", value++);
     ftcComponentNamesMap.put("FtcDeviceInterfaceModule", value++);

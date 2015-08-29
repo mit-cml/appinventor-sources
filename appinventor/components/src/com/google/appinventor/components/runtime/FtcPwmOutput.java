@@ -110,10 +110,10 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
     return 0;
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
       if (pwmOutput == null) {
@@ -124,7 +124,7 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     pwmOutput = null;
   }
 }

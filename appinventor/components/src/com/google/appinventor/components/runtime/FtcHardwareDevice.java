@@ -41,7 +41,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
    * DeviceName property getter.
    * Not visible in blocks.
    */
-  @SimpleProperty(description = "The name for the hardware device",
+  @SimpleProperty(description = "The name for the hardware device.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public String DeviceName() {
     return deviceName;
@@ -134,20 +134,26 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     clearHardwareDevice();
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public void initHardwareDevice(OpMode opMode) {
+  public final void initHardwareDevice(OpMode opMode) {
     Object hardwareDevice = initHardwareDeviceImpl(opMode.hardwareMap);
     this.hardwareDevice = (hardwareDevice instanceof HardwareDevice) ?
         ((HardwareDevice) hardwareDevice) : null;
   }
 
-  public abstract void clearHardwareDevice();
+  @Override
+  public final void clearHardwareDevice() {
+    clearHardwareDeviceImpl();
+    hardwareDevice = null;
+  }
 
   // protected methods
 
   protected abstract Object initHardwareDeviceImpl(HardwareMap hardwareMap);
+
+  protected abstract void clearHardwareDeviceImpl();
 
   protected final String getDeviceName() {
     return deviceName;
