@@ -282,7 +282,7 @@ public class ReplForm extends Form {
     if (!component.exists()) {
       return false;
     }
-    if (!component.getName().endsWith(".dex")) {
+    if (!component.getName().endsWith(".jar")) {
       return  false;
     }
     // Store the loaded dex files in the private storage of the App for stable optimization
