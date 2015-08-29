@@ -332,10 +332,10 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
     I2cPortIsReady(port);
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       legacyModule = hardwareMap.legacyModule.get(getDeviceName());
       if (legacyModule == null) {
@@ -346,7 +346,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     synchronized (portsRegisteredForPortReadyCallbackLock) {
       for (Integer port : portsRegisteredForPortReadyCallback) {
         legacyModule.deregisterForPortReadyCallback(port);

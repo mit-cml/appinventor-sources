@@ -364,6 +364,7 @@ public class YaVersion {
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
   // - The FtcI2cDevice component was added.
+  // - The FtcI2cDeviceReader component was added.
   // - The FtcIrSeekerSensor component was added.
   // - The FtcLegacyModule component was added.
   // - The FtcLightSensor component was added.
@@ -682,6 +683,8 @@ public class YaVersion {
   public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
 
   public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 1;
+
+  public static final int FTC_I2C_DEVICE_READER_COMPONENT_VERSION = 1;
 
   public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 1;
 

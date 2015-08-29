@@ -125,10 +125,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
     return "";
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
       if (accelerationSensor == null) {
@@ -139,7 +139,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     accelerationSensor = null;
   }
 }

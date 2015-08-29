@@ -18,8 +18,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cController.I2cPortReadyCallback;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 
-import java.util.concurrent.locks.Lock;
-
 /**
  * A component for an I2C device of an FTC robot.
  *
@@ -264,10 +262,10 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     I2cPortIsReady();
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
       if (i2cDevice == null) {
@@ -278,7 +276,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     synchronized (registeredForPortReadyCallbackLock) {
       if (registeredForPortReadyCallback) {
         i2cDevice.deregisterForPortReadyCallback();

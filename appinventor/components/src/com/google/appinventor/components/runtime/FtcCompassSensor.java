@@ -138,10 +138,10 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return false;
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       compassSensor = hardwareMap.compassSensor.get(getDeviceName());
       if (compassSensor == null) {
@@ -152,7 +152,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     compassSensor = null;
   }
 }

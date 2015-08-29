@@ -140,10 +140,10 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
     }
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
       if (digitalChannel == null) {
@@ -154,7 +154,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     digitalChannel = null;
   }
 }

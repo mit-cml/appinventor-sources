@@ -200,6 +200,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcGyroSensorComponentPallette();
     } else if (key.equals("FtcI2cDevice")) {
       value = MESSAGES.ftcI2cDeviceComponentPallette();
+    } else if (key.equals("FtcI2cDeviceReader")) {
+      value = MESSAGES.ftcI2cDeviceReaderComponentPallette();
     } else if (key.equals("FtcIrSeekerSensor")) {
       value = MESSAGES.ftcIrSeekerSensorComponentPallette();
     } else if (key.equals("FtcLegacyModule")) {

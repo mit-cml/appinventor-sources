@@ -608,10 +608,10 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     I2cPortIsReady(port);
   }
 
-  // FtcRobotController.HardwareDevice implementation
+  // FtcHardwareDevice implementation
 
   @Override
-  public Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
+  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
       deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
       if (deviceInterfaceModule == null) {
@@ -622,7 +622,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   }
 
   @Override
-  public void clearHardwareDevice() {
+  protected void clearHardwareDeviceImpl() {
     synchronized (portsRegisteredForPortReadyCallbackLock) {
       for (Integer port : portsRegisteredForPortReadyCallback) {
         deviceInterfaceModule.deregisterForPortReadyCallback(port);
