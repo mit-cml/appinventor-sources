@@ -343,14 +343,10 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
       }
 
-      // make permissions unique by putting them in one set
-      Set<String> permissions = Sets.newHashSet();
-      for (Set<String> compPermissions : permissionsNeeded.values()) {
-        permissions.addAll(compPermissions);
-      }
-
-      for (String permission : permissions) {
-        out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+      for (String type : permissionsNeeded.keySet()) {
+        for (String permission : permissionsNeeded.get(type)) {
+          out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+        }
       }
 
       if (isForCompanion) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
