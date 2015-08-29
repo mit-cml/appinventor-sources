@@ -259,7 +259,7 @@ public final class Label extends AndroidViewComponent {
   /**
    * Specifies whether the label should have margins.
    * This margin value is not well coordinated with the
-   * designer, where the margins are defined for the arrangement, not just for individual 
+   * designer, where the margins are defined for the arrangement, not just for individual
    * labels.
    *
    * @param hasMargins {@code true} indicates that there are margins, {@code false} no margins
@@ -280,20 +280,20 @@ private void setLabelMargins(boolean hasMargins) {
 }
 
   /**
-   * Returns the label's text's font size, measured in pixels.
+   * Returns the label's text's font size, measured in sp(scale-independent pixels).
    *
-   * @return  font size in pixel
+   * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public float FontSize() {
-    return TextViewUtil.getFontSize(view);
+    return TextViewUtil.getFontSize(view, container.$context());
   }
 
   /**
-   * Specifies the label's text's font size, measured in pixels.
+   * Specifies the label's text's font size, measured in sp(scale-independent pixels).
    *
-   * @param size  font size in pixel
+   * @param size  font size in sp (scale-independent pixels)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
