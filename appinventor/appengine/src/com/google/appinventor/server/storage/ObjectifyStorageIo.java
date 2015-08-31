@@ -146,7 +146,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @VisibleForTesting
   abstract class JobRetryHelper {
-    public abstract void run(Objectify datastore) throws ObjectifyException;
+    private IOException exception = null;
+    public abstract void run(Objectify datastore) throws ObjectifyException, IOException;
     /*
      * Called before retrying the job. Note that the underlying datastore
      * still has the transaction active, so restrictions about operations
@@ -154,6 +155,12 @@ public class ObjectifyStorageIo implements  StorageIo {
      */
     public void onNonFatalError() {
       // Default is to do nothing
+    }
+    public void onIOException(IOException error) {
+      exception = error;
+    }
+    public IOException getIOException() {
+      return exception;
     }
   }
 
@@ -1982,15 +1989,17 @@ public class ObjectifyStorageIo implements  StorageIo {
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
    * @param zipName  the name of the zip file, if a specific one is desired
-
+   * @param fatalError Signal a fatal error if a file is not found
+   * @param forGallery flag to indicate we are exporting for the gallery
    * @return  project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
-                                                 final boolean includeProjectHistory,
-                                                 final boolean includeAndroidKeystore,
-                                                 @Nullable String zipName,
-                                                 final boolean fatalError) throws IOException {
+    final boolean includeProjectHistory,
+    final boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean fatalError,
+    final boolean forGallery) throws IOException {
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
@@ -2009,13 +2018,16 @@ public class ObjectifyStorageIo implements  StorageIo {
     final ZipOutputStream out = new ZipOutputStream(zipFile);
 
     try {
-      runJobWithRetries(new JobRetryHelper() {
+      JobRetryHelper job = new JobRetryHelper() {
         @Override
-        public void run(Objectify datastore) {
+        public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
           boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
             String fileName = fd.fileName;
+            if (fileName.startsWith("assets/external_comps") && forGallery) {
+              throw new IOException("FATAL Error, external component in gallery app");
+            }
             if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
               if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
                 // Skip legacy remix history files that were previous stored with the project
@@ -2033,8 +2045,12 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
           }
         }
-      }, true);
-
+      };
+      runJobWithRetries(job, true);
+      IOException error = job.getIOException();
+      if (error != null) {
+        throw error;
+      }
       // Process the file contents outside of the job since we can't read
       // blobs in the job.
       for (FileData fd : fileData) {
@@ -2452,6 +2468,9 @@ public class ObjectifyStorageIo implements  StorageIo {
         // maybe this should be a fatal error? I think only thing
         // that creates this exception is this method.
         job.onNonFatalError();
+      } catch (IOException e) {
+        job.onIOException(e);
+        break;
       } finally {
         if (useTransaction && datastore.getTxn().isActive()) {
           try {

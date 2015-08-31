@@ -562,7 +562,8 @@ public interface StorageIo {
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
                                           @Nullable String zipName,
-                                          boolean fatalError) throws IOException;
+                                          boolean fatalError,
+                                          boolean forGallery) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case

@@ -1929,6 +1929,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a project couldn't be uploaded to the server.")
   String projectUploadError();
 
+  @DefaultMessage("Apps with extensions cannot be uploaded to the Gallery")
+  @Description("Error to report when an app with an extension is attempted to be added to the Gallery")
+  String galleryNoExtensionsPlease();
+
   @DefaultMessage("The selected project is not a project source file!\n" +
       "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")

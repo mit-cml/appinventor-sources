@@ -1253,7 +1253,7 @@ panel
             }//end of callback#onSuccess
             @Override
             public void onFailure(Throwable caught) {
-              super.onFailure(caught);
+              Window.alert(MESSAGES.galleryNoExtensionsPlease());
               actionButton.setEnabled(true);
               actionButton.setText(MESSAGES.galleryPublishText());
             }
@@ -1288,7 +1288,7 @@ panel
             }
             @Override
             public void onFailure(Throwable caught) {
-              super.onFailure(caught);
+              Window.alert(MESSAGES.galleryNoExtensionsPlease());
               actionButton.setEnabled(true);
               actionButton.setText(MESSAGES.galleryUpdateText());
             }
