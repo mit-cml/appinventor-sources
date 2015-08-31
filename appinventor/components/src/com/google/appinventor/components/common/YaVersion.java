@@ -649,7 +649,8 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 2;
+  // - Added background color & image
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
 
   public static final int IMAGE_COMPONENT_VERSION = 1;
 
@@ -898,7 +899,8 @@ public class YaVersion {
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 2;
+  // - Added background color & image
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.
