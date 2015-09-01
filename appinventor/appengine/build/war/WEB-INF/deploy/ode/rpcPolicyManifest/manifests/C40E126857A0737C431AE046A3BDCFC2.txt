@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.launch.LaunchService
+path: 00C38B363F8A87516C7836E3A274DF52.gwt.rpc

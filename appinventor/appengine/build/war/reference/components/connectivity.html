@@ -1,0 +1,811 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+  <meta charset="utf-8">
+
+
+  <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+
+
+  <meta content="Front Page" about="/front_page" property="dc:title">
+
+
+  <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+
+<!-- Title ----------------------- -->
+  <title>Connectivity Components - App Inventor for Android</title>
+
+
+<!-- Title ----------------------- -->
+
+  <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+</head><body>
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+          <div id="menu-bar" class="nav clearfix">
+            <nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+              <ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+            </nav>
+          </div>
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+<div id="columns" class="no-menu-bar" style="margin-top:15px;">
+<div class="columns-inner clearfix">
+<div id="content-column">
+<div class="content-inner"> <section id="main-content" role="main"> </section>
+<div id="content">
+<div class="region region-content">
+<!-- Content ----------------------- -->
+<h1>Connectivity Components - App Inventor for Android</h1>
+<h2>Table of Contents</h2>
+<ul>
+  <li> <a href="#ActivityStarter"> ActivityStarter </a> </li>
+  <li> <a href="#BluetoothClient"> BluetoothClient </a> </li>
+  <li> <a href="#BluetoothServer"> BluetoothServer </a> </li>
+  <li> <a href="#Web"> Web </a> </li>
+</ul>
+
+
+<h2 id="ActivityStarter">ActivityStarter</h2>
+
+<p>A component that can launch an activity using the <code>StartActivity</code> method.
+<p>Activities that can be launched include:<ul> <li> Starting another App Inventor for Android app.
+ To do so, first      find out the <em>class</em> of the other application by      downloading the source code and using a file explorer or unzip      utility to find a file named      "youngandroidproject/project.properties".
+ The first line of      the file will start with "main=" and be followed by the class      name; for example,      <code>main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>.       (The first components indicate that it was created by      Ben.Bitdiddle@gmail.com.)
+ To make your      <code>ActivityStarter</code> launch this application, set the      following properties: <ul>
+      <li> <code>ActivityPackage</code> to the class name, dropping the           last component (for example,           <code>com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li>
+      <li> <code>ActivityClass</code> to the entire class name (for           example,           <code>com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>)</li>      </ul></li>
+<li> Starting the camera application by setting the following      properties:<ul>
+     <li> <code>Action: android.intent.action.MAIN</code> </li>
+     <li> <code>ActivityPackage: com.android.camera</code> </li>
+     <li> <code>ActivityClass: com.android.camera.Camera</code></li>
+      </ul></li>
+<li> Performing web search.  Assuming the term you want to search      for is "vampire" (feel free to substitute your own choice),
+     set the properties to:
+<ul><code>     <li>Action: android.intent.action.WEB_SEARCH</li>      <li>ExtraKey: query</li>      <li>ExtraValue: vampire</li>      <li>ActivityPackage: com.google.android.providers.enhancedgooglesearch</li>     <li>ActivityClass: com.google.android.providers.enhancedgooglesearch.Launcher</li>      </code></ul></li>
+<li> Opening a browser to a specified web page.  Assuming the page you      want to go to is "www.facebook.com" (feel free to substitute      your own choice), set the properties to:
+<ul><code>      <li>Action: android.intent.action.VIEW</li>      <li>DataUri: http://www.facebook.com</li> </code> </ul> </li> </ul></p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Action</code></dt>
+  <dd></dd>
+  <dt><code>ActivityClass</code></dt>
+  <dd></dd>
+  <dt><code>ActivityPackage</code></dt>
+  <dd></dd>
+  <dt><code>DataType</code></dt>
+  <dd></dd>
+  <dt><code>DataUri</code></dt>
+  <dd></dd>
+  <dt><code>Extras</code></dt>
+  <dd>Accepts a list of pairs which are used as key/value pairs in
+  the “Extra” field of the activity</dd>
+  <dt><code>ExtraKey<i>(Obsolete)</i></code></dt>
+  <dd></dd>
+  <dt><code>ExtraValue<i>(Obsolete)</i></code></dt>
+  <dd></dd>
+  <dt><code><em>Result</em></code></dt>
+  <dd></dd>
+  <dt><code>ResultName</code></dt>
+  <dd></dd>
+  <dt><code><em>ResultType</em></code></dt>
+  <dd></dd>
+  <dt><code><em>ResultUri</em></code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterActivity(text result)</code></dt>
+  <dd>Event raised after this ActivityStarter returns.</dd>
+</dl>
+
+<dl>
+  <dt><code>ActivityCanceled()</code></dt>
+  <dd>Event raised if this ActivityStarter returns because the activity was canceled.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>text ResolveActivity()</code></dt>
+  <dd>Returns the name of the activity that corresponds to this ActivityStarter, or an empty string if no corresponding activity can be found.</dd>
+  <dt><code>StartActivity()</code></dt>
+  <dd>Start the activity corresponding to this ActivityStarter.</dd>
+</dl>
+
+<h2 id="BluetoothClient">BluetoothClient</h2>
+
+<p>Bluetooth client component</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>AddressesAndNames</em></code></dt>
+  <dd>The addresses and names of paired Bluetooth devices</dd>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Whether Bluetooth is available on the device</dd>
+  <dt><code>CharacterEncoding</code></dt>
+  <dd></dd>
+  <dt><code>DelimiterByte</code></dt>
+  <dd></dd>
+  <dt><code><em>Enabled</em></code></dt>
+  <dd>Whether Bluetooth is enabled</dd>
+  <dt><code>HighByteFirst</code></dt>
+  <dd></dd>
+  <dt><code><em>IsConnected</em></code></dt>
+  <dd></dd>
+  <dt><code>Secure</code></dt>
+  <dd>Whether to invoke SSP (Simple Secure Pairing), which is supported on devices with Bluetooth v2.1 or higher. When working with embedded Bluetooth devices, this property may need to be set to False. For Android 2.0-2.2, this property setting will be ignored.</dd>
+</dl>
+
+<h3>Events</h3>
+none
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>number BytesAvailableToReceive()</code></dt>
+  <dd>Returns an estimate of the number of bytes that can be received without blocking</dd>
+  <dt><code>boolean Connect(text address)</code></dt>
+  <dd>Connect to the Bluetooth device with the specified address and the Serial Port Profile (SPP). Returns true if the connection was successful.</dd>
+  <dt><code>boolean ConnectWithUUID(text address, text uuid)</code></dt>
+  <dd>Connect to the Bluetooth device with the specified address and UUID. Returns true if the connection was successful.</dd>
+  <dt><code>Disconnect()</code></dt>
+  <dd>Disconnect from the connected Bluetooth device.</dd>
+  <dt><code>boolean IsDevicePaired(text address)</code></dt>
+  <dd>Checks whether the Bluetooth device with the specified address is paired.</dd>
+  <dt><code>number ReceiveSigned1ByteNumber()</code></dt>
+  <dd>Receive a signed 1-byte number from the connected Bluetooth device.</dd>
+  <dt><code>number ReceiveSigned2ByteNumber()</code></dt>
+  <dd>Receive a signed 2-byte number from the connected Bluetooth device.</dd>
+  <dt><code>number ReceiveSigned4ByteNumber()</code></dt>
+  <dd>Receive a signed 4-byte number from the connected Bluetooth device.</dd>
+  <dt><code>list ReceiveSignedBytes(number numberOfBytes)</code></dt>
+  <dd>Receive multiple signed byte values from the connected Bluetooth device. If numberOfBytes is less than 0, read until a delimiter byte value is received.</dd>
+  <dt><code>text ReceiveText(number numberOfBytes)</code></dt>
+  <dd>Receive text from the connected Bluetooth device. If numberOfBytes is less than 0, read until a delimiter byte value is received.</dd>
+  <dt><code>number ReceiveUnsigned1ByteNumber()</code></dt>
+  <dd>Receive an unsigned 1-byte number from the connected Bluetooth device.</dd>
+  <dt><code>number ReceiveUnsigned2ByteNumber()</code></dt>
+  <dd>Receive a unsigned 2-byte number from the connected Bluetooth device.</dd>
+  <dt><code>number ReceiveUnsigned4ByteNumber()</code></dt>
+  <dd>Receive a unsigned 4-byte number from the connected Bluetooth device.</dd>
+  <dt><code>list ReceiveUnsignedBytes(number numberOfBytes)</code></dt>
+  <dd>Receive multiple unsigned byte values from the connected Bluetooth device. If numberOfBytes is less than 0, read until a delimiter byte value is received.</dd>
+  <dt><code>Send1ByteNumber(text number)</code></dt>
+  <dd>Send a 1-byte number to the connected Bluetooth device.</dd>
+  <dt><code>Send2ByteNumber(text number)</code></dt>
+  <dd>Send a 2-byte number to the connected Bluetooth device.</dd>
+  <dt><code>Send4ByteNumber(text number)</code></dt>
+  <dd>Send a 4-byte number to the connected Bluetooth device.</dd>
+  <dt><code>SendBytes(list list)</code></dt>
+  <dd>Send a list of byte values to the connected Bluetooth device.</dd>
+  <dt><code>SendText(text text)</code></dt>
+  <dd>Send text to the connected Bluetooth device.</dd>
+</dl>
+
+
+<h2 id="BluetoothServer"> BluetoothServer </h2>
+<img alt="Picture of Bluetooth Server component" src="images/bluetoothserver.png">
+<p> Bluetooth server component </p>
+<h3> Properties </h3>
+<dl>
+  <dt> <code> Available: boolean </code> </dt>
+  <dd> Tell whether Bluetooth is available on the Android device. </dd>
+  <dt> <code> CharacterEncoding: text </code> </dt>
+  <dd> The character encoding to use when sending and receiving text. </dd>
+  <dt> <code> DelimiterByte: number </code> </dt>
+  <dd> The delimiter byte to use when passing a negative number for the
+numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes,
+or ReceiveUnsignedBytes. </dd>
+  <dt> <code> Enabled: boolean </code> </dt>
+  <dd> Tell whether Bluetooth is enabled. </dd>
+  <dt> <code> HighByteFirst: boolean </code> </dt>
+  <dd> Whether 2 and 4 byte numbers should be sent and received with
+the high (or most significant) byte first. Check the documentation for
+the device with which your app will be communicating for the
+appropriate setting. This is also known as big-endian. </dd>
+  <dt> <code> IsAccepting: boolean </code> </dt>
+  <dd> Tell whether this BluetoothServer component is accepting an
+incoming connection. </dd>
+  <dt> <code> IsConnected: boolean </code> </dt>
+  <dd> Tell whether a Bluetooth connection has been made. </dd>
+</dl>
+<h3> Events </h3>
+<dl>
+  <dt> <code> ConnectionAccepted() </code> </dt>
+  <dd> Indicates that a bluetooth connection has been accepted. </dd>
+</dl>
+<h3> Methods </h3>
+<dl>
+  <dt> <code> AcceptConnection(text serviceName) </code> </dt>
+  <dd> Accept an incoming connection with the Serial Port Profile
+(SPP). </dd>
+  <dt> <code> AcceptConnectionWithUUID(text serviceName, text uuid) </code>
+  </dt>
+  <dd> Accept an incoming connection with a specific UUID. </dd>
+  <dt> <code> number BytesAvailableToReceive() </code> </dt>
+  <dd> Returns an estimate of the number of bytes that can be received
+without blocking </dd>
+  <dt> <code> Disconnect() </code> </dt>
+  <dd> Disconnect from the connected Bluetooth device. </dd>
+  <dt> <code> number ReceiveSigned1ByteNumber() </code> </dt>
+  <dd> Receive a signed 1-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> number ReceiveSigned2ByteNumber() </code> </dt>
+  <dd> Receive a signed 2-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> number ReceiveSigned4ByteNumber() </code> </dt>
+  <dd> Receive a signed 4-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> list ReceiveSignedBytes(number numberOfBytes) </code> </dt>
+  <dd> Receive multiple signed byte values from the connected Bluetooth
+device. If numberOfBytes is less than 0, read until a delimiter byte
+value is received. </dd>
+  <dt> <code> text ReceiveText(number numberOfBytes) </code> </dt>
+  <dd> Receive text from the connected Bluetooth device. If
+numberOfBytes is less than 0, read until a delimiter byte value is
+received. </dd>
+  <dt> <code> number ReceiveUnsigned1ByteNumber() </code> </dt>
+  <dd> Receive an unsigned 1-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> number ReceiveUnsigned2ByteNumber() </code> </dt>
+  <dd> Receive a unsigned 2-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> number ReceiveUnsigned4ByteNumber() </code> </dt>
+  <dd> Receive a unsigned 4-byte number from the connected Bluetooth
+device. </dd>
+  <dt> <code> list ReceiveUnsignedBytes(number numberOfBytes) </code>
+  </dt>
+  <dd> Receive multiple unsigned byte values from the connected
+Bluetooth device. If numberOfBytes is less than 0, read until a
+delimiter byte value is received. </dd>
+  <dt> <code> Send1ByteNumber(text number) </code> </dt>
+  <dd> Send a 1-byte number to the connected Bluetooth device. </dd>
+  <dt> <code> Send2ByteNumber(text number) </code> </dt>
+  <dd> Send a 2-byte number to the connected Bluetooth device. </dd>
+  <dt> <code> Send4ByteNumber(text number) </code> </dt>
+  <dd> Send a 4-byte number to the connected Bluetooth device. </dd>
+  <dt> <code> SendBytes(list list) </code> </dt>
+  <dd> Send a list of byte values to the connected Bluetooth device. </dd>
+  <dt> <code> SendText(text text) </code> </dt>
+  <dd> Send text to the connected Bluetooth device. </dd>
+  <dt> <code> StopAccepting() </code> </dt>
+  <dd> Stop accepting an incoming connection. </dd>
+</dl>
+
+
+<h2 id="Web">Web</h2>
+
+<p>Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>AllowCookies</code></dt>
+  <dd>Whether the cookies from a response should be saved and used in subsequent requests. Cookies are only supported on Android version 2.3 or greater.</dd>
+  <dt><code>RequestHeaders</code></dt>
+  <dd>The request headers, as a list of two-element sublists. The first element of each sublist represents the request header field name. The second element of each sublist represents the request header field values, either a single value or a list containing multiple values.</dd>
+  <dt><code>ResponseFileName</code></dt>
+  <dd>The name of the file where the response should be saved. If SaveResponse is true and ResponseFileName is empty, then a new file name will be generated.</dd>
+  <dt><code>SaveResponse</code></dt>
+  <dd>Whether the response should be saved in a file.</dd>
+  <dt><code>Url</code></dt>
+  <dd>The URL for the web request.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GotFile(text url, number responseCode, text responseType, text fileName)</code></dt>
+  <dd>Event indicating that a request has finished.</dd>
+  <dt><code>GotText(text url, number responseCode, text responseType, text responseContent)</code></dt>
+  <dd>Event indicating that a request has finished.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>text BuildRequestData(list list)</code></dt>
+  <dd>Converts a list of two-element sublists, representing name and value pairs, to a
+ string formatted as application/x-www-form-urlencoded media type, suitable to pass to
+ PostText.</dd>
+  <dt><code>ClearCookies()</code></dt>
+  <dd>Clears all cookies for this Web component.</dd>
+  <dt><code>Delete()</code></dt>
+  <dd>Performs an HTTP DELETE request using the Url property and retrieves the
+ response.<br>
+ If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.<br>
+ If the SaveResponse property is false, the GotText event will be
+ triggered.</dd>
+  <dt><code>Get()</code></dt>
+  <dd>Performs an HTTP GET request using the Url property and retrieves the
+ response.<br>
+ If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.<br>
+ If the SaveResponse property is false, the GotText event will be
+ triggered.</dd>
+  <dt><code>text HtmlTextDecode(text htmlText)</code></dt>
+  <dd>Decodes the given HTML text value. HTML character entities such as &amp;amp;, &amp;lt;, &amp;gt;, &amp;apos;, and &amp;quot; are changed to &amp;, &lt;, &gt;, &#39;, and &quot;. Entities such as &amp;#xhhhh, and &amp;#nnnn are changed to the appropriate characters.</dd>
+  <dt><code>any JsonTextDecode(text jsonText)</code></dt>
+  <dd>Decodes the given JSON encoded value to produce a corresponding AppInventor value.
+ A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
+ (denoted as A:B enclosed in curly braces) decodes to a list
+ ((A B)), that is, a list containing the two-element list (A B).</dd>
+  <dt><code>PostFile(text path)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and data from the specified file.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PostText(text text)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.<br>The characters of the text are encoded using UTF-8 encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The responseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PostTextWithEncoding(text text, text encoding)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.<br>The characters of the text are encoded using the given encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutFile(text path)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and data from the specified file.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutText(text text)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.<br>The characters of the text are encoded using UTF-8 encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The responseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutTextWithEncoding(text text, text encoding)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.<br>The characters of the text are encoded using the given encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>text UriEncode(text text)</code></dt>
+  <dd>Encodes the given text value so that it can be used in a URL.</dd>
+  <dt><code>any XMLTextDecode(text XmlText)</code></dt>
+  <dd>Decodes the given XML string to produce a list structure.  See the App Inventor documentation on "Other topics, notes, and details" for information.</dd>
+</dl>
+
+<!-- Content ----------------------- -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer role="contentinfo"> </footer>
+<div class="region region-footer">
+<div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+<div class="block-inner clearfix">
+<div class="block-content content no-title">
+<p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported
+License</a><span class="ext"></span></p>
+<p style="text-align: center;">&copy; 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts
+Institute of Technology</a><span class="ext"></span></p>
+<p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<table class="gstl_50 gssb_c" style="width: 183px; display: none; top: 110px; position: absolute; left: 924px;" cellpadding="0" cellspacing="0">
+
+  <tbody>
+    <tr>
+      <td class="gssb_f"><br>
+      <br>
+      <br>
+      <br>
+</td>
+      <td class="gssb_e" style="width: 100%;"><br>
+      <br>
+      <br>
+      <br>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+</body></html>

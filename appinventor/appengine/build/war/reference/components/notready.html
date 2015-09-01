@@ -1,0 +1,1431 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Not Ready For Prime Time Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="/static/images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+
+                    <h1>Not Ready For Prime Time Components - App Inventor for Android</h1>
+
+                    <p>
+                      These components are experimental; the documentation is either missing or
+                      preliminary. Feel free to explore with them, but don't be surprised if they change
+                      in the near future.
+                    </p>
+                    <h2>
+                      Table of Contents
+                    </h2>
+                    <ul>
+                      <li>
+                        <a href="#FusiontablesControl">
+                          FusiontablesControl
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#GameClient">
+                          GameClient
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#SoundRecorder">
+                          SoundRecorder
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Voting">
+                          Voting
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#WebViewer">
+                          WebViewer
+                        </a>
+                      </li>
+                    </ul>
+                    <h2 id="FusiontablesControl">
+                      FusiontablesControl
+                    </h2>
+                    <img alt="Picture of Fusion Tables component" src="images/fusiontables.png" />
+                    <p>
+                      Google Fusion Tables lets you store, share, query and visualize data tables; this
+                      component lets you query, create, and modify these tables, using the
+                      <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API V1.0</a>.
+                    </p>
+                    To use the component, define a query, call SendQuery to execute the query, and
+                    GotResult will hand you the result when it is ready.
+                    <p>
+                      Note that you do not need to worry about UTF-encoding the
+                      query. But you do need to make sure the query follows the
+                      syntax described in the
+                      <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">reference manual</a>,
+                      which means that things like capitalization for names of columns matters, and that single quotes must
+                      be used around column names if there are spaces in them.
+                    </p>
+                    <p>
+                      The results of the query will generally be returned
+                      in <a href="http://en.wikipedia.org/wiki/Comma-separated_values" target="_blank">comma-separated
+                        values (CSV) format</a>, and can be converted to list
+                      format using the "list from csv table" or "list from
+                      csv row" blocks.
+                    </p>
+                    <h3>
+                      Using the FusiontablesControl Component
+                    </h3>
+
+                    <h4>Getting an API Key</h4>
+                    <p>In order to use the FusiontablesControl Component you need to acquire a Google
+                      a Google Applications Programming Interface (API) key, an <i>API Key</i>. To get an API key,
+                      follow these instructions:</p>
+                    <ol>
+                      <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a> and login if necessary.</li>
+                      <li>Select the <i>Services</i> item from the menu on the left.</li>
+                      <li>Choose the <i>Fusion Tables</i> service from the list provided and turn it on.</li>
+                      <li>Go back to the main menu and select the <i>API Access</i> item. </li>
+                    </ol>
+                    <p>Your API Key will be at the bottom of that pane in the section called "Simple API Access".  You will provide
+                      your key as the value to the <i>ApiKey</i> property in all your Fusiontables apps.</p>
+
+                    <h4>Creating Fusion Tables</h4>
+                    <p>You will probably want to create your own Fusion Tables to experiment with as you are developing your apps.
+                      This is as easy as creating a Google document, if you are familiar with that process.  Here are the steps:</p>
+                    <ol>
+                      <li>On the web, login to your Gmail account or any other Google service (e.g., Drive, YouTube).</li>
+                      <li>Select the <i>More &gt; Even more</i> menu and scroll to the bottom of the page of Google services where you will find
+                        the <i>Fusion Tables</i> service.</li>
+                      <li>You may want to view some of the examples and work through a tutorial to learn the basics.</li>
+                      <li>Click the <i>See my tables</i> button (top right of the page). This will bring you to your own page.</li>
+                      <li>You should see a list of your own tables or tables that have been shared with you (possibly none). </li>
+                      <li>Use the <i>Create</i> button to create a new table.  Give it some column names. And save it. </li>
+                      <li>Click on the  <i>Share</i> button (top right) to modify the table's permissions.  </li>
+                    </ol>
+
+                    <h4>Creating a Fusiontables App</h4>
+                    <p>When you drag the <i>FusiontablesControl</i> component onto the Designer, don't forget to set its <i>ApiKey</i>
+                      property, which is initially blank.  You should copy this from your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a>
+                      and paste it into the property field.
+                      <h3>
+                        Properties
+                      </h3>
+                      <dl>
+                        <dt>
+                          <code>
+                            ApiKey
+                          </code>
+                          : text (read-only)
+                        </dt>
+                        <dd>
+                          <p>Copy and paste your Google API key into this property.</p>
+
+                          <p>In order to develop apps that use Fusiontables, you must
+                            obtain a Google API Key. To get a key follow these
+                            instructions.</p>
+                          <ol>
+                            <li>Go to your <a href="https://code.google.com/apis/console/"  target="_blank">Google APIs Console</a> and login if necessary.</li>
+                            <li>Select the <i>Services</i> item from the menu on the left.</li>
+                            <li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>
+                            <li>Go back to the main menu and select the <i>API Access</i> item. </li>
+                          </ol>
+                          Your API Key will be near the bottom of that pane in the section called "Simple API Access".
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt>
+                          <code>
+                            Query
+                          </code>
+                          : text (read-only)
+                        </dt>
+                        <dd>
+                          The query to send to the Fusion Tables API.
+                          <p>
+                            For legal query formats and examples, see
+                            the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started"
+                                   target="_blank">Fusion Tables API V1.0</a> reference manual.
+                          </p>
+                          <p>
+                            Note that you do not need to worry about encoding the query, but you do have to
+                            make sure it follows the syntax described in the reference manual, which means
+                            that things like capitalization for names of columns matters, and that single
+                            quotes need to be used around column names that contain.
+                          </p>
+                        </dd>
+                      </dl>
+                      <h3>
+                        Events
+                      </h3>
+                      <dl>
+                        <dt>
+                          <code>
+                            GotResult(text result)
+                          </code>
+                        </dt>
+                        <dd>
+                          Indicates that the Fusion Tables query has finished processing, with a result.
+                          The result of the query will generally be returned in CSV format, and can be
+                          converted to list format using the "list from csv table" or "list from csv row"
+                          blocks.
+                        </dd>
+                      </dl>
+                      <h3>
+                        Methods
+                      </h3>
+                      <dl>
+                        <dt>
+                          <code>
+                            SendQuery()
+                          </code>
+                        </dt>
+                        <dd>
+                          Send the query to the Fusion Tables server.
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt>
+                          <code>
+                            ForgetLogin()
+                          </code>
+                        </dt>
+                        <dd>
+                          Discards the user's account name, forcing them to re-authenticate when accessing a Fusion Table.
+                        </dd>
+                      </dl>
+                      <h2 id="GameClient">
+                        GameClient
+                      </h2>
+                      <img alt="Picture of Game Client component" src="images/gameclient.png" />
+                    <p>
+                      GameClient communicates with online game servers to support the implementation of
+                      multiplayer games. For information on the clients and servers and examples of
+                      games, see the MIT Master's Thesis by Bill Magnuson,
+                      <em>
+                        Building Blocks for Mobile
+                        Games
+                      </em>
+                      available at
+                      <a href="http://dspace.mit.edu/handle/1721.1/61253">
+                        http://dspace.mit.edu/handle/1721.1/61253
+                      </a>
+                      .
+                      There is an experimental game server running at appinvgameserver.appspot.com, but
+                      this may be up only intermittently. For serious work, you will probably want to
+                      deploy your own game server on Google Appengine. The implementation is described in
+                      the thesis, and the code is available at
+                      http://code.google.com/p/app-inventor-for-android/source/browse/#svn/trunk/app_inv_game_server
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <b>
+                          InstanceId
+                        </b>
+                        : text (read-only)
+                      </dt>
+                      <dd>
+                        The game instance id. Taken together,the game ID and the instance ID uniquely
+                        identify the game.
+                      </dd>
+                      <dt>
+                        <b>
+                          InvitedInstances
+                        </b>
+                        : list (read-only)
+                      </dt>
+                      <dd>
+                        The set of game instances to which this player has been invited but has not yet
+                        joined. To ensure current values are returned, first invoke GetInstanceLists.
+                      </dd>
+                      <dt>
+                        <b>
+                          JoinedInstances
+                        </b>
+                        : list (read-only)
+                      </dt>
+                      <dd>
+                        The set of game instances in which this player is participating. To ensure
+                        current values are returned, first invoke GetInstanceLists.
+                      </dd>
+                      <dt>
+                        <b>
+                          Leader
+                        </b>
+                        : text (read-only)
+                      </dt>
+                      <dd>
+                        The game's leader. At any time, each game instance has only one leader, but the
+                        leader may change with time. Initially, the leader is the game instance creator.
+                        Application writers determine special properties of the leader. The leader value
+                        is updated each time a successful communication is made with the server.
+                      </dd>
+                      <dt>
+                        <b>
+                          Players
+                        </b>
+                        : list (read-only)
+                      </dt>
+                      <dd>
+                        The current set of players for this game instance. Each player is designated by
+                        an email address, which is a string. The list of players is updated each time a
+                        successful communication is made with the game server.
+                      </dd>
+                      <dt>
+                        <b>
+                          PublicInstances
+                        </b>
+                        : list (read-only)
+                      </dt>
+                      <dd>
+                        The set of game instances that have been marked public. To ensure current values
+                        are returned, first invoke GetInstanceLists.
+                      </dd>
+                      <dt>
+                        <b>
+                          ServiceUrl
+                        </b>
+                        : text (read-only)
+                      </dt>
+                      <dd>
+                        The URL of the game server.
+                      </dd>
+                      <dt>
+                        <b>
+                          UserEmailAddress
+                        </b>
+                        : text (read-write)
+                      </dt>
+                      <dd>
+                        The email address that is being used as the player id for this game client. At
+                        present, users must set this manually in order to join a game. But this property
+                        will change in the future so that is set automatically, and users will not be
+                        able to change it.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt class="c2">
+                        FunctionCompleted(text functionName)
+                      </dt>
+                      <dd>
+                        Indicates that a function call completed.
+                      </dd>
+                      <dt class="c2">
+                        GotMessage(text type, text sender, list contents)
+                      </dt>
+                      <dd>
+                        Indicates that a new message has been received.
+                      </dd>
+                      <dt class="c2">
+                        Info(text message)
+                      </dt>
+                      <dd>
+                        Indicates that something has occurred which the player should know about.
+                      </dd>
+                      <dt class="c2">
+                        InstanceIdChanged(text instanceId)
+                      </dt>
+                      <dd>
+                        Indicates that the InstanceId property has changed as a result of calling
+                        MakeNewInstance or SetInstance.
+                      </dd>
+                      <dt class="c2">
+                        Invited(text instanceId)
+                      </dt>
+                      <dd>
+                        Indicates that a user has been invited to this game instance.
+                      </dd>
+                      <dt class="c2">
+                        NewInstanceMade(text instanceId)
+                      </dt>
+                      <dd>
+                        Indicates that a new instance was successfully created after calling
+                        MakeNewInstance.
+                      </dd>
+                      <dt class="c2">
+                        NewLeader(text playerId)
+                      </dt>
+                      <dd>
+                        Indicates that this game has a new leader as specified through SetLeader
+                      </dd>
+                      <dt class="c2">
+                        PlayerJoined(text playerId)
+                      </dt>
+                      <dd>
+                        Indicates that a new player has joined this game instance.
+                      </dd>
+                      <dt class="c2">
+                        PlayerLeft(text playerId)
+                      </dt>
+                      <dd>
+                        Indicates that a player has left this game instance.
+                      </dd>
+                      <dt class="c2">
+                        ServerCommandFailure(text command, list arguments)
+                      </dt>
+                      <dd>
+                        Indicates that a server command failed.
+                      </dd>
+                      <dt class="c2">
+                        ServerCommandSuccess(text command, list response)
+                      </dt>
+                      <dd>
+                        Indicates that a server command returned successfully.
+                      </dd>
+                      <dt class="c2">
+                        UserEmailAddressSet(text emailAddress)
+                      </dt>
+                      <dd>
+                        Indicates that the user email address has been set.
+                      </dd>
+                      <dt class="c2">
+                        WebServiceError(text functionName, text message)
+                      </dt>
+                      <dd>
+                        Indicates that an error occurred while communicating with the web server.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <b>
+                          GetInstanceLists
+                        </b>
+                        ()
+                      </dt>
+                      <dd>
+                        Updates the InstancesJoined and InstancesInvited lists. This procedure can be
+                        called before setting the InstanceId.
+                      </dd>
+                      <dt>
+                        <b>
+                          GetMessages
+                        </b>
+                        (text type, number count)
+                      </dt>
+                      <dd>
+                        Retrieves messages of the specified type.
+                      </dd>
+                      <dt>
+                        <b>
+                          Invite
+                        </b>
+                        (text playerEmail)
+                      </dt>
+                      <dd>
+                        Invites a player to this game instance.
+                      </dd>
+                      <dt>
+                        <b>
+                          LeaveInstance
+                        </b>
+                        ()
+                      </dt>
+                      <dd>
+                        Leaves the current instance.
+                      </dd>
+                      <dt>
+                        <b>
+                          MakeNewInstance
+                        </b>
+                        (text instanceId, boolean makePublic)
+                      </dt>
+                      <dd>
+                        Asks the server to create a new instance of this game.
+                      </dd>
+                      <dt>
+                        <b>
+                          SendMessage
+                        </b>
+                        (text type, list recipients, list contents)
+                      </dt>
+                      <dd>
+                        Sends a keyed message to all recipients in the recipients list. The message will
+                        consist of the contents list.
+                      </dd>
+                      <dt>
+                        <b>
+                          ServerCommand
+                        </b>
+                        (text command, list arguments)
+                      </dt>
+                      <dd>
+                        Sends the specified command to the game server.
+                      </dd>
+                      <dt>
+                        <b>
+                          SetInstance
+                        </b>
+                        (text instanceId)
+                      </dt>
+                      <dd>
+                        Sets InstanceId and joins the specified instance.
+                      </dd>
+                      <dt>
+                        <b>
+                          SetLeader
+                        </b>
+                        (text playerEmail)
+                      </dt>
+                      <dd>
+                        Tells the server to set the leader to playerId. Only the current leader may
+                        successfully set a new leader.
+                      </dd>
+                    </dl>
+                    <h2 id="SoundRecorder">
+                      SoundRecorder
+                    </h2>
+                    <img alt="Picture of Sound Recorder component" src="images/soundRecorder.png" />
+                    <p>
+                      Multimedia component that records audio.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    none
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          AfterSoundRecorded(text sound)
+                        </code>
+                      </dt>
+                      <dd>
+                        Provides the location of the newly created sound.
+                      </dd>
+                      <dt>
+                        <code>
+                          StartedRecording()
+                        </code>
+                      </dt>
+                      <dd>
+                        Indicates that the recorder has started, and can be stopped.
+                      </dd>
+                      <dt>
+                        <code>
+                          StoppedRecording()
+                        </code>
+                      </dt>
+                      <dd>
+                        Indicates that the recorder has stopped, and can be started again.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Start
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Starts recording.
+                      </dd>
+                      <dt>
+                        <code>
+                          Stop
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stops recording.
+                      </dd>
+                    </dl>
+                    <h2 id="Voting">
+                      Voting
+                    </h2>
+                    <img alt="Picture of Voting component" src="images/voting.png" />
+                    <p>
+                      The Voting component communicates with a Web service to retrieve a ballot and send
+                      back users' votes.
+                    </p>
+                    <p>
+                      The application should call the method
+                      <code>
+                        RequestBallot
+                      </code>
+                      , usually in the
+                      <code>
+                        Initialize
+                      </code>
+                      event handler, in order to get the ballot question and
+                      options from the Web service (specified by the
+                      <code>
+                        ServiceURL
+                      </code>
+                      property).
+                      Depending on the response from the Web service, the system will raise one of the
+                      following three events:
+                    </p>
+                    <ol>
+                      <li>
+                        <code>
+                          GotBallot
+                        </code>
+                        , indicating that the ballot question and options were
+                        retrieved and the properties
+                        <code>
+                          BallotQuestion
+                        </code>
+                        and
+                        <code>
+                          BallotOptions
+                        </code>
+                        have been set.
+                      </li>
+                      <li>
+                        <code>
+                          NoOpenPoll
+                        </code>
+                        , indicating that no ballot question is available.
+                      </li>
+                      <li>
+                        <code>
+                          WebServiceError
+                        </code>
+                        , indicating that the service did not provide a legal
+                        response and providing an error messages.
+                      </li>
+                    </ol>
+                    <p>
+                      After getting the ballot, the application should allow the user to make a choice
+                      from among
+                      <code>
+                        BallotOptions
+                      </code>
+                      and set the property
+                      <code>
+                        UserChoice
+                      </code>
+                      to that choice. The application should also set
+                      <code>
+                        UserId
+                      </code>
+                      to specify
+                      which user is voting. Often, this will be set to the property
+                      <code>
+                        UserEmailAddress
+                      </code>
+                      , which specifies the email address associated with
+                      the phone.
+                    </p>
+                    <p>
+                      Once the application has set
+                      <code>
+                        UserChoice
+                      </code>
+                      and
+                      <code>
+                        UserId
+                      </code>
+                      , the
+                      application can call
+                      <code>
+                        SendBallot
+                      </code>
+                      to send this information to the Web
+                      service. If the service successfully receives the vote, the event
+                      <code>
+                        GotBallotConfirmation
+                      </code>
+                      will be raised. Otherwise, the event
+                      <code>
+                        WebServiceError
+                      </code>
+                      will be raised with the appropriate error message.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          <em>
+                            BallotOptions
+                          </em>
+                        </code>
+                      </dt>
+                      <dd>
+                        The list of ballot options.
+                      </dd>
+                      <dt>
+                        <code>
+                          <em>
+                            BallotQuestion
+                          </em>
+                        </code>
+                      </dt>
+                      <dd>
+                        The question to be voted on.
+                      </dd>
+                      <dt>
+                        <code>
+                          ServiceURL
+                        </code>
+                      </dt>
+                      <dd>
+                        The URL of the Voting service
+                      </dd>
+                      <dt>
+                        <code>
+                          UserChoice
+                        </code>
+                      </dt>
+                      <dd>
+                        The ballot choice to send to the server, which must be set before
+                        <code>
+                          SendBallot
+                        </code>
+                        is called. This must be one of
+                        <code>
+                          BallotOptions
+                        </code>
+                        .
+                      </dd>
+                      <dt>
+                        <code>
+                          <em>
+                            UserEmailAddress
+                          </em>
+                        </code>
+                      </dt>
+                      <dd>
+                        The email address associated with this device.
+                      </dd>
+                      <dt>
+                        <code>
+                          UserId
+                        </code>
+                      </dt>
+                      <dd>
+                        A text identifying the voter that is sent to the Voting server along with the
+                        vote. This must be set before
+                        <code>
+                          SendBallot
+                        </code>
+                        is called.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GotBallot()
+                        </code>
+                      </dt>
+                      <dd>
+                        Event indicating that a ballot was retrieved from the Web service and that the
+                        properties
+                        <code>
+                          BallotQuestion
+                        </code>
+                        and
+                        <code>
+                          BallotOptions
+                        </code>
+                        have been
+                        set. This is always preceded by a call to the method
+                        <code>
+                          RequestBallot
+                        </code>
+                        .
+                      </dd>
+                      <dt>
+                        <code>
+                          GotBallotConfirmation()
+                        </code>
+                      </dt>
+                      <dd>
+                        Event confirming that the Voting service received the ballot.
+                      </dd>
+                      <dt>
+                        <code>
+                          NoOpenPoll()
+                        </code>
+                      </dt>
+                      <dd>
+                        Event indicating that the service has no open poll.
+                      </dd>
+                      <dt>
+                        <code>
+                          WebServiceError(text message)
+                        </code>
+                      </dt>
+                      <dd>
+                        Event indicating that the communication with the Web service resulted in an
+                        error.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          RequestBallot()
+                        </code>
+                      </dt>
+                      <dd>
+                        Send a request for a ballot to the Web service specified by the property
+                        <code>
+                          ServiceURL
+                        </code>
+                        . When the completes, one of the following events will be
+                        raised:
+                        <code>
+                          GotBallot
+                        </code>
+                        ,
+                        <code>
+                          NoOpenPoll
+                        </code>
+                        , or
+                        <code>
+                          WebServiceError
+                        </code>
+                        .
+                      </dd>
+                      <dt>
+                        <code>
+                          SendBallot()
+                        </code>
+                      </dt>
+                      <dd>
+                        Send a completed ballot to the Web service. This should not be called until the
+                        properties
+                        <code>
+                          UserId
+                        </code>
+                        and
+                        <code>
+                          UserChoice
+                        </code>
+                        have been set by the
+                        application.
+                      </dd>
+                    </dl>
+                    <h2 id="WebViewer">
+                      WebViewer
+                    </h2>
+                    <img alt="Picture of WebViewer component" src="images/webviewer.png" />
+                    <p>
+                      Component for viewing Web pages. The Home URL can be specified in the Designer or
+                      in the Blocks Editor. The view can be set to follow links when they are tapped, and
+                      users can fill in Web forms. Warning: This is not a full browser. For example,
+                      pressing the phone's hardware Back key will exit the app, rather than move back in
+                      the browser history.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          <em>
+                            CurrentPageTitle
+                          </em>
+                        </code>
+                      </dt>
+                      <dd>
+                        Title of the page currently viewed
+                      </dd>
+                      <dt>
+                        <code>
+                          <em>
+                            CurrentUrl
+                          </em>
+                        </code>
+                      </dt>
+                      <dd>
+                        URL of the page currently viewed. This could be different from the Home URL if
+                        new pages were visited by following links.
+                      </dd>
+                      <dt>
+                        <code>
+                          FollowLinks
+                        </code>
+                      </dt>
+                      <dd>
+                        Determines whether to follow links when they are tapped in the WebViewer. If you
+                        follow links, you can use GoBack and GoForward to navigate the browser history.
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dt>
+                        <code>
+                          HomeUrl
+                        </code>
+                      </dt>
+                      <dd>
+                        URL of the page the WebViewer should initially open to. Setting this will load
+                        the page.
+                      </dd>
+                      <dt>
+                        <code>
+                          PromptforPermission
+                        </code>
+                      </dt>
+                      <dd>
+                        If True, then prompt the user of the WebView to give
+                        permission to access the geolocation API. If False, then
+                        assume permission is granted.
+                      </dd>
+                      <dt>
+                        <code>
+                          UsesLocation
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether or not to give the application permission to use the
+                        Javascript geolocation API.
+                      </dd>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the component is visible
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    none
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          boolean CanGoBack()
+                        </code>
+                      </dt>
+                      <dd>
+                        Returns true if the WebViewer can go back in the history list.
+                      </dd>
+                      <dt>
+                        <code>
+                          boolean CanGoForward()
+                        </code>
+                      </dt>
+                      <dd>
+                        Returns true if the WebViewer can go forward in the history list.
+                      </dd>
+                      <dt>
+                        <code>
+                          GoBack()
+                        </code>
+                      </dt>
+                      <dd>
+                        Go back to the previous page in the history list. Does nothing if there is no
+                        previous page.
+                      </dd>
+                      <dt>
+                        <code>
+                          GoForward()
+                        </code>
+                      </dt>
+                      <dd>
+                        Go forward to the next page in the history list. Does nothing if there is no next
+                        page.
+                      </dd>
+                      <dt>
+                        <code>
+                          GoHome()
+                        </code>
+                      </dt>
+                      <dd>
+                        Loads the home URL page. This happens automatically when the home URL is changed.
+                      </dd>
+                      <dt>
+                        <code>
+                          GoToUrl(text url)
+                        </code>
+                      </dt>
+                      <dd>
+                        Load the page at the given URL.
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>
