@@ -1,0 +1,1 @@
+    <LangSpecProperty key="ya-event-%3$d" value="%1$s-%2$s"/>

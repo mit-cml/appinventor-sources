@@ -1,0 +1,1684 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>LEGO MINDSTORMS - App Inventor for Android</title>
+    <style>
+
+
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+<nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+<ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+          </div>
+
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+                    <h1>LEGO MINDSTORMS - App Inventor for Android</h1>
+                    <p>
+                      These components provide control of LEGO® MINDSTORMS® NXT robots using Bluetooth.
+                    </p>
+                    <p>
+                      LEGO and MINDSTORMS are registered trademarks of the LEGO Group.
+                    </p>
+                    <p>
+                      <b>
+                        IMPORTANT
+                      </b>
+                      : All of these components have a
+                      <b>
+                        BluetoothClient
+                        <i>
+                          property
+                        </i>
+                      </b>
+                      that must be set in the App Inventor designer (in the browser).
+                      The property cannot be set in the blocks editor. The property tells which
+                      <b>
+                        BluetoothClient
+                        <i>
+                          component
+                        </i>
+                      </b>
+                      to use for communication with the robot.
+                      You will need to explicitly add a BluetoothClient component to your project. If you
+                      have one robot, you should have one BluetoothClient component. If you are lucky
+                      enough to have two robots and you want to control both of them simultaneously from
+                      one application, you'll need two BluetoothClient components in your project. The
+                      BluetoothClient component is available from the "Not ready for prime time" section
+                      of the palette.
+                    </p>
+                    <p>
+                      Here's a list of the initial steps you'll need to perform to use one or more of the
+                      NXT components:
+                    </p>
+                    <ol>
+                      <li>
+                        Go to the
+                        <i>
+                          Palette
+                        </i>
+                        and click on "Not ready for prime time".
+                      </li>
+                      <li>
+                        Drag a
+                        <i>
+                          BluetoothClient
+                        </i>
+                        component and drop it on to the
+                        <i>
+                          Viewer
+                        </i>
+                        .
+                      </li>
+                      <li>
+                        The component will automatically be named
+                        <i>
+                          BluetoothClient1
+                        </i>
+                        .
+                      </li>
+                      <li>
+                        In the
+                        <i>
+                          Palette
+                        </i>
+                        , click on "LEGO MINDSTORMS".
+                      </li>
+                      <li>
+                        Drag one of the components, for example
+                        <i>
+                          NxtDirectCommands
+                        </i>
+                        , and drop it
+                        on to the
+                        <i>
+                          Viewer
+                        </i>
+                        .
+                      </li>
+                      <li>
+                        In the
+                        <i>
+                          Properties box
+                        </i>
+                        , click on the area after
+                        <i>
+                          BluetoothClient
+                        </i>
+                        (currently "None...").
+                      </li>
+                      <li>
+                        A box appears with a list of all the BluetoothClient components in your
+                        project.
+                      </li>
+                      <li>
+                        Click on
+                        <i>
+                          BluetoothClient1
+                        </i>
+                        and click
+                        <i>
+                          OK
+                        </i>
+                        .
+                      </li>
+                      <li>
+                        If desired, add another component, for example
+                        <i>
+                          NxtColorSensor
+                        </i>
+                        , and
+                        repeat steps 6-8 to set its
+                        <i>
+                          BluetoothClient
+                        </i>
+                        property.
+                      </li>
+                    </ol>
+                    <h2>
+                      Table of Contents
+                    </h2>
+                    <ul>
+                      <li>
+                        <a href="#NxtDirectCommands">
+                          NxtDirectCommands
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtColorSensor">
+                          NxtColorSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtLightSensor">
+                          NxtLightSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtSoundSensor">
+                          NxtSoundSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtTouchSensor">
+                          NxtTouchSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtUltrasonicSensor">
+                          NxtUltrasonicSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#NxtDrive">
+                          NxtDrive
+                        </a>
+                      </li>
+                    </ul>
+                    <h2 id="NxtDirectCommands">
+                      NxtDirectCommands
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a low-level interface to a LEGO MINDSTORMS NXT robot,
+                      with functions to send NXT Direct Commands
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          DeleteFile
+                        </code>
+                        (text fileName)
+                      </dt>
+                      <dd>
+                        Delete a file on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          DownloadFile
+                        </code>
+                        (text source, text destination)
+                      </dt>
+                      <dd>
+                        Download a file to the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetBatteryLevel
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the battery level for the robot. Returns the voltage in millivolts.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetBrickName
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the brick name of the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetCurrentProgramName
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the name of currently running program on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetFirmwareVersion
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the firmware and protocol version numbers for the robot as a list where the
+                        first element is the firmware version number and the second element is the
+                        protocol version number.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetInputValues
+                        </code>
+                        (text sensorPortLetter)
+                      </dt>
+                      <dd>
+                        Reads the values of an input sensor on the robot. Assumes sensor type has been
+                        configured via SetInputMode.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetOutputState
+                        </code>
+                        (text motorPortLetter)
+                      </dt>
+                      <dd>
+                        Reads the output state of a motor on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          KeepAlive
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Keep Alive. Returns the current sleep time limit in milliseconds.
+                      </dd>
+                      <dt>
+                        <code>
+                          ListFiles
+                        </code>
+                        (text wildcard)
+                      </dt>
+                      <dd>
+                        Returns a list containing the names of matching files found on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          LsGetStatus
+                        </code>
+                        (text sensorPortLetter)
+                      </dt>
+                      <dd>
+                        Returns the count of available bytes to read.
+                      </dd>
+                      <dt>
+                        <code>
+                          LsRead
+                        </code>
+                        (text sensorPortLetter)
+                      </dt>
+                      <dd>
+                        Reads unsigned low speed data from an input sensor on the robot. Assumes sensor
+                        type has been configured via SetInputMode.
+                      </dd>
+                      <dt>
+                        <code>
+                          LsWrite
+                        </code>
+                        (text sensorPortLetter, list list, number rxDataLength)
+                      </dt>
+                      <dd>
+                        Writes low speed data to an input sensor on the robot. Assumes sensor type has
+                        been configured via SetInputMode.
+                      </dd>
+                      <dt>
+                        <code>
+                          MessageRead
+                        </code>
+                        (number mailbox)
+                      </dt>
+                      <dd>
+                        Read a message from a mailbox (1-10) on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          MessageWrite
+                        </code>
+                        (number mailbox, text message)
+                      </dt>
+                      <dd>
+                        Write a message to a mailbox (1-10) on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          PlaySoundFile
+                        </code>
+                        (text fileName)
+                      </dt>
+                      <dd>
+                        Play a sound file on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          PlayTone
+                        </code>
+                        (number frequencyHz, number durationMs)
+                      </dt>
+                      <dd>
+                        Make the robot play a tone.
+                      </dd>
+                      <dt>
+                        <code>
+                          ResetInputScaledValue
+                        </code>
+                        (text sensorPortLetter)
+                      </dt>
+                      <dd>
+                        Reset the scaled value of an input sensor on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          ResetMotorPosition
+                        </code>
+                        (text motorPortLetter, boolean relative)
+                      </dt>
+                      <dd>
+                        Reset motor position.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetBrickName
+                        </code>
+                        (text name)
+                      </dt>
+                      <dd>
+                        Set the brick name of the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetInputMode
+                        </code>
+                        (text sensorPortLetter, number sensorType, number
+                        sensorMode)
+                      </dt>
+                      <dd>
+                        Configure an input sensor on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetOutputState
+                        </code>
+                        (text motorPortLetter, number power, number mode,
+                        number regulationMode, number turnRatio, number runState, number tachoLimit)
+                      </dt>
+                      <dd>
+                        Sets the output state of a motor on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          StartProgram
+                        </code>
+                        (text programName)
+                      </dt>
+                      <dd>
+                        Start execution of a previously downloaded program on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopProgram
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stop execution of the currently running program on the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopSoundPlayback
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stop sound playback.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtColorSensor">
+                      NxtColorSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to a color sensor on a LEGO
+                      MINDSTORMS NXT robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          DetectColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the sensor should detect color or light.
+                        <br />
+                        True indicates that the sensor should detect color; False indicates that the
+                        sensor should detect light.
+                        <br />
+                        If the DetectColor property is set to True, the BelowRange, WithinRange, and
+                        AboveRange events will not occur and the sensor will not generate color.
+                        <br />
+                        If the DetectColor property is set to False, the ColorChanged event will not
+                        occur.
+                      </dd>
+                      <dt>
+                        <code>
+                          ColorChangedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the ColorChanged event should fire when the DetectColor property is set
+                        to True and the detected color changes.
+                      </dd>
+                      <dt>
+                        <code>
+                          GenerateColor
+                        </code>
+                      </dt>
+                      <dd>
+                        The color that should generated by the sensor.
+                        <br />
+                        Only None, Red, Green, or Blue are valid values.
+                        <br />
+                        The sensor will not generate color when the DetectColor property is set to True.
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange
+                        events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the DetectColor property is set to
+                        False and the light level goes below the BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the DetectColor property is set to
+                        False and the light level goes between the BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the DetectColor property is set to
+                        False and the light level goes above the TopOfRange.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          ColorChanged(number color)
+                        </code>
+                      </dt>
+                      <dd>
+                        Detected color has changed.
+                        <br />
+                        The ColorChanged event will not occur if the DetectColor property is set to False
+                        or if the ColorChangedEventEnabled property is set to False.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone below the range.
+                        <br />
+                        The BelowRange event will not occur if the DetectColor property is set to True or
+                        if the BelowRangeEventEnabled property is set to False.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone within the range.
+                        <br />
+                        The WithinRange event will not occur if the DetectColor property is set to True
+                        or if the WithinRangeEventEnabled property is set to False.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone above the range.
+                        <br />
+                        The AboveRange event will not occur if the DetectColor property is set to True or
+                        if the AboveRangeEventEnabled property is set to False.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetColor
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current detected color, or the color None if the color can not be
+                        read or if the DetectColor property is set to False.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetLightLevel
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current light level as a value between 0 and 1023, or -1 if the light
+                        level can not be read or if the DetectColor property is set to True.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtLightSensor">
+                      NxtLightSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to a light sensor on a LEGO
+                      MINDSTORMS NXT robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          GenerateLight
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the light sensor should generate light.
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange
+                        events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the light level goes below the
+                        BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the light level goes between the
+                        BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the light level goes above the
+                        TopOfRange.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BelowRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone below the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone within the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Light level has gone above the range.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetLightLevel
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current light level as a value between 0 and 1023, or -1 if the light
+                        level can not be read.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtSoundSensor">
+                      NxtSoundSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to a sound sensor on a LEGO
+                      MINDSTORMS NXT robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange
+                        events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the sound level goes below the
+                        BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the sound level goes between the
+                        BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the sound level goes above the
+                        TopOfRange.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BelowRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Sound level has gone below the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Sound level has gone within the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Sound level has gone above the range.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetSoundLevel
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current sound level as a value between 0 and 1023, or -1 if the sound
+                        level can not be read.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtTouchSensor">
+                      NxtTouchSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to a touch sensor on a LEGO
+                      MINDSTORMS NXT robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          PressedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the Pressed event should fire when the touch sensor is pressed.
+                      </dd>
+                      <dt>
+                        <code>
+                          ReleasedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the Released event should fire when the touch sensor is released.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Pressed()
+                        </code>
+                      </dt>
+                      <dd>
+                        Touch sensor has been pressed.
+                      </dd>
+                      <dt>
+                        <code>
+                          Released()
+                        </code>
+                      </dt>
+                      <dd>
+                        Touch sensor has been released.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          IsPressed
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns true if the touch sensor is pressed.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtUltrasonicSensor">
+                      NxtUltrasonicSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to an ultrasonic sensor on a LEGO
+                      MINDSTORMS NXT robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange
+                        events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the distance goes below the
+                        BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the distance goes between the
+                        BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the distance goes above the
+                        TopOfRange.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BelowRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Distance has gone below the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Distance has gone within the range.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRange()
+                        </code>
+                      </dt>
+                      <dd>
+                        Distance has gone above the range.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetDistance
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current distance in centimeters as a value between 0 and 254, or -1
+                        if the distance can not be read.
+                      </dd>
+                    </dl>
+                    <h2 id="NxtDrive">
+                      NxtDrive
+                    </h2>
+                    <img alt="" src="images/legoMindstormsNxt.png" />
+                    <p>
+                      A component that provides a high-level interface to a LEGO MINDSTORMS NXT robot,
+                      with functions that can move and turn the robot
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          DriveMotors
+                        </code>
+                      </dt>
+                      <dd>
+                        The motor ports that are used for driving.
+                      </dd>
+                      <dt>
+                        <code>
+                          WheelDiameter
+                        </code>
+                      </dt>
+                      <dd>
+                        The diameter of the wheels used for driving.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopBeforeDisconnect
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether to stop the drive motors before disconnecting.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          MoveForwardIndefinitely
+                        </code>
+                        (number power)
+                      </dt>
+                      <dd>
+                        Move the robot forward indefinitely, with the specified percentage of maximum
+                        power.
+                      </dd>
+                      <dt>
+                        <code>
+                          MoveForward
+                        </code>
+                        (number power, number distance)
+                      </dt>
+                      <dd>
+                        Move the robot forward the given distance, with the specified percentage of
+                        maximum power.
+                      </dd>
+                      <dt>
+                        <code>
+                          MoveBackwardIndefinitely
+                        </code>
+                        (number power)
+                      </dt>
+                      <dd>
+                        Move the robot backward indefinitely, with the specified percentage of maximum
+                        power.
+                      </dd>
+                      <dt>
+                        <code>
+                          MoveBackward
+                        </code>
+                        (number power, number distance)
+                      </dt>
+                      <dd>
+                        Move the robot backward the given distance, with the specified percentage of
+                        maximum power.
+                      </dd>
+                      <dt>
+                        <code>
+                          Stop
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stop the drive motors of the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          TurnClockwiseIndefinitely
+                        </code>
+                        (number power)
+                      </dt>
+                      <dd>
+                        Turn the robot clockwise indefinitely, with the specified percentage of maximum
+                        power.
+                      </dd>
+                      <dt>
+                        <code>
+                          TurnCounterClockwiseIndefinitely
+                        </code>
+                        (number power)
+                      </dt>
+                      <dd>
+                        Turn the robot counterclockwise indefinitely, with the specified percentage of
+                        maximum power.
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
+</html>

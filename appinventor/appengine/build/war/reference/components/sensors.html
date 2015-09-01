@@ -1,0 +1,821 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html class="js" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:og="http://ogp.me/ns#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:dc="http://purl.org/dc/terms/" xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  dir="ltr" version="XHTML+RDFa 1.0" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta datatype="xsd:integer" content="0" property="sioc:num_replies" about="/front_page" />
+    <meta property="dc:title" about="/front_page" content="Front Page" />
+    <meta content="Drupal 7 (http://drupal.org)" name="Generator" />
+    <link type="text/css" rel="stylesheet" href="../superfish.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../reset.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../colors.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../layout.css" media="all">
+    <title>Sensor Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: block;
+      }
+/*
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+*/
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+/*      background:transparent !important; */
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container" id="page">
+      <header role="banner" class="clearfix">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a class="active" title="Home page" href="http://appinventor.mit.edu">
+                <img alt="Explore MIT App Inventor logo" src="images/logo2.png" /></a></div>
+          </div>
+          <div class="nav clearfix" id="menu-bar">
+            <nav id="block-superfish-1" class="block block-superfish block-odd block-count-1 block-region-menu-bar menu-wrapper clearfix" role="navigation">
+              <ul id="superfish-1" class="sf-menu"><li class="current"><a href="http://appinventor.mit.edu/explore/about-us.html">About ▾</a><ul><li><a href="http://appinventor.mit.edu/explore/about-us.html">About Us</a></li><li id="menu-4234-1" ><a href="http://appinventor.mit.edu/explore/our-team.html">Our Team</a></li><li id="menu-4233-1" ><a href="http://appinventor.mit.edu/explore/sponsors.html">Sponsors</a></li></ul></li><li id="menu-2893-1" ><a href="http://appinventor.mit.edu/explore/news-events.html">News &amp;&nbsp;Stories ▾</a><ul><li id="menu-3040-1"><a href="http://appinventor.mit.edu/explore/news-events.html">In The News</a></li><li id="menu-3039-1"><a href="http://appinventor.mit.edu/explore/stories.html">Stories</a></li><li id="menu-4429-1"><a href="http://appinventor.mit.edu/explore/team-blog.html">Team Blog</a></li><li id="menu-4074-1"><a href="http://appinventor.mit.edu/explore/app-month-gallery.html" title="Gallery of current and past MIT App Inventor App of the Month winners">App of the Month</a></li></ul></li><li id="menu-2894-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources ▾</a><ul><li id="menu-3041-1"><a href="http://appinventor.mit.edu/explore/get-started.html">Get Started</a></li><li id="menu-3783-1"><a href="http://appinventor.mit.edu/explore/teach.html">Teach</a></li><li id="menu-3104-1"><a href="http://appinventor.mit.edu/explore/library.html">Documentation</a></li><li id="menu-3036-1"><a href="http://appinventor.mit.edu/explore/ai2/tutorials.html"title="Tutorials to learn about using MIT App Inventor" >Tutorials</a></li><li id="menu-3174-1"><a href="http://appinventor.mit.edu/explore/support.html"title="Information about App Inventor version 1">AI Classic (v1)</a></li><li id="menu-3038-1"><a href="http://appinventor.mit.edu/explore/resources.html">Resources</a></li><li id="menu-3037-1"><a href="https://groups.google.com/forum/#!forum/mitappinventortest" target="_blank">Forums</a></li><li id="menu-3105-1"><a href="http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html">Troubleshooting</a></li></ul></li></ul>
+            </nav>
+          </div>
+          <div class="region region-create">
+            <section id="block-block-21" class="block block-block block-odd block-count-2 block-region-create">
+              <div class="block-inner clearfix">
+                <h2 class="block-title">Create Button</h2>
+                <div class="block-content content">
+                  <p><a href="http://ai2.appinventor.mit.edu/" target="new"><button>Create!</button></a></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </header>
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;">
+        <div class="columns-inner clearfix">
+          <div id="content-column">
+            <div class="content-inner">
+              <section role="main" id="main-content"> </section>
+              <div id="content">
+                <div class="region region-content">
+                  <!-- Content ----------------------- -->
+                  <h1>Sensor Components - App Inventor for Android</h1>
+                  <h2>Table of Contents</h2>
+                  <ul>
+                    <li> <a href="#AccelerometerSensor"> AccelerometerSensor </a>
+                    </li>
+                    <li> <a href="#BarcodeScanner"> BarcodeScanner </a> </li>
+                    <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#LocationSensor"> LocationSensor </a></li>
+                    <li> <a href="#NearField">NearField</a></li>
+                    <li> <a href="#OrientationSensor"> OrientationSensor </a>
+                    <li> <a href="#ProximitySensor"> ProximitySensor </a>
+                    </li>
+                  </ul>
+
+
+<h2 id="AccelerometerSensor">AccelerometerSensor</h2>
+
+<p>Non-visible component that can detect shaking and measure acceleration approximately in three dimensions using SI units (m/s<sup>2</sup>).  The components are: <ul>
+<li> <strong>xAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when the phone is tilted to the right (i.e.,      its left side is raised), and negative when the phone is tilted      to the left (i.e., its right size is raised).</li>
+ <li> <strong>yAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when its bottom is raised, and negative when      its top is raised. </li>
+ <li> <strong>zAccel</strong>: Equal to -9.8 (earth's gravity in meters per      second per second when the device is at rest parallel to the ground      with the display facing up,      0 when perpindicular to the ground, and +9.8 when facing down.       The value can also be affected by accelerating it with or against      gravity. </li></ul></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd></dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code>MinimumInterval</code></dt>
+  <dd>The minimum interval between phone shakes</dd>
+  <dt><code>Sensitivity</code></dt>
+  <dd>A number that encodes how sensitive the accelerometer is. The choices are: 1 = weak, 2 = moderate,  3 = strong.</dd>
+  <dt><code><em>XAccel</em></code></dt>
+  <dd></dd>
+  <dt><code><em>YAccel</em></code></dt>
+  <dd></dd>
+  <dt><code><em>ZAccel</em></code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AccelerationChanged(number xAccel, number yAccel, number zAccel)</code></dt>
+  <dd>Indicates the acceleration changed in the X, Y, and/or Z dimensions.</dd>
+  <dt><code>Shaking()</code></dt>
+  <dd>Indicates the device started being shaken or continues to be shaken.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
+<h2 id="BarcodeScanner">BarcodeScanner</h2>
+
+<p>Component for using the Barcode Scanner to read a barcode</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Result</em></code></dt>
+  <dd>Text result of the previous scan.</dd>
+  <dt><code><em>UseExternalScanner</em></code></dt>
+  <dd>If true App Inventor will look for and use an external scanning program such as "Bar Code Scanner."</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterScan(text result)</code></dt>
+  <dd>Indicates that the scanner has read a (text) result and provides the result</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DoScan()</code></dt>
+  <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
+</dl>
+
+ <h2 id="Clock"> Clock </h2>
+  <img src="images/clock.png" alt="" />
+  <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p> 
+  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p> 
+  <h3> Properties </h3>
+  <dl>
+      <dt> <code> TimerAlwaysFires </code> </dt>
+      <dd> Will fire even when application is not showing on the screen if true </dd>
+      <dt> <code> TimerEnabled </code> </dt>
+      <dd> Fires timer if true </dd>
+      <dt> <code> TimerInterval </code> </dt>
+      <dd> Interval between timer events in ms </dd>
+  </dl> 
+  <h3> Events </h3>
+  <dl>
+    <dt> <code> Timer() </code> </dt>
+    <dd>Timer has gone off.</dd>
+  </dl>
+  <h3> Methods </h3>
+  <dl>
+      <dt> <code> InstantInTime AddDays(InstantInTime instant, number days) </code> </dt>
+      <dd> An instant in time some days after the argument </dd>
+      <dt> <code> InstantInTime AddHours(InstantInTime instant, number hours) </code> </dt>
+      <dd> An instant in time some hours after the argument </dd>
+      <dt> <code> InstantInTime AddMinutes(InstantInTime instant, number minutes) </code> </dt>
+      <dd> An instant in time some minutes after the argument </dd>
+      <dt> <code> InstantInTime AddMonths(InstantInTime instant, number months) </code> </dt>
+      <dd> An instant in time some months after the argument </dd>
+      <dt> <code> InstantInTime AddSeconds(InstantInTime instant, number seconds) </code> </dt>
+      <dd> An instant in time some seconds after the argument </dd>
+      <dt> <code> InstantInTime AddWeeks(InstantInTime instant, number weeks) </code> </dt>
+      <dd> An instant in time some weeks after the argument </dd>
+      <dt> <code> InstantInTime AddYears(InstantInTime instant, number years) </code> </dt>
+      <dd> An instant in time some years after the argument </dd>
+      <dt> <code> number DayOfMonth(InstantInTime instant) </code> </dt>
+      <dd> The day of the month </dd>
+      <dt> <code> number Duration(InstantInTime start, InstantInTime end) </code> </dt>
+      <dd> Milliseconds elapsed between instants </dd>
+      <dt> <code> text FormatDate(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date of an instant in the specified pattern </dd>
+      <dt> <code> text FormatDateTime(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date and time of an instant in the specified pattern</dd>
+      <dt> <code> text FormatTime(InstantInTime instant) </code> </dt>
+      <dd> Text representing the time of an instant </dd>
+      <dt> <code> number GetMillis(InstantInTime instant) </code> </dt>
+      <dd> The instant in time measured as milliseconds since 1970. </dd>
+      <dt> <code> number Hour(InstantInTime instant) </code> </dt>
+      <dd> The hour of the day </dd>
+      <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
+      <dd> An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm </dd>
+      <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
+      <dd> An instant in time specified by the milliseconds since 1970. </dd>
+      <dt> <code> number Minute(InstantInTime instant) </code> </dt>
+      <dd> The minute of the hour </dd>
+      <dt> <code> number Month(InstantInTime instant) </code> </dt>
+      <dd> The month of the year represented as a number from 1 to 12) </dd>
+      <dt> <code> text MonthName(InstantInTime instant) </code> </dt>
+      <dd> The name of the month </dd>
+      <dt> <code> InstantInTime Now() </code> </dt>
+      <dd> The current instant in time read from phone's clock </dd>
+      <dt> <code> number Second(InstantInTime instant) </code> </dt>
+      <dd> The second of the minute </dd>
+      <dt> <code> number SystemTime() </code> </dt>
+      <dd> The phone's internal time </dd>
+      <dt> <code> number Weekday(InstantInTime instant) </code> </dt>
+      <dd> The day of the week represented as a number from 1 (Sunday) to 7 (Saturday) </dd>
+      <dt> <code> text WeekdayName(InstantInTime instant) </code> </dt>
+      <dd> The name of the day of the week </dd>
+      <dt> <code> number Year(InstantInTime instant) </code> </dt>
+      <dd> The year </dd>
+  </dl>
+
+
+<h2 id="LocationSensor">LocationSensor</h2>
+
+<p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
+<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>
+Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Accuracy</em></code></dt>
+  <dd></dd>
+  <dt><code><em>Altitude</em></code></dt>
+  <dd></dd>
+  <dt><code><em>AvailableProviders</em></code></dt>
+  <dd></dd>
+  <dt><code><em>CurrentAddress</em></code></dt>
+  <dd></dd>
+  <dt><code>DistanceInterval</code></dt>
+  <dd>Determines the minimum distance interval, in meters, that the sensor will try to use for sending out location updates. For example, if this is set to 5, then the sensor will fire a LocationChanged event only after 5 meters have been traversed. However, the sensor does not guarantee that an update will be received at exactly the distance interval. It may take more than 5 meters to fire an event, for instance.</dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code><em>HasAccuracy</em></code></dt>
+  <dd></dd>
+  <dt><code><em>HasAltitude</em></code></dt>
+  <dd></dd>
+  <dt><code><em>HasLongitudeLatitude</em></code></dt>
+  <dd></dd>
+  <dt><code><em>Latitude</em></code></dt>
+  <dd></dd>
+  <dt><code><em>Longitude</em></code></dt>
+  <dd></dd>
+  <dt><code>ProviderLocked</code></dt>
+  <dd></dd>
+  <dt><code>ProviderName</code></dt>
+  <dd></dd>
+  <dt><code>TimeInterval</code></dt>
+  <dd>Determines the minimum time interval, in milliseconds, that the sensor will try to use for sending out location updates. However, location updates will only be received when the location of the phone actually changes, and use of the specified time interval is not guaranteed. For example, if 1000 is used as the time interval, location updates will never be fired sooner than 1000ms, but they may be fired anytime after.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>LocationChanged(number latitude, number longitude, number altitude)</code></dt>
+  <dd>Indicates that a new location has been detected.</dd>
+  <dt><code>StatusChanged(text provider, text status)</code></dt>
+  <dd>Indicates that the status of the location provider service has changed, such as when a
+ provider is lost or a new provider starts being used.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>number LatitudeFromAddress(text locationName)</code></dt>
+  <dd>Derives latitude of given address</dd>
+  <dt><code>number LongitudeFromAddress(text locationName)</code></dt>
+  <dd>Derives longitude of given address</dd>
+</dl>
+
+
+<h2 id="NearField">NearField</h2>
+
+<p><p>Non-visible component to provide NFC capabilities. For now this
+component supports the reading and writing of text tags only (if supported by the
+device)</p><p>In order to read and write text tags, the component must
+have its <code>ReadMode</code> property set to True or False
+respectively.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>LastMessage</em></code></dt>
+  <dd></dd>
+  <dt><code>ReadMode</code></dt>
+  <dd></dd>
+  <dt><code>TextToWrite</code></dt>
+  <dd></dd>
+  <dt><code><em>WriteType</em></code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>TagRead(text message)</code></dt>
+  <dd>Indicates that a new tag has been detected.
+ Currently this is only a plain text tag, as specified in the
+ manifest.  See Compiler.java.</dd>
+  <dt><code>TagWritten()</code></dt>
+  <dd>Event for TagWritten</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
+                  <h2 id="OrientationSensor"><br />
+                  </h2>
+                  <h2 id="OrientationSensor">OrientationSensor </h2>
+                  <img src="images/orientationsensor.png" alt="" />
+                  <p> Use an orientation sensor component to determine the
+                    phone's spatial orientation. </p>
+                  <p> An orientation sensor is a non-visible component that
+                    reports the following three values, in degrees: </p>
+                  <ul>
+                    <li> <strong> Roll </strong> : 0 degree when the device is
+                      level, increasing to 90 degrees as the device is tilted up
+                      onto its left side, and decreasing to −90 degrees when the
+                      device is tilted up onto its right side. </li>
+                    <li> <strong> Pitch </strong> : 0 degree when the device
+                      is level, increasing to 90 degrees as the device is tilted
+                      so its top is pointing down, then decreasing to 0 degree
+                      as it gets turned over. Similarly, as the device is tilted
+                      so its bottom points down, pitch decreases to −90 degrees,
+                      then increases to 0 degree as it gets turned all the way
+                      over. </li>
+                    <li> <strong> Azimuth </strong> : 0 degree when the top of
+                      the device is pointing north, 90 degrees when it is
+                      pointing east, 180 degrees when it is pointing south, 270
+                      degrees when it is pointing west, etc. </li>
+                  </ul>
+                  These measurements assume that the device itself is not
+                  moving.
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code class="c2"> Available </code> </dt>
+                    <dd> Indicates whether the orientation sensor is present on
+                      the Android device. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, the orientation sensor is enabled. </dd>
+                    <dt> <code class="c2"> Azimuth </code> </dt>
+                    <dd> Returns the azimuth angle of the device. </dd>
+                    <dt> <code class="c2"> Pitch </code> </dt>
+                    <dd> Returns the pitch angle of the device. </dd>
+                    <dt> <code class="c2"> Roll </code> </dt>
+                    <dd> Returns the roll angle of the device. </dd>
+                    <dt> <code class="c2"> Magnitude </code> </dt>
+                    <dd> Returns a number between 0 and 1 that indicates how
+                      much the device is tilted. It gives the magnitude of the
+                      force that would be felt by a ball rolling on the surface
+                      of the device. </dd>
+                    <dt> <code class="c2"> Angle </code> </dt>
+                    <dd> Returns an angle that tells the direction in which the
+                      device is tiled. That is, it tells the direction of the
+                      force that would be felt by a ball rolling on the surface
+                      of the device. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> OrientationChanged(number azimuth, number
+                        pitch, number roll) </code> </dt>
+                    <dd> Called when the orientation has changed. </dd>
+                  </dl>
+                  <!-- ===== start: ProximitySensor ==== -->
+                  <h2 id="ProximitySensor">ProximitySensor </h2>
+                  <p> A sensor component that can measure the proximity of an object (in cm)
+                      relative to the view screen of a device. This sensor is typically used to determine
+                      whether a handset is being held up to a persons ear;
+                      i.e. lets you determine how far away an object is from a device.
+                      Many devices return the absolute distance, in cm, but some return only near and far values.
+                      In this case, the sensor usually reports its maximum range value in the far state
+                      and a lesser value in the near state. It reports the following value:</p>
+                  <ul>
+                      <li><strong>Distance</strong>: The distance from the object to the device</li>
+                  </ul>
+                  <h3> Properties </h3>
+                  <dl>
+                      <dt> <code class="c2"> Available </code> </dt>
+                      <dd> Reports whether or not the device has a proximity sensor </dd>
+
+                      <dt> <code class="c2"> Enabled </code> </dt>
+                      <dd> If enabled, then device will listen for changes in proximity</dd>
+
+                      <dt> <code class="c2"> KeepRunningWhenOnPause </code> </dt>
+                      <dd> If set to true, it will keep sensing for proximity changes even when the app is not visible</dd>
+
+                       <dt> <code class="c2"> Distance </code> </dt>
+                      <dd> Returns the distance from the object to the device</dd>
+
+                      <dt> <code class="c2"> MaximumRange </code> </dt>
+                      <dd> Reports the Maximum Range of the device's ProximitySensor. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                      <dt> <code> ProximityChanged(number distance) </code> </dt>
+                      <dd> Called when distance (in cm) of the object to the device changes. </dd>
+                  </dl>
+
+                  <!-- ===== end: ProximitySensor ==== -->
+
+                  <!-- Content ----------------------- --> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer role="contentinfo"> </footer>
+      <div class="region region-footer">
+        <div class="block block-block block-odd block-count-8 block-region-footer"
+          id="block-block-3">
+          <div class="block-inner clearfix">
+            <div class="block-content content no-title">
+              <p style="text-align: center;"><a target="_blank" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                  rel="license"><img src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"
+                    alt="Creative Commons License" /></a> <br />
+                This work is licensed under a <a target="_blank" class="ext" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                  rel="license">Creative Commons Attribution-ShareAlike 3.0
+                  Unported License</a><span class="ext"></span></p>
+              <p style="text-align: center;">© 2012-2013 <a target="_blank" class="ext"
+                  href="http://web.mit.edu/">Massachusetts
+                  Institute of Technology</a><span class="ext"></span></p>
+              <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact
+                  Us</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table cellspacing="0" cellpadding="0" style="width: 183px; display: none; top: 110px; position: absolute; left: 924px;"
+      class="gstl_50 gssb_c">
+      <tbody>
+        <tr>
+          <td class="gssb_f"><br />
+            <br />
+          </td>
+          <td style="width: 100%;" class="gssb_e"><br />
+            <br />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
