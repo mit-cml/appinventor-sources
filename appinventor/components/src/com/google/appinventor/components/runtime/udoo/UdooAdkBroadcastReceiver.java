@@ -151,8 +151,6 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
         return;
       }
 
-      Log.d(TAG, "ok file");
-      
       FileDescriptor fd = fileDescriptor.getFileDescriptor();
       inputStream = new FileInputStream(fd);
       outputStream = new FileOutputStream(fd);
@@ -161,10 +159,9 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
       if (!this.arduino.hi()) {
         this.connected = false;
         this.isConnecting = false;
+        form.dispatchErrorOccurredEvent((Component)connectedComponents.get(0), "connect", ErrorMessages.ERROR_UDOO_ADK_NO_CONNECTION);
         return;
       }
-      
-      Log.d(TAG, "ok conn");
       
       this.connected = true;
       this.isConnecting = false;

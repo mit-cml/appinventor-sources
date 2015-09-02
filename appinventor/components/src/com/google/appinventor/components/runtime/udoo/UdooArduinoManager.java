@@ -250,7 +250,7 @@ public class UdooArduinoManager
     throw new Exception("Invalid response from ADK");
   }
   
-  public void attachInterrupt(String pin, int mode)
+  public void attachInterrupt(String pin, String mode)
   {
     int interruptId = rand.nextInt((99999 - 10000) + 1) + 10000;
     UdooRequestsRegistry.registerInterrupt(interruptId, this.interruptible);
@@ -259,7 +259,7 @@ public class UdooArduinoManager
     try {
       json.put("method", "attachInterrupt");
       json.put("pin", pinNameToInt(pin));
-      json.put("mode", mode);
+      json.put("mode", getInterruptMode(mode));
       json.put("interrupt_id", interruptId);
     } catch (JSONException e) {
       e.printStackTrace();
@@ -341,6 +341,21 @@ public class UdooArduinoManager
     }
   }
 
+  private int getInterruptMode(String mode)
+  {
+    mode = mode.trim().toUpperCase();
+    
+    if (mode.equals("CHANGE")) {
+      return 2;
+    } else if (mode.equals("FALLING")) {
+      return 3;
+    } else if (mode.equals("RISING")) {
+      return 4;
+    }
+    
+    return 2;
+  }
+  
   void stop()
   {
     this.udooArduinoReader.stop();

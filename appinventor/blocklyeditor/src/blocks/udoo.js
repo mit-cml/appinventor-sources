@@ -18,9 +18,6 @@ Blockly.Blocks['udoo_digital_pinout'] = {
         for (var i=0; i<=53; i++) {
             pinList.push([''+i, ''+i]);
         }
-        for (var i=0; i<=7; i++) {
-            pinList.push(['A'+i, 'A'+i]);
-        }
         
         var listGen = function() {
             originalPin = this.value_;
@@ -85,6 +82,17 @@ Blockly.Blocks['arduino_pin_mode'] = {
         this.setColour(Blockly.LOGIC_CATEGORY_HUE);
         this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
         this.appendDummyInput().appendField(dropdown, 'ARDUINO_PIN_MODE');
+        var thisBlock = this;
+    }
+};
+
+Blockly.Blocks['arduino_interrupt_mode'] = {
+    init: function () {
+        var dropdown = new Blockly.FieldDropdown([['CHANGE', 'CHANGE'], ['FALLING', 'FALLING'], ['RISING', 'RISING']]);
+        
+        this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+        this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+        this.appendDummyInput().appendField(dropdown, 'ARDUINO_INTERRUPT_MODE');
         var thisBlock = this;
     }
 };

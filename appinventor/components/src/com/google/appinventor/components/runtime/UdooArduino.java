@@ -238,7 +238,7 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   }
   
   @SimpleFunction
-  public void attachInterrupt(String pin, int mode) throws Exception
+  public void attachInterrupt(String pin, String mode) throws Exception
   {
     if (this.isConnected()) {
       getTransport().arduino().setInterruptible(this);

@@ -65,7 +65,8 @@ public final class ErrorMessages {
   public static final int ERROR_UDOO_ADK_UNAVAILABLE = 450;
   public static final int ERROR_UDOO_ADK_NO_PERMISSIONS = 451;
   public static final int ERROR_UDOO_ADK_NO_DEVICE = 452;
-  public static final int ERROR_UDOO_TCP_NO_CONNECTION = 453;
+  public static final int ERROR_UDOO_ADK_NO_CONNECTION = 453;
+  public static final int ERROR_UDOO_TCP_NO_CONNECTION = 454;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -292,6 +293,8 @@ public final class ErrorMessages {
         "Permission denied to access ADK accessory.");
     errorMessages.put(ERROR_UDOO_ADK_NO_DEVICE,
         "No ADK accessory found. Is the Arduino sketch uploaded?");
+    errorMessages.put(ERROR_UDOO_ADK_NO_CONNECTION,
+        "Unable to connect to the Arduino. Try to reset it or restart the app.");
     errorMessages.put(ERROR_UDOO_TCP_NO_CONNECTION,
         "Could not create TCP connection.");
     // Bluetooth errors

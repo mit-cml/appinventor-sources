@@ -204,7 +204,6 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
   public void Connected()
   {
-    Log.d(TAG, "Connected EVENT");
     EventDispatcher.dispatchEvent(this, "Connected");
   }
   

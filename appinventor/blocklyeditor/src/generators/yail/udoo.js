@@ -27,3 +27,8 @@ Blockly.Yail['udoo_digital_pinout'] = function() {
   var code = Blockly.Yail.quote_(this.getFieldValue('UDOO_DIGITAL_PINOUT'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
+
+Blockly.Yail['arduino_interrupt_mode'] = function() {
+  var code = Blockly.Yail.quote_(this.getFieldValue('ARDUINO_INTERRUPT_MODE'));
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
