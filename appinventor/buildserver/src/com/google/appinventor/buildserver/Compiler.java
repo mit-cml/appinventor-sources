@@ -191,7 +191,7 @@ public final class Compiler {
           locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
           locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
           locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
-          permissionsNeeded.put("WebViewer", locationPermissions);
+          permissionsNeeded.put("com.google.appinventor.components.runtime.WebViewer", locationPermissions);
         }
       }
     } catch (IOException e) {
@@ -210,6 +210,12 @@ public final class Compiler {
     }
 
     System.out.println("Permissions needed, n = " + n);
+  }
+
+  // Just used for testing
+  @VisibleForTesting
+  Map<String,Set<String>> getPermissions() {
+    return permissionsNeeded;
   }
 
   /*
