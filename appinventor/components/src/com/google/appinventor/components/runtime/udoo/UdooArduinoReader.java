@@ -42,24 +42,32 @@ public class UdooArduinoReader
         while (running) {
           String readResponse = this.read();
           if (readResponse != null) {
-            
-            JSONObject response = null;
-            Integer id = null;
-            try {
-              response = new JSONObject(readResponse);
-              if (!response.has("id")) {
-                Log.d("UdooArduinoReader", "Ignored response: " + readResponse);
-                return;
-              }
-              id = (Integer) response.get("id");
-              if (response.has("disconnected")) {
-                stop();
-              }
-              
-              UdooRequestsRegistry.onRead(response, id);
-            } catch (JSONException ex) {
-              Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            parseJson(readResponse);
+          }
+        }
+      }
+      
+      private void parseJson(String response)
+      {
+        JSONObject json = null;
+        Integer id = null;
+        try {
+          json = new JSONObject(response);
+          if (!json.has("id")) {
+            Log.d("UdooArduinoReader", "Ignored response: " + response);
+            return;
+          }
+          id = (Integer) json.get("id");
+          if (json.has("disconnected")) {
+            stop();
+          }
+
+          UdooRequestsRegistry.onRead(json, id);
+        } catch (JSONException ex) {
+          Logger.getLogger(UdooRequestsRegistry.class.getName()).log(Level.SEVERE, null, ex);
+          
+          if (response.charAt(0) == '}') {
+            parseJson(response.substring(1));
           }
         }
       }
@@ -93,6 +101,7 @@ public class UdooArduinoReader
           message = null;
         }
 
+        Log.d("UdooArduinoReader", message);
         return message;
       }
     });

@@ -54,7 +54,11 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
     usbManager = (UsbManager)activity.getSystemService(Context.USB_SERVICE);
     registerReceiver();
     
-    connect();
+    if (this.connected) {
+      reconnect();
+    } else {
+      connect();
+    }
   }
 
   @Override
@@ -111,6 +115,10 @@ public class UdooAdkBroadcastReceiver extends BroadcastReceiver implements UdooC
 
   public synchronized void connect()
   {
+    if (this.connected) {
+      return;
+    }
+    
     Log.d(TAG, "Connecting UdooAdkBroadcastReceiver");
 
     this.connected = false;
