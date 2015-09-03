@@ -4,7 +4,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.runtime.udoo.UdooConnectionFactory;
 import com.google.appinventor.components.runtime.udoo.UdooConnectionInterface;
 import com.google.appinventor.components.runtime.udoo.UdooConnectedInterface;
 import android.util.Log;
@@ -17,10 +16,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.json.JSONObject;
-
 
 /**
  * A component that interfaces with sensors connected to UDOO boards.
@@ -34,97 +30,29 @@ import org.json.JSONObject;
     iconName = "images/udoo.png")
 @SimpleObject
 public class UdooTempHumSensor extends AndroidNonvisibleComponent
-implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedInterface
+implements UdooConnectedInterface
 {
-  private String TAG = "UdooTempHumSensor";
   private UdooConnectionInterface connection = null;
+  private final String TAG = "UdooTempHumSensor";
   private final String SENSOR_TYPE_DHT11 = "dht11";
 
-  private String transport = "local";
-
-  /**
-   * Sets the transport property
-   *
-   * @param transport
-   */
-  @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS,
-      defaultValue = "local")
-  @SimpleProperty(
-      description = "Connect to a local (via ADK) or remote (via TCP) board.",
-      userVisible = false)
-  public void Transport(String transport) {
-    this.transport = transport;
-  }
-  
-  public boolean isLocal() {
-    return this.transport.equals("local");
-  }
-  
-  private String remoteAddress;
-  
-  /**
-   * Sets the remote IP address
-   *
-   * @param remoteAddress
-   */
-  @DesignerProperty()
-  @SimpleProperty(
-      description = "If transport=remote, the IP address of the remote board.",
-      userVisible = false)
-  public void RemoteAddress(String remoteAddress) {
-    this.remoteAddress = remoteAddress;
-  }
- 
-  public String getRemoteAddress() {
-    return this.remoteAddress;
+  public UdooTempHumSensor(Form form) {
+    super(form);
   }
 
-  private String remotePort;
-  
-  /**
-   * Sets the remote TCP port number
-   *
-   * @param remotePort
-   */
-  @DesignerProperty()
-  @SimpleProperty(
-      description = "If transport=remote, the TCP port of the remote board.",
-      userVisible = false)
-  public void RemotePort(String remotePort) {
-    this.remotePort = remotePort;
-  }
-  
-  public String getRemotePort() {
-    return this.remotePort;
-  }
-
-  private String remoteSecret;
-  
-  /**
-   * Sets the remote secret string for authentication
-   *
-   * @param remoteSecret
-   */
-  @DesignerProperty()
-  @SimpleProperty(
-      description = "If transport=remote, the secret key to connect to the remote board.",
-      userVisible = false)
-  public void RemoteSecret(String remoteSecret) {
-    this.remoteSecret = remoteSecret;
-  }
-
-  public String getRemoteSecret() {
-    return this.remoteSecret;
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_ARDUINO_CONNECTION,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false)
+  public void UdooArduino(UdooArduino udooArduino) {
+    this.connection = udooArduino.getTransport();
+    this.connection.registerComponent(this, form);
   }
   
   private String sensor = SENSOR_TYPE_DHT11;
 
-  /**
-   * Sets the transport property
-   *
-   * @param transport
-   */
+ /**
+  * @param sensor 
+  */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS,
       defaultValue = SENSOR_TYPE_DHT11)
@@ -133,59 +61,6 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
       userVisible = false)
   public void Sensor(String sensor) {
     this.sensor = sensor;
-  }
-  
-  public synchronized boolean isConnected()
-  {
-    boolean isc = getTransport().isConnected();
-    if (!isc) {
-      if (!getTransport().isConnecting()) {
-        getTransport().reconnect();
-      }
-    }
-    return isc;
-  }
-
-  public UdooTempHumSensor(final Form form)
-  {
-    super(form);
-    
-    form.registerForOnResume(this);
-    form.registerForOnDestroy(this);
-    form.registerForOnPause(this);
-    
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        new Timer().schedule(new TimerTask() {          
-          @Override
-          public void run() {
-            getTransport().onCreate(form);
-          }
-        }, 500);
-      }
-    }).start();
-  }
-  
-  @Override
-  public void onResume()
-  {
-    this.isConnected(); //connects, if disconnected
-  }
-
-  @Override
-  public void onDestroy()
-  {
-    getTransport().disconnect();
-    getTransport().onDestroy();
-  }
-  
-  @Override
-  public void onPause()
-  {
-    if (!getTransport().isConnecting()) {
-      getTransport().disconnect();
-    }
   }
 
   @SimpleFunction
@@ -213,12 +88,19 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener, UdooConnectedIn
     EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
   }
   
+  public synchronized boolean isConnected()
+  {
+    boolean isc = getTransport().isConnected();
+    if (!isc) {
+      if (!getTransport().isConnecting()) {
+        getTransport().reconnect();
+      }
+    }
+    return isc;
+  }
+  
   private UdooConnectionInterface getTransport()
   {
-    if (this.connection == null) {
-      this.connection = UdooConnectionFactory.getConnection(this, form);
-      this.connection.registerComponent(this, form);
-    }
     return this.connection;
   }
 }

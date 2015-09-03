@@ -22,7 +22,7 @@ public class UdooConnectionFactory
   private static HashMap<String, UdooTcpRedirector> connections = new HashMap<String, UdooTcpRedirector>();
   private static UdooAdkBroadcastReceiver adkInstance = null;
   
-  public static UdooConnectionInterface getConnection(UdooConnectedInterface component, Form form)
+  public static UdooConnectionInterface getConnection(UdooConnectionDetailsInterface component, Form form)
   {
     if (component.isLocal()) {
       if (adkInstance == null) {

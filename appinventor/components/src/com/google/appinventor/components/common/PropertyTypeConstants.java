@@ -110,7 +110,14 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_UDOO_TRANSPORTS = "udoo_transports";
   
   /**
-   * UDOO transports
+   * UDOO Arduino connections
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooArduinoConnectionsChoicePropertyEditor#connections
+   */
+  public static final String PROPERTY_TYPE_UDOO_ARDUINO_CONNECTION = "UdooArduino";
+  
+  /**
+   * UDOO temperature humidity sensors
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTempHumSensorsChoicePropertyEditor#sensors
    */

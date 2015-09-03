@@ -195,6 +195,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new YoungAndroidGpioDirectionsChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS)) {
       return new YoungAndroidUdooTransportsChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_ARDUINO_CONNECTION)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("UdooArduino"));
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS)) {
       return new YoungAndroidUdooTempHumSensorsChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER)) {

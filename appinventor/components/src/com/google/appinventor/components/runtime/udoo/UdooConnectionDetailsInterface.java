@@ -3,7 +3,10 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.udoo;
 
-public interface UdooConnectedInterface
+public interface UdooConnectionDetailsInterface
 {
-  public void Connected();
+  public boolean isLocal();
+  public String getRemoteAddress();
+  public String getRemotePort();
+  public String getRemoteSecret();
 }

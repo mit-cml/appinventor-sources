@@ -17,10 +17,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.udoo.UdooConnectionDetailsInterface;
 import com.google.appinventor.components.runtime.udoo.UdooInterruptibleInterface;
 import java.util.Timer;
 import java.util.TimerTask;
-
 
 /**
  * A component that allows to call functions on the Arduino side of UDOO boards.
@@ -35,7 +35,7 @@ import java.util.TimerTask;
 @SimpleObject
 public class UdooArduino extends AndroidNonvisibleComponent
 implements OnResumeListener, OnDestroyListener, OnPauseListener,
-           UdooConnectedInterface, UdooInterruptibleInterface
+           UdooConnectedInterface, UdooConnectionDetailsInterface, UdooInterruptibleInterface
 {
   private final String TAG = "UdooArduino";
   private UdooConnectionInterface connection = null;
@@ -262,7 +262,7 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
     EventDispatcher.dispatchEvent(this, "Connected");
   }
   
-  private UdooConnectionInterface getTransport()
+  protected UdooConnectionInterface getTransport()
   {
     if (this.connection == null) {
       this.connection = UdooConnectionFactory.getConnection(this, form);
