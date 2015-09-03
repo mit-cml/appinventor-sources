@@ -18,6 +18,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>A two-dimensional touch-sensitive rectangular panel on which drawing can
@@ -124,6 +126,18 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   // Handle fling events
   private final GestureDetector mGestureDetector;
+
+  // The canvas has built-in detectors that trigger on touch, drag, touchDown,
+  // TouchUp and Fling gestures.  It also maintains a set of additional gesture detectors
+  // that can respond to motion events. These detectors
+  // will typically be implemented by extension components that add the detector to this set.
+
+  private final Set<ExtensionGestureDetector> extensionGestureDetectors = Sets.newHashSet();
+
+  // additional gesture detectors must implement this interface
+  public interface ExtensionGestureDetector {
+    boolean onTouchEvent(MotionEvent event);
+  };
 
   /**
    * Parser for Android {@link android.view.MotionEvent} sequences, which calls
@@ -509,6 +523,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       container.$form().dontGrabTouchEventsForComponent();
       motionEventParser.parse(event);
       mGestureDetector.onTouchEvent(event); // handle onFling here
+      // let each detector in the custom list handle the event
+      for (ExtensionGestureDetector g : extensionGestureDetectors) {
+        //  Log.i("Canvas", "Calling detector: " + g.toString());
+        //  Log.i("Canvas", "sending motion event " + event.toString());
+        g.onTouchEvent(event);
+      }
       return true;
     }
 
@@ -685,6 +705,21 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   public View getView() {
     return view;
   }
+
+  public Activity getContext() {
+    return context;
+  }
+
+  // add a new custom gesture detector, typically by means of a component extension
+  public void registerCustomGestureDetector(ExtensionGestureDetector detector) {
+    // Log.i("Canvas", "Adding custom detector " + detector.toString());
+    extensionGestureDetectors.add(detector);
+  }
+
+  public void removeCustomGestureDetector(Object detector) {
+    extensionGestureDetectors.remove(detector);
+  }
+
 
   // Methods related to getting the dimensions of this Canvas
 

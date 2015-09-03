@@ -75,6 +75,29 @@ Blockly.Blocks.Utilities.wrapSentence = function(str, len) {
   }
 };
 
+// Change the text of collapsed blocks on rename
+// Recurse to fix collapsed parents
+
+Blockly.Blocks.Utilities.MAX_COLLAPSE = 4;
+
+Blockly.Blocks.Utilities.renameCollapsed = function(block, n) {
+  if(n > Blockly.Blocks.Utilities.MAX_COLLAPSE) return;
+  if (block.isCollapsed()) {
+    var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+    block.removeInput(COLLAPSED_INPUT_NAME);
+    var text = block.toString(Blockly.COLLAPSE_CHARS);
+    block.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
+
+    if(block.type.indexOf("procedures_call") != -1) {
+      block.moveInputBefore(COLLAPSED_INPUT_NAME, 'ARG0');
+    }
+  }
+
+  if(block.parentBlock_) {
+    Blockly.Blocks.Utilities.renameCollapsed(block.parentBlock_, n+1);
+  }
+}
+
 // unicode multiplication symbol
 Blockly.Blocks.Utilities.times_symbol = '\u00D7';
 
