@@ -12,6 +12,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.widget.TextView;
+import android.content.Context;
+
 
 /**
  * Helper methods for manipulating {@link TextView} objects.
@@ -91,10 +93,12 @@ public class TextViewUtil {
    * Returns the font size for a {@link TextView}.
    *
    * @param textview   text view instance
+   * @param context   Context in the screen to get the density of
    * @return  font size in pixel
    */
-  public static float getFontSize(TextView textview) {
-    return textview.getTextSize();
+  public static float getFontSize(TextView textview, Context context) {
+    float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+    return textview.getTextSize()/scaledDensity;
   }
 
   /**
