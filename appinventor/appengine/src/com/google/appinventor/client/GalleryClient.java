@@ -19,6 +19,8 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * Gallery Client is a facade for the ui to talk to the gallery server side.
@@ -178,6 +180,29 @@ public class GalleryClient {
     ode.getGalleryService().getRecentApps(start, count, callback);
   }
   /**
+  * GetMostLiked gets the most liked apps then tells listeners
+  * @param start staring index
+  * @param count number of results
+  */
+  public void GetMostLiked(int start, int count, final boolean refreshable) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
+    // failure message
+    MESSAGES.galleryLikedAppsError()) {
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, refreshable);
+        }
+      }
+    };
+
+    // ok, this is below the call back, but of course it is done first
+    ode.getGalleryService().getMostLikedApps(start,count,callback);
+  }
+  /**
   * GetMostDownloaded gets the most downloaded apps then tells listeners
   * @param start staring index
   * @param count number of results
@@ -252,9 +277,9 @@ public class GalleryClient {
   * @param gApp the app to open
   * @return True if success, otherwise false
   */
-  public boolean loadSourceFile(GalleryApp gApp, String newProjectName) {
+  public boolean loadSourceFile(GalleryApp gApp, String newProjectName, final PopupPanel popup) {
     final String projectName = newProjectName;
-    final String sourceURL = getGallerySettings().getSourceURL(gApp.getGalleryAppId());
+    final String sourceKey = getGallerySettings().getSourceKey(gApp.getGalleryAppId());
     final long galleryId = gApp.getGalleryAppId();
 
     // first check name to see if valid and unique...
@@ -263,14 +288,6 @@ public class GalleryClient {
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
 
-    final OdeAsyncCallback<Void> galleryCallback = new OdeAsyncCallback<Void>(
-    // failure message
-    MESSAGES.createProjectError()) {
-      @Override
-      public void onSuccess(Void arg2) {
-      }
-    };
-
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
     // failure message
     MESSAGES.createProjectError()) {
@@ -278,10 +295,16 @@ public class GalleryClient {
       public void onSuccess(UserProject projectInfo) {
         Project project = ode.getProjectManager().addProject(projectInfo);
         Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        popup.hide();
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        popup.hide();
+        super.onFailure(caught);
       }
     };
     // this is really what's happening here, we call server to load project
-    ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
+    ode.getProjectService().newProjectFromGallery(projectName, sourceKey, galleryId, callback);
     return true;
   }
 
@@ -289,15 +312,16 @@ public class GalleryClient {
   * appWasChanged called to tell galleryList (and possibly others) that app is modified
   */
   public void appWasChanged() {
-    // for now, let's update the recent list and the popular list (in case one was deleted)
+    // for now, let's update the recent list, the popular list and feature list (in case one was deleted)
     GetMostRecent(0,GalleryList.NUMAPPSTOSHOW, true);
-    GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW, true);
+    GetMostLiked(0,GalleryList.NUMAPPSTOSHOW, true);
+    GetFeatured(0, GalleryList.NUMAPPSTOSHOW, 0, true);
   }
 
  /**
   * appWasDownloaded called to tell backend that app is downloaded
   */
-  public void appWasDownloaded(final long galleryId) {
+  public void appWasDownloaded(final long galleryId, final String userId) {
     // Inform the GalleryService (which eventually goes to ObjectifyGalleryStorageIo)
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
@@ -315,7 +339,16 @@ public class GalleryClient {
         };
         Ode.getInstance().getGalleryService().getApp(galleryId, appCallback);
 
-      }
+        final OdeAsyncCallback<Boolean> checkCallback = new OdeAsyncCallback<Boolean>(
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean b) {
+            //email will be send automatically if condition matches (in ObjectifyGalleryStorageIo)
+          }
+        };
+        Ode.getInstance().getGalleryService().checkIfSendAppStats(userId, galleryId,
+            getGallerySettings().getAdminEmail(), Window.Location.getHost(), checkCallback);
+       }
     };
     // ok, this is below the call back, but of course it is done first
     ode.getGalleryService().appWasDownloaded(galleryId, callback);

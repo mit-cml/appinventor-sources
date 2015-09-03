@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This class is used to display a Slider.
@@ -53,6 +54,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private float maxValue;
   // thumbPosition is a number between minValue and maxValue
   private float thumbPosition;
+  private boolean thumbEnabled;
 
   // the total slider width
   private LayerDrawable fullBar;
@@ -67,6 +69,23 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private final static String initialRightColorString = Component.DEFAULT_VALUE_COLOR_GRAY;
   private final static int initialLeftColor = Component.COLOR_ORANGE;
   private final static String initialLeftColorString = Component.DEFAULT_VALUE_COLOR_ORANGE;
+
+  // seekbar.getThumb was introduced in API level 16 and the component warns the user
+  // that apps using Sliders won't work if the API level is below 16.  But for very old systems the
+  // app won't even *load* because the verifier will reject getThumb.  I don't know how old - the
+  // rejection happens on Donut but not on Gingerbread.
+  // The purpose of SeekBarHelper class is to avoid getting rejected by the Android verifier when the
+  // Slider component code is loaded into a device with API level less than Gingerbread.
+  // We do this trick by putting the use of getThumb in the class SeekBarHelper and arranging for
+  // the class to be compiled only if the API level is at least Gingerbread.  This same trick is
+  // used in implementing the Sound component.
+  private class SeekBarHelper {
+    public void getThumb(int alpha) {
+      seekbar.getThumb().mutate().setAlpha(alpha);
+    }
+  }
+
+  public final boolean referenceGetThumb = (SdkLevel.getLevel() >= SdkLevel.LEVEL_JELLYBEAN);
 
   /**
    * Creates a new Slider component.
@@ -90,6 +109,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     minValue = Component.SLIDER_MIN_VALUE;
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
+    thumbEnabled = true;
 
     seekbar.setOnSeekBarChangeListener(this);
 
@@ -107,6 +127,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       Log.d(LOG_TAG, "Slider initial min, max, thumb values are: " +
           MinValue() + "/" + MaxValue() + "/" + ThumbPosition());
     }
+
+    if (DEBUG) {
+      Log.d(LOG_TAG, "API level is " + SdkLevel.getLevel());
+    }
+
   }
 
   // NOTE(hal): On old phones, up through 2.2.2 and maybe higher, the color of the bar doesn't
@@ -138,6 +163,37 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     // Set the thumb position on the seekbar
     seekbar.setProgress((int) seekbarPosition);
+  }
+
+  /**
+   * Sets whether or not the slider thumb should be shown
+   *
+   * @param enabled Whether or not the slider thumb should be shown
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "True")
+  @SimpleProperty(description = "Sets whether or not to display the slider thumb.",
+     userVisible = true)
+  public void ThumbEnabled(boolean enabled) {
+    thumbEnabled = enabled;
+    int alpha = thumbEnabled ? 255 : 0;
+    if (referenceGetThumb) {
+      new SeekBarHelper().getThumb(alpha);
+    }
+    seekbar.setEnabled(thumbEnabled);
+
+  }
+
+  /**
+   * Whether or not the slider thumb is being be shown
+   *
+   * @return Whether or not the slider thumb is being be shown
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Returns whether or not the slider thumb is being be shown",
+      userVisible = true)
+  public boolean ThumbEnabled() {
+    return thumbEnabled;
   }
 
   /**

@@ -28,6 +28,8 @@ goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
 goog.require('goog.crypt.base64');
 
+top.loadAll = true;             // Global for debugging!
+
 // Repl State
 // Repl "state" definitions
 
@@ -246,10 +248,44 @@ Blockly.ReplMgr.putYail = (function() {
             if (!phonereceiving) {
                 engine.receivefromphone();
             }
-            var work = rs.phoneState.phoneQueue.shift();
-            if (!work) {
-                rs.phoneState.ioRunning = false;
-                return;
+            var work;
+            if (top.loadAll) {
+                var chunk;
+                var allcode = "";
+                var first = true;
+                var chunked = false;
+                var lastblock;
+                while ((chunk = rs.phoneState.phoneQueue.shift())) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        console.log("We did chunk!");
+                        chunked = true;
+                    }
+                    allcode += chunk.code; // We can concatonate because AppInvHTTPD runs us
+                                           // in a (begin) block
+                    lastblock = chunk.block;
+                }
+                if (first) {               // There was no work to do
+                    rs.phoneState.ioRunning = false;
+                    return;
+                }
+                work = { 'code' : allcode,
+                         'block' : null    // We cannot link this large code block
+                                           // to any particular block (yet)
+                       };
+                if (chunked) {
+                    console.log("Chunk: " + allcode);
+                } else {
+                    console.log("Slow Path: " + allcode);
+                    work.block = lastblock; // Only one block, so we can provide it
+                }
+            } else {
+                work = rs.phoneState.phoneQueue.shift();
+                if (!work) {
+                    rs.phoneState.ioRunning = false;
+                    return;
+                }
             }
             var encoder = new goog.Uri.QueryData();
             conn = goog.net.XmlHttp();
@@ -311,7 +347,7 @@ Blockly.ReplMgr.putYail = (function() {
                     } else {
                         var json = goog.json.parse(this.response);
                         if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
-                            engine.checkversionupgrade(true, json.installer, false);
+                            engine.checkversionupgrade(false, json.installer, false);
                             return;
                         }
                     }
@@ -392,7 +428,7 @@ Blockly.ReplMgr.putYail = (function() {
                 engine.resetcompanion();
             } else {
                 dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
-                engine.resetcompanion();
+                engine.pollphone();
             }
         }
     };

@@ -6,8 +6,10 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -74,6 +76,10 @@ public class InternalTextToSpeech implements ITextToSpeech {
   public void speak(final String message, final Locale loc) {
     Log.d(LOG_TAG, "Internal TTS got speak");
     speak(message, loc, 0);
+  }
+
+  public boolean isInitialized() {
+    return isTtsInitialized;
   }
 
 
@@ -143,14 +149,20 @@ public class InternalTextToSpeech implements ITextToSpeech {
     initializeTts();
   }
 
-    @Override
-    public void setPitch(float pitch) {
-        tts.setPitch(pitch);
-    }
+  @Override
+  public void setPitch(float pitch) {
+    tts.setPitch(pitch);
+  }
 
-    @Override
-    public void setSpeechRate(float speechRate) {
-        tts.setSpeechRate(speechRate);
-    }
+  @Override
+  public void setSpeechRate(float speechRate) {
+    tts.setSpeechRate(speechRate);
+  }
+
+  // This is for use by the higher level TextToSpeech component
+  public int isLanguageAvailable(Locale loc) {
+    return tts.isLanguageAvailable(loc);
+  }
 
 }
+

@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -93,6 +94,9 @@ public final class Compiler {
 
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_APP_NAME = "";
+
+  private static final String DEFAULT_MIN_SDK = "4";
 
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -297,8 +301,8 @@ public final class Compiler {
 
   // This patches around a bug in AAPT (and other placed in Android)
   // where an ampersand in the name string breaks AAPT.
-  private String cleanVname(String vname) {
-    return vname.replace("&", "and");
+  private String cleanName(String name) {
+    return name.replace("&", "and");
   }
 
   /*
@@ -311,13 +315,15 @@ public final class Compiler {
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
-    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanVname(project.getVName());
+    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
+    String minSDK = DEFAULT_MIN_SDK;
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
-      BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(manifestFile), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       // TODO(markf) Allow users to set versionCode and versionName attributes.
       // See http://developer.android.com/guide/publishing/publishing.html for
@@ -351,22 +357,12 @@ public final class Compiler {
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
-      // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
-      // The market will use the following to filter apps shown to devices that don't support
-      // the specified SDK version.  We might also want to allow users to specify minSdkVersion
-      // or have us specify higher SDK versions when the program uses a component that uses
-      // features from a later SDK (e.g. Bluetooth).
-      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 
-      // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
-      // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
-      // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
-      // sized appropriately. For example, an image component with an image that is 60x60, width
-      // and height properties set to automatic, is sized as 40x40. So they appear on the screen
-      // much smaller than they should be. There is code in Canvas and ImageSprite to work around
-      // this problem, but images and buttons are still an unsolved problem. We'll have to solve
-      // that before we can set the targetSdkVersion to 4 here.
-      // out.write("  <uses-sdk android:targetSdkVersion=\"4\" />\n");
+      // The market will use the following to filter apps shown to devices that don't support
+      // the specified SDK version.  We right now support building for minSDK 4,
+      // and minSDK 3 as compatibility mode (through a property in Screen 1).
+      // We might also want to allow users to specify minSdk version or targetSDK version.
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
 
       out.write("  <application ");
 
@@ -377,7 +373,11 @@ public final class Compiler {
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
-      out.write("android:label=\"" + projectName + "\" ");
+      if (aName.equals("")) {
+        out.write("android:label=\"" + projectName + "\" ");
+      } else {
+        out.write("android:label=\"" + aName + "\" ");
+      }
       out.write("android:icon=\"@drawable/ya\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
@@ -925,7 +925,7 @@ public final class Compiler {
         apkAbsolutePath,
         zipAlignedPath
     };
-    long startAapt = System.currentTimeMillis();
+    long startZipAlign = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
@@ -941,7 +941,7 @@ public final class Compiler {
       return false;
     }
     String zipALignTimeMessage = "ZIPALIGN time: " +
-        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+        ((System.currentTimeMillis() - startZipAlign) / 1000.0) + " seconds";
     out.println(zipALignTimeMessage);
     LOG.info(zipALignTimeMessage);
     return true;

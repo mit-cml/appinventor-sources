@@ -62,6 +62,13 @@ public abstract class SimpleEditor extends FileEditor {
   public abstract SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel();
 
   /**
+   * Returns the visible components panel
+   *
+   * @return  visible components panel
+   */
+  public abstract SimpleVisibleComponentsPanel getVisibleComponentsPanel();
+
+  /**
    * Returns true if this editor is for Screen1.
    */
   public abstract boolean isScreen1();

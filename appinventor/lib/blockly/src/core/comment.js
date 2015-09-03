@@ -102,14 +102,14 @@ Blockly.Comment.prototype.createEditor_ = function() {
   this.foreignObject_ = Blockly.createSvgElement('foreignObject',
       {'x': Blockly.Bubble.BORDER_WIDTH, 'y': Blockly.Bubble.BORDER_WIDTH},
       null);
-  var body = document.createElementNS(Blockly.HTML_NS, 'body');
-  body.setAttribute('xmlns', Blockly.HTML_NS);
-  body.className = 'blocklyMinimalBody';
+  this.foreignBody_ = document.createElementNS(Blockly.HTML_NS, 'body');
+  this.foreignBody_.setAttribute('xmlns', Blockly.HTML_NS);
+  this.foreignBody_.className = 'blocklyMinimalBody';
   this.textarea_ = document.createElementNS(Blockly.HTML_NS, 'textarea');
   this.textarea_.className = 'blocklyCommentTextarea';
   this.textarea_.setAttribute('dir', Blockly.RTL ? 'RTL' : 'LTR');
-  body.appendChild(this.textarea_);
-  this.foreignObject_.appendChild(body);
+  this.foreignBody_.appendChild(this.textarea_);
+  this.foreignObject_.appendChild(this.foreignBody_);
   Blockly.bindEvent_(this.textarea_, 'mouseup', this, this.textareaFocus_);
   return this.foreignObject_;
 };
@@ -138,8 +138,9 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
   this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
   this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth);
-  this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
-  this.textarea_.style.height = (size.height - doubleBorderWidth - 4) + 'px';
+  this.foreignBody_.style.height = (size.height - doubleBorderWidth) + 'px';
+  this.textarea_.style.width = (size.width - doubleBorderWidth) + 'px';
+  this.textarea_.style.height = (size.height - doubleBorderWidth) + 'px';
 };
 
 /**

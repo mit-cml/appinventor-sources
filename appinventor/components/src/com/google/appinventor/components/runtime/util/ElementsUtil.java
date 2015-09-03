@@ -23,6 +23,13 @@ public class ElementsUtil {
     return items;
   }
 
+ /** Check a Yail list of items to verify that they are all strings and
+  *
+  * @param itemList
+  * @param componentName
+  * @return the original list
+  */
+
   public static YailList elements(YailList itemList, String componentName){
     Object[] objects = itemList.toStringArray();
     for (int i = 0; i < objects.length; i++) {
@@ -31,6 +38,7 @@ public class ElementsUtil {
             "Error");
       }
     }
+    // this is not changing itemlist.  it's just checking that the items are strings
     return itemList;
   }
 

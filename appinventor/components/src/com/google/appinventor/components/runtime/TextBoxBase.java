@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -291,20 +292,20 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the textbox's text's font size, measured in pixels.
+   * Returns the textbox's text's font size, measured in sp(scale-independent pixels).
    *
-   * @return  font size in pixel
+   * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "The font size for the text.  By default, it is " +
       Component.FONT_DEFAULT_SIZE + " points.")
   public float FontSize() {
-    return TextViewUtil.getFontSize(view);
+    return TextViewUtil.getFontSize(view, container.$context());
   }
 
   /**
-   * Specifies the textbox's text's font size, measured in pixels.
+   * Specifies the textbox's text's font size, measured in sp(scale-independent pixels).
    *
    * @param size  font size in pixel
    */
@@ -437,6 +438,15 @@ public abstract class TextBoxBase extends AndroidViewComponent
     } else {
       TextViewUtil.setTextColor(view, Component.COLOR_BLACK);
     }
+  }
+
+  /**
+   * Request focus to current textbox.
+   */
+  @SimpleFunction(
+    description = "Sets the textbox active.")
+  public void RequestFocus() {
+    view.requestFocus();
   }
 
   // OnFocusChangeListener implementation

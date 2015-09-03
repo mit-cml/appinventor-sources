@@ -227,6 +227,13 @@ public class File extends AndroidNonvisibleComponent implements Component {
           out.flush();
           out.close();
           fileWriter.close();
+
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              AfterFileSaved(filename);
+            }
+          });
         } catch (IOException e) {
           if (append) {
             form.dispatchErrorOccurredEvent(File.this, "AppendTo",
@@ -239,6 +246,21 @@ public class File extends AndroidNonvisibleComponent implements Component {
       }
     });
   }
+
+  /**
+   * Replace Windows-style CRLF with Unix LF as String. This allows
+   * end-user to treat Windows text files same as Unix or Mac. In
+   * future, allowing user to choose to normalize new lines might also
+   * be nice - in case someone really wants to detect Windows-style
+   * line separators, or save a file which was read (and expect no
+   * changes in size or checksum).
+   * @param string to convert
+   */
+
+  private String normalizeNewLines(String s) {
+    return s.replaceAll("\r\n", "\n");
+  }
+
 
   /**
    * Asynchronously reads from the given file. Calls the main event thread
@@ -258,7 +280,15 @@ public class File extends AndroidNonvisibleComponent implements Component {
       while ((length = input.read(buffer, offset, BUFFER_LENGTH)) > 0) {
         output.write(buffer, 0, length);
       }
-      final String text = output.toString();
+
+      // Now that we have the file as a String,
+      // normalize any line separators to avoid compatibility between Windows and Mac
+      // text files. Users can expect \n to mean a line separator regardless of how
+      // file was created. Currently only doing this for files opened locally - not files we pull
+      // from other places like URLs.
+
+      final String text = normalizeNewLines(output.toString());
+
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
@@ -293,6 +323,17 @@ public class File extends AndroidNonvisibleComponent implements Component {
   public void GotText(String text) {
     // invoke the application's "GotText" event handler.
     EventDispatcher.dispatchEvent(this, "GotText", text);
+  }
+
+  /**
+   * Event indicating that a request has finished.
+   *
+   * @param text write to the file
+   */
+  @SimpleEvent (description = "Event indicating that the contents of the file have been written.")
+  public void AfterFileSaved(String fileName) {
+    // invoke the application's "AfterFileSaved" event handler.
+    EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
   }
 
   /**

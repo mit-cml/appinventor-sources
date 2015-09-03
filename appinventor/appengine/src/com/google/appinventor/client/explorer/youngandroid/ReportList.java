@@ -7,20 +7,24 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.shared.rpc.project.Email;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
-import com.google.appinventor.shared.rpc.project.Message;
+import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -30,6 +34,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -50,7 +55,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author blu2@dons.usfca.edu (Bin Lu)
  */
 public class ReportList extends Composite  {
-  public static final int MAX_MESSAGE_PREVIEW_LENGTH = 40;
+  public static final int MAX_EMAIL_PREVIEW_LENGTH = 40;
   private final CheckBox checkBox;
   private final VerticalPanel panel;
   private List<GalleryAppReport> reports;
@@ -58,20 +63,27 @@ public class ReportList extends Composite  {
   private final List<GalleryAppReport> selectedGalleryAppReports;
   private final Map<GalleryAppReport, ReportWidgets> ReportWidgets;
   private DropDownButton templateButton;
+  private GalleryClient galleryClient;
 
   // UI elements
   private final Grid table;
+  private final Label buttonNext;
 
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
-  public static final int MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE = 1;
-  public static final int MESSAGE_INAPPROPRIATE_APP_CONTENT = 2;
-  public static final int MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT = 3;
+  public static final int EMAIL_INAPPROPRIATE_APP_CONTENT_REMOVE = 1;
+  public static final int EMAIL_INAPPROPRIATE_APP_CONTENT = 2;
+  public static final int EMAIL_INAPPROPRIATE_USER_PROFILE_CONTENT = 3;
+
+  public static final int NUMREPORTSSHOW = 10;
+  private int reportRecentCounter = 0;
+  private int reportAllRecentCounter = 0;
 
   /**
    * Creates a new ProjectList
    */
   public ReportList() {
+    galleryClient = GalleryClient.getInstance();
     // Initialize UI
     panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -83,6 +95,10 @@ public class ReportList extends Composite  {
       @Override
       public void onValueChange(ValueChangeEvent<Boolean> event) {
         boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
+        //reset start position
+        reportAllRecentCounter = 0;
+        reportRecentCounter = 0;
+        buttonNext.setVisible(true);
         if (isChecked) {
           initializeAllReports();
         } else {
@@ -103,9 +119,43 @@ public class ReportList extends Composite  {
     table.setWidth("100%");
     table.setCellSpacing(0);
 
+    buttonNext = new Label();
+    buttonNext.setText(MESSAGES.galleryMoreReports());
+
+    buttonNext.addClickHandler(new ClickHandler() {
+      //  @Override
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<GalleryReportListResult> callback = new OdeAsyncCallback<GalleryReportListResult>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(GalleryReportListResult reportListResult) {
+                List<GalleryAppReport> reportList = reportListResult.getReports();
+                reports.addAll(reportList);
+                for (GalleryAppReport report : reportList) {
+                  ReportWidgets.put(report, new ReportWidgets(report));
+                }
+                refreshTable(reportListResult, false);
+              }
+          };
+          if(checkBox.isChecked()){
+            reportAllRecentCounter += NUMREPORTSSHOW;
+            Ode.getInstance().getGalleryService().getAllAppReports(reportAllRecentCounter,NUMREPORTSSHOW,callback);
+          }else{
+            reportRecentCounter += NUMREPORTSSHOW;
+            Ode.getInstance().getGalleryService().getRecentReports(reportRecentCounter,NUMREPORTSSHOW,callback);
+          }
+      }
+    });
+
     setHeaderRow();
 
     panel.add(table);
+    FlowPanel next = new FlowPanel();
+    buttonNext.addStyleName("active");
+    next.add(buttonNext);
+    next.addStyleName("gallery-report-next");
+    panel.add(next);
     initWidget(panel);
 
     initializeReports();
@@ -155,40 +205,42 @@ public class ReportList extends Composite  {
    * initialize reports, only including solved reports
    */
   private void initializeReports() {
-    final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
+    final OdeAsyncCallback<GalleryReportListResult> callback = new OdeAsyncCallback<GalleryReportListResult>(
       // failure message
       MESSAGES.galleryError()) {
         @Override
-        public void onSuccess(List<GalleryAppReport> reportList) {
+        public void onSuccess(GalleryReportListResult reportListResult) {
+          List<GalleryAppReport> reportList = reportListResult.getReports();
           reports=reportList;
           ReportWidgets.clear();
           for (GalleryAppReport report : reports) {
             ReportWidgets.put(report, new ReportWidgets(report));
           }
-          refreshTable();
+          refreshTable(reportListResult, true);
         }
     };
-    Ode.getInstance().getGalleryService().getRecentReports(0,10,callback);
+    Ode.getInstance().getGalleryService().getRecentReports(reportRecentCounter,NUMREPORTSSHOW,callback);
   }
 
   /**
    * initialize all reports, including both solved and unsolved reports
    */
   private void initializeAllReports() {
-    final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
+    final OdeAsyncCallback<GalleryReportListResult> callback = new OdeAsyncCallback<GalleryReportListResult>(
       // failure message
       MESSAGES.galleryError()) {
         @Override
-        public void onSuccess(List<GalleryAppReport> reportList) {
+        public void onSuccess(GalleryReportListResult reportListResult) {
+          List<GalleryAppReport> reportList = reportListResult.getReports();
           reports=reportList;
           ReportWidgets.clear();
           for (GalleryAppReport report : reports) {
             ReportWidgets.put(report, new ReportWidgets(report));
           }
-          refreshTable();
+          refreshTable(reportListResult, true);
         }
       };
-    Ode.getInstance().getGalleryService().getAllAppReports(0,10,callback);
+    Ode.getInstance().getGalleryService().getAllAppReports(reportAllRecentCounter,NUMREPORTSSHOW,callback);
   }
   /**
    * Helper wrapper Class of Report Widgets
@@ -199,7 +251,7 @@ public class ReportList extends Composite  {
     final Label dateCreatedLabel;
     final Label appAuthorlabel;
     final Label reporterLabel;
-    final Button sendMessageButton;
+    final Button sendEmailButton;
     final Button deactiveAppButton;
     final Button markAsResolvedButton;
     final Button seeAllActions;
@@ -213,6 +265,8 @@ public class ReportList extends Composite  {
 
       reportTextLabel = new Label(report.getReportText());
       reportTextLabel.addStyleName("ode-ProjectNameLabel");
+      reportTextLabel.setWordWrap(true);
+      reportTextLabel.setWidth("200px");
 
       appLabel = new Label(report.getApp().getTitle());
       appLabel.addStyleName("primary-link");
@@ -227,7 +281,7 @@ public class ReportList extends Composite  {
       reporterLabel = new Label(report.getReporter().getUserName());
       reporterLabel.addStyleName("primary-link");
 
-      sendMessageButton = new Button(MESSAGES.buttonSendMessage());
+      sendEmailButton = new Button(MESSAGES.buttonSendEmail());
 
       deactiveAppButton = new Button(MESSAGES.labelDeactivateApp());
 
@@ -241,27 +295,39 @@ public class ReportList extends Composite  {
    * refresh report list table
    * Update the information of reports
    */
-  private void refreshTable() {
+  private void refreshTable(GalleryReportListResult reportListResult, boolean refreshable) {
+    int row;
+    List<GalleryAppReport> incomingReports = reportListResult.getReports();
+    if(refreshable){
+      table.clear();
+      table.resize(1+incomingReports.size(), 9);
+      setHeaderRow();
+      row = 1;
+    }else{
+      int nextRow = table.getRowCount();
+      table.resize(1+reports.size(), 9);
+      row = nextRow;
+    }
 
     // Refill the table.
-    table.resize(1 + reports.size(), 9);
-    int row = 1;
-    for (GalleryAppReport report : reports) {
+    for (GalleryAppReport report : incomingReports) {
       ReportWidgets rw = ReportWidgets.get(report);
       table.setWidget(row, 0, rw.reportTextLabel);
       table.setWidget(row, 1, rw.appLabel);
       table.setWidget(row, 2, rw.dateCreatedLabel);
       table.setWidget(row, 3, rw.appAuthorlabel);
       table.setWidget(row, 4, rw.reporterLabel);
-      table.setWidget(row, 5, rw.sendMessageButton);
+      table.setWidget(row, 5, rw.sendEmailButton);
       table.setWidget(row, 6, rw.deactiveAppButton);
       table.setWidget(row, 7, rw.markAsResolvedButton);
       table.setWidget(row, 8, rw.seeAllActions);
       prepareGalleryAppReport(report, rw);
       row++;
     }
-
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    //if the total num of row - 1(head row) == total count of reports, there are no more results
+    if(table.getRowCount()-1 == reportListResult.getTotalCount()){
+      buttonNext.setVisible(false);
+    }
   }
 
   /**
@@ -299,10 +365,10 @@ public class ReportList extends Composite  {
         }
     });
 
-    rw.sendMessageButton.addClickHandler(new ClickHandler() {
+    rw.sendEmailButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        sendMessagePopup(r);
+        sendEmailPopup(r);
       }
     });
 
@@ -329,20 +395,37 @@ public class ReportList extends Composite  {
           if(rw.appActive == true){
               deactivateAppPopup(r, rw);
           }else{
-
-              final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
-              MESSAGES.galleryError()) {
-                @Override
-                public void onSuccess(Boolean success) {
-                  if(!success)
-                    return;
-                  rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
-                  rw.appActive = true;
-                  storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
-                      GalleryModerationAction.REACTIVATEAPP, null);
+            final OdeAsyncCallback<Long> emailCallback = new OdeAsyncCallback<Long>(
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Long emailId) {
+                if(emailId == Email.NOTRECORDED){
+                  Window.alert(MESSAGES.moderationErrorFailToSendEmail());
+                }else{
+                  final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+                      MESSAGES.galleryError()) {
+                        @Override
+                        public void onSuccess(Boolean success) {
+                          if(!success)
+                            return;
+                          rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
+                          rw.appActive = true;
+                          storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
+                              GalleryModerationAction.REACTIVATEAPP, null);
+                          //update gallery list
+                          galleryClient.appWasChanged();
+                        }
+                      };
+                  Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
                 }
-              };
-              Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
+              }
+            };
+            String emailBody = MESSAGES.moderationAppReactivateBody(r.getApp().getTitle()) +
+                MESSAGES.galleryVisitGalleryAppLinkLabel(Window.Location.getHost(), r.getApp().getGalleryAppId());
+            Ode.getInstance().getGalleryService().sendEmail(
+                Ode.getInstance().getUser().getUserId(), r.getOffender().getUserId(),
+                r.getOffender().getUserEmail(), MESSAGES.moderationAppReactivatedTitle(),
+                emailBody, emailCallback);
           }
         }
     });
@@ -428,7 +511,7 @@ public class ReportList extends Composite  {
   public void onReportAdded(GalleryAppReport report) {
     reports.add(report);
     ReportWidgets.put(report, new ReportWidgets(report));
-    refreshTable();
+    refreshTable(new GalleryReportListResult(reports, reports.size()), true);
   }
   /**
    * Method when removed gallery app report
@@ -437,20 +520,20 @@ public class ReportList extends Composite  {
   public void onReportRemoved(GalleryAppReport report) {
     reports.remove(report);
     ReportWidgets.remove(report);
-    refreshTable();
+    refreshTable(new GalleryReportListResult(reports, reports.size()), true);
     selectedGalleryAppReports.remove(report);
   }
   /**
-   * Helper method of creating a sending message popup
+   * Helper method of creating a sending email popup
    * @param report
    */
-  private void sendMessagePopup(final GalleryAppReport report){
+  private void sendEmailPopup(final GalleryAppReport report){
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
       popup.setStyleName("ode-InboxContainer");
       final FlowPanel content = new FlowPanel();
       content.addStyleName("ode-Inbox");
-      Label title = new Label(MESSAGES.messageSendTitle());
+      Label title = new Label(MESSAGES.emailSendTitle());
       title.addStyleName("InboxTitle");
       content.add(title);
 
@@ -463,54 +546,62 @@ public class ReportList extends Composite  {
       });
       content.add(closeButton);
 
-      final FlowPanel msgPanel = new FlowPanel();
-      msgPanel.addStyleName("app-actions");
-      final Label sentFrom = new Label(MESSAGES.messageSentFrom());
-      final Label sentTo = new Label(MESSAGES.messageSentTo() + report.getOffender().getUserName());
-      final TextArea msgText = new TextArea();
-      msgText.addStyleName("action-textarea");
-      final Button sendMsg = new Button(MESSAGES.buttonSendMessage());
-      sendMsg.addStyleName("action-button");
+      final FlowPanel emailPanel = new FlowPanel();
+      emailPanel.addStyleName("app-actions");
+      final Label sentFrom = new Label(MESSAGES.emailSentFrom());
+      final Label sentTo = new Label(MESSAGES.emailSentTo() + report.getOffender().getUserName());
+      final TextArea emailBodyText = new TextArea();
+      emailBodyText.addStyleName("action-textarea");
+      final Button sendEmail = new Button(MESSAGES.buttonSendEmail());
+      sendEmail.addStyleName("action-button");
 
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
-      // Messages Template 1
-      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
+      // Email Template 1
+      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
 
       templateButton = new DropDownButton("template", MESSAGES.labelChooseTemplate(), templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
-      new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle()).execute();
+      new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle()).execute();
 
-      msgPanel.add(templateButton);
-      msgPanel.add(sentFrom);
-      msgPanel.add(sentTo);
-      msgPanel.add(msgText);
-      msgPanel.add(sendMsg);
+      emailPanel.add(templateButton);
+      emailPanel.add(sentFrom);
+      emailPanel.add(sentTo);
+      emailPanel.add(emailBodyText);
+      emailPanel.add(sendEmail);
 
-      content.add(msgPanel);
+      content.add(emailPanel);
       popup.setWidget(content);
       // Center and show the popup
       popup.center();
 
       final User currentUser = Ode.getInstance().getUser();
-      sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
-      sendMsg.addClickHandler(new ClickHandler() {
+      sentFrom.setText(MESSAGES.emailSentFrom() + currentUser.getUserName());
+      sendEmail.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
-          final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
+          final OdeAsyncCallback<Long> emailCallBack = new OdeAsyncCallback<Long>(
             MESSAGES.galleryError()) {
               @Override
-              public void onSuccess(final Long msgId) {
-                popup.hide();
-                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                    GalleryModerationAction.SENDMESSAGE, getMessagePreview(msgText.getText()));
+              public void onSuccess(final Long emailId) {
+                if(emailId == Email.NOTRECORDED){
+                  Window.alert(MESSAGES.moderationErrorFailToSendEmail());
+                  popup.hide();
+                }else{
+                  popup.hide();
+                  storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), emailId,
+                      GalleryModerationAction.SENDEMAIL, getEmailPreview(emailBodyText.getText()));
+                }
               }
             };
-            Ode.getInstance().getGalleryService().sendMessageFromSystem(
+            String emailBody = emailBodyText.getText() + MESSAGES.galleryVisitGalleryAppLinkLabel(Window.Location.getHost(),
+                report.getApp().getGalleryAppId());
+            Ode.getInstance().getGalleryService().sendEmail(
                 currentUser.getUserId(), report.getOffender().getUserId(),
-                msgText.getText(), messagesCallback);
+                report.getOffender().getUserEmail(), MESSAGES.moderationSendEmailTitle(),
+                emailBody, emailCallBack);
         }
       });
   }
@@ -525,7 +616,7 @@ public class ReportList extends Composite  {
       popup.setStyleName("ode-InboxContainer");
       final FlowPanel content = new FlowPanel();
       content.addStyleName("ode-Inbox");
-      Label title = new Label(MESSAGES.messageSendTitle());
+      Label title = new Label(MESSAGES.emailSendTitle());
       title.addStyleName("InboxTitle");
       content.add(title);
 
@@ -538,37 +629,37 @@ public class ReportList extends Composite  {
       });
       content.add(closeButton);
 
-      final FlowPanel msgPanel = new FlowPanel();
-      msgPanel.addStyleName("app-actions");
-      final Label sentFrom = new Label(MESSAGES.messageSentFrom());
-      final Label sentTo = new Label(MESSAGES.messageSentTo() + report.getOffender().getUserName());
-      final TextArea msgText = new TextArea();
-      msgText.addStyleName("action-textarea");
-      final Button sendMsgAndDRApp = new Button(MESSAGES.labelDeactivateAppAndSendMessage());
-      sendMsgAndDRApp.addStyleName("action-button");
+      final FlowPanel emailPanel = new FlowPanel();
+      emailPanel.addStyleName("app-actions");
+      final Label sentFrom = new Label(MESSAGES.emailSentFrom());
+      final Label sentTo = new Label(MESSAGES.emailSentTo() + report.getOffender().getUserName());
+      final TextArea emailBodyText = new TextArea();
+      emailBodyText.addStyleName("action-textarea");
+      final Button sendEmailAndDeactivateApp = new Button(MESSAGES.labelDeactivateAppAndSendEmail());
+      sendEmailAndDeactivateApp.addStyleName("action-button");
       final Button cancel = new Button(MESSAGES.labelCancel());
       cancel.addStyleName("action-button");
 
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
-      // Messages Template 1
-      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
+      // Email Template 1
+      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
       templateButton = new DropDownButton("template", MESSAGES.labelChooseTemplate(), templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
       // automatically choose first template
-      new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle()).execute();
+      new TemplateAction(emailBodyText, EMAIL_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle()).execute();
 
-      msgPanel.add(templateButton);
-      msgPanel.add(sentFrom);
-      msgPanel.add(sentTo);
-      msgPanel.add(msgText);
-      msgPanel.add(sendMsgAndDRApp);
-      msgPanel.add(cancel);
+      emailPanel.add(templateButton);
+      emailPanel.add(sentFrom);
+      emailPanel.add(sentTo);
+      emailPanel.add(emailBodyText);
+      emailPanel.add(sendEmailAndDeactivateApp);
+      emailPanel.add(cancel);
 
-      content.add(msgPanel);
+      content.add(emailPanel);
       popup.setWidget(content);
       // Center and show the popup
       popup.center();
@@ -580,41 +671,51 @@ public class ReportList extends Composite  {
       });
 
       final User currentUser = Ode.getInstance().getUser();
-      sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
-      sendMsgAndDRApp.addClickHandler(new ClickHandler() {
+      sentFrom.setText(MESSAGES.emailSentFrom() + currentUser.getUserName());
+      sendEmailAndDeactivateApp.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
-          final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
+          final OdeAsyncCallback<Long> emailCallback = new OdeAsyncCallback<Long>(
             MESSAGES.galleryError()) {
               @Override
-              public void onSuccess(final Long msgId) {
-                popup.hide();
-
-                final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
-                  // failure message
-                  MESSAGES.galleryError()) {
-                    @Override
-                      public void onSuccess(Boolean success) {
-                        if(!success)
-                          return;
-                        popup.hide();
-                        if(rw.appActive == true){                                     //app was active, now is deactive
-                          rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
-                          rw.appActive = false;
-                          storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                              GalleryModerationAction.DEACTIVATEAPP, getMessagePreview(msgText.getText()));
-                        }else{                                                        //app was deactive, now is active
-                          /*This should not be reached, just in case*/
-                          rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
-                          rw.appActive = true;
-                          storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
-                              GalleryModerationAction.REACTIVATEAPP, getMessagePreview(msgText.getText()));
-                        }
-                      }
-                   };
-                Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
+              public void onSuccess(final Long emailId) {
+                if(emailId == Email.NOTRECORDED){
+                  Window.alert(MESSAGES.moderationErrorFailToSendEmail());
+                  popup.hide();
+                }else{
+                  popup.hide();
+                  final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+                      // failure message
+                      MESSAGES.galleryError()) {
+                        @Override
+                          public void onSuccess(Boolean success) {
+                            if(!success)
+                              return;
+                            if(rw.appActive == true){                                     //app was active, now is deactive
+                              rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
+                              rw.appActive = false;
+                              storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), emailId,
+                                  GalleryModerationAction.DEACTIVATEAPP, getEmailPreview(emailBodyText.getText()));
+                            }else{                                                        //app was deactive, now is active
+                              /*This should not be reached, just in case*/
+                              rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
+                              rw.appActive = true;
+                              storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), emailId,
+                                  GalleryModerationAction.REACTIVATEAPP, getEmailPreview(emailBodyText.getText()));
+                            }
+                            //update gallery list
+                            galleryClient.appWasChanged();
+                          }
+                       };
+                    Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
+                }
               }
             };
-            Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+            String emailBody = emailBodyText.getText() + MESSAGES.galleryVisitGalleryAppLinkLabel(Window.Location.getHost(),
+                report.getApp().getGalleryAppId());
+            Ode.getInstance().getGalleryService().sendEmail(currentUser.getUserId(),
+                      report.getOffender().getUserId(),
+                      report.getOffender().getUserEmail(), MESSAGES.moderationAppDeactivatedTitle(), emailBody,
+                      emailCallback);
         }
       });
     }
@@ -674,13 +775,13 @@ public class ReportList extends Composite  {
               record.add(actionLabel);
               int actionType= moderationAction.getActonType();
               switch(actionType){
-                case GalleryModerationAction.SENDMESSAGE:
-                  actionLabel.setText(MESSAGES.moderationActionSendAMessage());
-                  createMessageCollapse(record, moderationAction.getMesaageId(),  moderationAction.getMessagePreview());
+                case GalleryModerationAction.SENDEMAIL:
+                  actionLabel.setText(MESSAGES.moderationActionSendAnEmail());
+                  createEmailCollapse(record, moderationAction.getMesaageId(),  moderationAction.getEmailPreview());
                   break;
                 case GalleryModerationAction.DEACTIVATEAPP:
-                  actionLabel.setText(MESSAGES.moderationActionDeactivateThisAppWithMessage());
-                  createMessageCollapse(record, moderationAction.getMesaageId(),  moderationAction.getMessagePreview());
+                  actionLabel.setText(MESSAGES.moderationActionDeactivateThisAppWithEmail());
+                  createEmailCollapse(record, moderationAction.getMesaageId(),  moderationAction.getEmailPreview());
                   break;
                 case GalleryModerationAction.REACTIVATEAPP:
                   actionLabel.setText(MESSAGES.moderationActionReactivateThisApp());
@@ -706,34 +807,34 @@ public class ReportList extends Composite  {
     popup.center();
   }
   /**
-   * Helper class for message template action
-   * Choose Message Template based on given type
+   * Helper class for email template action
+   * Choose Email Template based on given type
    */
   private class TemplateAction implements Command {
-    TextArea msgText;
+    TextArea emailText;
     int type;
     String customText;
     /**
      *
-     * @param msgText message textarea UI
-     * @param type default message type
+     * @param emailText emamil textArea UI
+     * @param type default email type
      * @param customText moderator custom text
      */
-    TemplateAction(TextArea msgText, int type, String customText){
-      this.msgText = msgText;
+    TemplateAction(TextArea emailText, int type, String customText){
+      this.emailText = emailText;
       this.type = type;
       this.customText = customText;
     }
     @Override
     public void execute() {
-      if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE){
-        msgText.setText(MESSAGES.yourAppMessage() + "\"" + customText  + MESSAGES.inappropriateAppContentRemoveMessage());
+      if(type == EMAIL_INAPPROPRIATE_APP_CONTENT_REMOVE){
+        emailText.setText(MESSAGES.inappropriateAppContentRemoveEmail(customText));
         templateButton.setCaption(MESSAGES.inappropriateAppContentRemoveTitle());
-      }else if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT){
-         msgText.setText(MESSAGES.yourAppMessage() + "\""  + customText + MESSAGES.inappropriateAppContentMessage());
+      }else if(type == EMAIL_INAPPROPRIATE_APP_CONTENT){
+         emailText.setText(MESSAGES.inappropriateAppContentEmail(customText));
         templateButton.setCaption(MESSAGES.inappropriateAppContentTitle());
-      }else if(type == MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT){
-        msgText.setText(MESSAGES.inappropriateUserProfileContentMessage());
+      }else if(type == EMAIL_INAPPROPRIATE_USER_PROFILE_CONTENT){
+        emailText.setText(MESSAGES.inappropriateUserProfileContentEmail());
         templateButton.setCaption(MESSAGES.inappropriateUserProfileContentTitle());
       }
     }
@@ -742,11 +843,11 @@ public class ReportList extends Composite  {
    * Store Moderation Action into database
    * @param reportId report id
    * @param galleryId gallery id
-   * @param messageId message id
+   * @param emailId email id
    * @param actionType action type
-   * @param messagePreview message preview
+   * @param emailPreview email preview
    */
-  void storeModerationAction(final long reportId, final long galleryId, final long messageId, final int actionType, final String messagePreview){
+  void storeModerationAction(final long reportId, final long galleryId, final long emailId, final int actionType, final String emailPreview){
     final User currentUser = Ode.getInstance().getUser();
     final OdeAsyncCallback<Void> moderationActionCallback = new OdeAsyncCallback<Void>(
       // failure message
@@ -756,26 +857,26 @@ public class ReportList extends Composite  {
 
         }
     };
-    Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, messageId, currentUser.getUserId(),
-        actionType, currentUser.getUserName(), messagePreview, moderationActionCallback);
+    Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, emailId, currentUser.getUserId(),
+        actionType, currentUser.getUserName(), emailPreview, moderationActionCallback);
   }
   /**
-   * Help method for Message Collapse Function
-   * When the button(see more) is clicked, it will retrieve the whole message from database.
+   * Help method for Email Collapse Function
+   * When the button(see more) is clicked, it will retrieve the whole email from database.
    * @param parent the parent container
-   * @param msgId message id
-   * @param preview message preview
+   * @param emailId email id
+   * @param preview email preview
    */
-  void createMessageCollapse(final FlowPanel parent, final long msgId, final String preview){
-    final Label messageContent = new Label();
-    messageContent.setText(preview);
-    messageContent.addStyleName("inline-label");
-    parent.add(messageContent);
+  void createEmailCollapse(final FlowPanel parent, final long emailId, final String preview){
+    final Label emailContent = new Label();
+    emailContent.setText(preview);
+    emailContent.addStyleName("inline-label");
+    parent.add(emailContent);
     final Label actionButton = new Label();
     actionButton.setText(MESSAGES.seeMoreLink());
     actionButton.addStyleName("seemore-link");
     parent.add(actionButton);
-    if(preview.length() <= MAX_MESSAGE_PREVIEW_LENGTH){
+    if(preview.length() <= MAX_EMAIL_PREVIEW_LENGTH){
       actionButton.setVisible(false);
     }
     actionButton.addClickHandler(new ClickHandler() {
@@ -783,20 +884,20 @@ public class ReportList extends Composite  {
       @Override
       public void onClick(ClickEvent event) {
         if(ifPreview == true){
-          OdeAsyncCallback<Message> callback = new OdeAsyncCallback<Message>(
+          OdeAsyncCallback<Email> callback = new OdeAsyncCallback<Email>(
               // failure message
               MESSAGES.serverUnavailable()) {
                 @Override
-                public void onSuccess(final Message message) {
-                  messageContent.setText(message.getMessage());
-                  messageContent.addStyleName("inline");
+                public void onSuccess(final Email email) {
+                  emailContent.setText(email.getBody());
+                  emailContent.addStyleName("inline");
                   actionButton.setText(MESSAGES.hideLink());
                   ifPreview = false;
                 }
               };
-          Ode.getInstance().getGalleryService().getMessage(msgId, callback);
+          Ode.getInstance().getGalleryService().getEmail(emailId, callback);
         }else{
-          messageContent.setText(preview);
+          emailContent.setText(preview);
           actionButton.setText(MESSAGES.seeMoreLink());
           ifPreview = true;
         }
@@ -804,17 +905,17 @@ public class ReportList extends Composite  {
     });
   }
   /**
-   * prune the message based on MAX_MESSAGE_PREVIEW_LENGTH.
-   * If the message is longer than MAX_MESSAGE_PREVIEW_LENGTH,
+   * prune the email based on MAX_EMAIL_PREVIEW_LENGTH.
+   * If the email is longer than MAX_EMAIL_PREVIEW_LENGTH,
    * The rest of it will save as "..."
-   * @param message the origin message
-   * @return a message preview
+   * @param email the origin email body
+   * @return an email preview
    */
-  String getMessagePreview(String message){
-    if(message != null && message.length() > MAX_MESSAGE_PREVIEW_LENGTH){
-      return message.substring(0, MAX_MESSAGE_PREVIEW_LENGTH) + MESSAGES.moderationDotDotDot();
+  String getEmailPreview(String email){
+    if(email != null && email.length() > MAX_EMAIL_PREVIEW_LENGTH){
+      return email.substring(0, MAX_EMAIL_PREVIEW_LENGTH) + MESSAGES.moderationDotDotDot();
     }else{
-      return message;
+      return email;
     }
   }
 }

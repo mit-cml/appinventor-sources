@@ -27,6 +27,7 @@ public class GallerySettings implements IsSerializable {
   private boolean enabled;
   private String bucket;
   private String environment;
+  private String adminEmail;
 
   /**
    * default constructor
@@ -35,6 +36,7 @@ public class GallerySettings implements IsSerializable {
     this.enabled = false;
     this.bucket = "";
     this.environment = "";
+    this.adminEmail = "";
   }
 
   /**
@@ -42,10 +44,11 @@ public class GallerySettings implements IsSerializable {
    * @param enabled
    * @param bucket
    */
-  public GallerySettings(boolean enabled, String bucket, String environment) {
+  public GallerySettings(boolean enabled, String bucket, String environment, String adminEmail) {
     this.enabled = enabled;
     this.bucket = bucket;
     this.environment = environment;
+    this.adminEmail = adminEmail;
   }
 
   @Override
@@ -73,6 +76,13 @@ public class GallerySettings implements IsSerializable {
    */
   public String getEnvironment() {
     return environment;
+  }
+
+  /**
+   * get the gallery admin email
+   */
+  public String getAdminEmail() {
+    return adminEmail;
   }
 
   /**

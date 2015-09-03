@@ -7,9 +7,12 @@
 package com.google.appinventor.server.storage;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
+
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Id;
@@ -32,6 +35,7 @@ public class StoredData {
   // The UserData class is an entity root, and the parent of UserFileData
   // and UserProjectData
   @Unindexed
+  @Cached
   public static final class UserData {
     // The Google Account userid
     @Id public String id;
@@ -48,16 +52,18 @@ public class StoredData {
 
     public String name;
     public String link;
+    public int emailFrequency;
     public int type;
     String sessionid;           // uuid of active session
 
     // Path to template project passed as GET parameter
     String templatePath;
-
+    boolean upgradedGCS;
   }
 
   // Project properties
   // The ProjectData class is an entity root, and the parent of FileData
+  @Cached
   @Unindexed
   static final class ProjectData {
     // Auto-generated unique project id
@@ -135,8 +141,10 @@ public class StoredData {
   }
 
   // Project files
+  // Note: FileData has to be Serializable so we can put it into
+  //       memcache.
   @Unindexed
-  static final class FileData {
+  static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
     enum RoleEnum {
       SOURCE,
@@ -165,6 +173,9 @@ public class StoredData {
 
     // The Blobstore path to use to get the data from Blobstore
     String blobstorePath;
+
+    // The Blobstore key. This is filled in by a MapReduce job run outside of App Inventor
+    String blobKey;
 
     // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
     // GCS file name (sans bucket).
@@ -250,4 +261,15 @@ public class StoredData {
     public String fileId;
     public String message;
   }
+
+  @Cached(expirationSeconds=60)
+  @Unindexed
+  static final class SplashData {
+    @Id Long id;
+    public int version;
+    public String content;
+    public int height;
+    public int width;
+  }
+
 }

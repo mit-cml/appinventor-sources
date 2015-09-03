@@ -226,7 +226,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           + "current file editor!");
     }
   }
-  
+
   @Override
   public void onClose() {
     form.removeFormChangeListener(this);
@@ -274,6 +274,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
     return nonVisibleComponentsPanel;
+  }
+
+  public SimpleVisibleComponentsPanel getVisibleComponentsPanel() {
+    return visibleComponentsPanel;
   }
 
   @Override
@@ -463,6 +467,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)
         mockComponent.changeProperty(name, properties.get(name).asString().getString());
       }
+    }
+
+    //This is for old project which doesn't have the AppName property
+    if (!properties.keySet().contains("AppName")) {
+      String fileId = getFileId();
+      String projectName = fileId.split("/")[3];
+      mockComponent.changeProperty("AppName", projectName);
     }
 
     // Add component type to the blocks editor

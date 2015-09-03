@@ -6,14 +6,12 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
-import com.google.appinventor.client.TranslationComponentEvents;
-import com.google.appinventor.client.TranslationComponentMethods;
 import com.google.appinventor.client.TranslationComponentParams;
-import com.google.appinventor.client.TranslationComponentProperty;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.output.OdeLog;
@@ -763,7 +761,7 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static String getLocalizedPropertyName(String key) {
-    return TranslationComponentProperty.getName(key);
+    return ComponentsTranslation.getPropertyName(key);
   }
 
   public static String getLocalizedParameterName(String key) {
@@ -771,11 +769,11 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static String getLocalizedMethodName(String key) {
-    return TranslationComponentMethods.getName(key);
+    return ComponentsTranslation.getMethodName(key);
   }
 
   public static String getLocalizedEventName(String key) {
-    return TranslationComponentEvents.getName(key);
+    return ComponentsTranslation.getEventName(key);
   }
 
   public static String getLocalizedComponentType(String key) {

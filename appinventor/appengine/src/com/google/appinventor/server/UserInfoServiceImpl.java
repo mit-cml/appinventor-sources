@@ -43,6 +43,12 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
+
+    // Fetch the current splash screen version
+    config.setSplashConfig(storageIo.getSplashConfig());
+
+    // Check to see if we need to upgrade this user's project to GCS
+    storageIo.checkUpgrade(userInfoProvider.getUserId());
     return config;
   }
 
@@ -112,6 +118,15 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void storeUserLink(String link) {
     storageIo.setUserLink(userInfoProvider.getUserId(), link);
+  }
+
+  /**
+   * Stores the user's email notification frequency.
+   * @param emailFrequency  user's email frequency
+   */
+  @Override
+  public void storeUserEmailFrequency(int emailFrequency) {
+    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
   }
 
   /**

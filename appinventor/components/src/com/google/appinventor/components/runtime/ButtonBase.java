@@ -46,7 +46,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   private final android.widget.Button view;
 
   // Constant for shape
-  // 10px is the radius of the rounded corners.  
+  // 10px is the radius of the rounded corners.
   // 10px was chosen for esthetic reasons.
   private static final float ROUNDED_CORNERS_RADIUS = 10f;
   private static final float[] ROUNDED_CORNERS_ARRAY = new float[] { ROUNDED_CORNERS_RADIUS,
@@ -258,11 +258,11 @@ public abstract class ButtonBase extends AndroidViewComponent
   /**
    * Specifies the style the button. This does not check that the argument is a legal value.
    *
-   * @param shape one of {@link Component#BUTTON_SHAPE_DEFAULT}, 
+   * @param shape one of {@link Component#BUTTON_SHAPE_DEFAULT},
    *          {@link Component#BUTTON_SHAPE_ROUNDED},
    *          {@link Component#BUTTON_SHAPE_RECT} or
    *          {@link Component#BUTTON_SHAPE_OVAL}
-   *   
+   *
    * @throws IllegalArgumentException if shape is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
@@ -360,12 +360,12 @@ public abstract class ButtonBase extends AndroidViewComponent
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
   // Images take precedence over background colors.
   private void updateAppearance() {
-    // If there is no background image, 
+    // If there is no background image,
     // the appearance depends solely on the background color and shape.
     if (backgroundImageDrawable == null) {
       if (shape == Component.BUTTON_SHAPE_DEFAULT) {
         if (backgroundColor == Component.COLOR_DEFAULT) {
-          // If there is no background image and color is default, 
+          // If there is no background image and color is default,
           // restore original 3D bevel appearance.
           ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
         } else {
@@ -373,23 +373,23 @@ public abstract class ButtonBase extends AndroidViewComponent
           ViewUtil.setBackgroundDrawable(view, null);
           // Set to the specified color (possibly COLOR_NONE for transparent).
           TextViewUtil.setBackgroundColor(view, backgroundColor);
-        }   
+        }
       } else {
         // If there is no background image and the shape is something other than default,
         // create a drawable with the appropriate shape and color.
         setShape();
       }
-    } else { 
+    } else {
       // If there is a background image
       ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
     }
   }
 
-  // Throw IllegalArgumentException if shape has illegal value. 
+  // Throw IllegalArgumentException if shape has illegal value.
   private void setShape() {
     ShapeDrawable drawable = new ShapeDrawable();
     // Set color of drawable.
-    drawable.getPaint().setColor((backgroundColor == Component.COLOR_DEFAULT) 
+    drawable.getPaint().setColor((backgroundColor == Component.COLOR_DEFAULT)
                                  ? SHAPED_DEFAULT_BACKGROUND_COLOR : backgroundColor);
     // Set shape of drawable.
     switch (shape) {
@@ -524,21 +524,21 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
-   * Returns the button's text's font size, measured in pixels.
+   * Returns the button's text's font size, measured in sp(scale-independent pixels).
    *
-   * @return  font size in pixel
+   * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Point size for button text.")
   public float FontSize() {
-    return TextViewUtil.getFontSize(view);
+    return TextViewUtil.getFontSize(view, container.$context());
   }
 
   /**
-   * Specifies the button's text's font size, measured in pixels.
+   * Specifies the button's text's font size, measured in sp(scale-independent pixels).
    *
-   * @param size  font size in pixel
+   * @param size  font size in sp(scale-independent pixels)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")

@@ -180,12 +180,14 @@ Blockly.Drawer.instanceNameToXMLArray = function(instanceName) {
   //create event blocks
   var eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
   for(var i=0;i<eventObjects.length;i++) {
+    if (eventObjects[i].deprecated === "true") continue;
     mutatorAttributes = {component_type: typeName, instance_name: instanceName, event_name : eventObjects[i].name};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
   }
   //create non-generic method blocks
   var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
   for(var i=0;i<methodObjects.length;i++) {
+    if (methodObjects[i].deprecated === "true") continue;
     mutatorAttributes = {component_type: typeName, instance_name: instanceName, method_name: methodObjects[i].name, is_generic:"false"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
   }
@@ -454,5 +456,29 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
          '</block>' +
          '</xml>';}},
+
+    // Clock.FormatDate has pattern default to MMM d, yyyy
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDate"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MMM d, yyyy</field></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+    // Clock.FormatDateTime has pattern default to MM/dd/yyyy hh:mm:ss a
+    {matchingMutatorAttributes:{component_type:"Clock", method_name:"FormatDateTime"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+         Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+         '<value name="ARG1"><block type="text"><field name="TEXT">MM/dd/yyyy hh:mm:ss a</field></block></value>' +
+         '</block>' +
+         '</xml>';}}
   ]
 };

@@ -16,8 +16,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.YailList;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -108,6 +110,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   private Intent resultIntent;
   private String result;
   private int requestCode;
+  private YailList extras;
   private final ComponentContainer container;
 
   /**
@@ -127,6 +130,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     DataType("");
     ExtraKey("");
     ExtraValue("");
+    Extras(new YailList());
     ResultName("");
   }
 
@@ -166,8 +170,11 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Returns the extra key that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
+      description = "Returns the extra key that will be passed to the activity.\n" +
+          "DEPRECATED: New code should use Extras property instead.",
       category = PropertyCategory.BEHAVIOR)
   public String ExtraKey() {
     return extraKey;
@@ -175,6 +182,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Specifies the extra key that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
@@ -186,8 +194,11 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Returns the extra value that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @SimpleProperty(
+      description = "Returns the extra value that will be passed to the activity.\n" +
+          "DEPRECATED: New code should use Extras property instead.",
       category = PropertyCategory.BEHAVIOR)
   public String ExtraValue() {
     return extraValue;
@@ -195,6 +206,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
   /**
    * Specifies the extra value that will be passed to the activity.
+   * Obsolete. Should use Extras instead
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
@@ -329,6 +341,12 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "AfterActivity", result);
   }
 
+  @SimpleEvent(description =
+      "Event raised if this ActivityStarter returns because the activity was canceled.")
+  public void ActivityCanceled() {
+    EventDispatcher.dispatchEvent(this, "ActivityCanceled");
+  }
+
   /**
    * Returns the MIME type from the activity.
    */
@@ -359,13 +377,37 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     return "";
   }
 
+  /**
+   * Specifies the list of key-value pairs that will be passed as extra data to the activity.
+   */
+  @SimpleProperty
+  public void Extras(YailList pairs) {
+    for (Object pair : pairs.toArray()) {
+      boolean isYailList = pair instanceof YailList;
+      boolean isPair = isYailList ? ((YailList) pair).size() == 2 : false;
+      if (!isYailList || !isPair) {
+        throw new YailRuntimeError("Argument to Extras should be a list of pairs",
+            "ActivityStarter Error");
+      }
+    }
+    extras = pairs;
+  }
 
   /**
-   * Returns the name of the activity that corresponds to this ActivityStarer,
+   * Returns the list of key-value pairs that will be passed as extra data to the activity.
+   */
+  @SimpleProperty
+  public YailList Extras() {
+    return extras;
+  }
+
+
+  /**
+   * Returns the name of the activity that corresponds to this ActivityStarter,
    * or an empty string if no corresponding activity can be found.
    */
   @SimpleFunction(description = "Returns the name of the activity that corresponds to this " +
-      "ActivityStarer, or an empty string if no corresponding activity can be found.")
+      "ActivityStarter, or an empty string if no corresponding activity can be found.")
   public String ResolveActivity() {
     Intent intent = buildActivityIntent();
     PackageManager pm = container.$context().getPackageManager();
@@ -422,7 +464,18 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     }
 
     if (extraKey.length() != 0 && extraValue.length() != 0) {
+      Log.i("ActivityStarter", "Adding extra, key = " + extraKey + " value = " + extraValue);
       intent.putExtra(extraKey, extraValue);
+    }
+
+    for (Object extra : extras.toArray()) {
+      YailList castExtra = (YailList) extra;
+      String key = castExtra.getString(0);
+      String value = castExtra.getString(1);
+      if (key.length() != 0 && value.length() != 0) {
+        Log.i("ActivityStarter", "Adding extra (pairs), key = " + key + " value = " + value);
+        intent.putExtra(key, value);
+      }
     }
 
     return intent;
@@ -442,6 +495,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
         }
         // call user's AfterActivity event handler
         AfterActivity(result);
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        ActivityCanceled();
       }
     }
   }

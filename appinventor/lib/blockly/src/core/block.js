@@ -346,6 +346,22 @@ Blockly.Block.prototype.unselect = function() {
 };
 
 /**
+ * Mark this block as Bad.  Highlight it visually in Red.
+ */
+Blockly.Block.prototype.badBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.addBadBlock();
+};
+
+/**
+ * Check to see if this block is bad.
+ */
+Blockly.Block.prototype.isBadBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  return this.svg_.isBadBlock();
+};
+
+/**
  * Dispose of this block.
  * @param {boolean} healStack If true, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, dispose of
@@ -730,7 +746,7 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
   var block = this;
   var options = [];
 
-  if (this.isDeletable() && this.isMovable() && !block.isInFlyout) {
+  if (!this.isBadBlock() && this.isDeletable() && this.isMovable() && !block.isInFlyout) {
     // Option to duplicate this block.
     var duplicateOption = {
       text: Blockly.Msg.DUPLICATE_BLOCK,

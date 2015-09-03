@@ -28,11 +28,13 @@ public class GalleryAppData {
   @Indexed public long dateCreated;
   // Date app last updated
   @Indexed public long dateModified;
+  @Indexed public int numLikes;
   @Indexed public int numDownloads;
   @Indexed public int unreadLikes;
   @Indexed public int unreadDownloads;
   long projectId;
   int status;
+  long lastEmailNotificationTimeStamp;
 
   @Indexed
   String userId;
