@@ -184,6 +184,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcAnalogInputComponentPallette();
     } else if (key.equals("FtcAnalogOutput")) {
       value = MESSAGES.ftcAnalogOutputComponentPallette();
+    } else if (key.equals("FtcCologSensor")) {
+      value = MESSAGES.ftcColorSensorComponentPallette();
     } else if (key.equals("FtcCompassSensor")) {
       value = MESSAGES.ftcCompassSensorComponentPallette();
     } else if (key.equals("FtcDcMotor")) {
@@ -368,6 +370,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcAnalogInputHelpStringComponentPallette();
     } else if (key.equals("FtcAnalogOutput-helpString")) {
       value = MESSAGES.FtcAnalogOutputHelpStringComponentPallette();
+    } else if (key.equals("FtcColorSensor-helpString")) {
+      value = MESSAGES.FtcColorSensorHelpStringComponentPallette();
     } else if (key.equals("FtcCompassSensor-helpString")) {
       value = MESSAGES.FtcCompassSensorHelpStringComponentPallette();
     } else if (key.equals("FtcDcMotor-helpString")) {

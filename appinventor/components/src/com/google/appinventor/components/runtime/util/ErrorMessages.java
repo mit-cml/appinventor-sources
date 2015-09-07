@@ -186,19 +186,20 @@ public final class ErrorMessages {
 
   // FTC errors
   public static final int ERROR_FTC_UNEXPECTED_ERROR = 2901;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2902;
-  public static final int ERROR_FTC_INVALID_DIRECTION = 2903;
-  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2904;
-  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2905;
-  public static final int ERROR_FTC_INVALID_NUMBER = 2906;
-  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2907;
-  public static final int ERROR_FTC_INVALID_POSITION = 2908;
-  public static final int ERROR_FTC_INVALID_LENGTH = 2909;
-  public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2910;
-  public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2911;
-  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2912;
-  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2913;
-  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2914;
+  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2902;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2903;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2904;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2905;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2906;
+  public static final int ERROR_FTC_INVALID_NUMBER = 2907;
+  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2908;
+  public static final int ERROR_FTC_INVALID_POSITION = 2909;
+  public static final int ERROR_FTC_INVALID_LENGTH = 2910;
+  public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2911;
+  public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2912;
+  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2913;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2914;
+  public static final int ERROR_FTC_INVALID_HSV = 2915;
 
   // Please start the next group of error numbers at 3001.
 
@@ -480,6 +481,8 @@ public final class ErrorMessages {
     // FTC errors
     errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
         "An unexpected error occurred: %s");
+    errorMessages.put(ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS,
+        "An FTC Robot Controller app should contain exactly one FtcRobotController component.");
     errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
         "The specified run mode \"%s\" is not valid. The valid modes are " +
         "RUN_USING_ENCODERS, RUN_WITHOUT_ENCODERS, RUN_TO_POSITION, and RESET_ENCODERS.");
@@ -510,8 +513,8 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE,
         "The specified motor controller device mode \"%s\" is not valid. The valid modes are " +
         "READ_ONLY and WRITE_ONLY.");
-    errorMessages.put(ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS,
-        "An FTC Robot Controller app should contain exactly one FtcRobotController component.");
+    errorMessages.put(ERROR_FTC_INVALID_HSV,
+        "The specified HSV is not valid");
   }
 
   private ErrorMessages() {

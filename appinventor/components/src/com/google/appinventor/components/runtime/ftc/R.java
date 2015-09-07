@@ -26,6 +26,7 @@ class R {
     final int active_filename;
     final int entire_screen;
     final int included_header;
+    final int RelativeLayout;
     final int menu_buttons;
     final int textDeviceName;
     final int textErrorMessage;
@@ -43,6 +44,7 @@ class R {
       active_filename = getIdentifier(resources, "active_filename", "id", packageName);
       entire_screen = getIdentifier(resources, "entire_screen", "id", packageName);
       included_header = getIdentifier(resources, "included_header", "id", packageName);
+      RelativeLayout = getIdentifier(resources, "RelativeLayout", "id", packageName);
       menu_buttons = getIdentifier(resources, "menu_buttons", "id", packageName);
       textDeviceName = getIdentifier(resources, "textDeviceName", "id", packageName);
       textErrorMessage = getIdentifier(resources, "textErrorMessage", "id", packageName);

@@ -55,6 +55,7 @@
            android:id="@+id/included_header"/>
 
   <RelativeLayout
+    android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"

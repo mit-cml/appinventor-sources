@@ -195,15 +195,22 @@ public class TranslationComponentParams {
     map.put("uri", MESSAGES.uriParams());
 
     // ========== FTC
+    map.put("alpha", MESSAGES.alphaParams());
+    map.put("argb", MESSAGES.argbParams());
     map.put("bigEndian", MESSAGES.bigEndianParams());
     map.put("bitField", MESSAGES.bitFieldParams());
     map.put("bitPosition", MESSAGES.bitPositionParams());
+    map.put("blue", MESSAGES.blueParams());
     map.put("byteArray", MESSAGES.byteArrayParams());
     map.put("channel", MESSAGES.channelParams());
+    map.put("colorText", MESSAGES.colorTextParams());
     map.put("destinationByteArray", MESSAGES.destinationByteArrayParams());
     map.put("destinationPosition", MESSAGES.destinationPositionParams());
+    map.put("digitalPort", MESSAGES.digitalPortParams());
     map.put("enable", MESSAGES.enableParams());
     map.put("frequency", MESSAGES.frequencyParams());
+    map.put("green", MESSAGES.greenParams());
+    map.put("hsv", MESSAGES.hsvParams());
     map.put("i2cAddress", MESSAGES.i2cAddressParams());
     map.put("input", MESSAGES.inputParams());
     map.put("joystickDeadzone", MESSAGES.joystickDeadzoneParams());
@@ -215,12 +222,15 @@ public class TranslationComponentParams {
     map.put("min", MESSAGES.minParams());
     map.put("motor", MESSAGES.motorParams());
     map.put("period", MESSAGES.periodParams());
+    map.put("physicalPort", MESSAGES.physicalPortParams());
     map.put("port", MESSAGES.portParams());
     map.put("position", MESSAGES.positionParams());
+    map.put("red", MESSAGES.redParams());
     map.put("set", MESSAGES.setParams());
     map.put("sourceByteArray", MESSAGES.sourceByteArrayParams());
     map.put("sourcePosition", MESSAGES.sourcePositionParams());
     map.put("state", MESSAGES.stateParams());
+    map.put("threshold", MESSAGES.thresholdParams());
     map.put("time", MESSAGES.timeParams());
     map.put("unsigned", MESSAGES.unsignedParams());
     map.put("voltage", MESSAGES.voltageParams());

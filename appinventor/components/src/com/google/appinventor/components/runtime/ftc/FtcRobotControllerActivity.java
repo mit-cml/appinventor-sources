@@ -434,6 +434,13 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     }
   }
 
+  /*
+   * Called from FtcRobotController when the BackgroundColor property is changed.
+   */
+  public View getRelativeLayout() {
+    return findViewById(R.id.RelativeLayout);
+  }
+
   class FtcOpModeRegister implements OpModeRegister {
     public void register(OpModeManager manager) {
       aiFtcRobotController.register(manager);

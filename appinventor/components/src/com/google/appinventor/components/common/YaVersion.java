@@ -356,6 +356,7 @@ public class YaVersion {
   // - The FtcAccelerationSensor component was added.
   // - The FtcAnalogInput component was added.
   // - The FtcAnalogOutput component was added.
+  // - The FtcColorSensor component was added.
   // - The FtcCompassSensor component was added.
   // - The FtcDcMotor component was added.
   // - The FtcDcMotorController component was added.
@@ -667,6 +668,8 @@ public class YaVersion {
   public static final int FTC_ANALOG_INPUT_COMPONENT_VERSION = 1;
 
   public static final int FTC_ANALOG_OUTPUT_COMPONENT_VERSION = 1;
+
+  public static final int FTC_COLOR_SENSOR_COMPONENT_VERSION = 1;
 
   public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
 

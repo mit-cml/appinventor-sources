@@ -43,6 +43,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -113,6 +115,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   // Backing for properties.
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
   private volatile String configuration = DEFAULT_CONFIGURATION;
+
+  // Backing for background color
+  private volatile int backgroundColor = Component.COLOR_WHITE;
 
   /*
    * wakeLock and ftcRobotControllerActivity are set in onInitialize,
@@ -248,6 +253,14 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @Override
   public void register(OpModeManager opModeManager) {
     synchronized (opModeWrappersLock) {
+      Collections.sort(opModeWrappers, new Comparator<OpModeWrapper>() {
+        @Override
+        public int compare(OpModeWrapper opModeWrapper1, OpModeWrapper opModeWrapper2) {
+          String name1 = opModeWrapper1.getOpModeName();
+          String name2 = opModeWrapper2.getOpModeName();
+          return name1.compareToIgnoreCase(name2);
+        }
+      });
       for (OpModeWrapper opModeWrapper : opModeWrappers) {
         opModeManager.register(opModeWrapper.getOpModeName(), opModeWrapper.getOpMode());
       }
@@ -412,6 +425,32 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       category = PropertyCategory.BEHAVIOR)
   public String LIBRARY_VERSION() {
     return Version.LIBRARY_VERSION;
+  }
+
+  /**
+   * BackgroundColor property getter.
+   */
+  @SimpleProperty(description = "Returns the background color",
+      category = PropertyCategory.APPEARANCE)
+  public int BackgroundColor() {
+    return backgroundColor;
+  }
+
+  /**
+   * BackgroundColor property setter.
+   */
+  @SimpleProperty(description = "Specifies the background color.")
+  public void BackgroundColor(final int argb) {
+    backgroundColor = argb;
+
+    // Update the UI.
+    final View relativeLayout = ftcRobotControllerActivity.getRelativeLayout();
+    relativeLayout.post(new Runnable() {
+      public void run() {
+        relativeLayout.setBackgroundColor(argb);
+        relativeLayout.invalidate();
+      }
+    });
   }
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")

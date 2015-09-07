@@ -111,6 +111,7 @@ public class TopToolbar extends Composite {
   public DropDownButton adminDropDown;
 
   public TopToolbar() {
+    Config config = Ode.getInstance().getSystemConfig();
     /*
      * Layout is as follows:
      * +--------------------------------------------------------------+
@@ -171,22 +172,25 @@ public class TopToolbar extends Composite {
         new HardResetAction()));
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
-//    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
-//        new BarcodeAction()));
+    if (!config.getFtcStandaloneVersion()) {
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
+          new BarcodeAction()));
+    }
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
         new DownloadAction()));
-//    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
-//      buildItems.add(null);
-//      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
-//          new GenerateYailAction()));
-//    }
+    if (!config.getFtcStandaloneVersion()) {
+      if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
+        buildItems.add(null);
+        buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
+            new GenerateYailAction()));
+      }
+    }
 
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
     //  Companion Information, Show Splash Screen}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
-    Config config = Ode.getInstance().getSystemConfig();
     String libraryUrl = config.getLibraryUrl();
     if (!Strings.isNullOrEmpty(libraryUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
@@ -688,11 +692,15 @@ public class TopToolbar extends Composite {
       db.center();
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
-      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-          "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
-          "FIRST\u00AE Tech Challenge</b>" +
-          "<BR/><BR/>No Companion Available.";
+      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion());
       Config config = Ode.getInstance().getSystemConfig();
+      if (config.getFtcStandaloneVersion()) {
+        html += "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
+            "FIRST\u00AE Tech Challenge</b>" +
+            "<BR/><BR/>No Companion Available.";
+      } else {
+        html += "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
+      }
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
         html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +

@@ -107,8 +107,8 @@
     <property name="reference.components.url" value="http://ai2.appinventor.mit.edu/reference/components/" />
     -->
 
-    <!-- Set this to true to enable support for FIRST Tech Challenge. -->
-    <property name="ftc.enabled" value="true" />
+    <!-- Set this to true for FIRST Tech Challenge standalone version. -->
+    <property name="ftc.standalone.version" value="true" />
 
   </system-properties>
 
