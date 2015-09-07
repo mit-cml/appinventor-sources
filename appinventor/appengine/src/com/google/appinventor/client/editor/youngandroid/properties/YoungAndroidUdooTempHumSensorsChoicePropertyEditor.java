@@ -14,7 +14,8 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 public class YoungAndroidUdooTempHumSensorsChoicePropertyEditor extends ChoicePropertyEditor {
 
   private static final Choice[] sensors = new Choice[] {
-    new Choice("dht11", "dht11")
+    new Choice("DHT11", "DHT11"),
+    new Choice("DHT22", "DHT22")
   };
 
   public YoungAndroidUdooTempHumSensorsChoicePropertyEditor() {

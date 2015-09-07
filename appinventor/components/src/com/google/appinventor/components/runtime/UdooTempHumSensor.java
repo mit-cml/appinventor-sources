@@ -34,7 +34,8 @@ implements UdooConnectedInterface
 {
   private UdooConnectionInterface connection = null;
   private final String TAG = "UdooTempHumSensor";
-  private final String SENSOR_TYPE_DHT11 = "dht11";
+  private final String SENSOR_TYPE_DHT11 = "DHT11";
+  private final String SENSOR_TYPE_DHT22 = "DHT22";
 
   public UdooTempHumSensor(Form form) {
     super(form);
@@ -69,7 +70,7 @@ implements UdooConnectedInterface
     if (this.isConnected()) {
       try {
         JSONObject response = getTransport().arduino().sensor(pin, this.sensor);
-        this.DataReady(response.getInt("temperature"), response.getInt("humidity"));
+        this.DataReady(response.getDouble("temperature"), response.getDouble("humidity"));
       } catch (Exception ex) {
         Log.d(TAG, "Invalid JSON");
       }
@@ -83,7 +84,7 @@ implements UdooConnectedInterface
   }
   
   @SimpleEvent(description = "Fires when the Arduino returns the temperature and humidity.")
-  public void DataReady(int temperature, int humidity)
+  public void DataReady(double temperature, double humidity)
   {
     EventDispatcher.dispatchEvent(this, "DataReady", temperature, humidity);
   }
