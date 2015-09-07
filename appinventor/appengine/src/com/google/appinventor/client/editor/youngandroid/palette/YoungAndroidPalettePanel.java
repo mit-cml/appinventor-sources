@@ -99,12 +99,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         categoryPanels.put(category, categoryPanel);
         stackPalette.add(categoryPanel,
             TranslationDesignerPallete.getCorrespondingString(category.getName()));
-
-        if (category == ComponentCategory.FIRSTTECHCHALLENGE &&
-            Ode.getInstance().getSystemConfig().getFtcStandaloneVersion()) {
-          // Move the FTC category to the top.
-          stackPalette.insert(categoryPanel, 0);
-        }
       }
     }
 
