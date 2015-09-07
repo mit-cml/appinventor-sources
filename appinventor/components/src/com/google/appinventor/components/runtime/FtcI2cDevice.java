@@ -89,7 +89,6 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     }
   }
 
-  /*
   @SimpleFunction(description = "Get a copy of the most recent data read in " +
       "from the device. (byte array)")
   public Object GetCopyOfReadBuffer() {
@@ -145,7 +144,6 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
       }
     }
   }
-  */
 
   @SimpleFunction(description = "Set the action flag for this I2C port.")
   public void SetI2cPortActionFlag() {
@@ -175,39 +173,39 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   }
 
   @SimpleFunction(description = "Trigger a read of the I2C cache.")
-  public void ReadI2cCacheFromModule() {
+  public void ReadI2cCacheFromController() {
     if (i2cDevice != null) {
       try {
-        i2cDevice.readI2cCacheFromModule();
+        i2cDevice.readI2cCacheFromController();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
+        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromController",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
   @SimpleFunction(description = "Trigger a write of the I2C cache.")
-  public void WriteI2cCacheToModule() {
+  public void WriteI2cCacheToController() {
     if (i2cDevice != null) {
       try {
-        i2cDevice.writeI2cCacheToModule();
+        i2cDevice.writeI2cCacheToController();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
+        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToController",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
   @SimpleFunction(description = "Write only the action flag.")
-  public void WriteI2cPortFlagOnlyToModule() {
+  public void WriteI2cPortFlagOnlyToController() {
     if (i2cDevice != null) {
       try {
-        i2cDevice.writeI2cPortFlagOnlyToModule();
+        i2cDevice.writeI2cPortFlagOnlyToController();
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
+        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToController",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
@@ -284,5 +282,46 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
       }
     }
     i2cDevice = null;
+  }
+
+  // The following were deprecated on 2015/09/04.
+
+  @SimpleFunction(description = "DEPRECATED: Please use ReadI2cCacheFromController.")
+  public void ReadI2cCacheFromModule() {
+    if (i2cDevice != null) {
+      try {
+        i2cDevice.readI2cCacheFromModule();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cCacheToModule.")
+  public void WriteI2cCacheToModule() {
+    if (i2cDevice != null) {
+      try {
+        i2cDevice.writeI2cCacheToModule();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cPortFlagOnlyToController.")
+  public void WriteI2cPortFlagOnlyToModule() {
+    if (i2cDevice != null) {
+      try {
+        i2cDevice.writeI2cPortFlagOnlyToModule();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 }

@@ -544,6 +544,11 @@ public final class Compiler {
         out.write("      android:label=\"@string/edit_legacy_module_controller_activity\"\n");
         out.write("      android:windowSoftInputMode=\"stateHidden|adjustResize\" />\n");
         out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditMatrixControllerActivity\"\n");
+        out.write("      android:configChanges=\"orientation|screenSize\"\n");
+        out.write("      android:label=\"@string/edit_matrix_controller_activity\"\n");
+        out.write("      android:windowSoftInputMode=\"stateHidden|adjustResize\" />\n");
+        out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.EditDeviceInterfaceModuleActivity\"\n");
         out.write("      android:configChanges=\"orientation|screenSize\"\n");
         out.write("      android:label=\"@string/edit_core_device_interface_module_controller_activity\"\n");

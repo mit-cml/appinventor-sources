@@ -2336,6 +2336,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcAnalogOutputComponentPallette();
 
+  @DefaultMessage("FtcColorSensor")
+  @Description("")
+  String ftcColorSensorComponentPallette();
+
   @DefaultMessage("FtcCompassSensor")
   @Description("")
   String ftcCompassSensorComponentPallette();
@@ -3302,6 +3306,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String AProperties();
 
+  @DefaultMessage("Alpha")
+  @Description("")
+  String AlphaProperties();
+
+  @DefaultMessage("ARGB")
+  @Description("")
+  String ARGBProperties();
+
   @DefaultMessage("AtRest")
   @Description("")
   String AtRestProperties();
@@ -3313,6 +3325,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Back")
   @Description("")
   String BackProperties();
+
+  @DefaultMessage("Blue")
+  @Description("")
+  String BlueProperties();
 
   @DefaultMessage("CalibrationFailed")
   @Description("")
@@ -3381,6 +3397,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GamepadNumber")
   @Description("")
   String GamepadNumberProperties();
+
+  @DefaultMessage("Green")
+  @Description("")
+  String GreenProperties();
 
   @DefaultMessage("Guide")
   @Description("")
@@ -3509,6 +3529,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PwmStatus_ENABLED")
   @Description("")
   String PwmStatus_ENABLEDProperties();
+
+  @DefaultMessage("Red")
+  @Description("")
+  String RedProperties();
 
   @DefaultMessage("RightBumper")
   @Description("")
@@ -4200,6 +4224,14 @@ public interface OdeMessages extends Messages {
   String textToTranslateParams();
 
   // FIRST Tech Challenge parameters
+  @DefaultMessage("alpha")
+  @Description("")
+  String alphaParams();
+
+  @DefaultMessage("argb")
+  @Description("")
+  String argbParams();
+
   @DefaultMessage("bigEndian")
   @Description("")
   String bigEndianParams();
@@ -4212,6 +4244,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String bitPositionParams();
 
+  @DefaultMessage("blue")
+  @Description("")
+  String blueParams();
+
   @DefaultMessage("byteArray")
   @Description("")
   String byteArrayParams();
@@ -4219,6 +4255,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("channel")
   @Description("")
   String channelParams();
+
+  @DefaultMessage("colorTextString")
+  @Description("")
+  String colorTextParams();
 
   @DefaultMessage("destinationByteArray")
   @Description("")
@@ -4228,6 +4268,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String destinationPositionParams();
 
+  @DefaultMessage("digitalPort")
+  @Description("")
+  String digitalPortParams();
+
   @DefaultMessage("enable")
   @Description("")
   String enableParams();
@@ -4235,6 +4279,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("frequency")
   @Description("")
   String frequencyParams();
+
+  @DefaultMessage("green")
+  @Description("")
+  String greenParams();
+
+  @DefaultMessage("hsv")
+  @Description("")
+  String hsvParams();
 
   @DefaultMessage("i2cAddress")
   @Description("")
@@ -4280,6 +4332,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String periodParams();
 
+  @DefaultMessage("physicalPort")
+  @Description("")
+  String physicalPortParams();
+
   @DefaultMessage("port")
   @Description("")
   String portParams();
@@ -4287,6 +4343,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("position")
   @Description("")
   String positionParams();
+
+  @DefaultMessage("red")
+  @Description("")
+  String redParams();
 
   @DefaultMessage("set")
   @Description("")
@@ -5556,6 +5616,22 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
+  @DefaultMessage("Alpha")
+  @Description("")
+  String AlphaMethods();
+
+  @DefaultMessage("ARGB")
+  @Description("")
+  String ARGBMethods();
+
+  @DefaultMessage("Blue")
+  @Description("")
+  String BlueMethods();
+
+  @DefaultMessage("ColorToHSV")
+  @Description("")
+  String ColorToHSVMethods();
+
   @DefaultMessage("CopyBufferIntoWriteBuffer")
   @Description("")
   String CopyBufferIntoWriteBufferMethods();
@@ -5688,6 +5764,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetSwitchesMethods();
 
+  @DefaultMessage("Green")
+  @Description("")
+  String GreenMethods();
+
+  @DefaultMessage("HSVToColor")
+  @Description("")
+  String HSVToColorMethods();
+
+  @DefaultMessage("HSVToColorWithAlpha")
+  @Description("")
+  String HSVToColorWithAlphaMethods();
+
+  @DefaultMessage("Hue")
+  @Description("")
+  String HueMethods();
+
   @DefaultMessage("IndividualSensorAngle")
   @Description("")
   String IndividualSensorAngleMethods();
@@ -5728,6 +5820,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String OpModeIsActiveMethods();
 
+  @DefaultMessage("ParseColor")
+  @Description("")
+  String ParseColorMethods();
+
   @DefaultMessage("Put1ByteNumberIntoByteArray")
   @Description("")
   String Put1ByteNumberIntoByteArrayMethods();
@@ -5764,9 +5860,29 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ReadAnalogMethods();
 
+  @DefaultMessage("ReadI2cCacheFromController")
+  @Description("")
+  String ReadI2cCacheFromControllerMethods();
+
   @DefaultMessage("ReadI2cCacheFromModule")
   @Description("")
   String ReadI2cCacheFromModuleMethods();
+
+  @DefaultMessage("Red")
+  @Description("")
+  String RedMethods();
+
+  @DefaultMessage("RGB")
+  @Description("")
+  String RGBMethods();
+
+  @DefaultMessage("RGBToHSV")
+  @Description("")
+  String RGBToHSVMethods();
+
+  @DefaultMessage("Saturation")
+  @Description("")
+  String SaturationMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")
@@ -5860,6 +5976,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TelemetryAddTextDataMethods();
 
+  @DefaultMessage("Value")
+  @Description("")
+  String ValueMethods();
+
   @DefaultMessage("WaitForNextHardwareCycle")
   @Description("")
   String WaitForNextHardwareCycleMethods();
@@ -5872,9 +5992,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WaitOneFullHardwareCycleMethods();
 
+  @DefaultMessage("WriteI2cCacheToController")
+  @Description("")
+  String WriteI2cCacheToControllerMethods();
+
   @DefaultMessage("WriteI2cCacheToModule")
   @Description("")
   String WriteI2cCacheToModuleMethods();
+
+  @DefaultMessage("WriteI2cPortFlagOnlyToController")
+  @Description("")
+  String WriteI2cPortFlagOnlyToControllerMethods();
 
   @DefaultMessage("WriteI2cPortFlagOnlyToModule")
   @Description("")
@@ -6167,6 +6295,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for an analog output device of an FTC robot.")
   @Description("")
   String FtcAnalogOutputHelpStringComponentPallette();
+
+  @DefaultMessage("A component for a color sensor of an FTC robot.")
+  @Description("")
+  String FtcColorSensorHelpStringComponentPallette();
 
   @DefaultMessage("A component for a compass sensor of an FTC robot.")
   @Description("")

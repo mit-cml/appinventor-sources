@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
@@ -71,6 +72,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // Associated editor
   private final YaFormEditor editor;
 
+  private final Map<ComponentCategory, PaletteHelper> paletteHelpers;
+
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
 
@@ -84,6 +87,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     stackPalette = new StackPanel();
 
+    paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
+    paletteHelpers.put(ComponentCategory.FIRSTTECHCHALLENGE, new FtcPaletteHelper());
+
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
 
     for (ComponentCategory category : ComponentCategory.values()) {
@@ -93,6 +99,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         categoryPanels.put(category, categoryPanel);
         stackPalette.add(categoryPanel,
             TranslationDesignerPallete.getCorrespondingString(category.getName()));
+
+        if (category == ComponentCategory.FIRSTTECHCHALLENGE &&
+            Ode.getInstance().getSystemConfig().getFtcStandaloneVersion()) {
+          // Move the FTC category to the top.
+          stackPalette.insert(categoryPanel, 0);
+        }
       }
     }
 
@@ -105,7 +117,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return false;
     }
     if (category == ComponentCategory.FIRSTTECHCHALLENGE) {
-      return false;
+      return Ode.getInstance().getSystemConfig().getFtcStandaloneVersion();
     }
     if (category == ComponentCategory.INTERNAL &&
         !AppInventorFeatures.showInternalComponentsCategory()) {
@@ -237,6 +249,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
-    panel.add(component);
+    PaletteHelper paletteHelper = paletteHelpers.get(category);
+    if (paletteHelper != null) {
+      paletteHelper.addPaletteItem(panel, component);
+    } else {
+      panel.add(component);
+    }
   }
 }
