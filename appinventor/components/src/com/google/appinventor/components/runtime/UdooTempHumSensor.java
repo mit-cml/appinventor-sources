@@ -34,8 +34,8 @@ implements UdooConnectedInterface
 {
   private UdooConnectionInterface connection = null;
   private final String TAG = "UdooTempHumSensor";
-  public static final String SENSOR_TYPE_DHT11 = "DHT11";
-  public static final String SENSOR_TYPE_DHT22 = "DHT22";
+  private final String SENSOR_TYPE_DHT11 = "DHT11";
+  private final String SENSOR_TYPE_DHT22 = "DHT22";
 
   public UdooTempHumSensor(Form form) {
     super(form);
