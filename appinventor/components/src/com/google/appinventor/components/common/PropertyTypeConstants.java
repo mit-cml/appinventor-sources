@@ -122,6 +122,13 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTempHumSensorsChoicePropertyEditor#sensors
    */
   public static final String PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS = "udoo_temp_hum_sensors";
+  
+  /**
+   * UDOO color sensors
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooColorSensorsChoicePropertyEditor#sensors
+   */
+  public static final String PROPERTY_TYPE_UDOO_COLOR_SENSORS = "udoo_color_sensors";
 
   /**
    * Non-negative (positive or zero) floating-point values.

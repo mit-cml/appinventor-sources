@@ -268,6 +268,11 @@ public class UdooArduinoManager
     sendJson(json);
   }
   
+  public JSONObject sensor(String sensorName) throws Exception
+  {
+    return this.sensor("0", sensorName);
+  }
+  
   public JSONObject sensor(String pin, String sensorName) throws Exception
   {
     JSONObject json = new JSONObject();
