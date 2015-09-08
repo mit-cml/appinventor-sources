@@ -111,7 +111,6 @@ public class TopToolbar extends Composite {
   public DropDownButton adminDropDown;
 
   public TopToolbar() {
-    Config config = Ode.getInstance().getSystemConfig();
     /*
      * Layout is as follows:
      * +--------------------------------------------------------------+
@@ -170,6 +169,8 @@ public class TopToolbar extends Composite {
         new ResetAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
         new HardResetAction()));
+
+    Config config = Ode.getInstance().getSystemConfig();
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
     if (!config.getFtcStandaloneVersion()) {
