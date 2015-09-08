@@ -283,45 +283,4 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     }
     i2cDevice = null;
   }
-
-  // The following were deprecated on 2015/09/04.
-
-  @SimpleFunction(description = "DEPRECATED: Please use ReadI2cCacheFromController.")
-  public void ReadI2cCacheFromModule() {
-    if (i2cDevice != null) {
-      try {
-        i2cDevice.readI2cCacheFromModule();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cCacheToModule.")
-  public void WriteI2cCacheToModule() {
-    if (i2cDevice != null) {
-      try {
-        i2cDevice.writeI2cCacheToModule();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cPortFlagOnlyToController.")
-  public void WriteI2cPortFlagOnlyToModule() {
-    if (i2cDevice != null) {
-      try {
-        i2cDevice.writeI2cPortFlagOnlyToModule();
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
 }

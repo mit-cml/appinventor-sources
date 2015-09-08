@@ -5864,10 +5864,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ReadI2cCacheFromControllerMethods();
 
-  @DefaultMessage("ReadI2cCacheFromModule")
-  @Description("")
-  String ReadI2cCacheFromModuleMethods();
-
   @DefaultMessage("Red")
   @Description("")
   String RedMethods();
@@ -5996,17 +5992,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteI2cCacheToControllerMethods();
 
-  @DefaultMessage("WriteI2cCacheToModule")
-  @Description("")
-  String WriteI2cCacheToModuleMethods();
-
   @DefaultMessage("WriteI2cPortFlagOnlyToController")
   @Description("")
   String WriteI2cPortFlagOnlyToControllerMethods();
-
-  @DefaultMessage("WriteI2cPortFlagOnlyToModule")
-  @Description("")
-  String WriteI2cPortFlagOnlyToModuleMethods();
 
 
   //Mock Components
