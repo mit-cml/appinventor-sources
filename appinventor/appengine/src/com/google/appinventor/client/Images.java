@@ -69,6 +69,12 @@ public interface Images extends Resources {
   ImageResource phonebar();
 
   /**
+   * Navigation bar shown below the form in the visual designer
+   */
+  @Source("com/google/appinventor/images/navigationbar.png")
+  ImageResource navigationbar();
+
+  /**
    * Designer palette item: question mark for more component information
    */
   @Source("com/google/appinventor/images/help.png")
@@ -123,7 +129,7 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
-   * Designer palette item: TimePicker Component
+   * Designer palette item: DatePicker Component
    */
   @Source("com/google/appinventor/images/datePicker.png")
   ImageResource datePickerComponent();
@@ -466,6 +472,11 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/procedures.png")
   ImageResource procedures();
+  /**
+    * Designer palette item: MediaStore
+    */
+  @Source("com/google/appinventor/images/mediastore.png")
+  ImageResource mediastore();
 
   /**
    * Designer palette item: Sharing Component

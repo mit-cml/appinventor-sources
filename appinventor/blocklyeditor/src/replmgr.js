@@ -347,7 +347,7 @@ Blockly.ReplMgr.putYail = (function() {
                     } else {
                         var json = goog.json.parse(this.response);
                         if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
-                            engine.checkversionupgrade(true, json.installer, false);
+                            engine.checkversionupgrade(false, json.installer, false);
                             return;
                         }
                     }
@@ -428,7 +428,7 @@ Blockly.ReplMgr.putYail = (function() {
                 engine.resetcompanion();
             } else {
                 dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
-                engine.resetcompanion();
+                engine.pollphone();
             }
         }
     };
