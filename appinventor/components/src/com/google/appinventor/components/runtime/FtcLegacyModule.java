@@ -357,46 +357,6 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   }
 
 
-  // The following were deprecated on 2015/09/04.
-  @SimpleFunction(description = "DEPRECATED: Please use ReadI2cCacheFromController.")
-  public void ReadI2cCacheFromModule(int port) {
-    if (legacyModule != null) {
-      try {
-        legacyModule.readI2cCacheFromModule(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ReadI2cCacheFromModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cCacheToController.")
-  public void WriteI2cCacheToModule(int port) {
-    if (legacyModule != null) {
-      try {
-        legacyModule.writeI2cCacheToModule(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cCacheToModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cPortFlagOnlyToController.")
-  public void WriteI2cPortFlagOnlyToModule(int port) {
-    if (legacyModule != null) {
-      try {
-        legacyModule.writeI2cPortFlagOnlyToModule(port);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "WriteI2cPortFlagOnlyToModule",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-  }
-
   // TODO(lizlooney): remove these
   // The following were deprecated on 2015/07/25.
   @SimpleFunction(description = "ReadI2c", userVisible = false)
@@ -449,5 +409,18 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   }
   @SimpleFunction(description = "SetNxtI2cPortActionFlag", userVisible = false)
   public void SetNxtI2cPortActionFlag(int port) {
+  }
+  // The following were deprecated on 2015/09/04.
+  @SimpleFunction(description = "DEPRECATED: Please use ReadI2cCacheFromController.",
+      userVisible = false)
+  public void ReadI2cCacheFromModule(int port) {
+  }
+  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cCacheToController.",
+      userVisible = false)
+  public void WriteI2cCacheToModule(int port) {
+  }
+  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cPortFlagOnlyToController.",
+      userVisible = false)
+  public void WriteI2cPortFlagOnlyToModule(int port) {
   }
 }

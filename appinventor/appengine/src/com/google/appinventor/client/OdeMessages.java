@@ -5864,10 +5864,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ReadI2cCacheFromControllerMethods();
 
-  @DefaultMessage("ReadI2cCacheFromModule")
-  @Description("")
-  String ReadI2cCacheFromModuleMethods();
-
   @DefaultMessage("Red")
   @Description("")
   String RedMethods();
@@ -5996,17 +5992,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteI2cCacheToControllerMethods();
 
-  @DefaultMessage("WriteI2cCacheToModule")
-  @Description("")
-  String WriteI2cCacheToModuleMethods();
-
   @DefaultMessage("WriteI2cPortFlagOnlyToController")
   @Description("")
   String WriteI2cPortFlagOnlyToControllerMethods();
-
-  @DefaultMessage("WriteI2cPortFlagOnlyToModule")
-  @Description("")
-  String WriteI2cPortFlagOnlyToModuleMethods();
 
 
   //Mock Components
@@ -6750,6 +6738,9 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ReadI2c")
   @Description("")
   String ReadI2cMethods();
+  @DefaultMessage("ReadI2cCacheFromModule")
+  @Description("")
+  String ReadI2cCacheFromModuleMethods();
   @DefaultMessage("ReadLegacyModuleCache")
   @Description("")
   String ReadLegacyModuleCacheMethods();
@@ -6771,9 +6762,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WriteI2c")
   @Description("")
   String WriteI2cMethods();
+  @DefaultMessage("WriteI2cCacheToModule")
+  @Description("")
+  String WriteI2cCacheToModuleMethods();
   @DefaultMessage("WriteI2cPortFlagOnlyFromModule")
   @Description("")
   String WriteI2cPortFlagOnlyFromModuleMethods();
+  @DefaultMessage("WriteI2cPortFlagOnlyToModule")
+  @Description("")
+  String WriteI2cPortFlagOnlyToModuleMethods();
   @DefaultMessage("WriteLegacyModuleCache")
   @Description("")
   String WriteLegacyModuleCacheMethods();
