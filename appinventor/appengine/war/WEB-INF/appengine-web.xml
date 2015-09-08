@@ -101,10 +101,10 @@
     <property name="forums.url" value="https://groups.google.com/forum/#!forum/mitappinventortest" />
     <property name="feedback.url" value="http://something.example.com" />
     <property name="release.notes.url" value="http://appinventor.mit.edu/ai2/ReleaseNotes.html" />
-    <property name="tos.url" value="http://ai2.appinventor.mit.edu/about/termsofservice.html" />
+    <property name="tos.url" value="/about/termsofservice.html" />
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
-    <property name="reference.components.url" value="http://ai2.appinventor.mit.edu/reference/components/" />
+    <property name="reference.components.url" value="/reference/components/" />
     -->
 
     <!-- Set this to true for FIRST Tech Challenge standalone version. -->
