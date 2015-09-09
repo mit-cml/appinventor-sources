@@ -91,4 +91,18 @@ public final class FtcOpMode extends FtcOpModeBase {
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
   }
+
+  // The following were deprecated on 2015/07/25.
+
+  @SimpleFunction(userVisible = false,
+      description = "TelemetryAddTextData is deprecated. " +
+      "Please use FtcRobotController TelemetryAddTextData.")
+  public void TelemetryAddTextData(String key, String text) {
+  }
+
+  @SimpleFunction(userVisible = false,
+      description = "TelemetryAddNumericData is deprecated. " +
+      "Please use FtcRobotController TelemetryAddNumericData.")
+  public void TelemetryAddNumericData(String key, String number) {
+  }
 }
