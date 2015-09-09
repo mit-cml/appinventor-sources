@@ -335,13 +335,18 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
     irSeekerSensor = null;
   }
 
-  // TODO(lizlooney): remove these
   // The following were deprecated on 2015/08/28.
-  @SimpleProperty(description = "Mode_1200HZ_AC", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_1200HZ_AC is deprecated. Please use Mode_1200HZ.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_1200HZ_AC() {
     return Mode.MODE_1200HZ.toString();
   }
-  @SimpleProperty(description = "Mode_600HZ_DC.", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_600HZ_DC. is deprecated. Please use Mode_600HZ.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_600HZ_DC() {
     return Mode.MODE_600HZ.toString();
   }

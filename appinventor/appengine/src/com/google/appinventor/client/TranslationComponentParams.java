@@ -206,7 +206,6 @@ public class TranslationComponentParams {
     map.put("colorText", MESSAGES.colorTextParams());
     map.put("destinationByteArray", MESSAGES.destinationByteArrayParams());
     map.put("destinationPosition", MESSAGES.destinationPositionParams());
-    map.put("digitalPort", MESSAGES.digitalPortParams());
     map.put("enable", MESSAGES.enableParams());
     map.put("frequency", MESSAGES.frequencyParams());
     map.put("green", MESSAGES.greenParams());

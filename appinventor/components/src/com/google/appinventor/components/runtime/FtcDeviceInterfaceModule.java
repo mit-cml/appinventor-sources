@@ -632,66 +632,98 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     deviceInterfaceModule = null;
   }
 
-
-  // TODO(lizlooney): remove these
   // The following were deprecated on 2015/07/25.
-  @SimpleFunction(description = "ReadI2c", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "ReadI2c is deprecated. Please use GetCopyOfReadBuffer.")
   public Object ReadI2c(int port) {
     return new byte[0];
   }
-  @SimpleFunction(description = "WriteI2c", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "WriteI2c is deprecated. Please use CopyBufferIntoWriteBuffer.")
   public void WriteI2c(int port, Object byteArray) {
   }
-  @SimpleFunction(description = "GetAnalogOutputFrequency", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "GetAnalogOutputFrequency is deprecated.")
   public int GetAnalogOutputFrequency(int port) {
     return 0;
   }
-  @SimpleFunction(description = "GetAnalogOutputMode", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "GetAnalogOutputMode is deprecated.")
   public int GetAnalogOutputMode(int port) {
     return 0;
   }
-  @SimpleFunction(description = "GetAnalogOutputVoltage", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "GetAnalogOutputVoltage is deprecated.")
   public int GetAnalogOutputVoltage(int port) {
     return 0;
   }
-  @SimpleFunction(description = "IsPortReady", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "IsPortReady is deprecated. Please use IsI2cPortReady.")
   public boolean IsPortReady(int physicalPort) {
     return false;
   }
-  @SimpleFunction(description = "ReadDeviceInterfaceModuleI2cCache", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "ReadDeviceInterfaceModuleI2cCache is deprecated. " +
+      "Please use GetCopyOfReadBuffer.")
   public Object ReadDeviceInterfaceModuleI2cCache(int physicalPort) {
     return new byte[0];
   }
-  @SimpleFunction(description = "WriteDeviceInterfaceModuleI2cCache", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "WriteDeviceInterfaceModuleI2cCache is deprecated. " +
+      "Please use CopyBufferIntoWriteBuffer.")
   public void WriteDeviceInterfaceModuleI2cCache(int physicalPort, Object byteArray) {
   }
+
   // The following were deprecated on 2015/07/28.
-  @SimpleFunction(description = "WriteI2cPortFlagOnlyFromModule", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "WriteI2cPortFlagOnlyFromModule is deprecated. " +
+      "Please use WriteI2cPortFlagOnlyToController.")
   public void WriteI2cPortFlagOnlyFromModule(int port) {
   }
+
   // The following were deprecated on 2015/08/28.
-  @SimpleFunction(description = "GetI2cReadCache", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "GetI2cReadCache is deprecated. Please use GetCopyOfReadBuffer.")
   public Object GetI2cReadCache(int port) {
     return new byte[0];
   }
-  @SimpleFunction(description = "GetI2cWriteCache", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "GetI2cWriteCache is deprecated. Please use GetCopyOfWriteBuffer.")
   public Object GetI2cWriteCache(int port) {
     return new byte[0];
   }
-  @SimpleFunction(description = "SetI2cWriteCache", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "SetI2cWriteCache is deprecated. Please use CopyBufferIntoWriteBuffer.")
   public void SetI2cWriteCache(int port, Object byteArray) {
   }
+
   // The following were deprecated on 2015/09/04.
-  @SimpleFunction(description = "DEPRECATED: Please use ReadI2cCacheFromController.",
-      userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "ReadI2cCacheFromModule is deprecated. Please use ReadI2cCacheFromController.")
   public void ReadI2cCacheFromModule(int port) {
   }
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cCacheToController.",
-      userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "WriteI2cCacheToModule is deprecated. Please use WriteI2cCacheToController.")
   public void WriteI2cCacheToModule(int port) {
   }
-  @SimpleFunction(description = "DEPRECATED: Please use WriteI2cPortFlagOnlyToController.",
-      userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "WriteI2cPortFlagOnlyToModule is deprecated. " +
+      "Please use WriteI2cPortFlagOnlyToController.")
   public void WriteI2cPortFlagOnlyToModule(int port) {
   }
 }

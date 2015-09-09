@@ -365,59 +365,105 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     dcMotor = null;
   }
 
-  // TODO(lizlooney): remove these
   // The following were deprecated on 2015/07/25.
-  @SimpleProperty(description = "GearRatio", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "GearRatio is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public double GearRatio() {
     return 0.0;
   }
-  @SimpleProperty
+
+  @SimpleProperty(userVisible = false,
+      description = "GearRatio is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public void GearRatio(double ratio) {
   }
-  @SimpleProperty(description = "DifferentialControlLoopCoefficientP", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "DifferentialControlLoopCoefficientP is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public double DifferentialControlLoopCoefficientP() {
     return 0.0;
   }
-  @SimpleProperty(description = "DifferentialControlLoopCoefficientI", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "DifferentialControlLoopCoefficientI is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public double DifferentialControlLoopCoefficientI() {
     return 0.0;
   }
-  @SimpleProperty(description = "DifferentialControlLoopCoefficientD", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "DifferentialControlLoopCoefficientD is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public double DifferentialControlLoopCoefficientD() {
     return 0.0;
   }
-  @SimpleFunction(description = "SetDifferentialControlLoopCoefficients", userVisible = false)
+
+  @SimpleFunction(userVisible = false,
+      description = "SetDifferentialControlLoopCoefficients is deprecated.")
   public void SetDifferentialControlLoopCoefficients(double p, double i, double d) {
   }
+
   // The following were deprecated on 2015/07/29.
-  @SimpleProperty(description = "Mode_RUN_USING_ENCODERS", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_RUN_USING_ENCODERS is deprecated. " +
+      "Please use RunMode_RUN_USING_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_RUN_USING_ENCODERS() {
     return "";
   }
-  @SimpleProperty(description = "Mode_RUN_WITHOUT_ENCODERS", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_RUN_WITHOUT_ENCODERS is deprecated. " +
+      "Please use RunMode_RUN_WITHOUT_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_RUN_WITHOUT_ENCODERS() {
     return "";
   }
-  @SimpleProperty(description = "Mode_RUN_TO_POSITION", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_RUN_TO_POSITION is deprecated. Please use RunMode_RUN_TO_POSITION.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_RUN_TO_POSITION() {
     return "";
   }
-  @SimpleProperty(description = "Mode_RESET_ENCODERS", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode_RESET_ENCODERS is deprecated. Please use RunMode_RESET_ENCODERS.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode_RESET_ENCODERS() {
     return "";
   }
-  @SimpleProperty(description = "DeviceMode_READ_ONLY", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "DeviceMode_READ_ONLY is deprecated. " +
+      "Please use FtcDcMotorController DeviceMode_READ_ONLY.",
+      category = PropertyCategory.BEHAVIOR)
   public String DeviceMode_READ_ONLY() {
     return "";
   }
-  @SimpleProperty(description = "DeviceMode_WRITE_ONLY", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "DeviceMode_WRITE_ONLY is deprecated. " +
+      "Please use FtcDcMotorController DeviceMode_WRITE_ONLY.",
+      category = PropertyCategory.BEHAVIOR)
   public String DeviceMode_WRITE_ONLY() {
     return "";
   }
-  @SimpleProperty(description = "MotorControllerDeviceMode", userVisible = false)
+
+  @SimpleProperty(userVisible = false,
+      description = "MotorControllerDeviceMode is deprecated. " +
+      "Please use FtcDcMotorController MotorControllerDeviceMode.")
   public void MotorControllerDeviceMode(String modeString) {
   }
-  @SimpleProperty(description = "MotorControllerDeviceMode", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "MotorControllerDeviceMode is deprecated. " +
+      "Please use FtcDcMotorController MotorControllerDeviceMode.",
+      category = PropertyCategory.BEHAVIOR)
   public String MotorControllerDeviceMode() {
     return "";
   }

@@ -135,10 +135,10 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Enable the LED light.")
-  public void EnableLed(int digitalPort, boolean enable) {
+  public void EnableLed(boolean enable) {
     if (colorSensor != null) {
       try {
-        colorSensor.enableLed(digitalPort, enable);
+        colorSensor.enableLed(0, enable);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableLed",

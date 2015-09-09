@@ -156,12 +156,17 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     compassSensor = null;
   }
 
-  // TODO(lizlooney): remove these
   // The following were deprecated on 2015/07/29.
-  @SimpleProperty(description = "Mode", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode is deprecated. Please use SetMode.",
+      category = PropertyCategory.BEHAVIOR)
   public void Mode(String modeString) {
   }
-  @SimpleProperty(description = "Mode", userVisible = false, category = PropertyCategory.BEHAVIOR)
+
+  @SimpleProperty(userVisible = false,
+      description = "Mode is deprecated.",
+      category = PropertyCategory.BEHAVIOR)
   public String Mode() {
     return "";
   }
