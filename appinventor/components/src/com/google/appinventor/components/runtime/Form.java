@@ -179,6 +179,9 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  private int formWidth;
+  private int formHeight;
+
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
@@ -285,8 +288,7 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
-            ReplayFormOrientation(); // Re-do Form layout because percentage code
-                                     // needs to recompute objects sizes etc.
+            recomputeLayout();
             final FrameLayout savedLayout = frameLayout;
             androidUIHandler.postDelayed(new Runnable() {
                 public void run() {
@@ -402,6 +404,7 @@ public class Form extends Activity
   void ReplayFormOrientation() {
     // We first make a copy of the existing dimChanges list
     // because while we are replaying it, it is being appended to
+    Log.d(LOG_TAG, "ReplayFormOrientation()");
     ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
     dimChanges.clear();         // Empties it out
     for (int i = 0; i < temp.size(); i++) {
@@ -617,7 +620,6 @@ public class Form extends Activity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
-    recomputeLayout();
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -764,6 +766,8 @@ public class Form extends Activity
           } else {
             Sizing("Responsive");
           }
+          ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                   // needs to recompute objects sizes etc.
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -1246,12 +1250,21 @@ public class Form extends Activity
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
+    Log.d(LOG_TAG, "Sizing(" + value + ")");
+    formWidth = (int)((float) this.getResources().getDisplayMetrics().widthPixels / deviceDensity);
+    formHeight = (int)((float) this.getResources().getDisplayMetrics().heightPixels / deviceDensity);
     if (value.equals("Fixed")) {
       sCompatibilityMode = true;
+      formWidth /= compatScalingFactor;
+      formHeight /= compatScalingFactor;
     } else {
       sCompatibilityMode = false;
     }
     scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
+    if (frameLayout != null) {
+      frameLayout.invalidate();
+    }
+    Log.d(LOG_TAG, "formWidth = " + formWidth + " formHeight = " + formHeight);
   }
 
   // public String Sizing() {
@@ -1284,12 +1297,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    int retval = (int)(scaleLayout.getWidth() / this.deviceDensity);
-    if (sCompatibilityMode) {
-      retval /= compatScalingFactor;
-    }
-    Log.d(LOG_TAG, "Width = " + retval);
-    return retval;
+    Log.d(LOG_TAG, "Form.Width = " + formWidth);
+    return formWidth;
   }
 
   /**
@@ -1300,12 +1309,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    int retval = (int)(scaleLayout.getHeight() / this.deviceDensity);
-    if (sCompatibilityMode) {
-      retval /= compatScalingFactor;
-    }
-    Log.d(LOG_TAG, "Height = " + retval);
-    return retval;
+    Log.d(LOG_TAG, "Form.Height = " + formHeight);
+    return formHeight;
   }
 
   /**
