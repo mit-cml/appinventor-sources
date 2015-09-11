@@ -62,6 +62,13 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_COLOR = 417;
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
+  // LegoMindstormsEv3 errors
+  public static final int ERROR_EV3_BLUETOOTH_NOT_SET = 2900;
+  public static final int ERROR_EV3_NOT_CONNECTED_TO_ROBOT = 2901;
+  public static final int ERROR_EV3_INVALID_REPLY = 2902;
+  public static final int ERROR_EV3_ILLEGAL_ARGUMENT = 2903;
+  public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 2904;
+  public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 2905;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -293,7 +300,20 @@ public final class ErrorMessages {
         "Cannot detect light level when the DetectColor property is set to True.");
     errorMessages.put(ERROR_NXT_INVALID_GENERATE_COLOR,
         "The GenerateColor property is limited to None, Red, Green, or Blue.");
-    // Bluetooth errors
+    // LegoMindstormsEv3 errors
+    errorMessages.put(ERROR_EV3_BLUETOOTH_NOT_SET,
+        "The Bluetooth property has not been set.");
+    errorMessages.put(ERROR_EV3_NOT_CONNECTED_TO_ROBOT,
+        "Cannot connect to an EV3 robot. Has the robot gone to sleep?");
+    errorMessages.put(ERROR_EV3_INVALID_REPLY,
+        "Unable to receive a reply or the reply cannot be understood.");
+    errorMessages.put(ERROR_EV3_ILLEGAL_ARGUMENT,
+        "Illegal argument: %s");
+    errorMessages.put(ERROR_EV3_ILLEGAL_MOTOR_PORT,
+        "Cannot understant motor port: %s");
+    errorMessages.put(ERROR_EV3_ILLEGAL_SENSOR_PORT,
+        "Cannot understant sensor port: %s");
+    // bluetooth errors
     errorMessages.put(ERROR_BLUETOOTH_NOT_AVAILABLE,
         "Bluetooth is not available.");
     errorMessages.put(ERROR_BLUETOOTH_NOT_ENABLED,
@@ -482,4 +502,3 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
-

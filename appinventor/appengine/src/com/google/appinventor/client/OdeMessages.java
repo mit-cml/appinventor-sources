@@ -2272,7 +2272,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String verticalArrangementComponentPallette();
 
-  // Lego Mindstorms
+  // Lego Mindstorms NXT
   @DefaultMessage("NxtColorSensor")
   @Description("")
   String nxtColorSensorComponentPallette();
@@ -2300,6 +2300,39 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("NxtUltrasonicSensor")
   @Description("")
   String nxtUltrasonicSensorComponentPallette();
+
+  // Lego Mindstorms EV3
+  @DefaultMessage("Ev3Commands")
+  @Description("")
+  String ev3CommandsComponentPallette();
+
+  @DefaultMessage("Ev3UI")
+  @Description("")
+  String ev3UIComponentPallette();
+
+  @DefaultMessage("Ev3Sound")
+  @Description("")
+  String ev3SoundComponentPallette();
+
+  @DefaultMessage("Ev3Motors")
+  @Description("")
+  String ev3MotorsComponentPallette();
+
+  @DefaultMessage("Ev3TouchSensor")
+  @Description("")
+  String ev3TouchSensorComponentPallette();
+
+  @DefaultMessage("Ev3ColorSensor")
+  @Description("")
+  String ev3ColorSensorComponentPallette();
+
+  @DefaultMessage("Ev3GyroSensor")
+  @Description("")
+  String ev3GyroSensorComponentPallette();
+
+  @DefaultMessage("Ev3UltrasonicSensor")
+  @Description("")
+  String ev3UltrasonicSensorComponentPallette();
 
   // Storage
   @DefaultMessage("ActivityStarter")
@@ -3268,6 +3301,34 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebViewStringProperties();
 
+  @DefaultMessage("EnableSpeedRegulation")
+  @Description("")
+  String EnableSpeedRegulationProperties();
+
+  @DefaultMessage("Mode")
+  @Description("")
+  String ModeProperties();
+
+  @DefaultMessage("MotorPorts")
+  @Description("")
+  String MotorPortsProperties();
+
+  @DefaultMessage("ReverseDirection")
+  @Description("")
+  String ReverseDirectionProperties();
+
+  @DefaultMessage("SensorValueChangedEventEnabled")
+  @Description("")
+  String SensorValueChangedEventEnabledProperties();
+
+  @DefaultMessage("TachoCountChangedEventEnabled")
+  @Description("")
+  String TachoCountChangedEventEnabledProperties();
+
+  @DefaultMessage("Unit")
+  @Description("")
+  String UnitProperties();
+
   //Params
   @DefaultMessage("xAccel")
   @Description("")
@@ -3889,6 +3950,58 @@ public interface OdeMessages extends Messages {
   @Description("")
   String timestampParams();
 
+  @DefaultMessage("colorCode")
+  @Description("")
+  String colorCodeParams();
+
+  @DefaultMessage("colorName")
+  @Description("")
+  String colorNameParams();
+
+  @DefaultMessage("fill")
+  @Description("")
+  String fillParams();
+
+  @DefaultMessage("frequency")
+  @Description("")
+  String frequencyParams();
+
+  @DefaultMessage("height")
+  @Description("")
+  String heightParams();
+
+  @DefaultMessage("no")
+  @Description("")
+  String noParams();
+
+  @DefaultMessage("rate")
+  @Description("")
+  String rateParams();
+
+  @DefaultMessage("sensorValue")
+  @Description("")
+  String sensorValueParams();
+
+  @DefaultMessage("tachoCount")
+  @Description("")
+  String tachoCountParams();
+
+  @DefaultMessage("tachoCounts")
+  @Description("")
+  String tachoCountsParams();
+
+  @DefaultMessage("useBrake")
+  @Description("")
+  String useBrakeParams();
+
+  @DefaultMessage("volume")
+  @Description("")
+  String volumeParams();
+
+  @DefaultMessage("width")
+  @Description("")
+  String widthParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -4277,6 +4390,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GyroscopeChanged")
   @Description("")
   String GyroscopeChangedEvents();
+
+  @DefaultMessage("TachoCountChanged")
+  @Description("")
+  String TachoCountChangedEvents();
+
+  @DefaultMessage("SensorValueChanged")
+  @Description("")
+  String SensorValueChangedEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -5135,6 +5256,133 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RequestTranslationMethods();
 
+  @DefaultMessage("GetBatteryCurrent")
+  @Description("")
+  String GetBatteryCurrentMethods();
+
+  @DefaultMessage("GetBatteryVoltage")
+  @Description("")
+  String GetBatteryVoltageMethods();
+
+  @DefaultMessage("GetHardwareVersion")
+  @Description("")
+  String GetHardwareVersionMethods();
+
+  @DefaultMessage("SetAngleMode")
+  @Description("")
+  String SetAngleModeMethods();
+
+  @DefaultMessage("SetRateMode")
+  @Description("")
+  String SetRateModeMethods();
+
+  @DefaultMessage("SetCmUnit")
+  @Description("")
+  String SetCmUnitMethods();
+
+  @DefaultMessage("SetInchUnit")
+  @Description("")
+  String SetInchUnitMethods();
+
+  @DefaultMessage("SetColorMode")
+  @Description("")
+  String SetColorModeMethods();
+
+  @DefaultMessage("SetReflectedMode")
+  @Description("")
+  String SetReflectedModeMethods();
+
+  @DefaultMessage("SetAmbientMode")
+  @Description("")
+  String SetAmbientModeMethods();
+
+  @DefaultMessage("RotateIndefinitely")
+  @Description("")
+  String RotateIndefinitelyMethods();
+
+  @DefaultMessage("RotateInDistance")
+  @Description("")
+  String RotateInDistanceMethods();
+
+  @DefaultMessage("RotateInDuration")
+  @Description("")
+  String RotateInDurationMethods();
+
+  @DefaultMessage("RotateInTachoCounts")
+  @Description("")
+  String RotateInTachoCountsMethods();
+
+  @DefaultMessage("RotateSyncIndefinitely")
+  @Description("")
+  String RotateSyncIndefinitelyMethods();
+
+  @DefaultMessage("RotateSyncInDistance")
+  @Description("")
+  String RotateSyncInDistanceMethods();
+
+  @DefaultMessage("RotateSyncInDuration")
+  @Description("")
+  String RotateSyncInDurationMethods();
+
+  @DefaultMessage("RotateSyncInTachoCounts")
+  @Description("")
+  String RotateSyncInTachoCountsMethods();
+
+  @DefaultMessage("ToggleDirection")
+  @Description("")
+  String ToggleDirectionMethods();
+
+  @DefaultMessage("GetTachoCount")
+  @Description("")
+  String GetTachoCountMethods();
+
+  @DefaultMessage("ResetTachoCount")
+  @Description("")
+  String ResetTachoCountMethods();
+
+  @DefaultMessage("GetSensorValue")
+  @Description("")
+  String GetSensorValueMethods();
+
+  @DefaultMessage("GetColorCode")
+  @Description("")
+  String GetColorCodeMethods();
+
+  @DefaultMessage("GetColorName")
+  @Description("")
+  String GetColorNameMethods();
+
+  @DefaultMessage("FillScreen")
+  @Description("")
+  String FillScreenMethods();
+
+  @DefaultMessage("DrawRect")
+  @Description("")
+  String DrawRectMethods();
+
+  @DefaultMessage("DrawIcon")
+  @Description("")
+  String DrawIconMethods();
+
+  @DefaultMessage("GetOSVersion")
+  @Description("")
+  String GetOSVersionMethods();
+
+  @DefaultMessage("GetOSBuild")
+  @Description("")
+  String GetOSBuildMethods();
+
+  @DefaultMessage("GetFirmwareBuild")
+  @Description("")
+  String GetFirmwareBuildMethods();
+
+  @DefaultMessage("SetPower")
+  @Description("")
+  String SetPowerMethods();
+
+  @DefaultMessage("StopSound")
+  @Description("")
+  String StopSoundMethods();
 
   //Mock Components
   @DefaultMessage("add items...")
@@ -5212,6 +5460,38 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>\n <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>\n<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.")
   @Description("")
   String EmailPickerHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides both high- and low-level interfaces to control the motors on LEGO MINDSTORMS EV3.")
+  @Description("")
+  String Ev3MotorsHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3TouchSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a gyro sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3GyroSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3ColorSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3UltrasonicSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a low-level interface to a LEGO MINDSTORMS EV3 robot, with functions to send system or direct commands to EV3 robots.")
+  @Description("")
+  String Ev3CommandsHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, which provides graphic functionalities.")
+  @Description("")
+  String Ev3UIHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to sound functionalities on LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3SoundHelpStringComponentPallette();
 
   @DefaultMessage("Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.")
   @Description("")

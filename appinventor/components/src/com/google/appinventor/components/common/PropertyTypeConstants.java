@@ -96,6 +96,48 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR = "lego_nxt_generated_color";
 
   /**
+   * Lego EV3 sensor ports.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3SensorPortChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_SENSOR_PORT = "lego_ev3_sensor_port";
+
+  /**
+   * Lego EV3 sound sensor mode.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3SensorSoundModeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_SOUND_SENSOR_MODE = "lego_ev3_sound_sensor_mode";
+
+  /**
+   * Lego EV3 color sensor mode.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3SensorColorModeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_COLOR_SENSOR_MODE = "lego_ev3_color_sensor_mode";
+
+  /**
+   * Lego EV3 ultrasonic sensor mode.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3UltrasonicSensorModeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_ULTRASONIC_SENSOR_MODE = "lego_ev3_ultrasonic_sensor_mode";
+
+  /**
+   * Lego EV3 gyro sensor mode.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3SensorgyroModeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_GYRO_SENSOR_MODE = "lego_ev3_gyro_sensor_mode";
+
+  /**
+   * Colors recognizable by Lego EV3 sensors.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor#EV3_GENERATED_COLORS
+   */
+  public static final String PROPERTY_TYPE_LEGO_EV3_GENERATED_COLOR = "lego_ev3_generated_color";
+
+  /**
    * Non-negative (positive or zero) floating-point values.
    * @see com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor
    */

@@ -400,6 +400,12 @@ public interface Images extends Resources {
   ImageResource legoMindstormsNxt();
 
   /**
+   * Designer palette item: Lego Mindstorms EV3 components
+   */
+  @Source("com/google/appinventor/images/legoMindstormsEv3.png")
+  ImageResource legoMindstormsEv3();
+
+  /**
    * Designer palette item: Bluetooth components
    */
   @Source("com/google/appinventor/images/bluetooth.png")

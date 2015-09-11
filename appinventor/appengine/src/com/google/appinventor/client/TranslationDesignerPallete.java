@@ -130,7 +130,7 @@ public class TranslationDesignerPallete {
       value = MESSAGES.tableArrangementComponentPallette();
     } else if (key.equals("VerticalArrangement")) {
       value = MESSAGES.verticalArrangementComponentPallette();
-      // Lego Mindstorms
+      // Lego Mindstorms NXT
     } else if (key.equals("NxtColorSensor")) {
       value = MESSAGES.nxtColorSensorComponentPallette();
     } else if (key.equals("NxtDirectCommands")) {
@@ -145,6 +145,23 @@ public class TranslationDesignerPallete {
       value = MESSAGES.nxtTouchSensorComponentPallette();
     } else if (key.equals("NxtUltrasonicSensor")) {
       value = MESSAGES.nxtUltrasonicSensorComponentPallette();
+      // Lego Mindstorms EV3
+    } else if (key.equals("Ev3Motors")) {
+      value = MESSAGES.ev3MotorsComponentPallette();
+    } else if (key.equals("Ev3TouchSensor")) {
+      value = MESSAGES.ev3TouchSensorComponentPallette();
+    } else if (key.equals("Ev3GyroSensor")) {
+      value = MESSAGES.ev3GyroSensorComponentPallette();
+    } else if (key.equals("Ev3ColorSensor")) {
+      value = MESSAGES.ev3ColorSensorComponentPallette();
+    } else if (key.equals("Ev3UltrasonicSensor")) {
+      value = MESSAGES.ev3UltrasonicSensorComponentPallette();
+    } else if (key.equals("Ev3Commands")) {
+      value = MESSAGES.ev3CommandsComponentPallette();
+    } else if (key.equals("Ev3Sound")) {
+      value = MESSAGES.ev3SoundComponentPallette();
+    } else if (key.equals("Ev3UI")) {
+      value = MESSAGES.ev3UIComponentPallette();
       // Other stuff
     } else if (key.equals("ActivityStarter")) {
       value = MESSAGES.activityStarterComponentPallette();
@@ -258,6 +275,22 @@ public class TranslationDesignerPallete {
       value = MESSAGES.NxtTouchSensorHelpStringComponentPallette();
     } else if (key.equals("NxtUltrasonicSensor-helpString")) {
       value = MESSAGES.NxtUltrasonicSensorHelpStringComponentPallette();
+    } else if (key.equals("Ev3Motors-helpString")) {
+      value = MESSAGES.Ev3MotorsHelpStringComponentPallette();
+    } else if (key.equals("Ev3TouchSensor-helpString")) {
+      value = MESSAGES.Ev3TouchSensorHelpStringComponentPallette();
+    } else if (key.equals("Ev3GyroSensor-helpString")) {
+      value = MESSAGES.Ev3GyroSensorHelpStringComponentPallette();
+    } else if (key.equals("Ev3ColorSensor-helpString")) {
+      value = MESSAGES.Ev3ColorSensorHelpStringComponentPallette();
+    } else if (key.equals("Ev3UltrasonicSensor-helpString")) {
+      value = MESSAGES.Ev3UltrasonicSensorHelpStringComponentPallette();
+    } else if (key.equals("Ev3Commands-helpString")) {
+      value = MESSAGES.Ev3CommandsHelpStringComponentPallette();
+    } else if (key.equals("Ev3Sound-helpString")) {
+      value = MESSAGES.Ev3SoundHelpStringComponentPallette();
+    } else if (key.equals("Ev3UI-helpString")) {
+      value = MESSAGES.Ev3UIHelpStringComponentPallette();
     } else if (key.equals("OrientationSensor-helpString")) {
       value = MESSAGES.OrientationSensorHelpStringComponentPallette();
     } else if (key.equals("PasswordTextBox-helpString")) {
