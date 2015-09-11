@@ -382,8 +382,11 @@ public class YaVersion {
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 152:
   // - FIREBASE_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 153:
+  // - The components Ev3Motors, Ev3{Color,Gyro,Touch,Ultrasonic}
+  //   Sensor Ev3UI, Ev3Commands were added for EV3 support
 
-  public static final int YOUNG_ANDROID_VERSION = 152;
+  public static final int YOUNG_ANDROID_VERSION = 153;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -789,6 +792,22 @@ public class YaVersion {
   public static final int NXT_TOUCHSENSOR_COMPONENT_VERSION = 1;
 
   public static final int NXT_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int EV3_MOTORS_COMPONENT_VERSION = 1;
+
+  public static final int EV3_COLORSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int EV3_GYROSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int EV3_TOUCHSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int EV3_ULTRASONICSENSOR_COMPONENT_VERSION = 1;
+
+  public static final int EV3_SOUND_COMPONENT_VERSION = 1;
+
+  public static final int EV3_UI_COMPONENT_VERSION = 1;
+
+  public static final int EV3_COMMANDS_COMPONENT_VERSION = 1;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
