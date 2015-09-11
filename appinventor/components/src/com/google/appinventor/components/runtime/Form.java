@@ -342,18 +342,19 @@ public class Form extends Activity
       Log.d(LOG_TAG, "keyboard hidden!");
       if (keyboardShown) {
         keyboardShown = false;
-        if (sCompatibilityMode) { // Only need this in "Fixed" mode
-          androidUIHandler.postDelayed(new Runnable() {
-              public void run() {
-                recomputeLayout();
-              }
-            }, 100);
+        if (sCompatibilityMode) { // Put us back in "Fixed" Mode
+          scaleLayout.setScale(compatScalingFactor);
+          scaleLayout.invalidate();
         }
       }
     } else {
       int keyboardHeight = heightDiff - contentViewTop;
       Log.d(LOG_TAG, "keyboard shown!");
       keyboardShown = true;
+      if (scaleLayout != null) { // Effectively put us in responsive mode
+        scaleLayout.setScale(1.0f);
+        scaleLayout.invalidate();
+      }
     }
   }
 
