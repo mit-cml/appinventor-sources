@@ -4,6 +4,9 @@ package edu.mills.feeney.thesis.aimerger;
  * A representation of an App Inventor screen.
  * 
  * @author feeney.kate@gmail.com (Kate Feeney)
+ * 
+ * Modified by Arezu Esmaili (arezuesmaili1@gmail.com) - July 2015
+ * 
  */
 public class AIScreen {
 
@@ -36,5 +39,14 @@ public class AIScreen {
   public String getName() {
     // The screenName is the name of the screen's file.
     return screenPath.substring(screenPath.lastIndexOf('/') + 1, screenPath.lastIndexOf('.'));
+  }
+  
+  /**
+   * Returns the AIScreen's file extension.
+   * 
+   * @return AIScreen's file extension
+   */
+  public String getExtension() {
+	return screenPath.substring(screenPath.lastIndexOf('.'));
   }
 }
