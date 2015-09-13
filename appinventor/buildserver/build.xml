@@ -78,7 +78,6 @@
     <copy toFile="${classes.files.dir}/FtcModernRobotics.jar" file="${build.dir}/components/ftc/ModernRobotics/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcRobotCore.jar" file="${build.dir}/components/ftc/RobotCore/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcWirelessP2p.jar" file="${build.dir}/components/ftc/WirelessP2p/classes.jar" />
-    <copy toFile="${classes.files.dir}/d2xx.jar" file="${lib.dir}/ftc/d2xx.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />

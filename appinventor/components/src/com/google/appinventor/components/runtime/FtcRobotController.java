@@ -72,8 +72,7 @@ import java.util.List;
   "FtcHardware.jar," +
   "FtcModernRobotics.jar," +
   "FtcRobotCore.jar," +
-  "FtcWirelessP2p.jar," +
-  "d2xx.jar")
+  "FtcWirelessP2p.jar")
 public final class FtcRobotController extends AndroidViewComponent implements OnInitializeListener,
     ActivityResultListener, OnNewIntentListener, OnCreateOptionsMenuListener,
     OnOptionsItemSelectedListener, OnDestroyListener, Deleteable, OpModeRegister {
