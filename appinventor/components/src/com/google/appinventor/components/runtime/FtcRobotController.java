@@ -69,6 +69,7 @@ import java.util.List;
 @UsesLibraries(libraries =
   "FtcAnalytics.jar," +
   "FtcCommon.jar," +
+  "FtcHardware.jar," +
   "FtcModernRobotics.jar," +
   "FtcRobotCore.jar," +
   "FtcWirelessP2p.jar," +

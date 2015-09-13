@@ -138,7 +138,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   public void EnableLed(boolean enable) {
     if (colorSensor != null) {
       try {
-        colorSensor.enableLed(0, enable);
+        colorSensor.enableLed(enable);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "EnableLed",

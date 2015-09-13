@@ -74,6 +74,7 @@
     <copy toFile="${classes.files.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
     <copy toFile="${classes.files.dir}/FtcAnalytics.jar" file="${build.dir}/components/ftc/Analytics/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcCommon.jar" file="${build.dir}/components/ftc/FtcCommon/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcHardware.jar" file="${build.dir}/components/ftc/Hardware/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcModernRobotics.jar" file="${build.dir}/components/ftc/ModernRobotics/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcRobotCore.jar" file="${build.dir}/components/ftc/RobotCore/classes.jar" />
     <copy toFile="${classes.files.dir}/FtcWirelessP2p.jar" file="${build.dir}/components/ftc/WirelessP2p/classes.jar" />

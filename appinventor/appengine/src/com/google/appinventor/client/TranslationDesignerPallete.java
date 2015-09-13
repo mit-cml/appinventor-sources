@@ -206,6 +206,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ftcI2cDeviceReaderComponentPallette();
     } else if (key.equals("FtcIrSeekerSensor")) {
       value = MESSAGES.ftcIrSeekerSensorComponentPallette();
+    } else if (key.equals("FtcLED")) {
+      value = MESSAGES.ftcLEDComponentPallette();
     } else if (key.equals("FtcLegacyModule")) {
       value = MESSAGES.ftcLegacyModuleComponentPallette();
     } else if (key.equals("FtcLightSensor")) {
@@ -390,6 +392,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcI2cDeviceHelpStringComponentPallette();
     } else if (key.equals("FtcIrSeekerSensor-helpString")) {
       value = MESSAGES.FtcIrSeekerSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcLED-helpString")) {
+      value = MESSAGES.FtcLEDHelpStringComponentPallette();
     } else if (key.equals("FtcLegacyModule-helpString")) {
       value = MESSAGES.FtcLegacyModuleHelpStringComponentPallette();
     } else if (key.equals("FtcLightSensor-helpString")) {

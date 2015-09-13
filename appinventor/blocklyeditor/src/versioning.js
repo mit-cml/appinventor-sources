@@ -1492,6 +1492,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End FtcIrSeekerSensor upgraders
 
+  "FtcLED": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcDigitalChannel upgraders
+
   "FtcLegacyModule": {
 
     //This is initial version. Placeholder for future upgrades
