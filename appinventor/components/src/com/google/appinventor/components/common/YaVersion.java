@@ -677,7 +677,14 @@ public class YaVersion {
 
   public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 1;
 
-  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 1;
+  // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 2:
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 2;
 
   public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
 
@@ -685,17 +692,40 @@ public class YaVersion {
 
   public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
 
-  public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 1;
+  // For FTC_I2C_DEVICE_COMPONENT_VERSION 2:
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 2;
 
   public static final int FTC_I2C_DEVICE_READER_COMPONENT_VERSION = 1;
 
-  public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 1;
+  // For FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION 2:
+  // - The Mode_1200HZ_AC property was renamed Mode_1200HZ.
+  // - The Mode_600HZ_DC property was renamed Mode_600HZ.
+  public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 2;
 
-  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 1;
+  // For FTC_LEGACY_MODULE_COMPONENT_VERSION 2:
+  // - The EnableNxtI2cReadMode method was renamed EnableI2cReadMode.
+  // - The EnableNxtI2cWriteMode method was renamed EnableI2cWriteMode.
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The IsNxtI2cPortActionFlagSet method was renamed IsI2cPortActionFlagSet.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The SetNxtI2cPortActionFlag method was renamed SetI2cPortActionFlag.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 2;
 
   public static final int FTC_LIGHT_SENSOR_COMPONENT_VERSION = 1;
 
-  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 1;
+  // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 2:
+  // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
+  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 2;
 
   public static final int FTC_OP_MODE_COMPONENT_VERSION = 1;
 

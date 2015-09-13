@@ -91,11 +91,4 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
   public boolean OpModeIsActive() {
     return linearOpMode.opModeIsActive();
   }
-
-  // The following were deprecated on 2015/08/28.
-
-  @SimpleFunction(userVisible = false,
-      description = "WaitOneHardwareCycle is deprecated. Please use WaitOneFullHardwareCycle.")
-  public void WaitOneHardwareCycle() {
-  }
 }
