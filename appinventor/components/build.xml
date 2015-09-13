@@ -178,7 +178,6 @@
         <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />
-        <pathelement location="${lib.dir}/ftc/d2xx.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -289,7 +288,6 @@
           <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />
-          <pathelement location="${lib.dir}/ftc/d2xx.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
