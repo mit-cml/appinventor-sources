@@ -32,6 +32,7 @@ class FtcPaletteHelper extends OrderedPaletteHelper {
     ftcComponentNames.add("FtcCompassSensor");
     ftcComponentNames.add("FtcGyroSensor");
     ftcComponentNames.add("FtcIrSeekerSensor");
+    ftcComponentNames.add("FtcLED");
     ftcComponentNames.add("FtcLightSensor");
     ftcComponentNames.add("FtcOpticalDistanceSensor");
     ftcComponentNames.add("FtcTouchSensor");

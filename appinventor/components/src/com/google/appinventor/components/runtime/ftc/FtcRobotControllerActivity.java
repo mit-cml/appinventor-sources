@@ -70,7 +70,7 @@ import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
 // Removed for App Inventor
 //import com.qualcomm.ftcrobotcontroller.opmodes.FtcOpModeRegister;
-import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
+import com.qualcomm.hardware.ModernRoboticsHardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.Dimmer;

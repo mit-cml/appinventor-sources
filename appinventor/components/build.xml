@@ -63,6 +63,9 @@
     <aar.unzip src="${lib.dir}/ftc/FtcCommon-release.aar"
                name="FtcCommon"
                dest="${public.build.dir}/ftc/FtcCommon" />
+    <aar.unzip src="${lib.dir}/ftc/Hardware-release.aar"
+               name="Hardware"
+               dest="${public.build.dir}/ftc/Hardware" />
     <aar.unzip src="${lib.dir}/ftc/ModernRobotics-release.aar"
                name="ModernRobotics"
                dest="${public.build.dir}/ftc/ModernRobotics" />
@@ -171,6 +174,7 @@
         <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
         <pathelement location="${public.build.dir}/ftc/Analytics/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/FtcCommon/classes.jar" />
+        <pathelement location="${public.build.dir}/ftc/Hardware/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
         <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />
@@ -281,6 +285,7 @@
           <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
           <pathelement location="${public.build.dir}/ftc/Analytics/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/FtcCommon/classes.jar" />
+          <pathelement location="${public.build.dir}/ftc/Hardware/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/ModernRobotics/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
           <pathelement location="${public.build.dir}/ftc/WirelessP2p/classes.jar" />

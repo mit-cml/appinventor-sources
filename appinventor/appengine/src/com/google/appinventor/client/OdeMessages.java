@@ -2380,6 +2380,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcIrSeekerSensorComponentPallette();
 
+  @DefaultMessage("FtcLED")
+  @Description("")
+  String ftcLEDComponentPallette();
+
   @DefaultMessage("FtcLegacyModule")
   @Description("")
   String ftcLegacyModuleComponentPallette();
@@ -5632,6 +5636,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CreateByteArrayMethods();
 
+  @DefaultMessage("Enable")
+  @Description("")
+  String EnableMethods();
+
   @DefaultMessage("Enable9v")
   @Description("")
   String Enable9vMethods();
@@ -6319,6 +6327,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")
   String FtcIrSeekerSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component for an LED of an FTC robot.")
+  @Description("")
+  String FtcLEDHelpStringComponentPallette();
 
   @DefaultMessage("A component for a legacy module of an FTC robot.")
   @Description("")

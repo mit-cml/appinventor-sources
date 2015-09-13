@@ -367,6 +367,7 @@ public class YaVersion {
   // - The FtcI2cDevice component was added.
   // - The FtcI2cDeviceReader component was added.
   // - The FtcIrSeekerSensor component was added.
+  // - The FtcLED component was added.
   // - The FtcLegacyModule component was added.
   // - The FtcLightSensor component was added.
   // - The FtcLinearOpMode component was added.
@@ -707,6 +708,8 @@ public class YaVersion {
   // - The Mode_1200HZ_AC property was renamed Mode_1200HZ.
   // - The Mode_600HZ_DC property was renamed Mode_600HZ.
   public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 2;
+
+  public static final int FTC_LED_COMPONENT_VERSION = 1;
 
   // For FTC_LEGACY_MODULE_COMPONENT_VERSION 2:
   // - The EnableNxtI2cReadMode method was renamed EnableI2cReadMode.
