@@ -38,6 +38,8 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -67,7 +69,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
-
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
@@ -84,7 +85,9 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching {
+  implements Component, ComponentContainer, HandlesEventDispatching,
+  OnGlobalLayoutListener {
+
   private static final String LOG_TAG = "Form";
 
   private static final String RESULT_NAME = "APP_INVENTOR_RESULT";
@@ -174,6 +177,11 @@ public class Form extends Activity
   private String nextFormName;
 
   private FullScreenVideoUtil fullScreenVideoUtil;
+
+  private int formWidth;
+  private int formHeight;
+
+  private boolean keyboardShown = false;
 
   public static class PercentStorageRecord {
     public enum Dim {
@@ -281,8 +289,7 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
-            ReplayFormOrientation(); // Re-do Form layout because percentage code
-                                     // needs to recompute objects sizes etc.
+            recomputeLayout();
             final FrameLayout savedLayout = frameLayout;
             androidUIHandler.postDelayed(new Runnable() {
                 public void run() {
@@ -300,6 +307,54 @@ public class Form extends Activity
           }
         }
       });
+    }
+  }
+
+// What's this code?
+//
+// There is either an App Inventor bug, or Android bug (likely both)
+// that results in the contents of the screen being rendered "too
+// tall" on some devices when the soft keyboard is toggled from
+// displayed to hidden. This results in the bottom of the App being
+// cut-off. This only happens when we are in "Fixed" mode where we
+// provide a ScaledFrameLayout whose job is to scale the app to fill
+// the display of whatever device it is running on ("big phone mode").
+//
+// The code below is triggered on every major layout change. It
+// compares the size of the device window with the height of the
+// displayed content. Based on the difference, we can tell if the
+// keyboard is open or closed. We detect the transition from open to
+// closed and iff we are in "Fixed" mode (sComptabilityMode = true) we
+// trigger a recomputation of the entire apps layout after a delay of
+// 100ms (which seems to be required, for reasons we don't quite
+// understand).
+//
+// This code is not really a "fix" but more of a "workaround."
+
+  @Override
+  public void onGlobalLayout() {
+    int heightDiff = scaleLayout.getRootView().getHeight() - scaleLayout.getHeight();
+    int contentViewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+    Log.d(LOG_TAG, "onGlobalLayout(): heightdiff = " + heightDiff + " contentViewTop = " +
+      contentViewTop);
+
+    if(heightDiff <= contentViewTop){
+      Log.d(LOG_TAG, "keyboard hidden!");
+      if (keyboardShown) {
+        keyboardShown = false;
+        if (sCompatibilityMode) { // Put us back in "Fixed" Mode
+          scaleLayout.setScale(compatScalingFactor);
+          scaleLayout.invalidate();
+        }
+      }
+    } else {
+      int keyboardHeight = heightDiff - contentViewTop;
+      Log.d(LOG_TAG, "keyboard shown!");
+      keyboardShown = true;
+      if (scaleLayout != null) { // Effectively put us in responsive mode
+        scaleLayout.setScale(1.0f);
+        scaleLayout.invalidate();
+      }
     }
   }
 
@@ -398,6 +453,7 @@ public class Form extends Activity
   void ReplayFormOrientation() {
     // We first make a copy of the existing dimChanges list
     // because while we are replaying it, it is being appended to
+    Log.d(LOG_TAG, "ReplayFormOrientation()");
     ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
     dimChanges.clear();         // Empties it out
     for (int i = 0; i < temp.size(); i++) {
@@ -605,7 +661,6 @@ public class Form extends Activity
 
   @SimpleEvent(description = "Screen orientation changed")
   public void ScreenOrientationChanged() {
-    recomputeLayout();
     EventDispatcher.dispatchEvent(this, "ScreenOrientationChanged");
   }
 
@@ -724,7 +779,6 @@ public class Form extends Activity
   private void recomputeLayout() {
 
     Log.d(LOG_TAG, "recomputeLayout called");
-
     // Remove our view from the current frameLayout.
     if (frameLayout != null) {
       frameLayout.removeAllViews();
@@ -743,7 +797,8 @@ public class Form extends Activity
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     setContentView(scaleLayout);
-    frameLayout.requestLayout();
+    frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+    scaleLayout.requestLayout();
     androidUIHandler.post(new Runnable() {
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
@@ -752,6 +807,9 @@ public class Form extends Activity
           } else {
             Sizing("Responsive");
           }
+          ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                   // needs to recompute objects sizes etc.
+          frameLayout.requestLayout();
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -1234,12 +1292,21 @@ public class Form extends Activity
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
+    Log.d(LOG_TAG, "Sizing(" + value + ")");
+    formWidth = (int)((float) this.getResources().getDisplayMetrics().widthPixels / deviceDensity);
+    formHeight = (int)((float) this.getResources().getDisplayMetrics().heightPixels / deviceDensity);
     if (value.equals("Fixed")) {
       sCompatibilityMode = true;
+      formWidth /= compatScalingFactor;
+      formHeight /= compatScalingFactor;
     } else {
       sCompatibilityMode = false;
     }
     scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
+    if (frameLayout != null) {
+      frameLayout.invalidate();
+    }
+    Log.d(LOG_TAG, "formWidth = " + formWidth + " formHeight = " + formHeight);
   }
 
   // public String Sizing() {
@@ -1272,12 +1339,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    int retval = (int)(scaleLayout.getWidth() / this.deviceDensity);
-    if (sCompatibilityMode) {
-      retval /= compatScalingFactor;
-    }
-    Log.d(LOG_TAG, "Width = " + retval);
-    return retval;
+    Log.d(LOG_TAG, "Form.Width = " + formWidth);
+    return formWidth;
   }
 
   /**
@@ -1288,12 +1351,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    int retval = (int)(scaleLayout.getHeight() / this.deviceDensity);
-    if (sCompatibilityMode) {
-      retval /= compatScalingFactor;
-    }
-    Log.d(LOG_TAG, "Height = " + retval);
-    return retval;
+    Log.d(LOG_TAG, "Form.Height = " + formHeight);
+    return formHeight;
   }
 
   /**
