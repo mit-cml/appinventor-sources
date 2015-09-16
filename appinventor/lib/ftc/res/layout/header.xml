@@ -23,8 +23,9 @@
 
     <TextView
         android:id="@+id/active_filename"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:textColor="@color/white"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

@@ -374,7 +374,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   @SimpleProperty(description = "The name of the robot configuration.",
       category = PropertyCategory.BEHAVIOR, userVisible = false)
   public String Configuration() {
-    // TODO(lizlooney): consider removing this property
     return configuration;
   }
 
@@ -386,7 +385,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       defaultValue = DEFAULT_CONFIGURATION)
   @SimpleProperty(userVisible = false)
   public void Configuration(String configuration) {
-    // TODO(lizlooney): consider removing this property
     if (!this.configuration.equals(configuration)) {
       this.configuration = configuration;
       if (!TextUtils.isEmpty(configuration)) {
@@ -798,8 +796,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   public boolean IsBitSet(long bitField, int bitPosition) {
     return ((bitField >> bitPosition) & 1) == 1;
   }
-
-  // TODO(lizlooney): Consider adding support for com.qualcomm.robotcore.uti.RollingAverage
 
   private void prepareToDie() {
     form.unregisterForActivityResult(this);
