@@ -9,6 +9,7 @@
   <!-- also defined in FtcCommon/res/values/values.xml
   <string name="pref_configure_robot_title">Robot Configuration Settings</string>
   <string name="configure_activity">Configure Robot</string>
+  <string name="title_activity_wifi_channel_selector">Wifi Channel Selection</string>
   -->
 
   <string name="restart_robot_menu_item">Restart Robot</string>

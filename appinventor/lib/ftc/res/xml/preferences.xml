@@ -2,13 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
   <PreferenceCategory
-    android:title="@string/pref_wifi_channel_selection_title">
+    android:title="@string/pref_change_wifi_channel">
 
     <PreferenceScreen
       android:title="@string/pref_change_wifi_channel"
       android:key="@string/pref_launch_settings">
       <intent
-        android:action="com.qualcomm.ftccommon.configuration.FtcWifiChannelSelectorActivity.intent.action.Launch"
+        android:action="com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity.intent.action.Launch"
         android:targetPackage="com.qualcomm.ftccommon"
         android:targetClass="com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity" />
     </PreferenceScreen>

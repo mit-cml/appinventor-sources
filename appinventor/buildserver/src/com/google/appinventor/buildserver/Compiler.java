@@ -512,6 +512,14 @@ public final class Compiler {
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
         out.write("      android:label=\"@string/title_activity_config_wifi_direct\" />\n");
         out.write("    <activity\n");
+        out.write("      android:name=\"com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity\"\n");
+        out.write("      android:label=\"@string/title_activity_wifi_channel_selector\"\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity.intent.action.Launch\" />\n");
+        out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
+        out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ViewLogsActivity\"\n");
         out.write("      android:configChanges=\"orientation|screenSize\"\n");
         out.write("      android:label=\"@string/view_logs_activity\">\n");
