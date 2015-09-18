@@ -20,6 +20,7 @@ public final class ErrorMessages {
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER = 2;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_FUSIONTABLES_CONTROL = 3;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES = 4;
+  public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT = 5;
   // LocationSensor errors
   public static final int ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101;
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
@@ -183,7 +184,10 @@ public final class ErrorMessages {
   // AndroidViewComponent errors
   public static final int ERROR_BAD_PERCENT = 2801;
 
-  // Please start the next group of error numbers at 2901.
+  // 2901-2999 are reserved for FIRST Tech Challenge.
+
+  // Please start the next group of error numbers at 3001.
+
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -202,6 +206,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES,
         "Warning: This app contains functionality that does not work on this phone: " +
         "using cookies in the Web component.");
+    errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT,
+        "Warning: This app contains functionality that does not work on this phone: " +
+        "Wi-Fi peer-to-peer connectivity.");
     // LocationSensor errors
     errorMessages.put(ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND,
         "Unable to find latitude from %s.");
@@ -451,10 +458,11 @@ public final class ErrorMessages {
     // FusiontablesControl errors
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
-    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    // AndroidViewComponent errors
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
   }
 
   private ErrorMessages() {
