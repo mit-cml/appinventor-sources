@@ -233,7 +233,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * TargetPosition property getter.
    */
-  @SimpleProperty(description = "The motor target position.",
+  @SimpleProperty(description = "The motor target position. If this motor has been set to " +
+      "REVERSE, the value will be multiplied by -1.",
       category = PropertyCategory.BEHAVIOR)
   public int TargetPosition() {
     if (dcMotor != null) {
@@ -251,7 +252,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * CurrentPosition property getter.
    */
-  @SimpleProperty(description = "The current motor position.",
+  @SimpleProperty(description = "The current encoder value. If this motor has been set to " +
+      "REVERSE, the value will be multiplied by -1.",
       category = PropertyCategory.BEHAVIOR)
   public int CurrentPosition() {
     if (dcMotor != null) {
