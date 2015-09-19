@@ -5255,10 +5255,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StopSoundPlaybackMethods();
 
-  @DefaultMessage("LengthOfByteArray")
-  @Description("")
-  String LengthOfByteArrayMethods();
-
   @DefaultMessage("LsWrite")
   @Description("")
   String LsWriteMethods();
@@ -5815,6 +5811,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsTouchSensorPressed")
   @Description("")
   String IsTouchSensorPressedMethods();
+
+  @DefaultMessage("LengthOfByteArray")
+  @Description("")
+  String LengthOfByteArrayMethods();
 
   @DefaultMessage("OpModeIsActive")
   @Description("")

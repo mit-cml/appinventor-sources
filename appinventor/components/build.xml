@@ -206,7 +206,6 @@
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
     <pathelement location="${public.build.dir}/CommonConstants.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${public.build.dir}/ftc/RobotCore/classes.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
