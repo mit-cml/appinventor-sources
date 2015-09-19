@@ -184,7 +184,7 @@ public final class ErrorMessages {
   // AndroidViewComponent errors
   public static final int ERROR_BAD_PERCENT = 2801;
 
-  // 2901-2999 are reserved for FTC errors.
+  // 2901-2999 are reserved for FIRST Tech Challenge.
 
   // Please start the next group of error numbers at 3001.
 
