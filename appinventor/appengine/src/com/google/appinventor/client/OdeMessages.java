@@ -5708,6 +5708,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetLEDStateMethods();
 
+  @DefaultMessage("GetMotorChannelMode")
+  @Description("")
+  String GetMotorChannelModeMethods();
+
   @DefaultMessage("GetMotorCurrentPosition")
   @Description("")
   String GetMotorCurrentPositionMethods();
@@ -5931,6 +5935,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetMode")
   @Description("")
   String SetModeMethods();
+
+  @DefaultMessage("SetMotorChannelMode")
+  @Description("")
+  String SetMotorChannelModeMethods();
 
   @DefaultMessage("SetMotorPower")
   @Description("")
