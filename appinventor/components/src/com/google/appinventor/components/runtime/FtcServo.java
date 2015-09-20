@@ -61,6 +61,24 @@ public final class FtcServo extends FtcHardwareDevice {
   }
 
   /**
+   * MIN_POSITION property getter.
+   */
+  @SimpleProperty(description = "The constant for MIN_POSITION.",
+      category = PropertyCategory.BEHAVIOR)
+  public double MIN_POSITION() {
+    return Servo.MIN_POSITION;
+  }
+
+  /**
+   * MAX_POSITION property getter.
+   */
+  @SimpleProperty(description = "The constant for MAX_POSITION.",
+      category = PropertyCategory.BEHAVIOR)
+  public double MAX_POSITION() {
+    return Servo.MAX_POSITION;
+  }
+
+  /**
    * Direction property setter.
    */
   @SimpleProperty
