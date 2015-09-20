@@ -48,10 +48,10 @@
 
     <!-- set to true if users should not be allowed to access the App
          Inventor server unless they are listed in the appengine/war/whitelist file -->
-    <property name="use.whitelist" value="false"/>
+    <property name="use.whitelist" value="true"/>
 
     <!-- Name of storage bucket in Google Cloud Store -->
-    <property name="gcs.bucket" value="" />
+    <property name="gcs.bucket" value="ftc-ai-1" />
     <!-- Whether or not to use GCS for storage -->
     <property name="use.gcs" value="true" />
 
@@ -69,7 +69,7 @@
     <property name="require.tos" value="true" />
 
     <!-- host[:port] to use for connecting to the build server -->
-    <property name="build.server.host" value="localhost:9990" />
+    <property name="build.server.host" value="146.148.65.56:9990" />
 
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as

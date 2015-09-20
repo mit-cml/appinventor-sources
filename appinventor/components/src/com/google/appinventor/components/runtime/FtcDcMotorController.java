@@ -139,6 +139,42 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return "";
   }
 
+  @SimpleFunction(description = "Set the current channel mode.")
+  public void SetMotorChannelMode(int motor, String mode) {
+    if (dcMotorController != null) {
+      try {
+        for (RunMode runMode : RunMode.values()) {
+          if (runMode.toString().equalsIgnoreCase(mode)) {
+            dcMotorController.setMotorChannelMode(motor, runMode);
+            return;
+          }
+        }
+
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetMotorChannelMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Get the current channel mode.")
+  public String GetMotorChannelMode(int motor) {
+    if (dcMotorController != null) {
+      try {
+        RunMode runMode = dcMotorController.getMotorChannelMode(motor);
+        if (runMode != null) {
+          return runMode.toString();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetMotorChannelMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
   @SimpleFunction(description = "Set the current motor power (from -1.0 to 1.0).")
   public void SetMotorPower(int motor, double power) {
     if (dcMotorController != null) {
