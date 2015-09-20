@@ -3458,9 +3458,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MAX_NEW_I2C_ADDRESSProperties();
 
+  @DefaultMessage("MAX_POSITION")
+  @Description("")
+  String MAX_POSITIONProperties();
+
   @DefaultMessage("MIN_NEW_I2C_ADDRESS")
   @Description("")
   String MIN_NEW_I2C_ADDRESSProperties();
+
+  @DefaultMessage("MIN_POSITION")
+  @Description("")
+  String MIN_POSITIONProperties();
 
   @DefaultMessage("Mode")
   @Description("")
