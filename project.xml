@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <!-- Do not use Project Properties customizer when editing this file manually. 
+ To prevent the customizer from showing, create nbproject/project.properties file and enter 
+auxiliary.show.customizer=false 
+property there. Adding 
+auxiliary.show.customizer.message=<message>
+ will show your customized message when someone attempts to open the customizer.  -->
+            <name>appinventor</name>
+            <properties>
+                <property name="project.dir">C:\Users\Andres\Documents\GitHub\appinventor-sources\appinventor</property>
+                <property name="ant.script">${project.dir}/build.xml</property>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>appinventor</label>
+                    <location>${project.dir}</location>
+                </source-folder>
+                <source-folder>
+                    <label>aimerger\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/aimerger/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>aimerger_for_appinv_classic\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/aimerger_for_appinv_classic/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>appengine\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/appengine/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>build\components\ComponentTranslation\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/build/components/ComponentTranslation/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>buildserver\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/buildserver/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>common\build\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/common/build/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>common\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/common/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>components\src</label>
+                    <type>java</type>
+                    <location>${project.dir}/components/src</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <script>${ant.script}</script>
+                    <target>all</target>
+                </action>
+                <action name="clean">
+                    <script>${ant.script}</script>
+                    <target>clean</target>
+                </action>
+                <action name="javadoc">
+                    <script>${ant.script}</script>
+                    <target>javadoc</target>
+                </action>
+                <action name="test">
+                    <script>${ant.script}</script>
+                    <target>tests</target>
+                </action>
+                <action name="rebuild">
+                    <script>${ant.script}</script>
+                    <target>clean</target>
+                    <target>all</target>
+                </action>
+            </ide-actions>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>aimerger\src</label>
+                        <location>${project.dir}/aimerger/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>aimerger_for_appinv_classic\src</label>
+                        <location>${project.dir}/aimerger_for_appinv_classic/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>appengine\src</label>
+                        <location>${project.dir}/appengine/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>build\components\ComponentTranslation\src</label>
+                        <location>${project.dir}/build/components/ComponentTranslation/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>buildserver\src</label>
+                        <location>${project.dir}/buildserver/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>common\build\src</label>
+                        <location>${project.dir}/common/build/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>common\src</label>
+                        <location>${project.dir}/common/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>components\src</label>
+                        <location>${project.dir}/components/src</location>
+                    </source-folder>
+                    <source-file>
+                        <location>${ant.script}</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
+                    <ide-action name="test"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
+            <compilation-unit>
+                <package-root>${project.dir}/aimerger/src</package-root>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/aimerger_for_appinv_classic/src</package-root>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/appengine/src</package-root>
+                <classpath mode="compile">${project.dir}/lib/gwt/2.7/gwt-dev.jar;${project.dir}/lib/gwt/2.7/gwt-servlet-deps.jar;${project.dir}/lib/gwt/2.7/gwt-servlet.jar;${project.dir}/lib/gwt/2.7/gwt-user.jar;${project.dir}/lib/gwt/2.7/validation-api-1.0.0.GA-sources.jar;${project.dir}/lib/gwt/2.7/validation-api-1.0.0.GA.jar;${project.dir}/common/build/src;${project.dir}/common/src;${project.dir}/lib/commons-io/commons-io-2.0.1.jar;${project.dir}/lib/commons-fileupload/commons-fileupload-1.2.2.jar;${project.dir}/lib/guava/guava-18.0.jar;${project.dir}/lib/guava/guava-gwt-18.0.jar;${project.dir}/components/src;${project.dir}/lib/gwt_incubator/gwt-incubator-20101117-r1766.jar;${project.dir}/build/components/ComponentTranslation/src;${project.dir}/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar;${project.dir}/lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-api.jar;${project.dir}/lib/gcs/appengine-gcs-client-0.4.3.jar;${project.dir}/lib/keyczar/KeyczarTool.jar;${project.dir}/lib/keyczar/keyczar-0.66-080111-java-1.6.jar;${project.dir}/lib/objectify-3.1/objectify-3.1.jar;${project.dir}/lib/json/json.jar;${project.dir}/lib/appengine/appengine-java-sdk-1.9.17/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar</classpath>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/build/components/ComponentTranslation/src</package-root>
+                <classpath mode="compile">${project.dir}/appengine/src</classpath>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/buildserver/src</package-root>
+                <classpath mode="compile">${project.dir}/common/build/src;${project.dir}/lib/args4j/args4j-2.0.18.jar;${project.dir}/common/src;${project.dir}/lib/commons-io/commons-io-2.0.1.jar;${project.dir}/lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-local-runtime.jar;${project.dir}/lib/guava/guava-14.0.1.jar;${project.dir}/buildserver/lib/jettison-1.1.jar;${project.dir}/buildserver/lib/grizzly-servlet-webserver-1.9.18-i.jar;${project.dir}/buildserver/lib/jsr311-api-1.1.1.jar;${project.dir}/buildserver/lib/jersey-bundle-1.3.jar;${project.dir}/lib/android/4.2.2/android.jar;${project.dir}/lib/android/tools/sdklib.jar</classpath>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/common/build/src</package-root>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/common/src</package-root>
+                <classpath mode="compile">${project.dir}/lib/guava/guava-18.0.jar</classpath>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>${project.dir}/components/src</package-root>
+                <classpath mode="compile">${project.dir}/lib/android/4.2.2/android.jar;${project.dir}/lib/fusiontables/fusiontables.jar;${project.dir}/lib/kawa/kawa-1.11-modified.jar;${project.dir}/lib/oauth/google-api-client-1.10.3-beta.jar;${project.dir}/lib/oauth/google-http-client-android2-1.10.3-beta.jar;${project.dir}/lib/acra/acra-4.4.0.jar;${project.dir}/lib/appengine/appengine-java-sdk-1.9.17/lib/impl/google_sql.jar;${project.dir}/lib/gcs/google-api-client-1.18.0-rc.jar;${project.dir}/lib/oauth/google-http-client-1.10.3-beta.jar;${project.dir}/lib/apache-http/httpmime-4.3.4.jar;${project.dir}/common/build/src;${project.dir}/lib/twitter/twitter4j-core-3.0.5.jar;${project.dir}/lib/json/json.jar;${project.dir}/lib/oauth/google-api-client-android2-1.10.3-beta.jar;${project.dir}/lib/QRGenerator/core.jar;${project.dir}/lib/guava/guava-18.0.jar;${project.dir}/common/src</classpath>
+                <source-level>1.7</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>
