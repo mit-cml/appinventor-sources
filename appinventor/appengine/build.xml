@@ -96,6 +96,9 @@
         <filter token="GUID" value="${guid1}"/>
       </filterset>
     </copy>
+    <delete>
+      <fileset dir="${build.war.dir}" includes="blockly-*.js"/>
+    </delete>
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
     <copy todir="${build.war.dir}/">
       <fileset dir="${lib.dir}">
@@ -107,6 +110,9 @@
   <target name="CopyBlocklyToBuildWar"
           description="Create blockly-all.js and add to war with unique name"
           depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
+    <delete>
+      <fileset dir="${build.war.dir}" includes="blockly-*.js"/>
+    </delete>
     <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
     <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
       <filterset>

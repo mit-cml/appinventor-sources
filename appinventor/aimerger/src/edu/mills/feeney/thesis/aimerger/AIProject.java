@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 /**
  * A representation of an App Inventor project. This includes its path, name,
  * list of assets, list of screens and project properties file.
- * 
+ *
  * @author feeney.kate@gmail.com (Kate Feeney)
  */
 public class AIProject {
@@ -36,7 +36,7 @@ public class AIProject {
 
   /**
    * Creates a new AIProject.
-   * 
+   *
    * @param projectPath the path to the project from the home directory
    */
   public AIProject(String projectPath) {
@@ -67,17 +67,17 @@ public class AIProject {
       valid = screensList != null && propertiesFilePath != null;
       if (!valid) {
         JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, "The selected project is not a"
-        		+ " project source file! Project source files are zip files.", "File error",
+                + " project source file! Project source files are zip files.", "File error",
             JOptionPane.ERROR_MESSAGE);
       }
     } catch (ZipException e) {
-      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, 
-          "The selected project is not a project source file! Project source files are zip files.", 
+      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP,
+          "The selected project is not a project source file! Project source files are zip files.",
           "File error", JOptionPane.ERROR_MESSAGE);
       valid = false;
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, 
-          "The selected project is not a project source file! Project source files are zip files.", 
+      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP,
+          "The selected project is not a project source file! Project source files are zip files.",
           "File error", JOptionPane.ERROR_MESSAGE);
       valid = false;
     }
@@ -85,13 +85,13 @@ public class AIProject {
 
   /**
    * Returns the AIProject's name.
-   * 
+   *
    * @return AIProject's name
    */
   public String getProjectName() {
     // The projectName is the name of the zip file.
     if (projectPath.contains(File.separator)) {
-      return projectPath.substring(projectPath.lastIndexOf(File.separator) + 1, 
+      return projectPath.substring(projectPath.lastIndexOf(File.separator) + 1,
           projectPath.lastIndexOf("."));
     } else {
       return projectPath;
@@ -100,7 +100,7 @@ public class AIProject {
 
   /**
    * Returns the AIProject's path from home directory.
-   * 
+   *
    * @return AIProject's path from home directory
    */
   public String getProjectPath() {
@@ -109,7 +109,7 @@ public class AIProject {
 
   /**
    * Returns the AIProject's list of AIScreens.
-   * 
+   *
    * @return list of project's AIScreens
    */
   public List<AIScreen> getScreensList() {
@@ -118,7 +118,7 @@ public class AIProject {
 
   /**
    * Returns the AIProject's list of AIAssets.
-   * 
+   *
    * @return list of project's AIAssets
    */
   public List<AIAsset> getAssetsList() {
@@ -127,7 +127,7 @@ public class AIProject {
 
   /**
    * Returns the path to the projects properties file from project file.
-   * 
+   *
    * @return path to project's properties file within the project file
    */
   public String getPropertiesFilePath() {
@@ -136,7 +136,7 @@ public class AIProject {
 
   /**
    * Sets the projects properties file
-   * 
+   *
    * @param propertiesFilePath the path to the project's properties file within the project
    */
   public void setPropertiesFilePath(String propertiesFilePath) {
@@ -145,7 +145,7 @@ public class AIProject {
 
   /**
    * Returns if the project is valid and can be used for a merge.
-   * 
+   *
    * @return if project is valid
    */
   public boolean isValid() {

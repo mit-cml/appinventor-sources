@@ -93,6 +93,18 @@
 
     <property name="wifi.enabled" value="true" />
 
+    <property name="library.url" value="http://appinventor.mit.edu/explore/library" />
+    <property name="get_started.url" value="http://appinventor.mit.edu/explore/get-started" />
+    <property name="tutorials.url" value="http://appinventor.mit.edu/explore/ai2/tutorials" />
+    <property name="troubleshooting.url" value="http://appinventor.mit.edu/explore/ai2/support/troubleshooting" />
+    <property name="forums.url" value="https://groups.google.com/forum/#!forum/mitappinventortest" />
+    <property name="feedback.url" value="http://something.example.com" />
+    <property name="release.notes.url" value="http://appinventor.mit.edu/ai2/ReleaseNotes.html" />
+    <property name="tos.url" value="/about/termsofservice.html" />
+    <property name="logo.url" value="http://appinventor.mit.edu" />
+    <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
+    <property name="reference.components.url" value="/reference/components/" />
+
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->

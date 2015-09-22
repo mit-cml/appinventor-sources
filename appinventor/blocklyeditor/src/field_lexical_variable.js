@@ -770,6 +770,7 @@ Blockly.LexicalVariable.checkIdentifier = function(ident) {
   // Note: to take complement of character set, put ^ first.
   // Note: to include '-' in character set, put it first or right after ^
   var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;,\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/;
+  // " Make Emacs Happy
   var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }
@@ -949,12 +950,38 @@ Blockly.LexicalVariable.stringListsEqual = function (strings1, strings2) {
 
 /**
  * [lyn, 07/03/14] Created
+ * [jis, 09/18/15] Refactored into two procedures
  * @param block: a getter or setter block
- * For getters and setters of event parameters, creates an "eventparam" mutation in the XML
- * that distinguishes them from other getters and setters. This mutations "knows"
- * the default (untranslated = English) name of the event parameter.
+ *
+ * Creates the mutation for the eventparam attribute
  */
 Blockly.LexicalVariable.eventParamMutationToDom = function (block) {
+  if (!block.eventparam) {      // Newly created block won't have one
+    Blockly.LexicalVariable.getEventParam(block);
+  }
+  // At this point, if the variable is an event parameter, the
+  // eventparam field will be set. Otherwise it won't be and
+  // we return null
+  if (!block.eventparam) {
+    return null;
+  }
+  var mutation = document.createElement('mutation');
+  var eventParam = document.createElement('eventparam');
+  eventParam.setAttribute('name', block.eventparam);
+  mutation.appendChild(eventParam);
+  return mutation;
+}
+
+/**
+ * @param block: a getter or setter block
+ *
+ * For getter or setter block of event parameters, sets the eventparam
+ * field of the block which contains the default (untranslated =
+ * English) name for event parameters.
+ *
+ */
+
+Blockly.LexicalVariable.getEventParam = function (block) {
   var prefixPair = Blockly.unprefixName(block.getFieldValue("VAR"));
   var prefix = prefixPair[0];
   if (prefix !== Blockly.globalNamePrefix) {
@@ -970,12 +997,8 @@ Blockly.LexicalVariable.eventParamMutationToDom = function (block) {
          );
          var index = translatedEventParams.indexOf(name);
          if (index != -1) {
-           // Create a mutation that has default (English) name
-           var mutation = document.createElement('mutation');
-           var eventParam = document.createElement('eventparam');
-           eventParam.setAttribute('name', untranslatedEventParams[index]);
-           mutation.appendChild(eventParam);
-           return mutation;
+           block.eventparam = untranslatedEventParams[index];
+           return null;         // return value is unimportant
          } else {
            return null;
          }

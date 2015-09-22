@@ -131,4 +131,8 @@ public class ChoicePropertyEditor extends PropertyEditor {
       }
     }
   }
+
+  public void setVisible(boolean visible) {
+    dropDownButton.setVisible(visible);
+  }
 }

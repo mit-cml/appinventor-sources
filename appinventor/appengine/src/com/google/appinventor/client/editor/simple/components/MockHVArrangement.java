@@ -43,8 +43,6 @@ public class MockHVArrangement extends MockContainer {
   private YoungAndroidHorizontalAlignmentChoicePropertyEditor myHAlignmentPropertyEditor;
   private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
   
-  private boolean initialized = false;
-  
  /**
    * Creates a new MockHVArrangement component.
    */
@@ -79,8 +77,7 @@ public class MockHVArrangement extends MockContainer {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
-    enableAndDisableDropdowns();
-    initialized = true;
+
   }
 
   
@@ -95,30 +92,10 @@ public class MockHVArrangement extends MockContainer {
       refreshForm();
     } else {
       if (propertyName.equals(PROPERTY_NAME_WIDTH) || propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-        adjustAlignmentDropdowns();
         refreshForm();
       }
     }
   }
 
-  // enableAndDisable It should not be called until the component is initialized.
-  // Otherwise, we'll get NPEs in trying to use myAlignmentPropertyEditor.
-  private void adjustAlignmentDropdowns() {
-    if (initialized) enableAndDisableDropdowns();
-  }
-
-  // If the width is automatic, the selector for horizontal alignment should be disabled.
-  // If the length is automatic, the selector for vertical alignment should be disabled.
-  private void enableAndDisableDropdowns() {
-    String width = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_WIDTH).getValue();
-    if (width.equals(YoungAndroidLengthPropertyEditor.CONST_AUTOMATIC)) {
-      myHAlignmentPropertyEditor.disable();
-    } else myHAlignmentPropertyEditor.enable();
-
-    String height = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_HEIGHT).getValue();
-    if (height.equals(YoungAndroidLengthPropertyEditor.CONST_AUTOMATIC)) {
-      myVAlignmentPropertyEditor.disable();
-    } else myVAlignmentPropertyEditor.enable();
-  }
 }
 

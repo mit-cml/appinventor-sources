@@ -976,7 +976,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The ActivityStarter.ActivityCanceled event was added.
     // No blocks need to be modified to upgrade to version 5.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Extras property was added
+    6: "noUpgrade"
 
   }, // End ActivityStarter upgraders
 
@@ -1219,7 +1222,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:  Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
     // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2:  Added ContactUri
+    6: "noUpgrade"
 
   }, // End ContactPicker upgraders
 
@@ -1231,7 +1237,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // The SetDateToDisplay and LaunchPicker methods were added to
     // give the user more control of what time is displayed in the
     // datepicker dialog.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: SetDateToDisplayFromInstant method and Instant property are added.
+    3: "noUpgrade"
 
   }, // End DatePicker upgraders
 
@@ -1251,8 +1260,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "File": {
 
-    //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    // AI2: The AfterFileSaved event was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
 
   }, // End File upgraders
 
@@ -1817,7 +1827,15 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 16:
     // - The Screen1.TitleVisible was added and no block needs to be changed.
-    16: "noUpgrade"
+    16: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 17:
+    // - Screen.CompatibilityMode property was added no block needs to be changed.
+    17: "noUpgrade",
+
+    // Screen.CompatibililtyMode replaced with Screen.Sizing no blocks need to be
+    // changed.
+    18: "noUpgrade"
 
   }, // End Screen
 
@@ -1938,7 +1956,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // the Country designer property was changed to use a ChoicePropertyEditor
     // the Language designer property was changed to use a ChoicePropertyEditor
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // default value was added to the Country designer property
+    // default value was added to the Language designer property
+    5: "noUpgrade"
 
   }, // End TextToSpeech upgraders
 
@@ -1949,9 +1971,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // The SetTimeToDisplay and LaunchPicker methods were added to
     // give the user more control of what time is displayed in the
     // timepicker dialog.
-    2: "noUpgrade"
+    2: "noUpgrade",
 
-  }, // End TimerPicker upgraders
+    // AI2: SetTimeToDisplayFromInstant method and Instant property are added.
+    3: "noUpgrade"
+
+  }, // End TimePicker upgraders
 
   "TinyDB": {
 
@@ -2121,4 +2146,3 @@ Blockly.Versioning.AllUpgradeMaps =
   } // End YandexTranslate upgraders
 
 }
-

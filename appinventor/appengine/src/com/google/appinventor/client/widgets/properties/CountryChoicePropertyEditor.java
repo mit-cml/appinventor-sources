@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor.Choice;
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Property editor for text-to-speech countries.
@@ -16,6 +16,7 @@ public class CountryChoicePropertyEditor extends ChoicePropertyEditor {
 
   // countries supported by AppInventor's Android 2.2 emulator
   private static final Choice[] countries = new Choice[] {
+    new Choice(MESSAGES.defaultText(), ""),
     new Choice("AUS", "AUS"),
     new Choice("AUT", "AUT"),
     new Choice("BEL", "BEL"),
@@ -53,11 +54,3 @@ public class CountryChoicePropertyEditor extends ChoicePropertyEditor {
     super(countries);
   }
 }
-
-
-
-
-
-
-
-
