@@ -40,8 +40,13 @@ Blockly.Yail.component_event = function() {
     + this.eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
-    + this.declaredNames()
-          .map(function (name) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+name;})
+    // declaredNames gives us names in local language, but we want the default
+    // + this.declaredNames()
+    //       .map(function (name) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+name;})
+    //       .join(' ')
+    // So we do this instead:
+    + this.getParameters()
+          .map(function (param) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+param.name;})
           .join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_SET_THIS_FORM
