@@ -530,6 +530,24 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
     return "";
   }
 
+  @SimpleFunction(description = "Return text representing the state of the gamepad.")
+  public String ToString() {
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        String s = gamepad.toString();
+        if (s != null) {
+          return s;
+        }
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ToString",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return "";
+  }
+
   // OnDestroyListener implementation
 
   @Override
