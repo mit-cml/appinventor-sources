@@ -147,7 +147,15 @@ public final class YoungAndroidFormUpgrader {
     }
 
     // Get the system component version from the component database.
-    final int sysCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+    final int sysCompVersion;
+    try {
+      sysCompVersion = COMPONENT_DATABASE.getComponentVersion(componentType);
+    } catch (IllegalArgumentException e) {
+      OdeLog.wlog("Cound not find component of type = " + componentType
+        + " assuming it is an external component.");
+      return;                   // This should be safe because external components don't have
+                                // nested children
+    }
 
     // Upgrade if necessary.
     upgradeComponentProperties(componentProperties, componentType, srcCompVersion, sysCompVersion);
