@@ -5988,6 +5988,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TelemetryAddTextDataMethods();
 
+  @DefaultMessage("ToString")
+  @Description("")
+  String ToStringMethods();
+
   @DefaultMessage("Value")
   @Description("")
   String ValueMethods();

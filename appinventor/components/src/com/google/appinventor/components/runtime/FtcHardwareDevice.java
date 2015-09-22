@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -61,7 +62,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   /**
    * Device property getter.
    */
-  @SimpleProperty(description = "The name of the device.",
+  @SimpleProperty(description = "The manufacturer and name of the device.",
       category = PropertyCategory.BEHAVIOR)
   public String Device() {
     if (hardwareDevice != null) {
@@ -116,6 +117,23 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
       }
     }
     return 0;
+  }
+
+  @SimpleFunction(description = "Return text representing the state of the hardware device.")
+  public String ToString() {
+    try {
+      if (hardwareDevice != null) {
+        String s = hardwareDevice.toString();
+        if (s != null) {
+          return s;
+        }
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ToString",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return "";
   }
 
   // OnDestroyListener implementation
