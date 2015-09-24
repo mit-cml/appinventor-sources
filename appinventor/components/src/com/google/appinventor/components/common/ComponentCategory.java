@@ -14,6 +14,7 @@ import java.util.Map;
  */
 //public enum ComponentCategory {
 //  // TODO(user): i18n category names
+//  FIRSTTECHCHALLENGE(MESSAGES.ftcComponentPallette()),
 //  USERINTERFACE(MESSAGES.UIComponentPallette()),
 //  LAYOUT(MESSAGES.layoutComponentPallette()),
 //  MEDIA(MESSAGES.mediaComponentPallette()),
@@ -23,7 +24,6 @@ import java.util.Map;
 //  STORAGE(MESSAGES.storageComponentPallette()),
 //  CONNECTIVITY(MESSAGES.connectivityComponentPallette()),
 //  LEGOMINDSTORMS(MESSAGES.legoComponentPallette()),
-//  FIRSTTECHCHALLENGE(MESSAGES.ftcComponentPallette()),
 //  //EXPERIMENTAL(MESSAGES.experimentalComponentPallette()),
 //  INTERNAL(MESSAGES.internalUseComponentPallette()),
 //  // UNINITIALIZED is used as a default value so Swing libraries can still compile
@@ -34,6 +34,7 @@ import java.util.Map;
 //  // suitable for appearing in URLs.
 //  private static final Map<String, String> DOC_MAP = new HashMap<String, String>();
 //  static {
+//    DOC_MAP.put(MESSAGES.ftcComponentPallette(), "firsttechchallenge");
 //    DOC_MAP.put(MESSAGES.UIComponentPallette(), "userinterface");
 //    DOC_MAP.put(MESSAGES.layoutComponentPallette(), "layout");
 //    DOC_MAP.put(MESSAGES.mediaComponentPallette(), "media");
@@ -43,7 +44,6 @@ import java.util.Map;
 //    DOC_MAP.put(MESSAGES.storageComponentPallette(), "storage");
 //    DOC_MAP.put(MESSAGES.connectivityComponentPallette(), "connectivity");
 //    DOC_MAP.put(MESSAGES.legoComponentPallette(), "legomindstorms");
-//    DOC_MAP.put(MESSAGES.ftcComponentPallette(), "firsttechchallenge");
 //    //DOC_MAP.put(MESSAGES.experimentalComponentPallette(), "experimental");
 //  }
 
@@ -69,6 +69,7 @@ import java.util.Map;
     // suitable for appearing in URLs.
     private static final Map<String, String> DOC_MAP = new HashMap<String, String>();
     static {
+      DOC_MAP.put("FIRST\u00AE Tech Challenge", "firsttechchallenge");
       DOC_MAP.put("User Interface", "userinterface");
       DOC_MAP.put("Layout", "layout");
       DOC_MAP.put("media", "media");
@@ -78,7 +79,6 @@ import java.util.Map;
       DOC_MAP.put("Storage", "storage");
       DOC_MAP.put("Connectivity", "connectivity");
       DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
-      DOC_MAP.put("FIRST\u00AE Tech Challenge", "firsttechchallenge");
       //DOC_MAP.put("Experimental", "experimental");
     }
 

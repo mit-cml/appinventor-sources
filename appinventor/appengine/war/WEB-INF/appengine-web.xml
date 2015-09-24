@@ -93,7 +93,7 @@
 
     <property name="wifi.enabled" value="true" />
 
-    <!-- 
+    <!-- Comment these out until I get the appropriate URLs from FIRST
     <property name="library.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="get_started.url" value="http://appinventor.mit.edu/explore/get-started" />
     <property name="tutorials.url" value="http://appinventor.mit.edu/explore/ai2/tutorials" />
@@ -108,7 +108,7 @@
     -->
 
     <!-- Set this to true for FIRST Tech Challenge standalone version. -->
-    <property name="ftc.standalone.version" value="true" />
+    <property name="ftc.standalone.version" value="false" />
 
   </system-properties>
 
