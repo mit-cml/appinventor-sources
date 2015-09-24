@@ -173,18 +173,16 @@ public class TopToolbar extends Composite {
     Config config = Ode.getInstance().getSystemConfig();
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
-    if (!config.getFtcStandaloneVersion()) {
+    if (!config.getFtcStandaloneVersion()) {  // No barcode for FTC standalone version.
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
           new BarcodeAction()));
     }
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
         new DownloadAction()));
-    if (!config.getFtcStandaloneVersion()) {
-      if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
-        buildItems.add(null);
-        buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
-            new GenerateYailAction()));
-      }
+    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
+      buildItems.add(null);
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
+          new GenerateYailAction()));
     }
 
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
@@ -695,13 +693,9 @@ public class TopToolbar extends Composite {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion());
       Config config = Ode.getInstance().getSystemConfig();
-      if (config.getFtcStandaloneVersion()) {
-        html += "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
-            "FIRST\u00AE Tech Challenge</b>" +
-            "<BR/><BR/>No Companion Available.";
-      } else {
-        html += "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
-      }
+      html += "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
+          "FIRST\u00AE Tech Challenge</b>" +
+          "<BR/><BR/>No Companion Available.";
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
         html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +

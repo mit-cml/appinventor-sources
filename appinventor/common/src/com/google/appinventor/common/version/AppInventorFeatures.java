@@ -17,13 +17,13 @@ public final class AppInventorFeatures {
 
   public static boolean hasDebuggingView() {
     // Set this to true if you want the Debugging view to show.
-    return true;
+    return false;
   }
 
   public static boolean hasYailGenerationOption() {
     // Set this to true if you want the Package for Phone button to include an option to just
     // generate Yail
-    return true;
+    return false;
   }
 
   public static boolean sendBugReports() {
@@ -34,7 +34,7 @@ public final class AppInventorFeatures {
   public static boolean allowMultiScreenApplications() {
     // Set this to true if you want users to be able to create more than one screen in a single
     // project.
-    return true;
+    return false;
   }
 
   public static boolean showInternalComponentsCategory() {
