@@ -1171,15 +1171,13 @@
             *non-coercible-value*))))
 
 (define (type->class type-name)
-  ;; TODO(sharon):
+  ;; TODO(sharon): DONE!
   ;; Note that the following will have to change when we have the CDK and
   ;; components may be defined in packages other than
   ;; com.google.appinventor.components.runtime
-  (symbol-append
-   'com.google.appinventor.components.runtime.
-   (if (eq? type-name 'Screen)
-       'Form
-       type-name)))
+  (if (eq? type-name 'Screen)
+     'com.google.appinventor.components.runtime.Form
+     type-name))
 
 (define (coerce-to-number arg)
   (cond
