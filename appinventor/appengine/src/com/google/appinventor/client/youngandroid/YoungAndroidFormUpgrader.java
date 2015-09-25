@@ -1326,10 +1326,6 @@ public final class YoungAndroidFormUpgrader {
       // RequestFocus method was added
       srcCompVersion = 5;
     }
-    if (srcCompVersion < 6) {
-      // HideKeyboard method was moved to Form.java
-      srcCompVersion = 6; 
-    }
     return srcCompVersion;
   }
 

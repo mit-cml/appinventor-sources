@@ -144,14 +144,14 @@ public final class TextBox extends TextBoxBase {
   /**
    * Hide the soft keyboard
    */
-  /*@SimpleFunction(
+  @SimpleFunction(
       description = "Hide the keyboard.  Only multiline text boxes need this. " +
       "Single line text boxes close the keyboard when the users presses the Done key.")
   public void HideKeyboard() {
     InputMethodManager imm =
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-  } */
+  } 
 
   /**
    * Multi line property getter method.

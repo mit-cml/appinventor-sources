@@ -636,7 +636,7 @@ public class YaVersion {
   // - Screen.CompatibilityMode property morphed into the
   //   Sizing property
   // For FORM_COMPONENT_VERSION 19:
-  // - Moved HideKeyboard method from TextBox to Form
+  // - Added HideKeyboard method 
   public static final int FORM_COMPONENT_VERSION = 19;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
@@ -828,8 +828,6 @@ public class YaVersion {
   // - The MultiLine property was added.
   // For TEXTBOX_COMPONENT_VERSION 5:
   // - RequestFocus method was added
-  // For TEXTBOX_COMPONENT_VERSION 6: 
-  // - HideKeyboard method was moved to Form.
   public static final int TEXTBOX_COMPONENT_VERSION = 6;
 
   // For TEXTING_COMPONENT_VERSION 2:
