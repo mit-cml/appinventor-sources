@@ -887,6 +887,7 @@
 (define (call-component-type-method possible-component component-type method-name arglist typelist)
   ;; Note that we use the cdr of the typelist because it contains the generic
   ;; 'component' type for the component and we want to check the more specific type
+  ;; that is passed in via the component-type argument
   (let ((coerced-args (coerce-args method-name arglist (cdr typelist)))
         (component-value (coerce-to-component-of-type possible-component component-type)))
     (if (not (instance? component-value com.google.appinventor.components.runtime.Component))
@@ -1170,7 +1171,7 @@
             *non-coercible-value*))))
 
 (define (type->class type-name)
-  ;; TODO(sharon):
+  ;; TODO(sharon): DONE!
   ;; Note that the following will have to change when we have the CDK and
   ;; components may be defined in packages other than
   ;; com.google.appinventor.components.runtime
