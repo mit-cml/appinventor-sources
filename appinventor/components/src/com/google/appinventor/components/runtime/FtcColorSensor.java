@@ -313,6 +313,25 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
+  @SimpleFunction(description = "Create an HSV (hue, saturation, value)")
+  public Object CreateHSV(float hue, float saturation, float value) {
+    try {
+      if (hsv instanceof float[]) {
+        float[] array = (float[]) hsv;
+        if (array.length == 3) {
+          return array[0];
+        }
+      }
+      form.dispatchErrorOccurredEvent(this, "Hue",
+          ErrorMessages.ERROR_FTC_INVALID_HSV);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Hue",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
   @SimpleFunction(description = "Return the hue from the given HSV (hue, saturation, value)")
   public float Hue(Object hsv) {
     try {
