@@ -163,6 +163,9 @@ public class Form extends Activity
   // AppInventor lifecycle: listeners for the Initialize Event
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
 
+  // To prepare the Screen's standard options menu to be displayed.
+  private OnPrepareOptionsMenuListener onPrepareOptionsMenuListener;
+
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
   protected String startupValue = "";
@@ -1663,11 +1666,28 @@ public class Form extends Activity
     // This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
+
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.clear();
+
     // add the menu items
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
     addAboutInfoToMenu(menu);
+
+    if(onPrepareOptionsMenuListener != null) {
+      onPrepareOptionsMenuListener.onPrepareOptionsMenu(menu);
+    }
+
     return true;
+  }
+
+  public void registerForOnPrepareOptionsMenu(OnPrepareOptionsMenuListener component) {
+    onPrepareOptionsMenuListener = component;
   }
 
   public void addExitButtonToMenu(Menu menu) {

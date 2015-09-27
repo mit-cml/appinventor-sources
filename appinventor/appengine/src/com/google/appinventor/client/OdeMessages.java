@@ -5502,6 +5502,23 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SelectionColorProperties();
 
+  // =========== SimpleMenu
+  @DefaultMessage("icon1")
+  @Description("")
+  String Icon1Properties();
+
+  @DefaultMessage("icon2")
+  @Description("")
+  String Icon2Properties();
+
+  @DefaultMessage("icon3")
+  @Description("")
+  String Icon3Properties();
+
+  @DefaultMessage("icon4")
+  @Description("")
+  String Icon4Properties();
+
   // Missing translations from 4/8/2015 -- Should sort into appropriate place
 
   @DefaultMessage("LaunchPicker")
