@@ -549,6 +549,14 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM = 'string';
     Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP = '';
 
+    Blockly.Msg.LANG_LISTS_TO_STRING_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#join';
+    Blockly.Msg.LANG_LISTS_TO_STRING_TITLE_TO_STRING = 'list join';
+    Blockly.Msg.LANG_LISTS_TO_STRING_INPUT_LIST = ' list';
+    Blockly.Msg.LANG_LISTS_TO_STRING_INPUT_SEPARATOR = 'separator';
+    Blockly.Msg.LANG_LISTS_TO_STRING_INPUT = 'list join list %1 separator %2';
+    Blockly.Msg.LANG_LISTS_TO_STRING_TOOLTIP = 'Returns the string representation of the list, with the specified '
+        + 'separator between elements.';
+
     Blockly.Msg.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
     Blockly.Msg.LANG_TEXT_APPEND_TO = 'to';
     Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT = 'append text';

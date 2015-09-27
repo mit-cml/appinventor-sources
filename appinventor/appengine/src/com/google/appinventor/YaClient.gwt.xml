@@ -108,18 +108,18 @@
   <!-- English language, independent of country -->
   <extend-property name="locale" values="en"/>
   <!-- Simplified Chinese -->
-  <extend-property name="locale" values="zh_CN"/>
+  <!-- <extend-property name="locale" values="zh_CN"/>  -->
   <!-- Traditional Chinese -->
-  <extend-property name="locale" values="zh_TW"/>
+  <!-- <extend-property name="locale" values="zh_TW"/> -->
   <!-- Spanish from Spain -->
-  <extend-property name="locale" values="es_ES"/>
-  <!-- French -->
-  <extend-property name="locale" values="fr_FR"/>
-  <!-- Italian -->
-  <extend-property name="locale" values="it_IT"/>
-  <!-- Russian -->
-  <extend-property name="locale" values="ru"/>
+  <!--<extend-property name="locale" values="es_ES"/>  -->
+ <!-- French -->
+  <!--<extend-property name="locale" values="fr_FR"/>  -->
+ <!-- Italian -->
+  <!--<extend-property name="locale" values="it_IT"/>  -->
+ <!-- Russian -->
+  <!--<extend-property name="locale" values="ru"/>  -->
 
-  <set-property-fallback name="locale" value="en"/>
+ <set-property-fallback name="locale" value="en"/>
 
 </module>

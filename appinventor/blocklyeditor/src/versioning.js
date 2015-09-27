@@ -1488,7 +1488,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // see these new options.  (Hal is not sure why not, but it seems to work.)
     // The math convert block was added
     // No language blocks need to be modified to upgrade to version 16.
-    19: "noUpgrade"
+    19: "noUpgrade",
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 20
+    // Emery Otopalik's new List to String Block and List From JSON String Block
+    20: "noUpgrade"
 
   }, // End Language upgraders
 

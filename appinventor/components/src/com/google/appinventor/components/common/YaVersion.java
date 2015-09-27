@@ -352,8 +352,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 137:
   // - FORM_COMPONENT_VERSION was incremented to 18.
   // - MEDIASTORE_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 139:
+  // - BLOCKS_LANGUAGE_VERSION = was incremented to 20
 
-  public static final int YOUNG_ANDROID_VERSION = 138;
+  public static final int YOUNG_ANDROID_VERSION = 139;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -411,7 +413,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 19:
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  // For BLOCKS_LANGUAGE_VERSION 20:
+  // The list-to-string block was added
+  public static final int BLOCKS_LANGUAGE_VERSION = 20;
 
   // ................................. Component Version Numbers ..................................
 
@@ -625,6 +629,7 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 14:
   // - The Screen1.AppName was added and no block need to be changed.
   // For FORM_COMPONENT_VERSION 15:
+  // - The UseJSONFormat was added as a property.
   // - The Screen.ShowStatusBar was added.
   // For FORM_COMPONENT_VERSION 16:
   // - TitleVisible property was added

@@ -2756,6 +2756,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String UseGPSProperties();
 
+  @DefaultMessage("UseJSONFormat")
+  @Description("")
+  String UseJSONFormatProperties();
+
   @DefaultMessage("UseServiceAuthentication")
   @Description("")
   String UseServiceAuthenticationProperties();

@@ -178,6 +178,8 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  public static boolean useJSONFormat; //EMERY use JSON representation for lists
+
   private int formWidth;
   private int formHeight;
 
@@ -259,6 +261,7 @@ public class Form extends Activity
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    UseJSONFormat(true); //emery
     ShowStatusBar(true);
     TitleVisible(true);
   }
@@ -1825,6 +1828,29 @@ public class Form extends Activity
       throw e.getTargetException();
     }
   }
+
+  /**
+   * Determines if lists should be represented using JSON Display or the old way
+   *
+   * @param useJSONFormat true if use JSON Display for return values.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue= "True")
+  @SimpleProperty(userVisible = false,
+          description = "Set this to use JSON Display Representation for lists.")
+  public void UseJSONFormat (boolean useJSONFormat) {
+    this.useJSONFormat = useJSONFormat;
+  }
+
+  /**
+   * UseJSONFormat getter method.
+   *
+   * @return true if return values are printed in JSON format.
+   */
+  public static boolean UseJSONFormat() {
+    return useJSONFormat;
+  }
+
 
   /**
    * Perform some action related to fullscreen video display.

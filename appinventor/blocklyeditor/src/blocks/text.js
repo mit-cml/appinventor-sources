@@ -84,6 +84,25 @@ Blockly.Blocks['text_join'] = {
 
 };
 
+Blockly.Blocks['lists_to_string'] = {
+  // Make a string from lists with separator between elements
+  category : 'Text',
+  helpUrl : Blockly.Msg.LANG_LISTS_TO_STRING_HELPURL,
+  init : function() {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+    var inputList = Blockly.Blocks.Utilities.YailTypeToBlocklyType("list", Blockly.Blocks.Utilities.INPUT);
+    var inputSeparator = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_LISTS_TO_STRING_INPUT,
+        ['LIST', inputList, Blockly.ALIGN_RIGHT],
+        ['SEPARATOR', inputSeparator, Blockly.ALIGN_RIGHT],
+        Blockly.ALIGN_RIGHT);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_TO_STRING_TOOLTIP);
+    this.setInputsInline(false);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LISTS_TO_STRING_TITLE_TO_STRING }]
+};
+
 Blockly.Blocks['text_join_item'] = {
   // Add items.
   init: function () {
