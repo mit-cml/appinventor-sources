@@ -4260,7 +4260,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String channelParams();
 
-  @DefaultMessage("colorTextString")
+  @DefaultMessage("colorText")
   @Description("")
   String colorTextParams();
 
@@ -4287,6 +4287,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("hsv")
   @Description("")
   String hsvParams();
+
+  @DefaultMessage("hue")
+  @Description("")
+  String hueParams();
 
   @DefaultMessage("i2cAddress")
   @Description("")
@@ -4348,6 +4352,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String redParams();
 
+  @DefaultMessage("saturation")
+  @Description("")
+  String saturationParams();
+
   @DefaultMessage("set")
   @Description("")
   String setParams();
@@ -4375,6 +4383,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("unsigned")
   @Description("")
   String unsignedParams();
+
+  @DefaultMessage("value")
+  @Description("")
+  String valueParams();
 
   @DefaultMessage("voltage")
   @Description("")
@@ -5639,6 +5651,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("CreateByteArray")
   @Description("")
   String CreateByteArrayMethods();
+
+  @DefaultMessage("CreateHSV")
+  @Description("")
+  String CreateHSVMethods();
 
   @DefaultMessage("Enable")
   @Description("")

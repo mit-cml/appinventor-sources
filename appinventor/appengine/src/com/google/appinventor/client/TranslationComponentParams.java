@@ -210,6 +210,7 @@ public class TranslationComponentParams {
     map.put("frequency", MESSAGES.frequencyParams());
     map.put("green", MESSAGES.greenParams());
     map.put("hsv", MESSAGES.hsvParams());
+    map.put("hue", MESSAGES.hueParams());
     map.put("i2cAddress", MESSAGES.i2cAddressParams());
     map.put("input", MESSAGES.inputParams());
     map.put("joystickDeadzone", MESSAGES.joystickDeadzoneParams());
@@ -225,6 +226,7 @@ public class TranslationComponentParams {
     map.put("port", MESSAGES.portParams());
     map.put("position", MESSAGES.positionParams());
     map.put("red", MESSAGES.redParams());
+    map.put("saturation", MESSAGES.saturationParams());
     map.put("set", MESSAGES.setParams());
     map.put("sourceByteArray", MESSAGES.sourceByteArrayParams());
     map.put("sourcePosition", MESSAGES.sourcePositionParams());
@@ -232,6 +234,7 @@ public class TranslationComponentParams {
     map.put("threshold", MESSAGES.thresholdParams());
     map.put("time", MESSAGES.timeParams());
     map.put("unsigned", MESSAGES.unsignedParams());
+    map.put("value", MESSAGES.valueParams());
     map.put("voltage", MESSAGES.voltageParams());
     return map;
   }
