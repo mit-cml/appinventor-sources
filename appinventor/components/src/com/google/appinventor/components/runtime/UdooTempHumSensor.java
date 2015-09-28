@@ -27,7 +27,7 @@ import org.json.JSONObject;
     description = "A component that interfaces with temperature/humidity sensors connected to UDOO boards.",
     category = ComponentCategory.UDOO,
     nonVisible = true,
-    iconName = "images/udoo.png")
+    iconName = "images/udooTemperature.png")
 @SimpleObject
 public class UdooTempHumSensor extends AndroidNonvisibleComponent
 implements UdooConnectedInterface

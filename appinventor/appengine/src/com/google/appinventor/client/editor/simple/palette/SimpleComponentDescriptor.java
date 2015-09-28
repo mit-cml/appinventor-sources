@@ -124,6 +124,11 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/udoo.png", images.udoo());
+    bundledImages.put("images/udooAxis.png", images.udooAxis());
+    bundledImages.put("images/udooCamera.png", images.udooCamera());
+    bundledImages.put("images/udooColor.png", images.udooColor());
+    bundledImages.put("images/udooIc.png", images.udooIc());
+    bundledImages.put("images/udooTemperature.png", images.udooTemperature());
     imagesInitialized = true;
   }
 

@@ -508,4 +508,19 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/udoo.png")
   ImageResource udoo();
 
+  @Source("com/google/appinventor/images/udooAxis.png")
+  ImageResource udooAxis();
+
+  @Source("com/google/appinventor/images/udooCamera.png")
+  ImageResource udooCamera();
+
+  @Source("com/google/appinventor/images/udooColor.png")
+  ImageResource udooColor();
+
+  @Source("com/google/appinventor/images/udooIc.png")
+  ImageResource udooIc();
+
+  @Source("com/google/appinventor/images/udooTemperature.png")
+  ImageResource udooTemperature();
+
 }

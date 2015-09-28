@@ -27,7 +27,7 @@ import org.json.JSONObject;
     description = "A component that interfaces with color sensors connected to UDOO boards.",
     category = ComponentCategory.UDOO,
     nonVisible = true,
-    iconName = "images/udoo.png")
+    iconName = "images/udooColor.png")
 @SimpleObject
 public class UdooColorSensor extends AndroidNonvisibleComponent
 implements UdooConnectedInterface

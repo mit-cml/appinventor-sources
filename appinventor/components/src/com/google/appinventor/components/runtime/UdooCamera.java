@@ -33,7 +33,7 @@ import java.util.Date;
         "the Picture property of an Image component.",
    category = ComponentCategory.UDOO,
    nonVisible = true,
-   iconName = "images/udoo.png")
+   iconName = "images/udooCamera.png")
 @SimpleObject
 public class UdooCamera extends Camera {
 
