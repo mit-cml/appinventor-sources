@@ -2215,6 +2215,13 @@ textarea::-webkit-input-placeholder {
   cursor: pointer;
   width: auto;
 }
+.app-actions .copylink-textbox {
+  width: 90%;
+  margin: 15px 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
 .app-actions .action-button {
 }
 .app-actions .action-textarea {

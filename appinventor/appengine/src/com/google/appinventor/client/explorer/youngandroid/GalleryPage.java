@@ -28,7 +28,9 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,6 +55,8 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.user.client.ui.Hyperlink;
 
 /**
  * The gallery page shows a single app from the gallery
@@ -946,20 +950,44 @@ panel
    * Helper method called by constructor to initialize the report section
    */
   private void initAppShare() {
+    //the link to share requires the "http://" for the twitter button to work
+    String shareLink = "http://" + Window.Location.getHost() + MESSAGES.galleryGalleryIdAction() + app.getGalleryAppId();
     final HTML sharePrompt = new HTML();
     sharePrompt.setHTML(MESSAGES.gallerySharePrompt());
     sharePrompt.addStyleName("primary-prompt");
     final TextBox urlText = new TextBox();
-    urlText.addStyleName("action-textbox");
-    urlText.setText(Window.Location.getHost() + MESSAGES.galleryGalleryIdAction() + app.getGalleryAppId());
+    
+
+    urlText.addStyleName("copylink-textbox");
+    urlText.setText(shareLink);
     urlText.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         urlText.selectAll();
       }
     });
+
+
+
+    /*Adds a button to share the app via twitter*/
+    String tweetText="Check out my app, " + app.getTitle() + " on the AppInventor Galley!  ";
+   
+    String tweetLinkTag = "<a href='twitter.com/share' class='twitter-share-button' data-text='"+tweetText +"'data-hashtags='aigallery'" +
+            "data-url='"+ shareLink+"'>Tweet</a>";
+    HTML tweetLink = new HTML(tweetLinkTag);
+
+    Document doc = Document.get();
+    ScriptElement script = doc.createScriptElement();
+    script.setSrc("http://platform.twitter.com/widgets.js");
+    script.setType("text/javascript");
+    script.setLang("javascript");
+    doc.getBody().appendChild(script);
+
+    /*Add copy link icon*/
+
     appSharePanel.add(sharePrompt);
     appSharePanel.add(urlText);
+    appSharePanel.add(tweetLink);
   }
 
   /**
