@@ -47,7 +47,14 @@ Blockly.Yail['global_declaration'] = function() {
 Blockly.Yail['lexical_variable_get'] = function() {
   var code = "";
   var name = this.getFieldValue('VAR');
-  
+  if (this.eventparam) {        // If this exists, its the english (default) value
+    name = this.eventparam;     // which is what we should use in the Yail
+  } else {
+    Blockly.LexicalVariable.getEventParam(this);
+    if (this.eventparam) {
+      name = this.eventparam;
+    }
+  }
   var commandAndName = Blockly.Yail.getVariableCommandAndName(name);
   code += commandAndName[0];
   name = commandAndName[1];
@@ -61,6 +68,14 @@ Blockly.Yail['lexical_variable_set'] = function() {
   var argument0 = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || '0';
   var code = "";
   var name = this.getFieldValue('VAR');
+  if (this.eventparam) {        // If this exists, its the english (default) value
+    name = this.eventparam;     // which is what we should use in the Yail
+  } else {
+    Blockly.LexicalVariable.getEventParam(this);
+    if (this.eventparam) {
+      name = this.eventparam;
+    }
+  }
   var commandAndName = Blockly.Yail.setVariableCommandAndName(name);
   code += commandAndName[0];
   name = commandAndName[1];

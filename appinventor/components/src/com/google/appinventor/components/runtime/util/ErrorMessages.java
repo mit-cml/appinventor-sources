@@ -180,8 +180,10 @@ public final class ErrorMessages {
   //TextToSpeech errors
   public static final int ERROR_TTS_NOT_READY = 2701;
 
-  // Please start the next group of error numbers at 2801.
+  // AndroidViewComponent errors
+  public static final int ERROR_BAD_PERCENT = 2801;
 
+  // Please start the next group of error numbers at 2901.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -449,6 +451,7 @@ public final class ErrorMessages {
     // FusiontablesControl errors
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");

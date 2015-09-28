@@ -651,8 +651,18 @@ none
                   <h2 id="SoundRecorder"> SoundRecorder </h2>
                     <img src="images/soundRecorder.png" alt="Picture of Sound Recorder component">
                     <p> Multimedia component that records audio. </p>
-                    <h3> Properties </h3>
-                    none
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>SavedRecording</code></dt>
+                      <dd>Specifies the path to the file where the
+                      recording should be stored. If this proprety is
+                      the empty string, then starting a recording will
+                      create a file in an appropriate location.  If
+                      the property is not the empty string, it should
+                      specify a complete path to a file in an existing
+                      directory, including a file name with the
+                      extension .3gp.</dd>
+                    </dl>
                     <h3> Events </h3>
                     <dl>
                       <dt> <code> AfterSoundRecorded(text sound) </code> </dt>
@@ -732,8 +742,8 @@ and AvailableCountries properties.</p></p>
   <dt><code>Language</code></dt>
   <dd>Sets the language for TextToSpeech. This changes the way that
   words are pronounced, not the actual language that is spoken.  For
-  example setting the language to and speaking English text with sound
-  like someone speaking English with a Frernch accent.</dd>
+  example setting the language to French and speaking English text will sound
+  like someone speaking English with a French accent.</dd>
   <dt><code>Pitch</code></dt>
   <dd>Sets the Pitch for TextToSpeech. The values should be between 0 and 2
   where lower values lower the tone of synthesized voice and greater

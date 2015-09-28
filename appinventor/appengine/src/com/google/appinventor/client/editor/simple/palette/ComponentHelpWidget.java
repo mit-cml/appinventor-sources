@@ -12,6 +12,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.common.base.Strings;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -56,26 +57,29 @@ public final class ComponentHelpWidget extends Image {
       HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(scd.getName() + "-helpString"));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
-      // Create link to more information.  This would be cleaner if
-      // GWT supported String.format.
-      HTML link;
-      String categoryDocUrlString = scd.getCategoryDocUrlString();
-      if (categoryDocUrlString == null) {
-        link = new HTML("<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-            "/reference/components/index.html\" target=_blank>" + MESSAGES.moreInformation() + "</a>");
-      } else {
-        link = new HTML("<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-            "/reference/components/" + categoryDocUrlString + ".html#" + scd.getName() +
-            "\" target=_blank>" + MESSAGES.moreInformation() + "</a>");
-      }
-      link.setStyleName("ode-ComponentHelpPopup-Link");
-
       // Create panel to hold the above three widgets and act as the
       // popup's widget.
       VerticalPanel inner = new VerticalPanel();
       inner.add(titleBar);
       inner.add(helpText);
-      inner.add(link);
+
+      // Create link to more information.  This would be cleaner if
+      // GWT supported String.format.
+      String referenceComponentsUrl = Ode.getInstance().getSystemConfig().getReferenceComponentsUrl();
+      if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
+        if (!referenceComponentsUrl.endsWith("/")) {
+          referenceComponentsUrl += "/";
+        }
+        String categoryDocUrlString = scd.getCategoryDocUrlString();
+        String url = (categoryDocUrlString == null)
+            ? referenceComponentsUrl + "index.html"
+            : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+        HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +
+            MESSAGES.moreInformation() + "</a>");
+        link.setStyleName("ode-ComponentHelpPopup-Link");
+        inner.add(link);
+      }
+
       setWidget(inner);
 
       // When the panel is closed, save the time in milliseconds.
