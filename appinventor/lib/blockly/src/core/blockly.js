@@ -513,6 +513,13 @@ Blockly.showContextMenu_ = function(e) {
       }
     }
 
+    var exportOption = {enabled: true};
+    exportOption.text = Blockly.Msg.EXPORT_IMAGE;
+    exportOption.callback = function() {
+      Blockly.ExportBlocksImage.onclickExportBlocks(Blockly.mainWorkspace.getMetrics());
+    }
+    options.push(exportOption);
+
     // Option to collapse top blocks.
     var collapseOption = {enabled: hasExpandedBlocks};
     collapseOption.text = Blockly.Msg.COLLAPSE_ALL;
