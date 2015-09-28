@@ -6,5 +6,5 @@ package com.google.appinventor.components.runtime.udoo;
 
 public interface UdooInterruptibleInterface
 {
-  public void InterruptFired();
+  public void InterruptFired(int pin);
 }

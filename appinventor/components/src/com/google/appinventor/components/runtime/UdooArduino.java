@@ -248,11 +248,11 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   }
   
   @SimpleEvent(description = "Fires when the Arduino triggers an interrupt routine.")
-  public void InterruptFired()
+  public void InterruptFired(int pinNumber)
   {
     Log.d(TAG, "InterruptFired event");
     
-    EventDispatcher.dispatchEvent(this, "InterruptFired");
+    EventDispatcher.dispatchEvent(this, "InterruptFired", pinNumber);
   }
   
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")

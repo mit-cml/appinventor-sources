@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -36,7 +37,13 @@ class UdooRequestsRegistry
         return;
       }
       
-      component.InterruptFired();
+      int pin = -1;
+      try {
+        pin = response.getInt("pin");
+      } catch (JSONException ex) {
+      }
+      
+      component.InterruptFired(pin);
       return;
     }
     
