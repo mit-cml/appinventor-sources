@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * The gallery page shows a single app from the gallery
@@ -103,6 +104,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appComments;
   private FlowPanel appCommentsList;
   private FlowPanel returnToGallery;
+  private FlowPanel reportAppPanel;
+  private PopupPanel reportPopupPanel;
 //private String tagSelected;
 
   public static final int VIEWAPP = 0;
@@ -315,6 +318,7 @@ panel
     appsByTags = new FlowPanel();
     appsRemixes = new FlowPanel();
     returnToGallery = new FlowPanel();
+    reportAppPanel = new FlowPanel();
 //    tagSelected = "";
 
     appCreated = new Label();
@@ -803,7 +807,7 @@ panel
     appActionTabs.addStyleName("app-actions");
     appActionTabs.add(appDescPanel, "Description");
     appActionTabs.add(appSharePanel, "Share");
-    appActionTabs.add(appReportPanel, "Report");
+    appActionTabs.add(appReportPanel, "");
     appActionTabs.selectTab(0);
     appActionTabs.addStyleName("app-actions-tabs");
     appDetails.add(appSecondaryWrapper);
@@ -815,9 +819,29 @@ panel
         ode.switchToGalleryView();
       }
     });
+
+    //Report label
+    Label reportLabel = new Label("Report");
+    reportPopupPanel = new PopupPanel(true);
+    reportPopupPanel.setWidget(appReportPanel);
+    reportPopupPanel.addStyleName("reportPopupPanel");
+
+    reportLabel.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        reportPopupPanel.show();
+        reportPopupPanel.center();
+        /*appActionTabs.selectTab(2);*/
+      }
+    });
+    reportAppPanel.add(reportLabel);
+    reportAppPanel.addStyleName("reportLabel");
+    appSecondaryWrapper.add(reportAppPanel);
+
     returnToGallery.add(returnLabel);
     returnToGallery.addStyleName("gallery-nav-return");
     returnToGallery.addStyleName("primary-link");
+
     appSecondaryWrapper.add(returnToGallery); //
   }
 
@@ -899,13 +923,17 @@ panel
     final HTML reportPrompt = new HTML();
     reportPrompt.setHTML(MESSAGES.galleryReportPrompt());
     reportPrompt.addStyleName("primary-prompt");
+    reportPrompt.addStyleName("reportTitle");
     final TextArea reportText = new TextArea();
     reportText.addStyleName("action-textarea");
+    reportText.addStyleName("reportForm");
     final Button submitReport = new Button(MESSAGES.galleryReportButton());
     submitReport.addStyleName("action-button");
+    submitReport.addStyleName("reportSubButton");
     appReportPanel.add(reportPrompt);
     appReportPanel.add(reportText);
     appReportPanel.add(submitReport);
+
 
     final OdeAsyncCallback<Boolean> isReportdByUserCallback = new OdeAsyncCallback<Boolean>(
         // failure message
@@ -917,10 +945,22 @@ panel
               reportText.setVisible(false);
               submitReport.setVisible(false);
               submitReport.setEnabled(false);
+              //recenter the window
+              reportPopupPanel.center();
+              reportPopupPanel.hide();
             } else {
               submitReport.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
+
+                  //hide report panel so it does not show while contents are loading
+                  reportPopupPanel.hide();
+
+
+
                   final OdeAsyncCallback<Long> reportClickCallback = new OdeAsyncCallback<Long>(
+
+
+
                       // failure message
                       MESSAGES.galleryError()) {
                         @Override
@@ -933,6 +973,10 @@ panel
                     };
                   Ode.getInstance().getGalleryService().addAppReport(app, reportText.getText(),
                       reportClickCallback);
+
+                  //recenter the window
+                  reportPopupPanel.center();
+
                 }
               });
             }

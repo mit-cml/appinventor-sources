@@ -2199,7 +2199,6 @@ textarea::-webkit-input-placeholder {
 .primary-link,
 .moderator-link {
   color: #b3c833;
-  border-bottom: 1px dotted #b3c833;
   font-weight: 300; font-size: 14px; line-height: 1.75;
 }
 .moderator-link {
@@ -2210,8 +2209,6 @@ textarea::-webkit-input-placeholder {
 .primary-link:hover,
 .primary-link-small:hover,
 .moderator-link:hover {
-  background-color: #b3c833;
-  color: white;
   cursor: pointer;
   width: auto;
 }
@@ -2289,4 +2286,36 @@ textarea::-webkit-input-placeholder {
   display: block;
   height: 0;
   clear: both;
+}
+.reportLabel{
+  float:left;
+  padding: 30px 0 0;
+  color: #b3c833;
+}
+.reportLabel:hover {
+  cursor: pointer;
+}
+.reportForm{
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 16px;
+  display: block;
+}
+.reportSubButton{
+   margin-left: auto;
+   margin-right: auto;
+   display: block;
+   margin-bottom: 23px;
+}
+.reportTitle{
+    padding: 14px;
+    margin-top: 0px;
+    background-color: #8FC202;
+    color: white;
+    font-size: 13px;
+}
+.reportPopupPanel{
+  padding-top:0px!important;
+  padding-bottom:0px!important;
 }
