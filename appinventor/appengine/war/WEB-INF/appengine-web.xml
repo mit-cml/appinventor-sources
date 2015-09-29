@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <application></application>
-  <version>1</version>
+  <application>appinventor2-1023</application>
+  <version>myprofile</version>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
@@ -51,14 +51,14 @@
     <property name="use.whitelist" value="false"/>
 
     <!-- Name of storage bucket in Google Cloud Store -->
-    <property name="gcs.bucket" value="" />
+    <property name="gcs.bucket" value="ai2bucket" />
     <!-- Whether or not to use GCS for storage -->
     <property name="use.gcs" value="true" />
 
     <!-- Name of gallery bucket in Google Cloud Store -->
-    <property name="gallery.bucket" value="" />
+    <property name="gallery.bucket" value="ai2bucket" />
     <!-- Whether or not to use the gallery -->
-    <property name="use.gallery" value="false" />
+    <property name="use.gallery" value="true" />
 
     <!-- Gallery Admin Email -->
     <property name="gallery.admin.email" value="" />
