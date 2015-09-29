@@ -328,9 +328,9 @@ public class Ode implements EntryPoint {
         if(gallerySettings.galleryEnabled() == true){
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
           projectToolbar.setPublishOrUpdateButtonVisible(true);
-          GalleryClient.getInstance().setSystemEnvironmet(settings.getEnvironment());
+          GalleryClient.getInstance().setSystemEnvironment(settings.getEnvironment());
           GalleryListBox.loadGalleryList();
-          topPanel.showGalleryLink(true);
+          topPanel.showGalleryLink(true);  
           if(user.isModerator()){
             ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);

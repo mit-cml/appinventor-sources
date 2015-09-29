@@ -28,7 +28,9 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,6 +55,8 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.user.client.ui.Hyperlink;
 
 /**
  * The gallery page shows a single app from the gallery
@@ -470,8 +474,8 @@ panel
       });
       container.add(image);
 
-      if(gallery.getSystemEnvironmet() != null &&
-          gallery.getSystemEnvironmet().toString().equals("Development")){
+      if(gallery.getSystemEnvironment() != null &&
+          gallery.getSystemEnvironment().toString().equals("Development")){
         final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
           // failure message
           MESSAGES.galleryError()) {
@@ -597,6 +601,8 @@ panel
     initLikeSection(container);
     // Adds dynamic feature
     initFeatureSection(container);
+    // Adds dynamic tutorial
+    initTutorialSection(container);
     // Adds dynamic salvage
     initSalvageSection(container);
     // Adds dynamic salvage
@@ -946,20 +952,44 @@ panel
    * Helper method called by constructor to initialize the report section
    */
   private void initAppShare() {
+    //the link to share requires the "http://" for the twitter button to work
+    String shareLink = "http://" + Window.Location.getHost() + MESSAGES.galleryGalleryIdAction() + app.getGalleryAppId();
     final HTML sharePrompt = new HTML();
     sharePrompt.setHTML(MESSAGES.gallerySharePrompt());
     sharePrompt.addStyleName("primary-prompt");
     final TextBox urlText = new TextBox();
-    urlText.addStyleName("action-textbox");
-    urlText.setText(Window.Location.getHost() + MESSAGES.galleryGalleryIdAction() + app.getGalleryAppId());
+    
+
+    urlText.addStyleName("copylink-textbox");
+    urlText.setText(shareLink);
     urlText.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         urlText.selectAll();
       }
     });
+
+
+
+    /*Adds a button to share the app via twitter*/
+    String tweetText="Check out this app, " + app.getTitle() + ",  built with App Inventor. You can open it in the gallery at";
+   
+    String tweetLinkTag = "<a href='twitter.com/share' class='twitter-share-button' data-text='"+tweetText +"' data-hashtags='appinventorapps' data-count='none'" +
+            "data-url='"+ shareLink+"'>Tweet</a>";
+    HTML tweetLink = new HTML(tweetLinkTag);
+
+    Document doc = Document.get();
+    ScriptElement script = doc.createScriptElement();
+    script.setSrc("http://platform.twitter.com/widgets.js");
+    script.setType("text/javascript");
+    script.setLang("javascript");
+    doc.getBody().appendChild(script);
+
+    /*Add copy link icon*/
+
     appSharePanel.add(sharePrompt);
     appSharePanel.add(urlText);
+    appSharePanel.add(tweetLink);
   }
 
   /**
@@ -1158,7 +1188,58 @@ panel
       }
     });
   }
+  
+  /**
+   * Helper method called by constructor to initialize the tutorial section
+   * @param container   The container that feature label reside
+   */
+  private void initTutorialSection(Panel container) { //TODO: Update the location of this button
+    final User currentUser = Ode.getInstance().getUser();
+    if(currentUser.getType() != User.MODERATOR){     //not admin
+      return;
+    }
 
+    final Label tutorialPrompt = new Label(MESSAGES.galleryEmptyText());
+    tutorialPrompt.addStyleName("primary-link");
+    container.add(tutorialPrompt);
+
+    final OdeAsyncCallback<Boolean> isTutorialCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if (bool) { // If the app is already featured before, the prompt should show as unfeatured
+              tutorialPrompt.setText(MESSAGES.galleryUntutorialText());
+            } else {    // otherwise show as featured
+              tutorialPrompt.setText(MESSAGES.galleryTutorialText());
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isTutorial(app.getGalleryAppId(),
+        isTutorialCallback); // This happens when user click on like, we need to check if it's already liked
+
+    tutorialPrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Boolean> markTutorialCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean bool) {
+                if (bool) { // If the app is already featured, the prompt should show as unfeatured
+                  tutorialPrompt.setText(MESSAGES.galleryUntutorialText());
+                } else {    // otherwise show as featured
+                  tutorialPrompt.setText(MESSAGES.galleryTutorialText());
+                }
+                //update gallery list
+                gallery.appWasChanged();
+              }
+          };
+        Ode.getInstance().getGalleryService().markAppAsTutorial(app.getGalleryAppId(),
+            markTutorialCallback);
+      }
+    });
+  }
+  
   /**
    * Helper method called by constructor to initialize the edit it button
    * Only seen by app owner.
@@ -1399,7 +1480,7 @@ panel
   private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, MESSAGES.galleryByAuthorText(), MESSAGES.galleryAppsByAuthorSidebar() + MESSAGES.gallerySingleSpaceText() + app.getDeveloperName(), refreshable, true);
+        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, MESSAGES.galleryByAuthorText(), MESSAGES.galleryAppsByAuthorSidebar() + MESSAGES.gallerySingleSpaceText() + app.getDeveloperName(), true, true);
         break;
 //      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
 //        String tagTitle = "Tagged with " + tagSelected;
