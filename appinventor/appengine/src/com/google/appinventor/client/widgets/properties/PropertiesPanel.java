@@ -50,7 +50,11 @@ public class PropertiesPanel extends Composite {
     label.setStyleName("ode-PropertyLabel");
     panel.add(label);
     PropertyEditor editor = property.getEditor();
-    editor.setStyleName("ode-PropertyEditor");
+    // Since UIObject#setStyleName(String) clears existing styles, only
+    // style the editor if it hasn't already been styled during instantiation.
+    if(!editor.getStyleName().contains("PropertyEditor")) {
+      editor.setStyleName("ode-PropertyEditor");
+    }
     panel.add(editor);
   }
 

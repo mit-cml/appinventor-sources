@@ -72,6 +72,7 @@ abstract class MockHVLayoutBase extends MockLayout {
   private enum VerticalAlignment {Top, Center, Bottom};
   private VerticalAlignment alignV;
 
+  private enum Dim { HEIGHT, WIDTH };
 
   /**
    * Creates a new linear layout with the specified orientation.
@@ -292,9 +293,12 @@ abstract class MockHVLayoutBase extends MockLayout {
       height += COMPONENT_SPACING;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the height is fill parent, use automatic height.
-      int childHeight = (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT)
-          ? childLayoutInfo.calculateAutomaticHeight()
-          : childLayoutInfo.height;
+      int childHeight = childLayoutInfo.height;
+      if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
+        childHeight = childLayoutInfo.calculateAutomaticHeight();
+      } else if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childHeight = convertFromPercent(childHeight, Dim.HEIGHT);
+      }
       height += childHeight + BORDER_SIZE;
     }
     height += COMPONENT_SPACING;
@@ -315,10 +319,13 @@ abstract class MockHVLayoutBase extends MockLayout {
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       usedHeight += COMPONENT_SPACING;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
+      int childHeight = childLayoutInfo.height;
+      if (childHeight < MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childHeight = convertFromPercent(childHeight, Dim.HEIGHT);
+      if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
-        usedHeight += childLayoutInfo.height + BORDER_SIZE;
+        usedHeight += childHeight + BORDER_SIZE;
       }
     }
     usedHeight += COMPONENT_SPACING;
@@ -340,10 +347,16 @@ abstract class MockHVLayoutBase extends MockLayout {
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.width = containerLayoutInfo.width - BORDER_SIZE;
       }
+      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childLayoutInfo.width = convertFromPercent(childLayoutInfo.width, Dim.WIDTH);
+      }
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = remainingHeight / countFillParent - BORDER_SIZE;
         // if any component has height fill-parent then there's no remaining height
         finalRemainingHeight = 0;
+      }
+      if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childLayoutInfo.height = convertFromPercent(childLayoutInfo.height, Dim.HEIGHT);
       }
 
       // If the child is a container call layoutChildren for it.
@@ -458,10 +471,13 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the width is fill parent, use automatic width.
-      int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
-          ? childLayoutInfo.calculateAutomaticWidth()
-              : childLayoutInfo.width;
-          width += childWidth + BORDER_SIZE;
+      int childWidth = childLayoutInfo.width;
+      if (childWidth <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childWidth = convertFromPercent(childWidth, Dim.WIDTH);
+      childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
+        ? childLayoutInfo.calculateAutomaticWidth()
+        : childWidth;
+      width += childWidth + BORDER_SIZE;
     }
     return width;
   }
@@ -488,6 +504,8 @@ abstract class MockHVLayoutBase extends MockLayout {
         usedWidth += COMPONENT_SPACING;
       }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
+      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childLayoutInfo.width = convertFromPercent(childLayoutInfo.width, Dim.WIDTH);
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
@@ -523,9 +541,13 @@ abstract class MockHVLayoutBase extends MockLayout {
         // if any component has width fill parent then there will be no final remaining width
         finalRemainingWidth = 0;
       }
+
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = containerLayoutInfo.height - BORDER_SIZE;
       }
+
+      if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childLayoutInfo.height = convertFromPercent(childLayoutInfo.height, Dim.HEIGHT);
 
       maxHeight = Math.max(maxHeight, childLayoutInfo.height + BORDER_SIZE);
 
@@ -534,27 +556,6 @@ abstract class MockHVLayoutBase extends MockLayout {
         ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
       }
     }
-
-    // centerY is where the middle of each child should be: either vertically
-    // centered at the top of the arrangement, or each child at the middle of the
-    // arrangement.
-
-   //we have to initialize this, or else Eclipse will whine at us
-    int centerY = 0;
-
-    switch (alignV) {
-    case Top:
-      centerY = maxHeight / 2;
-      break;
-    case Center:
-      centerY = containerLayoutInfo.height / 2;
-      break;
-    case Bottom:
-      centerY = containerLayoutInfo.height - (maxHeight / 2);
-    default:
-      OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
-    }
-
 
     // NOTE(hal) What is this for?
     layoutHeight = 0;
@@ -595,9 +596,25 @@ abstract class MockHVLayoutBase extends MockLayout {
       int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
       int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
 
-      // The middle of the child needs to be at centerY, so the
-      // top of the child is above that by childHeightWithBorder/2
-      int topY = centerY - (childHeightWithBorder / 2);
+      // topY is where the top of each component goes.  It starts out either at zero, or offset
+      // so the entire stack is vertically centered in the arrangement (i.e., offset by
+      // (containerLayoutInfo.height / 2) - (childHeightWithBorder / 2)) or offset so that
+      // the bottom of the stack of components is at the bottom of the layout
+      // (i.e., offset by containerLayoutInfo.height - childHeightWithBorder).
+      int topY = 0;
+
+      switch (alignV) {
+        case Top:
+          topY = 0;
+          break;
+        case Center:
+          topY = (containerLayoutInfo.height / 2) - (childHeightWithBorder / 2);
+          break;
+        case Bottom:
+          topY = containerLayoutInfo.height - childHeightWithBorder;
+        default:
+          OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+      }
 
       container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
       layoutHeight = Math.max(layoutHeight, topY + childHeightWithBorder);
@@ -726,6 +743,22 @@ abstract class MockHVLayoutBase extends MockLayout {
       // As above, this error should not happen
       ErrorReporter.reportError(MESSAGES.badValueForVerticalAlignment(alignment));
     }
+  }
+
+  private int convertFromPercent(int childLength, Dim dim) {
+    MockForm form = container.getForm();
+    int parentLength;
+    if (dim == Dim.WIDTH) {
+      parentLength = form.screenWidth;
+    } else {
+      parentLength = form.usableScreenHeight;
+    }
+
+    if (childLength > MockVisibleComponent.LENGTH_PERCENT_TAG)
+      return childLength;       // Shouldn't happen
+
+    childLength = parentLength * (- (childLength - MockVisibleComponent.LENGTH_PERCENT_TAG)) / 100;
+    return childLength;
   }
 
 }

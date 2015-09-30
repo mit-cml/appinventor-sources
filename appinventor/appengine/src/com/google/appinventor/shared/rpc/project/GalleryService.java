@@ -94,6 +94,15 @@ public interface GalleryService extends RemoteService {
   GalleryAppListResult getMostDownloadedApps(int start, int count);
 
   /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  GalleryAppListResult getMostLikedApps(int start, int count);
+
+  /**
    * Returns a wrapped class which contains a list of featured gallery app
    * @param start start index
    * @param count count number
@@ -191,6 +200,16 @@ public interface GalleryService extends RemoteService {
   boolean isLikedByUser(long galleryId);
 
   /**
+   * salvage the gallery app by given galleryId
+   */
+  void salvageGalleryApp(long galleryId);
+
+  /**
+   * salvage all gallery app
+   */
+  void salvageAllGalleryApps();
+
+  /**
   * adds a report (flag) to a gallery app
   * @param app app that is being reported
   * @param reportText the report
@@ -204,7 +223,7 @@ public interface GalleryService extends RemoteService {
   * @param count number to retrieve
   * @return the list of reports
   */
-  List<GalleryAppReport> getRecentReports(int start, int count);
+  GalleryReportListResult getRecentReports(int start, int count);
 
   /**
   * gets existing reports
@@ -212,7 +231,7 @@ public interface GalleryService extends RemoteService {
   * @param count number to retrieve
   * @return the list of reports
   */
-  List<GalleryAppReport> getAllAppReports(int start, int count);
+  GalleryReportListResult getAllAppReports(int start, int count);
 
   /**
   * check if an app is reported by a user
@@ -240,44 +259,32 @@ public interface GalleryService extends RemoteService {
   List<GalleryApp> remixedTo(long galleryId);
 
   /**
-   * send a message from system
+   * send an Email
    * @param senderId sender id
    * @param receiverId receiver id
-   * @param message message body
-   * @return
+   * @param receiverEmail receiver email
+   * @param title title of email
+   * @param body body of email
+   * @return emailId
    */
-  long sendMessageFromSystem(String senderId, String receiverId, String message);
+  long sendEmail(String senderId, String receiverId, String receiverEmail,
+      String title, String body);
 
   /**
-   * get all messages of current user
-   * @return list of Message
+   * check if ready to send app stats to user
+   * @param userId
+   * @param galleryId
+   * @param adminEmail
+   * @param currentHost
    */
-  List<Message> getMessages();
+  boolean checkIfSendAppStats(String userId, long galleryId, String adminEmail, String currentHost);
 
   /**
-   * get message based on given message id
-   * @param msgId message id
-   * @return Message message
+   * get email based on given email id
+   * @param emailId email id
+   * @return Email email
    */
-  Message getMessage(long msgId);
-
-  /**
-   * mark message as read based on given id
-   * @param msgId message id
-   */
-  void readMessage(long msgId);
-
-  /**
-   * delete message based on given id
-   * @param msgId message id
-   */
-  void deleteMessage(long msgId);
-
-  /**
-   * mark app stats as read based on given app id
-   * @param appId app id
-   */
-  void appStatsWasRead(long appId);
+  Email getEmail(long emailId);
 
   /**
    * mark an report as resolved
@@ -301,11 +308,11 @@ public interface GalleryService extends RemoteService {
    * Store moderation actions based on actionType
    * @param reportId
    * @param galleryId
-   * @param messageId
+   * @param emailId
    * @param moderatorId
    * @param actionType
    */
-  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview);
+  void storeModerationAction(long reportId, long galleryId, long emailId, String moderatorId, int actionType, String moderatorName, String emailPreview);
 
   /**
    * get moderation actions based on given reportId

@@ -6,12 +6,13 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,8 +43,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that displays a list of text elements." +
         " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. <br> Warning: This component will" +
-        " not work correctly on Screens that are scrollable.</p>",
+        " or using the Elements block in the blocks editor. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -73,6 +73,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private int textColor;
   private static final int DEFAULT_TEXT_COLOR = Component.COLOR_WHITE;
 
+  private int selectionColor;
+  private static final int DEFAULT_SELECTION_COLOR = Component.COLOR_LTGRAY;
+
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
 
@@ -86,6 +89,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     items = YailList.makeEmptyList();
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
+    view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
+    view.setScrollingCacheEnabled(false);
     listViewLayout = new LinearLayout(container.$context());
     listViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -128,6 +133,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
     Width(Component.LENGTH_FILL_PARENT);
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    SelectionColor(DEFAULT_SELECTION_COLOR);
 
     textColor = DEFAULT_TEXT_COLOR;
     TextColor(textColor);
@@ -208,7 +214,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
   @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
-  		"signal an error if the elements are not text strings.",
+                "signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     items = ElementsUtil.elements(itemsList, "Listview");
@@ -254,8 +260,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     int size = items.size();
     Spannable [] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
-      String itemString = items.get(i).toString();
-      // Is there a more efficient way to do this that does not
+      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
+      // YailList.ToStringArray.
+      // ListView however, does the string conversion via the adapter, so we must ensure
+      // that the adapter uses YailListElementToSring
+      String itemString = YailList.YailListElementToString(items.get(i));
+      // Is there a more efficient way to do conversion to spannable strings that does not
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
@@ -381,6 +391,39 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   public void BackgroundColor(int argb) {
       backgroundColor = argb;
       setBackgroundColor(backgroundColor);
+  }
+
+  /**
+   * Returns the listview's selection color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Icecream Sandwich or earlier
+   *
+   * @return selection color in the format 0xAARRGGBB, which includes
+   * alpha, red, green, and blue components
+   */
+  @SimpleProperty(description = "The color of the item when it is selected.")
+  public int SelectionColor() {
+    return selectionColor;
+  }
+
+  /**
+   * Specifies the ListView's selection color as an alpha-red-green-blue
+   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * indicates fully transparent and {@code FF} means opaque.
+   * Is not supported on Icecream Sandwich or earlier
+   *
+   * @param argb selection color in the format 0xAARRGGBB, which
+   * includes alpha, red, green, and blue components
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void SelectionColor(int argb) {
+    selectionColor = argb;
+    view.setSelector(new GradientDrawable(
+      GradientDrawable.Orientation.TOP_BOTTOM, new int[]{argb, argb}
+    ));
   }
 
   /**

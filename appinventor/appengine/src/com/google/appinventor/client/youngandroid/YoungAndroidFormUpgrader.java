@@ -236,6 +236,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("CheckBox")) {
         srcCompVersion = upgradeCheckBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Clock")) {
+        srcCompVersion = upgradeClockProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ContactPicker")) {
         srcCompVersion = upgradeContactPickerProperties(componentProperties, srcCompVersion);
 
@@ -244,6 +247,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("EmailPicker")) {
         srcCompVersion = upgradeEmailPickerProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("File")) {
+        srcCompVersion = upgradeFileProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
@@ -410,6 +416,36 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The ActivityStarter.ActivityCanceled event was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // Extras property was added to accept a list of key-value pairs to put to the intent
+      String defaultValue = "";
+      boolean sendWarning = false;
+
+      if (componentProperties.containsKey("ExtraKey")) {
+        String extraKeyValue = componentProperties.get("ExtraKey").asString().getString();
+        if (!extraKeyValue.equals(defaultValue)) {
+          sendWarning = true;
+        }
+      }
+
+      if (componentProperties.containsKey("ExtraValue")) {
+        String extraValueValue = componentProperties.get("ExtraValue").asString().getString();
+        if (!extraValueValue.equals(defaultValue)) {
+          sendWarning = true;
+        }
+      }
+
+      if (sendWarning) {
+        Window.alert(MESSAGES.extraKeyValueWarning());
+      }
+
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -518,6 +554,16 @@ public final class YoungAndroidFormUpgrader {
       // The AvailableCountires property was added
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // the Country designer property was changed to use a ChoicePropertyEditor
+      // the Language designer property was changed to use a ChoicePropertyEditor
+      srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // default value was added to the Country designer property
+      // default value was added to the Language designer property
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -629,6 +675,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeContactPickerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -651,6 +707,11 @@ public final class YoungAndroidFormUpgrader {
       // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The ContactUri property was added.
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -660,6 +721,11 @@ public final class YoungAndroidFormUpgrader {
       // The SetDateToDisplay and LaunchPicker methods were added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // SetDateToDisplayFromInstant, and Instant property are added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -675,6 +741,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // RequestFocus function was added (via TextBoxBase)
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFileProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if(srcCompVersion < 2) {
+      // File.AfterFileSaved event was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -771,10 +847,37 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 13;
     }
-    if (srcCompVersion < 14) {
+
+    if (srcCompVersion < 15) {
       // The AppName property was added.
-      srcCompVersion = 14;
+      // The Compatibility Mode property was added. No properties need to be modified to update to
+      // version 7.
+      srcCompVersion = 15;
     }
+    if (srcCompVersion < 16) {
+      // The ShowStatusBar property was added.
+      // The TitleVisible property was added.
+      srcCompVersion = 16;
+    }
+    if (srcCompVersion < 17) {
+      // The CompatibilityMode property was added
+      // When upgrading projects, turn on Compatbility Mode
+      // NOTE: This change never saw production, but was on various
+      // Test Instances
+      componentProperties.put("CompatibilityMode", new ClientJsonString("True"));
+      srcCompVersion = 17;
+    }
+
+    if (srcCompVersion < 18) {
+      // Compatilibity Mode property turned into the Sizing property
+      if (componentProperties.containsKey("CompatibilityMode")) {
+        componentProperties.remove("CompatibilityMode");
+      } else {
+        componentProperties.put("Sizing", new ClientJsonString("Responsive"));
+      }
+      srcCompVersion = 18;
+    }
+
     return srcCompVersion;
   }
 
@@ -931,6 +1034,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the TextSize property
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Added the SelectionColor property
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1068,6 +1175,11 @@ public final class YoungAndroidFormUpgrader {
       // The SetTimeToDisplay and LaunchPicker methods were added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // SetTimeToDisplayFromInstant, and Instant property are added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

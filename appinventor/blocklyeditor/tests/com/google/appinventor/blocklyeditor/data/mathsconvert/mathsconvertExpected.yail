@@ -1,0 +1,14 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_test.mathsConvert.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "math" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+(init-runtime)

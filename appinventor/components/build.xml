@@ -14,7 +14,7 @@
   <target name="all"
           depends="CommonConstants,AndroidRuntime,
                    JsonComponentDescription,XmlComponentDescription,
-                   ComponentList,Barcode">
+                   ComponentList,ComponentTranslation,Barcode">
   </target>
 
   <target name="tests"
@@ -124,6 +124,8 @@
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+        <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
+        <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -225,6 +227,8 @@
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
+          <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
+          <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -356,6 +360,25 @@
           todir="${public.build.dir}"/>
     <copy file="${ComponentList-class.dir}/simple_components_build_info.json"
           todir="${public.build.dir}"/>
+  </target>
+
+  <!-- =====================================================================
+       ComponentTranslation: create ComponentsTranslation.java
+       ===================================================================== -->
+  <target name="ComponentTranslation"
+          description="Build ComponentsTranslation.java at build time
+                       from annotations"
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="ComponentTranslation-class.dir" location="${class.dir}/ComponentTranslation" />
+    <mkdir dir="${ComponentTranslation-class.dir}" />
+
+    <ai.apt apt-classdir="${ComponentTranslation-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.ComponentTranslationGenerator"
+            apt-target="${ComponentTranslation-class.dir}/ComponentsTranslation.java"/>
+
+    <copy file="${ComponentTranslation-class.dir}/ComponentsTranslation.java"
+          todir="${public.build.dir}/ComponentTranslation/src/com/google/appinventor/client/" />
+
   </target>
 
   <!-- =====================================================================

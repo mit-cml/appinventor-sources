@@ -35,6 +35,7 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.DISABLE_BLOCK = 'Inhabilitar Bloque';
     Blockly.Msg.ENABLE_BLOCK = 'Habilitar Bloque';
     Blockly.Msg.HELP = 'Ayuda';
+    Blockly.Msg.EXPORT_IMAGE = 'Exportar como Imagen';
     Blockly.Msg.COLLAPSE_ALL = 'Ocultar Bloques';
     Blockly.Msg.EXPAND_ALL = 'Mostrar Bloques';
     Blockly.Msg.ARRANGE_H = 'Ordenar Bloques Horizontalmente';
@@ -480,6 +481,36 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '¿es un número?';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = 'Comprueba si algo es un número.';
+
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = 'is base 10?';
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = 'Tests if something is decimal.';
+
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = 'is hexadecimal?';
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tests if something is hexadecimal.';
+
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'is binary?';
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = 'Tests if something is binary.';
+
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = 'convert number';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = 'base 10 to hex';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = 'Returns the conversion from decimal to hexadecimal';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = 'hex to base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = 'Returns the conversion from hexadecimal to decimal';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = 'base 10 to binary';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = 'Returns the conversion from decimal to binary';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = 'binary to base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Returns the conversion from binary to decimal';
 
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = 'Texto';
@@ -1087,25 +1118,25 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = '/reference/components/animation.html#imagespritemethods';
 
 //Sensor components
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensor.html#AccelerometerSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#accelerometersensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#accelerometersensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#accelerometersensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensors.html#AccelerometerSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#accelerometersensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#accelerometersensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#accelerometersensormethods';
 
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensor.html#BarcodeScanner";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensor.html#barcodescannerproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensor.html#barcodescannerevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensor.html#barcodescannermethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensors.html#BarcodeScanner";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensors.html#barcodescannerproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensors.html#barcodescannerevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensors.html#barcodescannermethods';
 
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensor.html#LocationSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#locationsensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#locationsensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#locationsensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensors.html#LocationSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#locationsensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#locationsensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#locationsensormethods';
 
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensor.html#OrientationSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#orientationsensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#orientationsensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#orientationsensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensors.html#OrientationSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#orientationsensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#orientationsensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#orientationsensormethods';
 
 //Social components
     Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "/reference/components/social.html#ContactPicker";
@@ -1274,6 +1305,15 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "¿Estás totalmente seguro?";
     Blockly.Msg.REPL_FACTORY_RESET = 'Esto intentará devolver tu emulador a su estado “de fábrica”. Si habías actualizado Companion en el emulador, seguramente tendrás que hacerlo de nuevo.';
 
+// Messages from Blockly.js
+    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Estás seguro de que quieres borrar todos los %1 bloques?";
+
+// Blocklyeditor.js
+    Blockly.Msg.GENERATE_YAIL = "Generate Yail";
+    Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Cerrar Error";
+    Blockly.Msg.CAN_NOT_DO_IT = 'El comando "Do it" no está disponible';
+    Blockly.Msg.CONNECT_TO_DO_IT = 'Necesitas estar conectado a la Companion or al Emulador para utilizar "Do It"';
   }
 };
 

@@ -44,6 +44,7 @@ Blockly.ScrollbarPair = function(workspace) {
   this.corner_ = Blockly.createSvgElement('rect',
       {'height': Blockly.Scrollbar.scrollbarThickness,
       'width': Blockly.Scrollbar.scrollbarThickness,
+      'id': 'rectCorner',
       'style': 'fill: #fff'}, null);
   Blockly.Scrollbar.insertAfter_(this.corner_, workspace.getBubbleCanvas());
 };
@@ -497,7 +498,7 @@ Blockly.Scrollbar.prototype.onScroll_ = function() {
  */
 Blockly.Scrollbar.prototype.set = function(value) {
   // Move the scrollbar slider.
-  this.svgKnob_.setAttribute(this.horizontal_ ? 'x' : 'y', value * this.ratio_);
+  this.svgKnob_.setAttribute(this.horizontal_ ? 'x' : 'y', this.constrainKnob_(value * this.ratio_));
   this.onScroll_();
 };
 

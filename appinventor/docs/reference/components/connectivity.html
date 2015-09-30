@@ -495,9 +495,12 @@
   <dd></dd>
   <dt><code>DataUri</code></dt>
   <dd></dd>
-  <dt><code>ExtraKey</code></dt>
+  <dt><code>Extras</code></dt>
+  <dd>Accepts a list of pairs which are used as key/value pairs in
+  the “Extra” field of the activity</dd>
+  <dt><code>ExtraKey<i>(Obsolete)</i></code></dt>
   <dd></dd>
-  <dt><code>ExtraValue</code></dt>
+  <dt><code>ExtraValue<i>(Obsolete)</i></code></dt>
   <dd></dd>
   <dt><code><em>Result</em></code></dt>
   <dd></dd>
@@ -513,6 +516,11 @@
 <dl>
   <dt><code>AfterActivity(text result)</code></dt>
   <dd>Event raised after this ActivityStarter returns.</dd>
+</dl>
+
+<dl>
+  <dt><code>ActivityCanceled()</code></dt>
+  <dd>Event raised if this ActivityStarter returns because the activity was canceled.</dd>
 </dl>
 
 <h3>Methods</h3>

@@ -25,11 +25,11 @@ public class GalleryModerationActionData {
   String moderatorId;
   long reportId;       // may functionally duplicated with reportKey
   long galleryId;
-  long messageId;
+  long emailId;
   int actionType;
 
   String moderatorName;
-  String messagePreview;
+  String emailPreview;
 
   @Parent Key<GalleryAppReportData> reportKey;
 }

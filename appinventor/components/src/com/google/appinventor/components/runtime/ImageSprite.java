@@ -6,6 +6,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -16,13 +22,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * Simple image-based Sprite.
@@ -59,15 +58,6 @@ public class ImageSprite extends Sprite {
   private String picturePath = "";  // Picture property
   private boolean rotates;
 
-  private Matrix mat;
-
-  private Bitmap unrotatedBitmap;
-  private Bitmap rotatedBitmap;
-  private Bitmap scaledBitmap;
-
-  private BitmapDrawable rotatedDrawable;
-  private double cachedRotationHeading;
-  private boolean rotationCached;
 
   /**
    * Constructor for ImageSprite.
@@ -77,72 +67,39 @@ public class ImageSprite extends Sprite {
   public ImageSprite(ComponentContainer container) {
     super(container);
     form = container.$form();
-    mat = new Matrix();
     rotates = true;
-    rotationCached = false;
   }
 
+  /**
+   * This method uses getWidth and getHeight directly from the bitmap,
+   * so we apply corrections for density for coordinates and size.
+   * @param canvas the canvas on which to draw
+   */
   public void onDraw(android.graphics.Canvas canvas) {
-    if (unrotatedBitmap != null && visible) {
-      int xinit = (int) Math.round(xLeft);
-      int yinit = (int) Math.round(yTop);
-      int w = Width();
-      int h = Height();
-      // If the sprite doesn't rotate,  use the original drawable
-      // otherwise use the bitmapDrawable
+    if (drawable != null && visible) {
+      int xinit = (int) (Math.round(xLeft) * form.deviceDensity());
+      int yinit = (int) (Math.round(yTop) * form.deviceDensity());
+      int w = (int)(Width() * form.deviceDensity());
+      int h = (int)(Height() * form.deviceDensity());
+      drawable.setBounds(xinit, yinit, xinit + w, yinit + h);
+      // If the sprite doesn't rotate, just draw the drawable
+      // within the bounds of the sprite rectangle
       if (!rotates) {
-        drawable.setBounds(xinit, yinit, xinit + w, yinit + h);
         drawable.draw(canvas);
       } else {
-        // compute the new rotated image if the heading has changed
-        if (!rotationCached || (cachedRotationHeading != Heading())) {
-          // Set up the matrix for the rotation transformation
-          // Rotate around the center of the sprite image (w/2, h/2)
-          // TODO(halabelson): Add a way for the user to specify the center of rotation.
-          mat.setRotate((float) -Heading(), w / 2, h / 2);
-          // We must scale the unrotated Bitmap to be the user specified size before
-          // rotating.
-          if (w != unrotatedBitmap.getWidth() || h != unrotatedBitmap.getHeight()) {
-            scaledBitmap = Bitmap.createScaledBitmap(unrotatedBitmap, w, h, true);
-          }
-          else {
-            scaledBitmap = unrotatedBitmap;
-          }
-          // Next create the rotated bitmap
-          // Careful: We use getWidth and getHeight of the unrotated bitmap, rather than the
-          // Width and Height of the sprite.  Doing the latter produces an illegal argument
-          // exception in creating the bitmap, if the user sets the Width or Height of the
-          // sprite to be larger than the image size.
-          rotatedBitmap = Bitmap.createBitmap(
-              scaledBitmap,
-              0, 0,
-              scaledBitmap.getWidth(), scaledBitmap.getHeight(),
-              mat, true);
-          // make a drawable for the rotated image and cache the heading
-          rotatedDrawable = new BitmapDrawable(rotatedBitmap);
-          cachedRotationHeading = Heading();
-        }
-        // Position the drawable:
-        // We want the center of the image to remain fixed under the rotation.
-        // To do this, we have to take account of the fact that, since the original
-        // and the rotated bitmaps are rectangular, the offset of the center point from (0,0)
-        // in the rotated bitmap will in general be different from the offset
-        // in the unrotated bitmap.  Namely, rather than being 1/2 the width and height of the
-        // unrotated bitmap, the offset is 1/2 the width and height of the rotated bitmap.
-        // So when we display on the canvas, we  need to displace the upper left away
-        // from (xinit, yinit) to take account of the difference in the offsets.
-        rotatedDrawable.setBounds(
-            xinit + w / 2 - rotatedBitmap.getWidth() / 2,
-            yinit + h / 2 - rotatedBitmap.getHeight() / 2 ,
-            // add in the width and height of the rotated bitmap
-            // to get the other right and bottom edges
-            xinit + w / 2 + rotatedBitmap.getWidth() / 2,
-            yinit + h / 2 + rotatedBitmap.getHeight() / 2);
-        rotatedDrawable.draw(canvas);
+        // if the sprite does rotate, draw the sprite on the canvas
+        // that has been rotated in the opposite direction
+        // Still within those same image bounds.
+        canvas.save();
+        // rotate the canvas for drawing.  This pivot point of the
+        // rotation will be the center of the sprite
+        canvas.rotate((float) (- Heading()), xinit + w/2, yinit + h/2);
+        drawable.draw(canvas);
+        canvas.restore();
       }
     }
   }
-
+ 
   /**
    * Returns the path of the sprite's picture
    *
@@ -174,13 +131,7 @@ public class ImageSprite extends Sprite {
       Log.e("ImageSprite", "Unable to load " + picturePath);
       drawable = null;
     }
-    // NOTE(lizlooney) - drawable can be null!
-    if (drawable != null) {
-      // we'll need the bitmap for the drawable in order to rotate it
-      unrotatedBitmap = drawable.getBitmap();
-    } else {
-      unrotatedBitmap = null;
-    }
+    // note: drawable can be null!
     registerChange();
   }
 
@@ -190,9 +141,9 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Height() {
-    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
+    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getHeight();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
     }
     return heightHint;
   }
@@ -205,11 +156,16 @@ public class ImageSprite extends Sprite {
   }
 
   @Override
+  public void HeightPercent(int pCent) {
+    // Ignore
+  }
+
+  @Override
   @SimpleProperty
   public int Width() {
-    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
+    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : drawable.getBitmap().getWidth();
+      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
     }
     return widthHint;
   }
@@ -219,6 +175,11 @@ public class ImageSprite extends Sprite {
   public void Width(int width) {
     widthHint = width;
     registerChange();
+  }
+
+  @Override
+  public void WidthPercent(int pCent) {
+    // Ignore
   }
 
   /**

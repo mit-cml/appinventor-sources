@@ -40,6 +40,12 @@ public interface UserInfoProvider {
   String getUserLink();
 
   /**
+   * Returns the email notification frequency set by user
+   * @return emailFrequency email frequency
+   */
+  int getUserEmailFrequency();
+
+  /**
    * Returns the user object.
    *
    * @return user object

@@ -111,6 +111,9 @@
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
+        <!-- Apache Http Libraries -->
+        <pathelement location="lib/apache-http/httpcore-4.3.2.jar" />
+        <pathelement location="lib/apache-http/httpmime-4.3.4.jar" />
         <!-- oauth libs -->
         <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -123,8 +126,8 @@
         <!-- acra -->
         <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->
-        <pathelement location="lib/gwt/2.5.1/gwt-dev.jar"/>
-        <pathelement location="lib/gwt/2.5.1/gwt-user.jar"/>
+        <pathelement location="lib/gwt/2.7/gwt-dev.jar"/>
+        <pathelement location="lib/gwt/2.7/gwt-user.jar"/>
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
         <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>

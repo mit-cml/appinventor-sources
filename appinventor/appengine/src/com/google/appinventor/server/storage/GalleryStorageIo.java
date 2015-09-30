@@ -9,13 +9,14 @@ package com.google.appinventor.server.storage;
 
 import java.util.List;
 
+import com.google.appinventor.shared.rpc.project.Email;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
-import com.google.appinventor.shared.rpc.project.Message;
+import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
 
 
 
@@ -79,6 +80,15 @@ public interface GalleryStorageIo {
    * @return list of {@link GalleryApp}
    */
   GalleryAppListResult getMostDownloadedApps(int start, int count);
+
+  /**
+   * Returns a wrapped class which contains a list of most liked
+   * gallery apps and total number of results in database
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
+   */
+  GalleryAppListResult getMostLikedApps(int start, int count);
 
   /**
    *Returns a wrapped class which contains a list of featured gallery app
@@ -161,6 +171,18 @@ public interface GalleryStorageIo {
    * @return true if relation exists
    */
   boolean isLikedByUser(long galleryId,String userId);
+
+  /**
+   * salvage the gallery app by given galleryId
+   * @param galleryId id of gallery app
+   */
+  void salvageGalleryApp(long galleryId);
+
+  /**
+   * salvage all gallery app
+   */
+  void salvageAllGalleryApps();
+
   /**
    * save AttributionId
    * @param galleryId id of gallery app that was like
@@ -229,19 +251,21 @@ public interface GalleryStorageIo {
   List<GalleryAppReport> getAppReports(long galleryId, int start, int count);
 
   /**
-   * Returns a list of reports (flags) for all app
+   * Returns a wrapped class which contains a list of reports (flags) for unresolved app
+   * and total number of results in database
    * @param start start index
    * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
-  List<GalleryAppReport> getAppReports(int start, int count);
+  GalleryReportListResult getAppReports(int start, int count);
   /**
-  * gets existing reports
+  * Returns a wrapped class which contains a list of reports (flags) for resolved and unresolved app
+  * and total number of results in database
   * @param start start index
   * @param count number to retrieve
   * @return the list of reports
   */
-  List<GalleryAppReport> getAllAppReports(int start, int count);
+  GalleryReportListResult getAllAppReports(int start, int count);
   /**
    * adds a report (flag) to a gallery app comment
    * @param commentId id of comment that was reported
@@ -263,57 +287,46 @@ public interface GalleryStorageIo {
   List<GalleryCommentReport> getCommentReports();
 
   /**
-   * send message from sender to receiver
+   * send email from sender to receiver
    * @param senderId sender id
    * @param receiverId receiver id
-   * @param message message body
-   * @return message id
+   * @param senderEmail sender email
+   * @param receiverEmail receiver email
+   * @param title title of email
+   * @param body body of email
+   * @return email id
    */
-  long sendMessage(String senderId, String receiverId, String message);
+  long sendEmail(String senderId, String receiverId,
+      String senderEmail, String receiverEmail,
+      String title, String body);
 
   /**
-   * delete message based on given id
-   * @param id
-   */
-  void deleteMessage(long id);
-
-  /**
-   * get list of message based on receiver id
-   * @param receiverId receiver id
-   * @return list of Message
-   */
-  List<Message> getMessages(String userId);
-
-  /**
-   * get message based on msgId
-   * @param msgId message id
+   * get email based on emailId
+   * @param emailId email id
    * @return Message message object
    */
-  Message getMessage(long msgId);
+  Email getEmail(long emailId);
 
   /**
-   * mark message as read based on given msgId
-   * @param timestamp
+   * check if read to send app stats to user
+   * @param userId
+   * @param galleryId
+   * @param adminEmail
+   * @param currentHost
    */
-  void readMessage(long msgId);
-
-  /**
-   * mark app stats as read based on given appId
-   * @param appId
-   */
-  void appStatsWasRead(long appId);
+  boolean checkIfSendAppStats(String userId, long galleryId, String adminEmail, String currentHost);
 
   /**
    * store moderation action
    * @param reportId report id
    * @param galleryId gallery id
-   * @param messageId message id
+   * @param emailId email id
    * @param moderatorId moderator id
    * @param actionType action type
    * @param moderatorName moderator name
-   * @param messagePreview message preview
+   * @param emailPreview email preview
    */
-  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview);
+  void storeModerationAction(long reportId, long galleryId, long emailId, String moderatorId, int actionType, String moderatorName, String emailPreview);
 
   /**
    * get moderation actions

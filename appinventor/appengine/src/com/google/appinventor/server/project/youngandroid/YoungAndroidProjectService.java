@@ -114,6 +114,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  // host[:port] to tell build server app host url
+  private static final Flag<String> appengineHost =
+      Flag.createFlag("appengine.host", "");
 
   public YoungAndroidProjectService(StorageIo storageIo) {
     super(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, storageIo);
@@ -122,19 +125,22 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   /**
    * Returns project settings that can be used when creating a new project.
    */
-  public static String getProjectSettings(String icon, String vCode, String vName, String useslocation, String aName) {
+  public static String getProjectSettings(String icon, String vCode, String vName,
+    String useslocation, String aName, String sizing) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
     useslocation = Strings.nullToEmpty(useslocation);
+    sizing = Strings.nullToEmpty(sizing);
     aName = Strings.nullToEmpty(aName);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
-        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" +
-        icon + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE +
-        "\":\"" + vCode +"\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME +
-        "\":\"" + vName + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION +
-        "\":\"" + useslocation + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME +
-        "\":\"" + aName + "\"}}";
+        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"" + vName +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
+        "\"}}";
   }
 
   /**
@@ -148,7 +154,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param vname the version name
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-    String icon, String vcode, String vname, String useslocation, String aname) {
+    String icon, String vcode, String vname, String useslocation, String aname, String sizing) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -168,6 +174,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
     if (aname != null) {
       contents += "aname=" + aname + "\n";
+    }
+    if (sizing != null && !sizing.isEmpty()) {
+      contents += "sizing=" + sizing + "\n";
     }
     return contents;
   }
@@ -231,6 +240,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newUsesLocation = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION));
+    String newSizing = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
     String newAName = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
@@ -250,14 +262,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldVCode = Strings.nullToEmpty(properties.getProperty("versioncode"));
     String oldVName = Strings.nullToEmpty(properties.getProperty("versionname"));
     String oldUsesLocation = Strings.nullToEmpty(properties.getProperty("useslocation"));
+    String oldSizing = Strings.nullToEmpty(properties.getProperty("sizing"));
     String oldAName = Strings.nullToEmpty(properties.getProperty("aname"));
 
     if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)
-      || !newUsesLocation.equals(oldUsesLocation) || !newAName.equals(oldAName)) {
+      || !newUsesLocation.equals(oldUsesLocation) ||
+         !newAName.equals(oldAName) || !newSizing.equals(oldSizing)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
-      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon, newVCode, newVName, newUsesLocation, newAName);
+      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
+        newVCode, newVName, newUsesLocation, newAName, newSizing);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -276,7 +291,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
-      qualifiedFormName, null, null, null, null, null);
+      qualifiedFormName, null, null, null, null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -296,7 +311,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(yailFileName, yailFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", projectName));
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0", "false", projectName, "Fixed"));
   }
 
   @Override
@@ -320,6 +335,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String aname = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME);
+    String sizing = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -338,7 +356,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // name and qualified name.
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
-        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode, vname, useslocation, aname);
+        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode, vname, useslocation, aname, sizing);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -361,7 +379,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname, useslocation, aname));
+    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
+        useslocation, aname, sizing));
   }
 
   @Override
@@ -658,9 +677,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private String getCurrentHost() {
     if (Server.isProductionServer()) {
-      String applicationVersionId = SystemProperty.applicationVersion.get();
-      String applicationId = SystemProperty.applicationId.get();
-      return applicationVersionId + "." + applicationId + ".appspot.com";
+      if (appengineHost.get()=="") {
+        String applicationVersionId = SystemProperty.applicationVersion.get();
+        String applicationId = SystemProperty.applicationId.get();
+        return applicationVersionId + "." + applicationId + ".appspot.com";
+      } else {
+        return appengineHost.get();
+      }
     } else {
       // TODO(user): Figure out how to make this more generic
       return "localhost:8888";

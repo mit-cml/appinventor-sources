@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.IOException;
 import java.util.Date;
@@ -94,7 +95,15 @@ public interface StorageIo {
    */
   void setUserName(String userId, String name);
 
-   /**
+  /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
+  String getUserName(String userId);
+
+  /**
    * Returns a string with the user's name.
    *
    * @param userId user id
@@ -108,13 +117,19 @@ public interface StorageIo {
    */
   void setUserLink(String userId, String link);
 
-   /**
-   * Returns a string with the user's name.
+  /**
+   * Returns the email notification frequency
    *
    * @param userId user id
-   * @return name
+   * @return emailFrequency email frequency
    */
-  String getUserName(String userId);
+  int getUserEmailFrequency(String userId);
+
+  /**
+   * Sets the stored email notification frequency for user with id userId
+   *
+   */
+  void setUserEmailFrequency(String userId, int emailFrequency);
 
   /**
    * Stores a string with the user's settings.
@@ -558,4 +573,13 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
+  // Check to see if user needs projects upgraded (moved to GCS)
+  // if so, add task to task queue
+  void checkUpgrade(String userId);
+
+  // Called by the task queue to actually upgrade user's projects
+  void doUpgrade(String userId);
+
+  // Retrieve the current Splash Screen Version
+  SplashConfig getSplashConfig();
 }

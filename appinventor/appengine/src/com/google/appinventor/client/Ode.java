@@ -44,6 +44,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
@@ -65,11 +66,11 @@ import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
-import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.Config;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
@@ -78,6 +79,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -93,6 +96,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -122,11 +126,6 @@ public class Ode implements EntryPoint {
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
-  /**
-   * The base URL for App Inventor documentation.
-   */
-  public static final String APP_INVENTOR_DOCS_URL = "";
-
   // Global instance of the Ode object
   private static Ode instance;
 
@@ -139,6 +138,9 @@ public class Ode implements EntryPoint {
   // Command registry
   private static final CommandRegistry COMMANDS = new CommandRegistry();
 
+  // System config
+  private static Config config;
+
   // User settings
   private static UserSettings userSettings;
 
@@ -149,9 +151,6 @@ public class Ode implements EntryPoint {
 
   // User information
   private User user;
-
-  // Unread message count, global
-  private final int[] msgCount = {0};
 
   // Template path if set by /?repo=
   private String templatePath;
@@ -248,6 +247,8 @@ public class Ode implements EntryPoint {
 
   private boolean screensLocked;
 
+  private SplashConfig splashConfig; // Splash Screen Configuration
+
   /**
    * Returns global instance of Ode.
    *
@@ -285,6 +286,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the system config.
+   *
+   * @return  system config
+   */
+  public static Config getSystemConfig() {
+    return config;
+  }
+
+  /**
    * Returns the user settings.
    *
    * @return  user settings
@@ -316,6 +326,8 @@ public class Ode implements EntryPoint {
       public void onSuccess(GallerySettings settings) {
         gallerySettings = settings;
         if(gallerySettings.galleryEnabled() == true){
+          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
+          projectToolbar.setPublishOrUpdateButtonVisible(true);
           GalleryClient.getInstance().setSystemEnvironmet(settings.getEnvironment());
           GalleryListBox.loadGalleryList();
           topPanel.showGalleryLink(true);
@@ -325,32 +337,11 @@ public class Ode implements EntryPoint {
           }
           topPanel.updateAccountMessageButton();
           PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
-
-          final String userInfo = user.getUserName();
-          // Get the message count to display right next to user
-          final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
-              // failure message
-              MESSAGES.galleryError()) {
-                @Override
-                public void onSuccess(List<Message> msgs) {
-                  msgCount[0] = 0;
-                  // get the new comment list so gui updates
-                  for (Message m : msgs) {
-                    if (m.getStatus().equalsIgnoreCase("1")) {
-                      msgCount[0]++;
-                    }
-                  }
-                  String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
-                  OdeLog.log("### MSG final = " + u);
-                  // Reset message count for further use
-                  topPanel.showUserEmail(u);
-                }
-            };
-          Ode.getInstance().getGalleryService().getMessages(messagesCallback);
-
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
+          projectToolbar.setPublishOrUpdateButtonVisible(false);
+          ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(false);
         }
       }
     };
@@ -385,6 +376,10 @@ public class Ode implements EntryPoint {
    * Switch to the Projects tab
    */
   public void switchToProjectsView() {
+    if(currentView != PROJECTS) { //If we are switching to projects view from somewhere else, clear all of the previously selected projects.
+      ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects().clear();
+      ProjectListBox.getProjectListBox().getProjectList().refreshTable(false);
+    }
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
@@ -644,6 +639,7 @@ public class Ode implements EntryPoint {
 
       @Override
       public void onSuccess(Config result) {
+        config = result;
         user = result.getUser();
         // If user hasn't accepted terms of service, ask them to.
         if (!user.getUserTosAccepted()) {
@@ -653,6 +649,8 @@ public class Ode implements EntryPoint {
           ErrorReporter.reportError(MESSAGES.serverUnavailable());
           return;
         }
+
+        splashConfig = result.getSplashConfig();
 
         if (result.getRendezvousServer() != null) {
           setRendezvousServer(result.getRendezvousServer());
@@ -1001,6 +999,22 @@ public class Ode implements EntryPoint {
     mainPanel.add(statusPanel, DockPanel.SOUTH);
     mainPanel.setSize("100%", "100%");
     RootPanel.get().add(mainPanel);
+
+    // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
+    // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
+    // control key pressed.
+    RootPanel.get().addDomHandler(new MouseWheelHandler() {
+      @Override
+      public void onMouseWheel(MouseWheelEvent event) {
+        if(event.isControlKeyDown()) {
+          // Trip the appropriate flag in PZAwarePositionCallback when the page
+          // is Pinch Zoomed. Note that this flag does not need to be removed when
+          // the browser is un-zoomed because the patched function for determining
+          // absolute position works in all circumstances.
+          PZAwarePositionCallback.setPinchZoomed(true);
+        }
+      }
+    }, MouseWheelEvent.getType());
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
@@ -1357,53 +1371,103 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Creates, visually centers, and optionally displays the dialog box
-   * that informs the user how to start learning about using App Inventor
-   * or create a new project.
-   * @param showDialog Convenience variable to show the created DialogBox.
-   * @return The created and optionally displayed Dialog box.
+   * public entry for (re)displaying the welcome dialog box.
+   * Bypass the "Do Not Show Again" feature. This is used by the
+   * menu choice to explicitly show the dialog box. This lets
+   * people who have dismissed the dialog to manually decide to
+   * see it again.
+   *
    */
-  public DialogBox createWelcomeDialog(boolean showDialog) {
+  public void showWelcomeDialog() {
+    createWelcomeDialog(true);
+  }
+
+  /**
+   * Possibly display the MIT App Inventor "Splash Screen"
+   *
+   * @param force Bypass the check to see if they have dimissed this version
+   */
+  private void createWelcomeDialog(boolean force) {
+    if (!shouldShowWelcomeDialog() && !force) {
+      openProjectsTab();
+      return;
+    }
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createWelcomeDialogText());
-    dialogBox.setHeight("400px");
-    dialogBox.setWidth("400px");
+    dialogBox.setHeight(splashConfig.height + "px");
+    dialogBox.setWidth(splashConfig.width + "px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML(MESSAGES.createWelcomeDialogMessage());
+    HTML message = new HTML(splashConfig.content);
     message.setStyleName("DialogBox-message");
-    SimplePanel holder = new SimplePanel();
+    FlowPanel holder = new FlowPanel();
     Button ok = new Button(MESSAGES.createWelcomeDialogButton());
+    final CheckBox noshow = new CheckBox(MESSAGES.doNotShow());
     ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
-          getProjectService().getProjects(new AsyncCallback<long[]>() {
-              @Override
-              public void onSuccess(long [] projectIds) {
-                if (projectIds.length == 0 && !templateLoadingFlag) {
-                  createNoProjectsDialog(true);
-                }
-              }
-
-              @Override
-              public void onFailure(Throwable projectIds) {
-                OdeLog.elog("Could not get project list");
-              }
-            });
+          if (noshow.getValue()) { // User checked the box
+            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+              changePropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION,
+                "" + splashConfig.version);
+            userSettings.saveSettings(null);
+          }
+          openProjectsTab();
         }
       });
     holder.add(ok);
+    holder.add(noshow);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
-    if (showDialog) {
-      dialogBox.show();
+    dialogBox.show();
+  }
+
+  /**
+   * Load and open the projects tab.
+   */
+  private void openProjectsTab() {
+    getProjectService().getProjects(new AsyncCallback<long[]>() {
+        @Override
+          public void onSuccess(long [] projectIds) {
+          if (projectIds.length == 0 && !templateLoadingFlag) {
+            createNoProjectsDialog(true);
+          }
+        }
+
+        @Override
+          public void onFailure(Throwable projectIds) {
+          OdeLog.elog("Could not get project list");
+        }
+      });
+  }
+
+  /*
+   * Check the user's setting to get the version of the Splash
+   * Screen that they have seen. If they have seen this version (or greater)
+   * then return false so they do not see it again. Return true to show it
+   */
+  private boolean shouldShowWelcomeDialog() {
+    if (splashConfig.version == 0) {   // Never show splash if version is 0
+      return false;             // Check first to avoid others unnecessary calls
     }
-    return dialogBox;
+    String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+      getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
+    int uversion;
+    if (value == null) {        // Nothing stored
+      uversion = 0;
+    } else {
+      uversion = Integer.parseInt(value);
+    }
+    if (uversion >= splashConfig.version) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /**
@@ -1473,21 +1537,9 @@ public class Ode implements EntryPoint {
 
   private void maybeShowSplash() {
     if (AppInventorFeatures.showSplashScreen()) {
-      createWelcomeDialog(true);
+      createWelcomeDialog(false);
     } else {
-      getProjectService().getProjects(new AsyncCallback<long[]>() {
-          @Override
-            public void onSuccess(long [] projectIds) {
-            if (projectIds.length == 0 && !templateLoadingFlag) {
-              createNoProjectsDialog(true);
-            }
-          }
-
-          @Override
-            public void onFailure(Throwable projectIds) {
-            OdeLog.elog("Could not get project list");
-          }
-        });
+      openProjectsTab();
     }
   }
 
@@ -1772,6 +1824,33 @@ public class Ode implements EntryPoint {
     holder.add(okButton);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * This dialog is showned if an account is disabled. It is
+   * completely modal with no escape. The provided URL is displayed in
+   * an iframe, so it can be tailored to each person whose account is
+   * disabled.
+   *
+   * @param Url the Url to display in the dialog box.
+   */
+
+  public void disabledAccountDialog(String Url) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.accountDisabledMessage());
+    dialogBox.setHeight("700px");
+    dialogBox.setWidth("700px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<iframe src=\"" + Url + "\" style=\"border: 0; width: 680px; height: 660px;\"></iframe>");
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
   }
