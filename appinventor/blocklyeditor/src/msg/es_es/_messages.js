@@ -35,6 +35,7 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.DISABLE_BLOCK = 'Inhabilitar Bloque';
     Blockly.Msg.ENABLE_BLOCK = 'Habilitar Bloque';
     Blockly.Msg.HELP = 'Ayuda';
+    Blockly.Msg.EXPORT_IMAGE = 'Exportar como Imagen';
     Blockly.Msg.COLLAPSE_ALL = 'Ocultar Bloques';
     Blockly.Msg.EXPAND_ALL = 'Mostrar Bloques';
     Blockly.Msg.ARRANGE_H = 'Ordenar Bloques Horizontalmente';

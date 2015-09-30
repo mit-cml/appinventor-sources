@@ -74,7 +74,7 @@ Blockly.WarningIndicator.prototype.top_ = 0;
 Blockly.WarningIndicator.prototype.createDom = function() {
 
   this.svgGroup_ = Blockly.createSvgElement('g',
-      {}, null);
+      {'id': "indicatorWarning"}, null);
   this.warningCount_ = Blockly.createSvgElement('text',
       {'fill': "black", 'transform':"translate(20,14)"},
       this.svgGroup_);

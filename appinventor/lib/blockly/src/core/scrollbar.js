@@ -44,6 +44,7 @@ Blockly.ScrollbarPair = function(workspace) {
   this.corner_ = Blockly.createSvgElement('rect',
       {'height': Blockly.Scrollbar.scrollbarThickness,
       'width': Blockly.Scrollbar.scrollbarThickness,
+      'id': 'rectCorner',
       'style': 'fill: #fff'}, null);
   Blockly.Scrollbar.insertAfter_(this.corner_, workspace.getBubbleCanvas());
 };
