@@ -421,7 +421,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   }
 
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
-      "to be written out to the device")
+      "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(int physicalPort, Object byteArray) {
     if (deviceInterfaceModule != null) {
       try {

@@ -41,7 +41,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Sets the channel output voltage.\n" +
       "If mode == 0: takes input from -1023-1023, output in the range -4 to +4 volts.\n" +
-      "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts..")
+      "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts.")
   public void SetAnalogOutputVoltage(int voltage) {
     if (analogOutput != null) {
       try {
@@ -55,7 +55,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
-      "mode 1, 2 or 3..")
+      "mode 1, 2 or 3.")
   public void SetAnalogOutputFrequency(int frequency) {
     if (analogOutput != null) {
       try {
@@ -69,9 +69,9 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Sets the channel operating mode.\n" +
-      "Mode 0: Voltage output. Range: -4V - 4V\n" +
-      "Mode 1: Sine wave output. Range: 0 - 8V\n" +
-      "Mode 2: Square wave output. Range: 0 - 8V\n" +
+      "Mode 0: Voltage output. Range: -4V - 4V.\n" +
+      "Mode 1: Sine wave output. Range: 0 - 8V.\n" +
+      "Mode 2: Square wave output. Range: 0 - 8V.\n" +
       "Mode 3: Triangle wave output. Range: 0 - 8V.")
   public void SetAnalogOutputMode(int mode) {
     if (analogOutput != null) {
