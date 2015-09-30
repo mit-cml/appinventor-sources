@@ -23,6 +23,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -41,6 +42,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -48,6 +50,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -73,7 +76,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
  * <p>This is the root container of any Android activity and also the
- * superclass for for Simple/Android UI applications.
+ * superclass for Simple/Android UI applications.
  *
  * The main form is always named "Screen1".
  *
@@ -1142,7 +1145,7 @@ public class Form extends Activity
 
  /**
   * Returns a number that encodes how contents of the arrangement are aligned vertically.
-  * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom.
+  * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom. 
   * Vertical alignment has no effect if the screen is scrollable.
   */
  @SimpleProperty(
@@ -1918,4 +1921,17 @@ public class Form extends Activity
     return sCompatibilityMode;
   }
 
+  /**
+   * Hide the soft keyboard
+   */
+  @SimpleFunction(description = "Hide the onscreen soft keyboard.")
+  public void HideKeyboard() {
+    View view = this.getCurrentFocus();
+    if (view != null) {
+      InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    } else {
+      dispatchErrorOccurredEvent(this, "HideKeyboard", ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND);
+    }
+  }
 }

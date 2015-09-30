@@ -1917,7 +1917,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Screen.CompatibililtyMode replaced with Screen.Sizing no blocks need to be
     // changed.
-    18: "noUpgrade"
+    18: "noUpgrade",
+    
+    // For FORM_COMPONENT_VERSION 19:
+    // - The Screen1.HideKeyboard method was added and no block needs to be changed.
+    19: "noUpgrade"
 
   }, // End Screen
 

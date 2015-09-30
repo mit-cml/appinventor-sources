@@ -151,7 +151,7 @@ public final class TextBox extends TextBoxBase {
     InputMethodManager imm =
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-  }
+  } 
 
   /**
    * Multi line property getter method.
