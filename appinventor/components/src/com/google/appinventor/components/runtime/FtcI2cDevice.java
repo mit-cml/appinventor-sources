@@ -126,7 +126,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   }
 
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
-      "to be written out to the device")
+      "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(Object byteArray) {
     if (i2cDevice != null) {
       try {

@@ -313,7 +313,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Create an HSV (hue, saturation, value)")
+  @SimpleFunction(description = "Create an HSV (hue, saturation, value).")
   public Object CreateHSV(float hue, float saturation, float value) {
     try {
       float[] array = new float[3];
@@ -329,7 +329,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Return the hue from the given HSV (hue, saturation, value)")
+  @SimpleFunction(description = "Return the hue from the given HSV (hue, saturation, value).")
   public float Hue(Object hsv) {
     try {
       if (hsv instanceof float[]) {

@@ -132,7 +132,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   }
 
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
-      "to be written out to the device")
+      "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(int physicalPort, Object byteArray) {
     if (legacyModule != null) {
       try {
