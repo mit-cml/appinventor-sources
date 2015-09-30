@@ -317,6 +317,13 @@ Blockly.onMouseDown_ = function(e) {
     Blockly.Drawer.hide();
   }
 
+  //if backpack exists and clicked, open or close
+  if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)) {
+    Blockly.mainWorkspace.backpack.openBackpack();
+  } else if(Blockly.mainWorkspace.backpack && Blockly.Backpack.flyout_.autoClose) {
+    Blockly.Backpack.hide();
+  }
+
   //Closes mutators
   var blocks = Blockly.mainWorkspace.getAllBlocks();
   var numBlocks = blocks.length;
@@ -341,8 +348,7 @@ Blockly.onMouseDown_ = function(e) {
   if (e.target == Blockly.svg && Blockly.isRightButton(e)) {
     // Right-click.
     Blockly.showContextMenu_(e);
-  } else if ((Blockly.readOnly || isTargetSvg) &&
-             Blockly.mainWorkspace.scrollbar) {
+  } else if ((Blockly.readOnly || isTargetSvg) && Blockly.mainWorkspace.scrollbar) {
     // If the workspace is editable, only allow dragging when gripping empty
     // space.  Otherwise, allow dragging when gripping anywhere.
     Blockly.mainWorkspace.dragMode = true;
@@ -694,7 +700,37 @@ Blockly.showContextMenu_ = function(e) {
       arrangeOptionV.callback();
   }
 
-  // Option to get help.
+  // Retrieve from backpack option.
+  var backpackRetrieve = {enabled: true};
+  backpackRetrieve.text = Blockly.Msg.BACKPACK_GET + " (" +
+      Blockly.mainWorkspace.backpack.count() + ")";
+  backpackRetrieve.callback = function() {
+      if (Blockly.mainWorkspace.backpack) {
+          Blockly.mainWorkspace.backpack.pasteBackpack(Blockly.backpack_);
+      }
+  }
+  options.push(backpackRetrieve);
+
+  // Copy all blocks to backpack option.
+  var backpackCopyAll = {enabled: true};
+  backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
+  backpackCopyAll.callback = function() {
+      if (Blockly.mainWorkspace.backpack) {
+          Blockly.mainWorkspace.backpack.addAllToBackpack();
+      }
+  }
+  options.push(backpackCopyAll);
+
+  // Clear backpack.
+  var backpackClear = {enabled: true};
+  backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
+  backpackClear.callback = function() {
+      Blockly.mainWorkspace.backpack.clear();
+      backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
+  }
+  options.push(backpackClear);
+
+// Option to get help.
   var helpOption = {enabled: false};
   helpOption.text = Blockly.Msg.HELP;
   helpOption.callback = function() {};
