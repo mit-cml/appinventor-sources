@@ -30,6 +30,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
     collapse : true,
     hasScrollbars: true,
     hasTrashcan: true,
+    hasBackpack: true,
     comments: true,
     disable: true,
     configForTypeBlock: typeblock_config
@@ -156,6 +157,7 @@ Blockly.BlocklyEditor.render = function() {
   var timeDiff = stop - start;
   Blockly.Instrument.stats.totalTime = timeDiff;
   Blockly.Instrument.displayStats("Blockly.BlocklyEditor.render");
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 }
 
 /**
