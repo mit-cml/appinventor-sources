@@ -1644,7 +1644,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The AlignHorizontal and AlignVertical properties were added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // - Added background color & image
+    3: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -2395,7 +2398,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
     // to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // - Added background color & image
+    3: "noUpgrade"
 
   }, // End VerticalArrangement upgraders
 
