@@ -62,6 +62,12 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.SORT_W = 'Sort Blocks by Width';
     Blockly.Msg.SORT_H = 'Sort Blocks by Height';
     Blockly.Msg.SORT_C = 'Sort Blocks by Category';
+    Blockly.Msg.COPY_TO_BACKPACK = 'Add to Backpack';
+    Blockly.Msg.COPY_ALLBLOCKS = 'Copy All Blocks to Backpack';
+    Blockly.Msg.BACKPACK_GET = 'Paste All Blocks from Backpack';
+    Blockly.Msg.BACKPACK_EMPTY = 'Empty the Backpack';
+    Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Are you sure you want to empty the backpack?';
+
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
@@ -78,6 +84,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
     Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
     Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
+    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';

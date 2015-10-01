@@ -336,6 +336,7 @@ public final class YaBlocksEditor extends FileEditor
   // We use EditorManager.scheduleAutoSave for that.
   public void prepareForUnload() {
     blocksArea.saveComponentsAndBlocks();
+//    blocksArea.saveBackpackContents();
   }
 
   @Override

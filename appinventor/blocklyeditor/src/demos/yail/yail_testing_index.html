@@ -25,6 +25,17 @@ var BLOCKS_LANGUAGE_VERSION;
 
 function start() {
 
+  // GWT Functions related to the backpack
+  // These have to be defined before initialization
+
+  window.parent.backpack_ = "[]";
+
+  window.parent.BlocklyPanel_getBackpack =
+    function () { return  window.parent.backpack_ };
+
+  window.parent.BlocklyPanel_setBackpack =
+    function (pack) { window.parent.backpack_ = pack };
+
   var formName = window.location.hash.substr(1);
   // Blockly.BlocklyEditor.startup(document.body, formName);
 
@@ -98,6 +109,16 @@ function start() {
       return ["", name];
     }
   }
+
+  // GWT Functions related to the backpack
+
+  window.parent.backpack_ = "";
+
+  window.parent.BlocklyPanel_getBackpack =
+    function () { return  window.parent.backpack_ };
+
+  window.parent.BlocklyPanel_setBackpack =
+    function (pack) { window.parent.backpack_ = pack };
 
   // ----- End the Blockly Initialization
 
