@@ -982,6 +982,13 @@ Blockly.LexicalVariable.eventParamMutationToDom = function (block) {
  */
 
 Blockly.LexicalVariable.getEventParam = function (block) {
+  // If it isn't undefined, then we have already computed it.
+  if (block.eventparam !== undefined) {
+    return block.eventparam;
+  }
+  block.eventparam = null;      // So if we leave without setting it to
+                                // some value, we know we have already
+                                // evaluated it.
   var prefixPair = Blockly.unprefixName(block.getFieldValue("VAR"));
   var prefix = prefixPair[0];
   if (prefix !== Blockly.globalNamePrefix) {
