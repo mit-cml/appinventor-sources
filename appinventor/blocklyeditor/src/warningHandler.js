@@ -247,10 +247,10 @@ Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
 // - added by @graceRyu
 
 Blockly.WarningHandler.checkComponentNotExistsError = function() {
-  var component_names = Blockly.ComponentInstances.getInstanceNames()
   if (this.isGeneric == true) { // Generic blocks take a component as an arg
     return false;               // So we cannot check for existence
   }
+  var component_names = Blockly.ComponentInstances.getInstanceNames();
   if (component_names.indexOf(this.instanceName) == -1) {
     var errorMessage = Blockly.ERROR_COMPONENT_DOES_NOT_EXIST;
     if(this.errorIcon){
