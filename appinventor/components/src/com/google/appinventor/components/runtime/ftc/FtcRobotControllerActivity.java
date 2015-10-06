@@ -279,11 +279,9 @@ public class FtcRobotControllerActivity extends ActivityGlue {
         Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
         startActivity(intent);
         return true;
-      /* Removed for App Inventor
-      case R.id.action_exit_app:
+      case R.id_action_exit_app:
         finish();
         return true;
-        */
       case R.id_action_view_logs:
         // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
         Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
@@ -318,7 +316,6 @@ public class FtcRobotControllerActivity extends ActivityGlue {
           utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
         }
       }
-
     }
   }
 
@@ -349,10 +346,7 @@ public class FtcRobotControllerActivity extends ActivityGlue {
     eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, thisActivity);
 
     controllerService.setCallback(callback);
-
-    // Added for App Inventor
-    aiFtcRobotController.beforeSetupRobot();
-
+    aiFtcRobotController.beforeSetupRobot(); // Added for App Inventor
     controllerService.setupRobot(eventLoop);
   }
 

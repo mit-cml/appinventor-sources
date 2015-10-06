@@ -20,6 +20,7 @@ import java.util.Map;
 class R {
   static class Ids {
     final int action_about;
+    final int action_exit_app;
     final int action_restart_robot;
     final int action_settings;
     final int action_view_logs;
@@ -38,6 +39,7 @@ class R {
 
     Ids(Resources resources, String packageName) {
       action_about = getIdentifier(resources, "action_about", "id", packageName);
+      action_exit_app = getIdentifier(resources, "action_exit_app", "id", packageName);
       action_restart_robot = getIdentifier(resources, "action_restart_robot", "id", packageName);
       action_settings = getIdentifier(resources, "action_settings", "id", packageName);
       action_view_logs = getIdentifier(resources, "action_view_logs", "id", packageName);
@@ -59,7 +61,7 @@ class R {
     final int activity_ftc_controller;
 
     Layouts(Resources resources, String packageName) {
-      activity_ftc_controller =  getIdentifier(resources, "activity_ftc_controller", "layout", packageName);
+      activity_ftc_controller = getIdentifier(resources, "activity_ftc_controller", "layout", packageName);
     }
   }
   static class Menus {
@@ -73,14 +75,14 @@ class R {
     final int pref_hardware_config_filename;
 
     Strings(Resources resources, String packageName) {
-      pref_hardware_config_filename =  getIdentifier(resources, "pref_hardware_config_filename", "string", packageName);
+      pref_hardware_config_filename = getIdentifier(resources, "AI_pref_hardware_config_filename", "string", packageName);
     }
   }
   static class Xmls {
     final int preferences;
 
     Xmls(Resources resources, String packageName) {
-      preferences =  getIdentifier(resources, "preferences", "xml", packageName);
+      preferences = getIdentifier(resources, "preferences", "xml", packageName);
     }
   }
 
@@ -91,9 +93,10 @@ class R {
   }
 
   static final int id_action_about = 1;
-  static final int id_action_restart_robot = 2;
-  static final int id_action_settings = 3;
-  static final int id_action_view_logs = 4;
+  static final int id_action_exit_app = 2;
+  static final int id_action_restart_robot = 3;
+  static final int id_action_settings = 4;
+  static final int id_action_view_logs = 5;
   private static final Map<Integer, Integer> actionIdToConstant = Maps.newHashMap();
 
   static Ids id;
@@ -112,6 +115,7 @@ class R {
     xml = new Xmls(resources, packageName);
 
     actionIdToConstant.put(id.action_about, id_action_about);
+    actionIdToConstant.put(id.action_exit_app, id_action_exit_app);
     actionIdToConstant.put(id.action_restart_robot, id_action_restart_robot);
     actionIdToConstant.put(id.action_settings, id_action_settings);
     actionIdToConstant.put(id.action_view_logs, id_action_view_logs);

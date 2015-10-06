@@ -97,19 +97,21 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return DeviceMode.WRITE_ONLY.toString();
   }
 
-  @SimpleProperty(description = "Set the device into READ_ONLY or WRITE_ONLY mode.")
-  public void MotorControllerDeviceMode(String modeString) {
+  /**
+   * MotorControllerDeviceMode property setter.
+   */
+  public void MotorControllerDeviceMode(String deviceMode) {
     if (dcMotorController != null) {
       try {
-        for (DeviceMode mode : DeviceMode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            dcMotorController.setMotorControllerDeviceMode(mode);
+        for (DeviceMode deviceModeValue : DeviceMode.values()) {
+          if (deviceModeValue.toString().equalsIgnoreCase(deviceMode)) {
+            dcMotorController.setMotorControllerDeviceMode(deviceModeValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
-            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE, modeString);
+            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE, deviceMode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "MotorControllerDeviceMode",
@@ -121,7 +123,8 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * MotorControllerDeviceMode property getter.
    */
-  @SimpleProperty(description = "The motor controller device mode.",
+  @SimpleProperty(description = "Set the device into read-only or write-only mode.\n" +
+      "Valid values are DeviceMode_READ_ONLY or DeviceMode_WRITE_ONLY.",
       category = PropertyCategory.BEHAVIOR)
   public String MotorControllerDeviceMode() {
     if (dcMotorController != null) {
@@ -139,13 +142,15 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return "";
   }
 
-  @SimpleFunction(description = "Set the current channel mode.")
-  public void SetMotorChannelMode(int motor, String mode) {
+  @SimpleFunction(description = "Set the current channel mode.\n" +
+      "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
+      "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.")
+  public void SetMotorChannelMode(int motor, String runMode) {
     if (dcMotorController != null) {
       try {
-        for (RunMode runMode : RunMode.values()) {
-          if (runMode.toString().equalsIgnoreCase(mode)) {
-            dcMotorController.setMotorChannelMode(motor, runMode);
+        for (RunMode runModeValue : RunMode.values()) {
+          if (runModeValue.toString().equalsIgnoreCase(runMode)) {
+            dcMotorController.setMotorChannelMode(motor, runModeValue);
             return;
           }
         }
@@ -158,7 +163,9 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Get the current channel mode.")
+  @SimpleFunction(description = "Get the current channel mode.\n" +
+      "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
+      "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.")
   public String GetMotorChannelMode(int motor) {
     if (dcMotorController != null) {
       try {

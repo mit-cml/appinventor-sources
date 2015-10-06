@@ -198,7 +198,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return Mode.OUTPUT.toString();
   }
 
-  @SimpleFunction(description = "Get the mode of a digital channel; INPUT or OUTPUT.")
+  @SimpleFunction(description = "Get the mode of a digital channel.\n" +
+      "Valid values are Mode_INPUT or Mode_OUTPUT.")
   public String GetDigitalChannelMode(int channel) {
     if (deviceInterfaceModule != null) {
       try {
@@ -215,13 +216,14 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return "";
   }
 
-  @SimpleFunction(description = "Set the mode of a digital channel; INPUT or OUTPUT.")
+  @SimpleFunction(description = "Set the mode of a digital channel.\n" +
+      "Valid values are Mode_INPUT or Mode_OUTPUT.")
   public void SetDigitalChannelMode(int channel, String mode) {
     if (deviceInterfaceModule != null) {
       try {
-        for (Mode modeEnum : Mode.values()) {
-          if (modeEnum.toString().equalsIgnoreCase(mode)) {
-            deviceInterfaceModule.setDigitalChannelMode(channel, modeEnum);
+        for (Mode modeValue : Mode.values()) {
+          if (modeValue.toString().equalsIgnoreCase(mode)) {
+            deviceInterfaceModule.setDigitalChannelMode(channel, modeValue);
             return;
           }
         }

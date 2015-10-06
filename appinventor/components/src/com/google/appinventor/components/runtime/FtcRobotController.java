@@ -139,13 +139,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       robotControllers.add(this);
     }
 
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = wm.getDefaultDisplay();
-    int preferredWidth = display.getWidth();
-    int preferredHeight = display.getHeight();
-    container.setChildWidth(this, preferredWidth);
-    container.setChildHeight(this, preferredHeight);
-
     form.registerForOnInitialize(this);
     requestCodeConfigureRobot = form.registerForActivityResult(this);
     requestCodeConfigureWifiChannel = form.registerForActivityResult(this);
@@ -795,6 +788,26 @@ public final class FtcRobotController extends AndroidViewComponent implements On
       "Returns true if the target bit is one.")
   public boolean IsBitSet(long bitField, int bitPosition) {
     return ((bitField >> bitPosition) & 1) == 1;
+  }
+
+  // Components don't normally override Width and Height, but we do it here so that
+  // the automatic width and height will be fill parent.
+  @Override
+  @SimpleProperty()
+  public void Width(int width) {
+    if (width == LENGTH_PREFERRED) {
+      width = LENGTH_FILL_PARENT;
+    }
+    super.Width(width);
+  }
+
+  @Override
+  @SimpleProperty()
+  public void Height(int height) {
+    if (height == LENGTH_PREFERRED) {
+      height = LENGTH_FILL_PARENT;
+    }
+    super.Height(height);
   }
 
   private void prepareToDie() {

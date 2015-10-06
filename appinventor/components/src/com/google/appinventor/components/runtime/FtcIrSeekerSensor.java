@@ -65,18 +65,18 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    * Mode property setter.
    */
   @SimpleProperty
-  public void Mode(String modeString) {
+  public void Mode(String mode) {
     if (irSeekerSensor != null) {
       try {
-        for (Mode mode : Mode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            irSeekerSensor.setMode(mode);
+        for (Mode modeValue : Mode.values()) {
+          if (modeValue.toString().equalsIgnoreCase(mode)) {
+            irSeekerSensor.setMode(modeValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE, modeString);
+            ErrorMessages.ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE, mode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Mode",
@@ -88,7 +88,8 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode of the IR seeker sensor; MODE_600HZ or MODE_1200HZ.",
+  @SimpleProperty(description = "The mode of the IR seeker sensor.\n" +
+      "Valid values are Mode_600HZ or Mode_1200HZ.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
     if (irSeekerSensor != null) {

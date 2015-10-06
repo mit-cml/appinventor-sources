@@ -31,35 +31,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<!--
+Modified for App Inventor by Liz Looney
+Copyright 2011-2015 MIT, All rights reserved
+Released under the Apache License, Version 2.0
+http://www.apache.org/licenses/LICENSE-2.0
+-->
 
-  <item
-    android:id="@+id/action_settings"
-    android:orderInCategory="99"
-    android:showAsAction="never"
-    android:title="@string/settings_menu_item"/>
-  <item
-    android:id="@+id/action_restart_robot"
-    android:orderInCategory="100"
-    android:showAsAction="never"
-    android:title="@string/restart_robot_menu_item"/>
+<resources>
 
-  <item
-    android:id="@+id/action_view_logs"
-    android:orderInCategory="101"
-    android:showAsAction="never"
-    android:title="@string/view_logs_menu_item"/>
+    <!--
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+    -->
+    <dimen name="AI_activity_horizontal_margin">128dp</dimen>
 
-  <item
-    android:id="@+id/action_about"
-    android:orderInCategory="999"
-    android:icon="@android:drawable/ic_menu_info_details"
-    android:title="@string/about_menu_item"/>
-
-  <item
-    android:id="@+id/action_exit_app"
-    android:orderInCategory="1000"
-    android:icon="@android:drawable/ic_menu_info_details"
-    android:title="@string/action_exit_app"/>
-
-</menu>
+</resources>

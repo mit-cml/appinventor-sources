@@ -1677,7 +1677,7 @@ public class Form extends Activity
     super.onCreateOptionsMenu(menu);
     // add the menu items
     // Comment out the next line if we don't want the exit button
-    addExitButtonToMenu(menu);
+    //addExitButtonToMenu(menu);
     addAboutInfoToMenu(menu);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
@@ -1698,7 +1698,7 @@ public class Form extends Activity
   }
 
   public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
+    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 1000 + menu.size(),
     "About this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {

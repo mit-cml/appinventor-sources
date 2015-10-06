@@ -66,11 +66,11 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    * Direction property setter.
    */
   @SimpleProperty
-  public void Direction(String directionString) {
+  public void Direction(String direction) {
     if (dcMotor != null) {
       try {
         try {
-          int n = Integer.decode(directionString);
+          int n = Integer.decode(direction);
           if (n == 1) {
             dcMotor.setDirection(Direction.FORWARD);
             return;
@@ -80,18 +80,18 @@ public final class FtcDcMotor extends FtcHardwareDevice {
             return;
           }
         } catch (NumberFormatException e) {
-          // Code below will try to interpret directionString as a Direction enum string.
+          // Code below will try to interpret direction as a Direction enum string.
         }
         
-        for (Direction direction : Direction.values()) {
-          if (direction.toString().equalsIgnoreCase(directionString)) {
-            dcMotor.setDirection(direction);
+        for (Direction directionValue : Direction.values()) {
+          if (directionValue.toString().equalsIgnoreCase(direction)) {
+            dcMotor.setDirection(directionValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "Direction",
-            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
+            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, direction);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Direction",
@@ -103,7 +103,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * Direction property getter.
    */
-  @SimpleProperty(description = "Whether this motor should spin forward or reverse.",
+  @SimpleProperty(description = "Whether this motor should spin forward or reverse.\n" +
+      "Valid values are Direction_FORWARD or Direction_REVERSE.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
     if (dcMotor != null) {
@@ -308,18 +309,18 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    * ChannelMode property setter.
    */
   @SimpleProperty
-  public void ChannelMode(String modeString) {
+  public void ChannelMode(String runMode) {
     if (dcMotor != null) {
       try {
-        for (RunMode mode : RunMode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            dcMotor.setChannelMode(mode);
+        for (RunMode runModeValue : RunMode.values()) {
+          if (runModeValue.toString().equalsIgnoreCase(runMode)) {
+            dcMotor.setChannelMode(runModeValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "ChannelMode",
-            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, modeString);
+            ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, runMode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "ChannelMode",
@@ -331,7 +332,9 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   /**
    * ChannelMode property getter.
    */
-  @SimpleProperty(description = "The channel mode.",
+  @SimpleProperty(description = "The channel mode.\n" +
+      "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
+      "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
   public String ChannelMode() {
     if (dcMotor != null) {
