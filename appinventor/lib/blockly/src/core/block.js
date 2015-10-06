@@ -680,6 +680,12 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
       // resize to contain the newly positioned block.  Force a second resize
       // now that the block has been deleted.
       Blockly.fireUiEvent(window, 'resize');
+    } else if (this_.workspace.backpack && this_.workspace.backpack.isOpen) {
+      var backpack = this_.workspace.backpack
+	//      var xy = this.getRelativeToSurfaceXY();
+      goog.Timer.callOnce(backpack.close, 100, backpack);
+      backpack.addToBackpack(Blockly.selected);
+      Blockly.mainWorkspace.backpack.onMouseUp(e, Blockly.selected.startDragMouseX, Blockly.selected.startDragMouseY);
     }
     if (Blockly.highlightedConnection_) {
       Blockly.highlightedConnection_.unhighlight();
@@ -825,6 +831,20 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
       };
       options.push(disableOption);
     }
+
+    // Option to copy to backpack.
+    var backpackOption = {
+      enabled:true,
+      text: Blockly.Msg.COPY_TO_BACKPACK +
+        " (" + Blockly.mainWorkspace.backpack.count() + ")",
+      callback: function() {
+        if (Blockly.selected && Blockly.selected.isDeletable() &&
+            Blockly.selected.workspace == Blockly.mainWorkspace) {
+          Blockly.mainWorkspace.backpack.addToBackpack(Blockly.selected);
+        }
+      }
+    };
+    options.push(backpackOption);
 
     // Option to delete this block.
     // Count the number of blocks that are nested in this block.
@@ -1019,6 +1039,10 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
       // Flip the trash can lid if needed.
       if (this_.workspace.trashcan && this_.isDeletable()) {
         this_.workspace.trashcan.onMouseMove(e);
+      }
+      // Flip the backpack image if needed
+      if (this_.workspace.backpack) {
+        this_.workspace.backpack.onMouseMove(e);
       }
     }
     // This event has been handled.  No need to bubble up to the document.
