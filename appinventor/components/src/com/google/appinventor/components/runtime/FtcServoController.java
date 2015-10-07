@@ -86,7 +86,8 @@ public final class FtcServoController extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Get the PWM status.")
+  @SimpleFunction(description = "Get the PWM status.\n" +
+      "Valid values are PwmStatus_ENABLED or PwmStatus_DISABLED.")
   public String GetPwmStatus() {
     if (servoController != null) {
       try {

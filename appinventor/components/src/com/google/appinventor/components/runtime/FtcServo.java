@@ -82,11 +82,11 @@ public final class FtcServo extends FtcHardwareDevice {
    * Direction property setter.
    */
   @SimpleProperty
-  public void Direction(String directionString) {
+  public void Direction(String direction) {
     if (servo != null) {
       try {
         try {
-          int n = Integer.decode(directionString);
+          int n = Integer.decode(direction);
           if (n == 1) {
             servo.setDirection(Direction.FORWARD);
             return;
@@ -96,18 +96,18 @@ public final class FtcServo extends FtcHardwareDevice {
             return;
           }
         } catch (NumberFormatException e) {
-          // Code below will try to interpret directionString as a Direction enum string.
+          // Code below will try to interpret direction as a Direction enum string.
         }
         
-        for (Direction direction : Direction.values()) {
-          if (direction.toString().equalsIgnoreCase(directionString)) {
-            servo.setDirection(direction);
+        for (Direction directionValue : Direction.values()) {
+          if (directionValue.toString().equalsIgnoreCase(direction)) {
+            servo.setDirection(directionValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "Direction",
-            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, directionString);
+            ErrorMessages.ERROR_FTC_INVALID_DIRECTION, direction);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Direction",
@@ -119,7 +119,8 @@ public final class FtcServo extends FtcHardwareDevice {
   /**
    * Direction property getter.
    */
-  @SimpleProperty(description = "Whether this servo should spin forward or reverse.",
+  @SimpleProperty(description = "Whether this servo should spin forward or reverse.\n" +
+      "Valid values are Direction_FORWARD or Direction_REVERSE.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
     if (servo != null) {

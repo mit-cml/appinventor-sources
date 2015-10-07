@@ -62,7 +62,8 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
   /**
    * Mode property getter.
    */
-  @SimpleProperty(description = "The mode of the digital channel; INPUT or OUTPUT.",
+  @SimpleProperty(description = "The mode of the digital channel.\n" +
+      "Valid values are Mode_INPUT or Mode_OUTPUT.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
     if (digitalChannel != null) {
@@ -84,18 +85,18 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
    * Mode property setter.
    */
   @SimpleProperty
-  public void Mode(String modeString) {
+  public void Mode(String mode) {
     if (digitalChannel != null) {
       try {
-        for (Mode mode : Mode.values()) {
-          if (mode.toString().equalsIgnoreCase(modeString)) {
-            digitalChannel.setMode(mode);
+        for (Mode modeValue : Mode.values()) {
+          if (modeValue.toString().equalsIgnoreCase(mode)) {
+            digitalChannel.setMode(modeValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "Mode",
-            ErrorMessages.ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE, modeString);
+            ErrorMessages.ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE, mode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "Mode",

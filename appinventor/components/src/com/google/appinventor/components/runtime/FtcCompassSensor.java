@@ -99,19 +99,20 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
     return CompassMode.CALIBRATION_MODE.toString();
   }
 
-  @SimpleFunction(description = "Change to calibration or measurement mode.")
-  public void SetMode(String mode) {
+  @SimpleFunction(description = "Change to calibration or measurement mode.\n" +
+      "Valid values are Mode_CALIBRATION or Mode_MEASUREMENT.")
+  public void SetMode(String compassMode) {
     if (compassSensor != null) {
       try {
-        for (CompassMode compassMode : CompassMode.values()) {
-          if (compassMode.toString().equalsIgnoreCase(mode)) {
-            compassSensor.setMode(compassMode);
+        for (CompassMode compassModeValue : CompassMode.values()) {
+          if (compassModeValue.toString().equalsIgnoreCase(compassMode)) {
+            compassSensor.setMode(compassModeValue);
             return;
           }
         }
 
         form.dispatchErrorOccurredEvent(this, "SetMode",
-            ErrorMessages.ERROR_FTC_INVALID_COMPASS_MODE, mode);
+            ErrorMessages.ERROR_FTC_INVALID_COMPASS_MODE, compassMode);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "SetMode",

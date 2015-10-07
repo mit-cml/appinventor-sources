@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <!--
 Copyright (c) 2014, 2015 Qualcomm Technologies Inc
 
@@ -40,40 +38,41 @@ Released under the Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
 
-  <PreferenceCategory
-    android:title="@string/AI_pref_change_wifi_channel">
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AI_AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AI_AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
 
-    <PreferenceScreen
-      android:title="@string/AI_pref_change_wifi_channel"
-      android:key="@string/pref_launch_settings">
-      <intent
-        android:action="com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity.intent.action.Launch"
-        android:targetPackage="com.qualcomm.ftccommon"
-        android:targetClass="com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity" />
-    </PreferenceScreen>
-  </PreferenceCategory>
+    <!-- Application theme. -->
+  <style name="AI_AppTheme" parent="AI_AppBaseTheme">
+    <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:textViewStyle">@style/AI_RobotoTextViewStyle</item>
+    <item name="android:buttonStyle">@style/AI_RobotoButtonStyle</item>
+  </style>
 
-  <PreferenceCategory
-    android:title="@string/AI_pref_configure_robot_title">
+  <style name="AI_RobotoTextViewStyle" parent="android:Widget.TextView">
+    <item name="android:fontFamily">sans-serif-light</item>
+  </style>
 
-    <PreferenceScreen
-      android:title="@string/AI_configure_activity"
-      android:key="@string/pref_launch_configure">
-      <intent
-        android:action="com.qualcomm.ftccommon.configuration.FtcLoadFileActivity.intent.action.Launch"
-        android:targetPackage="com.qualcomm.ftccommon"
-        android:targetClass="com.qualcomm.ftccommon.configuration.FtcLoadFileActivity" />
-    </PreferenceScreen>
+  <style name="AI_RobotoButtonStyle" parent="android:Widget.Holo.Button">
+    <item name="android:fontFamily">sans-serif-light</item>
+  </style>
 
-    <PreferenceScreen
-      android:title="@string/title_activity_autoconfigure"
-      android:key="@string/pref_launch_autoconfigure">
-      <intent
-        android:action="com.qualcomm.ftccommon.configuration.FtcAutoconfigureActivity.intent.action.Launch"
-        android:targetPackage="com.qualcomm.ftccommon"
-        android:targetClass="com.qualcomm.ftccommon.configuration.AutoConfigureActivity" />
-    </PreferenceScreen>
-  </PreferenceCategory>
-</PreferenceScreen>
+  <style name="AI_CustomAlertDialog" parent="@android:style/Theme.Dialog">
+    <item name="android:background">@color/black</item>
+    <item name="android:textColor">@color/white</item>
+    <item name="android:windowBackground">@color/dark_red_background</item>
+  </style>
+
+</resources>

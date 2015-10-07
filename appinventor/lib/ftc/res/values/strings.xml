@@ -1,35 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright (c) 2014, 2015 Qualcomm Technologies Inc
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted (subject to the limitations in the disclaimer below) provided that
+the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list
+of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+Neither the name of Qualcomm Technologies Inc nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+
+NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<!--
+Modified for App Inventor by Liz Looney
+Copyright 2011-2015 MIT, All rights reserved
+Released under the Apache License, Version 2.0
+http://www.apache.org/licenses/LICENSE-2.0
+-->
+
 <resources>
 
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="app_name">FTC Robot Controller</string>
-  -->
+  <string name="AI_app_name">FTC Robot Controller</string>
   <string name="ok">OK</string>
 
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="pref_configure_robot_title">Robot Configuration Settings</string>
-  <string name="configure_activity">Configure Robot</string>
-  <string name="title_activity_wifi_channel_selector">Wifi Channel Selection</string>
-  -->
+  <string name="AI_pref_configure_robot_title">Robot Configuration Settings</string>
+  <string name="AI_configure_activity">Configure Robot</string>
+  <string name="AI_title_activity_wifi_channel_selector">Wifi Channel Selection</string>
 
   <string name="restart_robot_menu_item">Restart Robot</string>
   <string name="action_exit_app">Exit</string>
   <!-- Modified for App Inventor -->
   <string name="about_menu_item">About FtcRobotController</string>
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="settings_activity">Settings</string>
-  -->
+  <string name="AI_settings_activity">Settings</string>
   <string name="settings_menu_item">Settings</string>
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
-  <string name="action_settings">Settings</string>
-  <string name="title_activity_autoconfigure">Autoconfigure Robot</string>
-  -->
+  <string name="AI_pref_hardware_config_filename">pref_hardware_config_filename</string>
+  <string name="AI_action_settings">Settings</string>
+  <string name="AI_title_activity_autoconfigure">Autoconfigure Robot</string>
 
   <!-- Fix Misconfigured Wifi Direct -->
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="title_activity_config_wifi_direct">Configure Wifi Direct</string>
-  -->
+  <string name="AI_title_activity_config_wifi_direct">Configure Wifi Direct</string>
 
   <!-- View Logs -->
   <string name="view_logs_menu_item">View logs</string>
@@ -38,11 +69,9 @@
   <string name="button_text_clear_logs">Clear Logs</string>
 
   <!-- Preferences -->
-  <!-- also defined in FtcCommon/res/values/values.xml
-  <string name="pref_launch_settings">pref_launch_settings</string>
-  <string name="pref_change_wifi_channel">Change Wifi Channel</string>
-  <string name="pref_launch_configure">pref_launch_configure</string>
-  <string name="pref_launch_autoconfigure">pref_launch_autoconfigure</string>
-  -->
+  <string name="AI_pref_launch_settings">pref_launch_settings</string>
+  <string name="AI_pref_change_wifi_channel">Change Wifi Channel</string>
+  <string name="AI_pref_launch_configure">pref_launch_configure</string>
+  <string name="AI_pref_launch_autoconfigure">pref_launch_autoconfigure</string>
 
 </resources>
