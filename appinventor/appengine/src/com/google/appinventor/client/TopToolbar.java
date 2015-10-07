@@ -222,8 +222,10 @@ public class TopToolbar extends Composite {
           new WindowOpenAction(feedbackUrl, "_blank", "scrollbars=1")));
       helpItems.add(null);
     }
-    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
-        new AboutCompanionAction()));
+    if (config.getFtcCompanion()) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
+          new AboutCompanionAction()));
+    }
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
@@ -245,7 +247,9 @@ public class TopToolbar extends Composite {
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    toolbar.add(connectDropDown);
+    if (config.getFtcCompanion()) {
+      toolbar.add(connectDropDown);
+    }
     toolbar.add(buildDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
@@ -691,11 +695,13 @@ public class TopToolbar extends Composite {
       db.center();
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
-      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion());
+      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
+          "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
+          "FIRST\u00AE Tech Challenge</b>";
       Config config = Ode.getInstance().getSystemConfig();
-      html += "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
-          "FIRST\u00AE Tech Challenge</b>" +
-          "<BR/><BR/>No Companion Available.";
+      if (!config.getFtcCompanion()) {
+        html += "<BR/><BR/>No Companion Available.";
+      }
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
         html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
