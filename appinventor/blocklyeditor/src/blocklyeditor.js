@@ -153,6 +153,7 @@ Blockly.BlocklyEditor.render = function() {
   var start = new Date().getTime();
   Blockly.Instrument.initializeStats("Blockly.BlocklyEditor.render");
   Blockly.mainWorkspace.render();
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
   var stop = new Date().getTime();
   var timeDiff = stop - start;
   Blockly.Instrument.stats.totalTime = timeDiff;
