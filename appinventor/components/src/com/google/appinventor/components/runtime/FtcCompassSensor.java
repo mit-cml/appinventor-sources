@@ -82,25 +82,25 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   }
 
   /**
-   * Mode_MEASUREMENT property getter.
+   * CompassMode_MEASUREMENT_MODE property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_MEASUREMENT.",
+  @SimpleProperty(description = "The constant for CompassMode_MEASUREMENT_MODE.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_MEASUREMENT() {
+  public String CompassMode_MEASUREMENT_MODE() {
     return CompassMode.MEASUREMENT_MODE.toString();
   }
 
   /**
-   * Mode_CALIBRATION property getter.
+   * CompassMode_CALIBRATION_MODE property getter.
    */
-  @SimpleProperty(description = "The constant for Mode_CALIBRATION.",
+  @SimpleProperty(description = "The constant for CompassMode_CALIBRATION_MODE.",
       category = PropertyCategory.BEHAVIOR)
-  public String Mode_CALIBRATION() {
+  public String CompassMode_CALIBRATION_MODE() {
     return CompassMode.CALIBRATION_MODE.toString();
   }
 
   @SimpleFunction(description = "Change to calibration or measurement mode.\n" +
-      "Valid values are Mode_CALIBRATION or Mode_MEASUREMENT.")
+      "Valid values are CompassMode_CALIBRATION_MODE or CompassMode_MEASUREMENT_MODE.")
   public void SetMode(String compassMode) {
     if (compassSensor != null) {
       try {

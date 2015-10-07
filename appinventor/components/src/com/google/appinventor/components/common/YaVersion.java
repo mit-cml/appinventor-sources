@@ -362,16 +362,21 @@ public class YaVersion {
   // - The FtcDcMotor component was added.
   // - The FtcDcMotorController component was added.
   // - The FtcDeviceInterfaceModule component was added.
+  // - FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION was incremented to 2.
   // - The FtcDigitalChannel component was added.
   // - The FtcGamepad component was added.
   // - The FtcGyroSensor component was added.
   // - The FtcI2cDevice component was added.
+  // - FTC_I2C_DEVICE_COMPONENT_VERSION was incremented to 2.
   // - The FtcI2cDeviceReader component was added.
   // - The FtcIrSeekerSensor component was added.
+  // - FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - The FtcLED component was added.
   // - The FtcLegacyModule component was added.
+  // - FTC_LEGACY_MODULE_COMPONENT_VERSION was incremented to 2.
   // - The FtcLightSensor component was added.
   // - The FtcLinearOpMode component was added.
+  // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 2.
   // - The FtcOpMode component was added.
   // - The FtcOpticalDistanceSensor was added.
   // - The FtcPwmOutput was added.
@@ -385,6 +390,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 140:
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 3.
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
+  // - FTC_COMPASS_SENSOR_COMPONENT_VERSION was incremented to 2.
 
   public static final int YOUNG_ANDROID_VERSION = 140;
 
@@ -676,7 +682,10 @@ public class YaVersion {
 
   public static final int FTC_COLOR_SENSOR_COMPONENT_VERSION = 1;
 
-  public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
+  // For FTC_COMPASS_SENSOR_COMPONENT_VERSION 2:
+  // - The Mode_MEASUREMENT property was renamed CompassMode_MEASUREMENT_MODE.
+  // - The Mode_CALIBRATION property was renamed CompassMode_CALIBRATION_MODE.
+  public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 2;
 
   public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
 
