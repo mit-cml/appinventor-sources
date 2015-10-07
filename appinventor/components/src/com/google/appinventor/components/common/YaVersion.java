@@ -354,7 +354,34 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 138:
   // - MEDIASTORE_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 139:
-  // - Reserved for FIRST Tech Challenge.
+  // - The FtcAccelerationSensor component was added.
+  // - The FtcAnalogInput component was added.
+  // - The FtcAnalogOutput component was added.
+  // - The FtcColorSensor component was added.
+  // - The FtcCompassSensor component was added.
+  // - The FtcDcMotor component was added.
+  // - The FtcDcMotorController component was added.
+  // - The FtcDeviceInterfaceModule component was added.
+  // - The FtcDigitalChannel component was added.
+  // - The FtcGamepad component was added.
+  // - The FtcGyroSensor component was added.
+  // - The FtcI2cDevice component was added.
+  // - The FtcI2cDeviceReader component was added.
+  // - The FtcIrSeekerSensor component was added.
+  // - The FtcLED component was added.
+  // - The FtcLegacyModule component was added.
+  // - The FtcLightSensor component was added.
+  // - The FtcLinearOpMode component was added.
+  // - The FtcOpMode component was added.
+  // - The FtcOpticalDistanceSensor was added.
+  // - The FtcPwmOutput was added.
+  // - The FtcRobotController component was added.
+  // - The FtcServo component was added.
+  // - The FtcServoController component was added.
+  // - The FtcTouchSensor component was added.
+  // - The FtcTouchSensorMultiplexer component was added.
+  // - The FtcUltrasonicSensor component was added.
+  // - The FtcVoltageSensor component was added.
   // For YOUNG_ANDROID_VERSION 140:
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 3.
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
@@ -641,6 +668,91 @@ public class YaVersion {
   //   Sizing property
   public static final int FORM_COMPONENT_VERSION = 18;
 
+  public static final int FTC_ACCELERATION_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ANALOG_INPUT_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ANALOG_OUTPUT_COMPONENT_VERSION = 1;
+
+  public static final int FTC_COLOR_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 1;
+
+  // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 2:
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 2;
+
+  public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
+
+  public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
+
+  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
+
+  // For FTC_I2C_DEVICE_COMPONENT_VERSION 2:
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 2;
+
+  public static final int FTC_I2C_DEVICE_READER_COMPONENT_VERSION = 1;
+
+  // For FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION 2:
+  // - The Mode_1200HZ_AC property was renamed Mode_1200HZ.
+  // - The Mode_600HZ_DC property was renamed Mode_600HZ.
+  public static final int FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION = 2;
+
+  public static final int FTC_LED_COMPONENT_VERSION = 1;
+
+  // For FTC_LEGACY_MODULE_COMPONENT_VERSION 2:
+  // - The EnableNxtI2cReadMode method was renamed EnableI2cReadMode.
+  // - The EnableNxtI2cWriteMode method was renamed EnableI2cWriteMode.
+  // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+  // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+  // - The IsNxtI2cPortActionFlagSet method was renamed IsI2cPortActionFlagSet.
+  // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+  // - The SetNxtI2cPortActionFlag method was renamed SetI2cPortActionFlag.
+  // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+  // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+  // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 2;
+
+  public static final int FTC_LIGHT_SENSOR_COMPONENT_VERSION = 1;
+
+  // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 2:
+  // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
+  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 2;
+
+  public static final int FTC_OP_MODE_COMPONENT_VERSION = 1;
+
+  public static final int FTC_OPTICAL_DISTANCE_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_PWM_OUTPUT_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 1;
+
+  public static final int FTC_SERVO_COMPONENT_VERSION = 1;
+
+  public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 1;
+
+  public static final int FTC_TOUCH_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ULTRASONIC_SENSOR_COMPONENT_VERSION = 1;
+
+  public static final int FTC_VOLTAGE_SENSOR_COMPONENT_VERSION = 1;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

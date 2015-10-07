@@ -47,7 +47,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_Barcode,components_ComponentList">
+          depends="init,CopyToRunLibDir,CopyFtcRes,MakeFtcResList,components_AndroidRuntime,components_Barcode,components_ComponentList,components_FtcAars">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -65,12 +65,19 @@
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
+    <!-- Copy jars -->
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
     <copy toFile="${classes.files.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
     <copy toFile="${classes.files.dir}/httpcore-4.3.2.jar" file="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
     <copy toFile="${classes.files.dir}/httpmime-4.3.4.jar" file="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
+    <copy toFile="${classes.files.dir}/FtcAnalytics.jar" file="${build.dir}/components/ftc/Analytics/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcCommon.jar" file="${build.dir}/components/ftc/FtcCommon/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcHardware.jar" file="${build.dir}/components/ftc/Hardware/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcModernRobotics.jar" file="${build.dir}/components/ftc/ModernRobotics/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcRobotCore.jar" file="${build.dir}/components/ftc/RobotCore/classes.jar" />
+    <copy toFile="${classes.files.dir}/FtcWirelessP2p.jar" file="${build.dir}/components/ftc/WirelessP2p/classes.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
@@ -123,6 +130,39 @@
     </copy>
   </target>
 
+  <target name="CopyFtcRes"
+          depends="init,components_FtcAars">
+    <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
+    <mkdir dir="${ftcres.dir}" />
+    <!-- Copy resources for FtcCommon, except layout/header.xml and
+         xml/preferences.xml (which should not override the ones in lib/ftc/res) -->
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*"
+               excludes="layout/header.xml,xml/preferences.xml" />
+    </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
+    </copy>
+  </target>
+
+  <target name="CheckFtcResList"
+          depends="init,CopyFtcRes">
+    <uptodate property="FtcResList.uptodate" targetfile="${class.dir}/BuildServer/files/ftcres.list">
+      <srcfiles dir="${ftcres.dir}" includes="**/*" />
+    </uptodate>
+  </target>
+
+  <target name="MakeFtcResList"
+          depends="CheckFtcResList"
+          unless="FtcResList.uptodate">
+    <fileset dir="${ftcres.dir}" id="ftcres.fileset">
+      <include name="**/*" />
+    </fileset>
+    <pathconvert dirsep="/" pathsep="," property="ftcres.filelist" refid="ftcres.fileset">
+      <map from="${ftcres.dir}/" to="" />
+    </pathconvert>
+		<echo message="${ftcres.filelist}" file="${class.dir}/BuildServer/files/ftcres.list" />
+  </target>
 
   <!-- =====================================================================
        Checks to see if a debug.keystore file exists in the invoker's

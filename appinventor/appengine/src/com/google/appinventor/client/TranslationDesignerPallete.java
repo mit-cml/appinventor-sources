@@ -177,6 +177,63 @@ public class TranslationDesignerPallete {
       value = MESSAGES.votingComponentPallette();
     } else if (key.equals("WebViewer")) {
       value = MESSAGES.webViewerComponentPallette();
+      // FIRST Tech Challenge
+    } else if (key.equals("FtcAccelerationSensor")) {
+      value = MESSAGES.ftcAccelerationSensorComponentPallette();
+    } else if (key.equals("FtcAnalogInput")) {
+      value = MESSAGES.ftcAnalogInputComponentPallette();
+    } else if (key.equals("FtcAnalogOutput")) {
+      value = MESSAGES.ftcAnalogOutputComponentPallette();
+    } else if (key.equals("FtcCologSensor")) {
+      value = MESSAGES.ftcColorSensorComponentPallette();
+    } else if (key.equals("FtcCompassSensor")) {
+      value = MESSAGES.ftcCompassSensorComponentPallette();
+    } else if (key.equals("FtcDcMotor")) {
+      value = MESSAGES.ftcDcMotorComponentPallette();
+    } else if (key.equals("FtcDcMotorController")) {
+      value = MESSAGES.ftcDcMotorControllerComponentPallette();
+    } else if (key.equals("FtcDeviceInterfaceModule")) {
+      value = MESSAGES.ftcDeviceInterfaceModuleComponentPallette();
+    } else if (key.equals("FtcDigitalChannel")) {
+      value = MESSAGES.ftcDigitalChannelComponentPallette();
+    } else if (key.equals("FtcGamepad")) {
+      value = MESSAGES.ftcGamepadComponentPallette();
+    } else if (key.equals("FtcGyroSensor")) {
+      value = MESSAGES.ftcGyroSensorComponentPallette();
+    } else if (key.equals("FtcI2cDevice")) {
+      value = MESSAGES.ftcI2cDeviceComponentPallette();
+    } else if (key.equals("FtcI2cDeviceReader")) {
+      value = MESSAGES.ftcI2cDeviceReaderComponentPallette();
+    } else if (key.equals("FtcIrSeekerSensor")) {
+      value = MESSAGES.ftcIrSeekerSensorComponentPallette();
+    } else if (key.equals("FtcLED")) {
+      value = MESSAGES.ftcLEDComponentPallette();
+    } else if (key.equals("FtcLegacyModule")) {
+      value = MESSAGES.ftcLegacyModuleComponentPallette();
+    } else if (key.equals("FtcLightSensor")) {
+      value = MESSAGES.ftcLightSensorComponentPallette();
+    } else if (key.equals("FtcLinearOpMode")) {
+      value = MESSAGES.ftcLinearOpModeComponentPallette();
+    } else if (key.equals("FtcOpMode")) {
+      value = MESSAGES.ftcOpModeComponentPallette();
+    } else if (key.equals("FtcOpticalDistanceSensor")) {
+      value = MESSAGES.ftcOpticalDistanceSensorComponentPallette();
+    } else if (key.equals("FtcPwmOutput")) {
+      value = MESSAGES.ftcPwmOutputComponentPallette();
+    } else if (key.equals("FtcRobotController")) {
+      value = MESSAGES.ftcRobotControllerComponentPallette();
+    } else if (key.equals("FtcServo")) {
+      value = MESSAGES.ftcServoComponentPallette();
+    } else if (key.equals("FtcServoController")) {
+      value = MESSAGES.ftcServoControllerComponentPallette();
+    } else if (key.equals("FtcTouchSensor")) {
+      value = MESSAGES.ftcTouchSensorComponentPallette();
+    } else if (key.equals("FtcTouchSensorMultiplexer")) {
+      value = MESSAGES.ftcTouchSensorMultiplexerComponentPallette();
+    } else if (key.equals("FtcUltrasonicSensor")) {
+      value = MESSAGES.ftcUltrasonicSensorComponentPallette();
+    } else if (key.equals("FtcVoltageSensor")) {
+      value = MESSAGES.ftcVoltageSensorComponentPallette();
 
       //help strings
 
@@ -308,6 +365,61 @@ public class TranslationDesignerPallete {
       value = MESSAGES.WebViewerHelpStringComponentPallette();
     } else if (key.equals("YandexTranslate-helpString")) {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
+      // FIRST Tech Challenge
+    } else if (key.equals("FtcAccelerationSensor-helpString")) {
+      value = MESSAGES.FtcAccelerationSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcAnalogInput-helpString")) {
+      value = MESSAGES.FtcAnalogInputHelpStringComponentPallette();
+    } else if (key.equals("FtcAnalogOutput-helpString")) {
+      value = MESSAGES.FtcAnalogOutputHelpStringComponentPallette();
+    } else if (key.equals("FtcColorSensor-helpString")) {
+      value = MESSAGES.FtcColorSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcCompassSensor-helpString")) {
+      value = MESSAGES.FtcCompassSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcDcMotor-helpString")) {
+      value = MESSAGES.FtcDcMotorHelpStringComponentPallette();
+    } else if (key.equals("FtcDcMotorController-helpString")) {
+      value = MESSAGES.FtcDcMotorControllerHelpStringComponentPallette();
+    } else if (key.equals("FtcDeviceInterfaceModule-helpString")) {
+      value = MESSAGES.FtcDeviceInterfaceModuleHelpStringComponentPallette();
+    } else if (key.equals("FtcDigitalChannel-helpString")) {
+      value = MESSAGES.FtcDigitalChannelHelpStringComponentPallette();
+    } else if (key.equals("FtcGamepad-helpString")) {
+      value = MESSAGES.FtcGamepadHelpStringComponentPallette();
+    } else if (key.equals("FtcGyroSensor-helpString")) {
+      value = MESSAGES.FtcGyroSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcI2cDevice-helpString")) {
+      value = MESSAGES.FtcI2cDeviceHelpStringComponentPallette();
+    } else if (key.equals("FtcIrSeekerSensor-helpString")) {
+      value = MESSAGES.FtcIrSeekerSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcLED-helpString")) {
+      value = MESSAGES.FtcLEDHelpStringComponentPallette();
+    } else if (key.equals("FtcLegacyModule-helpString")) {
+      value = MESSAGES.FtcLegacyModuleHelpStringComponentPallette();
+    } else if (key.equals("FtcLightSensor-helpString")) {
+      value = MESSAGES.FtcLightSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcLinearOpMode-helpString")) {
+      value = MESSAGES.FtcLinearOpModeHelpStringComponentPallette();
+    } else if (key.equals("FtcOpMode-helpString")) {
+      value = MESSAGES.FtcOpModeHelpStringComponentPallette();
+    } else if (key.equals("FtcOpticalDistanceSensor-helpString")) {
+      value = MESSAGES.FtcOpticalDistanceSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcPwmOutput-helpString")) {
+      value = MESSAGES.FtcPwmOutputHelpStringComponentPallette();
+    } else if (key.equals("FtcRobotController-helpString")) {
+      value = MESSAGES.FtcRobotControllerHelpStringComponentPallette();
+    } else if (key.equals("FtcServo-helpString")) {
+      value = MESSAGES.FtcServoHelpStringComponentPallette();
+    } else if (key.equals("FtcServoController-helpString")) {
+      value = MESSAGES.FtcServoControllerHelpStringComponentPallette();
+    } else if (key.equals("FtcTouchSensor-helpString")) {
+      value = MESSAGES.FtcTouchSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcTouchSensorMultiplexer-helpString")) {
+      value = MESSAGES.FtcTouchSensorMultiplexerHelpStringComponentPallette();
+    } else if (key.equals("FtcUltrasonicSensor-helpString")) {
+      value = MESSAGES.FtcUltrasonicSensorHelpStringComponentPallette();
+    } else if (key.equals("FtcVoltageSensor-helpString")) {
+      value = MESSAGES.FtcVoltageSensorHelpStringComponentPallette();
     }
     return value;
   }

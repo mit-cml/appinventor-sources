@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="app_name">FTC Robot Controller</string>
+  -->
+  <string name="ok">OK</string>
+
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="pref_configure_robot_title">Robot Configuration Settings</string>
+  <string name="configure_activity">Configure Robot</string>
+  <string name="title_activity_wifi_channel_selector">Wifi Channel Selection</string>
+  -->
+
+  <string name="restart_robot_menu_item">Restart Robot</string>
+  <string name="action_exit_app">Exit</string>
+  <!-- Modified for App Inventor -->
+  <string name="about_menu_item">About FtcRobotController</string>
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="settings_activity">Settings</string>
+  -->
+  <string name="settings_menu_item">Settings</string>
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="pref_hardware_config_filename">pref_hardware_config_filename</string>
+  <string name="action_settings">Settings</string>
+  <string name="title_activity_autoconfigure">Autoconfigure Robot</string>
+  -->
+
+  <!-- Fix Misconfigured Wifi Direct -->
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="title_activity_config_wifi_direct">Configure Wifi Direct</string>
+  -->
+
+  <!-- View Logs -->
+  <string name="view_logs_menu_item">View logs</string>
+  <string name="action_view_logs">View logs</string>
+  <string name="title_activity_view_logs">View Logs</string>
+  <string name="button_text_clear_logs">Clear Logs</string>
+
+  <!-- Preferences -->
+  <!-- also defined in FtcCommon/res/values/values.xml
+  <string name="pref_launch_settings">pref_launch_settings</string>
+  <string name="pref_change_wifi_channel">Change Wifi Channel</string>
+  <string name="pref_launch_configure">pref_launch_configure</string>
+  <string name="pref_launch_autoconfigure">pref_launch_autoconfigure</string>
+  -->
+
+</resources>

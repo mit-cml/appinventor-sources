@@ -1354,6 +1354,272 @@ Blockly.Versioning.AllUpgradeMaps =
 
   // Form is renamed to Screen. See below.
 
+  "FtcAccelerationSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcAccelerationSensor upgraders
+
+  "FtcAnalogInput": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcAnalogInput upgraders
+
+  "FtcAnalogOutput": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcAnalogOutput upgraders
+
+  "FtcColorSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcColorSensor upgraders
+
+  "FtcCompassSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcCompassSensor upgraders
+
+  "FtcDcMotor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcDcMotor upgraders
+
+  "FtcDcMotorController": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcDcMotorController upgraders
+
+  "FtcDeviceInterfaceModule": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "GetI2cReadCache", "GetCopyOfReadBuffer"),
+        // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "GetI2cWriteCache", "GetCopyOfWriteBuffer"),
+        // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "ReadI2cCacheFromModule", "ReadI2cCacheFromController"),
+        // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "SetI2cWriteCache", "CopyBufferIntoWriteBuffer"),
+        // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "WriteI2cCacheToModule", "WriteI2cCacheToController"),
+        // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+        Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "WriteI2cPortFlagOnlyToModule", "WriteI2cPortFlagOnlyToController")
+      ]
+
+  }, // End FtcDeviceInterfaceModule upgraders
+
+  "FtcDigitalChannel": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcDigitalChannel upgraders
+
+  "FtcGamepad": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcGamepad upgraders
+
+  "FtcGyroSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcGyroSensor upgraders
+
+  "FtcI2cDevice": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "GetI2cReadCache", "GetCopyOfReadBuffer"),
+        // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "GetI2cWriteCache", "GetCopyOfWriteBuffer"),
+        // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "ReadI2cCacheFromModule", "ReadI2cCacheFromController"),
+        // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "SetI2cWriteCache", "CopyBufferIntoWriteBuffer"),
+        // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "WriteI2cCacheToModule", "WriteI2cCacheToController"),
+        // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+        Blockly.Versioning.changeMethodName("FtcI2cDevice", "WriteI2cPortFlagOnlyToModule", "WriteI2cPortFlagOnlyToController")
+      ]
+
+  }, // End FtcI2cDevice upgraders
+
+  "FtcI2cDeviceReader": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcI2cDeviceReader upgraders
+
+  "FtcIrSeekerSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The Mode_1200HZ_AC property was renamed Mode_1200HZ.
+        Blockly.Versioning.changePropertyName("FtcIrSeekerSensor", "Mode_1200HZ_AC", "Mode_1200HZ"),
+        // - The Mode_600HZ_DC property was renamed Mode_600HZ.
+        Blockly.Versioning.changePropertyName("FtcIrSeekerSensor", "Mode_600HZ_DC", "Mode_600HZ")
+      ]
+
+  }, // End FtcIrSeekerSensor upgraders
+
+  "FtcLED": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcDigitalChannel upgraders
+
+  "FtcLegacyModule": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The EnableNxtI2cReadMode method was renamed EnableI2cReadMode.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "EnableNxtI2cReadMode", "EnableI2cReadMode"),
+        // - The EnableNxtI2cWriteMode method was renamed EnableI2cWriteMode.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "EnableNxtI2cWriteMode", "EnableI2cWriteMode"),
+        // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "GetI2cReadCache", "GetCopyOfReadBuffer"),
+        // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "GetI2cWriteCache", "GetCopyOfWriteBuffer"),
+        // - The IsNxtI2cPortActionFlagSet method was renamed IsI2cPortActionFlagSet.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "IsNxtI2cPortActionFlagSet", "IsI2cPortActionFlagSet"),
+        // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "ReadI2cCacheFromModule", "ReadI2cCacheFromController"),
+        // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "SetI2cWriteCache", "CopyBufferIntoWriteBuffer"),
+        // - The SetNxtI2cPortActionFlag method was renamed SetI2cPortActionFlag.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "SetNxtI2cPortActionFlag", "SetI2cPortActionFlag"),
+        // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "WriteI2cCacheToModule", "WriteI2cCacheToController"),
+        // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+        Blockly.Versioning.changeMethodName("FtcLegacyModule", "WriteI2cPortFlagOnlyToModule", "WriteI2cPortFlagOnlyToController")
+      ]
+
+  }, // End FtcLegacyModule upgraders
+
+  "FtcLightSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcLightSensor upgraders
+
+  "FtcLinearOpMode": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
+        Blockly.Versioning.changeMethodName("FtcLinearOpMode", "WaitOneHardwareCycle", "WaitOneFullHardwareCycle")
+      ]
+
+  }, // End FtcLinearOpMode upgraders
+
+  "FtcOpMode": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcOpMode upgraders
+
+  "FtcOpticalDistanceSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcOpticalDistanceSensor upgraders
+
+  "FtcPwmOutput": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcPwmOutput upgraders
+
+  "FtcRobotController": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcRobotController upgraders
+
+  "FtcServo": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcServo upgraders
+
+  "FtcServoController": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcServoController upgraders
+
+  "FtcTouchSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcTouchSensor upgraders
+
+  "FtcTouchSensorMultiplexer": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcTouchSensorMultiplexer upgraders
+
+  "FtcUltrasonicSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcUltrasonicSensor upgraders
+
+  "FtcVoltageSensor": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcVoltageSensor upgraders
+
   "FusiontablesControl": {
 
     // AI1: No changes required

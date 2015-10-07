@@ -33,6 +33,8 @@ public class Config implements IsSerializable, Serializable {
   private String guideUrl;
   private String referenceComponentsUrl;
 
+  private boolean ftcStandaloneVersion;
+
   public Config() {
   }
 
@@ -146,5 +148,13 @@ public class Config implements IsSerializable, Serializable {
 
   public void setReferenceComponentsUrl(String referenceComponentsUrl) {
     this.referenceComponentsUrl = referenceComponentsUrl;
+  }
+
+  public boolean getFtcStandaloneVersion() {
+    return ftcStandaloneVersion;
+  }
+
+  public void setFtcStandaloneVersion(boolean ftcStandaloneVersion) {
+    this.ftcStandaloneVersion = ftcStandaloneVersion;
   }
 }
