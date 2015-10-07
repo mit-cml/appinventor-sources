@@ -1385,7 +1385,15 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcCompassSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    2:
+      [
+        // - The Mode_MEASUREMENT property was renamed CompassMode_MEASUREMENT_MODE.
+        Blockly.Versioning.changePropertyName("FtcCompassSensor", "Mode_MEASUREMENT", "CompassMode_MEASUREMENT_MODE"),
+        // - The Mode_CALIBRATION property was renamed CompassMode_CALIBRATION_MODE.
+        Blockly.Versioning.changePropertyName("FtcCompassSensor", "Mode_CALIBRATION", "CompassMode_CALIBRATION_MODE")
+      ]
 
   }, // End FtcCompassSensor upgraders
 

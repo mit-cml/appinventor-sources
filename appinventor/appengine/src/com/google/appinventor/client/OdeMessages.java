@@ -3342,6 +3342,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ChannelModeProperties();
 
+  @DefaultMessage("CompassMode_CALIBRATION_MODE")
+  @Description("")
+  String CompassMode_CALIBRATION_MODEProperties();
+
+  @DefaultMessage("CompassMode_MEASUREMENT_MODE")
+  @Description("")
+  String CompassMode_MEASUREMENT_MODEProperties();
+
   @DefaultMessage("Configuration")
   @Description("")
   String ConfigurationProperties();
@@ -3482,17 +3490,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Mode_600HZProperties();
 
-  @DefaultMessage("Mode_CALIBRATION")
-  @Description("")
-  String Mode_CALIBRATIONProperties();
-
   @DefaultMessage("Mode_INPUT")
   @Description("")
   String Mode_INPUTProperties();
-
-  @DefaultMessage("Mode_MEASUREMENT")
-  @Description("")
-  String Mode_MEASUREMENTProperties();
 
   @DefaultMessage("Mode_OUTPUT")
   @Description("")

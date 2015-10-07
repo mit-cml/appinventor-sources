@@ -254,6 +254,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcCompassSensor")) {
+        srcCompVersion = upgradeFtcCompassSensorProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcDeviceInterfaceModule")) {
         srcCompVersion = upgradeFtcDeviceInterfaceModuleProperties(componentProperties,
             srcCompVersion);
@@ -894,6 +897,17 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 18;
     }
 
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcCompassSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Mode_MEASUREMENT property (blocks only) was renamed CompassMode_MEASUREMENT_MODE.
+      // - The Mode_CALIBRATION property (blocks only) was renamed CompassMode_CALIBRATION_MODE.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
