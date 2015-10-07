@@ -1698,7 +1698,7 @@ public class Form extends Activity
   }
 
   public void addAboutInfoToMenu(Menu menu) {
-    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 1000 + menu.size(),
+    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 1000,
     "About this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
