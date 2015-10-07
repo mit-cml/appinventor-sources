@@ -108,7 +108,7 @@
     -->
 
     <!-- Set this to true for FIRST Tech Challenge standalone version. -->
-    <property name="ftc.standalone.version" value="false" />
+    <property name="ftc.standalone.version" value="true" />
 
   </system-properties>
 
