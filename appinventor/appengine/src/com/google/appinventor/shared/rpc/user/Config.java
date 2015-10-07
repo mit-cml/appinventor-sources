@@ -34,6 +34,7 @@ public class Config implements IsSerializable, Serializable {
   private String referenceComponentsUrl;
 
   private boolean ftcStandaloneVersion;
+  private boolean ftcCompanion;
 
   public Config() {
   }
@@ -156,5 +157,13 @@ public class Config implements IsSerializable, Serializable {
 
   public void setFtcStandaloneVersion(boolean ftcStandaloneVersion) {
     this.ftcStandaloneVersion = ftcStandaloneVersion;
+  }
+
+  public boolean getFtcCompanion() {
+    return ftcCompanion;
+  }
+
+  public void setFtcCompanion(boolean ftcCompanion) {
+    this.ftcCompanion = ftcCompanion;
   }
 }
