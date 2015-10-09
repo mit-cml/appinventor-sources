@@ -348,6 +348,29 @@ Blockly.Backpack.prototype.position_ = function() {
 };
 
 /**
+ * On right click, open alert and show documentation
+ */
+Blockly.Backpack.prototype.openBackpackDoc = function(e) {
+  var options = [];
+  var backpackDoc = {enabled : true};
+  backpackDoc.text = "Backpack documentation";
+  backpackDoc.callback = function() {
+  var str = "The Backpack is a copy/paste feature. It allows you to copy blocks from one project or screen " +
+   " and paste them into another project or screen. " +
+   " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
+   " drag-and-drop blocks into the workspace." +
+   "\n\nThe contents of the Backpack will persist throughout " +
+   " an App Inventor session. When you quit App Inventor or refresh its web page in the browser, " +
+   " the Backpack will be re-initialized -- i.e., emptied." +
+   "\n\nFor further documentation and a 'how to' video, see:" +
+   "\n\nhttp://ai2.appinventor.mit.edu/reference/other/backpack.html";
+  alert(str);  
+  } 
+  options.push(backpackDoc);
+  Blockly.ContextMenu.show(e, options);
+};
+
+/**
  * On left click, open backpack and view flyout
  */
 Blockly.Backpack.prototype.openBackpack = function(){
@@ -366,8 +389,6 @@ Blockly.Backpack.prototype.openBackpack = function(){
     Blockly.Backpack.flyout_.show(newBackpack);
   }
 };
-
-
 
 /**
  * Obtains starting coordinates so the block can return to spot after copy
