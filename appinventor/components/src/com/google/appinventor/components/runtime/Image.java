@@ -107,7 +107,7 @@ public final class Image extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(description = "Specifies whether the image should be resized to match the size                                 of the ImageView.")
+  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);
