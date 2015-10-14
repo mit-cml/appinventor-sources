@@ -279,7 +279,7 @@ Blockly.Msg.fr_fr.switch_language_to_french = {
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE = 'Retourne la valeur booléenne vrai.';
     Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE = 'vrai';
     Blockly.Msg.LANG_LOGIC_COMPARE_EQ = '=';
-    Blockly.Msg.LANG_LOGIC_COMPARE_NEQ = 'u2260';
+    Blockly.Msg.LANG_LOGIC_COMPARE_NEQ = '\u2260';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Teste si deux objets sont égaux.\nLes objets à comparer peuvent être n\'importe quoi, pas seulement des nombres.\nLes nombres sont considérés égaux à leur format de chaine de caractère,\npar exemple, le numéro 0 est égal au texte "0"';
     Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Retourne vrai si les deux entrées ne sont pas égales.';
     Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME = 'égalité logique';
