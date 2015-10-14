@@ -34,6 +34,7 @@
 'use strict';
 
 goog.provide('Blockly.Backpack');
+goog.require('Blockly.Util');
 
 /**
  * Class for a backpack.
@@ -348,6 +349,25 @@ Blockly.Backpack.prototype.position_ = function() {
 };
 
 /**
+ * On right click, open alert and show documentation
+ */
+Blockly.Backpack.prototype.openBackpackDoc = function(e) {
+  var options = [];
+  var backpackDoc = {enabled : true};
+  backpackDoc.text = "Backpack documentation";
+  backpackDoc.callback = function() {
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.BACKPACK_DOC_TITLE,
+                                         Blockly.Msg.BACKPACK_DOCUMENTATION,
+                                         Blockly.Msg.REPL_OK, null, 0,
+                                         function() {
+                                           dialog.hide();
+                                         });
+  }
+  options.push(backpackDoc);
+  Blockly.ContextMenu.show(e, options);
+};
+
+/**
  * On left click, open backpack and view flyout
  */
 Blockly.Backpack.prototype.openBackpack = function(){
@@ -366,8 +386,6 @@ Blockly.Backpack.prototype.openBackpack = function(){
     Blockly.Backpack.flyout_.show(newBackpack);
   }
 };
-
-
 
 /**
  * Obtains starting coordinates so the block can return to spot after copy
