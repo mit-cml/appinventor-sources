@@ -142,6 +142,29 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return "";
   }
 
+  /**
+   * BatteryVoltage property getter.
+   */
+  @SimpleProperty(description = "Get the battery voltage, if supported by the controller.",
+      category = PropertyCategory.BEHAVIOR)
+  public double BatteryVoltage() {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          return ((MatrixDcMotorController)dcMotorController).getVoltage();
+        }
+        if (dcMotorController instanceof MatrixDcMotorController) {
+          return ((MatrixDcMotorController)dcMotorController).getBattery();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "BatteryVoltage",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
+
   @SimpleFunction(description = "Set the current channel mode.\n" +
       "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
       "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.")

@@ -3330,6 +3330,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BackProperties();
 
+  @DefaultMessage("BatteryVoltage")
+  @Description("")
+  String BatteryVoltageProperties();
+
   @DefaultMessage("Blue")
   @Description("")
   String BlueProperties();
