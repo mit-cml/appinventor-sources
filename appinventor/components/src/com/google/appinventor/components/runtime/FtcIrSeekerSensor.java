@@ -323,8 +323,12 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
-      if (irSeekerSensor == null) {
+      try {
+        irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
+        if (irSeekerSensor == null) {
+          deviceNotFound("IrSeekerSensor", hardwareMap.irSeekerSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("IrSeekerSensor", hardwareMap.irSeekerSensor);
       }
     }

@@ -84,8 +84,12 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
-      if (ultrasonicSensor == null) {
+      try {
+        ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
+        if (ultrasonicSensor == null) {
+          deviceNotFound("UltrasonicSensor", hardwareMap.ultrasonicSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("UltrasonicSensor", hardwareMap.ultrasonicSensor);
       }
     }

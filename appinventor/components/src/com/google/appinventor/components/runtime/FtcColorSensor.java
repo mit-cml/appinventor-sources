@@ -391,8 +391,12 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      colorSensor = hardwareMap.colorSensor.get(getDeviceName());
-      if (colorSensor == null) {
+      try {
+        colorSensor = hardwareMap.colorSensor.get(getDeviceName());
+        if (colorSensor == null) {
+          deviceNotFound("ColorSensor", hardwareMap.colorSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("ColorSensor", hardwareMap.colorSensor);
       }
     }

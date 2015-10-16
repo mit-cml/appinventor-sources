@@ -90,8 +90,12 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      analogOutput = hardwareMap.analogOutput.get(getDeviceName());
-      if (analogOutput == null) {
+      try {
+        analogOutput = hardwareMap.analogOutput.get(getDeviceName());
+        if (analogOutput == null) {
+          deviceNotFound("AnalogOutput", hardwareMap.analogOutput);
+        }
+      } catch (Throwable e) {
         deviceNotFound("AnalogOutput", hardwareMap.analogOutput);
       }
     }

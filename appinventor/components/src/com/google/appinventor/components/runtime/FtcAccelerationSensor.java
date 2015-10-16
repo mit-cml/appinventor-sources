@@ -130,8 +130,12 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
-      if (accelerationSensor == null) {
+      try {
+        accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
+        if (accelerationSensor == null) {
+          deviceNotFound("AccelerationSensor", hardwareMap.accelerationSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("AccelerationSensor", hardwareMap.accelerationSensor);
       }
     }

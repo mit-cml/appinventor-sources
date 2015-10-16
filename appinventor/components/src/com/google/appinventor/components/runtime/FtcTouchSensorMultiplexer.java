@@ -73,8 +73,12 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      touchSensorMultiplexer = hardwareMap.touchSensorMultiplexer.get(getDeviceName());
-      if (touchSensorMultiplexer == null) {
+      try {
+        touchSensorMultiplexer = hardwareMap.touchSensorMultiplexer.get(getDeviceName());
+        if (touchSensorMultiplexer == null) {
+          deviceNotFound("TouchSensorMultiplexer", hardwareMap.touchSensorMultiplexer);
+        }
+      } catch (Throwable e) {
         deviceNotFound("TouchSensorMultiplexer", hardwareMap.touchSensorMultiplexer);
       }
     }
