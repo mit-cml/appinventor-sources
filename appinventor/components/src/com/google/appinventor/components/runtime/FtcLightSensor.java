@@ -116,8 +116,12 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      lightSensor = hardwareMap.lightSensor.get(getDeviceName());
-      if (lightSensor == null) {
+      try {
+        lightSensor = hardwareMap.lightSensor.get(getDeviceName());
+        if (lightSensor == null) {
+          deviceNotFound("LightSensor", hardwareMap.lightSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("LightSensor", hardwareMap.lightSensor);
       }
     }

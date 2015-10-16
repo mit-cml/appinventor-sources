@@ -84,8 +84,12 @@ public final class FtcI2cDeviceReader extends FtcHardwareDevice {
       // We don't instantiate the I2cDeviceReader here because it has the side effect of
       // registering an I2cPortReadyCallback. Instead, we just get the I2cDevice here and in
       // Initialize method, we instantiate the I2cDeviceReader.
-      i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
-      if (i2cDevice == null) {
+      try {
+        i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
+        if (i2cDevice == null) {
+          deviceNotFound("I2cDeviceReader", hardwareMap.i2cDevice);
+        }
+      } catch (Throwable e) {
         deviceNotFound("I2cDeviceReader", hardwareMap.i2cDevice);
       }
     }

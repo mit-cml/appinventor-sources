@@ -335,8 +335,12 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      legacyModule = hardwareMap.legacyModule.get(getDeviceName());
-      if (legacyModule == null) {
+      try {
+        legacyModule = hardwareMap.legacyModule.get(getDeviceName());
+        if (legacyModule == null) {
+          deviceNotFound("LegacyModule", hardwareMap.legacyModule);
+        }
+      } catch (Throwable e) {
         deviceNotFound("LegacyModule", hardwareMap.legacyModule);
       }
     }

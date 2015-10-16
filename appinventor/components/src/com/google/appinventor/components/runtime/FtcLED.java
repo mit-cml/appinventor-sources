@@ -57,8 +57,12 @@ public final class FtcLED extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      led = hardwareMap.led.get(getDeviceName());
-      if (led == null) {
+      try {
+        led = hardwareMap.led.get(getDeviceName());
+        if (led == null) {
+          deviceNotFound("LED", hardwareMap.led);
+        }
+      } catch (Throwable e) {
         deviceNotFound("LED", hardwareMap.led);
       }
     }

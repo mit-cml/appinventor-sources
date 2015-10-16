@@ -84,8 +84,12 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
-      if (gyroSensor == null) {
+      try {
+        gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
+        if (gyroSensor == null) {
+          deviceNotFound("GyroSensor", hardwareMap.gyroSensor);
+        }
+      } catch (Throwable e) {
         deviceNotFound("GyroSensor", hardwareMap.gyroSensor);
       }
     }
