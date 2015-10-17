@@ -6,13 +6,16 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.HiTechnicNxtTouchSensorMultiplexer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensorMultiplexer;
 
@@ -27,7 +30,7 @@ import com.qualcomm.robotcore.hardware.TouchSensorMultiplexer;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "FtcRobotCore.jar")
+@UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
 
   private volatile TouchSensorMultiplexer touchSensorMultiplexer;
@@ -67,6 +70,29 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
     return 0;
   }
 
+  /**
+   * Status property getter.
+   */
+  @SimpleProperty(description = "The Status.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Status() {
+    if (touchSensorMultiplexer != null) {
+      try {
+        String status = null;
+        if (touchSensorMultiplexer instanceof HiTechnicNxtTouchSensorMultiplexer) {
+          status = ((HiTechnicNxtTouchSensorMultiplexer) touchSensorMultiplexer).status();
+        }
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
 
   // FtcHardwareDevice implementation
 

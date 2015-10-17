@@ -15,6 +15,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.MatrixServoController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoController.PwmStatus;
@@ -30,7 +31,7 @@ import com.qualcomm.robotcore.hardware.ServoController.PwmStatus;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "FtcRobotCore.jar")
+@UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcServoController extends FtcHardwareDevice {
 
   private volatile ServoController servoController;
@@ -129,6 +130,24 @@ public final class FtcServoController extends FtcHardwareDevice {
       }
     }
     return 0.0;
+  }
+
+  @SimpleFunction(description = "Set a position and a speed for a servo. The speed parameter is " +
+      "ignored if it is not supported by the controller.")
+  public void SetServoPositionAndSpeed(int channel, double position, int speed) {
+    if (servoController != null) {
+      try {
+        if (servoController instanceof MatrixServoController) {
+          ((MatrixServoController) servoController).setServoPosition(channel, position, (byte) speed);
+        } else {
+          servoController.setServoPosition(channel, position);
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetServoPosition",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   // FtcHardwareDevice implementation
