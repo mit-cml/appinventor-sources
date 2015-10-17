@@ -317,8 +317,11 @@ Blockly.onMouseDown_ = function(e) {
     Blockly.Drawer.hide();
   }
 
-  //if backpack exists and clicked, open or close
-  if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)) {
+  // If backpack exists and clicked, open or close or show documentation (right-click)
+  if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)
+      && Blockly.isRightButton(e))
+    Blockly.mainWorkspace.backpack.openBackpackDoc(e);
+  else if (Blockly.mainWorkspace.backpack && Blockly.mainWorkspace.backpack.mouseIsOver(e)) {
     Blockly.mainWorkspace.backpack.openBackpack();
   } else if(Blockly.mainWorkspace.backpack && Blockly.Backpack.flyout_.autoClose) {
     Blockly.Backpack.hide();

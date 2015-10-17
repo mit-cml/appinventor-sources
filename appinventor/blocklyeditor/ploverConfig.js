@@ -89,6 +89,9 @@
     "./src/substitution.js",
     "./src/language_switch.js",
 
+    // Dialog Utiltiy
+    "./src/util.js",
+
     // backpack files
     "./src/backpack.js",
     "./src/backpackFlyout.js",
