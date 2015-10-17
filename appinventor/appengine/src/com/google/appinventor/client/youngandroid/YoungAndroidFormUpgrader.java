@@ -254,6 +254,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcColorSensor")) {
+        srcCompVersion = upgradeFtcColorSensorProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcCompassSensor")) {
         srcCompVersion = upgradeFtcCompassSensorProperties(componentProperties, srcCompVersion);
 
@@ -897,6 +900,28 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 18;
     }
 
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcColorSensorProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The ColorToHSV method was renamed ConvertColorToHSV.
+      // - The HSVToColor method was renamed ConvertHSVToColor.
+      // - The HSVToColorWithAlpha method was renamed ConvertHSVToColorWithAlpha.
+      // - The RGBToHSV method was renamed ConvertRGBToHSV.
+      // - The ARGB method was renamed CreateARGB.
+      // - The RGB method was renamed CreateRGB.
+      // - The Alpha method was renamed ExtractAlpha.
+      // - The Red method was renamed ExtractRed.
+      // - The Green method was renamed ExtractGreen.
+      // - The Blue method was renamed ExtractBlue.
+      // - The Hue method was renamed ExtractHue.
+      // - The Saturation method was renamed ExtractSaturation.
+      // - The Value method was renamed ExtractValue.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 

@@ -15,6 +15,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.MatrixDcMotorController;
+import com.qualcomm.hardware.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;
 import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
@@ -31,7 +33,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "FtcRobotCore.jar")
+@UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcDcMotorController extends FtcHardwareDevice {
 
   private volatile DcMotorController dcMotorController;
@@ -151,7 +153,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
-          return ((MatrixDcMotorController)dcMotorController).getVoltage();
+          return ((ModernRoboticsUsbDcMotorController)dcMotorController).getVoltage();
         }
         if (dcMotorController instanceof MatrixDcMotorController) {
           return ((MatrixDcMotorController)dcMotorController).getBattery();

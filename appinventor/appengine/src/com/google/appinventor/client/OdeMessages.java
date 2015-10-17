@@ -5628,21 +5628,21 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
-  @DefaultMessage("Alpha")
+  @DefaultMessage("ConvertColorToHSV")
   @Description("")
-  String AlphaMethods();
+  String ConvertColorToHSVMethods();
 
-  @DefaultMessage("ARGB")
+  @DefaultMessage("ConvertHSVToColor")
   @Description("")
-  String ARGBMethods();
+  String ConvertHSVToColorMethods();
 
-  @DefaultMessage("Blue")
+  @DefaultMessage("ConvertHSVToColorWithAlpha")
   @Description("")
-  String BlueMethods();
+  String ConvertHSVToColorWithAlphaMethods();
 
-  @DefaultMessage("ColorToHSV")
+  @DefaultMessage("ConvertRGBToHSV")
   @Description("")
-  String ColorToHSVMethods();
+  String ConvertRGBToHSVMethods();
 
   @DefaultMessage("CopyBufferIntoWriteBuffer")
   @Description("")
@@ -5652,6 +5652,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CopyBytesMethods();
 
+  @DefaultMessage("CreateARGB")
+  @Description("")
+  String CreateARGBMethods();
+
   @DefaultMessage("CreateByteArray")
   @Description("")
   String CreateByteArrayMethods();
@@ -5659,6 +5663,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("CreateHSV")
   @Description("")
   String CreateHSVMethods();
+
+  @DefaultMessage("CreateRGB")
+  @Description("")
+  String CreateRGBMethods();
 
   @DefaultMessage("Enable")
   @Description("")
@@ -5683,6 +5691,34 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("EnableLed")
   @Description("")
   String EnableLedMethods();
+
+  @DefaultMessage("ExtractAlpha")
+  @Description("")
+  String ExtractAlphaMethods();
+
+  @DefaultMessage("ExtractBlue")
+  @Description("")
+  String ExtractBlueMethods();
+
+  @DefaultMessage("ExtractGreen")
+  @Description("")
+  String ExtractGreenMethods();
+
+  @DefaultMessage("ExtractHue")
+  @Description("")
+  String ExtractHueMethods();
+
+  @DefaultMessage("ExtractRed")
+  @Description("")
+  String ExtractRedMethods();
+
+  @DefaultMessage("ExtractSaturation")
+  @Description("")
+  String ExtractSaturationMethods();
+
+  @DefaultMessage("ExtractValue")
+  @Description("")
+  String ExtractValueMethods();
 
   @DefaultMessage("Get1ByteNumberFromByteArray")
   @Description("")
@@ -5788,22 +5824,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetSwitchesMethods();
 
-  @DefaultMessage("Green")
-  @Description("")
-  String GreenMethods();
-
-  @DefaultMessage("HSVToColor")
-  @Description("")
-  String HSVToColorMethods();
-
-  @DefaultMessage("HSVToColorWithAlpha")
-  @Description("")
-  String HSVToColorWithAlphaMethods();
-
-  @DefaultMessage("Hue")
-  @Description("")
-  String HueMethods();
-
   @DefaultMessage("IndividualSensorAngle")
   @Description("")
   String IndividualSensorAngleMethods();
@@ -5895,22 +5915,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ReadI2cCacheFromController")
   @Description("")
   String ReadI2cCacheFromControllerMethods();
-
-  @DefaultMessage("Red")
-  @Description("")
-  String RedMethods();
-
-  @DefaultMessage("RGB")
-  @Description("")
-  String RGBMethods();
-
-  @DefaultMessage("RGBToHSV")
-  @Description("")
-  String RGBToHSVMethods();
-
-  @DefaultMessage("Saturation")
-  @Description("")
-  String SaturationMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")
@@ -6011,10 +6015,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ToString")
   @Description("")
   String ToStringMethods();
-
-  @DefaultMessage("Value")
-  @Description("")
-  String ValueMethods();
 
   @DefaultMessage("WaitForNextHardwareCycle")
   @Description("")

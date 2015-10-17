@@ -1378,7 +1378,38 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcColorSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+
+    2:
+      [
+        // - The ColorToHSV method was renamed ConvertColorToHSV.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "ColorToHSV", "ConvertColorToHSV"),
+        // - The HSVToColor method was renamed ConvertHSVToColor.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "HSVToColor", "ConvertHSVToColor"),
+        // - The HSVToColorWithAlpha method was renamed ConvertHSVToColorWithAlpha.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "HSVToColorWithAlpha", "ConvertHSVToColorWithAlpha"),
+        // - The RGBToHSV method was renamed ConvertRGBToHSV.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "RGBToHSV", "ConvertRGBToHSV"),
+        // - The ARGB method was renamed CreateARGB.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "ARGB", "CreateARGB"),
+        // - The RGB method was renamed CreateRGB.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "RGB", "CreateRGB"),
+        // - The Alpha method was renamed ExtractAlpha.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Alpha", "ExtractAlpha"),
+        // - The Red method was renamed ExtractRed.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Red", "ExtractRed"),
+        // - The Green method was renamed ExtractGreen.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Green", "ExtractGreen"),
+        // - The Blue method was renamed ExtractBlue.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Blue", "ExtractBlue"),
+        // - The Hue method was renamed ExtractHue.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Hue", "ExtractHue"),
+        // - The Saturation method was renamed ExtractSaturation.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Saturation", "ExtractSaturation"),
+        // - The Value method was renamed ExtractValue.
+        Blockly.Versioning.changeMethodName("FtcColorSensor", "Value", "ExtractValue"),
+      ]
 
   }, // End FtcColorSensor upgraders
 

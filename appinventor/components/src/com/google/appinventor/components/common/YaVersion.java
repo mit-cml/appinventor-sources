@@ -391,8 +391,10 @@ public class YaVersion {
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 3.
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
   // - FTC_COMPASS_SENSOR_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 141:
+  // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 140;
+  public static final int YOUNG_ANDROID_VERSION = 141;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -680,7 +682,21 @@ public class YaVersion {
 
   public static final int FTC_ANALOG_OUTPUT_COMPONENT_VERSION = 1;
 
-  public static final int FTC_COLOR_SENSOR_COMPONENT_VERSION = 1;
+  // For FTC_COLOR_SENSOR_COMPONENT_VERSION 2:
+  // - The ColorToHSV method was renamed ConvertColorToHSV.
+  // - The HSVToColor method was renamed ConvertHSVToColor.
+  // - The HSVToColorWithAlpha method was renamed ConvertHSVToColorWithAlpha.
+  // - The RGBToHSV method was renamed ConvertRGBToHSV.
+  // - The ARGB method was renamed CreateARGB.
+  // - The RGB method was renamed CreateRGB.
+  // - The Alpha method was renamed ExtractAlpha.
+  // - The Red method was renamed ExtractRed.
+  // - The Green method was renamed ExtractGreen.
+  // - The Blue method was renamed ExtractBlue.
+  // - The Hue method was renamed ExtractHue.
+  // - The Saturation method was renamed ExtractSaturation.
+  // - The Value method was renamed ExtractValue.
+  public static final int FTC_COLOR_SENSOR_COMPONENT_VERSION = 2;
 
   // For FTC_COMPASS_SENSOR_COMPONENT_VERSION 2:
   // - The Mode_MEASUREMENT property was renamed CompassMode_MEASUREMENT_MODE.
