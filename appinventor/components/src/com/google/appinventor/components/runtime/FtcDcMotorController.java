@@ -13,14 +13,20 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import com.qualcomm.hardware.MatrixDcMotorController;
 import com.qualcomm.hardware.ModernRoboticsUsbDcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;
 import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
+
+import java.util.Set;
 
 /**
  * A component for a DC motor controller of an FTC robot.
@@ -142,29 +148,6 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
       }
     }
     return "";
-  }
-
-  /**
-   * BatteryVoltage property getter.
-   */
-  @SimpleProperty(description = "Get the battery voltage, if supported by the controller.",
-      category = PropertyCategory.BEHAVIOR)
-  public double BatteryVoltage() {
-    if (dcMotorController != null) {
-      try {
-        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
-          return ((ModernRoboticsUsbDcMotorController)dcMotorController).getVoltage();
-        }
-        if (dcMotorController instanceof MatrixDcMotorController) {
-          return ((MatrixDcMotorController)dcMotorController).getBattery();
-        }
-      } catch (Throwable e) {
-        e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "BatteryVoltage",
-            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-      }
-    }
-    return 0.0;
   }
 
   @SimpleFunction(description = "Set the current channel mode.\n" +
@@ -314,6 +297,184 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
       }
     }
     return 0;
+  }
+
+  @SimpleFunction(description = "Set the power for a group of motors.")
+  public void SetMotorPowerForGroup(YailList listOfFtcDcMotors, int power) {
+    if (dcMotorController != null) {
+      try {
+        Set<DcMotor> dcMotors = Sets.newHashSet();
+        Object[] array = listOfFtcDcMotors.toArray();
+        for (Object o : array) {
+          if (o instanceof FtcDcMotor) {
+            DcMotor dcMotor = ((FtcDcMotor) o).getDcMotor();
+            if (dcMotor != null) {
+              if (dcMotor.getController().equals(dcMotorController)) {
+                dcMotors.add(dcMotor);
+              } else {
+                form.dispatchErrorOccurredEvent(this, "SetMotorPowerForGroup",
+                    ErrorMessages.ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS);
+                return;
+              }
+            }
+          } else {
+            form.dispatchErrorOccurredEvent(this, "SetMotorPowerForGroup",
+                ErrorMessages.ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS);
+            return;
+          }
+        }
+        if (dcMotorController instanceof MatrixDcMotorController) {
+          ((MatrixDcMotorController) dcMotorController).setMotorPower(dcMotors, power);
+        } else {
+          // For other controllers, we just set the power for each motor.
+          for (DcMotor dcMotor : dcMotors) {
+            dcMotorController.setMotorPower(dcMotor.getPortNumber(), power);
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetMotorPowerForGroup",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * BatteryVoltage property getter.
+   */
+  @SimpleProperty(description = "Get the battery voltage, if supported by the controller.",
+      category = PropertyCategory.BEHAVIOR)
+  public double BatteryVoltage() {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          return ((ModernRoboticsUsbDcMotorController) dcMotorController).getVoltage();
+        }
+        if (dcMotorController instanceof MatrixDcMotorController) {
+          return ((MatrixDcMotorController) dcMotorController).getBattery();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "BatteryVoltage",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
+
+  @SimpleFunction(description = "Set the gear ratio (from -1.0 to 1.0), if supported by the controller.")
+  public void SetGearRatio(int motor, double ratio) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          ((ModernRoboticsUsbDcMotorController) dcMotorController).setGearRatio(motor, ratio);
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetGearRatio",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Get the gear ratio.")
+  public double GetGearRatio(int motor) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          return ((ModernRoboticsUsbDcMotorController) dcMotorController).getGearRatio(motor);
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetGearRatio",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
+
+  @SimpleFunction(description = "Set the differential control loop coefficients, if supported " +
+      "by the controller.")
+  public void SetDifferentialControlLoopCoefficients(int motor, double p, double i, double d) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          ((ModernRoboticsUsbDcMotorController) dcMotorController)
+              .setDifferentialControlLoopCoefficients(motor,
+                  new DifferentialControlLoopCoefficients(p, i, d));
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "SetDifferentialControlLoopCoefficients",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  @SimpleFunction(description = "Get the differential control loop coefficient p, if supported " +
+      "by the controller.")
+  public double GetDifferentialControlLoopCoefficientP(int motor) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          DifferentialControlLoopCoefficients pid =
+              ((ModernRoboticsUsbDcMotorController) dcMotorController)
+                  .getDifferentialControlLoopCoefficients(motor);
+          if (pid != null) {
+            return pid.p;
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetDifferentialControlLoopCoefficientP",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
+
+  @SimpleFunction(description = "Get the differential control loop coefficient i, if supported " +
+      "by the controller.")
+  public double GetDifferentialControlLoopCoefficientI(int motor) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          DifferentialControlLoopCoefficients pid =
+              ((ModernRoboticsUsbDcMotorController) dcMotorController)
+                  .getDifferentialControlLoopCoefficients(motor);
+          if (pid != null) {
+            return pid.i;
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetDifferentialControlLoopCoefficientI",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
+  }
+
+  @SimpleFunction(description = "Get the differential control loop coefficient d, if supported " +
+      "by the controller.")
+  public double GetDifferentialControlLoopCoefficientD(int motor) {
+    if (dcMotorController != null) {
+      try {
+        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
+          DifferentialControlLoopCoefficients pid =
+              ((ModernRoboticsUsbDcMotorController) dcMotorController)
+                  .getDifferentialControlLoopCoefficients(motor);
+          if (pid != null) {
+            return pid.d;
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "GetDifferentialControlLoopCoefficientD",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0.0;
   }
 
   // FtcHardwareDevice implementation

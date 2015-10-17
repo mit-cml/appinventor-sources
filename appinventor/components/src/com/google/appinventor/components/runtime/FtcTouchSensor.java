@@ -14,6 +14,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.HiTechnicNxtTouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -28,7 +29,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "FtcRobotCore.jar")
+@UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcTouchSensor extends FtcHardwareDevice {
 
   private volatile TouchSensor touchSensor;
@@ -75,6 +76,30 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
       }
     }
     return false;
+  }
+
+  /**
+   * Status property getter.
+   */
+  @SimpleProperty(description = "The Status.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Status() {
+    if (touchSensor != null) {
+      try {
+        String status = null;
+        if (touchSensor instanceof HiTechnicNxtTouchSensor) {
+          status = ((HiTechnicNxtTouchSensor) touchSensor).status();
+        }
+        if (status != null) {
+          return status;
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "Status",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
   }
 
   // FtcHardwareDevice implementation

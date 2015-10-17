@@ -200,6 +200,7 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2913;
   public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2914;
   public static final int ERROR_FTC_INVALID_HSV = 2915;
+  public static final int ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS = 2916;
 
   // Please start the next group of error numbers at 3001.
 
@@ -515,6 +516,8 @@ public final class ErrorMessages {
         "READ_ONLY and WRITE_ONLY.");
     errorMessages.put(ERROR_FTC_INVALID_HSV,
         "The specified HSV is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS,
+        "The specified listOfFtcDcMotors is not valid");
   }
 
   private ErrorMessages() {

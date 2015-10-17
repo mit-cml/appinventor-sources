@@ -4268,6 +4268,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String colorTextParams();
 
+  @DefaultMessage("d")
+  @Description("")
+  String dParams();
+
   @DefaultMessage("destinationByteArray")
   @Description("")
   String destinationByteArrayParams();
@@ -4296,6 +4300,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String hueParams();
 
+  @DefaultMessage("i")
+  @Description("")
+  String iParams();
+
   @DefaultMessage("i2cAddress")
   @Description("")
   String i2cAddressParams();
@@ -4320,6 +4328,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String lineParams();
 
+  @DefaultMessage("listOfFtcDcMotors")
+  @Description("")
+  String listOfFtcDcMotorsParams();
+
   @DefaultMessage("max")
   @Description("")
   String maxParams();
@@ -4336,6 +4348,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String motorParams();
 
+  @DefaultMessage("p")
+  @Description("")
+  String pParams();
+
   @DefaultMessage("period")
   @Description("")
   String periodParams();
@@ -4351,6 +4367,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("position")
   @Description("")
   String positionParams();
+
+  @DefaultMessage("ratio")
+  @Description("")
+  String ratioParams();
 
   @DefaultMessage("red")
   @Description("")
@@ -5748,6 +5768,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetCopyOfWriteBufferMethods();
 
+  @DefaultMessage("GetDifferentialControlLoopCoefficientD")
+  @Description("")
+  String GetDifferentialControlLoopCoefficientDMethods();
+
+  @DefaultMessage("GetDifferentialControlLoopCoefficientI")
+  @Description("")
+  String GetDifferentialControlLoopCoefficientIMethods();
+
+  @DefaultMessage("GetDifferentialControlLoopCoefficientP")
+  @Description("")
+  String GetDifferentialControlLoopCoefficientPMethods();
+
   @DefaultMessage("GetDigitalChannelMode")
   @Description("")
   String GetDigitalChannelModeMethods();
@@ -5767,6 +5799,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GetDigitalOutputStateByte")
   @Description("")
   String GetDigitalOutputStateByteMethods();
+
+  @DefaultMessage("GetGearRatio")
+  @Description("")
+  String GetGearRatioMethods();
 
   @DefaultMessage("GetLEDState")
   @Description("")
@@ -5932,6 +5968,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetAnalogOutputVoltageMethods();
 
+  @DefaultMessage("SetDifferentialControlLoopCoefficients")
+  @Description("")
+  String SetDifferentialControlLoopCoefficientsMethods();
+
   @DefaultMessage("SetDigitalChannelMode")
   @Description("")
   String SetDigitalChannelModeMethods();
@@ -5951,6 +5991,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetDigitalOutputByte")
   @Description("")
   String SetDigitalOutputByteMethods();
+
+  @DefaultMessage("SetGearRatio")
+  @Description("")
+  String SetGearRatioMethods();
 
   @DefaultMessage("SetI2cPortActionFlag")
   @Description("")
@@ -5976,6 +6020,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetMotorPowerMethods();
 
+  @DefaultMessage("SetMotorPowerForGroup")
+  @Description("")
+  String SetMotorPowerForGroupMethods();
+
   @DefaultMessage("SetMotorPowerFloat")
   @Description("")
   String SetMotorPowerFloatMethods();
@@ -5999,6 +6047,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetServoPosition")
   @Description("")
   String SetServoPositionMethods();
+
+  @DefaultMessage("SetServoPositionAndSpeed")
+  @Description("")
+  String SetServoPositionAndSpeedMethods();
 
   @DefaultMessage("Sleep")
   @Description("")

@@ -44,6 +44,10 @@ public final class FtcDcMotor extends FtcHardwareDevice {
     super(container.$form());
   }
 
+  protected DcMotor getDcMotor() {
+    return dcMotor;
+  }
+
   /**
    * Direction_FORWARD property getter.
    */
