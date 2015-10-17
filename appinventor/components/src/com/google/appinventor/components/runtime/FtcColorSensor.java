@@ -149,9 +149,24 @@ public final class FtcColorSensor extends FtcHardwareDevice {
 
   // Color functions
 
+  @SimpleFunction(description = "Convert an integer ARGB (alpha, red, green, blue) color to " +
+      "an HSV (hue, saturation, value).")
+  public Object ConvertColorToHSV(int color) {
+    try {
+      float[] array = new float[3];
+      Color.colorToHSV(color, array);
+      return array;
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ConvertColorToHSV",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return new float[3];
+  }
+
   @SimpleFunction(description = "Convert an HSV (hue, saturation, value) to " +
       "an integer ARGB (alpha, red, green, blue) color.")
-  public int HSVToColor(Object hsv) {
+  public int ConvertHSVToColor(Object hsv) {
     try {
       if (hsv instanceof float[]) {
         float[] array = (float[]) hsv;
@@ -159,11 +174,11 @@ public final class FtcColorSensor extends FtcHardwareDevice {
           return Color.HSVToColor(array);
         }
       }
-      form.dispatchErrorOccurredEvent(this, "HSVToColor",
+      form.dispatchErrorOccurredEvent(this, "ConvertHSVToColor",
           ErrorMessages.ERROR_FTC_INVALID_HSV);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "HSVToColor",
+      form.dispatchErrorOccurredEvent(this, "ConvertHSVToColor",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
@@ -171,7 +186,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Convert a specified alpha value and " +
       "an HSV (hue, saturation, value) to an integer ARGB (alpha, red, green, blue) color.")
-  public int HSVToColorWithAlpha(int alpha, Object hsv) {
+  public int ConvertHSVToColorWithAlpha(int alpha, Object hsv) {
     try {
       if (hsv instanceof float[]) {
         float[] array = (float[]) hsv;
@@ -179,11 +194,11 @@ public final class FtcColorSensor extends FtcHardwareDevice {
           return Color.HSVToColor(alpha, array);
         }
       }
-      form.dispatchErrorOccurredEvent(this, "HSVToColorWithAlpha",
+      form.dispatchErrorOccurredEvent(this, "ConvertHSVToColorWithAlpha",
           ErrorMessages.ERROR_FTC_INVALID_HSV);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "HSVToColorWithAlpha",
+      form.dispatchErrorOccurredEvent(this, "ConvertHSVToColorWithAlpha",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
@@ -191,123 +206,27 @@ public final class FtcColorSensor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Convert red, green, and blue values to " +
       "an HSV (hue, saturation, value).")
-  public Object RGBToHSV(int red, int green, int blue) {
+  public Object ConvertRGBToHSV(int red, int green, int blue) {
     try {
       float[] array = new float[3];
       Color.RGBToHSV(red, green, blue, array);
       return array;
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "RGBToHSV",
+      form.dispatchErrorOccurredEvent(this, "ConvertRGBToHSV",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return new float[3];
   }
 
-  @SimpleFunction(description = "Return the alpha component of an integer ARGB (alpha, red, green, blue) color.")
-  public int Alpha(int color) {
-    try {
-      return Color.alpha(color);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Alpha",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Return an integer ARGB (alpha, red, green, blue) color from " +
+  @SimpleFunction(description = "Create an integer ARGB (alpha, red, green, blue) color from " +
       "alpha, red, green, blue values.")
-  public int ARGB(int alpha, int red, int green, int blue) {
+  public int CreateARGB(int alpha, int red, int green, int blue) {
     try {
       return Color.argb(alpha, red, green, blue);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ARGB",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Return the blue component of " +
-      "an integer ARGB (alpha, red, green, blue) color.")
-  public int Blue(int color) {
-    try {
-      return Color.blue(color);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Blue",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Convert an integer ARGB (alpha, red, green, blue) color to " +
-      "an HSV (hue, saturation, value).")
-  public Object ColorToHSV(int color) {
-    try {
-      float[] array = new float[3];
-      Color.colorToHSV(color, array);
-      return array;
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ColorToHSV",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return new float[3];
-  }
-
-  @SimpleFunction(description = "Return the green component of " +
-      "an integer ARGB (alpha, red, green, blue) color.")
-  public int Green(int color) {
-    try {
-      return Color.green(color);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Green",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(
-      description = "Parse the color string, and return the corresponding ARGB (alpha, red, green, blue) color.\n" +
-      "Supported formats are: #RRGGBB #AARRGGBB or one of the following names: 'red',\n" +
-      "'blue', 'green', 'black', 'white', 'gray', 'cyan', 'magenta', 'yellow', 'lightgray',\n" +
-      "'darkgray', 'grey', 'lightgrey', 'darkgrey', 'aqua', 'fuchsia', 'lime', 'maroon',\n" +
-      "'navy', 'olive', 'purple', 'silver', 'teal'.")
-  public int ParseColor(String colorText) {
-    try {
-      return Color.parseColor(colorText);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ParseColor",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Return the red component of " +
-      "an integer ARGB (alpha, red, green, blue) color.")
-  public int Red(int color) {
-    try {
-      return Color.red(color);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Red",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
-    }
-    return 0;
-  }
-
-  @SimpleFunction(description = "Return an integer ARGB (alpha, red, green, blue) color from " +
-      "red, green, blue values.")
-  public int RGB(int red, int green, int blue) {
-    try {
-      return Color.rgb(red, green, blue);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "RGB",
+      form.dispatchErrorOccurredEvent(this, "CreateARGB",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
@@ -329,8 +248,72 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Return the hue from the given HSV (hue, saturation, value).")
-  public float Hue(Object hsv) {
+  @SimpleFunction(description = "Create an integer ARGB (alpha, red, green, blue) color from " +
+      "red, green, blue values.")
+  public int CreateRGB(int red, int green, int blue) {
+    try {
+      return Color.rgb(red, green, blue);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "CreateRGB",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Extract the alpha component of an integer ARGB (alpha, red, green, blue) color.")
+  public int ExtractAlpha(int color) {
+    try {
+      return Color.alpha(color);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ExtractAlpha",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Extract the red component of " +
+      "an integer ARGB (alpha, red, green, blue) color.")
+  public int ExtractRed(int color) {
+    try {
+      return Color.red(color);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ExtractRed",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Extract the green component of " +
+      "an integer ARGB (alpha, red, green, blue) color.")
+  public int ExtractGreen(int color) {
+    try {
+      return Color.green(color);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ExtractGreen",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Extract the blue component of " +
+      "an integer ARGB (alpha, red, green, blue) color.")
+  public int ExtractBlue(int color) {
+    try {
+      return Color.blue(color);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ExtractBlue",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(description = "Extract the hue from the given HSV (hue, saturation, value).")
+  public float ExtractHue(Object hsv) {
     try {
       if (hsv instanceof float[]) {
         float[] array = (float[]) hsv;
@@ -338,18 +321,18 @@ public final class FtcColorSensor extends FtcHardwareDevice {
           return array[0];
         }
       }
-      form.dispatchErrorOccurredEvent(this, "Hue",
+      form.dispatchErrorOccurredEvent(this, "ExtractHue",
           ErrorMessages.ERROR_FTC_INVALID_HSV);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Hue",
+      form.dispatchErrorOccurredEvent(this, "ExtractHue",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
   }
 
-  @SimpleFunction(description = "Return the saturation from the given HSV (hue, saturation, value).")
-  public float Saturation(Object hsv) {
+  @SimpleFunction(description = "Extract the saturation from the given HSV (hue, saturation, value).")
+  public float ExtractSaturation(Object hsv) {
     try {
       if (hsv instanceof float[]) {
         float[] array = (float[]) hsv;
@@ -357,18 +340,18 @@ public final class FtcColorSensor extends FtcHardwareDevice {
           return array[1];
         }
       }
-      form.dispatchErrorOccurredEvent(this, "Saturation",
+      form.dispatchErrorOccurredEvent(this, "ExtractSaturation",
           ErrorMessages.ERROR_FTC_INVALID_HSV);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Saturation",
+      form.dispatchErrorOccurredEvent(this, "ExtractSaturation",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
   }
 
-  @SimpleFunction(description = "Return the value from the given HSV (hue, saturation, value).")
-  public float Value(Object hsv) {
+  @SimpleFunction(description = "Extract the value from the given HSV (hue, saturation, value).")
+  public float ExtractValue(Object hsv) {
     try {
       if (hsv instanceof float[]) {
         float[] array = (float[]) hsv;
@@ -376,11 +359,28 @@ public final class FtcColorSensor extends FtcHardwareDevice {
           return array[2];
         }
       }
-      form.dispatchErrorOccurredEvent(this, "Value",
+      form.dispatchErrorOccurredEvent(this, "ExtractValue",
           ErrorMessages.ERROR_FTC_INVALID_HSV);
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Value",
+      form.dispatchErrorOccurredEvent(this, "ExtractValue",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  @SimpleFunction(
+      description = "Parse the color string, and return the corresponding ARGB (alpha, red, green, blue) color.\n" +
+      "Supported formats are: #RRGGBB #AARRGGBB or one of the following names: 'red',\n" +
+      "'blue', 'green', 'black', 'white', 'gray', 'cyan', 'magenta', 'yellow', 'lightgray',\n" +
+      "'darkgray', 'grey', 'lightgrey', 'darkgrey', 'aqua', 'fuchsia', 'lime', 'maroon',\n" +
+      "'navy', 'olive', 'purple', 'silver', 'teal'.")
+  public int ParseColor(String colorText) {
+    try {
+      return Color.parseColor(colorText);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "ParseColor",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;
