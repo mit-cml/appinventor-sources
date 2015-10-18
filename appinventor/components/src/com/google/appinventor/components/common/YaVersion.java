@@ -393,6 +393,10 @@ public class YaVersion {
   // - FTC_COMPASS_SENSOR_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 141:
   // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
+  // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 2.
+  // - FTC_SERVO_CONTROLLER_COMPONENT_VERSION
+  // - FTC_TOUCH_SENSOR_COMPONENT_VERSION was incremented to 2.
+  // - FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION was incremented to 2.
 
   public static final int YOUNG_ANDROID_VERSION = 141;
 
@@ -705,7 +709,16 @@ public class YaVersion {
 
   public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
 
-  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 1;
+  // FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION 2:
+  // - The SetMotorPowerForGroup function was added.
+  // - The BatteryVoltage property was added.
+  // - The SetGearRatio function was added.
+  // - The GetGearRatio function was added.
+  // - The SetDifferentialControlLoopCoefficients function was added.
+  // - The GetDifferentialControlLoopCoefficientP function was added.
+  // - The GetDifferentialControlLoopCoefficientI function was added.
+  // - The GetDifferentialControlLoopCoefficientD function was added.
+  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 2;
 
   // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 2:
   // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
@@ -769,11 +782,17 @@ public class YaVersion {
 
   public static final int FTC_SERVO_COMPONENT_VERSION = 1;
 
-  public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 1;
+  // For FTC_SERVO_CONTROLLER_COMPONENT_VERSION 2:
+  // - The SetServoPositionAndSpeed function was added.
+  public static final int FTC_SERVO_CONTROLLER_COMPONENT_VERSION = 2;
 
-  public static final int FTC_TOUCH_SENSOR_COMPONENT_VERSION = 1;
+  // For FTC_TOUCH_SENSOR_COMPONENT_VERSION 2:
+  // - The Status function was added.
+  public static final int FTC_TOUCH_SENSOR_COMPONENT_VERSION = 2;
 
-  public static final int FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION = 1;
+  // For FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION 2:
+  // - The Status function was added.
+  public static final int FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION = 2;
 
   public static final int FTC_ULTRASONIC_SENSOR_COMPONENT_VERSION = 1;
 

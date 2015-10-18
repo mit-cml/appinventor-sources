@@ -260,6 +260,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("FtcCompassSensor")) {
         srcCompVersion = upgradeFtcCompassSensorProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcDcMotorController")) {
+        srcCompVersion = upgradeFtcDcMotorControllerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcDeviceInterfaceModule")) {
         srcCompVersion = upgradeFtcDeviceInterfaceModuleProperties(componentProperties,
             srcCompVersion);
@@ -275,6 +278,15 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("FtcLinearOpMode")) {
         srcCompVersion = upgradeFtcLinearOpModeProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcServoController")) {
+        srcCompVersion = upgradeFtcServoControllerProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcTouchSensor")) {
+        srcCompVersion = upgradeFtcTouchSensorProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcTouchSensorMultiplexer")) {
+        srcCompVersion = upgradeFtcTouchSensorMultiplexerProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("FusiontablesControl")) {
         srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
@@ -903,8 +915,8 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
-  private static int upgradeFtcColorSensorProperties(
-      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+  private static int upgradeFtcColorSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // - The ColorToHSV method was renamed ConvertColorToHSV.
       // - The HSVToColor method was renamed ConvertHSVToColor.
@@ -930,6 +942,23 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // - The Mode_MEASUREMENT property (blocks only) was renamed CompassMode_MEASUREMENT_MODE.
       // - The Mode_CALIBRATION property (blocks only) was renamed CompassMode_CALIBRATION_MODE.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcDcMotorControllerProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The SetMotorPowerForGroup function was added.
+      // - The BatteryVoltage (blocks only) property was added.
+      // - The SetGearRatio function was added.
+      // - The GetGearRatio function was added.
+      // - The SetDifferentialControlLoopCoefficients function was added.
+      // - The GetDifferentialControlLoopCoefficientP function was added.
+      // - The GetDifferentialControlLoopCoefficientI function was added.
+      // - The GetDifferentialControlLoopCoefficientD function was added.
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
@@ -1001,6 +1030,36 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
       // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcServoControllerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The SetServoPositionAndSpeed function was added.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcTouchSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Status function was added.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcTouchSensorMultiplexerProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Status function was added.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
