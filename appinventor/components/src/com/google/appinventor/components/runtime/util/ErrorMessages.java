@@ -184,7 +184,23 @@ public final class ErrorMessages {
   // AndroidViewComponent errors
   public static final int ERROR_BAD_PERCENT = 2801;
 
-  // 2901-2999 are reserved for FIRST Tech Challenge.
+  // FTC errors
+  public static final int ERROR_FTC_UNEXPECTED_ERROR = 2901;
+  public static final int ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS = 2902;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE = 2903;
+  public static final int ERROR_FTC_INVALID_DIRECTION = 2904;
+  public static final int ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE = 2905;
+  public static final int ERROR_FTC_INVALID_SCALE_RANGE = 2906;
+  public static final int ERROR_FTC_INVALID_NUMBER = 2907;
+  public static final int ERROR_FTC_INVALID_BYTE_ARRAY = 2908;
+  public static final int ERROR_FTC_INVALID_POSITION = 2909;
+  public static final int ERROR_FTC_INVALID_LENGTH = 2910;
+  public static final int ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE = 2911;
+  public static final int ERROR_FTC_INVALID_COMPASS_MODE = 2912;
+  public static final int ERROR_FTC_INVALID_DEVICE_NAME = 2913;
+  public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2914;
+  public static final int ERROR_FTC_INVALID_HSV = 2915;
+  public static final int ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS = 2916;
 
   // Please start the next group of error numbers at 3001.
 
@@ -463,6 +479,45 @@ public final class ErrorMessages {
        "TextToSpeech is not yet ready to perform this operation");
     // AndroidViewComponent errors
     errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
+    // FTC errors
+    errorMessages.put(ERROR_FTC_UNEXPECTED_ERROR,
+        "An unexpected error occurred: %s");
+    errorMessages.put(ERROR_FTC_TOO_MANY_ROBOT_CONTROLLERS,
+        "An FTC Robot Controller app should contain exactly one FtcRobotController component.");
+    errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE,
+        "The specified run mode \"%s\" is not valid. The valid modes are " +
+        "RUN_USING_ENCODERS, RUN_WITHOUT_ENCODERS, RUN_TO_POSITION, and RESET_ENCODERS.");
+    errorMessages.put(ERROR_FTC_INVALID_DIRECTION,
+        "The specified direction \"%s\" is not valid. The valid directions are " +
+        "FORWARD (or 1) and REVERSE (or -1).");
+    errorMessages.put(ERROR_FTC_INVALID_IR_SEEKER_SENSOR_MODE,
+        "The specified IR seeker sensor mode \"%s\" is not valid. The valid modes are " +
+        "MODE_600HZ_DC and MODE_1200HZ_AC.");
+    errorMessages.put(ERROR_FTC_INVALID_SCALE_RANGE,
+        "The specified scale range is not valid: %s %s");
+    errorMessages.put(ERROR_FTC_INVALID_NUMBER,
+        "The specified number is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_BYTE_ARRAY,
+        "The specified byte array (%s) is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_POSITION,
+        "The specified position (%s) is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_LENGTH,
+        "The specified length is not valid: %s");
+    errorMessages.put(ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE,
+        "The specified digital channel mode \"%s\" is not valid. The valid modes are " +
+        "INPUT and OUTPUT.");
+    errorMessages.put(ERROR_FTC_INVALID_COMPASS_MODE,
+        "The specified compass mode \"%s\" is not valid. The valid modes are " +
+        "MEASUREMENT_MODE and CALIBRATION_MODE.");
+    errorMessages.put(ERROR_FTC_INVALID_DEVICE_NAME,
+        "There is no %s named %s. Valid names are %s.");
+    errorMessages.put(ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE,
+        "The specified motor controller device mode \"%s\" is not valid. The valid modes are " +
+        "READ_ONLY and WRITE_ONLY.");
+    errorMessages.put(ERROR_FTC_INVALID_HSV,
+        "The specified HSV is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS,
+        "The specified listOfFtcDcMotors is not valid");
   }
 
   private ErrorMessages() {
@@ -473,4 +528,3 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
-

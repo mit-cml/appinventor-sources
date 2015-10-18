@@ -254,6 +254,28 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcColorSensor")) {
+        srcCompVersion = upgradeFtcColorSensorProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcCompassSensor")) {
+        srcCompVersion = upgradeFtcCompassSensorProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcDeviceInterfaceModule")) {
+        srcCompVersion = upgradeFtcDeviceInterfaceModuleProperties(componentProperties,
+            srcCompVersion);
+
+      } else if (componentType.equals("FtcI2cDevice")) {
+        srcCompVersion = upgradeFtcI2cDeviceProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcIrSeekerSensor")) {
+        srcCompVersion = upgradeFtcIrSeekerSensorProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcLegacyModule")) {
+        srcCompVersion = upgradeFtcLegacyModuleProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("FtcLinearOpMode")) {
+        srcCompVersion = upgradeFtcLinearOpModeProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FusiontablesControl")) {
         srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
 
@@ -878,6 +900,109 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 18;
     }
 
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcColorSensorProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The ColorToHSV method was renamed ConvertColorToHSV.
+      // - The HSVToColor method was renamed ConvertHSVToColor.
+      // - The HSVToColorWithAlpha method was renamed ConvertHSVToColorWithAlpha.
+      // - The RGBToHSV method was renamed ConvertRGBToHSV.
+      // - The ARGB method was renamed CreateARGB.
+      // - The RGB method was renamed CreateRGB.
+      // - The Alpha method was renamed ExtractAlpha.
+      // - The Red method was renamed ExtractRed.
+      // - The Green method was renamed ExtractGreen.
+      // - The Blue method was renamed ExtractBlue.
+      // - The Hue method was renamed ExtractHue.
+      // - The Saturation method was renamed ExtractSaturation.
+      // - The Value method was renamed ExtractValue.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcCompassSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Mode_MEASUREMENT property (blocks only) was renamed CompassMode_MEASUREMENT_MODE.
+      // - The Mode_CALIBRATION property (blocks only) was renamed CompassMode_CALIBRATION_MODE.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcDeviceInterfaceModuleProperties(
+      Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+      // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+      // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+      // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+      // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+      // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcI2cDeviceProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+      // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+      // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+      // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+      // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+      // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcIrSeekerSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Mode_1200HZ_AC property (blocks only) was renamed Mode_1200HZ.
+      // - The Mode_600HZ_DC property (blocks only) was renamed Mode_600HZ.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcLegacyModuleProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The EnableNxtI2cReadMode method was renamed EnableI2cReadMode.
+      // - The EnableNxtI2cWriteMode method was renamed EnableI2cWriteMode.
+      // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
+      // - The GetI2cWriteCache method was renamed GetCopyOfWriteBuffer.
+      // - The IsNxtI2cPortActionFlagSet method was renamed IsI2cPortActionFlagSet.
+      // - The SetI2cWriteCache method was renamed CopyBufferIntoWriteBuffer.
+      // - The SetNxtI2cPortActionFlag method was renamed SetI2cPortActionFlag.
+      // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
+      // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
+      // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcLinearOpModeProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 

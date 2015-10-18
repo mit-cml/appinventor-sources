@@ -170,9 +170,13 @@ public class TopToolbar extends Composite {
     connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
         new HardResetAction()));
 
+    Config config = Ode.getInstance().getSystemConfig();
+
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
-        new BarcodeAction()));
+    if (!config.getFtcStandaloneVersion()) {  // No barcode for FTC standalone version.
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
+          new BarcodeAction()));
+    }
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
         new DownloadAction()));
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
@@ -186,7 +190,6 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
-    Config config = Ode.getInstance().getSystemConfig();
     String libraryUrl = config.getLibraryUrl();
     if (!Strings.isNullOrEmpty(libraryUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
@@ -219,8 +222,10 @@ public class TopToolbar extends Composite {
           new WindowOpenAction(feedbackUrl, "_blank", "scrollbars=1")));
       helpItems.add(null);
     }
-    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
-        new AboutCompanionAction()));
+    if (config.getFtcCompanion()) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
+          new AboutCompanionAction()));
+    }
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
@@ -242,7 +247,9 @@ public class TopToolbar extends Composite {
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    toolbar.add(connectDropDown);
+    if (config.getFtcCompanion()) {
+      toolbar.add(connectDropDown);
+    }
     toolbar.add(buildDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
@@ -689,8 +696,12 @@ public class TopToolbar extends Composite {
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
       String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-          "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
+          "<BR/><BR/><b>This version of MIT App Inventor contains support for<BR/>" +
+          "FIRST\u00AE Tech Challenge</b>";
       Config config = Ode.getInstance().getSystemConfig();
+      if (!config.getFtcCompanion()) {
+        html += "<BR/><BR/>No Companion Available.";
+      }
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
         html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
