@@ -105,6 +105,7 @@ public final class ErrorMessages {
   public static final int ERROR_SCREEN_BAD_VALUE_RECEIVED = 903;
   public static final int ERROR_SCREEN_BAD_VALUE_FOR_SENDING = 904;
   public static final int ERROR_SCREEN_INVALID_ANIMATION = 905;
+  public static final int ERROR_NO_FOCUSABLE_VIEW_FOUND = 906;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
@@ -364,6 +365,8 @@ public final class ErrorMessages {
         "Bad value for sending to other screen: %s");
     errorMessages.put(ERROR_SCREEN_INVALID_ANIMATION,
         "Bad value for screen open/close animation: %s");
+    errorMessages.put(ERROR_NO_FOCUSABLE_VIEW_FOUND,
+        "No Focusable View Found");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");

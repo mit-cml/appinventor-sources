@@ -878,6 +878,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 18;
     }
 
+    if (srcCompVersion < 19) {
+      // Added HideKeyboard
+      srcCompVersion = 19;
+    }
+
     return srcCompVersion;
   }
 

@@ -360,8 +360,10 @@ public class YaVersion {
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 141:
   // - Reserved for FIRST Tech Challenge.
+  // For YOUNG_ANDROID_VERSION 142:
+  // - FORM_COMPONENT_VERSION was incremented to 19.
 
-  public static final int YOUNG_ANDROID_VERSION = 141;
+  public static final int YOUNG_ANDROID_VERSION = 142;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -641,8 +643,9 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 18:
   // - Screen.CompatibilityMode property morphed into the
   //   Sizing property
-  public static final int FORM_COMPONENT_VERSION = 18;
-
+  // For FORM_COMPONENT_VERSION 19:
+  // - Added HideKeyboard method
+  public static final int FORM_COMPONENT_VERSION = 19;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
