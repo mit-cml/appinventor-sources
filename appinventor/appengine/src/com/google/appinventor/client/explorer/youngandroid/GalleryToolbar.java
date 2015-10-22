@@ -58,7 +58,7 @@ public class GalleryToolbar extends Composite {
         GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
         searchText.setFocus(true);
         Ode.getInstance().switchToGalleryView();
-        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(SEARCHTAB); 
+        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(SEARCHTAB);
         for(GalleryToolbar toolbar : allSearchToolbars){
           toolbar.getSearchText().setText(searchText.getText());
         }

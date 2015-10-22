@@ -159,7 +159,7 @@ public class GalleryClient {
     ode.getGalleryService().getFeaturedApp(start, count, callback);
   }
 /**
-  * GetTutorial gets tutorial apps, currently unimplemented
+  * GetTutorial gets tutorial apps, implemented in GalleryList.java
   * @param start staring index
   * @param count number of results
   * @param sortOrder unused sort order
