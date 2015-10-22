@@ -2354,3 +2354,9 @@ textarea::-webkit-input-placeholder {
   padding-left: 15px;
   margin-right: 135px;
 }
+
+#nextStepErrorMsg {
+  color: red;
+  display: none;
+  margin-top: 5px;
+}
