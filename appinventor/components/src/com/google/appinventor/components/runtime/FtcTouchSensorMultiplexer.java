@@ -73,7 +73,7 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status, if supported by the touch sensor multiplexer.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     if (touchSensorMultiplexer != null) {
