@@ -53,6 +53,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.DISABLE_BLOCK = 'Disable Block';
     Blockly.Msg.ENABLE_BLOCK = 'Enable Block';
     Blockly.Msg.HELP = 'Help';
+    Blockly.Msg.EXPORT_IMAGE = 'Download Blocks as Image';
     Blockly.Msg.COLLAPSE_ALL = 'Collapse Blocks';
     Blockly.Msg.EXPAND_ALL = 'Expand Blocks';
     Blockly.Msg.ARRANGE_H = 'Arrange Blocks Horizontally';
@@ -61,6 +62,21 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.SORT_W = 'Sort Blocks by Width';
     Blockly.Msg.SORT_H = 'Sort Blocks by Height';
     Blockly.Msg.SORT_C = 'Sort Blocks by Category';
+    Blockly.Msg.COPY_TO_BACKPACK = 'Add to Backpack';
+    Blockly.Msg.COPY_ALLBLOCKS = 'Copy All Blocks to Backpack';
+    Blockly.Msg.BACKPACK_GET = 'Paste All Blocks from Backpack';
+    Blockly.Msg.BACKPACK_EMPTY = 'Empty the Backpack';
+    Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Are you sure you want to empty the backpack?';
+    Blockly.Msg.BACKPACK_DOC_TITLE = "Backpack Information";
+    Blockly.Msg.BACKPACK_DOCUMENTATION = "The Backpack is a copy/paste feature. It allows you to copy blocks from one project or screen " +
+   " and paste them into another project or screen. " +
+   " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
+   " drag-and-drop blocks into the workspace." +
+   "</p><p>The contents of the Backpack will persist throughout " +
+   " an App Inventor session. When you quit App Inventor or refresh its web page in the browser, " +
+   " the Backpack will be re-initialized -- i.e., emptied." +
+   "</p><p>For further documentation and a 'how to' video, see:" +
+   '</p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
@@ -77,6 +93,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
     Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
     Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
+    Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';

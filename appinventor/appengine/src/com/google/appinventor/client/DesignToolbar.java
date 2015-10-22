@@ -454,10 +454,12 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
 
-    if (getCurrentProject() == null || getCurrentProject().currentScreen == "Screen1") {
-      setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);
-    } else {
-      setButtonEnabled(WIDGET_NAME_REMOVEFORM, true);
+    if (AppInventorFeatures.allowMultiScreenApplications()) {
+      if (getCurrentProject() == null || getCurrentProject().currentScreen == "Screen1") {
+        setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);
+      } else {
+        setButtonEnabled(WIDGET_NAME_REMOVEFORM, true);
+      }
     }
   }
 
