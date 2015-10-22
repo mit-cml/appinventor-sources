@@ -65,11 +65,15 @@ public static void displayDialog(){
     nextButton.getElement().setId("nextButton");
     Button backButton = new Button("back");
     backButton.getElement().setId("backButton");
+    HTML nextStepErrorMsg = new HTML("It looks like you haven't finished this step yet. Try reading through all the instructions again to make sure you've finished the whole step.");
+    nextStepErrorMsg.getElement().setId("nextStepErrorMsg");
+
 
     VerticalPanel dialogVPanel = new VerticalPanel();
     HorizontalPanel hPanel = new HorizontalPanel();
     hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
     // dialogVPanel.add(frame);
+    dialogVPanel.add(nextStepErrorMsg);
     dialogVPanel.add(hPanel);
 
     dialogVPanel.setWidth("300px");
