@@ -299,7 +299,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Set the power for a group of motors.")
+  @SimpleFunction(description = "Set the power for a group of motors, if supported by the controller.")
   public void SetMotorPowerForGroup(YailList listOfFtcDcMotors, int power) {
     if (dcMotorController != null) {
       try {
@@ -377,7 +377,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     }
   }
 
-  @SimpleFunction(description = "Get the gear ratio.")
+  @SimpleFunction(description = "Get the gear ratio, if supported by the controller.")
   public double GetGearRatio(int motor) {
     if (dcMotorController != null) {
       try {
