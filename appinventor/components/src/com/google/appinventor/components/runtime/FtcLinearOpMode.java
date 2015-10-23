@@ -6,9 +6,11 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
@@ -90,5 +92,15 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
   @SimpleFunction(description = "Returns true as long as the op mode is active.")
   public boolean OpModeIsActive() {
     return linearOpMode.opModeIsActive();
+  }
+
+  /**
+   * Time property getter.
+   */
+  @SimpleProperty(description = "The number of seconds this op mode had been running when the " +
+      "RunOpMode event was triggered.",
+      category = PropertyCategory.BEHAVIOR)
+  public double Time() {
+    return opMode.time;
   }
 }

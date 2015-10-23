@@ -6,8 +6,10 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
@@ -89,5 +91,15 @@ public final class FtcOpMode extends FtcOpModeBase {
   @SimpleEvent(description = "This event is triggered when this op mode is first disabled.")
   public void Stop() {
     EventDispatcher.dispatchEvent(this, "Stop");
+  }
+
+  /**
+   * Time property getter.
+   */
+  @SimpleProperty(description = "The number of seconds this op mode had been running when the " +
+      "Loop event was triggered.",
+      category = PropertyCategory.BEHAVIOR)
+  public double Time() {
+    return opMode.time;
   }
 }
