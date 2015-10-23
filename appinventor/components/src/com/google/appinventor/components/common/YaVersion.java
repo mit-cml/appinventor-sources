@@ -394,6 +394,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 141:
   // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 2.
+  // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 3.
+  // - FTC_OP_MODE_COMPONENT_VERSION was incremented to 2.
   // - FTC_SERVO_CONTROLLER_COMPONENT_VERSION
   // - FTC_TOUCH_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION was incremented to 2.
@@ -770,9 +772,13 @@ public class YaVersion {
 
   // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 2:
   // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
-  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 2;
+  // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 3:
+  // - The Time property was added.
+  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 3;
 
-  public static final int FTC_OP_MODE_COMPONENT_VERSION = 1;
+  // For FTC_OP_MODE_COMPONENT_VERSION 2:
+  // - The Time property was added.
+  public static final int FTC_OP_MODE_COMPONENT_VERSION = 2;
 
   public static final int FTC_OPTICAL_DISTANCE_SENSOR_COMPONENT_VERSION = 1;
 

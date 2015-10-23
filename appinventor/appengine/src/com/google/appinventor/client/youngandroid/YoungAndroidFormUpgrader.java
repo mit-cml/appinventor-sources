@@ -279,6 +279,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("FtcLinearOpMode")) {
         srcCompVersion = upgradeFtcLinearOpModeProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcOpMode")) {
+        srcCompVersion = upgradeFtcOpModeProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcServoController")) {
         srcCompVersion = upgradeFtcServoControllerProperties(componentProperties, srcCompVersion);
 
@@ -931,7 +934,7 @@ public final class YoungAndroidFormUpgrader {
       // - The Hue method was renamed ExtractHue.
       // - The Saturation method was renamed ExtractSaturation.
       // - The Value method was renamed ExtractValue.
-      // No properties need to be modified to upgrade to version 2.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -974,7 +977,7 @@ public final class YoungAndroidFormUpgrader {
       // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
       // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
-      // No properties need to be modified to upgrade to version 2.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -989,7 +992,7 @@ public final class YoungAndroidFormUpgrader {
       // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
       // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
-      // No properties need to be modified to upgrade to version 2.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -1019,7 +1022,7 @@ public final class YoungAndroidFormUpgrader {
       // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
       // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
-      // No properties need to be modified to upgrade to version 2.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;
@@ -1029,7 +1032,22 @@ public final class YoungAndroidFormUpgrader {
       int srcCompVersion) {
     if (srcCompVersion < 2) {
       // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
-      // No properties need to be modified to upgrade to version 2.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // - The Time property was added.
+      // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcOpModeProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Time property was added.
+      // No designer properties need to be modified to upgrade to version 3.
       srcCompVersion = 2;
     }
     return srcCompVersion;

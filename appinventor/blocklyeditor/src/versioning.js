@@ -1589,14 +1589,20 @@ Blockly.Versioning.AllUpgradeMaps =
       [
         // The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
         Blockly.Versioning.changeMethodName("FtcLinearOpMode", "WaitOneHardwareCycle", "WaitOneFullHardwareCycle")
-      ]
+      ],
+
+    // The Time property was added.
+    3: "noUpgrade"
 
   }, // End FtcLinearOpMode upgraders
 
   "FtcOpMode": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // The Time property was added.
+    2: "noUpgrade"
 
   }, // End FtcOpMode upgraders
 
