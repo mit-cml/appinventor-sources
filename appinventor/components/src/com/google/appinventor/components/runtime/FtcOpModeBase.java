@@ -66,6 +66,16 @@ public abstract class FtcOpModeBase extends AndroidNonvisibleComponent
     return opMode.getRuntime();
   }
 
+  /**
+   * Time property getter.
+   */
+  @SimpleProperty(description = "The number of seconds this op mode has been running, this is " +
+      "updated before every call to loop.",
+      category = PropertyCategory.BEHAVIOR)
+  public double Time() {
+    return opMode.time;
+  }
+
   // OnDestroyListener implementation
 
   @Override
