@@ -1760,9 +1760,21 @@ public class Form extends Activity
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();
+    frameLayout.removeAllViews();
+    frameLayout = null;
     // Set all screen properties to default values.
     defaultPropertyValues();
+    onStopListeners.clear();
+    onNewIntentListeners.clear();
+    onResumeListeners.clear();
+    onPauseListeners.clear();
+    onDestroyListeners.clear();
+    onInitializeListeners.clear();
+    onCreateOptionsMenuListeners.clear();
+    onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
+    System.err.println("Form.clear() About to do moby GC!");
+    System.gc();
     dimChanges.clear();
   }
 
