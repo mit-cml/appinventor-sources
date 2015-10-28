@@ -393,6 +393,7 @@ public class YaVersion {
   // - FTC_COMPASS_SENSOR_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 141:
   // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
+  // - FTC_DC_MOTOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 2.
   // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 3.
   // - FTC_OP_MODE_COMPONENT_VERSION was incremented to 2.
@@ -709,7 +710,9 @@ public class YaVersion {
   // - The Mode_CALIBRATION property was renamed CompassMode_CALIBRATION_MODE.
   public static final int FTC_COMPASS_SENSOR_COMPONENT_VERSION = 2;
 
-  public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 1;
+  // FTC_DC_MOTOR_COMPONENT_VERSION 2:
+  // - The ChannelMode property was renamed Mode.
+  public static final int FTC_DC_MOTOR_COMPONENT_VERSION = 2;
 
   // FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION 2:
   // - The SetMotorPowerForGroup function was added.

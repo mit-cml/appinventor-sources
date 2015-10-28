@@ -3342,10 +3342,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CalibrationFailedProperties();
 
-  @DefaultMessage("ChannelMode")
-  @Description("")
-  String ChannelModeProperties();
-
   @DefaultMessage("CompassMode_CALIBRATION_MODE")
   @Description("")
   String CompassMode_CALIBRATION_MODEProperties();

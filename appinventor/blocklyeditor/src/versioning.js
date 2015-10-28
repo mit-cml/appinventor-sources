@@ -1430,7 +1430,13 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcDcMotor": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    2:
+      [
+        // The ChannelMode property was renamed Mode.
+        Blockly.Versioning.changePropertyName("FtcDcMotor", "ChannelMode", "Mode"),
+      ] 
 
   }, // End FtcDcMotor upgraders
 

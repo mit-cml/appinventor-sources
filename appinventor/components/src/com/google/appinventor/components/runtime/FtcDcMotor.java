@@ -310,10 +310,10 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   }
 
   /**
-   * ChannelMode property setter.
+   * Mode property setter.
    */
   @SimpleProperty
-  public void ChannelMode(String runMode) {
+  public void Mode(String runMode) {
     if (dcMotor != null) {
       try {
         for (RunMode runModeValue : RunMode.values()) {
@@ -323,24 +323,24 @@ public final class FtcDcMotor extends FtcHardwareDevice {
           }
         }
 
-        form.dispatchErrorOccurredEvent(this, "ChannelMode",
+        form.dispatchErrorOccurredEvent(this, "Mode",
             ErrorMessages.ERROR_FTC_INVALID_DC_MOTOR_RUN_MODE, runMode);
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ChannelMode",
+        form.dispatchErrorOccurredEvent(this, "Mode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
   }
 
   /**
-   * ChannelMode property getter.
+   * Mode property getter.
    */
-  @SimpleProperty(description = "The channel mode.\n" +
+  @SimpleProperty(description = "The run mode.\n" +
       "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
       "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
-  public String ChannelMode() {
+  public String Mode() {
     if (dcMotor != null) {
       try {
         RunMode mode = dcMotor.getChannelMode();
@@ -349,7 +349,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
         }
       } catch (Throwable e) {
         e.printStackTrace();
-        form.dispatchErrorOccurredEvent(this, "ChannelMode",
+        form.dispatchErrorOccurredEvent(this, "Mode",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
