@@ -362,8 +362,10 @@ public class YaVersion {
   // - Reserved for FIRST Tech Challenge.
   // For YOUNG_ANDROID_VERSION 142:
   // - FORM_COMPONENT_VERSION was incremented to 19.
+  // For YOUNG_ANDROID_VERSION 143:
+  // - GyroscopeSensor component was added
 
-  public static final int YOUNG_ANDROID_VERSION = 142;
+  public static final int YOUNG_ANDROID_VERSION = 143;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -656,6 +658,8 @@ public class YaVersion {
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 3;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
+
+  public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
