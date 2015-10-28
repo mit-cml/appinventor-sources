@@ -1374,6 +1374,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End GameClient upgraders
 
+  "GyroscopeSensor": {
+
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End GyroscopeSensor upgraders
+
   "HorizontalArrangement": {
 
     // AI1: The AlignHorizontal and AlignVertical properties were added.

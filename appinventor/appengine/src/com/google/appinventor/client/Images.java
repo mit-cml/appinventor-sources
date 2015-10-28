@@ -426,6 +426,12 @@ public interface Images extends Resources {
   ImageResource web();
 
   /**
+   * Designer palette item: GyroscopeSensor component
+   */
+  @Source("com/google/appinventor/images/gyroscopesensor.png")
+  ImageResource gyroscopesensor();
+
+  /**
    * Built in drawer item: control
    */
   @Source("com/google/appinventor/images/control.png")
