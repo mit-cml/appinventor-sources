@@ -261,7 +261,8 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Extract the alpha component of an integer ARGB (alpha, red, green, blue) color.")
+  @SimpleFunction(description = "Extract the alpha component of " +
+      "an integer ARGB (alpha, red, green, blue) color.")
   public int ExtractAlpha(int color) {
     try {
       return Color.alpha(color);
@@ -331,7 +332,8 @@ public final class FtcColorSensor extends FtcHardwareDevice {
     return 0;
   }
 
-  @SimpleFunction(description = "Extract the saturation from the given HSV (hue, saturation, value).")
+  @SimpleFunction(description = "Extract the saturation from the given " +
+      "HSV (hue, saturation, value).")
   public float ExtractSaturation(Object hsv) {
     try {
       if (hsv instanceof float[]) {
