@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>JSZip Testing</title>
+<link media="screen" href="qunit-1.11.0.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="qunit-1.11.0.js"></script>
+
+<script type="text/javascript" src="../dist/jszip.js"></script>
+
+<script type="text/javascript">
+   QUnit.config.urlConfig.push({
+      id : "complexfiles",
+      label : "Load complex files",
+      tooltip : "Loading complex files can be (very) slow but useful to test real-world zip files"
+   });
+
+   // see https://github.com/axemclion/grunt-saucelabs#test-result-details-with-qunit
+   var log = [];
+   var testName;
+
+   QUnit.done(function (test_results) {
+   var tests = [];
+   for(var i = 0, len = log.length; i < len; i++) {
+      var details = log[i];
+      tests.push({
+         name: details.name,
+         result: details.result,
+         expected: details.expected,
+         actual: details.actual,
+         source: details.source
+      });
+   }
+   test_results.tests = tests;
+
+   window.global_test_results = test_results;
+   });
+   QUnit.testStart(function(testDetails){
+      QUnit.log = function(details){
+         if (!details.result) {
+            details.name = testDetails.name;
+            log.push(details);
+         }
+      };
+   });
+</script>
+
+<script type="text/javascript" src="//stuk.github.io/jszip-utils/dist/jszip-utils.js"></script>
+<!--
+Mandatory in IE 6, 7, 8 and 9.
+-->
+<!--[if IE]>
+<script type="text/javascript" src="//stuk.github.io/jszip-utils/dist/jszip-utils-ie.js"></script>
+<![endif]-->
+
+<script>
+// no CDN, fallback on the npm version
+if(!window.JSZipUtils) {
+   document.write('<script type="text/javascript" src="../node_modules/jszip-utils/dist/jszip-utils.js"><\/script>');
+   document.write('<!--[if IE]><script type="text/javascript" src="../node_modules/jszip-utils/dist/jszip-utils-ie.js"><\/script><![endif]-->');
+}
+</script>
+
+<script type="text/javascript" src="browser-test-utils.js"></script>
+
+<script type="text/javascript" src="test.js"></script>
+
+</head>
+<body>
+   <div id="qunit"></div>
+   <div id="qunit-fixture"></div>
+</body>
+</html>
+<!-- enforcing Stuk's coding style -->
+<!-- vim: set shiftwidth=3 softtabstop=3 foldmethod=marker: -->
