@@ -78,7 +78,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * LeftStickX property getter.
    */
-  @SimpleProperty(description = "The left analog stick horizontal axis value.",
+  @SimpleProperty(description = "The left analog stick horizontal axis value, " +
+      "as a numeric value between -1.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickX() {
     try {
@@ -97,7 +98,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * LeftStickY property getter.
    */
-  @SimpleProperty(description = "The left analog stick vertical axis value.",
+  @SimpleProperty(description = "The left analog stick vertical axis value, " +
+      "as a numeric value between -1.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftStickY() {
     try {
@@ -116,7 +118,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * RightStickX property getter.
    */
-  @SimpleProperty(description = "The right analog stick horizontal axis value.",
+  @SimpleProperty(description = "The right analog stick horizontal axis value, " +
+      "as a numeric value between -1.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float RightStickX() {
     try {
@@ -135,7 +138,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * RightStickY property getter.
    */
-  @SimpleProperty(description = "The right analog stick vertical axis value.",
+  @SimpleProperty(description = "The right analog stick vertical axis value, " +
+      "as a numeric value between -1.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float RightStickY() {
     try {
@@ -154,7 +158,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * DpadUp property getter.
    */
-  @SimpleProperty(description = "The dpad up value.",
+  @SimpleProperty(description = "The dpad up value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadUp() {
     try {
@@ -173,7 +177,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * DpadDown property getter.
    */
-  @SimpleProperty(description = "The dpad down value.",
+  @SimpleProperty(description = "The dpad down value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadDown() {
     try {
@@ -192,7 +196,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * DpadLeft property getter.
    */
-  @SimpleProperty(description = "The dpad left value.",
+  @SimpleProperty(description = "The dpad left value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadLeft() {
     try {
@@ -211,7 +215,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * DpadRight property getter.
    */
-  @SimpleProperty(description = "The dpad right value.",
+  @SimpleProperty(description = "The dpad right value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean DpadRight() {
     try {
@@ -230,7 +234,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * A property getter.
    */
-  @SimpleProperty(description = "The value of the A button.",
+  @SimpleProperty(description = "The value of the A button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean A() {
     try {
@@ -249,7 +253,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * B property getter.
    */
-  @SimpleProperty(description = "The value of the B button.",
+  @SimpleProperty(description = "The value of the B button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean B() {
     try {
@@ -268,7 +272,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * X property getter.
    */
-  @SimpleProperty(description = "The value of the X button.",
+  @SimpleProperty(description = "The value of the X button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean X() {
     try {
@@ -287,7 +291,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * Y property getter.
    */
-  @SimpleProperty(description = "The value of the Y button.",
+  @SimpleProperty(description = "The value of the Y button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Y() {
     try {
@@ -306,8 +310,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * Guide property getter.
    */
-  @SimpleProperty(description = "The value of the Guide button. " +
-      "The Guide button is often the large button in the middle of the controller.",
+  @SimpleProperty(description = "The value of the Guide button: true if pressed, false " +
+      "otherwise. The Guide button is often the large button in the middle of the controller.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Guide() {
     try {
@@ -326,7 +330,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * Start property getter.
    */
-  @SimpleProperty(description = "The value of the Start button.",
+  @SimpleProperty(description = "The value of the Start button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Start() {
     try {
@@ -345,7 +349,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * Back property getter.
    */
-  @SimpleProperty(description = "The value of the Back button.",
+  @SimpleProperty(description = "The value of the Back button: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean Back() {
     try {
@@ -364,7 +368,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * LeftBumper property getter.
    */
-  @SimpleProperty(description = "The left bumper value.",
+  @SimpleProperty(description = "The left bumper value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean LeftBumper() {
     try {
@@ -383,7 +387,7 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * RightBumper property getter.
    */
-  @SimpleProperty(description = "The right bumper value.",
+  @SimpleProperty(description = "The right bumper value: true if pressed, false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean RightBumper() {
     try {
@@ -402,7 +406,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * LeftStickButton property getter.
    */
-  @SimpleProperty(description = "The value of the left stick button.",
+  @SimpleProperty(description = "The value of the left stick button: true if pressed, " +
+      "false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean LeftStickButton() {
     try {
@@ -421,7 +426,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * RightStickButton property getter.
    */
-  @SimpleProperty(description = "The value of the right stick button.",
+  @SimpleProperty(description = "The value of the right stick button: true if pressed, " +
+      "false otherwise.",
       category = PropertyCategory.BEHAVIOR)
   public boolean RightStickButton() {
     try {
@@ -440,7 +446,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * LeftTrigger property getter.
    */
-  @SimpleProperty(description = "The left trigger value.",
+  @SimpleProperty(description = "The left trigger value, as a numeric value " +
+      "between 0.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float LeftTrigger() {
     try {
@@ -459,7 +466,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * RightTrigger property getter.
    */
-  @SimpleProperty(description = "The right trigger value.",
+  @SimpleProperty(description = "The right trigger value, as a numeric value " +
+      "between 0.0 and +1.0.",
       category = PropertyCategory.BEHAVIOR)
   public float RightTrigger() {
     try {
@@ -492,7 +500,8 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
   /**
    * AtRest property getter.
    */
-  @SimpleProperty(description = "Are all analog sticks and triggers in their rest position?",
+  @SimpleProperty(description = "Are all analog sticks and triggers in their rest position? " +
+      "True or false.",
       category = PropertyCategory.BEHAVIOR)
   public boolean AtRest() {
     try {
