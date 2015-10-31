@@ -818,6 +818,62 @@ Blockly.Versioning.addDefaultMethodArgument = function(componentType, methodName
 }
 
 /**
+ * Rename all method call blocks for a given component type and method name.
+ * @param componentType: name of component type for method
+ * @param oldMethodName: name of method
+ * @param newMethodName: new name of method
+ * @returns a function that maps a blocksRep (An XML DOM or workspace)
+ *   to a modified DOM in which every specified method call has been renamed.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+Blockly.Versioning.changeMethodName = function(componentType, oldMethodName, newMethodName) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    // For each matching method call block, change the method_name attribute.
+    var methodCallBlocks =  Blockly.Versioning.findAllMethodCalls(dom, componentType, oldMethodName);
+    for (var b = 0, methodCallBlock; methodCallBlock = methodCallBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(methodCallBlock, "mutation");
+      mutation.setAttribute("method_name", newMethodName);
+    }
+    return dom; // Return the modified dom, as required by the upgrading structure.
+  }
+}
+
+/**
+ * Rename all property get/set blocks for a given component type and property name.
+ * @param componentType: name of component type for property
+ * @param oldPropertyName: name of property
+ * @param newPropertyName: new name of property
+ * @returns a function that maps a blocksRep (An XML DOM or workspace)
+ *   to a modified DOM in which every specified property get/set has been renamed.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ */
+Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName, newPropertyName) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    // For each matching property block, change the property_name attribute.
+    var propertyBlocks =  Blockly.Versioning.findAllPropertyBlocks(dom, componentType, oldPropertyName);
+    for (var b = 0, propertyBlock; propertyBlock = propertyBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(propertyBlock, "mutation");
+      mutation.setAttribute("property_name", newPropertyName);
+      var children = goog.dom.getChildren(propertyBlock);
+      for (var c = 0, child; child = children[c]; c++) {
+        if (child.tagName.toUpperCase() == "FIELD") {
+          if (child.getAttribute("name") == "PROP") {
+            if (child.textContent == oldPropertyName) {
+              child.textContent = newPropertyName;
+            }
+          }
+        }
+      }
+    }
+    return dom; // Return the modified dom, as required by the upgrading structure.
+  }
+}
+
+/**
  * @param dom: DOM for XML workspace
  * @param componentType: name of component type for method
  * @param methodName: name of method
@@ -835,7 +891,7 @@ Blockly.Versioning.findAllMethodCalls = function (dom, componentType, methodName
       if (!mutation) {
         throw "Did not find expected mutation child in "
               + "Blockly.Versioning.findAllMethodCalls with componentType = " + componentType
-              + "and methodNames = " + methodName;
+              + "and methodName = " + methodName;
       } else {
         if ((mutation.getAttribute("component_type") == componentType)
             && (mutation.getAttribute("method_name") == methodName)) {
@@ -845,6 +901,36 @@ Blockly.Versioning.findAllMethodCalls = function (dom, componentType, methodName
     }
   }
   return callBlocks;
+}
+
+/**
+ * @param dom: DOM for XML workspace
+ * @param componentType: name of component type for property
+ * @param propertyName: name of property
+ * @returns a list of HTML elements for the specfied property blocks.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ *
+ */
+Blockly.Versioning.findAllPropertyBlocks = function (dom, componentType, propertyName) {
+  var allBlocks = dom.getElementsByTagName('block');
+  var propertyBlocks = [];
+  for (var b = 0, block; block = allBlocks[b]; b++)  {
+    if (block.getAttribute('type') == "component_set_get") {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, "mutation");
+      if (!mutation) {
+        throw "Did not find expected mutation child in "
+              + "Blockly.Versioning.findAllPropertyBlocks with componentType = " + componentType
+              + "and propertyName = " + propertyName;
+      } else {
+        if ((mutation.getAttribute("component_type") == componentType)
+            && (mutation.getAttribute("property_name") == propertyName)) {
+          propertyBlocks.push(block);
+        }
+      }
+    }
+  }
+  return propertyBlocks;
 }
 
 /**
@@ -1286,13 +1372,16 @@ Blockly.Versioning.AllUpgradeMaps =
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
 
-  }, // End Image upgraders
+  }, // End GameClient upgraders
 
   "HorizontalArrangement": {
 
     // AI1: The AlignHorizontal and AlignVertical properties were added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // - Added background color & image
+    3: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -2043,7 +2132,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
     // to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // - Added background color & image
+    3: "noUpgrade"
 
   }, // End VerticalArrangement upgraders
 

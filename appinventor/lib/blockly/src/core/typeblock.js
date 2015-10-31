@@ -464,7 +464,8 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         if (xmlString === null) {
           var blockType = blockToCreate.canonicName;
           if (blockType == 'procedures_callnoreturn' || blockType == 'procedures_callreturn') {
-            xmlString = Blockly.Drawer.procedureCallersXMLString(blockType == 'procedures_callreturn');
+            xmlString = Blockly.Drawer.procedureCallersXMLString(blockType == 'procedures_callreturn',
+                blockToCreate.dropDown.value);
           } else {
             xmlString = '<xml><block type="' + blockType + '">';
             if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {

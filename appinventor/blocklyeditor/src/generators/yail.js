@@ -613,5 +613,3 @@ Blockly.Yail.blockToCode1 = function(block) {
     return this.scrub_(block, code, true);
   }
 };
-
-

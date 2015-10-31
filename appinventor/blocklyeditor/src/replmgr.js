@@ -14,6 +14,7 @@ goog.provide('Blockly.ReplMgr');
 goog.provide('Blockly.ReplStateObj');
 
 goog.require('Blockly.Component');
+goog.require('Blockly.Util');
 
 Blockly.ReplMgr.yail = null;
 
@@ -318,7 +319,7 @@ Blockly.ReplMgr.putYail = (function() {
                         if (work.failure) {
                             work.failure(Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR);
                         }
-                        var dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, Blockly.Msg.REPL_NETWORK_ERROR_RESTART, Blockly.Msg.REPL_OK, null, 0,
+                        var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, Blockly.Msg.REPL_NETWORK_ERROR_RESTART, Blockly.Msg.REPL_OK, null, 0,
                             function() {
                                 dialog.hide();
                                 context.hardreset(context.formName);
@@ -356,7 +357,7 @@ Blockly.ReplMgr.putYail = (function() {
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
-                    var dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, Blockly.Msg.REPL_NETWORK_ERROR_RESTART, Blockly.Msg.REPL_OK, null, 0, function() {
+                    var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_NETWORK_ERROR, Blockly.Msg.REPL_NETWORK_ERROR_RESTART, Blockly.Msg.REPL_OK, null, 0, function() {
                         dialog.hide();
                     });
                     engine.resetcompanion();
@@ -415,7 +416,7 @@ Blockly.ReplMgr.putYail = (function() {
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
             if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
-                dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE, Blockly.Msg.REPL_OK, cancelButton, 0, function(response) {
                     dialog.hide();
                     if (response != Blockly.Msg.REPL_NOT_NOW) {
@@ -425,10 +426,10 @@ Blockly.ReplMgr.putYail = (function() {
                     }
                 });
             } else if (fatal) {
-                dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + window.parent.PREFERRED_COMPANION, Blockly.Msg.REPL_OK, null, 0, function() { dialog.hide();});
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + window.parent.PREFERRED_COMPANION, Blockly.Msg.REPL_OK, null, 0, function() { dialog.hide();});
                 engine.resetcompanion();
             } else {
-                dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
                 engine.pollphone();
             }
         }
@@ -462,11 +463,11 @@ Blockly.ReplMgr.triggerUpdate = function() {
             dialog.setContent(message);
         } else {
             if (OkButton) {
-                dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_SOFTWARE_UPDATE, message, OkButton, null, 0,
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_SOFTWARE_UPDATE, message, OkButton, null, 0,
                                                     function() { dialog.hide();});
                 okbuttonshowing = true;
             } else {
-                dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_SOFTWARE_UPDATE, message, null, null, 0, undefined);
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_SOFTWARE_UPDATE, message, null, null, 0, undefined);
                 dialog.display();
                 okbuttonshowing = false;
             }
@@ -652,7 +653,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     } else {
         message = Blockly.Msg.REPL_STARTING_EMULATOR;
     }
-    progdialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, null, 0, function() {
+    progdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, null, 0, function() {
         progdialog.hide();
         clearInterval(interval);
         window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
@@ -666,7 +667,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
         clearInterval(interval);    // Stop polling
         var giveupButton = Blockly.Msg.REPL_GIVE_UP;
         var keepgoingButton = Blockly.Msg.REPL_KEEP_TRYING;
-        dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_NO_START_EMULATOR, giveupButton, keepgoingButton, 0, function(response) {
+        dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_NO_START_EMULATOR, giveupButton, keepgoingButton, 0, function(response) {
             dialog.hide();
             dialog = null;
             if (response == giveupButton) {
@@ -720,7 +721,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                             xhr.send();
                             first = false;
                         } else if (first) { // USB
-                            udialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_PLUGGED_IN_Q, Blockly.Msg.REPL_AI_NO_SEE_DEVICE, Blockly.Msg.REPL_OK, null, 0, function() { udialog.hide(); udialog = null;});
+                            udialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_PLUGGED_IN_Q, Blockly.Msg.REPL_AI_NO_SEE_DEVICE, Blockly.Msg.REPL_OK, null, 0, function() { udialog.hide(); udialog = null;});
                             first = false;
                         }
                     }
@@ -733,7 +734,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     }
                     if (!dialog) {
                         window.parent.BlocklyPanel_indicateDisconnect();
-                        dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_HELPER_Q, Blockly.Msg.REPL_HELPER_NOT_RUNNING, Blockly.Msg.REPL_OK, null, 0, function() {
+                        dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_HELPER_Q, Blockly.Msg.REPL_HELPER_NOT_RUNNING, Blockly.Msg.REPL_OK, null, 0, function() {
                             dialog.hide();
                             dialog = null;
                             if (progdialog) {
@@ -869,7 +870,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         rs.rendezvouscode = this.sha1(rs.replcode);
         rs.seq_count = 1;          // used for the creating the hmac mac
         rs.count = 0;
-        rs.dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, null, 1, function() {
+        rs.dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECT_TO_COMPANION, this.makeDialogMessage(rs.replcode), Blockly.Msg.REPL_CANCEL, null, 1, function() {
             rs.dialog.hide();
             rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
             rs.connection = null;
@@ -944,51 +945,13 @@ Blockly.ReplMgr.rendPoll = function() {
         if (window.parent.ReplState.count > 40) {
             window.parent.ReplState.state = this.rsState.IDLE;
             window.parent.ReplState.dialog.hide(); // Punt the dialog
-            dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_TRY_AGAIN1, Blockly.Msg.REPL_OK, null, 0, function() {
+            dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_TRY_AGAIN1, Blockly.Msg.REPL_OK, null, 0, function() {
                 dialog.hide();
             });
             window.parent.ReplState.url = null;
             window.parent.BlocklyPanel_indicateDisconnect();
         }
         this.getFromRendezvous();
-    }
-};
-
-// Blockly.ReplMgr.Dialog -- A way to get GWT Dialogs to appear from the top window.
-// There is some hair here because we need this code to work both when the GWT code is
-// compiled and optimized and when this code is compiled with the closure compiler.
-// So we call up to GWT to create the actual dialog, hide the dialog and change the
-// dialog's content. We pass the callback as a GWT "JavaScriptObject" which is then
-// passed back to javascript for actual evaluation. The way we do this results in no
-// argument being passed to the callback. If in the future we need to pass an arugment
-// we can worry about adding that functionality.
-
-Blockly.ReplMgr.Dialog = function(title, content, buttonName, cancelButtonName, size, callback) {
-    this.title = title;
-    this.content = content;
-    this.size = size;
-    this.buttonName = buttonName;
-    this.cancelButtonName = cancelButtonName;
-    this.callback = callback;
-    if (this.buttonName) {
-        this.display();
-    }
-};
-
-Blockly.ReplMgr.Dialog.prototype = {
-    'display' : function() {
-        this._dialog = window.parent.BlocklyPanel_createDialog(this.title, this.content, this.buttonName, this.cancelButtonName, this.size, this.callback);
-    },
-    'hide' : function() {
-        if (this._dialog) {
-            top.BlocklyPanel_hideDialog(this._dialog);
-            this._dialog = null;
-        }
-    },
-    'setContent' : function(message) {
-        if (this._dialog) {
-            top.BlocklyPanel_setDialogContent(this._dialog, message);
-        }
     }
 };
 
@@ -1094,7 +1057,7 @@ Blockly.ReplMgr.hardreset = function(formName, callback) {
 
 Blockly.ReplMgr.ehardreset = function(formName) {
     var context = this;
-    var dialog = new Blockly.ReplMgr.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_OK, Blockly.Msg.REPL_CANCEL, 0, function(response) {
+    var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_OK, Blockly.Msg.REPL_CANCEL, 0, function(response) {
         dialog.hide();
         if (response == "OK") {
             context.hardreset(formName, function() {
