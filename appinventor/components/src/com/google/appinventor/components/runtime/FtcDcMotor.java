@@ -318,7 +318,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       try {
         for (RunMode runModeValue : RunMode.values()) {
           if (runModeValue.toString().equalsIgnoreCase(runMode)) {
-            dcMotor.setChannelMode(runModeValue);
+            dcMotor.setMode(runModeValue);
             return;
           }
         }
@@ -343,7 +343,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   public String Mode() {
     if (dcMotor != null) {
       try {
-        RunMode mode = dcMotor.getChannelMode();
+        RunMode mode = dcMotor.getMode();
         if (mode != null) {
           return mode.toString();
         }

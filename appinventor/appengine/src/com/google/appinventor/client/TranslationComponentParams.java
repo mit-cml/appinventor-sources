@@ -217,6 +217,7 @@ public class TranslationComponentParams {
     map.put("input", MESSAGES.inputParams());
     map.put("joystickDeadzone", MESSAGES.joystickDeadzoneParams());
     map.put("key", MESSAGES.keyParams());
+    map.put("label", MESSAGES.labelParams());
     map.put("length", MESSAGES.lengthParams());
     map.put("line", MESSAGES.lineParams());
     map.put("listOfFtcDcMotors", MESSAGES.listOfFtcDcMotorsParams());

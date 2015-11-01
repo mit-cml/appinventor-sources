@@ -17,6 +17,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 
 import android.graphics.Color;
 
@@ -384,6 +385,63 @@ public final class FtcColorSensor extends FtcHardwareDevice {
       e.printStackTrace();
       form.dispatchErrorOccurredEvent(this, "ParseColor",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return 0;
+  }
+
+  /**
+   * MAX_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MAX_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MAX_NEW_I2C_ADDRESS() {
+    // TODO(lizlooney): Ask FTC SDK authors to put MAX_NEW_I2C_ADDRESS in a common class, rather
+    // than in IrSeekerSensor.
+    return IrSeekerSensor.MAX_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * MIN_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MIN_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MIN_NEW_I2C_ADDRESS() {
+    // TODO(lizlooney): Ask FTC SDK authors to put MIN_NEW_I2C_ADDRESS in a common class, rather
+    // than in IrSeekerSensor.
+    return IrSeekerSensor.MIN_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * I2cAddress property setter.
+   */
+  @SimpleProperty
+  public void I2cAddress(int newAddress) {
+    if (colorSensor != null) {
+      try {
+        colorSensor.setI2cAddress(newAddress);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * I2cAddress property getter.
+   */
+  @SimpleProperty(description = "The I2C address of the color sensor. " + 
+      "Not all color sensors support this feature.",
+      category = PropertyCategory.BEHAVIOR)
+  public int I2cAddress() {
+    if (colorSensor != null) {
+      try {
+        return colorSensor.getI2cAddress();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
     }
     return 0;
   }

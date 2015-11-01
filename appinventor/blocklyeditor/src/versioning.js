@@ -1482,6 +1482,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End FtcDigitalChannel upgraders
 
+  "FtcElapsedTime": {
+
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcElapsedTime upgraders
+
   "FtcGamepad": {
 
     // This is the initial version. Placeholder for future upgrades
@@ -1546,7 +1553,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // This is the initial version. Placeholder for future upgrades
     1: "noUpgrade"
 
-  }, // End FtcDigitalChannel upgraders
+  }, // End FtcLED upgraders
 
   "FtcLegacyModule": {
 

@@ -392,6 +392,7 @@ public class YaVersion {
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
   // - FTC_COMPASS_SENSOR_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 141:
+  // - The FtcElapsedTime component was added.
   // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 2.
@@ -735,6 +736,8 @@ public class YaVersion {
   public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 2;
 
   public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
+
+  public static final int FTC_ELAPSED_TIME_COMPONENT_VERSION = 1;
 
   public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
 

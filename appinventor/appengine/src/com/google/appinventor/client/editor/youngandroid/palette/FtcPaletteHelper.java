@@ -48,6 +48,7 @@ class FtcPaletteHelper extends OrderedPaletteHelper {
     ftcComponentNames.add("FtcPwmOutput");
     ftcComponentNames.add("FtcDeviceInterfaceModule");
     ftcComponentNames.add("FtcLegacyModule");
+    ftcComponentNames.add("FtcElapsedTime");
   }
 
   FtcPaletteHelper() {

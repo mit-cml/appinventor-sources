@@ -2360,6 +2360,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcDigitalChannelComponentPallette();
 
+  @DefaultMessage("FtcElapsedTime")
+  @Description("")
+  String ftcElapsedTimeComponentPallette();
+
   @DefaultMessage("FtcGamepad")
   @Description("")
   String ftcGamepadComponentPallette();
@@ -3534,6 +3538,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PwmStatus_ENABLEDProperties();
 
+  @DefaultMessage("RawX")
+  @Description("")
+  String RawXProperties();
+
+  @DefaultMessage("RawY")
+  @Description("")
+  String RawYProperties();
+
+  @DefaultMessage("RawZ")
+  @Description("")
+  String RawZProperties();
+
   @DefaultMessage("Red")
   @Description("")
   String RedProperties();
@@ -3593,6 +3609,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Start")
   @Description("")
   String StartProperties();
+
+  @DefaultMessage("StartTime")
+  @Description("")
+  String StartTimeProperties();
 
   @DefaultMessage("State")
   @Description("")
@@ -4319,6 +4339,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("key")
   @Description("")
   String keyParams();
+
+  @DefaultMessage("label")
+  @Description("")
+  String labelParams();
 
   @DefaultMessage("length")
   @Description("")
@@ -5648,6 +5672,10 @@ public interface OdeMessages extends Messages {
   String RequestTranslationMethods();
 
   // FIRST Tech Challenge methods
+  @DefaultMessage("Calibrate")
+  @Description("")
+  String CalibrateMethods();
+
   @DefaultMessage("ConvertColorToHSV")
   @Description("")
   String ConvertColorToHSVMethods();
@@ -5880,6 +5908,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsBusyMethods();
 
+  @DefaultMessage("IsCalibrating")
+  @Description("")
+  String IsCalibratingMethods();
+
   @DefaultMessage("IsI2cPortActionFlagSet")
   @Description("")
   String IsI2cPortActionFlagSetMethods();
@@ -5899,6 +5931,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsTouchSensorPressed")
   @Description("")
   String IsTouchSensorPressedMethods();
+
+  @DefaultMessage("Log")
+  @Description("")
+  String LogMethods();
 
   @DefaultMessage("LengthOfByteArray")
   @Description("")
@@ -5951,6 +5987,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ReadI2cCacheFromController")
   @Description("")
   String ReadI2cCacheFromControllerMethods();
+
+  @DefaultMessage("ResetZAxisIntegrator")
+  @Description("")
+  String ResetZAxisIntegratorMethods();
 
   @DefaultMessage("ScaleRange")
   @Description("")
@@ -6399,6 +6439,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for a single digital channel of an FTC robot.")
   @Description("")
   String FtcDigitalChannelHelpStringComponentPallette();
+
+  @DefaultMessage("A component for measuring elapsed time for an FTC robot.")
+  @Description("")
+  String FtcElapsedTimeHelpStringComponentPallette();
 
   @DefaultMessage("A component for a gamepad of an FTC robot.")
   @Description("")
