@@ -81,6 +81,11 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  *
  * The main form is always named "Screen1".
  *
+ * NOTE WELL: There are many places in the code where the name "Screen1" is
+ * directly referenced. If we ever change App Inventor to support renaming
+ * screens and Screen1 in particular, we need to make sure we find all those
+ * places and make the appropriate code changes.
+ *
  */
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,

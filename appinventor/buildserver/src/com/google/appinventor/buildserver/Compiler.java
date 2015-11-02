@@ -1052,7 +1052,13 @@ public final class Compiler {
         dxSuccess = dexTask.execute(class2List);
         setProgress(75);
         hasSecondDex = true;
-      } else if (!dxSuccess) {  // The initial dx blew out, try more conservative
+      } else if (!dxSuccess) {
+        // If we get into this block of code, it means that the Dexer
+        // returned an error. It *might* be because of overflowing the
+        // the fixed table of methods, but we cannot know that for
+        // sure so we try Dexing again, but this time we put all
+        // support libraries into classes2.dex. If this second pass
+        // fails, we return the error to the user.
         LOG.info("DX execution failed, trying with fewer libraries.");
         if (secondTry) {        // Already tried the more conservative approach!
           LOG.warning("YAIL compiler - DX execution failed (secondTry!).");
