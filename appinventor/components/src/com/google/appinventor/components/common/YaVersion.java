@@ -396,6 +396,7 @@ public class YaVersion {
   // - FTC_COLOR_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 2.
+  // - FTC_GYRO_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 3.
   // - FTC_OP_MODE_COMPONENT_VERSION was incremented to 2.
   // - FTC_SERVO_CONTROLLER_COMPONENT_VERSION
@@ -741,7 +742,18 @@ public class YaVersion {
 
   public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
 
-  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 1;
+  // For FTC_GYRO_SENSOR_COMPONENT_VERSION 2:
+  // - The Calibrate method was added.
+  // - The IsCalibrating method was added.
+  // - The ResetZAxisIntegrator method was added.
+  // - The HeadingMode_CARDINAL property was added.
+  // - The HeadingMode_CARTESIAN property was added.
+  // - The HeadingMode property was added.
+  // - The Heading property was added.
+  // - The RawX property was added.
+  // - The RawY property was added.
+  // - The RawZ property was added.
+  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 2;
 
   // For FTC_I2C_DEVICE_COMPONENT_VERSION 2:
   // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.

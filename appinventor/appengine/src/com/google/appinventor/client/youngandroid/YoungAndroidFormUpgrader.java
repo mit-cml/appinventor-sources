@@ -270,6 +270,9 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFtcDeviceInterfaceModuleProperties(componentProperties,
             srcCompVersion);
 
+      } else if (componentType.equals("FtcGyroSensor")) {
+        srcCompVersion = upgradeFtcGyroSensorProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcI2cDevice")) {
         srcCompVersion = upgradeFtcI2cDeviceProperties(componentProperties, srcCompVersion);
 
@@ -990,6 +993,25 @@ public final class YoungAndroidFormUpgrader {
       // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
       // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcGyroSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Calibrate method was added.
+      // - The IsCalibrating method was added.
+      // - The ResetZAxisIntegrator method was added.
+      // - The HeadingMode_CARDINAL property was added.
+      // - The HeadingMode_CARTESIAN property was added.
+      // - The HeadingMode property was added.
+      // - The Heading property was added.
+      // - The RawX property was added.
+      // - The RawY property was added.
+      // - The RawZ property was added.
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }

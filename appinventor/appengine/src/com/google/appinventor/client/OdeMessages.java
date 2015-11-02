@@ -3422,6 +3422,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GuideProperties();
 
+  @DefaultMessage("HeadingMode")
+  @Description("")
+  String HeadingModeProperties();
+
+  @DefaultMessage("HeadingMode_CARDINAL")
+  @Description("")
+  String HeadingMode_CARDINALProperties();
+
+  @DefaultMessage("HeadingMode_CARTESIAN")
+  @Description("")
+  String HeadingMode_CARTESIANProperties();
+
   @DefaultMessage("I2cAddress")
   @Description("")
   String I2cAddressProperties();

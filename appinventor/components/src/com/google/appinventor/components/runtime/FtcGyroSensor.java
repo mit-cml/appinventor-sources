@@ -15,6 +15,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.ModernRoboticsI2cGyro.HeadingMode;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -72,10 +74,79 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   }
 
   /**
+   * HeadingMode_CARDINAL property getter.
+   */
+  @SimpleProperty(description = "The constant for HeadingMode_CARDINAL.",
+      category = PropertyCategory.BEHAVIOR)
+  public String HeadingMode_CARDINAL() {
+    return HeadingMode.HEADING_CARDINAL.toString();
+  }
+
+  /**
+   * HeadingMode_CARTESIAN property getter.
+   */
+  @SimpleProperty(description = "The constant for HeadingMode_CARTESIAN.",
+      category = PropertyCategory.BEHAVIOR)
+  public String HeadingMode_CARTESIAN() {
+    return HeadingMode.HEADING_CARTESIAN.toString();
+  }
+
+  /**
+   * HeadingMode property getter.
+   */
+  @SimpleProperty(description = "The heading mode. " +
+      "Valid values are HeadingMode_CARTESIAN or HeadingMode_CARDINAL. " +
+      "Not all gyro sensors support this feature.",
+      category = PropertyCategory.BEHAVIOR)
+  public String HeadingMode() {
+    if (gyroSensor != null) {
+      try {
+        if (gyroSensor instanceof ModernRoboticsI2cGyro) {
+          HeadingMode headingMode = ((ModernRoboticsI2cGyro) gyroSensor).getHeadingMode();
+          if (headingMode != null) {
+            return headingMode.toString();
+          }
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "HeadingMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return "";
+  }
+
+  /**
+   * HeadingMode property setter.
+   */
+  @SimpleProperty
+  public void HeadingMode(String headingMode) {
+    if (gyroSensor != null) {
+      try {
+        for (HeadingMode headingModeValue : HeadingMode.values()) {
+          if (headingModeValue.toString().equalsIgnoreCase(headingMode)) {
+            if (gyroSensor instanceof ModernRoboticsI2cGyro) {
+              ((ModernRoboticsI2cGyro) gyroSensor).setHeadingMode(headingModeValue);
+            }
+            return;
+          }
+        }
+
+        form.dispatchErrorOccurredEvent(this, "HeadingMode",
+            ErrorMessages.ERROR_FTC_INVALID_DIGITAL_CHANNEL_MODE, headingMode);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "HeadingMode",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
    * Heading property getter.
    */
-  @SimpleProperty(description = "The integrated Z axis as a cartesian heading, as a numeric " +
-      "value between 0 and 360. " +
+  @SimpleProperty(description = "The integrated Z axis as a cartesian or cardinal heading, " +
+      "as a numeric value between 0 and 360. " +
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int Heading() {

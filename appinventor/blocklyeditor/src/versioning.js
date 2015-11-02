@@ -1499,7 +1499,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcGyroSensor": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+    // The Calibrate, IsCalibrating, ResetZAxisIntegrator functions and the HeadingMode_CARDINAL,
+    // HeadingMode_CARTESIAN, HeadingMode, Heading, RawX, RawY, RawZ properties were added.
+    2: "noUpgrade"
 
   }, // End FtcGyroSensor upgraders
 
