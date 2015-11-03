@@ -33,7 +33,7 @@ Blockly.WarningHandler.updateWarningErrorCount = function() {
 }
 
 Blockly.WarningHandler.getWarningCount = function() {
-  //update the error and warning count in the UI
+  //return current warning count
   return Blockly.WarningHandler.warningCount;
 }
 
