@@ -25,6 +25,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.TypeConversion;
 import com.qualcomm.robotcore.util.Version;
@@ -104,6 +105,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private static final Object opModeWrappersLock = new Object();
   private static final List<OpModeWrapper> opModeWrappers = Lists.newArrayList();
   private static volatile OpMode activeOpMode;
+  private static volatile HardwareMap hardwareMap;
 
   private final Form form;
   public final LinearLayout view;
@@ -330,6 +332,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   static void activateOpMode(OpMode opMode) {
     activeOpMode = opMode;
+    hardwareMap = opMode.hardwareMap;
 
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
@@ -346,6 +349,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   static void deactivateOpMode() {
     activeOpMode = null;
+    hardwareMap = null;
 
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
@@ -446,6 +450,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")
   public void TelemetryAddTextData(String key, String text) {
+    // Copy the activeOpMode field into a local variable so we avoid any race condition cause by
+    // another thread setting the activeOpMode field to null before we finish using it.
     OpMode activeOpMode = this.activeOpMode;
     if (activeOpMode != null) {
       try {
@@ -460,6 +466,8 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @SimpleFunction(description = "Adds a numeric data point to the telemetry for the active op mode.")
   public void TelemetryAddNumericData(String key, String number) {
+    // Copy the activeOpMode field into a local variable so we avoid any race condition cause by
+    // another thread setting the activeOpMode field to null before we finish using it.
     OpMode activeOpMode = this.activeOpMode;
     if (activeOpMode != null) {
       // Try to parse the number as a float, but if that fails, fallback to text.
@@ -502,6 +510,22 @@ public final class FtcRobotController extends AndroidViewComponent implements On
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0.0;
+  }
+
+  @SimpleFunction(description = "Logs information about hardware devices.")
+  public void LogDevices() {
+    // Copy the hardwareMap field into a local variable so we avoid any race condition cause by
+    // another thread setting the hardwareMap field to null before we finish using it.
+    HardwareMap hardwareMap = this.hardwareMap;
+    if (hardwareMap != null) {
+      try {
+        hardwareMap.logDevices();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "LogDevices",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
   }
 
   @SimpleFunction(description = "Create a byte array.")

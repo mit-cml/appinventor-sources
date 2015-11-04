@@ -5944,13 +5944,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsTouchSensorPressedMethods();
 
+  @DefaultMessage("LengthOfByteArray")
+  @Description("")
+  String LengthOfByteArrayMethods();
+
   @DefaultMessage("Log")
   @Description("")
   String LogMethods();
 
-  @DefaultMessage("LengthOfByteArray")
+  @DefaultMessage("LogDevices")
   @Description("")
-  String LengthOfByteArrayMethods();
+  String LogDevicesMethods();
 
   @DefaultMessage("OpModeIsActive")
   @Description("")

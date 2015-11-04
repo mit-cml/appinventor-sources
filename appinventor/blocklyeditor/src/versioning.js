@@ -1639,7 +1639,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcRobotController": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // The LogDevices function was added.
+    2: "noUpgrade"
 
   }, // End FtcRobotController upgraders
 

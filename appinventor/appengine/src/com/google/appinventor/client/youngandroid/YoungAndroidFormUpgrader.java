@@ -288,6 +288,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("FtcOpMode")) {
         srcCompVersion = upgradeFtcOpModeProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FtcRobotController")) {
+        srcCompVersion = upgradeFtcRobotControllerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcServoController")) {
         srcCompVersion = upgradeFtcServoControllerProperties(componentProperties, srcCompVersion);
 
@@ -1083,6 +1086,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // - The Time property was added.
       // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcRobotControllerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The LogDevices function was added.
+      // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;

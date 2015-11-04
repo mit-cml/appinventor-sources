@@ -399,7 +399,8 @@ public class YaVersion {
   // - FTC_GYRO_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 3.
   // - FTC_OP_MODE_COMPONENT_VERSION was incremented to 2.
-  // - FTC_SERVO_CONTROLLER_COMPONENT_VERSION
+  // - FTC_SERVO_CONTROLLER_COMPONENT_VERSION was incremented to 2.
+  // - FTC_ROBOT_CONTROLLER_COMPONENT_VERSION was incremented to 2.
   // - FTC_TOUCH_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION was incremented to 2.
 
@@ -802,7 +803,9 @@ public class YaVersion {
 
   public static final int FTC_PWM_OUTPUT_COMPONENT_VERSION = 1;
 
-  public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 1;
+  // For FTC_ROBOT_CONTROLLER_COMPONENT_VERSION 2:
+  // - The LogDevices function was added.
+  public static final int FTC_ROBOT_CONTROLLER_COMPONENT_VERSION = 2;
 
   public static final int FTC_SERVO_COMPONENT_VERSION = 1;
 
