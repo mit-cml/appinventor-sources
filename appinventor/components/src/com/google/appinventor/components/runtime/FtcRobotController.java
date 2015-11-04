@@ -512,7 +512,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     return 0.0;
   }
 
-  @SimpleFunction(description = "Logs information about hardware devices.")
+  @SimpleFunction(description = "Log information about hardware devices.")
   public void LogDevices() {
     // Copy the hardwareMap field into a local variable so we avoid any race condition cause by
     // another thread setting the hardwareMap field to null before we finish using it.
