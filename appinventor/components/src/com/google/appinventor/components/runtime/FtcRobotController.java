@@ -76,7 +76,8 @@ import java.util.List;
   "FtcWirelessP2p.jar")
 public final class FtcRobotController extends AndroidViewComponent implements OnInitializeListener,
     ActivityResultListener, OnNewIntentListener, OnCreateOptionsMenuListener,
-    OnOptionsItemSelectedListener, OnDestroyListener, Deleteable, OpModeRegister {
+    OnOptionsItemSelectedListener, OnPauseListener, OnResumeListener, OnStartListener,
+    OnStopListener, OnDestroyListener, Deleteable, OpModeRegister {
 
   interface GamepadDevice {
     void initGamepadDevice(OpMode opMode);
@@ -148,6 +149,10 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     form.registerForOnCreateOptionsMenu(this);
     form.registerForOnOptionsItemSelected(this);
     form.registerForOnDestroy(this);
+    form.registerForOnPause(this);
+    form.registerForOnResume(this);
+    form.registerForOnStart(this);
+    form.registerForOnStop(this);
   }
 
   // AndroidViewComponent implementation
@@ -223,6 +228,42 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     return false;
   }
 
+  // OnPauseListener implementation
+
+  @Override
+  public void onPause() {
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onPause();
+    }
+  }
+
+  // OnResumeListener implementation
+
+  @Override
+  public void onResume() {
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onResumeAI();
+    }
+  }
+
+  // OnStartListener implementation
+
+  @Override
+  public void onStart() {
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onStartAI();
+    }
+  }
+
+  // OnStopListener implementation
+
+  @Override
+  public void onStop() {
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onStopAI();
+    }
+  }
+
   // OnDestroyListener implementation
 
   @Override
@@ -237,6 +278,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @Override
   public void onDelete() {
+    if (ftcRobotControllerActivity != null) {
+      ftcRobotControllerActivity.onStopAI();
+    }
     prepareToDie();
     synchronized (robotControllersLock) {
       robotControllers.remove(this);
@@ -836,10 +880,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   private void prepareToDie() {
     form.unregisterForActivityResult(this);
-
-    if (ftcRobotControllerActivity != null) {
-      ftcRobotControllerActivity.onStopAI();
-    }
 
     if (wakeLock != null) {
       wakeLock.release();

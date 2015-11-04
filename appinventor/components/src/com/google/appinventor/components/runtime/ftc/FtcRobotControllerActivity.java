@@ -409,12 +409,14 @@ public class FtcRobotControllerActivity extends ActivityGlue {
   public FtcRobotControllerActivity(FtcRobotController aiFtcRobotController, Activity activity,
       String configuration) {
     super(activity, aiFtcRobotController);
+    // We have already missed the activity's onCreate, onStart, and onResume events.
     onCreate(null);
     entireScreenLayout.requestLayout();
     if (!configuration.isEmpty()) {
       utility.saveToPreferences(configuration, R.string.pref_hardware_config_filename);
     }
     onStart();
+    onResume();
   }
 
   /*

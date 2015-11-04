@@ -75,7 +75,21 @@ class ActivityGlue {
   }
 
   /*
-   * Called from FtcRobotController.prepareToDie
+   * Called from FtcRobotController.onResume.
+   */
+  public void onResumeAI() {
+    onResume();
+  }
+
+  /*
+   * Called from FtcRobotController.onStart.
+   */
+  public void onStartAI() {
+    onStart();
+  }
+
+  /*
+   * Called from FtcRobotController.onStop and FtcRobotController.onDelete.
    */
   public void onStopAI() {
     onStop();

@@ -154,6 +154,7 @@ public class Form extends Activity
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
+  private final Set<OnStartListener> onStartListeners = Sets.newHashSet();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
@@ -535,6 +536,19 @@ public class Form extends Activity
 
   public void registerForOnPause(OnPauseListener component) {
     onPauseListeners.add(component);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    Log.i(LOG_TAG, "Form " + formName + " got onStart");
+    for (OnStartListener onStartListener : onStartListeners) {
+      onStartListener.onStart();
+    }
+  }
+
+  public void registerForOnStart(OnStartListener component) {
+    onStartListeners.add(component);
   }
 
   @Override
@@ -1767,6 +1781,12 @@ public class Form extends Activity
   }
 
   public void deleteComponent(Object component) {
+    if (component instanceof OnStartListener) {
+      OnStartListener onStartListener = (OnStartListener) component;
+      if (onStartListeners.contains(onStartListener)) {
+        onStartListeners.remove(onStartListener);
+      }
+    }
     if (component instanceof OnStopListener) {
       OnStopListener onStopListener = (OnStopListener) component;
       if (onStopListeners.contains(onStopListener)) {
