@@ -1853,6 +1853,7 @@ public class Form extends Activity
     frameLayout = null;
     // Set all screen properties to default values.
     defaultPropertyValues();
+    onStartListeners.clear();
     onStopListeners.clear();
     onNewIntentListeners.clear();
     onResumeListeners.clear();
