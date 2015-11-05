@@ -615,12 +615,8 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
-        if (deviceInterfaceModule == null) {
-          deviceNotFound("DeviceInterfaceModule", hardwareMap.deviceInterfaceModule);
-        }
-      } catch (Throwable e) {
+      deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
+      if (deviceInterfaceModule == null) {
         deviceNotFound("DeviceInterfaceModule", hardwareMap.deviceInterfaceModule);
       }
     }

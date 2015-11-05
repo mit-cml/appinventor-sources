@@ -146,12 +146,8 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
-        if (digitalChannel == null) {
-          deviceNotFound("DigitalChannel", hardwareMap.digitalChannel);
-        }
-      } catch (Throwable e) {
+      digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
+      if (digitalChannel == null) {
         deviceNotFound("DigitalChannel", hardwareMap.digitalChannel);
       }
     }

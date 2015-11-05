@@ -211,12 +211,8 @@ public final class FtcServo extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        servo = hardwareMap.servo.get(getDeviceName());
-        if (servo == null) {
-          deviceNotFound("Servo", hardwareMap.servo);
-        }
-      } catch (Throwable e) {
+      servo = hardwareMap.servo.get(getDeviceName());
+      if (servo == null) {
         deviceNotFound("Servo", hardwareMap.servo);
       }
     }

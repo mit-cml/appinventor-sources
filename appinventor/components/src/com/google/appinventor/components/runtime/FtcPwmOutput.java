@@ -115,12 +115,8 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
-        if (pwmOutput == null) {
-          deviceNotFound("PWMOutput", hardwareMap.pwmOutput);
-        }
-      } catch (Throwable e) {
+      pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
+      if (pwmOutput == null) {
         deviceNotFound("PWMOutput", hardwareMap.pwmOutput);
       }
     }

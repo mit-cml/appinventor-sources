@@ -361,12 +361,8 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        dcMotor = hardwareMap.dcMotor.get(getDeviceName());
-        if (dcMotor == null) {
-          deviceNotFound("DcMotor", hardwareMap.dcMotor);
-        }
-      } catch (Throwable e) {
+      dcMotor = hardwareMap.dcMotor.get(getDeviceName());
+      if (dcMotor == null) {
         deviceNotFound("DcMotor", hardwareMap.dcMotor);
       }
     }

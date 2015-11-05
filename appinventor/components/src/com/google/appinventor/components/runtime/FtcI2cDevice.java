@@ -265,12 +265,8 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
-        if (i2cDevice == null) {
-          deviceNotFound("I2cDevice", hardwareMap.i2cDevice);
-        }
-      } catch (Throwable e) {
+      i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
+      if (i2cDevice == null) {
         deviceNotFound("I2cDevice", hardwareMap.i2cDevice);
       }
     }

@@ -107,12 +107,8 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
   @Override
   protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
     if (hardwareMap != null) {
-      try {
-        touchSensor = hardwareMap.touchSensor.get(getDeviceName());
-        if (touchSensor == null) {
-          deviceNotFound("TouchSensor", hardwareMap.touchSensor);
-        }
-      } catch (Throwable e) {
+      touchSensor = hardwareMap.touchSensor.get(getDeviceName());
+      if (touchSensor == null) {
         deviceNotFound("TouchSensor", hardwareMap.touchSensor);
       }
     }
