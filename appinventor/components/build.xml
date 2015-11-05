@@ -540,7 +540,15 @@
       <mkdir dir="${Extensions.dir}" />
       <basename property="filename" file="${theComponent}" />
       <zip destfile="${Extensions.dir}/${filename}.aix">
-        <zipfileset dir="${ExternalComponentAsset.dir}/${filename}" prefix="${filename}"/>
+        <zipfileset dir="${ExternalComponentAsset.dir}/${filename}"
+                    prefix="${filename}">
+          <exclude name="*/**.jar" />
+        </zipfileset>
+        <zipfileset dir="${ExternalComponentAsset.dir}/${filename}"
+                    prefix="${filename}">
+          <include name="*/classes.jar" />
+          <include name="*/AndroidRuntime.jar" />
+        </zipfileset>
       </zip>
     </target>
 

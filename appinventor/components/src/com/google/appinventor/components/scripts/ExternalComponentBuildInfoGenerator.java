@@ -57,9 +57,17 @@ public class ExternalComponentBuildInfoGenerator {
     for (int i = 0; i < simple_component_build_info_array.size(); i++) {
       JSONObject component = (JSONObject)simple_component_build_info_array.get(i);
       String componentType = component.get("type").toString();
+      JSONArray libraries = (JSONArray) component.get("libraries");
       String componentName = componentType.substring(componentType.lastIndexOf(".") + 1);
       String componentFileDirectory = args[2]+File.separator+ componentName+ File.separator+"files";
         if(components.contains(componentName)) {
+            // Rename "libraries" to "externallibraries"
+            // We will use "externallibraries" later in the build process so
+            // we know which libraries we need to extract so they get "JarJar'd" into
+            // AndroidRuntime.jar. The Buildserver looks at "libraries" so we need to
+            // make sure it is an empty JSON array.
+            component.put("externallibraries", libraries);
+            component.put("libraries", new JSONArray());
             new File(componentFileDirectory).mkdirs();
             FileWriter file = new FileWriter(componentFileDirectory + File.separator + "component_build_info.json");
             try {
@@ -73,7 +81,7 @@ public class ExternalComponentBuildInfoGenerator {
             }
 
           // Copying related libraries to a given extension into his files folder
-          JSONArray libraryArray = (JSONArray)component.get("libraries");
+          JSONArray libraryArray = (JSONArray)component.get("externallibraries");
           for(int j = 0; j<libraryArray.size();j++){
             Object library = libraryArray.get(j);
             copyFile(new File(args[3]+File.separator+library.toString()),
