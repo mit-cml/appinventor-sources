@@ -81,7 +81,7 @@ public interface Images extends Resources {
   ImageResource help();
 
   /**
-   * Designer palette item: accelerometersensor component
+   * Designer palette item: nearfield component
    */
   @Source("com/google/appinventor/images/nearfield.png")
   ImageResource nearfield();
