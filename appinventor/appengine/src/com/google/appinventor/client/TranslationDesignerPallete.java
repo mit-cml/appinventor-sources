@@ -115,6 +115,8 @@ public class TranslationDesignerPallete {
       // Sensor
     } else if (key.equals("AccelerometerSensor")) {
       value = MESSAGES.accelerometerSensorComponentPallette();
+    } else if (key.equals("GyroscopeSensor")) {
+      value = MESSAGES.gyroscopeSensorComponentPallette();
     } else if (key.equals("LocationSensor")) {
       value = MESSAGES.locationSensorComponentPallette();
     } else if (key.equals("NearField")) {
@@ -277,6 +279,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FusiontablesControlHelpStringComponentPallette();
     } else if (key.equals("GameClient-helpString")) {
       value = MESSAGES.GameClientHelpStringComponentPallette();
+    } else if (key.equals("GyroscopeSensor-helpString")) {
+      value = MESSAGES.GyroscopeSensorHelpStringComponentPallette();
     } else if (key.equals("HorizontalArrangement-helpString")) {
       value = MESSAGES.HorizontalArrangementHelpStringComponentPallette();
     } else if (key.equals("Image-helpString")) {

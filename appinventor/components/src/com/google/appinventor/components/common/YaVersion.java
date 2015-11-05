@@ -403,8 +403,12 @@ public class YaVersion {
   // - FTC_ROBOT_CONTROLLER_COMPONENT_VERSION was incremented to 2.
   // - FTC_TOUCH_SENSOR_COMPONENT_VERSION was incremented to 2.
   // - FTC_TOUCH_SENSOR_MULTIPLEXER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 142:
+  // - FORM_COMPONENT_VERSION was incremented to 19.
+  // For YOUNG_ANDROID_VERSION 143:
+  // - GyroscopeSensor component was added
 
-  public static final int YOUNG_ANDROID_VERSION = 141;
+  public static final int YOUNG_ANDROID_VERSION = 143;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -684,7 +688,9 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 18:
   // - Screen.CompatibilityMode property morphed into the
   //   Sizing property
-  public static final int FORM_COMPONENT_VERSION = 18;
+  // For FORM_COMPONENT_VERSION 19:
+  // - Added HideKeyboard method
+  public static final int FORM_COMPONENT_VERSION = 19;
 
   public static final int FTC_ACCELERATION_SENSOR_COMPONENT_VERSION = 1;
 
@@ -834,6 +840,8 @@ public class YaVersion {
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 3;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
+
+  public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
