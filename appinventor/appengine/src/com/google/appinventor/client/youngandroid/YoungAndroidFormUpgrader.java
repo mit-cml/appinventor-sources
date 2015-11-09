@@ -989,6 +989,11 @@ public final class YoungAndroidFormUpgrader {
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // - The MotorControllerDeviceMode property setter was added.
+      // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

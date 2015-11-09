@@ -1448,7 +1448,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // SetDifferentialControlLoopCoefficients, GetDifferentialControlLoopCoefficientP,
     // GetDifferentialControlLoopCoefficientI, GetDifferentialControlLoopCoefficientD functions and
     // the BatteryVoltage property were added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+    // The MotorControllerDeviceMode property setter was added.
+    3: "noUpgrade"
 
   }, // End FtcDcMotorController upgraders
 

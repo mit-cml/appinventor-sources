@@ -407,8 +407,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 19.
   // For YOUNG_ANDROID_VERSION 143:
   // - GyroscopeSensor component was added
+  // For YOUNG_ANDROID_VERSION 144:
+  // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 3.
 
-  public static final int YOUNG_ANDROID_VERSION = 143;
+  public static final int YOUNG_ANDROID_VERSION = 144;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -732,7 +734,9 @@ public class YaVersion {
   // - The GetDifferentialControlLoopCoefficientP function was added.
   // - The GetDifferentialControlLoopCoefficientI function was added.
   // - The GetDifferentialControlLoopCoefficientD function was added.
-  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 2;
+  // FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION 3:
+  // - The MotorControllerDeviceMode property setter was added.
+  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 3;
 
   // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 2:
   // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
