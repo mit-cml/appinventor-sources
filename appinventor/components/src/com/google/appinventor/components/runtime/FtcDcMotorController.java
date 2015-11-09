@@ -108,6 +108,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * MotorControllerDeviceMode property setter.
    */
+  @SimpleProperty
   public void MotorControllerDeviceMode(String deviceMode) {
     if (dcMotorController != null) {
       try {
