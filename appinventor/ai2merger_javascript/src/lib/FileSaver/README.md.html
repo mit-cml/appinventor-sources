@@ -1,0 +1,933 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="">
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="viewport" content="width=1020">
+    
+    
+    <title>FileSaver.js/README.md at master · eligrey/FileSaver.js</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png">
+    <meta property="fb:app_id" content="1401488693436528">
+
+      <meta content="@github" name="twitter:site" /><meta content="summary" name="twitter:card" /><meta content="eligrey/FileSaver.js" name="twitter:title" /><meta content="FileSaver.js - An HTML5 saveAs() FileSaver implementation" name="twitter:description" /><meta content="https://avatars3.githubusercontent.com/u/46995?v=3&amp;s=400" name="twitter:image:src" />
+      <meta content="GitHub" property="og:site_name" /><meta content="object" property="og:type" /><meta content="https://avatars3.githubusercontent.com/u/46995?v=3&amp;s=400" property="og:image" /><meta content="eligrey/FileSaver.js" property="og:title" /><meta content="https://github.com/eligrey/FileSaver.js" property="og:url" /><meta content="FileSaver.js - An HTML5 saveAs() FileSaver implementation" property="og:description" />
+      <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
+    <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
+    <link rel="assets" href="https://assets-cdn.github.com/">
+    <link rel="web-socket" href="wss://live.github.com/_sockets/OTE0NTI3MDo1OTIwZGViOGUzNjYxNzg3NzZjM2U2ZmMwNTAzYzY0MjozNzM2YjZmMTk3NjFmOThjZWU2YmY2M2QzYWVlMzA4MDA3YzUxZjljMmNlODU4NWYwMmYwM2I0M2Y1MjVhZmZl--48e89647d6ecdc7c420869a4df94992c2886aba0">
+    <meta name="pjax-timeout" content="1000">
+    <link rel="sudo-modal" href="/sessions/sudo_modal">
+
+    <meta name="msapplication-TileImage" content="/windows-tile.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="selected-link" value="repo_source" data-pjax-transient>
+
+    <meta name="google-site-verification" content="KT5gs8h0wvaagLKAVWq8bbeNwnZZK1r1XQysX3xurLU">
+    <meta name="google-analytics" content="UA-3769691-2">
+
+<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="12BD5668:5927:1AD563D9:56423D4A" name="octolytics-dimension-request_id" /><meta content="9145270" name="octolytics-actor-id" /><meta content="aesmaili" name="octolytics-actor-login" /><meta content="0955307e43f0e72f9d5435425b33e3024cfbd856c05ae86a4f47cf4763ba605d" name="octolytics-actor-hash" />
+
+<meta content="Rails, view, blob#show" data-pjax-transient="true" name="analytics-event" />
+
+
+  <meta class="js-ga-set" name="dimension1" content="Logged In">
+    <meta class="js-ga-set" name="dimension4" content="Current repo nav">
+
+
+
+
+    <meta name="is-dotcom" content="true">
+        <meta name="hostname" content="github.com">
+    <meta name="user-login" content="aesmaili">
+
+      <link rel="mask-icon" href="https://assets-cdn.github.com/pinned-octocat.svg" color="#4078c0">
+      <link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
+
+    <meta content="9d1f10f5377f117557f8f8b1e3168012deb6175d" name="form-nonce" />
+
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github-e1c13e7309dc7f723b21b2afc0a6ee6a9e8e5978fe25dccb3251d923cab472df.css" media="all" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://assets-cdn.github.com/assets/github2-8660e134f8078fe75046e2c8cf09a2fd65d94446a9c3d11ecf672cb4c5842b6a.css" media="all" rel="stylesheet" />
+    
+    
+    
+
+
+    <meta http-equiv="x-pjax-version" content="bfd96d846aa5a35d072709105fddd787">
+
+      
+  <meta name="description" content="FileSaver.js - An HTML5 saveAs() FileSaver implementation">
+  <meta name="go-import" content="github.com/eligrey/FileSaver.js git https://github.com/eligrey/FileSaver.js.git">
+
+  <meta content="46995" name="octolytics-dimension-user_id" /><meta content="eligrey" name="octolytics-dimension-user_login" /><meta content="2051226" name="octolytics-dimension-repository_id" /><meta content="eligrey/FileSaver.js" name="octolytics-dimension-repository_nwo" /><meta content="true" name="octolytics-dimension-repository_public" /><meta content="false" name="octolytics-dimension-repository_is_fork" /><meta content="2051226" name="octolytics-dimension-repository_network_root_id" /><meta content="eligrey/FileSaver.js" name="octolytics-dimension-repository_network_root_nwo" />
+  <link href="https://github.com/eligrey/FileSaver.js/commits/master.atom" rel="alternate" title="Recent Commits to FileSaver.js:master" type="application/atom+xml">
+
+  </head>
+
+
+  <body class="logged_in   env-production  vis-public page-blob">
+    <a href="#start-of-content" tabindex="1" class="accessibility-aid js-skip-to-content">Skip to content</a>
+
+    
+    
+    
+
+
+
+      <div class="header header-logged-in true" role="banner">
+  <div class="container clearfix">
+
+    <a class="header-logo-invertocat" href="https://github.com/" data-hotkey="g d" aria-label="Homepage" data-ga-click="Header, go to dashboard, icon:logo">
+  <span class="mega-octicon octicon-mark-github"></span>
+</a>
+
+
+      <div class="site-search repo-scope js-site-search" role="search">
+          <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/eligrey/FileSaver.js/search" class="js-site-search-form" data-global-search-url="/search" data-repo-search-url="/eligrey/FileSaver.js/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+  <label class="js-chromeless-input-container form-control">
+    <div class="scope-badge">This repository</div>
+    <input type="text"
+      class="js-site-search-focus js-site-search-field is-clearable chromeless-input"
+      data-hotkey="s"
+      name="q"
+      placeholder="Search"
+      aria-label="Search this repository"
+      data-global-scope-placeholder="Search GitHub"
+      data-repo-scope-placeholder="Search"
+      tabindex="1"
+      autocapitalize="off">
+  </label>
+</form>
+      </div>
+
+      <ul class="header-nav left" role="navigation">
+        <li class="header-nav-item">
+          <a href="/pulls" class="js-selected-navigation-item header-nav-link" data-ga-click="Header, click, Nav menu - item:pulls context:user" data-hotkey="g p" data-selected-links="/pulls /pulls/assigned /pulls/mentioned /pulls">
+            Pull requests
+</a>        </li>
+        <li class="header-nav-item">
+          <a href="/issues" class="js-selected-navigation-item header-nav-link" data-ga-click="Header, click, Nav menu - item:issues context:user" data-hotkey="g i" data-selected-links="/issues /issues/assigned /issues/mentioned /issues">
+            Issues
+</a>        </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="https://gist.github.com/" data-ga-click="Header, go to gist, text:gist">Gist</a>
+          </li>
+      </ul>
+
+    
+<ul class="header-nav user-nav right" id="user-links">
+  <li class="header-nav-item">
+      <span class="js-socket-channel js-updatable-content"
+        data-channel="notification-changed:aesmaili"
+        data-url="/notifications/header">
+      <a href="/notifications" aria-label="You have unread notifications" class="header-nav-link notification-indicator tooltipped tooltipped-s" data-ga-click="Header, go to notifications, icon:unread" data-hotkey="g n">
+          <span class="mail-status unread"></span>
+          <span class="octicon octicon-bell"></span>
+</a>  </span>
+
+  </li>
+
+  <li class="header-nav-item dropdown js-menu-container">
+    <a class="header-nav-link tooltipped tooltipped-s js-menu-target" href="/new"
+       aria-label="Create new…"
+       data-ga-click="Header, create new, icon:add">
+      <span class="octicon octicon-plus left"></span>
+      <span class="dropdown-caret"></span>
+    </a>
+
+    <div class="dropdown-menu-content js-menu-content">
+      <ul class="dropdown-menu dropdown-menu-sw">
+        
+<a class="dropdown-item" href="/new" data-ga-click="Header, create new repository">
+  New repository
+</a>
+
+
+  <a class="dropdown-item" href="/organizations/new" data-ga-click="Header, create new organization">
+    New organization
+  </a>
+
+
+
+  <div class="dropdown-divider"></div>
+  <div class="dropdown-header">
+    <span title="eligrey/FileSaver.js">This repository</span>
+  </div>
+    <a class="dropdown-item" href="/eligrey/FileSaver.js/issues/new" data-ga-click="Header, create new issue">
+      New issue
+    </a>
+
+      </ul>
+    </div>
+  </li>
+
+  <li class="header-nav-item dropdown js-menu-container">
+    <a class="header-nav-link name tooltipped tooltipped-s js-menu-target" href="/aesmaili"
+       aria-label="View profile and more"
+       data-ga-click="Header, show menu, icon:avatar">
+      <img alt="@aesmaili" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/9145270?v=3&amp;s=40" width="20" />
+      <span class="dropdown-caret"></span>
+    </a>
+
+    <div class="dropdown-menu-content js-menu-content">
+      <div class="dropdown-menu  dropdown-menu-sw">
+        <div class=" dropdown-header header-nav-current-user css-truncate">
+            Signed in as <strong class="css-truncate-target">aesmaili</strong>
+
+        </div>
+
+
+        <div class="dropdown-divider"></div>
+
+          <a class="dropdown-item" href="/aesmaili" data-ga-click="Header, go to profile, text:your profile">
+            Your profile
+          </a>
+        <a class="dropdown-item" href="/stars" data-ga-click="Header, go to starred repos, text:your stars">
+          Your stars
+        </a>
+        <a class="dropdown-item" href="/explore" data-ga-click="Header, go to explore, text:explore">
+          Explore
+        </a>
+          <a class="dropdown-item" href="/integrations" data-ga-click="Header, go to integrations, text:integrations">
+            Integrations
+          </a>
+        <a class="dropdown-item" href="https://help.github.com" data-ga-click="Header, go to help, text:help">
+          Help
+        </a>
+
+          <div class="dropdown-divider"></div>
+
+          <a class="dropdown-item" href="/settings/profile" data-ga-click="Header, go to settings, icon:settings">
+            Settings
+          </a>
+
+          <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/logout" class="logout-form" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="UvatjG8xpzzUUAbh5my/J6lNO9ahr9HTLLmbLVnm1SUuOKeqHm8pyA8kZNbDZGDFfSSUibBaspRe5kUJzC+jPQ==" /></div>
+            <button class="dropdown-item dropdown-signout" data-ga-click="Header, sign out, icon:logout">
+              Sign out
+            </button>
+</form>
+      </div>
+    </div>
+  </li>
+</ul>
+
+
+    
+  </div>
+</div>
+
+      
+
+      
+
+
+    <div id="start-of-content" class="accessibility-aid"></div>
+
+    <div id="js-flash-container">
+</div>
+
+
+    <div role="main" class="main-content">
+        <div itemscope itemtype="http://schema.org/WebPage">
+    <div class="pagehead repohead instapaper_ignore readability-menu">
+
+      <div class="container">
+
+        <div class="clearfix">
+          
+
+<ul class="pagehead-actions">
+
+  <li>
+        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/notifications/subscribe" class="js-social-container" data-autosubmit="true" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="jXZItnW+y4QXtwDTg6mFZF80dH8jEUCwWr0vPXoyeghllDlFm/X9MFsCSzp/Xte/XXca4AA8SkYiVX/iAJwxeA==" /></div>      <input id="repository_id" name="repository_id" type="hidden" value="2051226" />
+
+        <div class="select-menu js-menu-container js-select-menu">
+          <a href="/eligrey/FileSaver.js/subscription"
+            class="btn btn-sm btn-with-count select-menu-button js-menu-target" role="button" tabindex="0" aria-haspopup="true"
+            data-ga-click="Repository, click Watch settings, action:blob#show">
+            <span class="js-select-button">
+              <span class="octicon octicon-eye"></span>
+              Watch
+            </span>
+          </a>
+          <a class="social-count js-social-count" href="/eligrey/FileSaver.js/watchers">
+            169
+          </a>
+
+        <div class="select-menu-modal-holder">
+          <div class="select-menu-modal subscription-menu-modal js-menu-content" aria-hidden="true">
+            <div class="select-menu-header">
+              <span class="octicon octicon-x js-menu-close" role="button" aria-label="Close"></span>
+              <span class="select-menu-title">Notifications</span>
+            </div>
+
+              <div class="select-menu-list js-navigation-container" role="menu">
+
+                <div class="select-menu-item js-navigation-item selected" role="menuitem" tabindex="0">
+                  <span class="select-menu-item-icon octicon octicon-check"></span>
+                  <div class="select-menu-item-text">
+                    <input checked="checked" id="do_included" name="do" type="radio" value="included" />
+                    <span class="select-menu-item-heading">Not watching</span>
+                    <span class="description">Be notified when participating or @mentioned.</span>
+                    <span class="js-select-button-text hidden-select-button-text">
+                      <span class="octicon octicon-eye"></span>
+                      Watch
+                    </span>
+                  </div>
+                </div>
+
+                <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
+                  <span class="select-menu-item-icon octicon octicon octicon-check"></span>
+                  <div class="select-menu-item-text">
+                    <input id="do_subscribed" name="do" type="radio" value="subscribed" />
+                    <span class="select-menu-item-heading">Watching</span>
+                    <span class="description">Be notified of all conversations.</span>
+                    <span class="js-select-button-text hidden-select-button-text">
+                      <span class="octicon octicon-eye"></span>
+                      Unwatch
+                    </span>
+                  </div>
+                </div>
+
+                <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
+                  <span class="select-menu-item-icon octicon octicon-check"></span>
+                  <div class="select-menu-item-text">
+                    <input id="do_ignore" name="do" type="radio" value="ignore" />
+                    <span class="select-menu-item-heading">Ignoring</span>
+                    <span class="description">Never be notified.</span>
+                    <span class="js-select-button-text hidden-select-button-text">
+                      <span class="octicon octicon-mute"></span>
+                      Stop ignoring
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+</form>
+  </li>
+
+  <li>
+    
+  <div class="js-toggler-container js-social-container starring-container ">
+
+    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/eligrey/FileSaver.js/unstar" class="js-toggler-form starred js-unstar-button" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="SiNeqx6GA6mxcx3fEe72JSJ+JOkNb8wQrQ8xYbjvosXYmBF6AL8ibkob1FJW/ptW4Pn4KmldWs2A5lwvmxi1Iw==" /></div>
+      <button
+        class="btn btn-sm btn-with-count js-toggler-target"
+        aria-label="Unstar this repository" title="Unstar eligrey/FileSaver.js"
+        data-ga-click="Repository, click unstar button, action:blob#show; text:Unstar">
+        <span class="octicon octicon-star"></span>
+        Unstar
+      </button>
+        <a class="social-count js-social-count" href="/eligrey/FileSaver.js/stargazers">
+          2,972
+        </a>
+</form>
+    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/eligrey/FileSaver.js/star" class="js-toggler-form unstarred js-star-button" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="pcg93lugLHYYD+oXXuWT5XjL679KZylFvv3Abozvc57TyflDs0M4Q6KKYR2zgM29OiTVNR0gHiK6l78dity5sA==" /></div>
+      <button
+        class="btn btn-sm btn-with-count js-toggler-target"
+        aria-label="Star this repository" title="Star eligrey/FileSaver.js"
+        data-ga-click="Repository, click star button, action:blob#show; text:Star">
+        <span class="octicon octicon-star"></span>
+        Star
+      </button>
+        <a class="social-count js-social-count" href="/eligrey/FileSaver.js/stargazers">
+          2,972
+        </a>
+</form>  </div>
+
+  </li>
+
+  <li>
+          <a href="#fork-destination-box" class="btn btn-sm btn-with-count"
+              title="Fork your own copy of eligrey/FileSaver.js to your account"
+              aria-label="Fork your own copy of eligrey/FileSaver.js to your account"
+              rel="facebox"
+              data-ga-click="Repository, show fork modal, action:blob#show; text:Fork">
+            <span class="octicon octicon-repo-forked"></span>
+            Fork
+          </a>
+
+          <div id="fork-destination-box" style="display: none;">
+            <h2 class="facebox-header" data-facebox-id="facebox-header">Where should we fork this repository?</h2>
+            <include-fragment src=""
+                class="js-fork-select-fragment fork-select-fragment"
+                data-url="/eligrey/FileSaver.js/fork?fragment=1">
+              <img alt="Loading" height="64" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-128.gif" width="64" />
+            </include-fragment>
+          </div>
+
+    <a href="/eligrey/FileSaver.js/network" class="social-count">
+      614
+    </a>
+  </li>
+</ul>
+
+          <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public ">
+  <span class="mega-octicon octicon-repo"></span>
+  <span class="author"><a href="/eligrey" class="url fn" itemprop="url" rel="author"><span itemprop="title">eligrey</span></a></span><!--
+--><span class="path-divider">/</span><!--
+--><strong><a href="/eligrey/FileSaver.js" data-pjax="#js-repo-pjax-container">FileSaver.js</a></strong>
+
+  <span class="page-context-loader">
+    <img alt="" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+  </span>
+
+</h1>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="repository-with-sidebar repo-container new-discussion-timeline ">
+        <div class="repository-sidebar clearfix">
+          
+<nav class="sunken-menu repo-nav js-repo-nav js-sidenav-container-pjax js-octicon-loaders"
+     role="navigation"
+     data-pjax="#js-repo-pjax-container"
+     data-issue-count-url="/eligrey/FileSaver.js/issues/counts">
+  <ul class="sunken-menu-group">
+    <li class="tooltipped tooltipped-w" aria-label="Code">
+      <a href="/eligrey/FileSaver.js" aria-label="Code" aria-selected="true" class="js-selected-navigation-item selected sunken-menu-item" data-hotkey="g c" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches /eligrey/FileSaver.js">
+        <span class="octicon octicon-code"></span> <span class="full-word">Code</span>
+        <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>    </li>
+
+      <li class="tooltipped tooltipped-w" aria-label="Issues">
+        <a href="/eligrey/FileSaver.js/issues" aria-label="Issues" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g i" data-selected-links="repo_issues repo_labels repo_milestones /eligrey/FileSaver.js/issues">
+          <span class="octicon octicon-issue-opened"></span> <span class="full-word">Issues</span>
+          <span class="js-issue-replace-counter"></span>
+          <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+    <li class="tooltipped tooltipped-w" aria-label="Pull requests">
+      <a href="/eligrey/FileSaver.js/pulls" aria-label="Pull requests" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g p" data-selected-links="repo_pulls /eligrey/FileSaver.js/pulls">
+          <span class="octicon octicon-git-pull-request"></span> <span class="full-word">Pull requests</span>
+          <span class="js-pull-replace-counter"></span>
+          <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>    </li>
+
+      <li class="tooltipped tooltipped-w" aria-label="Wiki">
+        <a href="/eligrey/FileSaver.js/wiki" aria-label="Wiki" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g w" data-selected-links="repo_wiki /eligrey/FileSaver.js/wiki">
+          <span class="octicon octicon-book"></span> <span class="full-word">Wiki</span>
+          <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+  </ul>
+  <div class="sunken-menu-separator"></div>
+  <ul class="sunken-menu-group">
+
+    <li class="tooltipped tooltipped-w" aria-label="Pulse">
+      <a href="/eligrey/FileSaver.js/pulse" aria-label="Pulse" class="js-selected-navigation-item sunken-menu-item" data-selected-links="pulse /eligrey/FileSaver.js/pulse">
+        <span class="octicon octicon-pulse"></span> <span class="full-word">Pulse</span>
+        <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>    </li>
+
+    <li class="tooltipped tooltipped-w" aria-label="Graphs">
+      <a href="/eligrey/FileSaver.js/graphs" aria-label="Graphs" class="js-selected-navigation-item sunken-menu-item" data-selected-links="repo_graphs repo_contributors /eligrey/FileSaver.js/graphs">
+        <span class="octicon octicon-graph"></span> <span class="full-word">Graphs</span>
+        <img alt="" class="mini-loader" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>    </li>
+  </ul>
+
+
+</nav>
+
+            <div class="only-with-full-nav">
+                
+<div class="js-clone-url clone-url "
+  data-protocol-type="http">
+  <h3 class="text-small text-muted"><span class="text-emphasized">HTTPS</span> clone URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini text-small text-muted input-monospace js-url-field js-zeroclipboard-target"
+           value="https://github.com/eligrey/FileSaver.js.git" readonly="readonly" aria-label="HTTPS clone URL">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+  
+<div class="js-clone-url clone-url open"
+  data-protocol-type="ssh">
+  <h3 class="text-small text-muted"><span class="text-emphasized">SSH</span> clone URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini text-small text-muted input-monospace js-url-field js-zeroclipboard-target"
+           value="git@github.com:eligrey/FileSaver.js.git" readonly="readonly" aria-label="SSH clone URL">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+  
+<div class="js-clone-url clone-url "
+  data-protocol-type="subversion">
+  <h3 class="text-small text-muted"><span class="text-emphasized">Subversion</span> checkout URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini text-small text-muted input-monospace js-url-field js-zeroclipboard-target"
+           value="https://github.com/eligrey/FileSaver.js" readonly="readonly" aria-label="Subversion checkout URL">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+
+
+<div class="clone-options text-small text-muted">You can clone with
+  <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/users/set_protocol?protocol_selector=http&amp;protocol_type=clone" class="inline-form js-clone-selector-form is-enabled" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="d1LrwszZBjVar95PdmI0BK1HqtpHWkjPsDc/tQQEAkGKn8tDTzKJLmZpnuIfeJXKBAquQ9INthoD77H/a3AY5A==" /></div><button class="btn-link js-clone-selector" data-protocol="http" type="submit">HTTPS</button></form>, <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/users/set_protocol?protocol_selector=ssh&amp;protocol_type=clone" class="inline-form js-clone-selector-form is-enabled" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="ISIYI/sMRPDAU8ah4K6KzcILTpAmOqq1Kg1/8Fhu88u0VzHV0DTzwBj2ENuyEuY666IOQetoLkvZeRcLwH5oUQ==" /></div><button class="btn-link js-clone-selector" data-protocol="ssh" type="submit">SSH</button></form>, or <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/users/set_protocol?protocol_selector=subversion&amp;protocol_type=clone" class="inline-form js-clone-selector-form is-enabled" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="P9Ct3AMnnodpbTAjVj6yVH+TxoQz0TEoBqB7SbNDtrWiOJgK3+1z14RoP4gqzKJuj3IPC7ozWvyNpiYWbsIwOg==" /></div><button class="btn-link js-clone-selector" data-protocol="subversion" type="submit">Subversion</button></form>.
+  <a href="https://help.github.com/articles/which-remote-url-should-i-use" class="help tooltipped tooltipped-n" aria-label="Get help on which URL is right for you.">
+    <span class="octicon octicon-question"></span>
+  </a>
+</div>
+
+              <a href="/eligrey/FileSaver.js/archive/master.zip"
+                 class="btn btn-sm sidebar-button"
+                 aria-label="Download the contents of eligrey/FileSaver.js as a zip file"
+                 title="Download the contents of eligrey/FileSaver.js as a zip file"
+                 rel="nofollow">
+                <span class="octicon octicon-cloud-download"></span>
+                Download ZIP
+              </a>
+            </div>
+        </div>
+        <div id="js-repo-pjax-container" class="repository-content context-loader-container" data-pjax-container>
+
+          
+
+<a href="/eligrey/FileSaver.js/blob/ec5c3cca113f9c0fba66c8d0ef44d4a6bf985357/README.md" class="hidden js-permalink-shortcut" data-hotkey="y">Permalink</a>
+
+<!-- blob contrib key: blob_contributors:v21:9c023c2e8a12eda631ba55bb871c4ca3 -->
+
+  <div class="file-navigation js-zeroclipboard-container">
+    
+<div class="select-menu js-menu-container js-select-menu left">
+  <button class="btn btn-sm select-menu-button js-menu-target css-truncate" data-hotkey="w"
+    title="master"
+    type="button" aria-label="Switch branches or tags" tabindex="0" aria-haspopup="true">
+    <i>Branch:</i>
+    <span class="js-select-button css-truncate-target">master</span>
+  </button>
+
+  <div class="select-menu-modal-holder js-menu-content js-navigation-container" data-pjax aria-hidden="true">
+
+    <div class="select-menu-modal">
+      <div class="select-menu-header">
+        <span class="octicon octicon-x js-menu-close" role="button" aria-label="Close"></span>
+        <span class="select-menu-title">Switch branches/tags</span>
+      </div>
+
+      <div class="select-menu-filters">
+        <div class="select-menu-text-filter">
+          <input type="text" aria-label="Filter branches/tags" id="context-commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
+        </div>
+        <div class="select-menu-tabs">
+          <ul>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="branches" data-filter-placeholder="Filter branches/tags" class="js-select-menu-tab" role="tab">Branches</a>
+            </li>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="tags" data-filter-placeholder="Find a tag…" class="js-select-menu-tab" role="tab">Tags</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="branches" role="menu">
+
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <a class="select-menu-item js-navigation-item js-navigation-open selected"
+               href="/eligrey/FileSaver.js/blob/master/README.md"
+               data-name="master"
+               data-skip-pjax="true"
+               rel="nofollow">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <span class="select-menu-item-text css-truncate-target" title="master">
+                master
+              </span>
+            </a>
+        </div>
+
+          <div class="select-menu-no-results">Nothing to show</div>
+      </div>
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="tags">
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+        </div>
+
+        <div class="select-menu-no-results">Nothing to show</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <div class="btn-group right">
+      <a href="/eligrey/FileSaver.js/find/master"
+            class="js-show-file-finder btn btn-sm empty-icon tooltipped tooltipped-nw"
+            data-pjax
+            data-hotkey="t"
+            aria-label="Quickly jump between files">
+        <span class="octicon octicon-list-unordered"></span>
+      </a>
+      <button aria-label="Copy file path to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </div>
+
+    <div class="breadcrumb js-zeroclipboard-target">
+      <span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/eligrey/FileSaver.js" class="" data-branch="master" data-pjax="true" itemscope="url"><span itemprop="title">FileSaver.js</span></a></span></span><span class="separator">/</span><strong class="final-path">README.md</strong>
+    </div>
+  </div>
+
+
+  <div class="commit-tease">
+      <span class="right">
+        <a class="commit-tease-sha" href="/eligrey/FileSaver.js/commit/54c04285aedaec973f5f725f18c624a3fb12cf63" data-pjax>
+          54c0428
+        </a>
+        <time datetime="2015-10-03T20:38:09Z" is="relative-time">Oct 3, 2015</time>
+      </span>
+      <div>
+        <img alt="@antelle" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/633557?v=3&amp;s=40" width="20" />
+        <a href="/antelle" class="user-mention" rel="contributor">antelle</a>
+          <a href="/eligrey/FileSaver.js/commit/54c04285aedaec973f5f725f18c624a3fb12cf63" class="message" data-pjax="true" title="update dist and readme">update dist and readme</a>
+      </div>
+
+    <div class="commit-tease-contributors">
+      <a class="muted-link contributors-toggle" href="#blob_contributors_box" rel="facebox">
+        <strong>10</strong>
+         contributors
+      </a>
+          <a class="avatar-link tooltipped tooltipped-s" aria-label="eligrey" href="/eligrey/FileSaver.js/commits/master/README.md?author=eligrey"><img alt="@eligrey" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/46995?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="jordanaustin" href="/eligrey/FileSaver.js/commits/master/README.md?author=jordanaustin"><img alt="@jordanaustin" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/709038?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="mudcube" href="/eligrey/FileSaver.js/commits/master/README.md?author=mudcube"><img alt="@mudcube" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/101564?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="haydenbleasel" href="/eligrey/FileSaver.js/commits/master/README.md?author=haydenbleasel"><img alt="@haydenbleasel" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/4142719?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="chilijung" href="/eligrey/FileSaver.js/commits/master/README.md?author=chilijung"><img alt="@chilijung" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/1216029?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="mondalaci" href="/eligrey/FileSaver.js/commits/master/README.md?author=mondalaci"><img alt="@mondalaci" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/300402?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="treygriffith" href="/eligrey/FileSaver.js/commits/master/README.md?author=treygriffith"><img alt="@treygriffith" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/1371533?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="panzi" href="/eligrey/FileSaver.js/commits/master/README.md?author=panzi"><img alt="@panzi" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/134175?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="antelle" href="/eligrey/FileSaver.js/commits/master/README.md?author=antelle"><img alt="@antelle" class="avatar" height="20" src="https://avatars0.githubusercontent.com/u/633557?v=3&amp;s=40" width="20" /> </a>
+    <a class="avatar-link tooltipped tooltipped-s" aria-label="XhmikosR" href="/eligrey/FileSaver.js/commits/master/README.md?author=XhmikosR"><img alt="@XhmikosR" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/349621?v=3&amp;s=40" width="20" /> </a>
+
+
+    </div>
+
+    <div id="blob_contributors_box" style="display:none">
+      <h2 class="facebox-header" data-facebox-id="facebox-header">Users who have contributed to this file</h2>
+      <ul class="facebox-user-list" data-facebox-id="facebox-description">
+          <li class="facebox-user-list-item">
+            <img alt="@eligrey" height="24" src="https://avatars2.githubusercontent.com/u/46995?v=3&amp;s=48" width="24" />
+            <a href="/eligrey">eligrey</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@jordanaustin" height="24" src="https://avatars1.githubusercontent.com/u/709038?v=3&amp;s=48" width="24" />
+            <a href="/jordanaustin">jordanaustin</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@mudcube" height="24" src="https://avatars2.githubusercontent.com/u/101564?v=3&amp;s=48" width="24" />
+            <a href="/mudcube">mudcube</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@haydenbleasel" height="24" src="https://avatars3.githubusercontent.com/u/4142719?v=3&amp;s=48" width="24" />
+            <a href="/haydenbleasel">haydenbleasel</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@chilijung" height="24" src="https://avatars1.githubusercontent.com/u/1216029?v=3&amp;s=48" width="24" />
+            <a href="/chilijung">chilijung</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@mondalaci" height="24" src="https://avatars1.githubusercontent.com/u/300402?v=3&amp;s=48" width="24" />
+            <a href="/mondalaci">mondalaci</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@treygriffith" height="24" src="https://avatars2.githubusercontent.com/u/1371533?v=3&amp;s=48" width="24" />
+            <a href="/treygriffith">treygriffith</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@panzi" height="24" src="https://avatars3.githubusercontent.com/u/134175?v=3&amp;s=48" width="24" />
+            <a href="/panzi">panzi</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@antelle" height="24" src="https://avatars2.githubusercontent.com/u/633557?v=3&amp;s=48" width="24" />
+            <a href="/antelle">antelle</a>
+          </li>
+          <li class="facebox-user-list-item">
+            <img alt="@XhmikosR" height="24" src="https://avatars3.githubusercontent.com/u/349621?v=3&amp;s=48" width="24" />
+            <a href="/XhmikosR">XhmikosR</a>
+          </li>
+      </ul>
+    </div>
+  </div>
+
+<div class="file">
+  <div class="file-header">
+  <div class="file-actions">
+
+    <div class="btn-group">
+      <a href="/eligrey/FileSaver.js/raw/master/README.md" class="btn btn-sm " id="raw-url">Raw</a>
+        <a href="/eligrey/FileSaver.js/blame/master/README.md" class="btn btn-sm js-update-url-with-hash">Blame</a>
+      <a href="/eligrey/FileSaver.js/commits/master/README.md" class="btn btn-sm " rel="nofollow">History</a>
+    </div>
+
+
+        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/eligrey/FileSaver.js/edit/master/README.md" class="inline-form js-update-url-with-hash" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="gYpnsR4EbqwC1M5PZK+EfI4ADsE+K18VpFae0tJDi5RWH0BCld8mjfDqfXBmikVSXnc/oYrU6xYRVGkIh2IHag==" /></div>
+          <button class="octicon-btn tooltipped tooltipped-nw" type="submit"
+            aria-label="Fork this project and edit the file" data-hotkey="e" data-disable-with>
+            <span class="octicon octicon-pencil"></span>
+          </button>
+</form>        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/eligrey/FileSaver.js/delete/master/README.md" class="inline-form" data-form-nonce="9d1f10f5377f117557f8f8b1e3168012deb6175d" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="1tkLPNOo+UvBSzglcFWUmUqH1jZfnMvwqskKS5LrsjU04Ui2e34W2INZWKpf/ww8WCcwkmYFJBJvbJv3p3pyHw==" /></div>
+          <button class="octicon-btn octicon-btn-danger tooltipped tooltipped-nw" type="submit"
+            aria-label="Fork this project and delete the file" data-disable-with>
+            <span class="octicon octicon-trashcan"></span>
+          </button>
+</form>  </div>
+
+  <div class="file-info">
+      112 lines (79 sloc)
+      <span class="file-info-divider"></span>
+    4.32 KB
+  </div>
+</div>
+
+  
+  <div id="readme" class="blob instapaper_body">
+    <article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1><a id="user-content-filesaverjs" class="anchor" href="#filesaverjs" aria-hidden="true"><span class="octicon octicon-link"></span></a>FileSaver.js</h1>
+
+<p>FileSaver.js implements the HTML5 W3C <code>saveAs()</code> FileSaver interface in browsers that do
+not natively support it. There is a <a href="http://eligrey.com/demos/FileSaver.js/">FileSaver.js demo</a> that demonstrates saving
+various media types.</p>
+
+<p>FileSaver.js is the solution to saving files on the client-side, and is perfect for
+webapps that need to generate files, or for saving sensitive information that shouldn't be
+sent to an external server.</p>
+
+<p>Looking for <code>canvas.toBlob()</code> for saving canvases? Check out
+<a href="https://github.com/eligrey/canvas-toBlob.js">canvas-toBlob.js</a> for a cross-browser implementation.</p>
+
+<h2><a id="user-content-supported-browsers" class="anchor" href="#supported-browsers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported browsers</h2>
+
+<table><thead>
+<tr>
+<th>Browser</th>
+<th>Constructs as</th>
+<th>Filenames</th>
+<th>Max Blob Size</th>
+<th>Dependencies</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Firefox 20+</td>
+<td>Blob</td>
+<td>Yes</td>
+<td>800 MiB</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Firefox &lt; 20</td>
+<td>data: URI</td>
+<td>No</td>
+<td>n/a</td>
+<td><a href="https://github.com/eligrey/Blob.js">Blob.js</a></td>
+</tr>
+<tr>
+<td>Chrome</td>
+<td>Blob</td>
+<td>Yes</td>
+<td><a href="https://code.google.com/p/chromium/issues/detail?id=375297">500 MiB</a></td>
+<td>None</td>
+</tr>
+<tr>
+<td>Chrome for Android</td>
+<td>Blob</td>
+<td>Yes</td>
+<td><a href="https://code.google.com/p/chromium/issues/detail?id=375297">500 MiB</a></td>
+<td>None</td>
+</tr>
+<tr>
+<td>IE 10+</td>
+<td>Blob</td>
+<td>Yes</td>
+<td>600 MiB</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Opera 15+</td>
+<td>Blob</td>
+<td>Yes</td>
+<td>500 MiB</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Opera &lt; 15</td>
+<td>data: URI</td>
+<td>No</td>
+<td>n/a</td>
+<td><a href="https://github.com/eligrey/Blob.js">Blob.js</a></td>
+</tr>
+<tr>
+<td>Safari 6.1+*</td>
+<td>Blob</td>
+<td>No</td>
+<td>?</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Safari &lt; 6</td>
+<td>data: URI</td>
+<td>No</td>
+<td>n/a</td>
+<td><a href="https://github.com/eligrey/Blob.js">Blob.js</a></td>
+</tr>
+</tbody></table>
+
+<p>Feature detection is possible:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">try</span> {
+    <span class="pl-k">var</span> isFileSaverSupported <span class="pl-k">=</span> <span class="pl-k">!!</span><span class="pl-k">new</span> <span class="pl-en">Blob</span>;
+} <span class="pl-k">catch</span> (e) {}</pre></div>
+
+<h3><a id="user-content-ie--10" class="anchor" href="#ie--10" aria-hidden="true"><span class="octicon octicon-link"></span></a>IE &lt; 10</h3>
+
+<p>It is possible to save text files in IE &lt; 10 without Flash-based polyfills.
+See <a href="https://github.com/koffsyrup/FileSaver.js#examples">ChenWenBrian and koffsyrup's <code>saveTextAs()</code></a> for more details.</p>
+
+<h3><a id="user-content-safari-61" class="anchor" href="#safari-61" aria-hidden="true"><span class="octicon octicon-link"></span></a>Safari 6.1+</h3>
+
+<p>Blobs may be opened instead of saved sometimes—you may have to direct your Safari users to manually
+press <kbd>⌘</kbd>+<kbd>S</kbd> to save the file after it is opened. Using the <code>application/octet-stream</code> MIME type to force downloads <a href="https://github.com/eligrey/FileSaver.js/issues/12#issuecomment-47247096">can cause issues in Safari</a>.</p>
+
+<h3><a id="user-content-ios" class="anchor" href="#ios" aria-hidden="true"><span class="octicon octicon-link"></span></a>iOS</h3>
+
+<p>saveAs must be run within a user interaction event such as onTouchDown or onClick; setTimeout will prevent saveAs from triggering. Due to restrictions in iOS saveAs opens in a new window instead of downloading, if you want this fixed please <a href="https://bugs.webkit.org/show_bug.cgi?id=102914">tell Apple</a> how this bug is affecting you.</p>
+
+<h2><a id="user-content-syntax" class="anchor" href="#syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Syntax</h2>
+
+<div class="highlight highlight-source-js"><pre>FileSaver saveAs(Blob data, DOMString filename, optional <span class="pl-c1">Boolean</span> disableAutoBOM)</pre></div>
+
+<p>Pass <code>true</code> for <code>disableAutoBOM</code> if you don't want FileSaver.js to automatically provide Unicode text encoding hints (see: <a href="https://en.wikipedia.org/wiki/Byte_order_mark">byte order mark</a>).</p>
+
+<h2><a id="user-content-examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<h3><a id="user-content-saving-text" class="anchor" href="#saving-text" aria-hidden="true"><span class="octicon octicon-link"></span></a>Saving text</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> blob <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Blob</span>([<span class="pl-s"><span class="pl-pds">"</span>Hello, world!<span class="pl-pds">"</span></span>], {type<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>text/plain;charset=utf-8<span class="pl-pds">"</span></span>});
+saveAs(blob, <span class="pl-s"><span class="pl-pds">"</span>hello world.txt<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>The standard W3C File API <a href="https://developer.mozilla.org/en-US/docs/DOM/Blob"><code>Blob</code></a> interface is not available in all browsers.
+<a href="https://github.com/eligrey/Blob.js">Blob.js</a> is a cross-browser <code>Blob</code> implementation that solves this.</p>
+
+<h3><a id="user-content-saving-a-canvas" class="anchor" href="#saving-a-canvas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Saving a canvas</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> canvas <span class="pl-k">=</span> <span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">"</span>my-canvas<span class="pl-pds">"</span></span>), ctx <span class="pl-k">=</span> canvas.getContext(<span class="pl-s"><span class="pl-pds">"</span>2d<span class="pl-pds">"</span></span>);
+<span class="pl-c">// draw to canvas...</span>
+canvas.toBlob(<span class="pl-k">function</span>(<span class="pl-smi">blob</span>) {
+    saveAs(blob, <span class="pl-s"><span class="pl-pds">"</span>pretty image.png<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>Note: The standard HTML5 <code>canvas.toBlob()</code> method is not available in all browsers.
+<a href="https://github.com/eligrey/canvas-toBlob.js">canvas-toBlob.js</a> is a cross-browser <code>canvas.toBlob()</code> that polyfills this.</p>
+
+<p><a href="https://camo.githubusercontent.com/e45db383ed87f57d340c88f92da60eb35a29cb04/68747470733a2f2f696e2e676574636c69636b792e636f6d2f3231323731326e732e676966" target="_blank"><img src="https://camo.githubusercontent.com/e45db383ed87f57d340c88f92da60eb35a29cb04/68747470733a2f2f696e2e676574636c69636b792e636f6d2f3231323731326e732e676966" alt="Tracking image" data-canonical-src="https://in.getclicky.com/212712ns.gif" style="max-width:100%;"></a></p>
+
+<h2><a id="user-content-contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>The <code>FileSaver.js</code> distribution file is compiled with Uglify.js like so:</p>
+
+<div class="highlight highlight-source-shell"><pre>uglifyjs FileSaver.js --mangle --comments /@<span class="pl-c1">source</span>/ <span class="pl-k">&gt;</span> FileSaver.min.js</pre></div>
+
+<p>Please make sure you build a production version before submitting a pull request.</p>
+
+<h2><a id="user-content-bower-installation" class="anchor" href="#bower-installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bower Installation</h2>
+
+<p>Please see the <a href="http://github.com/Teleborder/FileSaver.js">this repo</a> for a bower-compatible fork of FileSaver.js, available under the package name <code>file-saver.js</code>.</p>
+</article>
+  </div>
+
+</div>
+
+<a href="#jump-to-line" rel="facebox[.linejump]" data-hotkey="l" style="display:none">Jump to Line</a>
+<div id="jump-to-line" style="display:none">
+  <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="" class="js-jump-to-line-form" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+    <input class="linejump-input js-jump-to-line-field" type="text" placeholder="Jump to line&hellip;" aria-label="Jump to line" autofocus>
+    <button type="submit" class="btn">Go</button>
+</form></div>
+
+        </div>
+      </div>
+      <div class="modal-backdrop"></div>
+    </div>
+  </div>
+
+
+    </div>
+
+      <div class="container">
+  <div class="site-footer" role="contentinfo">
+    <ul class="site-footer-links right">
+        <li><a href="https://status.github.com/" data-ga-click="Footer, go to status, text:status">Status</a></li>
+      <li><a href="https://developer.github.com" data-ga-click="Footer, go to api, text:api">API</a></li>
+      <li><a href="https://training.github.com" data-ga-click="Footer, go to training, text:training">Training</a></li>
+      <li><a href="https://shop.github.com" data-ga-click="Footer, go to shop, text:shop">Shop</a></li>
+        <li><a href="https://github.com/blog" data-ga-click="Footer, go to blog, text:blog">Blog</a></li>
+        <li><a href="https://github.com/about" data-ga-click="Footer, go to about, text:about">About</a></li>
+        <li><a href="https://github.com/pricing" data-ga-click="Footer, go to pricing, text:pricing">Pricing</a></li>
+
+    </ul>
+
+    <a href="https://github.com" aria-label="Homepage">
+      <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+</a>
+    <ul class="site-footer-links">
+      <li>&copy; 2015 <span title="0.09710s from github-fe139-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="https://github.com/site/terms" data-ga-click="Footer, go to terms, text:terms">Terms</a></li>
+        <li><a href="https://github.com/site/privacy" data-ga-click="Footer, go to privacy, text:privacy">Privacy</a></li>
+        <li><a href="https://github.com/security" data-ga-click="Footer, go to security, text:security">Security</a></li>
+        <li><a href="https://github.com/contact" data-ga-click="Footer, go to contact, text:contact">Contact</a></li>
+        <li><a href="https://help.github.com" data-ga-click="Footer, go to help, text:help">Help</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+    
+    
+    
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="octicon octicon-alert"></span>
+      <button type="button" class="flash-close js-flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
+        <span class="octicon octicon-x"></span>
+      </button>
+      Something went wrong with that request. Please try again.
+    </div>
+
+
+      <script crossorigin="anonymous" src="https://assets-cdn.github.com/assets/frameworks-2e7fc3d264a208e1383de85b815379beccff56c1f977714515d4cac7820eef3e.js"></script>
+      <script async="async" crossorigin="anonymous" src="https://assets-cdn.github.com/assets/github-e3b6c0d7324e75ba03f85bd9a58697e1fb0c02d10c9326805d511fa6cb6a0d21.js"></script>
+      
+      
+    <div class="js-stale-session-flash stale-session-flash flash flash-warn flash-banner hidden">
+      <span class="octicon octicon-alert"></span>
+      <span class="signed-in-tab-flash">You signed in with another tab or window. <a href="">Reload</a> to refresh your session.</span>
+      <span class="signed-out-tab-flash">You signed out in another tab or window. <a href="">Reload</a> to refresh your session.</span>
+    </div>
+  </body>
+</html>
+
