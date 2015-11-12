@@ -138,6 +138,7 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> permissionsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
 
   /**
    * Map used to hold the names and paths of resources that we've written out
@@ -168,6 +169,7 @@ public final class Compiler {
 
   private File libsDir; // The directory that will contain any native libraries for packaging
   private String dexCacheDir;
+  private boolean hasSecondDex = false; // True if classes2.dex should be added to the APK
 
   private JSONArray simpleCompsBuildInfo;
   private JSONArray extCompsBuildInfo;
@@ -387,6 +389,8 @@ public final class Compiler {
       out.write("android:icon=\"@drawable/ya\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
+      } else {
+        out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
       out.write(">\n");
 
@@ -603,9 +607,9 @@ public final class Compiler {
     // method of identifying via a hash of the path won't work when files
     // are copied into temporary storage) and processed via a hacked up version of
     // Android SDK's Dex Ant task
-    File tmpDir = createDir(buildDir, "tmp");
-    String dexedClassesPath = tmpDir.getAbsolutePath() + SLASH + "classes.dex";
-    if (!compiler.runDx(classesDir, dexedClassesPath)) {
+    File tmpDir = createDirectory(buildDir, "tmp");
+    String dexedClassesDir = tmpDir.getAbsolutePath();
+    if (!compiler.runDx(classesDir, dexedClassesDir, false)) {
       return false;
     }
     setProgress(85);
@@ -624,7 +628,7 @@ public final class Compiler {
     out.println("________Invoking ApkBuilder");
     String apkAbsolutePath = deployDir.getAbsolutePath() + SLASH +
         project.getProjectName() + ".apk";
-    if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClassesPath)) {
+    if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClassesDir)) {
       return false;
     }
     setProgress(95);
@@ -701,10 +705,15 @@ public final class Compiler {
    * Runs ApkBuilder by using the API instead of calling its main method because the main method
    * can call System.exit(1), which will bring down our server.
    */
-  private boolean runApkBuilder(String apkAbsolutePath, String zipArchive, String dexedClassesPath) {
+  private boolean runApkBuilder(String apkAbsolutePath, String zipArchive, String dexedClassesDir) {
     try {
       ApkBuilder apkBuilder =
-          new ApkBuilder(apkAbsolutePath, zipArchive, dexedClassesPath, null, System.out);
+          new ApkBuilder(apkAbsolutePath, zipArchive,
+            dexedClassesDir + File.separator + "classes.dex", null, System.out);
+      if (hasSecondDex) {
+        apkBuilder.addFile(new File(dexedClassesDir + File.separator + "classes2.dex"),
+          "classes2.dex");
+      }
       apkBuilder.sealApk();
       return true;
     } catch (Exception e) {
@@ -748,6 +757,11 @@ public final class Compiler {
   /*
    * Runs the Kawa compiler in a separate process to generate classes. Returns false if not able to
    * create a class file for every source file in the project.
+   *
+   * As a side effect, we generate uniqueLibsNeeded which contains a set of libraries used by
+   * runDx. Each library appears in the set only once (which is why it is a set!). This is
+   * important because when we Dex the libraries, a given library can only appear once.
+   *
    */
   private boolean generateClasses(File classesDir) {
     try {
@@ -819,6 +833,8 @@ public final class Compiler {
             userErrors.print(String.format(ERROR_IN_STAGE, "Compile"));
             return false;
           }
+
+          uniqueLibsNeeded.add(sourcePath);
 
           classpath += sourcePath + COLON;
         }
@@ -1016,41 +1032,59 @@ public final class Compiler {
     return true;
   }
 
-  private boolean runDx(File classesDir, String dexedClassesPath) {
-    Set<File> inputList = Sets.newHashSet();
+  private boolean runDx(File classesDir, String dexedClassesDir, boolean secondTry) {
+    List<File> libList = new ArrayList<File>();
+    List<File> inputList = new ArrayList<File>();
+    List<File> class2List = new ArrayList<File>();
     inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
 
-    // attach the jars of external comps
-    for (String type : extCompTypes) {
-      String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
-      inputList.add(new File(sourcePath));
+    for (String lib : uniqueLibsNeeded) {
+      libList.add(new File(lib));
     }
 
-    // Add libraries to command line arguments
-    for (String type : libsNeeded.keySet()) {
-      for (String lib : libsNeeded.get(type)) {
-        String sourcePath = "";
-        String pathSuffix = RUNTIME_FILES_DIR + lib;
+    // BEGIN DEBUG -- XXX --
+    System.err.println("runDx -- libraries");
+    for (File aFile : inputList) {
+      System.err.println(" inputList => " + aFile.getAbsolutePath());
+    }
+    for (File aFile : libList) {
+      System.err.println(" libList => " + aFile.getAbsolutePath());
+    }
+    // END DEBUG -- XXX --
 
-        if (simpleCompTypes.contains(type)) {
-          sourcePath = getResource(pathSuffix);
-        } else if (extCompTypes.contains(type)) {
-          sourcePath = getExtCompDirPath(type) + pathSuffix;
-        } else {
-          userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
-          return false;
-        }
+    // attach the jars of external comps to the libraries list
+    for (String type : extCompTypes) {
+      String sourcePath = getExtCompDirPath(type) + SIMPLE_ANDROID_RUNTIME_JAR;
+      libList.add(new File(sourcePath));
+    }
 
-        inputList.add(new File(sourcePath));
+    int offset = libList.size();
+    // Note: The choice of 12 libraries is arbitrary. We note that things
+    // worked to put all libraries into the first classes.dex file when we
+    // had 16 libraries and broke at 17. So this is a conservative number
+    // to try.
+    if (!secondTry) {           // First time through, try base + 12 libraries
+      if (offset > 12)
+        offset = 12;
+    } else {
+      offset = 0;               // Add NO libraries the second time through!
+    }
+    for (int i = 0; i < offset; i++) {
+      inputList.add(libList.get(i));
+    }
+
+    if (libList.size() - offset > 0) { // Any left over for classes2?
+      for (int i = offset; i < libList.size(); i++) {
+        class2List.add(libList.get(i));
       }
     }
 
     DexExecTask dexTask = new DexExecTask();
     dexTask.setExecutable(getResource(DX_JAR));
-    dexTask.setOutput(dexedClassesPath);
+    dexTask.setOutput(dexedClassesDir + File.separator + "classes.dex");
     dexTask.setChildProcessRamMb(childProcessRamMb);
     if (dexCacheDir == null) {
       dexTask.setDisableDexMerger(true);
@@ -1065,8 +1099,25 @@ public final class Compiler {
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
       setProgress(50);
-      dxSuccess = dexTask.execute(Lists.newArrayList(inputList));
-      setProgress(75);
+      dxSuccess = dexTask.execute(inputList);
+      if (dxSuccess && (class2List.size() > 0)) {
+        setProgress(60);
+        dexTask.setOutput(dexedClassesDir + File.separator + "classes2.dex");
+        inputList = new ArrayList<File>();
+        dxSuccess = dexTask.execute(class2List);
+        setProgress(75);
+        hasSecondDex = true;
+      } else if (!dxSuccess) {  // The initial dx blew out, try more conservative
+        LOG.info("DX execution failed, trying with fewer libraries.");
+        if (secondTry) {        // Already tried the more conservative approach!
+          LOG.warning("YAIL compiler - DX execution failed (secondTry!).");
+          err.println("YAIL compiler - DX execution failed.");
+          userErrors.print(String.format(ERROR_IN_STAGE, "DX"));
+          return false;
+        } else {
+          return runDx(classesDir, dexedClassesDir, true);
+        }
+      }
     }
     if (!dxSuccess) {
       LOG.warning("YAIL compiler - DX execution failed.");
@@ -1330,6 +1381,21 @@ public final class Compiler {
    */
   private static File createDir(File parentDir, String name) {
     File dir = new File(parentDir, name);
+    if (!dir.exists()) {
+      dir.mkdir();
+    }
+    return dir;
+  }
+
+  /**
+   * Creates a new directory (if it doesn't exist already).
+   *
+   * @param parentDirectory  parent directory of new directory
+   * @param name  name of new directory
+   * @return  new directory
+   */
+  private static File createDirectory(File parentDirectory, String name) {
+    File dir = new File(parentDirectory, name);
     if (!dir.exists()) {
       dir.mkdir();
     }

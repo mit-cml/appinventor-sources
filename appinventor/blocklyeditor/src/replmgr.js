@@ -29,7 +29,21 @@ goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
 goog.require('goog.crypt.base64');
 
-top.loadAll = true;             // Global for debugging!
+top.loadAll = true;             // Use "Chunked" loading for initial form load
+                                // or any case where we have more then one "chunk"
+                                // of code queued for the device. We put this variable
+                                // in the top window to ease debugging (this may change
+                                // in the future).
+top.loadAllErrorCount = 0;      // When we get an error loading a chunk, we turn off
+                                // loadAll and set this to some positive value
+                                // (20 at the moment). We then count this value down each
+                                // time we do not get an error. When we hit zero, we
+                                // turn loadAll back on. The idea here is that when we
+                                // get an error loading a chunk, we retry the load but
+                                // not as one chunk. In that fashion, the actual blocks
+                                // with the error will be flagged. But we lose efficiency
+                                // so after some time without errors, we turn chunking
+                                // back on.
 
 // Repl State
 // Repl "state" definitions
@@ -191,10 +205,12 @@ Blockly.ReplMgr.pollYail = function() {
     }
 };
 
-Blockly.ReplMgr.resetYail = function(code) {
+Blockly.ReplMgr.resetYail = function(partial) {
     window.parent.ReplState.phoneState.initialized = false; // so running io stops
     this.putYail.reset();
-    window.parent.ReplState.phoneState = { "phoneQueue" : []};
+    if (!partial) {
+        window.parent.ReplState.phoneState = { "phoneQueue" : []};
+    }
 };
 
 // Theory of Operation
@@ -273,8 +289,9 @@ Blockly.ReplMgr.putYail = (function() {
                     return;
                 }
                 work = { 'code' : allcode,
-                         'block' : null    // We cannot link this large code block
+                         'block' : null,   // We cannot link this large code block
                                            // to any particular block (yet)
+                         'chunking' : true // indicate we are chunking...
                        };
                 if (chunked) {
                     console.log("Chunk: " + allcode);
@@ -295,7 +312,11 @@ Blockly.ReplMgr.putYail = (function() {
             if (work.block) {
                 blockid = work.block.id;
             } else {
-                blockid = "-1";
+                if (work.chunking) { // Used to indicate an error in when chunking
+                    blockid = "-2";
+                } else {
+                    blockid = "-1";
+                }
             }
 
             conn.open('POST', rs.url, true);
@@ -397,7 +418,7 @@ Blockly.ReplMgr.putYail = (function() {
             console.log("reseting companion");
             rs.state = Blockly.ReplMgr.rsState.IDLE;
             rs.connection = null;
-            context.resetYail();
+            context.resetYail(false);
 //   hardreset is now done in the handler for the network error dialog OK
 //   button.
 //          context.hardreset(context.formName); // kill adb and emulator
@@ -486,7 +507,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
         rs.state = Blockly.ReplMgr.rsState.IDLE;
         rs.connection = null;
         rs.didversioncheck = false;
-        context.resetYail();
+        context.resetYail(false);
         top.BlocklyPanel_indicateDisconnect();
         // End reset companion state
     };
@@ -574,8 +595,28 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         console.log("processRetVals: " + JSON.stringify(r));
         switch(r.type) {
         case "return":
-            if (r.blockid != "-1") {
+            if (r.status == "OK" && top.loadAllErrorCount > 0) {
+                console.log("Error Countdown: " + top.loadAllErrorCount);
+                top.loadAllErrorCount -= 1;
+                if (top.loadAllErrorCount <= 0) {
+                    top.loadAllErrorCount = 0; // Make sure!
+                    top.loadAll = true;
+                    console.log("Reseting top.loadAll to true");
+                }
+            }
+            if (r.blockid == "-2" && r.status != "OK") {
+                // We had an error in initial form load or at another
+                // time when we were chunking forms together
+                top.loadAll = false;
+                top.loadAllErrorCount = 20;
+                console.log("Error in chunking, disabling.");
+                this.resetYail(true);
+                this.pollYail();
+            } else if (r.blockid != "-1" && r.blockid != "-2") {
                 block = Blockly.mainWorkspace.getBlockById(r.blockid);
+                if (block === null) {
+                    break;      // This happens when we switch screens during a poll
+                }
                 if (r.status == "OK") {
                     block.replError = null;
                     if (r.value && (r.value != '*nothing*')) {
@@ -588,6 +629,8 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                         block.replError = "Error from Companion";
                     }
                 }
+            } else if (r.status != "OK") {
+                runtimeerr(Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value);
             }
             break;
         case "pushScreen":
@@ -678,7 +721,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                 top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                 top.ReplState.connection = null;
                 top.BlocklyPanel_indicateDisconnect();
-                context.resetYail();
+                context.resetYail(false);
                 context.hardreset(context.formName);
             } else {
                 ubercounter = 0;
@@ -881,7 +924,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
             window.parent.ReplState.dialog.hide();
         }
-        this.resetYail();
+        this.resetYail(false);
         window.parent.ReplState.state = this.rsState.IDLE;
         this.hardreset(this.formName);       // Tell aiStarter to kill off adb
     }
