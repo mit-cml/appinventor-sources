@@ -1,41 +1,8 @@
-// -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
-/**
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Korean strings.
- * @author pillarlee16@gmail.com (Byeongju Lee)
- */
-
 'use strict'
 
 goog.provide('Blockly.Msg.ko_kr');
 
-/**
- * Due to the frequency of long strings, the 80-column wrap rule need not apply
- * to message files.
- */
-
 Blockly.Msg.ko_kr.switch_language_to_korean = {
-  // Switch language to Korean.
   category: '',
   helpUrl: '',
   init: function() {
@@ -53,6 +20,7 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.DISABLE_BLOCK = '블록 비활성화하기';
     Blockly.Msg.ENABLE_BLOCK = '블록 활성화하기';
     Blockly.Msg.HELP = '도움말';
+    Blockly.Msg.EXPORT_IMAGE = '블록을 이미지로 다운로드하기';
     Blockly.Msg.COLLAPSE_ALL = '블록 모두 접기';
     Blockly.Msg.EXPAND_ALL = '블록 모두 펼치기';
     Blockly.Msg.ARRANGE_H = '블록 가로로 배열하기';
@@ -70,7 +38,7 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.MSG_PROCEDURE_CATEGORY = '함수';
     Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "이 블럭은 정의 내에 있을 수 없습니다";
     Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "드롭 다운에서 유효한 항목을 선택하세요.";
-    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "이 컴포넌트에 같은 이벤트 핸들러가 여러개 있습니다.";
+    Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "이 컴포넌트에 같은 이벤트 핸들러가 여러 개 있습니다.";
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';
     Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP = '사각형을 클릭하여 색상을 고르세요';
     Blockly.Msg.LANG_COLOUR_BLACK = '검정';
@@ -126,8 +94,8 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#forrange';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM = '각각 반복';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_VAR = '숫자';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = '부터';
-    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = '까지';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_START = '시작';
+    Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_END = '끝';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP = '간격';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO = '실행';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = '범위내의 각 숫자마다';
@@ -336,9 +304,9 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#quotient';
     Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#randomint';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM = '임의의 정수';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = '부터';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = '까지';
-    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = '임의의 정수 %1 부터 %2 까지';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = '시작';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = '끝';
+    Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = '임의의 정수 시작 %1 끝 %2';
     Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = '주어진 범위 내의 임의의 정수를 반환합니다.\n 최대 범위는 2**30보다 작은 수로 자동으로 변환됩니다.';
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#randomfrac';
     Blockly.Msg.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM = '임의의 분수';
@@ -495,7 +463,7 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_THING = '값';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT_LIST = '리스트';
     Blockly.Msg.LANG_LISTS_IS_IN_INPUT = '리스트에 포함되어 있나요? 값 %1 리스트 %2';
-    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = '리스트가 해당 값을 포함하고 있으면 참을 반환하고, 그렇지 않ㅇ느면 거짓을 반환합니다.';
+    Blockly.Msg.LANG_LISTS_IS_IN_TOOLTIP = '리스트가 해당 값을 포함하고 있으면 참을 반환하고, 그렇지 않으면 거짓을 반환합니다.';
     Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#indexinlist';
     Blockly.Msg.LANG_LISTS_POSITION_IN_TITLE_POSITION = '리스트에서의 위치';
     Blockly.Msg.LANG_LISTS_POSITION_IN_INPUT_THING = '값';
@@ -635,9 +603,9 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = '경고:\n이 함수는 \n중복된 입력값을 가지고 있습니다.';
     Blockly.Msg.LANG_PROCEDURES_GET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#get';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#do';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL = '호출';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL = '호출 ';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_PROCEDURE = '함수';
-    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = '호출';
+    Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = '호출 ';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TOOLTIP = '반환값이 없는 함수를 호출합니다.';
     Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME = '반환을 호출하지 않는다';
     Blockly.Msg.LANG_PROCEDURES_CALLRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#return';
@@ -655,9 +623,9 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = '언제 ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = '실행';
     Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = '호출';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL = '호출 ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL = '호출';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL = '호출 ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT = '컴포넌트';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GETTER_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_HELPURL = '';
@@ -666,7 +634,7 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = '지정하기 ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO = ' 값';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL = '';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = '지정하기';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = '지정하기 ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO = ' 값';
     Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = '컴포넌트';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BUTTON_HELPURL = '/reference/components/userinterface.html#Button';
@@ -769,22 +737,22 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL = '/reference/components/animation.html#imagespriteproperties';
     Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL = '/reference/components/animation.html#imagespriteevents';
     Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = '/reference/components/animation.html#imagespritemethods';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensors.html#AccelerometerSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#accelerometersensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#accelerometersensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#accelerometersensormethods';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensors.html#BarcodeScanner";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensors.html#barcodescannerproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensors.html#barcodescannerevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensors.html#barcodescannermethods';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensors.html#LocationSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#locationsensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#locationsensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#locationsensormethods';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensors.html#OrientationSensor";
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#orientationsensorproperties';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#orientationsensorevents';
-    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#orientationsensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensor.html#AccelerometerSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#accelerometersensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#accelerometersensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#accelerometersensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensor.html#BarcodeScanner";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensor.html#barcodescannerproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensor.html#barcodescannerevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensor.html#barcodescannermethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensor.html#LocationSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#locationsensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#locationsensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#locationsensormethods';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensor.html#OrientationSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#orientationsensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#orientationsensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#orientationsensormethods';
     Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "/reference/components/social.html#ContactPicker";
     Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL = '/reference/components/social.html#contactpickerproperties';
     Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL = '/reference/components/social.html#contactpickerevents';
@@ -881,7 +849,7 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.REPL_NETWORK_ERROR_RESTART = "컴패니언과 통신하는데 네트워크 오류가 발생했습니다.<br />컴패니언을 다시 시작하여 다시 연결해보세요";
     Blockly.Msg.REPL_OK = "확인";
     Blockly.Msg.REPL_COMPANION_VERSION_CHECK = "컴패니언 버전 확인";
-    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = '오래된 버전의 컴패니언 앱입니다. 업데이트를 하려면 "확인"을 클릭하세요. Watch your ';
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = '컴패니언 앱의 버전이 오래되었습니다. 업데이트를 하려면 "확인"을 클릭하세요. Watch your ';
     Blockly.Msg.REPL_EMULATORS = "에뮬레이터의";
     Blockly.Msg.REPL_DEVICES = "기기의";
     Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";
@@ -928,6 +896,13 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.DO_IT = "바로 실행";
     Blockly.Msg.CAN_NOT_DO_IT = "실행할 수 없습니다";
     Blockly.Msg.CONNECT_TO_DO_IT = '"바로 실행"하려면 컴패니언 또는 에뮬레이터에 연결되어야 합니다.';
+    Blockly.Msg.COPY_TO_BACKPACK = '백팩에 추가하기';
+    Blockly.Msg.COPY_ALLBLOCKS = '모든 블록을 백팩으로 복사하기';
+    Blockly.Msg.BACKPACK_GET = '백팩에 있는 모든 블록 붙여넣기';
+    Blockly.Msg.BACKPACK_EMPTY = '백팩 비우기';
+    Blockly.Msg.BACKPACK_CONFIRM_EMPTY = '백팩에 있는 모든 블록을 비우시겠습니까?';
+    Blockly.Msg.BACKPACK_DOC_TITLE = "백팩 정보";
+    Blockly.Msg.BACKPACK_DOCUMENTATION = '백팩은 블록 복사-붙여넣기를 도와주는 기능입니다. 현재 사용 중인 프로젝트 또는 스크린에서 블록을 복사하여 다른 프로젝트나 스크린에 붙여넣을 수 있습니다. 블록을 복사하려면, 원하는 블록을 드래그하여 백팩에 넣어주세요. 복사된 블록을 붙여넣으려면, 백팩 아이콘을 클릭한 다음 블록을 작업 공간으로 드래그하면 됩니다.</p><p>백팩안에 들어있는 내용들을 현재 접속된 앱 인벤터 세션 동안에만 유지됩니다. 만약 앱 인벤터를 종료하거나 웹 페이지를 다시 불러온다면 백팩은 다시 초기화됩니다. 즉 빈 가방이 되는거죠.</p><p>더 자세한 내용은 다음 문서를 참고하세요: </p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
   }
 };
 
