@@ -18,6 +18,7 @@ goog.require('Blockly.Msg.es_es');
 goog.require('Blockly.Msg.it_it');
 goog.require('Blockly.Msg.ru');
 goog.require('Blockly.Msg.ko_kr');
+goog.require('Blockly.Msg.sv');
 Blockly.language_switch = {
   // Switch between languages
   switchLanguage: function (language) {
@@ -54,6 +55,8 @@ Blockly.language_switch = {
       default:
         Blockly.Msg.en.switch_language_to_english.init();
         break;
+      case 'sv':
+        Blockly.Msg.sv.switch_language_to_swedish.init();
     }
     if (Blockly.mainWorkspace) {
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
