@@ -171,6 +171,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains list of tutorial gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getTutorialApp(int start, int count){
+    return galleryStorageIo.getTutorialApp(start, count);
+  }
+
+  /**
    * check if app is featured already
    * @param galleryId gallery id
    * @return true if featured, otherwise false
@@ -180,12 +190,30 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * check if app is tutorial already
+   * @param galleryId gallery id
+   * @return true if tutorial, otherwise false
+   */
+  public boolean isTutorial(long galleryId){
+    return galleryStorageIo.isTutorial(galleryId);
+  }
+
+  /**
    * mark an app as featured
    * @param galleryId gallery id
    * @return true if successful
    */
   public boolean markAppAsFeatured(long galleryId){
     return galleryStorageIo.markAppAsFeatured(galleryId);
+  }
+
+  /**
+   * mark an app as tutorial
+   * @param galleryId gallery id
+   * @return true if successful
+   */
+  public boolean markAppAsTutorial(long galleryId){
+    return galleryStorageIo.markAppAsTutorial(galleryId);
   }
 
   /**
