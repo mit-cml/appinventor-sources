@@ -74,6 +74,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   // Associated editor
   private final YaFormEditor editor;
 
+  private final Map<ComponentCategory, PaletteHelper> paletteHelpers;
+
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
 
@@ -86,6 +88,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     this.editor = editor;
 
     stackPalette = new StackPanel();
+
+    paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
+    // If a category has a palette helper, add it to the paletteHelpers map here.
+    paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new NxtPaletteHelper());
 
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
 
@@ -108,7 +114,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return false;
     }
     if (category == ComponentCategory.INTERNAL &&
-      !AppInventorFeatures.showInternalComponentsCategory()) {
+        !AppInventorFeatures.showInternalComponentsCategory()) {
       return false;
     }
     return true;
@@ -246,6 +252,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
     VerticalPanel panel = categoryPanels.get(category);
-    panel.add(component);
+    PaletteHelper paletteHelper = paletteHelpers.get(category);
+    if (paletteHelper != null) {
+      paletteHelper.addPaletteItem(panel, component);
+    } else {
+      panel.add(component);
+    }
   }
 }

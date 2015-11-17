@@ -351,7 +351,8 @@ public class MediaUtil {
           scaledWidth, scaledHeight, false);
       BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(scaledBitmap);
       scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-      System.gc();              // We likely used a lot of memory, so gc now.
+      originalBitmapDrawable = null; // So it will get GC'd on the next line
+      System.gc();                   // We likely used a lot of memory, so gc now.
       return scaledBitmapDrawable;
 
     } finally {

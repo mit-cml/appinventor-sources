@@ -102,7 +102,7 @@ Blockly.Flyout.prototype.CORNER_RADIUS = 8;
  */
 Blockly.Flyout.prototype.VERTICAL_SEPARATION_FACTOR = 2;
 
-/*
+/**
  * Wrapper function called when a resize occurs.
  * @type {Array.<!Array>}
  * @private
