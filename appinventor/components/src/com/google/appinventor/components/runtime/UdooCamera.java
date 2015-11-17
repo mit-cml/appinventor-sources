@@ -14,6 +14,8 @@ import com.google.appinventor.components.common.YaVersion;
 
 import android.graphics.SurfaceTexture;
 import android.os.Environment;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,6 +37,7 @@ import java.util.Date;
    nonVisible = true,
    iconName = "images/udooCamera.png")
 @SimpleObject
+@UsesPermissions(permissionNames = "android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_EXTERNAL_STORAGE")
 public class UdooCamera extends Camera {
 
   public UdooCamera(ComponentContainer container) {
@@ -44,9 +47,19 @@ public class UdooCamera extends Camera {
   /**
    * There is no front camera!
    */
+  @Override
   public boolean UseFront() {
     return false;
   }
+  
+  /**
+   * There is no front camera!
+   */
+  @Override
+  public void UseFront(boolean front) {
+  }
+  
+  private boolean useFront = false;
   
   /**
    * Takes a picture without user action, then raises the AfterPicture event.
@@ -54,14 +67,17 @@ public class UdooCamera extends Camera {
   @SimpleFunction
   public void SelfPicture() {
     SurfaceTexture surfaceTexture = new SurfaceTexture(10);
-    android.hardware.Camera camera = android.hardware.Camera.open(0);
     try {
+        android.hardware.Camera camera = android.hardware.Camera.open(0);
         camera.setPreviewTexture(surfaceTexture);
+        
+        camera.startPreview();
+        camera.takePicture(null,null,jpegCallback);
+    } catch (RuntimeException e) {
+        e.printStackTrace();
     } catch (IOException e) {
         e.printStackTrace();
     }
-    camera.startPreview();
-    camera.takePicture(null,null,jpegCallback);
   }
   
   android.hardware.Camera.PictureCallback jpegCallback = new android.hardware.Camera.PictureCallback() {
