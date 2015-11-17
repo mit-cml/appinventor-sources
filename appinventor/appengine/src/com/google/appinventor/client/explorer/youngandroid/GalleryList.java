@@ -55,16 +55,20 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final FlowPanel appFeatured;
   private final FlowPanel appPopular;
   private final FlowPanel appSearch;
+  private final FlowPanel appTutorial;
   private final FlowPanel appRecentContent;
   private final FlowPanel appFeaturedContent;
   private final FlowPanel appPopularContent;
   private final FlowPanel appSearchContent;
+  private final FlowPanel appTutorialContent;
   private final TextBox searchText;
 
   private GalleryAppTab appRecentTab;
   private GalleryAppTab appFeaturedTab;
   private GalleryAppTab appPopularTab;
   private GalleryAppTab appSearchTab;
+  private GalleryAppTab appTutorialTab;
+
 
   public static final int REQUEST_FEATURED = 1;
   public static final int REQUEST_RECENT = 2;
@@ -76,16 +80,18 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public static final int REQUEST_BYTAG = 8;
   public static final int REQUEST_ALL = 9;
   public static final int REQUEST_REMIXED_TO = 10;
+  public static final int REQUEST_TUTORIAL = 11;
 
   private int appRecentCounter = 0;
   private int appFeaturedCounter = 0;
   private int appPopularCounter = 0;
   private int appSearchCounter = 0;
+  private int appTutorialCounter = 0;
   private boolean appRecentExhausted = false;
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
-
+  private boolean appTutorialExhausted = false;
   public static final int NUMAPPSTOSHOW = 10;
 
   /**
@@ -107,11 +113,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appFeatured = new FlowPanel();
     appPopular = new FlowPanel();
     appSearch = new FlowPanel();
+    appTutorial = new FlowPanel();
     appRecentContent = new FlowPanel();
     appFeaturedContent = new FlowPanel();
     appPopularContent = new FlowPanel();
     appSearchContent = new FlowPanel();
-
+    appTutorialContent = new FlowPanel();
     searchText = new TextBox();
 
     // HTML segment for gallery typeface
@@ -125,12 +132,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appRecentTab = new GalleryAppTab(appRecent, appRecentContent, REQUEST_RECENT);
     appSearchTab = new GalleryAppTab(appSearch, appSearchContent, REQUEST_SEARCH);
     appPopularTab = new GalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTLIKED);
-
+    appTutorialTab = new GalleryAppTab(appTutorial, appTutorialContent, REQUEST_TUTORIAL);
     // don't think we need because in regular addgallerytab below
 
     // Add panels to main tabPanel
     appTabs.add(appRecent, "Recent");
-    appTabs.add(appFeatured, "Featured"); // 2014/05/15: don't need now
+    appTabs.add(appTutorial,"Tutorials");
+    appTabs.add(appFeatured, "Featured");
     appTabs.add(appPopular, "Popular");
     appTabs.add(appSearch, "Search");
     appTabs.selectTab(0);
@@ -248,7 +256,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             }
           }
         });
-      } else if (request == REQUEST_RECENT) {
+      } else if (request == REQUEST_TUTORIAL) {
+        generalTotalResultsLabel = new Label();
+        container.add(generalTotalResultsLabel);
+        gallery.GetTutorial(appTutorialCounter, NUMAPPSTOSHOW, 0, false);
+      }
+        else if (request == REQUEST_RECENT) {
         generalTotalResultsLabel = new Label();
         container.add(generalTotalResultsLabel);
         gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW, false);
@@ -284,6 +297,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
                 // If the next page still has apps to retrieve, do it
                 appFeaturedCounter += NUMAPPSTOSHOW;
                 gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0, false);
+              }
+              break;
+            case REQUEST_TUTORIAL:
+              if (!appTutorialExhausted) {
+                // If the next page still has apps to retrieve, do it
+                appTutorialCounter += NUMAPPSTOSHOW;
+                gallery.GetTutorial(appTutorialCounter, NUMAPPSTOSHOW,0, false);
               }
               break;
             case REQUEST_RECENT:
@@ -367,6 +387,21 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           appFeaturedTab.getButtonNext().setVisible(false);
         }else{
           appFeaturedTab.getButtonNext().setVisible(true);
+        }
+        break;
+      case REQUEST_TUTORIAL:
+        appTutorialTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
+        if (appsResult.getTotalCount() < NUMAPPSTOSHOW) {
+          // That means there's not enough apps to show (reaches the end)
+          appTutorialExhausted = true;
+        } else {
+          appTutorialExhausted = false;
+        }
+        galleryGF.generateHorizontalAppList(appsResult.getApps(), appTutorialContent, refreshable);
+        if(appsResult.getTotalCount() < NUMAPPSTOSHOW || appTutorialCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
+          appTutorialTab.getButtonNext().setVisible(false);
+        }else{
+          appTutorialTab.getButtonNext().setVisible(true);
         }
         break;
       case REQUEST_RECENT:
