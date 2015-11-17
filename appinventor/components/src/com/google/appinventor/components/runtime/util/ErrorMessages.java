@@ -68,6 +68,7 @@ public final class ErrorMessages {
   public static final int ERROR_UDOO_ADK_NO_DEVICE = 452;
   public static final int ERROR_UDOO_ADK_NO_CONNECTION = 453;
   public static final int ERROR_UDOO_TCP_NO_CONNECTION = 454;
+  public static final int ERROR_UDOO_SERVO_WRITE = 455;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -306,6 +307,8 @@ public final class ErrorMessages {
         "Unable to connect to the Arduino. Try to reset it or restart the app.");
     errorMessages.put(ERROR_UDOO_TCP_NO_CONNECTION,
         "Could not create TCP connection.");
+    errorMessages.put(ERROR_UDOO_SERVO_WRITE,
+        "Servo accepts only degrees between 0 and 180.");
     // Bluetooth errors
     errorMessages.put(ERROR_BLUETOOTH_NOT_AVAILABLE,
         "Bluetooth is not available.");

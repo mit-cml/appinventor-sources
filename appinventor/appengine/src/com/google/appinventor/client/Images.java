@@ -1,3 +1,4 @@
+
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
@@ -523,4 +524,6 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/udooTemperature.png")
   ImageResource udooTemperature();
 
+  @Source("com/google/appinventor/images/udooGear.png")
+  ImageResource udooGear();
 }

@@ -5605,6 +5605,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String pinModeMethods();
   
+  @DefaultMessage("attach")
+  @Description("")
+  String attachMethods();
+  
+  @DefaultMessage("detach")
+  @Description("")
+  String detachMethods();
+  
+  @DefaultMessage("write")
+  @Description("")
+  String writeMethods();
+  
   @DefaultMessage("attachInterrupt")
   @Description("")
   String attachInterruptMethods();

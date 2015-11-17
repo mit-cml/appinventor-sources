@@ -299,6 +299,23 @@ public class UdooArduinoManager
     throw new Exception("Invalid response from ADK");
   }
   
+  public void servo(String pin, String method) {
+    servo(pin, method, -1);
+  }
+  
+  public void servo(String pin, String method, int degrees) {
+    JSONObject json = new JSONObject();
+    try {
+      json.put("servo", method);
+      json.put("pin", pinNameToInt(pin));
+      json.put("degrees", degrees);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    
+    sendJson(json);
+  }
+  
   private JSONObject sendJson(JSONObject json)
   {
     UdooArduinoWriter task = new UdooArduinoWriter(udooConnection, outputStream, rand);
