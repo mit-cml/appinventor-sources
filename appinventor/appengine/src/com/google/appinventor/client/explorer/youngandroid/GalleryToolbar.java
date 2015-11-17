@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class GalleryToolbar extends Composite {
+  private static final int SEARCHTAB = 4;
   public static List<GalleryToolbar> allSearchToolbars = new ArrayList<GalleryToolbar>();  //store the reference of all creating toolbar
   final TextBox searchText;
   final Button searchButton;
@@ -57,7 +58,7 @@ public class GalleryToolbar extends Composite {
         GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
         searchText.setFocus(true);
         Ode.getInstance().switchToGalleryView();
-        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(3); //TODO change this to constant
+        GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(SEARCHTAB);
         for(GalleryToolbar toolbar : allSearchToolbars){
           toolbar.getSearchText().setText(searchText.getText());
         }
@@ -73,7 +74,7 @@ public class GalleryToolbar extends Composite {
           GalleryClient.getInstance().FindApps(searchText.getText(), 0, GalleryList.NUMAPPSTOSHOW, 0, true);
           searchText.setFocus(true);
           Ode.getInstance().switchToGalleryView();
-          GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(3); //TODO change this to constant
+          GalleryListBox.getGalleryListBox().getGalleryList().setSelectTabIndex(SEARCHTAB);
           for(GalleryToolbar toolbar : allSearchToolbars){
             toolbar.getSearchText().setText(searchText.getText());
           }

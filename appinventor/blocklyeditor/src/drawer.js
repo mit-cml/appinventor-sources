@@ -278,16 +278,28 @@ Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
 
 // [lyn, 10/22/13] return an XML string including one procedure caller for each procedure declaration
 // in main workspace.
-Blockly.Drawer.procedureCallersXMLString = function(returnsValue) {
+// [jos, 10/18/15] if we pass a proc_name, we only want one procedure returned as xmlString
+Blockly.Drawer.procedureCallersXMLString = function(returnsValue, proc_name) {
   var xmlString = '<xml>'  // Used to accumulate xml for each caller
   var decls = Blockly.AIProcedure.getProcedureDeclarationBlocks(returnsValue);
-  decls.sort(Blockly.Drawer.compareDeclarationsByName); // sort decls lexicographically by procedure name
-  for (var i = 0; i < decls.length; i++) {
-    xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
+
+  if (proc_name) {
+    for (var i = 0; i < decls.length; i++) {
+      if (decls[i].getFieldValue('NAME').toLocaleLowerCase() == proc_name){
+        xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
+        break;
+      }
+    }
+  }
+  else {
+    decls.sort(Blockly.Drawer.compareDeclarationsByName); // sort decls lexicographically by procedure name
+    for (var i = 0; i < decls.length; i++) {
+      xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
+    }
   }
   xmlString += '</xml>';
   return xmlString;
-}
+};
 
 Blockly.Drawer.compareDeclarationsByName = function (decl1, decl2) {
   var name1 = decl1.getFieldValue('NAME').toLocaleLowerCase();

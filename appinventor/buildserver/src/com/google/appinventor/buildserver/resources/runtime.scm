@@ -749,9 +749,7 @@
         (set! (*:.global-var-environment *this-form*)
               (gnu.mapping.Environment:make (string-append
                                              (symbol->string form-name)
-                                             "-global-vars")))
-        ;; The REPL likes to have the form environment as a parent of the REPL environment
-        (*:addParent (KawaEnvironment:getCurrent) (*:.form-environment *this-form*)))
+                                             "-global-vars"))))
       (begin
         ;; The following is just for testing. In normal situations *this-form* should be non-null
         (set! *test-environment* (gnu.mapping.Environment:make 'test-env))

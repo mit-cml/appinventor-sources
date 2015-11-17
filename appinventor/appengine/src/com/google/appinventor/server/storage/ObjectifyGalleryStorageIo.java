@@ -82,6 +82,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryCommentData.class);
     ObjectifyService.register(GalleryAppLikeData.class);
     ObjectifyService.register(GalleryAppFeatureData.class);
+    ObjectifyService.register(GalleryAppTutorialData.class);
     ObjectifyService.register(GalleryAppAttributionData.class);
     ObjectifyService.register(GalleryAppReportData.class);
     ObjectifyService.register(GalleryModerationActionData.class);
@@ -266,6 +267,27 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   /**
+   * Returns a wrapped class which contains a list of tutorial gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getTutorialApp(int start, int count){
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppTutorialData appTutorialData:datastore.query(GalleryAppTutorialData.class).offset(start).limit(count)) {
+      Long galleryId = appTutorialData.galleryKey.getId();
+      GalleryApp gApp = new GalleryApp();
+      GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+      makeGalleryApp(galleryAppData, gApp);
+      apps.add(gApp);
+    }
+
+    int totalCount = datastore.query(GalleryAppTutorialData.class).count();
+    return new GalleryAppListResult(apps, totalCount);
+  }
+
+  /**
    * check if app is featured already
    * @param galleryId gallery id
    * @return true if featured, otherwise false
@@ -275,6 +297,22 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     Objectify datastore = ObjectifyService.begin();
     result.t = false;
     for (GalleryAppFeatureData appFeatureData:datastore.query(GalleryAppFeatureData.class).ancestor(galleryKey(galleryId))) {
+      result.t = true;
+      break;
+    }
+    return result.t;
+  }
+
+  /**
+   * check if app is tutorial already
+   * @param galleryId gallery id
+   * @return true if tutorial, otherwise false
+   */
+   public boolean isTutorial(long galleryId){
+    final Result<Boolean> result = new Result<Boolean>();
+    Objectify datastore = ObjectifyService.begin();
+    result.t = false;
+    for (GalleryAppTutorialData appTutorialData:datastore.query(GalleryAppTutorialData.class).ancestor(galleryKey(galleryId))) {
       result.t = true;
       break;
     }
@@ -306,6 +344,33 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return result.t;
   }
+
+  /**
+   * mark an app as tutorial
+   * @param galleryId gallery id
+   * @return
+   */
+  public boolean markAppAsTutorial(long galleryId){
+    final Result<Boolean> result = new Result<Boolean>();
+    result.t = false;
+    boolean find = false;
+    Objectify datastore = ObjectifyService.begin();
+
+    for (GalleryAppTutorialData appTutorialData:datastore.query(GalleryAppTutorialData.class).ancestor(galleryKey(galleryId))) {
+      find = true;
+      datastore.delete(appTutorialData);
+      result.t = false;
+      break;
+    }
+    if(!find){
+      GalleryAppTutorialData appTutorialData = new GalleryAppTutorialData();
+      appTutorialData.galleryKey = galleryKey(galleryId);
+      datastore.put(appTutorialData);
+      result.t = true;
+    }
+    return result.t;
+  }
+
   /**
    * Returns a wrapped class which contains a list of galleryApps
    * by a particular developer and total number of results in database
@@ -1255,6 +1320,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   private Key<GalleryAppFeatureData> galleryFeatureKey(long galleryId) {
     return new Key<GalleryAppFeatureData>(GalleryAppFeatureData.class, galleryId);
+  }
+
+  private Key<GalleryAppTutorialData> galleryTutorialKey(long galleryId) {
+    return new Key<GalleryAppTutorialData>(GalleryAppTutorialData.class, galleryId);
   }
 
   private Key<GalleryCommentData> galleryCommentKey(long commentId) {

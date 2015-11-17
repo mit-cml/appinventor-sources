@@ -22,6 +22,7 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -29,6 +30,7 @@ import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -58,6 +60,8 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.multidex.MultiDex;
+import com.google.appinventor.components.runtime.multidex.MultiDexApplication;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -76,6 +80,11 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  * superclass for for Simple/Android UI applications.
  *
  * The main form is always named "Screen1".
+ *
+ * NOTE WELL: There are many places in the code where the name "Screen1" is
+ * directly referenced. If we ever change App Inventor to support renaming
+ * screens and Screen1 in particular, we need to make sure we find all those
+ * places and make the appropriate code changes.
  *
  */
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
@@ -187,6 +196,9 @@ public class Form extends Activity
 
   private boolean keyboardShown = false;
 
+  private ProgressDialog progress;
+  private static boolean _initialized = false;
+
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
@@ -203,6 +215,21 @@ public class Form extends Activity
   }
   private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
 
+  private static class MultiDexInstaller extends AsyncTask<Form, Void, Boolean> {
+    Form ourForm;
+
+    @Override
+    protected Boolean doInBackground(Form... form) {
+      ourForm = form[0];
+      Log.d(LOG_TAG, "Doing Full MultiDex Install");
+      MultiDex.install(ourForm, true); // Force installation
+      return true;
+    }
+    @Override
+    protected void onPostExecute(Boolean v) {
+      ourForm.onCreateFinish();
+    }
+  }
 
   @Override
   public void onCreate(Bundle icicle) {
@@ -224,6 +251,51 @@ public class Form extends Activity
     Log.i(LOG_TAG, "compatScalingFactor = " + compatScalingFactor);
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
+
+    progress = null;
+    if (!_initialized && formName.equals("Screen1")) {
+      Log.d(LOG_TAG, "MULTI: _initialized = " + _initialized + " formName = " + formName);
+      _initialized = true;
+      // Note that we always consult ReplApplication even if we are not the Repl (Companion)
+      // this is subtle. When ReplApplication isn't directly used, the "installed" property
+      // defaults to ture, which means we can continue. The MultiDexApplication which is
+      // used in a non-Companion context will always do the full install
+      if (ReplApplication.installed) {
+        Log.d(LOG_TAG, "MultiDex already installed.");
+        onCreateFinish();
+      } else {
+        progress = ProgressDialog.show(this, "Please Wait...", "Installation Finishing");
+        progress.show();
+        new MultiDexInstaller().execute(this);
+      }
+    } else {
+      Log.d(LOG_TAG, "NO MULTI: _initialized = " + _initialized + " formName = " + formName);
+      _initialized = true;
+      onCreateFinish();
+    }
+  }
+
+  /*
+   * Finish the work of setting up the Screen.
+   *
+   * onCreate is done in two parts. The first part is done in onCreate
+   * and the second part is done here. This division is so that we can
+   * asynchronously load classes2.dex if we have to, while displaying
+   * a splash screen which explains that installation is finishing.
+   * We do this because there can be a significant time spent in
+   * DexOpt'ing classes2.dex. Note: If it is already optimized, we
+   * don't show the splash screen and call this function
+   * immediately. Similarly we call this function immediately on any
+   * screen other then Screen1.
+   *
+   */
+
+  void onCreateFinish() {
+
+    Log.d(LOG_TAG, "onCreateFinish called " + System.currentTimeMillis());
+    if (progress != null) {
+      progress.dismiss();
+    }
 
     defaultPropertyValues();
 
@@ -1760,9 +1832,21 @@ public class Form extends Activity
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();
+    frameLayout.removeAllViews();
+    frameLayout = null;
     // Set all screen properties to default values.
     defaultPropertyValues();
+    onStopListeners.clear();
+    onNewIntentListeners.clear();
+    onResumeListeners.clear();
+    onPauseListeners.clear();
+    onDestroyListeners.clear();
+    onInitializeListeners.clear();
+    onCreateOptionsMenuListeners.clear();
+    onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
+    System.err.println("Form.clear() About to do moby GC!");
+    System.gc();
     dimChanges.clear();
   }
 
