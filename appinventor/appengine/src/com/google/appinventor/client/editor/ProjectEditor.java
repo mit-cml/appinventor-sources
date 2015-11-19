@@ -255,7 +255,7 @@ public abstract class ProjectEditor extends Composite {
    * this code.
    *
    * @param componentName The name of the component registering location permission
-   * @param newVlue either "True" or "False" indicating whether permission is need.
+   * @param newValue either "True" or "False" indicating whether permission is need.
    */
 
   public final void recordLocationSetting(String componentName, String newValue) {

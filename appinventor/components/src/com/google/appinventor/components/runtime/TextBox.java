@@ -118,7 +118,7 @@ public final class TextBox extends TextBoxBase {
   }
 
   /**
-   * NumersOnly property setter method.
+   * NumbersOnly property setter method.
    *
    * @param acceptsNumbersOnly {@code true} restricts input to numeric,
    * {@code false} allows any text
