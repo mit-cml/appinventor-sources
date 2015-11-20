@@ -14,7 +14,6 @@ import com.google.appinventor.components.common.YaVersion;
 
 import android.graphics.SurfaceTexture;
 import android.os.Environment;
-import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 
 import java.io.File;

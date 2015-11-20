@@ -326,6 +326,7 @@ public class UdooArduinoManager
     } catch (ExecutionException ex) {
       Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
     } catch (TimeoutException ex) {
+      Log.d("UdooTimeoutException", json.toString());
       Logger.getLogger(UdooArduinoManager.class.getName()).log(Level.SEVERE, null, ex);
       udooConnection.reconnect();
     }

@@ -97,11 +97,12 @@ public class UdooArduinoReader
 
         } catch (IOException e) {
           Log.e("ARDUINO IO Exception", e.getMessage());
+          Logger.getLogger(UdooArduinoReader.class.getName()).log(Level.SEVERE, null, e);
           stop();
           message = null;
         }
 
-        Log.d("UdooArduinoReader", message);
+        if (message!=null) Log.d("UdooArduinoReader", message);
         return message;
       }
     });
