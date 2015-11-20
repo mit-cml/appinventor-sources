@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.udoo.UdooBackgroundEventFirer;
 import com.google.appinventor.components.runtime.udoo.UdooConnectionDetailsInterface;
 import com.google.appinventor.components.runtime.udoo.UdooInterruptibleInterface;
 import java.util.Timer;
@@ -250,16 +251,18 @@ implements OnResumeListener, OnDestroyListener, OnPauseListener,
   @SimpleEvent(description = "Fires when the Arduino triggers an interrupt routine.")
   public void InterruptFired(int pinNumber)
   {
-    Log.d(TAG, "InterruptFired event");
-    
-    EventDispatcher.dispatchEvent(this, "InterruptFired", pinNumber);
+    UdooBackgroundEventFirer ef = new UdooBackgroundEventFirer();
+    ef.setEventName("InterruptFired").setPinNumber(pinNumber);
+    ef.execute(this);
   }
   
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
   @Override
   public void Connected()
   {
-    EventDispatcher.dispatchEvent(this, "Connected");
+    UdooBackgroundEventFirer ef = new UdooBackgroundEventFirer();
+    ef.setEventName("Connected");
+    ef.execute(this);
   }
   
   protected UdooConnectionInterface getTransport()

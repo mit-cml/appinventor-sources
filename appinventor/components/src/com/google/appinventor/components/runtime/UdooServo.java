@@ -17,8 +17,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.udoo.UdooBackgroundEventFirer;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import org.json.JSONObject;
 
 /**
  * A component that interfaces with sensors connected to UDOO boards.
@@ -89,7 +89,9 @@ implements UdooConnectedInterface
   @SimpleEvent(description = "Fires when the Arduino is (re)connected.")
   public void Connected()
   {
-    EventDispatcher.dispatchEvent(this, "Connected");
+    UdooBackgroundEventFirer ef = new UdooBackgroundEventFirer();
+    ef.setEventName("Connected");
+    ef.execute(this);
   }
   
   public synchronized boolean isConnected()
