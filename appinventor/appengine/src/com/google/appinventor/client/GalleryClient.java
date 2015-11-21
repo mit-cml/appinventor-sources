@@ -44,6 +44,7 @@ public class GalleryClient {
   public static final int REQUEST_BYTAG = 8;
   public static final int REQUEST_ALL = 9;
   public static final int REQUEST_REMIXED_TO = 10;
+  public static final int REQUEST_TUTORIAL = 11;
 
   private static volatile GalleryClient  instance= null;
 
@@ -157,7 +158,30 @@ public class GalleryClient {
     // This is below the call back, but of course it is done first
     ode.getGalleryService().getFeaturedApp(start, count, callback);
   }
- /**
+/**
+  * GetTutorial gets tutorial apps, implemented in GalleryList.java
+  * @param start staring index
+  * @param count number of results
+  * @param sortOrder unused sort order
+  */
+  public void GetTutorial(int start, int count, int sortOrder, final boolean refreshable) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
+    // failure message
+    MESSAGES.galleryRecentAppsError()) {
+      @Override
+      public void onSuccess(GalleryAppListResult appsResult) {
+        // the server has returned us something
+        for (GalleryRequestListener listener:listeners) {
+          listener.onAppListRequestCompleted(appsResult, REQUEST_TUTORIAL, refreshable);
+        }
+      }
+    };
+    // This is below the call back, but of course it is done first
+    ode.getGalleryService().getTutorialApp(start, count, callback);
+  }
+/**
   * GetMostRecent gets most recently updated apps then tells listeners
   * @param start staring index
   * @param count number of results
@@ -316,6 +340,7 @@ public class GalleryClient {
     GetMostRecent(0,GalleryList.NUMAPPSTOSHOW, true);
     GetMostLiked(0,GalleryList.NUMAPPSTOSHOW, true);
     GetFeatured(0, GalleryList.NUMAPPSTOSHOW, 0, true);
+    GetTutorial(0,GalleryList.NUMAPPSTOSHOW, 0, true);
   }
 
  /**
@@ -373,8 +398,8 @@ public class GalleryClient {
    * @return url of cloud image
    */
   public String getCloudImageURL(long galleryId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
+    if(getSystemEnvironment() != null &&
+        getSystemEnvironment().toString().equals("Production")){
       return getGallerySettings().getCloudImageURL(galleryId);
     }else {
       return getGallerySettings().getCloudImageLocation(galleryId);
@@ -387,8 +412,8 @@ public class GalleryClient {
    * @return url of project image
    */
   public String getProjectImageURL(long projectId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
+    if(getSystemEnvironment() != null &&
+        getSystemEnvironment().toString().equals("Production")){
       return getGallerySettings().getProjectImageURL(projectId);
     }else {
       return getGallerySettings().getProjectImageLocation(projectId);
@@ -401,18 +426,18 @@ public class GalleryClient {
    * @return url of user image
    */
   public String getUserImageURL(String userId) {
-    if(getSystemEnvironmet() != null &&
-        getSystemEnvironmet().toString().equals("Production")){
+    if(getSystemEnvironment() != null &&
+        getSystemEnvironment().toString().equals("Production")){
       return getGallerySettings().getUserImageURL(userId);
     }else {
       return getGallerySettings().getUserImageLocation(userId);
     }
   }
 
-  public void setSystemEnvironmet(String value) {
+  public void setSystemEnvironment(String value) {
     ENVIRONMENT = value;
   }
-  public String getSystemEnvironmet() {
+  public String getSystemEnvironment() {
     return this.ENVIRONMENT;
   }
 
