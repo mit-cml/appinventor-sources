@@ -453,8 +453,6 @@ Blockly.Msg.en.switch_language_to_english = {
      Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'standard deviation';
      Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'random item';
      Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Return the sum of all the numbers in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
      Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Return the arithmetic mean of the list.';
      Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Return the median number in the list.';
      Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Return a list of the most common item(s) in the list.';
@@ -467,7 +465,8 @@ Blockly.Msg.en.switch_language_to_english = {
      Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'and (high)';
      Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Constrain a number to be between the specified limits (inclusive).';*/
 
-
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
     Blockly.Msg.LANG_MATH_DIVIDE = '\u00F7';
     Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = 'modulo of';
     Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_REMAINDER = 'remainder of';
