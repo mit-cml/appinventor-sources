@@ -238,6 +238,8 @@ public class TopPanel extends Composite {
       nativeName = MESSAGES.SwitchToRussian();
     } else if (localeName == "ko_KR") {
       nativeName = MESSAGES.SwitchToKorean();
+    } else if (localeName == "sv") {
+      nativeName = MESSAGES.SwitchToSwedish();
     }
     return nativeName;
   }
