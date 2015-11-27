@@ -66,6 +66,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String mode) {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         for (Mode modeValue : Mode.values()) {
@@ -92,6 +93,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
       "Valid values are Mode_600HZ or Mode_1200HZ.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         Mode mode = irSeekerSensor.getMode();
@@ -112,6 +114,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void SignalDetectedThreshold(double threshold) {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         irSeekerSensor.setSignalDetectedThreshold(threshold);
@@ -129,6 +132,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The signal detection threshold of the IR seeker sensor.",
       category = PropertyCategory.BEHAVIOR)
   public double SignalDetectedThreshold() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         return irSeekerSensor.getSignalDetectedThreshold();
@@ -147,6 +151,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "Whether a signal is detected by the sensor.",
       category = PropertyCategory.BEHAVIOR)
   public boolean SignalDetected() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         return irSeekerSensor.signalDetected();
@@ -165,6 +170,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Angle.",
       category = PropertyCategory.BEHAVIOR)
   public double Angle() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         if (irSeekerSensor.signalDetected()) {
@@ -185,6 +191,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Strength.",
       category = PropertyCategory.BEHAVIOR)
   public double Strength() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         if (irSeekerSensor.signalDetected()) {
@@ -205,6 +212,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The number of individual IR sensors attached to this seeker.",
       category = PropertyCategory.BEHAVIOR)
   public int IndividualSensorCount() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
@@ -223,6 +231,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleFunction(description = "The angle of the individual IR sensor with the given " +
       "zero-based position.")
   public double IndividualSensorAngle(int position) {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
@@ -246,6 +255,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleFunction(description = "The strength of the individual IR sensor with the given " +
       "zero-based position.")
   public double IndividualSensorStrength(int position) {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         IrSeekerIndividualSensor[] sensors = irSeekerSensor.getIndividualSensors();
@@ -289,6 +299,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void I2cAddress(int newAddress) {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         irSeekerSensor.setI2cAddress(newAddress);
@@ -306,6 +317,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The I2C address of the IR seeker sensor.",
       category = PropertyCategory.BEHAVIOR)
   public int I2cAddress() {
+    checkHardwareDevice();
     if (irSeekerSensor != null) {
       try {
         return irSeekerSensor.getI2cAddress();
@@ -321,14 +333,14 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
-      if (irSeekerSensor == null) {
-        deviceNotFound("IrSeekerSensor", hardwareMap.irSeekerSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    irSeekerSensor = hardwareMap.irSeekerSensor.get(getDeviceName());
     return irSeekerSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("IrSeekerSensor", hardwareMap.irSeekerSensor);
   }
 
   @Override

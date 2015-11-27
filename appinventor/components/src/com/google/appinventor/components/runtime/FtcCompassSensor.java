@@ -48,6 +48,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Direction, in degrees.",
       category = PropertyCategory.BEHAVIOR)
   public double Direction() {
+    checkHardwareDevice();
     if (compassSensor != null) {
       try {
         return compassSensor.getDirection();
@@ -66,6 +67,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (compassSensor != null) {
       try {
         String status = compassSensor.status();
@@ -102,6 +104,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleFunction(description = "Change to calibration or measurement mode.\n" +
       "Valid values are CompassMode_CALIBRATION_MODE or CompassMode_MEASUREMENT_MODE.")
   public void SetMode(String compassMode) {
+    checkHardwareDevice();
     if (compassSensor != null) {
       try {
         for (CompassMode compassModeValue : CompassMode.values()) {
@@ -127,6 +130,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "Whether calibration failed.",
       category = PropertyCategory.BEHAVIOR)
   public boolean CalibrationFailed() {
+    checkHardwareDevice();
     if (compassSensor != null) {
       try {
         return compassSensor.calibrationFailed();
@@ -142,14 +146,14 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      compassSensor = hardwareMap.compassSensor.get(getDeviceName());
-      if (compassSensor == null) {
-        deviceNotFound("CompassSensor", hardwareMap.compassSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    compassSensor = hardwareMap.compassSensor.get(getDeviceName());
     return compassSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("CompassSensor", hardwareMap.compassSensor);
   }
 
   @Override

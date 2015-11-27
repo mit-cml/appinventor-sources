@@ -47,6 +47,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, on a scale of 0 to 1.",
       category = PropertyCategory.BEHAVIOR)
   public double LightDetected() {
+    checkHardwareDevice();
     if (opticalDistanceSensor != null) {
       try {
         return opticalDistanceSensor.getLightDetected();
@@ -65,6 +66,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int LightDetectedRaw() {
+    checkHardwareDevice();
     if (opticalDistanceSensor != null) {
       try {
         return opticalDistanceSensor.getLightDetectedRaw();
@@ -79,6 +81,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Enable the LED light.")
   public void EnableLed(boolean enable) {
+    checkHardwareDevice();
     if (opticalDistanceSensor != null) {
       try {
         opticalDistanceSensor.enableLed(enable);
@@ -96,6 +99,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (opticalDistanceSensor != null) {
       try {
         String status = opticalDistanceSensor.status();
@@ -114,14 +118,14 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
-      if (opticalDistanceSensor == null) {
-        deviceNotFound("OpticalDistanceSensor", hardwareMap.opticalDistanceSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get(getDeviceName());
     return opticalDistanceSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("OpticalDistanceSensor", hardwareMap.opticalDistanceSensor);
   }
 
   @Override

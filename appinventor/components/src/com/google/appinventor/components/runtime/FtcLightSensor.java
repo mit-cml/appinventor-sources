@@ -47,6 +47,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, on a scale of 0 to 1.",
       category = PropertyCategory.BEHAVIOR)
   public double LightDetected() {
+    checkHardwareDevice();
     if (lightSensor != null) {
       try {
         return lightSensor.getLightDetected();
@@ -65,6 +66,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The light detected by the sensor, as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int LightDetectedRaw() {
+    checkHardwareDevice();
     if (lightSensor != null) {
       try {
         return lightSensor.getLightDetectedRaw();
@@ -79,6 +81,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Enable the LED light.")
   public void EnableLed(boolean enable) {
+    checkHardwareDevice();
     if (lightSensor != null) {
       try {
         lightSensor.enableLed(enable);
@@ -96,6 +99,7 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (lightSensor != null) {
       try {
         String status = lightSensor.status();
@@ -114,14 +118,14 @@ public final class FtcLightSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      lightSensor = hardwareMap.lightSensor.get(getDeviceName());
-      if (lightSensor == null) {
-        deviceNotFound("LightSensor", hardwareMap.lightSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    lightSensor = hardwareMap.lightSensor.get(getDeviceName());
     return lightSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("LightSensor", hardwareMap.lightSensor);
   }
 
   @Override

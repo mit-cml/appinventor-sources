@@ -46,6 +46,7 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
   @SimpleProperty(description = "The current ADC results from the A0-A7 channel input pins.",
       category = PropertyCategory.BEHAVIOR)
   public int Value() {
+    checkHardwareDevice();
     if (analogInput != null) {
       try {
         return analogInput.getValue();
@@ -61,14 +62,14 @@ public final class FtcAnalogInput extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      analogInput = hardwareMap.analogInput.get(getDeviceName());
-      if (analogInput == null) {
-        deviceNotFound("AnalogInput", hardwareMap.analogInput);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    analogInput = hardwareMap.analogInput.get(getDeviceName());
     return analogInput;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("AnalogInput", hardwareMap.analogInput);
   }
 
   @Override

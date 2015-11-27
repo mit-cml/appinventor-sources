@@ -44,6 +44,7 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Is the touch sensor pressed?")
   public boolean IsTouchSensorPressed(int channel) {
+    checkHardwareDevice();
     if (touchSensorMultiplexer != null) {
       try {
         return touchSensorMultiplexer.isTouchSensorPressed(channel);
@@ -58,6 +59,7 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get switches")
   public int GetSwitches() {
+    checkHardwareDevice();
     if (touchSensorMultiplexer != null) {
       try {
         return touchSensorMultiplexer.getSwitches();
@@ -76,6 +78,7 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
   @SimpleProperty(description = "The status, if supported by the touch sensor multiplexer.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (touchSensorMultiplexer != null) {
       try {
         String status = null;
@@ -97,14 +100,14 @@ public final class FtcTouchSensorMultiplexer extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      touchSensorMultiplexer = hardwareMap.touchSensorMultiplexer.get(getDeviceName());
-      if (touchSensorMultiplexer == null) {
-        deviceNotFound("TouchSensorMultiplexer", hardwareMap.touchSensorMultiplexer);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    touchSensorMultiplexer = hardwareMap.touchSensorMultiplexer.get(getDeviceName());
     return touchSensorMultiplexer;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("TouchSensorMultiplexer", hardwareMap.touchSensorMultiplexer);
   }
 
   @Override

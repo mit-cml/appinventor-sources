@@ -146,6 +146,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
     requestCodeConfigureRobot = form.registerForActivityResult(this);
     requestCodeConfigureWifiChannel = form.registerForActivityResult(this);
     form.registerForOnNewIntent(this);
+    form.omitExitMenu();
     form.registerForOnCreateOptionsMenu(this);
     form.registerForOnOptionsItemSelected(this);
     form.registerForOnDestroy(this);

@@ -66,6 +66,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
       "Valid values are Mode_INPUT or Mode_OUTPUT.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
+    checkHardwareDevice();
     if (digitalChannel != null) {
       try {
         Mode mode = digitalChannel.getMode();
@@ -86,6 +87,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String mode) {
+    checkHardwareDevice();
     if (digitalChannel != null) {
       try {
         for (Mode modeValue : Mode.values()) {
@@ -113,6 +115,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
       "input bit.",
       category = PropertyCategory.BEHAVIOR)
   public boolean State() {
+    checkHardwareDevice();
     if (digitalChannel != null) {
       try {
         return digitalChannel.getState();
@@ -130,6 +133,7 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void State(boolean state) {
+    checkHardwareDevice();
     if (digitalChannel != null) {
       try {
         digitalChannel.setState(state);
@@ -144,14 +148,14 @@ public final class FtcDigitalChannel extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
-      if (digitalChannel == null) {
-        deviceNotFound("DigitalChannel", hardwareMap.digitalChannel);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    digitalChannel = hardwareMap.digitalChannel.get(getDeviceName());
     return digitalChannel;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("DigitalChannel", hardwareMap.digitalChannel);
   }
 
   @Override

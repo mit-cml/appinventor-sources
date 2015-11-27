@@ -43,6 +43,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
       "If mode == 0: takes input from -1023-1023, output in the range -4 to +4 volts.\n" +
       "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts.")
   public void SetAnalogOutputVoltage(int voltage) {
+    checkHardwareDevice();
     if (analogOutput != null) {
       try {
         analogOutput.setAnalogOutputVoltage(voltage);
@@ -57,6 +58,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
       "mode 1, 2 or 3.")
   public void SetAnalogOutputFrequency(int frequency) {
+    checkHardwareDevice();
     if (analogOutput != null) {
       try {
         analogOutput.setAnalogOutputFrequency(frequency);
@@ -74,6 +76,7 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
       "Mode 2: Square wave output. Range: 0 - 8V.\n" +
       "Mode 3: Triangle wave output. Range: 0 - 8V.")
   public void SetAnalogOutputMode(int mode) {
+    checkHardwareDevice();
     if (analogOutput != null) {
       try {
         analogOutput.setAnalogOutputMode((byte) mode);
@@ -88,14 +91,14 @@ public final class FtcAnalogOutput extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      analogOutput = hardwareMap.analogOutput.get(getDeviceName());
-      if (analogOutput == null) {
-        deviceNotFound("AnalogOutput", hardwareMap.analogOutput);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    analogOutput = hardwareMap.analogOutput.get(getDeviceName());
     return analogOutput;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("AnalogOutput", hardwareMap.analogOutput);
   }
 
   @Override

@@ -110,6 +110,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void MotorControllerDeviceMode(String deviceMode) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         for (DeviceMode deviceModeValue : DeviceMode.values()) {
@@ -136,6 +137,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
       "Valid values are DeviceMode_READ_ONLY or DeviceMode_WRITE_ONLY.",
       category = PropertyCategory.BEHAVIOR)
   public String MotorControllerDeviceMode() {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         DeviceMode mode = dcMotorController.getMotorControllerDeviceMode();
@@ -155,6 +157,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
       "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
       "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.")
   public void SetMotorChannelMode(int motor, String runMode) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         for (RunMode runModeValue : RunMode.values()) {
@@ -176,6 +179,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
       "Valid values are RunMode_RUN_USING_ENCODERS, RunMode_RUN_WITHOUT_ENCODERS, " +
       "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.")
   public String GetMotorChannelMode(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         RunMode runMode = dcMotorController.getMotorChannelMode(motor);
@@ -193,6 +197,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Set the current motor power (from -1.0 to 1.0).")
   public void SetMotorPower(int motor, double power) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         dcMotorController.setMotorPower(motor, power);
@@ -206,6 +211,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get the current motor power.")
   public double GetMotorPower(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         return dcMotorController.getMotorPower(motor);
@@ -220,6 +226,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Is the motor busy?")
   public boolean IsBusy(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         return dcMotorController.isBusy(motor);
@@ -234,6 +241,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Allow motor to float.")
   public void SetMotorPowerFloat(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         dcMotorController.setMotorPowerFloat(motor);
@@ -247,6 +255,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Allow motor to float.")
   public boolean GetMotorPowerFloat(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         return dcMotorController.getMotorPowerFloat(motor);
@@ -261,6 +270,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Set the motor target position.")
   public void SetMotorTargetPosition(int motor, int position) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         dcMotorController.setMotorTargetPosition(motor, position);
@@ -274,6 +284,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get the current motor target position.")
   public int GetMotorTargetPosition(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         return dcMotorController.getMotorTargetPosition(motor);
@@ -288,6 +299,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get the current motor position.")
   public int GetMotorCurrentPosition(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         return dcMotorController.getMotorCurrentPosition(motor);
@@ -302,6 +314,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Set the power for a group of motors, if supported by the controller.")
   public void SetMotorPowerForGroup(YailList listOfFtcDcMotors, int power) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         Set<DcMotor> dcMotors = Sets.newHashSet();
@@ -346,6 +359,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   @SimpleProperty(description = "Get the battery voltage, if supported by the controller.",
       category = PropertyCategory.BEHAVIOR)
   public double BatteryVoltage() {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -365,6 +379,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Set the gear ratio (from -1.0 to 1.0), if supported by the controller.")
   public void SetGearRatio(int motor, double ratio) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -380,6 +395,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get the gear ratio, if supported by the controller.")
   public double GetGearRatio(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -397,6 +413,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   @SimpleFunction(description = "Set the differential control loop coefficients, if supported " +
       "by the controller.")
   public void SetDifferentialControlLoopCoefficients(int motor, double p, double i, double d) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -415,6 +432,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   @SimpleFunction(description = "Get the differential control loop coefficient p, if supported " +
       "by the controller.")
   public double GetDifferentialControlLoopCoefficientP(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -437,6 +455,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   @SimpleFunction(description = "Get the differential control loop coefficient i, if supported " +
       "by the controller.")
   public double GetDifferentialControlLoopCoefficientI(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -459,6 +478,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   @SimpleFunction(description = "Get the differential control loop coefficient d, if supported " +
       "by the controller.")
   public double GetDifferentialControlLoopCoefficientD(int motor) {
+    checkHardwareDevice();
     if (dcMotorController != null) {
       try {
         if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
@@ -481,14 +501,14 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      dcMotorController = hardwareMap.dcMotorController.get(getDeviceName());
-      if (dcMotorController == null) {
-        deviceNotFound("DcMotorController", hardwareMap.dcMotorController);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    dcMotorController = hardwareMap.dcMotorController.get(getDeviceName());
     return dcMotorController;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("DcMotorController", hardwareMap.dcMotorController);
   }
 
   @Override

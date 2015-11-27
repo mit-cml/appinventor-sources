@@ -83,6 +83,7 @@ public final class FtcServo extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String direction) {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         try {
@@ -123,6 +124,7 @@ public final class FtcServo extends FtcHardwareDevice {
       "Valid values are Direction_FORWARD or Direction_REVERSE.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         Direction direction = servo.getDirection();
@@ -144,6 +146,7 @@ public final class FtcServo extends FtcHardwareDevice {
   @SimpleProperty(description = "The port number.",
       category = PropertyCategory.BEHAVIOR)
   public int PortNumber() {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         return servo.getPortNumber();
@@ -161,6 +164,7 @@ public final class FtcServo extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Position(double position) {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         servo.setPosition(position);
@@ -178,6 +182,7 @@ public final class FtcServo extends FtcHardwareDevice {
   @SimpleProperty(description = "The current servo position, between 0.0 and 1.0.",
       category = PropertyCategory.BEHAVIOR)
   public double Position() {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         return servo.getPosition();
@@ -192,6 +197,7 @@ public final class FtcServo extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Sets the scale range of this servo.")
   public void ScaleRange(double min, double max) {
+    checkHardwareDevice();
     if (servo != null) {
       try {
         servo.scaleRange(min, max);
@@ -209,14 +215,14 @@ public final class FtcServo extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      servo = hardwareMap.servo.get(getDeviceName());
-      if (servo == null) {
-        deviceNotFound("Servo", hardwareMap.servo);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    servo = hardwareMap.servo.get(getDeviceName());
     return servo;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("Servo", hardwareMap.servo);
   }
 
   @Override

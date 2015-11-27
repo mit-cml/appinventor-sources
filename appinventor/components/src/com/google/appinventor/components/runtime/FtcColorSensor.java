@@ -50,6 +50,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Red values detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Red() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.red();
@@ -68,6 +69,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Green values detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Green() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.green();
@@ -86,6 +88,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Blue values detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Blue() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.blue();
@@ -104,6 +107,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The amount of light detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Alpha() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.alpha();
@@ -123,6 +127,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
       "an integer ARGB (alpha, red, green, blue) color.",
       category = PropertyCategory.BEHAVIOR)
   public int ARGB() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.argb();
@@ -137,6 +142,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Enable the LED light.")
   public void EnableLed(boolean enable) {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         colorSensor.enableLed(enable);
@@ -416,6 +422,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void I2cAddress(int newAddress) {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         colorSensor.setI2cAddress(newAddress);
@@ -434,6 +441,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
       "Not all color sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int I2cAddress() {
+    checkHardwareDevice();
     if (colorSensor != null) {
       try {
         return colorSensor.getI2cAddress();
@@ -449,14 +457,14 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      colorSensor = hardwareMap.colorSensor.get(getDeviceName());
-      if (colorSensor == null) {
-        deviceNotFound("ColorSensor", hardwareMap.colorSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    colorSensor = hardwareMap.colorSensor.get(getDeviceName());
     return colorSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("ColorSensor", hardwareMap.colorSensor);
   }
 
   @Override

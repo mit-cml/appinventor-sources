@@ -46,6 +46,7 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The ultrasonic level.",
       category = PropertyCategory.BEHAVIOR)
   public double UltrasonicLevel() {
+    checkHardwareDevice();
     if (ultrasonicSensor != null) {
       try {
         return ultrasonicSensor.getUltrasonicLevel();
@@ -64,6 +65,7 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The Status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (ultrasonicSensor != null) {
       try {
         String status = ultrasonicSensor.status();
@@ -82,14 +84,14 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
-      if (ultrasonicSensor == null) {
-        deviceNotFound("UltrasonicSensor", hardwareMap.ultrasonicSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    ultrasonicSensor = hardwareMap.ultrasonicSensor.get(getDeviceName());
     return ultrasonicSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("UltrasonicSensor", hardwareMap.ultrasonicSensor);
   }
 
   @Override

@@ -43,6 +43,7 @@ public final class FtcI2cDeviceReader extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Initialize this I2C device reader")
   public void Initialize(int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     try {
       if (i2cDeviceReader != null) {
         i2cDevice.deregisterForPortReadyCallback();
@@ -61,6 +62,7 @@ public final class FtcI2cDeviceReader extends FtcHardwareDevice {
   @SimpleFunction(description = "Get a copy of the most recent data read in " +
       "from the I2C device. (byte array)")
   public Object GetReadBuffer() {
+    checkHardwareDevice();
     if (i2cDeviceReader != null) {
       try {
         byte[] copy = i2cDeviceReader.getReadBuffer();
@@ -79,17 +81,17 @@ public final class FtcI2cDeviceReader extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      // We don't instantiate the I2cDeviceReader here because it has the side effect of
-      // registering an I2cPortReadyCallback. Instead, we just get the I2cDevice here and in
-      // Initialize method, we instantiate the I2cDeviceReader.
-      i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
-      if (i2cDevice == null) {
-        deviceNotFound("I2cDeviceReader", hardwareMap.i2cDevice);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    // We don't instantiate the I2cDeviceReader here because it has the side effect of
+    // registering an I2cPortReadyCallback. Instead, we just get the I2cDevice here and in
+    // Initialize method, we instantiate the I2cDeviceReader.
+    i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
     return i2cDevice;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("I2cDeviceReader", hardwareMap.i2cDevice);
   }
 
   @Override

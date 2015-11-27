@@ -401,6 +401,7 @@
                               registeredComponentName :: java.lang.String
                               eventName :: java.lang.String
                               args :: java.lang.Object[]) :: boolean
+           (define-alias FtcInitHardwareDeviceRuntimeException <com.google.appinventor.components.runtime.errors.FtcInitHardwareDeviceRuntimeException>)
            ;; Check that the component object that generated the event
            ;; matches the component object associated with the
            ;; component name that registered the event.  This is
@@ -421,9 +422,12 @@
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
                                  (exception java.lang.Throwable
-                                  (begin
-                                    (if (instance? exception java.lang.InterruptedException)
-                                      (primitive-throw exception)
+                                  (cond
+                                    ((instance? exception FtcInitHardwareDeviceRuntimeException)
+                                      (primitive-throw (exception:getCause)))
+                                    ((instance? exception java.lang.InterruptedException)
+                                      (primitive-throw exception))
+                                    (else
                                       (begin
                                         (android-log-form (exception:getMessage))
 ;;; Comment out the line below to inhibit a stack trace on a RunTimeError

@@ -179,6 +179,7 @@ public class Form extends Activity
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+  private boolean omitExitMenu;
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
@@ -663,6 +664,10 @@ public class Form extends Activity
 
   public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
     onOptionsItemSelectedListeners.add(component);
+  }
+
+  public void omitExitMenu() {
+    omitExitMenu = true;
   }
 
   public Dialog onCreateDialog(int id) {
@@ -1765,8 +1770,9 @@ public class Form extends Activity
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
     // add the menu items
-    // Comment out the next line if we don't want the exit button
-    //addExitButtonToMenu(menu);
+    if (!omitExitMenu) {
+      addExitButtonToMenu(menu);
+    }
     addAboutInfoToMenu(menu);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
