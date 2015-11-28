@@ -270,6 +270,9 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeFtcDeviceInterfaceModuleProperties(componentProperties,
             srcCompVersion);
 
+      } else if (componentType.equals("FtcGamepad")) {
+        srcCompVersion = upgradeFtcGamepadProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("FtcGyroSensor")) {
         srcCompVersion = upgradeFtcGyroSensorProperties(componentProperties, srcCompVersion);
 
@@ -1006,6 +1009,16 @@ public final class YoungAndroidFormUpgrader {
       // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
       // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
+      // No designer properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFtcGamepadProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // - The Type property was added.
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }

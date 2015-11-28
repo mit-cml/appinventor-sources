@@ -1494,7 +1494,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcGamepad": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // The Type property was added.
+    2: "noUpgrade"
 
   }, // End FtcGamepad upgraders
 

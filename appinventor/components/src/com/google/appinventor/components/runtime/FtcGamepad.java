@@ -539,6 +539,28 @@ public final class FtcGamepad extends AndroidNonvisibleComponent
     return "";
   }
 
+  /**
+   * Type property getter.
+   */
+  @SimpleProperty(description = "The type of gamepad.",
+      category = PropertyCategory.BEHAVIOR)
+  public String Type() {
+    try {
+      Gamepad gamepad = getGamepad();
+      if (gamepad != null) {
+        String type = gamepad.type();
+        if (type != null) {
+          return type;
+        }
+      }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Type",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+    return "";
+  }
+
   @SimpleFunction(description = "Return text representing the state of the gamepad.")
   public String ToString() {
     try {

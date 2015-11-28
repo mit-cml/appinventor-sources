@@ -409,8 +409,10 @@ public class YaVersion {
   // - GyroscopeSensor component was added
   // For YOUNG_ANDROID_VERSION 144:
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 145:
+  // - The FtcGamepad component was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 144;
+  public static final int YOUNG_ANDROID_VERSION = 145;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -751,7 +753,9 @@ public class YaVersion {
 
   public static final int FTC_ELAPSED_TIME_COMPONENT_VERSION = 1;
 
-  public static final int FTC_GAMEPAD_COMPONENT_VERSION = 1;
+  // For FTC_GAMEPAD_COMPONENT_VERSION 2:
+  // - The Type method was added.
+  public static final int FTC_GAMEPAD_COMPONENT_VERSION = 2;
 
   // For FTC_GYRO_SENSOR_COMPONENT_VERSION 2:
   // - The Calibrate method was added.

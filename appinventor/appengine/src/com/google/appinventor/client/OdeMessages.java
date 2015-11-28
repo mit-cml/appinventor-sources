@@ -3674,6 +3674,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TimeProperties();
 
+  @DefaultMessage("Type")
+  @Description("")
+  String TypeProperties();
+
   @DefaultMessage("UltrasonicLevel")
   @Description("")
   String UltrasonicLevelProperties();
