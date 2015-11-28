@@ -436,12 +436,12 @@ public final class Compiler {
         if (isMain) {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
-        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
-          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
-        }
         out.write("      </intent-filter>\n");
 
         if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
+          out.write("      </intent-filter>\n");
           out.write("      <meta-data\n");
           out.write("        android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"\n");
           out.write("        android:resource=\"@xml/device_filter\" />\n");

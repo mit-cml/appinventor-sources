@@ -17,8 +17,8 @@ import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
-import com.qualcomm.hardware.MatrixDcMotorController;
-import com.qualcomm.hardware.ModernRoboticsUsbDcMotorController;
+import com.qualcomm.hardware.matrix.MatrixDcMotorController;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;

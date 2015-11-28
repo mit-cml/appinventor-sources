@@ -15,7 +15,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.hardware.HiTechnicNxtTouchSensorMultiplexer;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensorMultiplexer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensorMultiplexer;
 
