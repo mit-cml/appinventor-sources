@@ -5,11 +5,8 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import com.google.appengine.api.search.Cursor;
 import com.google.appengine.api.search.DeleteException;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
@@ -29,6 +26,10 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.googlecode.objectify.NotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // see sample at https://developers.google.com/appengine/docs/java/search/
 
@@ -39,7 +40,8 @@ public class GallerySearchIndex {
   private final transient GalleryStorageIo galleryStorageIo =
       GalleryStorageIoInstanceHolder.INSTANCE;
   private static volatile GallerySearchIndex  instance= null;
-
+  private static Cursor searchCursor;
+  private final int appResultMaxAccuracy = 100;
   /**
    * The default constructor of GallerySearchIndex
    */
@@ -110,17 +112,25 @@ public class GallerySearchIndex {
     //TODO page sliced has not implemented yet
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     final Result<Integer> size = new Result<Integer>();
+
     try {
+      //New search
+      if (start == 0 || searchCursor == null){
+        searchCursor = Cursor.newBuilder().build();
+      }
       Query query = Query.newBuilder()
-          .setOptions(QueryOptions.newBuilder().
-              //setLimit(10).
+          .setOptions(QueryOptions.newBuilder()
+                  .setCursor(searchCursor)
+                  .setLimit(count)
+                  .setNumberFoundAccuracy(appResultMaxAccuracy)
               // for deployed apps, uncomment the line below to demo snippeting.
               // This will not work on the dev_appserver.
               // setFieldsToSnippet("content").
-              build())
+              .build())
           .build(searchWords);
       LOG.info("Sending query " + query);
       Results<ScoredDocument> results = getIndex().search(query);
+      searchCursor = results.getCursor();
 
       // Iterate over the documents in the results
       for (ScoredDocument document : results) {
@@ -130,9 +140,6 @@ public class GallerySearchIndex {
       // Iterate over the documents in the results
       int index = 0;
       for (ScoredDocument document : results) {
-        if((index++) < start) continue;
-        if(count == 0) break;
-        count--;
         try{
           GalleryApp app = galleryStorageIo.getGalleryApp(Long.parseLong(document.getId()));
           apps.add(app);
