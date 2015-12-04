@@ -179,7 +179,7 @@ public class StoredData {
 
     // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
     // GCS file name (sans bucket).
-    Boolean isGCS;
+    Boolean isGCS = false;
 
     // The GCS filename, sans bucket name
     String gcsName;
