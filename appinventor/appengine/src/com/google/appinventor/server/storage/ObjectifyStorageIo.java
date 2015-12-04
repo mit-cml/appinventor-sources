@@ -594,7 +594,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       }, true);
     } catch (ObjectifyException e) {
       for (FileData addedFile : addedFiles) {
-        if (addedFile.isGCS) {  // Do something
+        if (isTrue(addedFile.isGCS)) {  // Do something
           if (addedFile.gcsName != null) {
             try {
               gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, addedFile.gcsName));
@@ -663,7 +663,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId);
           Query<FileData> fdq = datastore.query(FileData.class).ancestor(projectKey);
           for (FileData fd: fdq) {
-            if (fd.isGCS) {
+            if (isTrue(fd.isGCS)) {
               gcsPaths.add(fd.gcsName);
             } else if (fd.isBlob) {
               blobKeys.add(fd.blobKey);
@@ -1470,7 +1470,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.isBlob = false;  // in case we are converting from a blob
             fd.blobstorePath = null;
           } else {
-            if (fd.isGCS) {     // Was a GCS file, must have gotten smaller
+            if (isTrue(fd.isGCS)) {     // Was a GCS file, must have gotten smaller
               try {             // and is now stored in the data store
                 gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
               } catch (IOException e) {
@@ -1588,7 +1588,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
             oldBlobKeyString.t = fileData.blobKey;
-            if (fileData.isGCS) {
+            if (isTrue(fileData.isGCS)) {
               oldgcsName.t = fileData.gcsName;
             }
           }
@@ -1677,7 +1677,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
-      if (fileData.isGCS) {     // It's in the Cloud Store
+      if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store
         try {
           int count;
           boolean npfHappened = false;
@@ -1879,7 +1879,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
           }
-        } else if (fd.isGCS) {
+        } else if (isTrue(fd.isGCS)) {
           try {
             int count;
             boolean npfHappened = false;
@@ -2332,7 +2332,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       fd = datastore.find(fileKey);
     }
     if (fd != null) {
-      return fd.isGCS;
+      return isTrue(fd.isGCS);
     } else {
       return false;
     }
@@ -2355,7 +2355,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   // layer to the client code which will put up a dialog box for the user to review
   // See Ode.java for more information
   private void checkForBlocksTruncation(FileData fd) throws ObjectifyException {
-    if (fd.isBlob || fd.isGCS || fd.content.length > 120)
+    if (fd.isBlob || isTrue(fd.isGCS) || fd.content.length > 120)
       throw new ObjectifyException("BlocksTruncated"); // Hack
     // I'm avoiding having to modify every use of runJobWithRetries to handle a new
     // exception, so we use this dodge.
@@ -2414,7 +2414,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (useGcs) {         // Let's convert by just reading it!
             downloadRawFile(userId, projectId, fd.fileName);
           }
-        } else if (fd.isGCS) {
+        } else if (isTrue(fd.isGCS)) {
           if (!useGcs) {        // Let's downgrade by just reading it!
             downloadRawFile(userId, projectId, fd.fileName);
           }
@@ -2466,6 +2466,14 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
     return result.t;
+  }
+
+  private boolean isTrue(Boolean b) {
+    if (b != null && b) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }
