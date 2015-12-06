@@ -409,7 +409,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -430,7 +430,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             settings.t = "";
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -513,7 +513,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -555,7 +555,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId.t);
           for (TextFile file : project.getSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE,
+              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,
                   file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
             } catch (IOException e) { // GCS throws this
               throw CrashReport.createAndLogError(LOG, null,
@@ -564,7 +564,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           for (RawFile file : project.getRawSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, file.getFileName(),
+              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId, file.getFileName(),
                   file.getContent()));
             } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
@@ -619,12 +619,13 @@ public class ObjectifyStorageIo implements  StorageIo {
    *  the database.
    */
   private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
-    String fileName, byte[] content) throws ObjectifyException, IOException {
+    String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
     validateGCS();
     FileData file = new FileData();
     file.fileName = fileName;
     file.projectKey = projectKey;
     file.role = role;
+    file.userId = userId;
     if (useGCSforFile(fileName, content.length)) {
       file.isGCS = true;
       file.gcsName = makeGCSfileName(fileName, projectKey.getId());
@@ -740,7 +741,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             projects.add(upd.projectId);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -750,11 +751,6 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String loadProjectSettings(final String userId, final long projectId) {
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
     final Result<String> settings = new Result<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -767,7 +763,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             settings.t = "";
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -788,7 +784,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(pd);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -832,7 +828,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             projectData.t = null;
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -861,7 +857,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             projectName.t = "";
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -894,11 +890,6 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String getProjectHistory(final String userId, final long projectId) {
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
     final Result<String> projectHistory = new Result<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1039,7 +1030,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             fileList.add(ufd.fileName);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -1164,17 +1155,12 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void addSourceFilesToProject(final String userId, final long projectId,
-      final boolean changeModDate, final String... fileNames) {
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
+    final boolean changeModDate, final String... fileNames) {
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, fileNames);
+          addFilesToProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1185,17 +1171,12 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public void addOutputFilesToProject(final String userId, final long projectId,
-      final String... fileNames) {
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
+    final String... fileNames) {
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, FileData.RoleEnum.TARGET, false, fileNames);
+          addFilesToProject(datastore, projectId, FileData.RoleEnum.TARGET, false, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1205,12 +1186,13 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   private void addFilesToProject(Objectify datastore, long projectId, FileData.RoleEnum role,
-      boolean changeModDate, String... fileNames) {
+    boolean changeModDate, String userId, String... fileNames) {
     List<FileData> addedFiles = new ArrayList<FileData>();
     Key<ProjectData> projectKey = projectKey(projectId);
     for (String fileName : fileNames) {
       FileData fd = createProjectFile(datastore, projectKey, role, fileName);
       if (fd != null) {
+        fd.userId = userId;
         addedFiles.add(fd);
       }
     }
@@ -1295,11 +1277,6 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public List<String> getProjectSourceFiles(final String userId, final long projectId) {
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
     final Result<List<String>> result = new Result<List<String>>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1307,7 +1284,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void run(Objectify datastore) {
           result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.SOURCE);
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -1317,11 +1294,6 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public List<String> getProjectOutputFiles(final String userId, final long projectId) {
-   if (!getProjects(userId).contains(projectId)) {
-     throw CrashReport.createAndLogError(LOG, null,
-         collectUserProjectErrorInfo(userId, projectId),
-         new UnauthorizedAccessException(userId, projectId, null));
-   }
    final Result<List<String>> result = new Result<List<String>>();
    try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1329,7 +1301,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void run(Objectify datastore) {
           result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.TARGET);
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
@@ -1439,9 +1411,18 @@ public class ObjectifyStorageIo implements  StorageIo {
           // instead of blowing up, just create a <Screen>.yail file
           if (fd == null && fileName.endsWith(".yail")){
             fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
+            fd.userId = userId;
           }
 
           Preconditions.checkState(fd != null);
+
+          if (fd.userId != null && !fd.userId.equals("")) {
+            if (!fd.userId.equals(userId)) {
+              throw CrashReport.createAndLogError(LOG, null,
+                collectUserProjectErrorInfo(userId, projectId),
+                new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
 
           if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
             if (!force) {            // force is true if we *really* want to save it!
@@ -1502,6 +1483,10 @@ public class ObjectifyStorageIo implements  StorageIo {
                     collectProjectErrorInfo(userId, projectId, fileName + "(backup)"), e);
               }
             }
+          }
+          // Old file not marked with ownership, mark it now
+          if (fd.userId == null || fd.userId.equals("")) {
+            fd.userId = userId;
           }
           datastore.put(fd);
           memcache.put(key.getString(), fd); // Store the updated data in memcache
@@ -1571,11 +1556,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public long deleteFile(final String userId, final long projectId, final String fileName) {
     validateGCS();
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
     final Result<Long> modTime = new Result<Long>();
     final Result<String> oldBlobKeyString = new Result<String>();
     final Result<String> oldgcsName = new Result<String>();
@@ -1587,6 +1567,13 @@ public class ObjectifyStorageIo implements  StorageIo {
           memcache.delete(fileKey.getString());
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
+            if (fileData.userId != null && !fileData.userId.equals("")) {
+              if (!fileData.userId.equals(userId)) {
+                throw CrashReport.createAndLogError(LOG, null,
+                  collectUserProjectErrorInfo(userId, projectId),
+                  new UnauthorizedAccessException(userId, projectId, null));
+              }
+            }
             oldBlobKeyString.t = fileData.blobKey;
             if (isTrue(fileData.isGCS)) {
               oldgcsName.t = fileData.gcsName;
@@ -1652,11 +1639,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
     validateGCS();
-    if (!getProjects(userId).contains(projectId)) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId),
-          new UnauthorizedAccessException(userId, projectId, null));
-    }
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();
     try {
@@ -1677,6 +1659,13 @@ public class ObjectifyStorageIo implements  StorageIo {
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
+      if (fileData.userId != null && !fileData.userId.equals("")) {
+        if (!fileData.userId.equals(userId)) {
+          throw CrashReport.createAndLogError(LOG, null,
+            collectUserProjectErrorInfo(userId, projectId),
+            new UnauthorizedAccessException(userId, projectId, null));
+        }
+      }
       if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store
         try {
           int count;
@@ -1862,7 +1851,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
           }
         }
-      }, true);
+      }, false);
 
       // Process the file contents outside of the job since we can't read
       // blobs in the job.
@@ -1991,7 +1980,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                         StorageUtil.ANDROID_KEYSTORE_FILENAME), e);
               }
             }
-        }, true);
+        }, false);
       } catch (ObjectifyException e) {
         throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
       }
@@ -2022,7 +2011,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             motd.t = new Motd(MOTD_ID, "Oops, no message of the day!", null);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
@@ -2109,7 +2098,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             data.projectId = projectId;
             datastore.put(data);
           }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
