@@ -792,31 +792,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          datastore = ObjectifyService.begin();
-          int num = 0;
-          for (GalleryAppData appData : datastore.query(GalleryAppData.class).list()) {
-            Key<GalleryAppData> galleryKey = galleryKey(appData.id);
-            num = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
-            appData.numLikes = num;
-            datastore.put(appData);
-            LOG.info("salvage on gallerId:" + appData.id + ", total likes:" + appData.numLikes);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "error in galleryStorageIo.salvageAllGalleryApps", e);
-    }
-  }
-  /**
    * save the attribution of a gallery app
    *
    * @param galleryId

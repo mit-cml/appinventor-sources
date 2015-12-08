@@ -375,14 +375,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    galleryStorageIo.salvageAllGalleryApps();
-  }
-
-  /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
    * @param report report
