@@ -1808,6 +1808,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                                                  final boolean includeProjectHistory,
                                                  final boolean includeAndroidKeystore,
                                                  @Nullable String zipName,
+                                                 final boolean includeYail,
                                                  final boolean fatalError) throws IOException {
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
@@ -1837,6 +1838,16 @@ public class ObjectifyStorageIo implements  StorageIo {
             if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
               if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
                 // Skip legacy remix history files that were previous stored with the project
+                continue;
+              }
+              if (fileName.endsWith(".yail") && !includeYail) {
+                // Don't include YAIL files when exporting projects
+                // includeYail will be set to true when we are exporting the source
+                // to send to the buildserver or when the person exporting
+                // a project is an Admin (for debugging).
+                // Otherwise Yail files are confusing cruft. In the case of
+                // the Firebase Component they may contain secrets which we would
+                // rather not have leak into an export .aia file or into the Gallery
                 continue;
               }
               fileData.add(fd);
