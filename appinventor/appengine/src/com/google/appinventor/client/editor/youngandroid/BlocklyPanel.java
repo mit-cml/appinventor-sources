@@ -552,7 +552,7 @@ public class BlocklyPanel extends HTMLPanel {
   // [lyn, 2014/10/28] Handle these cases
   public String getFormJson() {
     if (blocksInited(formName)) {
-      return myBlocksEditor.encodeFormAsJsonString();
+      return myBlocksEditor.encodeFormAsJsonString(true);
     } else {
       // in case someone clicks Save before the blocks area is inited
       String formJson = pendingFormJsonMap.get(formName);
