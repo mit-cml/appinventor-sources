@@ -236,7 +236,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public String getRawFileContent() {
-    String encodedProperties = encodeFormAsJsonString();
+    String encodedProperties = encodeFormAsJsonString(false);
     JSONObject propertiesObject = JSON_PARSER.parse(encodedProperties).asObject();
     return YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
   }
@@ -564,13 +564,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Encodes the form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
    * to send the form info to the blockly world during code generation.
    */
-  protected String encodeFormAsJsonString() {
+  protected String encodeFormAsJsonString(boolean forYail) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     sb.append("\"YaVersion\":\"").append(YaVersion.YOUNG_ANDROID_VERSION).append("\",");
     sb.append("\"Source\":\"Form\",");
     sb.append("\"Properties\":");
-    encodeComponentProperties(form, sb);
+    encodeComponentProperties(form, sb, forYail);
     sb.append("}");
     return sb.toString();
   }
@@ -584,7 +584,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   /*
    * Encodes a component and its properties into a JSON encoded string.
    */
-  private void encodeComponentProperties(MockComponent component, StringBuilder sb) {
+  private void encodeComponentProperties(MockComponent component, StringBuilder sb, boolean forYail) {
     // The component encoding starts with component name and type
     String componentType = component.getType();
     EditableProperties properties = component.getProperties();
@@ -599,7 +599,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Next the actual component properties
     //
     // NOTE: It is important that these be encoded before any children components.
-    String propertiesString = properties.encodeAsPairs();
+    String propertiesString = properties.encodeAsPairs(forYail);
     if (propertiesString.length() > 0) {
       sb.append(',');
       sb.append(propertiesString);
@@ -612,7 +612,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       String separator = "";
       for (MockComponent child : children) {
         sb.append(separator);
-        encodeComponentProperties(child, sb);
+        encodeComponentProperties(child, sb, forYail);
         separator = ",";
       }
       sb.append(']');
