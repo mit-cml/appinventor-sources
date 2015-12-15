@@ -49,7 +49,7 @@ public final class EditableProperty extends Property {
   private final EditableProperties properties;
 
   // Type of property
-  private final int type;
+  private int type;
 
   // Property editor for use in properties panel
   private final PropertyEditor editor;
@@ -157,4 +157,13 @@ public final class EditableProperty extends Property {
   final void orphan() {
     editor.orphan();
   }
+
+  public int getType() {
+    return type;
+  }
+
+  public void setType(int aType) {
+    this.type = aType;
+  }
+
 }
