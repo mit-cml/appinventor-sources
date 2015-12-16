@@ -37,7 +37,7 @@ public final class EditableProperty extends Property {
    * Properties of this type will be included in a yail generation
    * even if they are not persisted. This is used for computed properties
    * which aren't stored, but which must be passed to a component both
-   * in the Companion and went built. Example: The FirebaseToken and
+   * in the Companion and when built. Example: The FirebaseToken and
    * deveoperId which are computed on the fly by MockFirebaseDB but
    * which are not persisted for security reasons. Yet we still need
    * to output them in the Yail.
