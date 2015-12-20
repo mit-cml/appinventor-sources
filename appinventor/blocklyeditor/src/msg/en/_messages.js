@@ -68,6 +68,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.BACKPACK_EMPTY = 'Empty the Backpack';
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = 'Are you sure you want to empty the backpack?';
     Blockly.Msg.BACKPACK_DOC_TITLE = "Backpack Information";
+    Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION = "Show Backpack documentation";
     Blockly.Msg.BACKPACK_DOCUMENTATION = "The Backpack is a copy/paste feature. It allows you to copy blocks from one project or screen " +
    " and paste them into another project or screen. " +
    " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
