@@ -1428,7 +1428,7 @@ public interface OdeMessages extends Messages {
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
-      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "clicking above on \"Help\", then \"Troubleshooting\", and then \"Keystores and Signing " +
       "of Applications\"\n\n" +
       "There is no undo for overwriting your keystore file.")
   @Description("Confirmation message shown when keystore is about to be overwritten.")
@@ -1447,7 +1447,7 @@ public interface OdeMessages extends Messages {
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
-      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "clicking above on \"Help\", then \"Troubleshooting\", and then \"Keystores and Signing " +
       "of Applications\"\n\n" +
       "There is no undo for deleting your keystore file.")
   @Description("Confirmation message for delete keystore")
