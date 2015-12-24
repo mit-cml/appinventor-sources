@@ -5409,18 +5409,19 @@ public interface OdeMessages extends Messages {
   String blocksTruncatedDialogText();
 
   @DefaultMessage("<p>It appears that <b>" + "%1" +
-                "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
-                "the result of a bug in our system.</p><p>" +
-                "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
-                "<li>Select \"No, Do Not Save\" below to restore the previously saved version</li></ul></p>")
+      "</b> has had all blocks removed.</p><p>" +
+      "<ul><li>You can save the enpty screen, and then all those blocks will be " +
+      "permanently gone from the project.</li>" +
+      "<li>Alternatively, you can restore the previously saved version " +
+      "of the project.</li></ul></p>")
   @Description("")
   String blocksTruncatedDialogMessage();
 
-  @DefaultMessage("OK, save the empty screen")
+  @DefaultMessage("Save the empty screen now.")
   @Description("")
   String blocksTruncatedDialogButtonSave();
 
-  @DefaultMessage("No, Do Not Save")
+  @DefaultMessage("Restore the previous version.")
   @Description("")
   String blocksTruncatedDialogButtonNoSave();
 
