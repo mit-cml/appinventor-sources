@@ -76,8 +76,8 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   public ListPicker(ComponentContainer container) {
     super(container);
     items = new YailList();
-    selection = "";
-    selectionIndex = 0;
+    // initialize selectionIndex which also sets selection
+    SelectionIndex(0);
     itemTextColor = DEFAULT_ITEM_TEXT_COLOR;
     itemBackgroundColor = DEFAULT_ITEM_BACKGROUND_COLOR;
 
