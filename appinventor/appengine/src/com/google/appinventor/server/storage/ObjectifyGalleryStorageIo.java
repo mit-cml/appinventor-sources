@@ -9,6 +9,7 @@ package com.google.appinventor.server.storage;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -610,10 +611,19 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
-            // Forge the like data entry
             Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+
+            // Make sure it isn't already liked (people have subverted the client
+            // based checks!)
+            for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
+              if(likeData.userId.equals(userId)){
+                return;         // We're done, already liked.
+              }
+            }
+
+            // Forge the like data entry
             GalleryAppLikeData likeData = new GalleryAppLikeData();
-            likeData.galleryKey = galleryKey(galleryId);
+            likeData.galleryKey = galleryKey;
             likeData.userId = userId;
             datastore.put(likeData);
 
@@ -653,7 +663,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
             for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
               if(likeData.userId.equals(userId)){
                 datastore.delete(likeData);
-                break;
+                // break;
+                // We don't break because there might be more then one likeData object for this
+                // person
               }
             }
             numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
@@ -749,6 +761,23 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           int num = 0;
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          // We need to extract a unique set of userId's for the Likes of this app
+          // Because of past bugs and abuse, a user can Like an app more then once
+          // So we fix that here...
+          TreeMap<String,Boolean> likeTree = new TreeMap();
+          for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
+            likeTree.put(likeData.userId, true);
+          }
+          for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
+            datastore.delete(likeData);
+          }
+          for (String treeUserId : likeTree.keySet()) {
+            GalleryAppLikeData likeData = new GalleryAppLikeData();
+            likeData.userId = treeUserId;
+            likeData.galleryKey = galleryKey;
+            datastore.put(likeData);
+          }
+
           num = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
           GalleryAppData galleryAppData = datastore.find(galleryKey);
           galleryAppData.numLikes = num;
@@ -762,31 +791,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-  /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          datastore = ObjectifyService.begin();
-          int num = 0;
-          for (GalleryAppData appData : datastore.query(GalleryAppData.class).list()) {
-            Key<GalleryAppData> galleryKey = galleryKey(appData.id);
-            num = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
-            appData.numLikes = num;
-            datastore.put(appData);
-            LOG.info("salvage on gallerId:" + appData.id + ", total likes:" + appData.numLikes);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "error in galleryStorageIo.salvageAllGalleryApps", e);
-    }
-  }
   /**
    * save the attribution of a gallery app
    *
