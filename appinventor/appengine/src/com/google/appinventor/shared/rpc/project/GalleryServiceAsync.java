@@ -154,11 +154,6 @@ public interface GalleryServiceAsync {
   void salvageGalleryApp(long galleryId, AsyncCallback<java.lang.Void> callback);
 
   /**
-   * salvage all gallery apps
-   */
-  void salvageAllGalleryApps(AsyncCallback<java.lang.Void> callback);
-
-  /**
    * @see @link{@link GalleryService#isLikedByUser(long)
    */
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);

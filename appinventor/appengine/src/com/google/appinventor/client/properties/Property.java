@@ -83,6 +83,10 @@ public class Property {
     return true;
   }
 
+  protected boolean isYail() {
+    return true;
+  }
+
   /**
    * Resets the value the property to its default value.
    */
