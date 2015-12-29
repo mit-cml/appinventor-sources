@@ -416,9 +416,9 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT = '텍스트1이 텍스트2보다 사전 순서 상 작은지 검사합니다.\n 만약 한 텍스트가 다른 텍스트의 접두사이면, 더 짧은 텍스트가 작은 것으로 간주됩니다. 대문자는 소문자보다 큽니다.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL = '텍스트 문자열이 동일한지 검사합니다.\n 즉, 똑같은 문자들이 똑같은 순서인지 확인합니다. 이는 보통의 = 와는 다릅니다.\n 예를 들어 텍스트 문자열이 숫자인 경우: 123과 0123은 = 이지만\n 텍스트로서는 =. 입니다.';
     Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT = '텍스트1이 텍스트2보다 사전 순서 상 큰지 검사합니다.\n 만약 한 텍스트가 다른 텍스트의 접두사이면, 더 짧은 텍스트가 작은 것으로 간주됩니다. 대문자는 소문자보다 큽니다.';
-    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_TOOLTIP = '입력된 텍스트를 읽기 어려운 형태의 새로운 텍스트 블록으로 만듭니다. \n 이는 앱에 보안이 중요한 정보를 포함하여 배포해야 할 때 사용하세요. 예를 들면 API 키 같은 경우에요. \n 경고: 전문가 수준에서는 매우 낮은 수준의 보안만 제공합니다.';
-    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE = '텍스트 난독화';
-    Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#obsfucatetext';
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP = '입력된 텍스트를 읽기 어려운 형태의 새로운 텍스트 블록으로 만듭니다. \n 이는 앱에 보안이 중요한 정보를 포함하여 배포해야 할 때 사용하세요. 예를 들면 API 키 같은 경우에요. \n 경고: 전문가 수준에서는 매우 낮은 수준의 보안만 제공합니다.';
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE = '텍스트 난독화';
+    Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#obfuscatetext';
     Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE = '대문자';
     Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE = '소문자';
     Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE = '대문자로 변환한 텍스트 문자열의 복사본을 반환합니다.';
