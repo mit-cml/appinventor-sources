@@ -1421,7 +1421,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "Image": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: The RotationAngle property was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade"
 
   }, // End Image upgraders
 

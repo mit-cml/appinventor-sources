@@ -142,12 +142,13 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
-  //AccelerometerSensor Errors
+  // AccelerometerSensor Errors
   public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
 
   //Sharing Errors
@@ -187,8 +188,10 @@ public final class ErrorMessages {
 
   // 2901-2999 are reserved for FIRST Tech Challenge.
 
-  // Please start the next group of error numbers at 3001.
+  // Image errors
+  public static final int ERROR_IMAGE_CANNOT_ROTATE = 3001;
 
+  // Start the next group of errors at 3100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -466,6 +469,9 @@ public final class ErrorMessages {
        "TextToSpeech is not yet ready to perform this operation");
     // AndroidViewComponent errors
     errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
+    // Image errors
+    errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
+        "The version of Android on this device does not support image rotation.");
   }
 
   private ErrorMessages() {

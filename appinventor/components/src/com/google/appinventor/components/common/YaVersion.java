@@ -370,8 +370,10 @@ public class YaVersion {
   // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
   // For YOUNG_ANDROID_VERSION 146:
   // - CAMERA_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 147:
+  // - IMAGE_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 146;
+  public static final int YOUNG_ANDROID_VERSION = 147;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -677,7 +679,9 @@ public class YaVersion {
   // - Added background color & image
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
 
-  public static final int IMAGE_COMPONENT_VERSION = 1;
+  // For IMAGE_COMPONENT_VERSION 2:
+  // - The RotationAngle property was added.
+  public static final int IMAGE_COMPONENT_VERSION = 2;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

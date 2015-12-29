@@ -2836,6 +2836,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RotatesProperties();
 
+  @DefaultMessage("RotationAngle")
+  @Description("")
+  String RotationAngleProperties();
+
   @DefaultMessage("Selection")
   @Description("")
   String SelectionProperties();
