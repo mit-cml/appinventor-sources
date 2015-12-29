@@ -260,6 +260,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("HorizontalArrangement")) {
         srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Image")) {
+        srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ImagePicker")) {
         srcCompVersion = upgradeImagePickerProperties(componentProperties, srcCompVersion);
 
@@ -908,6 +911,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeImageProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The RotationAngle property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
