@@ -366,8 +366,10 @@ public class YaVersion {
   // - GyroscopeSensor component was added
   // For YOUNG_ANDROID_VERSION 144:
   // - Reserved for FIRST Tech Challenge.
+  // For YOUNG_ANDROID_VERSION 145:
+  // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
 
-  public static final int YOUNG_ANDROID_VERSION = 144;
+  public static final int YOUNG_ANDROID_VERSION = 145;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -425,7 +427,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 19:
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  // For BLOCKS_LANGUAGE_VERSION 20:
+  // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
+  public static final int BLOCKS_LANGUAGE_VERSION = 20;
 
   // ................................. Component Version Numbers ..................................
 

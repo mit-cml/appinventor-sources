@@ -766,6 +766,29 @@ Blockly.Versioning.changeEventParameterName = function(componentType, eventName,
 };
 
 /**
+ * Rename all blocks with oldType to newType
+ * @param oldBlockType: string name of old block type
+ * @param newBlockType: string name of new block type
+ *
+ * @author fturbak@wellesley.edu (Lyn Turbak)
+ */
+
+Blockly.Versioning.renameBlockType = function(oldBlockType, newBlockType) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var i = 0, im = allBlocks.length; i < im; i++) {
+      var blockElem = allBlocks[i];
+      var blockType = blockElem.getAttribute('type');
+      if (blockType == oldBlockType) {
+        blockElem.setAttribute('type', newBlockType);
+      }
+    }
+    return dom; // Return the modified dom, as required by the upgrading structure.
+  }
+}
+
+/**
  * @param componentType: name of component type for method
  * @param methodName: name of method
  * @argumentIndex: index of the default argument block
@@ -1584,7 +1607,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // see these new options.  (Hal is not sure why not, but it seems to work.)
     // The math convert block was added
     // No language blocks need to be modified to upgrade to version 16.
-    19: "noUpgrade"
+    19: "noUpgrade",
+
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 20// Rename 'obsufcated_text' text block to 'obfuscated_text'
+    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text')
+
 
   }, // End Language upgraders
 
