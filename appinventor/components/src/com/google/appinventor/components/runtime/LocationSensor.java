@@ -72,7 +72,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   private class MyLocationListener implements LocationListener {
     @Override
     // This sets fields longitude, latitude, altitude, hasLocationData, and
-    // hasAltitude, then calls LocationSensor.LocationChanged(), alll in the
+    // hasAltitude, then calls LocationSensor.LocationChanged(), all in the
     // enclosing class LocationSensor.
     public void onLocationChanged(Location location) {
       lastLocation = location;
@@ -84,8 +84,13 @@ public class LocationSensor extends AndroidNonvisibleComponent
         hasAltitude = true;
         altitude = location.getAltitude();
       }
-      hasLocationData = true;
-      LocationChanged(latitude, longitude, altitude);
+
+      // By default Location.latitude == Location.longitude == 0.
+      // So we want to ignore that case rather than generating a changed event.
+      if (longitude != UNKNOWN_VALUE || latitude != UNKNOWN_VALUE) {
+        hasLocationData = true;
+        LocationChanged(latitude, longitude, altitude);
+      }
     }
 
     @Override
