@@ -358,8 +358,9 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 140:
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 3.
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 140;
+  // For YOUNG_ANDROID_VERSION 141:
+  // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
+  public static final int YOUNG_ANDROID_VERSION = 141;
 
   // ............................... Blocks Language Version Number ...............................
 
