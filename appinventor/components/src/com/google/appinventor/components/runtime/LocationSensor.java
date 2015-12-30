@@ -87,7 +87,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
       // By default Location.latitude == Location.longitude == 0.
       // So we want to ignore that case rather than generating a changed event.
-      if (longitude != UNKNOWN_VALUE && latitude != UNKNOWN_VALUE) {
+      if (longitude != UNKNOWN_VALUE || latitude != UNKNOWN_VALUE) {
 	hasLocationData = true;
 	LocationChanged(latitude, longitude, altitude);
       }
