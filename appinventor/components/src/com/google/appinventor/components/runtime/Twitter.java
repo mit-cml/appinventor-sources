@@ -158,7 +158,13 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * Logs in to Twitter with a username and password.
    */
-  @Deprecated
+  // @Deprecated
+  // [lyn, 2015/12/30] Removed @Deprecated annotation for this method, which was deprecated in AI1
+  // by setting userVisible = false. The @Deprecated annotation should only be used for
+  // events/methods/properties deprecated in AI2. The problem with using it for methods deprecated
+  // in AI1 is that the names of such methods no longer exist in OdeMessages.java, but the
+  // AI2 bad blocks mechanism (which uses the @Deprecated annotation) requires the method names
+  // to exist and be translatable so that they can appear in a block marked bad.
   @SimpleFunction(userVisible = false, description = "Twitter's API no longer supports login via username and "
       + "password. Use the Authorize call instead.")
   public void Login(String username, String password) {
@@ -218,7 +224,8 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    * TwitPicAPIkey property getter method.
    */
   @Deprecated
-  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty( // [lyn 2015/12/30] removed userVisible = false, which is superseded by @Deprecated
+      category = PropertyCategory.BEHAVIOR)
   public String TwitPic_API_Key() {
      return TwitPic_API_Key;
   }
@@ -233,7 +240,8 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   @Deprecated
   // Hide the deprecated property from the Designer
   //@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR,
+  @SimpleProperty( // [lyn 2015/12/30] removed userVisible = false, which is superseded by @Deprecated
+      category = PropertyCategory.BEHAVIOR,
       description="The API Key for image uploading, provided by TwitPic.")
   public void TwitPic_API_Key(String TwitPic_API_Key) {
     this.TwitPic_API_Key = TwitPic_API_Key;
