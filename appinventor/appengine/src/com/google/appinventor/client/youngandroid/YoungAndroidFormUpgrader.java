@@ -18,6 +18,12 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -606,6 +612,15 @@ public final class YoungAndroidFormUpgrader {
       // The UseFront property was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The UseFront property was removed, it isn't supported in
+      // newer versions of Android
+      if (componentProperties.containsKey("UseFront")) {
+        componentProperties.remove("UseFront");
+        upgradeWarnDialog(MESSAGES.useFrontDeprecated());
+      }
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1394,5 +1409,27 @@ public final class YoungAndroidFormUpgrader {
     }
   }
 
+  private static void upgradeWarnDialog(String aMessage) {
+    final DialogBox dialogBox = new DialogBox(false, true);
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.warningDialogTitle());
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    final HTML message = new HTML(aMessage);
+    message.setStyleName("DialogBox-message");
+    VerticalPanel vPanel = new VerticalPanel();
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+        @Override
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    vPanel.add(message);
+    vPanel.add(okButton);
+    dialogBox.setWidget(vPanel);
+    dialogBox.center();
+    dialogBox.show();
+  }
 
 }

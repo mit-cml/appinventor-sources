@@ -5630,4 +5630,12 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PostMediaMethods();
 
+  @DefaultMessage("Warning!")
+  @Description("")
+  String warningDialogTitle();
+
+  @DefaultMessage("The useFront property has been removed from your Camera Component")
+  @Description("")
+  String useFrontDeprecated();
+
 }

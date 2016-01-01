@@ -368,8 +368,10 @@ public class YaVersion {
   // - Reserved for FIRST Tech Challenge.
   // For YOUNG_ANDROID_VERSION 145:
   // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
+  // For YOUNG_ANDROID_VERSION 146:
+  // - CAMERA_COMPONENT_VERSION was incremented to 3.
 
-  public static final int YOUNG_ANDROID_VERSION = 145;
+  public static final int YOUNG_ANDROID_VERSION = 146;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -544,7 +546,9 @@ public class YaVersion {
 
   // For CAMERA_COMPONENT_VERSION 2:
   // - The UseFront property was added.
-   public static final int CAMERA_COMPONENT_VERSION = 2;
+  // For CAMERA_COMPONENT_VERSION 3:
+  // - The UseFront property was removed :-( .
+   public static final int CAMERA_COMPONENT_VERSION = 3;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
