@@ -81,7 +81,7 @@ public class Camera extends AndroidNonvisibleComponent
    *
    * @return {@code true} indicates front-facing is to be used, {@code false} will open default
    */
-  @SimpleProperty(
+  @SimpleProperty(userVisible = false, /* DEPRECATED MARCH 14 2015, STOPPED WORKING DECEMEBER 2014 */
     category = PropertyCategory.BEHAVIOR)
   public boolean UseFront() {
     return useFront;
@@ -93,8 +93,8 @@ public class Camera extends AndroidNonvisibleComponent
    * @param front
    *          {@code true} for front-facing camera, {@code false} for default
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
-  @SimpleProperty(description = "Specifies whether the front-facing camera should be used (when available). "
+  @SimpleProperty(userVisible = false, description = "DEPRECATED MARCH 2015, FEATURE NO LONGER AVAILABLE: "
+    + "Specifies whether the front-facing camera should be used (when available). "
     + "If the device does not have a front-facing camera, this option will be ignored "
     + "and the camera will open normally.")
   public void UseFront(boolean front) {

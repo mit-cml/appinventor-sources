@@ -1196,7 +1196,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Camera": {
 
     // AI2: The UseFront property was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The UseFront property was deprecated.
+    3: "noUpgrade"
 
   }, // End Camera upgraders
 
