@@ -425,6 +425,7 @@ Blockly.Blocks.component_set_get = {
     this.typeName = xmlElement.getAttribute('component_type');
     this.setOrGet = xmlElement.getAttribute('set_or_get');
     this.propertyName = xmlElement.getAttribute('property_name');
+    this.propertyObject = this.getPropertyObject(this.propertyName);
     var isGenericString = xmlElement.getAttribute('is_generic');
     this.isGeneric = (isGenericString == "true" ? true : false);
     if(!this.isGeneric) {
@@ -438,7 +439,9 @@ Blockly.Blocks.component_set_get = {
 
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
-      function() {return thisBlock.getPropertyDropDownList(); },
+      function() {
+        return thisBlock.getPropertyDropDownList();
+      },
       // change the output type and tooltip to match the new selection
       function(selection) {
         this.setValue(selection);
@@ -512,7 +515,13 @@ Blockly.Blocks.component_set_get = {
     this.setTooltip(this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
-    //this.typeblock = this.createTypeBlock();
+
+    if (this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      // [lyn, 2015/12/27] mark deprecated properties as bad
+      this.badBlock();
+      this.setDisabled(true);
+    }
+
   },
 
   setTypeCheck : function() {
@@ -540,7 +549,9 @@ Blockly.Blocks.component_set_get = {
   getPropertyDropDownList : function() {
     var dropDownList = [];
     var propertyNames = [];
-    if(this.setOrGet == "set") {
+    if (this.propertyObject.deprecated == "true") { // [lyn, 2015/12/27] Handle deprecated properties specially
+      propertyNames = [this.propertyObject.name]; // Only list the deprecated property name and no others
+    } else if(this.setOrGet == "set") {
       propertyNames = Blockly.ComponentTypes[this.typeName].setPropertyList;
     } else {
       propertyNames = Blockly.ComponentTypes[this.typeName].getPropertyList;
