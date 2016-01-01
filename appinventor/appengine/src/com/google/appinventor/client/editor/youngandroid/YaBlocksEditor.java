@@ -316,7 +316,7 @@ public final class YaBlocksEditor extends FileEditor
 
   public synchronized void sendComponentData() {
     try {
-      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(),
+      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(true),
         packageNameFromPath(getFileId()));
     } catch (YailGenerationException e) {
       e.printStackTrace();
@@ -336,6 +336,7 @@ public final class YaBlocksEditor extends FileEditor
   // We use EditorManager.scheduleAutoSave for that.
   public void prepareForUnload() {
     blocksArea.saveComponentsAndBlocks();
+//    blocksArea.saveBackpackContents();
   }
 
   @Override
@@ -345,7 +346,7 @@ public final class YaBlocksEditor extends FileEditor
 
   public FileDescriptorWithContent getYail() throws YailGenerationException {
     return new FileDescriptorWithContent(getProjectId(), yailFileName(),
-        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(),
+        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(true),
             packageNameFromPath(getFileId())));
   }
 
@@ -607,8 +608,8 @@ public final class YaBlocksEditor extends FileEditor
    * Encodes the associated form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
    * to send the form info to the blockly world during code generation.
    */
-  protected String encodeFormAsJsonString() {
-    return myFormEditor.encodeFormAsJsonString();
+  protected String encodeFormAsJsonString(boolean forYail) {
+    return myFormEditor.encodeFormAsJsonString(forYail);
   }
 
 }

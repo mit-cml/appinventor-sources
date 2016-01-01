@@ -120,4 +120,6 @@ public final class LinearLayout implements Layout {
     layoutManager.setVerticalGravity(gravity);
   }
 
+  public void setBaselineAligned(boolean baselineAligned) { layoutManager.setBaselineAligned(baselineAligned); }
+
 }

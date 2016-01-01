@@ -55,7 +55,8 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.EXPAND_BLOCK = '展開程式方塊';
     Blockly.Msg.DISABLE_BLOCK = '停用程式方塊';
     Blockly.Msg.ENABLE_BLOCK = '啟用程式方塊';
-    Blockly.Msg.HELP = '說明';
+    Blockly.Msg.HELP = '說明';    
+    Blockly.Msg.EXPORT_IMAGE = '下載方塊圖像';
     Blockly.Msg.COLLAPSE_ALL = '折疊所有方塊';
     Blockly.Msg.EXPAND_ALL = '展開所有方塊';
     Blockly.Msg.ARRANGE_H = '橫向排列所有方塊';
@@ -419,30 +420,8 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = '最小值';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = '最大值';
 
-//TODO: I don't think any of this is useful anymore...Delete?
-    /*Blockly.Msg.LANG_MATH_ONLIST_HELPURL = '';
-     Blockly.Msg.LANG_MATH_ONLIST_INPUT_OFLIST = 'of list';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SUM = 'sum';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'average';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'median';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'modes';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'standard deviation';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'random item';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Return the sum of all the numbers in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Return the arithmetic mean of the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Return the median number in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Return a list of the most common item(s) in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Return the standard deviation of the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_RANDOM = 'Return a random element from the list.';
-
-     Blockly.Msg.LANG_MATH_CONSTRAIN_HELPURL = 'http://en.wikipedia.org/wiki/Clamping_%28graphics%29';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_CONSTRAIN = 'constrain';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_LOW = 'between (low)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'and (high)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Constrain a number to be between the specified limits (inclusive).';
-*/
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
 
     Blockly.Msg.LANG_MATH_DIVIDE = '除以';
     Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = '模數';
@@ -490,7 +469,37 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '是否為數字？';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = '判斷該對象是否為數字類型';
+    
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = 'is base 10?';
+    // Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = 'Tests if something is decimal.';
 
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = 'is hexadecimal?';
+    // Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tests if something is hexadecimal.';
+
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'is binary?';
+    // Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = 'Tests if something is binary.';
+
+
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = 'convert number';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = 'base 10 to hex';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = '';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = 'Returns the conversion from decimal to hexadecimal';
+
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = 'hex to base 10';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = '';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = 'Returns the conversion from hexadecimal to decimal';
+
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = 'base 10 to binary';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = '';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = 'Returns the conversion from decimal to binary';
+
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = 'binary to base 10';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = '';
+    // Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Returns the conversion from binary to decimal';
+    
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = '文字';
     Blockly.Msg.LANG_TEXT_TEXT_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#string';
@@ -1288,6 +1297,7 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
 // Blocklyeditor.js
     Blockly.Msg.GENERATE_YAIL = "產生 Yail";
     Blockly.Msg.DO_IT = "實現功能";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "清除錯誤";
     Blockly.Msg.CAN_NOT_DO_IT = "不能實現功能";
     Blockly.Msg.CONNECT_TO_DO_IT = '你必須要連接AIAI Companion或者模擬器才能使用"實現功能"';
   }

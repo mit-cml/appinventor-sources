@@ -1,4 +1,4 @@
- // -*- mode: java; c-basic-offset: 2; -*-
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
@@ -12,6 +12,7 @@ package com.google.appinventor.components.runtime;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,20 +22,26 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -53,6 +60,8 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.multidex.MultiDex;
+import com.google.appinventor.components.runtime.multidex.MultiDexApplication;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -61,6 +70,7 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
@@ -71,6 +81,11 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  *
  * The main form is always named "Screen1".
  *
+ * NOTE WELL: There are many places in the code where the name "Screen1" is
+ * directly referenced. If we ever change App Inventor to support renaming
+ * screens and Screen1 in particular, we need to make sure we find all those
+ * places and make the appropriate code changes.
+ *
  */
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
@@ -79,7 +94,9 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching {
+  implements Component, ComponentContainer, HandlesEventDispatching,
+  OnGlobalLayoutListener {
+
   private static final String LOG_TAG = "Form";
 
   private static final String RESULT_NAME = "APP_INVENTOR_RESULT";
@@ -96,6 +113,9 @@ public class Form extends Activity
   // Timer event will still fire, even when the activity is no longer in the foreground. For this
   // reason, we cannot assume that the activeForm is the foreground activity.
   protected static Form activeForm;
+
+  private float deviceDensity;
+  private float compatScalingFactor;
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
@@ -115,6 +135,8 @@ public class Form extends Activity
   // Information string the app creator can set.  It will be shown when
   // "about this application" menu item is selected.
   private String aboutScreen;
+  private boolean showStatusBar = true;
+  private boolean showTitle = true;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -136,6 +158,9 @@ public class Form extends Activity
   private FrameLayout frameLayout;
   private boolean scrollable;
 
+  private ScaledFrameLayout scaleLayout;
+  private static boolean sCompatibilityMode;
+
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
@@ -146,6 +171,10 @@ public class Form extends Activity
 
   // AppInventor lifecycle: listeners for the Initialize Event
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
+
+  // Listeners for options menu.
+  private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
+  private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
@@ -162,6 +191,46 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  private int formWidth;
+  private int formHeight;
+
+  private boolean keyboardShown = false;
+
+  private ProgressDialog progress;
+  private static boolean _initialized = false;
+
+  public static class PercentStorageRecord {
+    public enum Dim {
+      HEIGHT, WIDTH };
+
+    public PercentStorageRecord(AndroidViewComponent component, int length, Dim dim) {
+      this.component = component;
+      this.length = length;
+      this.dim = dim;
+    }
+
+    AndroidViewComponent component;
+    int length;
+    Dim dim;
+  }
+  private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+
+  private static class MultiDexInstaller extends AsyncTask<Form, Void, Boolean> {
+    Form ourForm;
+
+    @Override
+    protected Boolean doInBackground(Form... form) {
+      ourForm = form[0];
+      Log.d(LOG_TAG, "Doing Full MultiDex Install");
+      MultiDex.install(ourForm, true); // Force installation
+      return true;
+    }
+    @Override
+    protected void onPostExecute(Boolean v) {
+      ourForm.onCreateFinish();
+    }
+  }
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -176,8 +245,57 @@ public class Form extends Activity
     activeForm = this;
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
 
+    deviceDensity = this.getResources().getDisplayMetrics().density;
+    Log.d(LOG_TAG, "deviceDensity = " + deviceDensity);
+    compatScalingFactor = ScreenDensityUtil.computeCompatibleScaling(this);
+    Log.i(LOG_TAG, "compatScalingFactor = " + compatScalingFactor);
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
+
+    progress = null;
+    if (!_initialized && formName.equals("Screen1")) {
+      Log.d(LOG_TAG, "MULTI: _initialized = " + _initialized + " formName = " + formName);
+      _initialized = true;
+      // Note that we always consult ReplApplication even if we are not the Repl (Companion)
+      // this is subtle. When ReplApplication isn't directly used, the "installed" property
+      // defaults to ture, which means we can continue. The MultiDexApplication which is
+      // used in a non-Companion context will always do the full install
+      if (ReplApplication.installed) {
+        Log.d(LOG_TAG, "MultiDex already installed.");
+        onCreateFinish();
+      } else {
+        progress = ProgressDialog.show(this, "Please Wait...", "Installation Finishing");
+        progress.show();
+        new MultiDexInstaller().execute(this);
+      }
+    } else {
+      Log.d(LOG_TAG, "NO MULTI: _initialized = " + _initialized + " formName = " + formName);
+      _initialized = true;
+      onCreateFinish();
+    }
+  }
+
+  /*
+   * Finish the work of setting up the Screen.
+   *
+   * onCreate is done in two parts. The first part is done in onCreate
+   * and the second part is done here. This division is so that we can
+   * asynchronously load classes2.dex if we have to, while displaying
+   * a splash screen which explains that installation is finishing.
+   * We do this because there can be a significant time spent in
+   * DexOpt'ing classes2.dex. Note: If it is already optimized, we
+   * don't show the splash screen and call this function
+   * immediately. Similarly we call this function immediately on any
+   * screen other then Screen1.
+   *
+   */
+
+  void onCreateFinish() {
+
+    Log.d(LOG_TAG, "onCreateFinish called " + System.currentTimeMillis());
+    if (progress != null) {
+      progress.dismiss();
+    }
 
     defaultPropertyValues();
 
@@ -209,18 +327,22 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
+    Sizing("Fixed");
     BackgroundImage("");
     AboutScreen("");
+    BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
+    ShowStatusBar(true);
+    TitleVisible(true);
   }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-
+    Log.d(LOG_TAG, "onConfigurationChanged() called");
     final int newOrientation = newConfig.orientation;
     if (newOrientation == Configuration.ORIENTATION_LANDSCAPE ||
         newOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -243,6 +365,17 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
+            recomputeLayout();
+            final FrameLayout savedLayout = frameLayout;
+            androidUIHandler.postDelayed(new Runnable() {
+                public void run() {
+                  if (frameLayout != null) {
+                    frameLayout.invalidate();
+                  }
+                }
+              }, 100);          // Redraw the whole screen in 1/10 second
+                                // we do this to avoid screen artifacts left
+                                // left by the Android runtime.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -250,6 +383,54 @@ public class Form extends Activity
           }
         }
       });
+    }
+  }
+
+// What's this code?
+//
+// There is either an App Inventor bug, or Android bug (likely both)
+// that results in the contents of the screen being rendered "too
+// tall" on some devices when the soft keyboard is toggled from
+// displayed to hidden. This results in the bottom of the App being
+// cut-off. This only happens when we are in "Fixed" mode where we
+// provide a ScaledFrameLayout whose job is to scale the app to fill
+// the display of whatever device it is running on ("big phone mode").
+//
+// The code below is triggered on every major layout change. It
+// compares the size of the device window with the height of the
+// displayed content. Based on the difference, we can tell if the
+// keyboard is open or closed. We detect the transition from open to
+// closed and iff we are in "Fixed" mode (sComptabilityMode = true) we
+// trigger a recomputation of the entire apps layout after a delay of
+// 100ms (which seems to be required, for reasons we don't quite
+// understand).
+//
+// This code is not really a "fix" but more of a "workaround."
+
+  @Override
+  public void onGlobalLayout() {
+    int heightDiff = scaleLayout.getRootView().getHeight() - scaleLayout.getHeight();
+    int contentViewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+    Log.d(LOG_TAG, "onGlobalLayout(): heightdiff = " + heightDiff + " contentViewTop = " +
+      contentViewTop);
+
+    if(heightDiff <= contentViewTop){
+      Log.d(LOG_TAG, "keyboard hidden!");
+      if (keyboardShown) {
+        keyboardShown = false;
+        if (sCompatibilityMode) { // Put us back in "Fixed" Mode
+          scaleLayout.setScale(compatScalingFactor);
+          scaleLayout.invalidate();
+        }
+      }
+    } else {
+      int keyboardHeight = heightDiff - contentViewTop;
+      Log.d(LOG_TAG, "keyboard shown!");
+      keyboardShown = true;
+      if (scaleLayout != null) { // Effectively put us in responsive mode
+        scaleLayout.setScale(1.0f);
+        scaleLayout.invalidate();
+      }
     }
   }
 
@@ -345,6 +526,27 @@ public class Form extends Activity
     }
   }
 
+  void ReplayFormOrientation() {
+    // We first make a copy of the existing dimChanges list
+    // because while we are replaying it, it is being appended to
+    Log.d(LOG_TAG, "ReplayFormOrientation()");
+    ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
+    dimChanges.clear();         // Empties it out
+    for (int i = 0; i < temp.size(); i++) {
+      // Iterate over the list...
+      PercentStorageRecord r = temp.get(i);
+      if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
+        r.component.Height(r.length);
+      } else {
+        r.component.Width(r.length);
+      }
+    }
+  }
+
+  public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
+    dimChanges.add(new PercentStorageRecord(component, length, dim));
+  }
+
   private static int generateNewRequestCode() {
     return nextRequestCode++;
   }
@@ -438,6 +640,14 @@ public class Form extends Activity
     onDestroyListeners.add(component);
   }
 
+  public void registerForOnCreateOptionsMenu(OnCreateOptionsMenuListener component) {
+    onCreateOptionsMenuListeners.add(component);
+  }
+
+  public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
+    onOptionsItemSelectedListeners.add(component);
+  }
+
   public Dialog onCreateDialog(int id) {
     switch(id) {
     case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
@@ -511,6 +721,11 @@ public class Form extends Activity
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
           screenInitialized = true;
 
           //  Call all apps registered to be notified when Initialize Event is dispatched
@@ -641,25 +856,50 @@ public class Form extends Activity
       return;
     }
 
+    this.scrollable = scrollable;
+    recomputeLayout();
+  }
+
+  private void recomputeLayout() {
+
+    Log.d(LOG_TAG, "recomputeLayout called");
     // Remove our view from the current frameLayout.
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
-
-    this.scrollable = scrollable;
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
-    frameLayout.setBackgroundColor(backgroundColor);
-    if (backgroundDrawable != null) {
-      ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    }
+    setBackground(frameLayout);
 
-    setContentView(frameLayout);
-    frameLayout.requestLayout();
+    Log.d(LOG_TAG, "About to create a new ScaledFrameLayout");
+    scaleLayout = new ScaledFrameLayout(this);
+    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    setContentView(scaleLayout);
+    frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+    scaleLayout.requestLayout();
+    androidUIHandler.post(new Runnable() {
+      public void run() {
+        if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
+          ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                   // needs to recompute objects sizes etc.
+          frameLayout.requestLayout();
+        } else {
+          // Try again later.
+          androidUIHandler.post(this);
+        }
+      }
+    });
   }
 
   /**
@@ -682,15 +922,8 @@ public class Form extends Activity
   @SimpleProperty
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
-    if (argb != Component.COLOR_DEFAULT) {
-      viewLayout.getLayoutManager().setBackgroundColor(argb);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(argb);
-    } else {
-      viewLayout.getLayoutManager().setBackgroundColor(Component.COLOR_WHITE);
-      // Just setting the background color on the layout manager is insufficient.
-      frameLayout.setBackgroundColor(Component.COLOR_WHITE);
-    }
+    // setBackground(viewLayout.getLayoutManager()); // Doesn't seem necessary anymore
+    setBackground(frameLayout);
   }
 
   /**
@@ -728,9 +961,7 @@ public class Form extends Activity
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;
     }
-
-    ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
-    frameLayout.invalidate();
+    setBackground(frameLayout);
   }
 
   /**
@@ -775,13 +1006,78 @@ public class Form extends Activity
    * AboutScreen property setter method: sets a new aboutApp string for the form in the
    * form's "About this application" menu.
    *
-   * @param title  new form caption
+   * @param aboutScreen content to be displayed in aboutApp
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void AboutScreen(String aboutScreen) {
     this.aboutScreen = aboutScreen;
+  }
+
+  /**
+   * TitleVisible property getter method.
+   *
+   * @return  showTitle boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.")
+  public boolean TitleVisible() {
+    return showTitle;
+  }
+
+  /**
+   * TitleVisible property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void TitleVisible(boolean show) {
+    if (show != showTitle) {
+      View v = (View)findViewById(android.R.id.title).getParent();
+      if (v != null) {
+        if (show) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          v.setVisibility(View.GONE);
+        }
+        showTitle = show;
+      }
+    }
+  }
+
+  /**
+   * ShowStatusBar property getter method.
+   *
+   * @return  showStatusBar boolean
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.")
+  public boolean ShowStatusBar() {
+    return showStatusBar;
+  }
+
+  /**
+   * ShowStatusBar property setter method.
+   *
+   * @param show boolean
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ShowStatusBar(boolean show) {
+    if (show != showStatusBar) {
+      if (show) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      }
+      showStatusBar = show;
+    }
   }
 
   /**
@@ -1065,6 +1361,47 @@ public class Form extends Activity
   }
 
   /**
+   * Sizing Property Setter
+   *
+   * @param
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
+      defaultValue = "Fixed")
+  @SimpleProperty(userVisible = false,
+    // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
+    description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
+                  "If set to responsive, screen layouts will use the actual resolution of the device.  " +
+                  "See the documentation on responsive design in App Inventor for more information. " +
+                  "This property appears on Screen1 only and controls the sizing for all screens in the app.")
+  public void Sizing(String value) {
+    // This is used by the project and build server.
+    // We also use it to adjust sizes
+    Log.d(LOG_TAG, "Sizing(" + value + ")");
+    formWidth = (int)((float) this.getResources().getDisplayMetrics().widthPixels / deviceDensity);
+    formHeight = (int)((float) this.getResources().getDisplayMetrics().heightPixels / deviceDensity);
+    if (value.equals("Fixed")) {
+      sCompatibilityMode = true;
+      formWidth /= compatScalingFactor;
+      formHeight /= compatScalingFactor;
+    } else {
+      sCompatibilityMode = false;
+    }
+    scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
+    if (frameLayout != null) {
+      frameLayout.invalidate();
+    }
+    Log.d(LOG_TAG, "formWidth = " + formWidth + " formHeight = " + formHeight);
+  }
+
+  // public String Sizing() {
+  //   if (compatibilityMode) {
+  //     return "Fixed";
+  //   } else {
+  //     return "Responsive";
+  //   }
+  // }
+
+  /**
    * Specifies the App Name.
    *
    * @param aName the display name of the installed application in the phone
@@ -1073,7 +1410,7 @@ public class Form extends Activity
     defaultValue = "")
   @SimpleProperty(userVisible = false,
     description = "This is the display name of the installed application in the phone." +
-    		"If the AppName is blank, it will be set to the name of the project when the project is built.")
+        "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1086,7 +1423,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return frameLayout.getWidth();
+    Log.d(LOG_TAG, "Form.Width = " + formWidth);
+    return formWidth;
   }
 
   /**
@@ -1097,7 +1435,8 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return frameLayout.getHeight();
+    Log.d(LOG_TAG, "Form.Height = " + formHeight);
+    return formHeight;
   }
 
   /**
@@ -1214,14 +1553,58 @@ public class Form extends Activity
     viewLayout.add(component);
   }
 
+  public float deviceDensity(){
+    return this.deviceDensity;
+  }
+
+  public float compatScalingFactor() {
+    return this.compatScalingFactor;
+  }
+
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent component, int width) {
+    int cWidth = Width();
+    if (cWidth == 0) {          // We're not really ready yet...
+      final int fWidth = width;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(Form)Width not stable yet... trying again");
+            setChildWidth(component, fWidth);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+    if (width <= LENGTH_PERCENT_TAG) {
+      width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
+//      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
+    }
+
+    component.setLastWidth(width);
+
     // A form is a vertical layout.
     ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
   }
 
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent component, int height) {
+    int cHeight = Height();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(Form)Height not stable yet... trying again");
+            setChildHeight(component, fHeight);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
+    if (height <= LENGTH_PERCENT_TAG) {
+      height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
+    }
+
+    component.setLastHeight(height);
+
     // A form is a vertical layout.
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
@@ -1368,6 +1751,9 @@ public class Form extends Activity
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
     addAboutInfoToMenu(menu);
+    for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
+      onCreateOptionsMenuListener.onCreateOptionsMenu(menu);
+    }
     return true;
   }
 
@@ -1393,6 +1779,16 @@ public class Form extends Activity
       }
     });
     aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    for (OnOptionsItemSelectedListener onOptionsItemSelectedListener : onOptionsItemSelectedListeners) {
+      if (onOptionsItemSelectedListener.onOptionsItemSelected(item)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void showExitApplicationNotification() {
@@ -1436,9 +1832,22 @@ public class Form extends Activity
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();
+    frameLayout.removeAllViews();
+    frameLayout = null;
     // Set all screen properties to default values.
     defaultPropertyValues();
+    onStopListeners.clear();
+    onNewIntentListeners.clear();
+    onResumeListeners.clear();
+    onPauseListeners.clear();
+    onDestroyListeners.clear();
+    onInitializeListeners.clear();
+    onCreateOptionsMenuListeners.clear();
+    onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
+    System.err.println("Form.clear() About to do moby GC!");
+    System.gc();
+    dimChanges.clear();
   }
 
   public void deleteComponent(Object component) {
@@ -1446,6 +1855,12 @@ public class Form extends Activity
       OnStopListener onStopListener = (OnStopListener) component;
       if (onStopListeners.contains(onStopListener)) {
         onStopListeners.remove(onStopListener);
+      }
+    }
+    if (component instanceof OnNewIntentListener) {
+      OnNewIntentListener onNewIntentListener = (OnNewIntentListener) component;
+      if (onNewIntentListeners.contains(onNewIntentListener)) {
+        onNewIntentListeners.remove(onNewIntentListener);
       }
     }
     if (component instanceof OnResumeListener) {
@@ -1464,6 +1879,24 @@ public class Form extends Activity
       OnDestroyListener onDestroyListener = (OnDestroyListener) component;
       if (onDestroyListeners.contains(onDestroyListener)) {
         onDestroyListeners.remove(onDestroyListener);
+      }
+    }
+    if (component instanceof OnInitializeListener) {
+      OnInitializeListener onInitializeListener = (OnInitializeListener) component;
+      if (onInitializeListeners.contains(onInitializeListener)) {
+        onInitializeListeners.remove(onInitializeListener);
+      }
+    }
+    if (component instanceof OnCreateOptionsMenuListener) {
+      OnCreateOptionsMenuListener onCreateOptionsMenuListener = (OnCreateOptionsMenuListener) component;
+      if (onCreateOptionsMenuListeners.contains(onCreateOptionsMenuListener)) {
+        onCreateOptionsMenuListeners.remove(onCreateOptionsMenuListener);
+      }
+    }
+    if (component instanceof OnOptionsItemSelectedListener) {
+      OnOptionsItemSelectedListener onOptionsItemSelectedListener = (OnOptionsItemSelectedListener) component;
+      if (onOptionsItemSelectedListeners.contains(onOptionsItemSelectedListener)) {
+        onOptionsItemSelectedListeners.remove(onOptionsItemSelectedListener);
       }
     }
     if (component instanceof Deleteable) {
@@ -1550,4 +1983,23 @@ public class Form extends Activity
   public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
     return fullScreenVideoUtil.performAction(action, source, data);
   }
+
+  private void setBackground(View bgview) {
+    Drawable setDraw = backgroundDrawable;
+    if (backgroundImagePath != "" && setDraw != null) {
+      setDraw = backgroundDrawable.getConstantState().newDrawable();
+      setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
+        PorterDuff.Mode.DST_OVER);
+    } else {
+      setDraw = new ColorDrawable(
+        (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
+    }
+    ViewUtil.setBackgroundImage(bgview, setDraw);
+    bgview.invalidate();
+  }
+
+  public static boolean getCompatibilityMode() {
+    return sCompatibilityMode;
+  }
+
 }

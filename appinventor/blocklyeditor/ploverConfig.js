@@ -7,10 +7,14 @@
     '../lib/blockly/src/core/blockly.js',
 
     //msg/js/*.js has to come next (for constants)
+    './src/msg/ko_kr/_messages.js',
     './src/msg/es_es/_messages.js',
     './src/msg/zh_tw/_messages.js',
     './src/msg/zh_cn/_messages.js',
+    './src/msg/fr_fr/_messages.js',
     './src/msg/it_it/_messages.js',
+    './src/msg/ru/_messages.js',
+    './src/msg/sv/_messages.js',
     './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code
@@ -77,6 +81,7 @@
     "./src/field_procedure.js",
     "./src/field_textblockinput.js",
     "./src/warningIndicator.js",
+    "./src/exportBlocksImage.js",
     "./src/flydown.js",
     "./src/field_flydown.js",
     "./src/field_parameter_flydown.js",
@@ -85,6 +90,13 @@
     "./src/nameSet.js",
     "./src/substitution.js",
     "./src/language_switch.js",
+
+    // Dialog Utiltiy
+    "./src/util.js",
+
+    // backpack files
+    "./src/backpack.js",
+    "./src/backpackFlyout.js",
 
     //blocks files
     './src/blocks/control.js',

@@ -20,6 +20,7 @@ public final class ErrorMessages {
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER = 2;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_FUSIONTABLES_CONTROL = 3;
   public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES = 4;
+  public static final int ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT = 5;
   // LocationSensor errors
   public static final int ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND = 101;
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
@@ -180,7 +181,12 @@ public final class ErrorMessages {
   //TextToSpeech errors
   public static final int ERROR_TTS_NOT_READY = 2701;
 
-  // Please start the next group of error numbers at 2801.
+  // AndroidViewComponent errors
+  public static final int ERROR_BAD_PERCENT = 2801;
+
+  // 2901-2999 are reserved for FIRST Tech Challenge.
+
+  // Please start the next group of error numbers at 3001.
 
 
   // Mapping of error numbers to error message format strings.
@@ -200,6 +206,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WEB_COOKIES,
         "Warning: This app contains functionality that does not work on this phone: " +
         "using cookies in the Web component.");
+    errorMessages.put(ERROR_FUNCTIONALITY_NOT_SUPPORTED_WIFI_DIRECT,
+        "Warning: This app contains functionality that does not work on this phone: " +
+        "Wi-Fi peer-to-peer connectivity.");
     // LocationSensor errors
     errorMessages.put(ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND,
         "Unable to find latitude from %s.");
@@ -452,6 +461,8 @@ public final class ErrorMessages {
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    // AndroidViewComponent errors
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
   }
 
   private ErrorMessages() {

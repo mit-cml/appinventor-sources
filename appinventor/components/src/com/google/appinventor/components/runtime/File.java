@@ -227,6 +227,13 @@ public class File extends AndroidNonvisibleComponent implements Component {
           out.flush();
           out.close();
           fileWriter.close();
+
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              AfterFileSaved(filename);
+            }
+          });
         } catch (IOException e) {
           if (append) {
             form.dispatchErrorOccurredEvent(File.this, "AppendTo",
@@ -316,6 +323,17 @@ public class File extends AndroidNonvisibleComponent implements Component {
   public void GotText(String text) {
     // invoke the application's "GotText" event handler.
     EventDispatcher.dispatchEvent(this, "GotText", text);
+  }
+
+  /**
+   * Event indicating that a request has finished.
+   *
+   * @param text write to the file
+   */
+  @SimpleEvent (description = "Event indicating that the contents of the file have been written.")
+  public void AfterFileSaved(String fileName) {
+    // invoke the application's "AfterFileSaved" event handler.
+    EventDispatcher.dispatchEvent(this, "AfterFileSaved", fileName);
   }
 
   /**

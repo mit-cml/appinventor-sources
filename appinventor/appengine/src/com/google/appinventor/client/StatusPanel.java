@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client;
 
+import com.google.common.base.Strings;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -18,10 +19,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class StatusPanel extends Composite {
-  private String AppInventorFooter =
-    "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
-    " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
-
   /**
    * Initializes and assembles all UI elements shown in the status panel.
    */
@@ -29,7 +26,12 @@ public class StatusPanel extends Composite {
     HorizontalPanel hpanel = new HorizontalPanel();
     hpanel.setWidth("100%");
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    hpanel.add(new HTML(AppInventorFooter));
+    String tosUrl = Ode.getInstance().getSystemConfig().getTosUrl();
+    if (!Strings.isNullOrEmpty(tosUrl)) {
+      String appInventorFooter =
+          "<a href=\"" + tosUrl + "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
+      hpanel.add(new HTML(appInventorFooter));
+    }
 
     // This shows the git version and the date of the build
 //    String version = GitBuildId.getVersion();

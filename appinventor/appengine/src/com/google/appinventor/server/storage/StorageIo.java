@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.IOException;
 import java.util.Date;
@@ -523,6 +524,7 @@ public interface StorageIo {
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
                                           @Nullable String zipName,
+                                          boolean includeYail,
                                           boolean fatalError) throws IOException;
 
   /**
@@ -572,4 +574,13 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
+  // Check to see if user needs projects upgraded (moved to GCS)
+  // if so, add task to task queue
+  void checkUpgrade(String userId);
+
+  // Called by the task queue to actually upgrade user's projects
+  void doUpgrade(String userId);
+
+  // Retrieve the current Splash Screen Version
+  SplashConfig getSplashConfig();
 }

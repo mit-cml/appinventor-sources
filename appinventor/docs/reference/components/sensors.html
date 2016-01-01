@@ -522,7 +522,8 @@ none
 
  <h2 id="Clock"> Clock </h2>
   <img src="images/clock.png" alt="" />
-  <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.Methods to format the date and time are also available.</p> 
+  <p>Non-visible component that provides the instant in time using the internal clock on the phone.It can fire a timer at regularly set intervals and perform time calculations, manipulations, and conversions.</p> 
+  <p>Methods to convert an instant to text are also available. Acceptable patterns are empty string, MM/DD/YYYY HH:mm:ss a, or MMM d, yyyy HH:mm. The empty string will provide the default format, which is "MMM d, yyyy HH:mm:ss a" for FormatDateTime, "MMM d, yyyy" for FormatDate. To see all possible format, please see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>. </p> 
   <h3> Properties </h3>
   <dl>
       <dt> <code> TimerAlwaysFires </code> </dt>
@@ -557,10 +558,10 @@ none
       <dd> The day of the month </dd>
       <dt> <code> number Duration(InstantInTime start, InstantInTime end) </code> </dt>
       <dd> Milliseconds elapsed between instants </dd>
-      <dt> <code> text FormatDate(InstantInTime instant) </code> </dt>
-      <dd> Text representing the date of an instant </dd>
-      <dt> <code> text FormatDateTime(InstantInTime instant) </code> </dt>
-      <dd> Text representing the date and time of an instant </dd>
+      <dt> <code> text FormatDate(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date of an instant in the specified pattern </dd>
+      <dt> <code> text FormatDateTime(InstantInTime instant, text pattern) </code> </dt>
+      <dd> Text representing the date and time of an instant in the specified pattern</dd>
       <dt> <code> text FormatTime(InstantInTime instant) </code> </dt>
       <dd> Text representing the time of an instant </dd>
       <dt> <code> number GetMillis(InstantInTime instant) </code> </dt>
@@ -568,7 +569,7 @@ none
       <dt> <code> number Hour(InstantInTime instant) </code> </dt>
       <dd> The hour of the day </dd>
       <dt> <code> InstantInTime MakeInstant(text from) </code> </dt>
-      <dd> An instant specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm </dd>
+      <dd> An instant in time specified by MM/DD/YYYY hh:mm:ss or MM/DD/YYYY or hh:mm </dd>
       <dt> <code> InstantInTime MakeInstantFromMillis(number millis) </code> </dt>
       <dd> An instant in time specified by the milliseconds since 1970. </dd>
       <dt> <code> number Minute(InstantInTime instant) </code> </dt>

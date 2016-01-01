@@ -13,7 +13,7 @@
 
 goog.provide('Blockly.Blocks.components');
 goog.provide('Blockly.ComponentBlock');
-
+goog.require('Blockly.Blocks.Utilities');
 goog.require('Blockly.TypeBlock');
 
 /*
@@ -170,6 +170,7 @@ Blockly.Blocks.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
   renameVar: function(oldName, newName) {
@@ -251,7 +252,7 @@ Blockly.Blocks.component_event = {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   },
   // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
-  errors: [{name:"checkIfIAmADuplicateEventHandler"}],
+  errors: [{name:"checkIfIAmADuplicateEventHandler"}, {name:"checkComponentNotExistsError"}],
   onchange: Blockly.WarningHandler.checkErrors
 };
 
@@ -327,7 +328,7 @@ Blockly.Blocks.component_method = {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
     if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       this.badBlock();
       this.setDisabled(true);
@@ -340,6 +341,7 @@ Blockly.Blocks.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
   getMethodTypeObject : function() {
@@ -420,7 +422,7 @@ Blockly.Blocks.component_set_get = {
   },
 
   domToMutation : function(xmlElement) {
-	this.typeName = xmlElement.getAttribute('component_type');
+    this.typeName = xmlElement.getAttribute('component_type');
     this.setOrGet = xmlElement.getAttribute('set_or_get');
     this.propertyName = xmlElement.getAttribute('property_name');
     var isGenericString = xmlElement.getAttribute('is_generic');
@@ -436,16 +438,13 @@ Blockly.Blocks.component_set_get = {
 
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
-
       function() {return thisBlock.getPropertyDropDownList(); },
       // change the output type and tooltip to match the new selection
       function(selection) {
         this.setValue(selection);
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
-
         thisBlock.setTooltip(thisBlock.getPropertyObject(thisBlock.propertyName).description);
-        
       }
     );
 
@@ -512,7 +511,7 @@ Blockly.Blocks.component_set_get = {
 
     this.setTooltip(this.getPropertyObject(this.propertyName).description);
 
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
     //this.typeblock = this.createTypeBlock();
   },
 
@@ -562,6 +561,7 @@ Blockly.Blocks.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
   typeblock : function(){
@@ -664,7 +664,7 @@ Blockly.Blocks.component_component_block = {
     this.appendDummyInput().appendField(this.componentDropDown, "COMPONENT_SELECTOR");
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
-    this.errors = [{name:"checkIsInDefinition"}];
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -673,6 +673,7 @@ Blockly.Blocks.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
+      Blockly.Blocks.Utilities.renameCollapsed(this, 0);
     }
   },
 

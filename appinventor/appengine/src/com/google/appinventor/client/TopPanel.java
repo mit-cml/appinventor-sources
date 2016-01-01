@@ -16,6 +16,8 @@ import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.user.Config;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -117,30 +119,24 @@ public class TopPanel extends Composite {
     });
     links.add(gallery);
 
-    TextButton guideLink = new TextButton(MESSAGES.guideTabName());
-    guideLink.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "scrollbars=1");
-      }
-    });
-
-    guideLink.setStyleName("ode-TopPanelButton");
-    links.add(guideLink);
+    Config config = ode.getSystemConfig();
+    String guideUrl = config.getGuideUrl();
+    if (!Strings.isNullOrEmpty(guideUrl)) {
+      TextButton guideLink = new TextButton(MESSAGES.guideTabName());
+      guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl, "_ai2", "scrollbars=1"));
+      guideLink.setStyleName("ode-TopPanelButton");
+      links.add(guideLink);
+    }
 
     // Feedback Link
-    TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
-    feedbackLink.setStyleName("ode-TopPanelButton");
-
-    feedbackLink.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        Window.open("http://something.example.com", "_blank", "scrollbars=1");
-      }
-    });
-
-    feedbackLink.setStyleName("ode-TopPanelButton");
-    links.add(feedbackLink);
+    String feedbackUrl = config.getFeedbackUrl();
+    if (!Strings.isNullOrEmpty(feedbackUrl)) {
+      TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
+      feedbackLink.addClickHandler(
+          new WindowOpenClickHandler(feedbackUrl, "_blank", "scrollbars=1"));
+      feedbackLink.setStyleName("ode-TopPanelButton");
+      links.add(feedbackLink);
+    }
 
   /*
   // Code on master branch
@@ -234,12 +230,20 @@ public class TopPanel extends Composite {
       nativeName = MESSAGES.SwitchToTraditionalChinese();
     } else if (localeName == "es_ES") {
       nativeName = MESSAGES.SwitchToSpanish();
-    }else if (localeName == "it_IT") {
+    } else if (localeName == "fr_FR") {
+      nativeName = MESSAGES.SwitchToFrench();
+    } else if (localeName == "it_IT") {
       nativeName = MESSAGES.SwitchToItalian();
+    } else if (localeName == "ru") {
+      nativeName = MESSAGES.SwitchToRussian();
+    } else if (localeName == "ko_KR") {
+      nativeName = MESSAGES.SwitchToKorean();
+    } else if (localeName == "sv") {
+      nativeName = MESSAGES.SwitchToSwedish();
     }
     return nativeName;
   }
-  
+
   public void updateAccountMessageButton(){
     // Since we want to insert "Messages" before "Sign Out", we need to clear first.
     accountButton.clearAllItems();
@@ -259,12 +263,10 @@ public class TopPanel extends Composite {
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
     logo.setSize("40px", "40px");
     logo.setStyleName("ode-Logo");
-    logo.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        Window.open("http://appinventor.mit.edu", "_ai2", "scrollbars=1");
-      }
-    });
+    String logoUrl = ode.getSystemConfig().getLogoUrl();
+    if (!Strings.isNullOrEmpty(logoUrl)) {
+      logo.addClickHandler(new WindowOpenClickHandler(logoUrl, "_ai2", "scrollbars=1"));
+    }
     panel.add(logo);
     panel.setCellWidth(logo, "50px");
     Label title = new Label("MIT App Inventor 2");
@@ -316,6 +318,23 @@ public class TopPanel extends Composite {
    */
   public void showMotd() {
     addMotd(rightPanel);
+  }
+
+  private static class WindowOpenClickHandler implements ClickHandler {
+    private final String url;
+    private final String name;
+    private final String features;
+
+    WindowOpenClickHandler(String url, String name, String features) {
+      this.url = url;
+      this.name = name;
+      this.features = features;
+    }
+
+    @Override
+    public void onClick(ClickEvent clickEvent) {
+      Window.open(url, name, features);
+    }
   }
 
   private static class SignOutAction implements Command {

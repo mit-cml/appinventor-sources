@@ -35,6 +35,7 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.DISABLE_BLOCK = 'Inhabilitar Bloque';
     Blockly.Msg.ENABLE_BLOCK = 'Habilitar Bloque';
     Blockly.Msg.HELP = 'Ayuda';
+    Blockly.Msg.EXPORT_IMAGE = 'Exportar como Imagen';
     Blockly.Msg.COLLAPSE_ALL = 'Ocultar Bloques';
     Blockly.Msg.EXPAND_ALL = 'Mostrar Bloques';
     Blockly.Msg.ARRANGE_H = 'Ordenar Bloques Horizontalmente';
@@ -404,29 +405,8 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
 
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
-//TODO: I don't think any of this is useful anymore...Delete?
-    /*Blockly.Msg.LANG_MATH_ONLIST_HELPURL = '';
-     Blockly.Msg.LANG_MATH_ONLIST_INPUT_OFLIST = 'de la lista';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SUM = 'suma';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'media';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'mediana';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'moda';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'desviación estándar';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'elemento aleatorio';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Devolver la suma de todos los números de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Devuelve el menor de sus argumentos.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Devuelve el mayor de sus argumentos.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Devuelve la media aritmmética de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Devuelve la mediana de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Devuelve una lista con el o los elemento(s) más comunes de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Devuelve la desviación estándar de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_RANDOM = 'Devuelve aleatoriamente un elemento de la vista.';
-
-     Blockly.Msg.LANG_MATH_CONSTRAIN_HELPURL = 'http://en.wikipedia.org/wiki/Clamping_%28graphics%29';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_CONSTRAIN = 'limitar';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_LOW = 'entre (inferior)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'y (superior)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Limitar un número para que esté comprendido entre los límites especificados (ambos incluidos).';*/
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Devuelve el menor de sus argumentos.';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Devuelve el mayor de sus argumentos.';
 
 
     Blockly.Msg.LANG_MATH_DIVIDE = '\u00F7';
@@ -480,6 +460,36 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_INPUT_NUM = '¿es un número?';
     Blockly.Msg.LANG_MATH_IS_A_NUMBER_TOOLTIP = 'Comprueba si algo es un número.';
+
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_INPUT_NUM = 'is base 10?';
+    Blockly.Msg.LANG_MATH_IS_A_DECIMAL_TOOLTIP = 'Tests if something is decimal.';
+
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_INPUT_NUM = 'is hexadecimal?';
+    Blockly.Msg.LANG_MATH_IS_A_HEXADECIMAL_TOOLTIP = 'Tests if something is hexadecimal.';
+
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#isnumber';
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_INPUT_NUM = 'is binary?';
+    Blockly.Msg.LANG_MATH_IS_A_BINARY_TOOLTIP = 'Tests if something is binary.';
+
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TITLE_CONVERT = 'convert number';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_HEX = 'base 10 to hex';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_HEX = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_HEX = 'Returns the conversion from decimal to hexadecimal';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_HEX_TO_DEC = 'hex to base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_HEX_TO_DEC = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_HEX_TO_DEC = 'Returns the conversion from hexadecimal to decimal';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_DEC_TO_BIN = 'base 10 to binary';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_DEC_TO_BIN = 'Returns the conversion from decimal to binary';
+
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_OP_BIN_TO_DEC = 'binary to base 10';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC = '';
+    Blockly.Msg.LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC = 'Returns the conversion from binary to decimal';
 
 // Text Blocks.
     Blockly.Msg.LANG_CATEGORY_TEXT = 'Texto';
@@ -1274,6 +1284,15 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "¿Estás totalmente seguro?";
     Blockly.Msg.REPL_FACTORY_RESET = 'Esto intentará devolver tu emulador a su estado “de fábrica”. Si habías actualizado Companion en el emulador, seguramente tendrás que hacerlo de nuevo.';
 
+// Messages from Blockly.js
+    Blockly.Msg.WARNING_DELETE_X_BLOCKS = "Estás seguro de que quieres borrar todos los %1 bloques?";
+
+// Blocklyeditor.js
+    Blockly.Msg.GENERATE_YAIL = "Generate Yail";
+    Blockly.Msg.DO_IT = "Do It";
+    Blockly.Msg.CLEAR_DO_IT_ERROR = "Cerrar Error";
+    Blockly.Msg.CAN_NOT_DO_IT = 'El comando "Do it" no está disponible';
+    Blockly.Msg.CONNECT_TO_DO_IT = 'Necesitas estar conectado a la Companion or al Emulador para utilizar "Do It"';
   }
 };
 

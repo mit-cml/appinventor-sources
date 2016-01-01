@@ -38,6 +38,7 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
+import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -170,6 +171,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains list of tutorial gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getTutorialApp(int start, int count){
+    return galleryStorageIo.getTutorialApp(start, count);
+  }
+
+  /**
    * check if app is featured already
    * @param galleryId gallery id
    * @return true if featured, otherwise false
@@ -179,12 +190,30 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * check if app is tutorial already
+   * @param galleryId gallery id
+   * @return true if tutorial, otherwise false
+   */
+  public boolean isTutorial(long galleryId){
+    return galleryStorageIo.isTutorial(galleryId);
+  }
+
+  /**
    * mark an app as featured
    * @param galleryId gallery id
    * @return true if successful
    */
   public boolean markAppAsFeatured(long galleryId){
     return galleryStorageIo.markAppAsFeatured(galleryId);
+  }
+
+  /**
+   * mark an app as tutorial
+   * @param galleryId gallery id
+   * @return true if successful
+   */
+  public boolean markAppAsTutorial(long galleryId){
+    return galleryStorageIo.markAppAsTutorial(galleryId);
   }
 
   /**
@@ -346,14 +375,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    galleryStorageIo.salvageAllGalleryApps();
-  }
-
-  /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
    * @param report report
@@ -373,7 +394,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   * @return the list of reports
   */
   @Override
-  public List<GalleryAppReport> getRecentReports(int start, int count) {
+  public GalleryReportListResult getRecentReports(int start, int count) {
     return galleryStorageIo.getAppReports(start,count);
 
   }
@@ -384,7 +405,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   * @return the list of reports
   */
   @Override
-  public List<GalleryAppReport> getAllAppReports(int start, int count){
+  public GalleryReportListResult getAllAppReports(int start, int count){
     return galleryStorageIo.getAllAppReports(start,count);
   }
 
@@ -470,7 +491,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     byte[] aiaBytes= null;
     try {
       ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-            projectId, true, false, aiaName, false);
+        projectId, true, false, aiaName, false, false);
       aiaFile = zipFile.getRawFile();
       aiaBytes = aiaFile.getContent();
       LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);

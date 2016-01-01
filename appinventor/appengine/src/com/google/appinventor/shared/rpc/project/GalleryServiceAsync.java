@@ -75,16 +75,31 @@ public interface GalleryServiceAsync {
   void getFeaturedApp(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
   /**
+   * @see @link{@link GalleryService#getTutorialApp(int, int)
+   */
+  void getTutorialApp(int start, int count, AsyncCallback<GalleryAppListResult> callback);
+
+  /**
    * @see @link{@link GalleryService#isFeatured(long)
    */
   void isFeatured(long galleryId, AsyncCallback<Boolean> callback);
+
+  /**
+   * @see @link{@link GalleryService#isTutorial(long)
+   */
+  void isTutorial(long galleryId, AsyncCallback<Boolean> callback);
 
   /**
    * @see @link{@link GalleryService#markReportAsResolved(long, long)
    */
   void markAppAsFeatured(long galleryId, AsyncCallback<Boolean> callback);
 
-   /**
+  /**
+   * @see @link{@link GalleryService#markReportAsResolved(long, long)
+   */
+  void markAppAsTutorial(long galleryId, AsyncCallback<Boolean> callback);
+
+  /**
    * @see @link{@link GalleryService#getMostDownloadedApps(int, int)
    */
   void getMostDownloadedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
@@ -139,11 +154,6 @@ public interface GalleryServiceAsync {
   void salvageGalleryApp(long galleryId, AsyncCallback<java.lang.Void> callback);
 
   /**
-   * salvage all gallery apps
-   */
-  void salvageAllGalleryApps(AsyncCallback<java.lang.Void> callback);
-
-  /**
    * @see @link{@link GalleryService#isLikedByUser(long)
    */
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
@@ -156,11 +166,11 @@ public interface GalleryServiceAsync {
   /**
    * @see @link{@link GalleryService#getRecentReports(int, int)
    */
-  void getRecentReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
+  void getRecentReports(int start, int count, AsyncCallback<GalleryReportListResult> callback);
   /**
    * @see @link{@link GalleryService#getAllAppReports(int, int)
    */
-  void getAllAppReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
+  void getAllAppReports(int start, int count, AsyncCallback<GalleryReportListResult> callback);
 
   /**
    * @see @link{@link GalleryService#isReportedByUser(long)
