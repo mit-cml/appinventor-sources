@@ -5473,6 +5473,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToSwedish();
 
+  @DefaultMessage("Português do Brasil")
+  @Description("")
+  String switchToPortugueseBR();
+
   @DefaultMessage("Progress Bar")
   @Description("")
   String ProgressBarFor();
