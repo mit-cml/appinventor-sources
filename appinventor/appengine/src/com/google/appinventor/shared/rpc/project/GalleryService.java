@@ -227,11 +227,6 @@ public interface GalleryService extends RemoteService {
   void salvageGalleryApp(long galleryId);
 
   /**
-   * salvage all gallery app
-   */
-  void salvageAllGalleryApps();
-
-  /**
   * adds a report (flag) to a gallery app
   * @param app app that is being reported
   * @param reportText the report

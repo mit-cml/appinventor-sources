@@ -201,11 +201,6 @@ public interface GalleryStorageIo {
   void salvageGalleryApp(long galleryId);
 
   /**
-   * salvage all gallery app
-   */
-  void salvageAllGalleryApps();
-
-  /**
    * save AttributionId
    * @param galleryId id of gallery app that was like
    * @param attributionId id of project's attribution

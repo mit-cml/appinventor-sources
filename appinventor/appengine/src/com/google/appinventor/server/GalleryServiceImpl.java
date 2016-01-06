@@ -375,14 +375,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    galleryStorageIo.salvageAllGalleryApps();
-  }
-
-  /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
    * @param report report
@@ -499,7 +491,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     byte[] aiaBytes= null;
     try {
       ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-            projectId, true, false, aiaName, false);
+        projectId, true, false, aiaName, false, false);
       aiaFile = zipFile.getRawFile();
       aiaBytes = aiaFile.getContent();
       LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);

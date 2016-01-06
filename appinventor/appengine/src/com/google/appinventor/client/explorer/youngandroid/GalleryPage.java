@@ -601,8 +601,6 @@ panel
     initTutorialSection(container);
     // Adds dynamic salvage
     initSalvageSection(container);
-    // Adds dynamic salvage
-    initSalvageAllSection(container);
 
     // We are not using views and comments at initial launch
     /*
@@ -1051,34 +1049,6 @@ panel
       };
     Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
         isLikedCallback);
-  }
-
-  /**
-   * Helper method called by constructor to initialize the salvage all section
-   * @param container   The container that salvage label reside
-   */
-  private void initSalvageAllSection(Panel container) { //TODO: Update the location of this button
-    if(!canSalvage()){                                   // Permitted to Salvage Apps?
-      return;
-    }
-
-    final Label salvagePrompt = new Label("salvageAll");
-    salvagePrompt.addStyleName("primary-link");
-    container.add(salvagePrompt);
-
-    salvagePrompt.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void bool) {
-                salvagePrompt.setText("done");
-              }
-          };
-        Ode.getInstance().getGalleryService().salvageAllGalleryApps(callback);
-      }
-    });
   }
 
   /**
