@@ -229,7 +229,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       // the arguments it calls proc decl updateParams_. This removes proc decl inputs
       // before adding them back, and all hell breaks loose when the procedure name field
       // and previous parameter flydown fields are disposed before an attempt is made to
-      // disposed this field. At this point, the SVG element associated with the procedure name
+      // dispose this field. At this point, the SVG element associated with the procedure name
       // is gone but the field is still in the title list. Attempting to dispose this field
       // attempts to hide the open HTML editor widget, which attempts to re-render the
       // procedure declaration block. But the null SVG for the procedure name field
