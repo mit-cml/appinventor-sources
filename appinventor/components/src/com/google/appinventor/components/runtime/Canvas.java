@@ -93,8 +93,7 @@ import java.util.Set;
     category = ComponentCategory.ANIMATION)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
-                 "android.permission.WRITE_EXTERNAL_STORAGE," +
-                 "android.permission.CAMERA" )
+                 "android.permission.WRITE_EXTERNAL_STORAGE")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
   private static final String LOG_TAG = "Canvas";
 
