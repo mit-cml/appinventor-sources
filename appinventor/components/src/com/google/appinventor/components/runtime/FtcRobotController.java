@@ -60,13 +60,13 @@ import java.util.List;
 @UsesPermissions(permissionNames =
                  "android.permission.ACCESS_WIFI_STATE, " +
                  "android.permission.CHANGE_WIFI_STATE, " +
+                 "android.permission.WAKE_LOCK, " +
                  "android.permission.ACCESS_NETWORK_STATE, " +
                  "android.permission.CHANGE_NETWORK_STATE, " +
                  "android.permission.INTERNET, " +
                  "android.permission.WRITE_EXTERNAL_STORAGE, " +
                  "android.permission.READ_EXTERNAL_STORAGE, " +
-                 "android.permission.WRITE_SETTINGS, " +
-                 "android.permission.WAKE_LOCK")
+                 "android.permission.WRITE_SETTINGS")
 @UsesLibraries(libraries =
   "FtcAnalytics.jar," +
   "FtcCommon.jar," +
@@ -106,7 +106,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   private static final Object opModeWrappersLock = new Object();
   private static final List<OpModeWrapper> opModeWrappers = Lists.newArrayList();
   private static volatile OpMode activeOpMode;
-  private static volatile HardwareMap hardwareMap;
+  private static volatile HardwareMap activeHardwareMap;
 
   private final Form form;
   public final LinearLayout view;
@@ -118,8 +118,6 @@ public final class FtcRobotController extends AndroidViewComponent implements On
   // Backing for properties.
   private volatile int usbScanTimeInSeconds = DEFAULT_USB_SCAN_TIME_IN_SECONDS;
   private volatile String configuration = DEFAULT_CONFIGURATION;
-
-  // Backing for background color
   private volatile int backgroundColor = Component.COLOR_WHITE;
 
   /*
@@ -377,7 +375,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   static void activateOpMode(OpMode opMode) {
     activeOpMode = opMode;
-    hardwareMap = opMode.hardwareMap;
+    activeHardwareMap = opMode.hardwareMap;
 
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
@@ -394,7 +392,7 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   static void deactivateOpMode() {
     activeOpMode = null;
-    hardwareMap = null;
+    activeHardwareMap = null;
 
     synchronized (hardwareDevicesLock) {
       for (HardwareDevice hardwareDevice : hardwareDevices) {
@@ -495,12 +493,12 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @SimpleFunction(description = "Adds a text data point to the telemetry for the active op mode.")
   public void TelemetryAddTextData(String key, String text) {
-    // Copy the activeOpMode field into a local variable so we avoid any race condition cause by
+    // Copy the activeOpMode field into a local variable so we avoid any race condition caused by
     // another thread setting the activeOpMode field to null before we finish using it.
-    OpMode activeOpMode = this.activeOpMode;
-    if (activeOpMode != null) {
+    OpMode opMode = this.activeOpMode;
+    if (opMode != null) {
       try {
-        activeOpMode.telemetry.addData(key, text);
+        opMode.telemetry.addData(key, text);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "TelemetryAddTextData",
@@ -511,26 +509,66 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @SimpleFunction(description = "Adds a numeric data point to the telemetry for the active op mode.")
   public void TelemetryAddNumericData(String key, String number) {
-    // Copy the activeOpMode field into a local variable so we avoid any race condition cause by
+    // Copy the activeOpMode field into a local variable so we avoid any race condition caused by
     // another thread setting the activeOpMode field to null before we finish using it.
-    OpMode activeOpMode = this.activeOpMode;
-    if (activeOpMode != null) {
+    OpMode opMode = this.activeOpMode;
+    if (opMode != null) {
       // Try to parse the number as a float, but if that fails, fallback to text.
       try {
-        activeOpMode.telemetry.addData(key, Float.parseFloat(number));
+        opMode.telemetry.addData(key, Float.parseFloat(number));
         return;
       } catch (Throwable e) {
         // Exception is ignored. Fallback to treating number as text.
       }
 
       try {
-        activeOpMode.telemetry.addData(key, number);
+        opMode.telemetry.addData(key, number);
       } catch (Throwable e) {
         e.printStackTrace();
         form.dispatchErrorOccurredEvent(this, "TelemetryAddNumericData",
             ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
     }
+  }
+
+  /**
+   * TelemetrySorted property setter.
+   */
+  @SimpleProperty
+  public void TelemetrySorted(boolean sorted) {
+    // Copy the activeOpMode field into a local variable so we avoid any race condition caused by
+    // another thread setting the activeOpMode field to null before we finish using it.
+    OpMode opMode = this.activeOpMode;
+    if (opMode != null) {
+      try {
+        opMode.telemetry.setSorted(sorted);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "TelemetrySorted",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * TelemetrySorted property getter.
+   */
+  @SimpleProperty(description = "Whether the telemetry should be sorted by its keys on the driver station.",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean TelemetrySorted() {
+    // Copy the activeOpMode field into a local variable so we avoid any race condition caused by
+    // another thread setting the activeOpMode field to null before we finish using it.
+    OpMode opMode = this.activeOpMode;
+    if (opMode != null) {
+      try {
+        return opMode.telemetry.isSorted();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "TelemetrySorted",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return true;
   }
 
   @SimpleFunction(description = "Clip number if number is less than min or greater than max")
@@ -559,9 +597,9 @@ public final class FtcRobotController extends AndroidViewComponent implements On
 
   @SimpleFunction(description = "Log information about hardware devices.")
   public void LogDevices() {
-    // Copy the hardwareMap field into a local variable so we avoid any race condition cause by
-    // another thread setting the hardwareMap field to null before we finish using it.
-    HardwareMap hardwareMap = this.hardwareMap;
+    // Copy the activeHardwareMap field into a local variable so we avoid any race condition caused by
+    // another thread setting the activeHardwareMap field to null before we finish using it.
+    HardwareMap hardwareMap = this.activeHardwareMap;
     if (hardwareMap != null) {
       try {
         hardwareMap.logDevices();

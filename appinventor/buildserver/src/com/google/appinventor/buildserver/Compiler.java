@@ -92,8 +92,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
-  private static final String DEFAULT_VERSION_CODE = "1";
-  private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_VERSION_CODE = "6";
+  private static final String DEFAULT_VERSION_NAME = "1.5";
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";

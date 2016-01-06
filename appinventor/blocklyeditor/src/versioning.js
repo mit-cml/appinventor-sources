@@ -1647,7 +1647,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // The LogDevices function was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // The TelemetrySorted property was added.
+    3: "noUpgrade"
 
   }, // End FtcRobotController upgraders
 
