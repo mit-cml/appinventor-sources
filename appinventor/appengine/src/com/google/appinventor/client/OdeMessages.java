@@ -476,24 +476,24 @@ public interface OdeMessages extends Messages {
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsMenuItem();
 
-  @DefaultMessage("Export keystore")
+  @DefaultMessage("Export app signing keystore")
   @Description("Label of the button for export keystore")
   String downloadKeystoreMenuItem();
 
-  @DefaultMessage("Import keystore")
+  @DefaultMessage("Import app signing keystore")
   @Description("Label of the button for import keystore")
   String uploadKeystoreMenuItem();
 
-  @DefaultMessage("Delete keystore")
+  @DefaultMessage("Delete app signing keystore")
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
 
   //Connect
-  @DefaultMessage("Connect")
+  @DefaultMessage("Run")
   @Description("Label of the button leading to Connect related cascade items")
   String connectTabName();
 
-  @DefaultMessage("AI Companion")
+  @DefaultMessage("Companion App")
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
 
@@ -521,7 +521,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String tabNameProjects();
 
-  @DefaultMessage("USB")
+  @DefaultMessage("Phone with USB")
   @Description("Message providing details about starting a USB connection.")
   String usbMenuItem();
 
@@ -529,12 +529,12 @@ public interface OdeMessages extends Messages {
   @Description("Reset all connections.")
   String resetConnectionsMenuItem();
 
-  @DefaultMessage("Hard Reset")
+  @DefaultMessage("Hard Reset Emulator")
   @Description("Hard Reset the Emulator.")
   String hardResetConnectionsMenuItem();
 
   //Build
-  @DefaultMessage("Build")
+  @DefaultMessage("Package")
   @Description("Label of the button leading to build related cascade items")
   String buildTabName();
 
@@ -617,7 +617,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String myProjectsTabName();
 
-  @DefaultMessage("Guide")
+  @DefaultMessage("Documentation")
   @Description("Name of Guide link")
   String guideTabName();
 
@@ -625,7 +625,7 @@ public interface OdeMessages extends Messages {
   @Description("Link for Report an Issue form")
   String feedbackTabName();
 
-  @DefaultMessage("Gallery")
+  @DefaultMessage("App Gallery")
   @Description("Link for Gallery")
   String galleryTabName();
 
@@ -1390,7 +1390,7 @@ public interface OdeMessages extends Messages {
   String confirmDeleteSingleProject(String projectName);
 
   @DefaultMessage("Are you really sure you want to delete this project: {0}?"+
-      " Note that the published copy of this project will be removed from the gallery as well.")
+      " Note that the published copy of this project will be removed from the Gallery as well.")
   @Description("Confirmation message for selecting a single project and clicking delete when gallery is on")
   String confirmDeleteSinglePublishedProject(String projectName);
 
@@ -1399,8 +1399,8 @@ public interface OdeMessages extends Messages {
   String confirmDeleteManyProjects(String projectNames);
 
   @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
-      " Note that if any of the projects have been published, the published version in"+
-      " the gallery will be removed as well.")
+      " Note that if any of the projects have been published, the published version(s) in"+
+      " the Gallery will be removed as well.")
   @Description("Confirmation message for selecting multiple projects and clicking delete when gallery is on")
   String confirmDeleteManyProjectsWithGalleryOn(String projectNames);
 
@@ -1946,7 +1946,7 @@ public interface OdeMessages extends Messages {
   @Description("Search Results Suffix")
   String gallerySearchResultsSuffix();
 
-  @DefaultMessage("Server error: gallery cannot be accessed")
+  @DefaultMessage("Server error: Gallery cannot be accessed")
   @Description("Error message reported when the gallery cannot be accessed.")
   String galleryError();
 
@@ -1956,7 +1956,7 @@ public interface OdeMessages extends Messages {
 
   // Used in GalleryClient.java
 
-  @DefaultMessage("Server error: gallery settings could not be accessed")
+  @DefaultMessage("Server error: Gallery settings could not be accessed")
   @Description("Error message reported when unable to extract gallery settings from xml.")
   String gallerySettingsError();
 
@@ -2075,7 +2075,7 @@ public interface OdeMessages extends Messages {
 
   // This error message is displayed as HTML
 
-  @DefaultMessage("User Interface")
+  @DefaultMessage("Basic")
   @Description("")
   String UIComponentPallette();
 
@@ -5453,16 +5453,24 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("You do not have any projects in App Inventor 2. " +
-      "To learn how to use App Inventor, click the \"Guide\" " +
-      "link at the top of the window; or to start your first project, " +
-      "click the \"Start New Project\" button at the upper left of the window.")
+  @DefaultMessage("You do not have any projects in App Inventor 2. <br /><br />To start your first project, click the " +
+      "<b>Start&nbspNew&nbspProject</b> button in the upper left. <br /><br />To learn how to use App Inventor, click " +
+      "<b>Help&#8594;Tutorials</b> at the top of the screen.")
   @Description("")
   String createNoProjectsDialogMessage1();
 
-  @DefaultMessage("Happy Inventing!")
+//  @DefaultMessage("To start your first project, click the <b>Start&nbspNew&nbspProject</b> button in the upper left.")
+//  @Description("")
+//  String createNoProjectsDialogMessage2();
+//
+//  @DefaultMessage("To learn how to use App Inventor, click <b>Help&#8594;Tutorials</b> at the top of the " +
+//      "screen.")
+//  @Description("")
+//  String createNoProjectsDialogMessage3();
+
+  @DefaultMessage("<br />Happy Inventing!")
   @Description("")
-  String createNoprojectsDialogMessage2();
+  String createNoProjectsDialogMessage2();
 
   @DefaultMessage("Welcome to App Inventor!")
   @Description("")
@@ -5496,7 +5504,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String showSurveySplashButtonNever();
 
-  @DefaultMessage("This Session Is Out of Date")
+  @DefaultMessage("App Inventor Opened in Another Location")
   @Description("")
   String invalidSessionDialogText();
 
@@ -5506,7 +5514,7 @@ public interface OdeMessages extends Messages {
                 "can damage your projects.</p>" +
                 "<p>Choose one of the buttons below to:" +
                 "<ul>" +
-                "<li>End this session here.</li>" +
+                "<li>End this session.</li>" +
                 "<li>Make this the current session and make the other sessions out of date.</li>" +
                 "<li>Continue with both sessions.</li>" +
                 "</ul>" +
@@ -5514,11 +5522,11 @@ public interface OdeMessages extends Messages {
   @Description("")
   String invalidSessionDialogMessage();
 
-  @DefaultMessage("End This Session")
+  @DefaultMessage("End this Session")
   @Description("")
   String invalidSessionDialogButtonEnd();
 
-  @DefaultMessage("Make this the current session")
+  @DefaultMessage("Make this the Current Session")
   @Description("")
   String invalidSessionDialogButtonCurrent();
 
@@ -5531,13 +5539,13 @@ public interface OdeMessages extends Messages {
   String bashWarningDialogText();
 
   @DefaultMessage("<p><font color=red>WARNING:</font> A second App " +
-                "Inventor session has been opened for this account. You may choose to " +
+                "Inventor session has been opened with this account. You may choose to " +
                 "continue with both sessions, but working with App Inventor from more " +
                 "than one session simultaneously can cause blocks to be lost in ways " +
                 "that cannot be recovered from the App Inventor server.</p><p>" +
-                "We recommend that people not open multiple sessions on the same " +
+                "We recommend that people not open multiple sessions with the same " +
                 "account. But if you do need to work in this way, then you should " +
-                "regularly export your project to your local computer, so you will " +
+                "regularly export your project to your computer, so you will " +
                 "have a backup copy independent of the App Inventor server. Use " +
                 "\"Export\" from the Projects menu to export the project.</p>")
   @Description("")
@@ -5547,7 +5555,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String bashWarningDialogButtonContinue();
 
-  @DefaultMessage("Do not use multiple Sessions")
+  @DefaultMessage("Do Not Use Multiple Sessions")
   @Description("")
   String bashWarningDialogButtonNo();
 
@@ -5559,7 +5567,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String accountDisabledMessage();
 
-  @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
+  @DefaultMessage("<p><b>Your session is over; you may close this window.</b></p>")
   @Description("")
   String finalDialogMessage();
 
@@ -5567,7 +5575,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String corruptionDialogText();
 
-  @DefaultMessage("<p><b>We detected errors while reading in your project</b></p>" +
+  @DefaultMessage("<p><b>We detected errors while importing your project</b></p>" +
                 "<p>To protect your project from damage, we have ended this session. You may close this " +
                 "window.</p>")
   @Description("")
@@ -5579,7 +5587,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("<p>It appears that <b>" + "%1" +
       "</b> has had all blocks removed.</p><p>" +
-      "<ul><li>You can save the enpty screen, and then all those blocks will be " +
+      "<ul><li>If you save, then all those blocks will be " +
       "permanently gone from the project.</li>" +
       "<li>Alternatively, you can restore the previously saved version " +
       "of the project.</li></ul></p>")
