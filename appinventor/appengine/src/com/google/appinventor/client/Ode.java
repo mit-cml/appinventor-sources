@@ -878,9 +878,9 @@ public class Ode implements EntryPoint {
 
     //workColumns.add(switchToDesignerButton);
 
-    Box palletebox = PaletteBox.getPaletteBox();
-    palletebox.setWidth("222px");
-    workColumns.add(palletebox);
+    Box paletteBox = PaletteBox.getPaletteBox();
+    paletteBox.setWidth("222px");
+    workColumns.add(paletteBox);
 
     Box viewerbox = ViewerBox.getViewerBox();
     workColumns.add(viewerbox);
@@ -1380,7 +1380,7 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    Grid mainGrid = new Grid(2, 2);
+    Grid mainGrid = new Grid(1, 2);
     mainGrid.getCellFormatter().setAlignment(0,
         0,
         HasHorizontalAlignment.ALIGN_CENTER,
@@ -1388,10 +1388,6 @@ public class Ode implements EntryPoint {
     mainGrid.getCellFormatter().setAlignment(0,
         1,
         HasHorizontalAlignment.ALIGN_CENTER,
-        HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(1,
-        1,
-        HasHorizontalAlignment.ALIGN_RIGHT,
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Image dialogImage = new Image(Ode.getImageBundle().androidGreenSmall());
@@ -1406,16 +1402,49 @@ public class Ode implements EntryPoint {
         HasHorizontalAlignment.ALIGN_LEFT,
         HasVerticalAlignment.ALIGN_MIDDLE);
 
+    Grid buttonGrid = new Grid(1,2);
+    buttonGrid.getCellFormatter().setAlignment(0,
+        0,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+    buttonGrid.getCellFormatter().setAlignment(0,
+        1,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+
+    //holds the messages and buttons
+    Grid contentGrid = new Grid(2, 1);
+
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
     
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new HTML(MESSAGES.createNoProjectsDialogMessage2());
 
+    Button newProject = new Button(MESSAGES.startFirstProjectText());
+    newProject.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        projectToolbar.createFirstNewProject();
+      }
+    });
+
+    Button showTutorials = new Button(MESSAGES.openTutorialsButtonText());
+    showTutorials.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        showTutorials();
+      }
+    });
+
     // Add the elements to the grids and DialogBox.
     messageGrid.setWidget(0, 0, messageChunk1);
     messageGrid.setWidget(1, 0, messageChunk2);
+    buttonGrid.setWidget(0, 0, newProject);
+    buttonGrid.setWidget(0, 1, showTutorials);
+    contentGrid.setWidget(0, 0, messageGrid);
+    contentGrid.setWidget(1, 0, buttonGrid);
     mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, messageGrid);
+    mainGrid.setWidget(0, 1, contentGrid);
+
 
     dialogBox.setWidget(mainGrid);
     dialogBox.center();
@@ -2063,6 +2092,10 @@ public class Ode implements EntryPoint {
   // a plug value. You should insert your own as appropriate.
   private native void takeSurvey() /*-{
     $wnd.open("http://web.mit.edu");
+  }-*/;
+
+  private native void showTutorials() /*-{
+    $wnd.open("http://appinventor.mit.edu/explore/ai2/tutorials.html");
   }-*/;
 
   // Making this public in case we need something like this elsewhere

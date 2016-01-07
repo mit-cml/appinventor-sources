@@ -50,7 +50,7 @@ public interface OdeMessages extends Messages {
   @Description("Text on \"Delete\" button")
   String deleteButton();
 
-  @DefaultMessage("Delete Project")
+  @DefaultMessage("Delete project")
   @Description("Text on \"Delete Project\" button")
   String deleteProjectButton();
 
@@ -5449,26 +5449,23 @@ public interface OdeMessages extends Messages {
 
 
   //Ode.java messages
-  @DefaultMessage("Welcome to App Inventor 2!")
+  @DefaultMessage("Welcome to MIT App Inventor!")
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("You do not have any projects in App Inventor 2. <br /><br />To start your first project, click the " +
-      "<b>Start&nbspNew&nbspProject</b> button in the upper left. <br /><br />To learn how to use App Inventor, click " +
-      "<b>Help&#8594;Tutorials</b> at the top of the screen.")
+  @DefaultMessage("You do not have any projects in App Inventor.")
   @Description("")
   String createNoProjectsDialogMessage1();
 
-//  @DefaultMessage("To start your first project, click the <b>Start&nbspNew&nbspProject</b> button in the upper left.")
-//  @Description("")
-//  String createNoProjectsDialogMessage2();
-//
-//  @DefaultMessage("To learn how to use App Inventor, click <b>Help&#8594;Tutorials</b> at the top of the " +
-//      "screen.")
-//  @Description("")
-//  String createNoProjectsDialogMessage3();
+  @DefaultMessage("Start My First Project")
+  @Description("")
+  String startFirstProjectText();
 
-  @DefaultMessage("<br />Happy Inventing!")
+  @DefaultMessage("Open Tutorials Page")
+  @Description("")
+  String openTutorialsButtonText();
+
+  @DefaultMessage("Happy Inventing!")
   @Description("")
   String createNoProjectsDialogMessage2();
 
