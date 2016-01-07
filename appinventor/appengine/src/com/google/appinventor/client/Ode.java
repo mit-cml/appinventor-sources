@@ -1401,11 +1401,18 @@ public class Ode implements EntryPoint {
         0,
         HasHorizontalAlignment.ALIGN_LEFT,
         HasVerticalAlignment.ALIGN_MIDDLE);
-
-    HorizontalPanel buttonPanel = new HorizontalPanel();
+    Grid buttonGrid = new Grid(1,2);
+    buttonGrid.getCellFormatter().setAlignment(0,
+        0,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+    buttonGrid.getCellFormatter().setAlignment(0,
+        1,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
 
     //holds the messages and buttons
-    VerticalPanel contentPanel = new VerticalPanel();
+    Grid contentGrid = new Grid(2, 1);
 
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
     
@@ -1430,12 +1437,12 @@ public class Ode implements EntryPoint {
     // Add the elements to the grids and DialogBox.
     messageGrid.setWidget(0, 0, messageChunk1);
     messageGrid.setWidget(1, 0, messageChunk2);
-    buttonPanel.add(newProject);
-    buttonPanel.add(showTutorials);
-    contentPanel.add(messageGrid);
-    contentPanel.add(buttonPanel);
+    buttonGrid.setWidget(0, 0, newProject);
+    buttonGrid.setWidget(0, 1, showTutorials);
+    contentGrid.setWidget(0, 0, messageGrid);
+    contentGrid.setWidget(1, 0, buttonGrid);
     mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, contentPanel);
+    mainGrid.setWidget(0, 1, contentGrid);
 
     dialogBox.setWidget(mainGrid);
     dialogBox.center();
