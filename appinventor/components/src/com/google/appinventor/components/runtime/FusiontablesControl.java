@@ -374,8 +374,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     new QueryProcessorV1(activity).execute(query);
   }
 
-//Deprecated  -- Won't work after 12/2012
-  @SimpleFunction(userVisible = false,
+  //Deprecated  -- Won't work after 12/2012
+  @Deprecated // [lyn, 2015/12/30] In AI2, now use explicit @Deprecated annotation rather than
+              // userVisible = false to deprecate an event, method, or property.
+  @SimpleFunction(
       description = "DEPRECATED. This block is deprecated as of the end of 2012.  Use SendQuery.")
   public void DoQuery() {
     if (requestHelper != null) {
