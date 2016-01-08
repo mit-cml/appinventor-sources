@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -42,6 +43,9 @@ public final class Image extends AndroidViewComponent {
   private final ImageView view;
 
   private String picturePath = "";  // Picture property
+  
+  private double rotationAngle;
+  
 
   /**
    * Creates a new Image component.
@@ -50,6 +54,7 @@ public final class Image extends AndroidViewComponent {
    */
   public Image(ComponentContainer container) {
     super(container);
+    rotationAngle = 0.0;
     view = new ImageView(container.$context()) {
       @Override
       public boolean verifyDrawable(Drawable dr) {
@@ -105,6 +110,28 @@ public final class Image extends AndroidViewComponent {
     ViewUtil.setImage(view, drawable);
   }
 
+  /**
+   * Specifies the angle at which the image picture appears rotated.
+   *
+   * @param rotated  the rotation angle
+   */
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.0")
+  @SimpleProperty
+  public void RotationAngle(double rotationAngle) {
+    view.setRotation((float) rotationAngle);
+    this.rotationAngle = rotationAngle;    
+  }
+  
+  @SimpleProperty(description = "The angle at which the image picture appears rotated. " +
+      "This rotation does not appear on the designer screen, only on the device.",
+      category = PropertyCategory.APPEARANCE)
+  public double RotationAngle() {
+    return rotationAngle;
+  }
+
+  
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty

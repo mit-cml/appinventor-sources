@@ -358,8 +358,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 140:
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 3.
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 141:
+  // - IMAGE_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 140;
+  public static final int YOUNG_ANDROID_VERSION = 141;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -658,7 +660,9 @@ public class YaVersion {
   // - Added background color & image
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
 
-  public static final int IMAGE_COMPONENT_VERSION = 1;
+  // For IMAGE_COMPONENT_VERSION 2:
+  // - The RotationAngle property was added. 
+  public static final int IMAGE_COMPONENT_VERSION = 2;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
