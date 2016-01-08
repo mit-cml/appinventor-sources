@@ -45,9 +45,9 @@ public abstract class Settings extends EditableProperties implements PropertyCha
   }
 
   @Override
-  protected String encode(boolean all) {
+  protected String encode(boolean forYail, boolean all) {
     updateBeforeEncoding();
-    return super.encode(all);
+    return super.encode(forYail, all);
   }
 
   @Override

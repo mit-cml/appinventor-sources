@@ -103,7 +103,7 @@ public class DownloadServlet extends OdeServlet {
       // First, call split with no limit parameter.
       String[] uriComponents = uri.split("/");
       String downloadKind = uriComponents[DOWNLOAD_KIND_INDEX];
-      
+
       userId = userInfoProvider.getUserId();
 
       if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_OUTPUT)) {
@@ -122,14 +122,21 @@ public class DownloadServlet extends OdeServlet {
         final boolean includeProjectHistory = true;
         String zipName = (projectTitle == null) ? null :
             StringUtils.normalizeForFilename(projectTitle) + ".aia";
+        // If the requester is an Admin, we include any Yail files in the
+        // project in the export
+        boolean includeYail = userInfoProvider.getIsAdmin();
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-            projectId, includeProjectHistory, false, zipName, false);
+            projectId, includeProjectHistory, false, zipName, includeYail, false);
         downloadableFile = zipFile.getRawFile();
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE)) {
+        if (!userInfoProvider.getIsAdmin()) {
+          throw new IllegalArgumentException("Unauthorized.");
+        }
+
         // Download project source files for the specified user project as a zip.
         uriComponents = uri.split("/", SPLIT_LIMIT_USER_PROJECT_SOURCE);
-        
+
         String userIdOrEmail = uriComponents[USER_PROJECT_USERID_INDEX];
         String projectUserId;
         StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
@@ -174,9 +181,9 @@ public class DownloadServlet extends OdeServlet {
           zipName = "u" + projectUserId + "_p" + projectId + ".aia";
         }
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
-            projectId, /* include history*/ true, /* include keystore */ true, zipName, false);
+            projectId, /* include history*/ true, /* include keystore */ true, zipName, true, false);
         downloadableFile = zipFile.getRawFile();
-        
+
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
         // Download all project source files as a zip of zips.
         ProjectSourceZip zipFile = fileExporter.exportAllProjectsSourceZip(

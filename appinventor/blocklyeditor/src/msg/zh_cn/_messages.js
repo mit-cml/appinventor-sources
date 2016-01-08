@@ -419,30 +419,8 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = '最小值';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = '最大值';
 
-//TODO: I don't think any of this is useful anymore...Delete?
-    /*Blockly.Msg.LANG_MATH_ONLIST_HELPURL = '';
-     Blockly.Msg.LANG_MATH_ONLIST_INPUT_OFLIST = 'of list';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SUM = 'sum';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'average';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'median';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'modes';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'standard deviation';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'random item';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Return the sum of all the numbers in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Return the arithmetic mean of the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Return the median number in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Return a list of the most common item(s) in the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Return the standard deviation of the list.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_RANDOM = 'Return a random element from the list.';
-
-     Blockly.Msg.LANG_MATH_CONSTRAIN_HELPURL = 'http://en.wikipedia.org/wiki/Clamping_%28graphics%29';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_CONSTRAIN = 'constrain';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_LOW = 'between (low)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'and (high)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Constrain a number to be between the specified limits (inclusive).';
-*/
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
 
     Blockly.Msg.LANG_MATH_DIVIDE = '除以';
     Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = '模数';
