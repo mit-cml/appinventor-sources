@@ -111,6 +111,14 @@ public interface GalleryService extends RemoteService {
   GalleryAppListResult getFeaturedApp(int start, int count);
 
   /**
+   * Returns a wrapped class which contains a list of tutorial gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  GalleryAppListResult getTutorialApp(int start, int count);
+
+  /**
    * check if app is featured already
    * @param galleryId gallery id
    * @return true if featured, otherwise false
@@ -118,11 +126,25 @@ public interface GalleryService extends RemoteService {
   boolean isFeatured(long galleryId);
 
   /**
+   * check if app is tutorial already
+   * @param galleryId gallery id
+   * @return true if tutorial, otherwise false
+   */
+  boolean isTutorial(long galleryId);
+
+  /**
    * mark an app as featured
    * @param galleryId gallery id
    * @return
    */
   boolean markAppAsFeatured(long galleryId);
+
+  /**
+   * mark an app as tutorial
+   * @param galleryId gallery id
+   * @return
+   */
+  boolean markAppAsTutorial(long galleryId);
 
   /**
    * Returns a wrapped class which contains a list of galleryApps
@@ -203,11 +225,6 @@ public interface GalleryService extends RemoteService {
    * salvage the gallery app by given galleryId
    */
   void salvageGalleryApp(long galleryId);
-
-  /**
-   * salvage all gallery app
-   */
-  void salvageAllGalleryApps();
 
   /**
   * adds a report (flag) to a gallery app

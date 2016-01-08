@@ -1428,7 +1428,7 @@ public interface OdeMessages extends Messages {
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
-      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "clicking above on \"Help\", then \"Troubleshooting\", and then \"Keystores and Signing " +
       "of Applications\"\n\n" +
       "There is no undo for overwriting your keystore file.")
   @Description("Confirmation message shown when keystore is about to be overwritten.")
@@ -1447,7 +1447,7 @@ public interface OdeMessages extends Messages {
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
-      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "clicking above on \"Help\", then \"Troubleshooting\", and then \"Keystores and Signing " +
       "of Applications\"\n\n" +
       "There is no undo for deleting your keystore file.")
   @Description("Confirmation message for delete keystore")
@@ -1621,6 +1621,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Unfeature")
   @Description("Text for gallery Unfeature Text")
   String galleryUnfeaturedText();
+
+  @DefaultMessage("Tutorial")
+  @Description("Text for gallery Tutorial  Text")
+  String galleryTutorialText();
+
+  @DefaultMessage("Untutorial")
+  @Description("Text for gallery Untutorial Text")
+  String galleryUntutorialText();
 
   @DefaultMessage(" ")
   @Description("Text for gallery Single Space Text")
@@ -1801,6 +1809,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not retrieve featured apps from gallery")
   @Description("Error message reported when can't get featured on server.")
   String galleryFeaturedAppError();
+
+  @DefaultMessage("Server error: could not retrieve tutorial apps from gallery")
+  @Description("Error message reported when can't get tutorial on server.")
+  String galleryTutorialAppError();
 
   @DefaultMessage("Server error: could not complete a search of gallery")
   @Description("Error message reported when can't search on server.")
@@ -5437,18 +5449,19 @@ public interface OdeMessages extends Messages {
   String blocksTruncatedDialogText();
 
   @DefaultMessage("<p>It appears that <b>" + "%1" +
-                "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
-                "the result of a bug in our system.</p><p>" +
-                "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
-                "<li>Select \"No, Do Not Save\" below to restore the previously saved version</li></ul></p>")
+      "</b> has had all blocks removed.</p><p>" +
+      "<ul><li>You can save the enpty screen, and then all those blocks will be " +
+      "permanently gone from the project.</li>" +
+      "<li>Alternatively, you can restore the previously saved version " +
+      "of the project.</li></ul></p>")
   @Description("")
   String blocksTruncatedDialogMessage();
 
-  @DefaultMessage("OK, save the empty screen")
+  @DefaultMessage("Save the empty screen now.")
   @Description("")
   String blocksTruncatedDialogButtonSave();
 
-  @DefaultMessage("No, Do Not Save")
+  @DefaultMessage("Restore the previous version.")
   @Description("")
   String blocksTruncatedDialogButtonNoSave();
 
@@ -5491,6 +5504,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Pусский")
   @Description("")
   String SwitchToRussian();
+
+  @DefaultMessage("한국어")
+  @Description("")
+  String SwitchToKorean();
+
+  @DefaultMessage("Svenska")
+  @Description("")
+  String SwitchToSwedish();
 
   @DefaultMessage("Progress Bar")
   @Description("")

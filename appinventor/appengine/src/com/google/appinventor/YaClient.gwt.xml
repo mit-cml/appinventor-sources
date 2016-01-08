@@ -119,6 +119,10 @@
   <extend-property name="locale" values="it_IT"/>
   <!-- Russian -->
   <extend-property name="locale" values="ru"/>
+  <!-- Korean -->
+  <extend-property name="locale" values="ko_KR"/>
+  <!-- Swedish -->
+  <extend-property name="locale" values="sv"/>
 
   <set-property-fallback name="locale" value="en"/>
 
