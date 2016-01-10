@@ -105,6 +105,7 @@ public final class ErrorMessages {
   public static final int ERROR_SCREEN_BAD_VALUE_RECEIVED = 903;
   public static final int ERROR_SCREEN_BAD_VALUE_FOR_SENDING = 904;
   public static final int ERROR_SCREEN_INVALID_ANIMATION = 905;
+  public static final int ERROR_NO_FOCUSABLE_VIEW_FOUND = 906;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
   public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
@@ -141,12 +142,13 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
-  //AccelerometerSensor Errors
+  // AccelerometerSensor Errors
   public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
 
   //Sharing Errors
@@ -186,8 +188,10 @@ public final class ErrorMessages {
 
   // 2901-2999 are reserved for FIRST Tech Challenge.
 
-  // Please start the next group of error numbers at 3001.
+  // Image errors
+  public static final int ERROR_IMAGE_CANNOT_ROTATE = 3001;
 
+  // Start the next group of errors at 3100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -364,6 +368,8 @@ public final class ErrorMessages {
         "Bad value for sending to other screen: %s");
     errorMessages.put(ERROR_SCREEN_INVALID_ANIMATION,
         "Bad value for screen open/close animation: %s");
+    errorMessages.put(ERROR_NO_FOCUSABLE_VIEW_FOUND,
+        "No Focusable View Found");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
     errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
@@ -463,6 +469,9 @@ public final class ErrorMessages {
        "TextToSpeech is not yet ready to perform this operation");
     // AndroidViewComponent errors
     errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
+    // Image errors
+    errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
+        "The version of Android on this device does not support image rotation.");
   }
 
   private ErrorMessages() {

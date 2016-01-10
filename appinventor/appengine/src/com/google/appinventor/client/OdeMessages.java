@@ -2223,6 +2223,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String barcodeScannerComponentPallette();
 
+  @DefaultMessage("GyroscopeSensor")
+  @Description("")
+  String gyroscopeSensorComponentPallette();
+
   @DefaultMessage("LocationSensor")
   @Description("")
   String locationSensorComponentPallette();
@@ -2832,6 +2836,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RotatesProperties();
 
+  @DefaultMessage("RotationAngle")
+  @Description("")
+  String RotationAngleProperties();
+
   @DefaultMessage("Selection")
   @Description("")
   String SelectionProperties();
@@ -3184,13 +3192,25 @@ public interface OdeMessages extends Messages {
   @Description("")
   String XAccelProperties();
 
+  @DefaultMessage("XAngularVelocity")
+  @Description("")
+  String XAngularVelocityProperties();
+
   @DefaultMessage("YAccel")
   @Description("")
   String YAccelProperties();
 
+  @DefaultMessage("YAngularVelocity")
+  @Description("")
+  String YAngularVelocityProperties();
+
   @DefaultMessage("ZAccel")
   @Description("")
   String ZAccelProperties();
+
+  @DefaultMessage("ZAngularVelocity")
+  @Description("")
+  String ZAngularVelocityProperties();
 
   @DefaultMessage("Width")
   @Description("")
@@ -3801,6 +3821,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String textToTranslateParams();
 
+  @DefaultMessage("xAngularVelocity")
+  @Description("")
+  String xAngularVelocityParams();
+
+  @DefaultMessage("yAngularVelocity")
+  @Description("")
+  String yAngularVelocityParams();
+
+  @DefaultMessage("zAngularVelocity")
+  @Description("")
+  String zAngularVelocityParams();
+
+  @DefaultMessage("timestamp")
+  @Description("")
+  String timestampParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -4177,6 +4213,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Shaking")
   @Description("")
   String ShakingEvents();
+
+  @DefaultMessage("GyroscopeChanged")
+  @Description("")
+  String GyroscopeChangedEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -5097,6 +5137,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GameClientHelpStringComponentPallette();
 
+  @DefaultMessage("<p>Non-visible component that can measure angular velocity in three dimensions in units of degrees per second.</p><p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have a gyroscope sensor.</p>")
+  @Description("")
+  String GyroscopeSensorHelpStringComponentPallette();
+
   @DefaultMessage("<p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p>")
   @Description("")
   String HorizontalArrangementHelpStringComponentPallette();
@@ -5593,5 +5637,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PostMedia")
   @Description("")
   String PostMediaMethods();
+
+  @DefaultMessage("Warning!")
+  @Description("")
+  String warningDialogTitle();
+
+  @DefaultMessage("The useFront property has been removed from your Camera Component")
+  @Description("")
+  String useFrontDeprecated();
 
 }

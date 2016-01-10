@@ -425,6 +425,7 @@ Blockly.Blocks.component_set_get = {
     this.typeName = xmlElement.getAttribute('component_type');
     this.setOrGet = xmlElement.getAttribute('set_or_get');
     this.propertyName = xmlElement.getAttribute('property_name');
+    this.propertyObject = this.getPropertyObject(this.propertyName);
     var isGenericString = xmlElement.getAttribute('is_generic');
     this.isGeneric = (isGenericString == "true" ? true : false);
     if(!this.isGeneric) {
@@ -438,7 +439,9 @@ Blockly.Blocks.component_set_get = {
 
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
-      function() {return thisBlock.getPropertyDropDownList(); },
+      function() {
+        return thisBlock.getPropertyDropDownList();
+      },
       // change the output type and tooltip to match the new selection
       function(selection) {
         this.setValue(selection);
@@ -512,7 +515,13 @@ Blockly.Blocks.component_set_get = {
     this.setTooltip(this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
-    //this.typeblock = this.createTypeBlock();
+
+    if (this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+      // [lyn, 2015/12/27] mark deprecated properties as bad
+      this.badBlock();
+      this.setDisabled(true);
+    }
+
   },
 
   setTypeCheck : function() {
@@ -540,7 +549,9 @@ Blockly.Blocks.component_set_get = {
   getPropertyDropDownList : function() {
     var dropDownList = [];
     var propertyNames = [];
-    if(this.setOrGet == "set") {
+    if (this.propertyObject.deprecated == "true") { // [lyn, 2015/12/27] Handle deprecated properties specially
+      propertyNames = [this.propertyObject.name]; // Only list the deprecated property name and no others
+    } else if(this.setOrGet == "set") {
       propertyNames = Blockly.ComponentTypes[this.typeName].setPropertyList;
     } else {
       propertyNames = Blockly.ComponentTypes[this.typeName].getPropertyList;
@@ -738,6 +749,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL,
+  "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL,
   "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL,
   "HorizontalArrangment": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL,
@@ -794,6 +806,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL,
+  "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_PROPERTIES_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL,
   "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL,
   "HorizontalArrangment": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL,
@@ -850,6 +863,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL,
   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL,
   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL,
+  "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_EVENTS_HELPURL,
   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL,
   "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
   "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL,
@@ -899,6 +913,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
    "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL,
    "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL,
    "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL,
+   "GyroscopeSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_METHODS_HELPURL,
    "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL,
    "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
    "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL,
