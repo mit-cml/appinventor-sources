@@ -436,6 +436,17 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '</block>' +
          '</xml>';}},
 
+    {matchingMutatorAttributes:{component_type:"FirebaseDB", method_name:"GetValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return '' +
+            '<xml>' +
+            '<block type="component_method">' +
+              //mutator generator
+            Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+            '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+            '</block>' +
+            '</xml>';}},
+
     // Notifer.ShowTextDialog has cancelable default to TRUE
     {matchingMutatorAttributes:{component_type:"Notifier", method_name:"ShowTextDialog"},
      mutatorXMLStringFunction: function(mutatorAttributes) {

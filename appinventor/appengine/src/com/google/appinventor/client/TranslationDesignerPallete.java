@@ -312,6 +312,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.WebViewerHelpStringComponentPallette();
     } else if (key.equals("YandexTranslate-helpString")) {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
+    } else if (key.equals("FirebaseDB-helpString")) {
+      value = MESSAGES.FirebaseDBHelpStringComponentPallette();
     }
     return value;
   }

@@ -198,4 +198,11 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_SIZING = "sizing";
 
+  /**
+   * FirebaseURL -- A type of String property that has a special default value
+   * selected via a checkbox.
+   */
+
+  public static final String PROPERTY_TYPE_FIREBASE_URL = "FirbaseURL";
+
 }

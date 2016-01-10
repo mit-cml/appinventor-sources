@@ -66,6 +66,9 @@ public final class Compiler {
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
 
+  // Copied from SdkLevel.java (which isn't in our class path so we duplicate it here)
+  private static final String LEVEL_GINGERBREAD_MR1 = "10";
+
   public static final String RUNTIME_FILES_DIR = "/files/";
 
   // Build info constants.  Used for permissions, libraries and assets.
@@ -353,6 +356,11 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
+      }
+
+      // Firebase requires at least API 10 (Gingerbread MR1)
+      if (componentTypes.contains("FirebaseDB") && !isForCompanion) {
+        minSDK = LEVEL_GINGERBREAD_MR1;
       }
 
       for (String permission : permissionsNeeded) {

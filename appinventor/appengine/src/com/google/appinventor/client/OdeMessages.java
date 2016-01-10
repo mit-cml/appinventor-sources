@@ -2692,6 +2692,26 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ServiceURLProperties();
 
+  @DefaultMessage("FirebaseURL")
+  @Description("")
+  String FirebaseURLProperties();
+
+  @DefaultMessage("ProjectBucket")
+  @Description("")
+  String ProjectBucketProperties();
+
+  @DefaultMessage("DeveloperBucket")
+  @Description("")
+  String DeveloperBucketProperties();
+
+  @DefaultMessage("FirebaseToken")
+  @Description("")
+  String FirebaseTokenProperties();
+
+  @DefaultMessage("PrivateUserStorage")
+  @Description("")
+  String PrivateUserStorageProperties();
+
   @DefaultMessage("Scrollable")
   @Description("")
   String ScrollableProperties();
@@ -4014,6 +4034,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebServiceErrorEvents();
 
+  @DefaultMessage("FirebaseError")
+  @Description("")
+  String FirebaseErrorEvents();
+
   @DefaultMessage("LocationChanged")
   @Description("")
   String LocationChangedEvents();
@@ -4133,6 +4157,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ValueStored")
   @Description("")
   String ValueStoredEvents();
+
+  @DefaultMessage("DataChanged")
+  @Description("")
+  String DataChangedEvents();
 
   @DefaultMessage("DirectMessagesReceived")
   @Description("")
@@ -4803,6 +4831,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StoreValueMethods();
 
+  @DefaultMessage("InitializeValue")
+  @Description("")
+  String InitializeValueMethods();
+
   @DefaultMessage("Authorize")
   @Description("")
   String AuthorizeMethods();
@@ -5322,6 +5354,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String YandexTranslateHelpStringComponentPallette();
 
+  @DefaultMessage("A non-visible component allowing you to store data on a Web database powered by Firebase. " +
+      "This allows the users of your app to share data with each other. " +
+      "By default, data will be stored in App Inventor''s shared Firebase database. " +
+      "Otherwise, you can specify the URL for your own Firebase in the \"FirebaseURL\" property. " +
+      "Learn more at <a target=\"_blank\" href=\"http://www.firebase.com\">Firebase.com</a>.")
+  @Description("")
+  String FirebaseDBHelpStringComponentPallette();
+
 
   //Ode.java messages
   @DefaultMessage("Welcome to App Inventor 2!")
@@ -5637,6 +5677,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PostMedia")
   @Description("")
   String PostMediaMethods();
+
+  @DefaultMessage("Unauthenticate")
+  @Description("")
+  String UnauthenticateMethods();
+
+  @DefaultMessage("Use Default")
+  @Description("Used by the MockFirebaseDB to display default checkbox")
+  String useDefault();
+
+  @DefaultMessage("DefaultURL")
+  @Description("")
+  String DefaultURLProperties();
 
   @DefaultMessage("Warning!")
   @Description("")
