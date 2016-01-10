@@ -206,7 +206,7 @@ public class Sound extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "The minimum interval between sounds.  If you play a sound, " +
+      description = "The minimum interval, in milliseconds, between sounds.  If you play a sound, " +
       "all further Play() calls will be ignored until the interval has elapsed.")
   public int MinimumInterval() {
     return minimumInterval;

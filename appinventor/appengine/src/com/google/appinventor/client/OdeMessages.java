@@ -2588,7 +2588,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MessageProperties();
 
-  @DefaultMessage("MinimumInterval")
+  @DefaultMessage("MinimumInterval (ms)")
   @Description("")
   String MinimumIntervalProperties();
 
