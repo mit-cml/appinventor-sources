@@ -166,10 +166,14 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     try {
       initHardwareDeviceException = null;
       hardwareMap = opMode.hardwareMap;
-      Object hardwareDevice = initHardwareDeviceImpl();
-      this.hardwareDevice = (hardwareDevice instanceof HardwareDevice) ?
-          ((HardwareDevice) hardwareDevice) : null;
-      hardwareDevice.toString(); // Will throw NullPointerException if hardwareDevice is null.
+      Object hardware = initHardwareDeviceImpl();
+      hardwareDevice = (hardware instanceof HardwareDevice) ?
+          ((HardwareDevice) hardware) : null;
+
+      // hardwareDevice is allowed to be null, but hardware should not be null.
+      if (hardware == null) {
+        throw new NullPointerException();
+      }
     } catch (Throwable e) {
       initHardwareDeviceException = e;
     }
