@@ -22,6 +22,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDefaultURLPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGpioDirectionsChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
@@ -242,6 +243,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new LanguageChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SIZING)) {
       return new YoungAndroidSizingChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FIREBASE_URL)) {
+      return new YoungAndroidDefaultURLPropertyEditor("DEFAULT");
     } else {
       return new TextPropertyEditor();
     }

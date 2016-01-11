@@ -369,6 +369,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return true;
   }
 
+  protected boolean isPropertyforYail(String propertyName) {
+    // By default we use the same criterion as persistance
+    // This method can then be overriden by the invididual
+    // component Mocks
+    return isPropertyPersisted(propertyName);
+  }
+
   /**
    * Invoked after a component is created from the palette.
    *
@@ -442,6 +449,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
     if (!isPropertyVisible(name)) {
       type |= EditableProperty.TYPE_INVISIBLE;
+    }
+    if (isPropertyforYail(name)) {
+      type |= EditableProperty.TYPE_DOYAIL;
     }
     properties.addProperty(name, defaultValue, caption, editor, type);
   }

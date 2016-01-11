@@ -354,7 +354,7 @@ Blockly.Backpack.prototype.position_ = function() {
 Blockly.Backpack.prototype.openBackpackDoc = function(e) {
   var options = [];
   var backpackDoc = {enabled : true};
-  backpackDoc.text = "Backpack documentation";
+  backpackDoc.text = Blockly.Msg.SHOW_BACKPACK_DOCUMENTATION;
   backpackDoc.callback = function() {
     var dialog = new Blockly.Util.Dialog(Blockly.Msg.BACKPACK_DOC_TITLE,
                                          Blockly.Msg.BACKPACK_DOCUMENTATION,

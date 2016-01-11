@@ -405,29 +405,8 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
 
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
-//TODO: I don't think any of this is useful anymore...Delete?
-    /*Blockly.Msg.LANG_MATH_ONLIST_HELPURL = '';
-     Blockly.Msg.LANG_MATH_ONLIST_INPUT_OFLIST = 'de la lista';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SUM = 'suma';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'media';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'mediana';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'moda';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'desviación estándar';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'elemento aleatorio';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Devolver la suma de todos los números de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Devuelve el menor de sus argumentos.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Devuelve el mayor de sus argumentos.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Devuelve la media aritmmética de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Devuelve la mediana de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Devuelve una lista con el o los elemento(s) más comunes de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Devuelve la desviación estándar de la lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_RANDOM = 'Devuelve aleatoriamente un elemento de la vista.';
-
-     Blockly.Msg.LANG_MATH_CONSTRAIN_HELPURL = 'http://en.wikipedia.org/wiki/Clamping_%28graphics%29';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_CONSTRAIN = 'limitar';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_LOW = 'entre (inferior)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'y (superior)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Limitar un número para que esté comprendido entre los límites especificados (ambos incluidos).';*/
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Devuelve el menor de sus argumentos.';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Devuelve el mayor de sus argumentos.';
 
 
     Blockly.Msg.LANG_MATH_DIVIDE = '\u00F7';
@@ -1127,6 +1106,11 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensors.html#barcodescannerproperties';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensors.html#barcodescannerevents';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensors.html#barcodescannermethods';
+
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_HELPURL = "/reference/components/sensors.html#GyroscopeSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#gyroscopesensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#gyroscopesensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_METHODS_HELPURL = '/reference/components/sensors.html#gyroscopesensormethods';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensors.html#LocationSensor";
     Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#locationsensorproperties';

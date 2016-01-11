@@ -181,6 +181,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     boolean definitionWritten = false;
     for (Map.Entry<String, Property> entry : component.properties.entrySet()) {
       Property property = entry.getValue();
+      if (property.isDeprecated()) continue;
       if (property.isUserVisible() || component.designerProperties.containsKey(property.name)) {
         if (!definitionWritten) {
           writer.write("<dl>\n");
@@ -206,6 +207,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     boolean definitionWritten = false;
     for (Map.Entry<String, Event> entry : component.events.entrySet()) {
       Event event = entry.getValue();
+      if (event.deprecated) continue;
       if (event.userVisible) {
         if (!definitionWritten) {
           writer.write("<dl>\n");
@@ -227,6 +229,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     boolean definitionWritten = false;
     for (Map.Entry<String, Method> entry : component.methods.entrySet()) {
       Method method = entry.getValue();
+      if (method.deprecated) continue;
       if (method.userVisible) {
         if (!definitionWritten) {
           writer.write("<dl>\n");

@@ -2184,7 +2184,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (string-empty? text)
   (= 0 (string-length text)))
 
-(define (text-deobsfucate text confounder)
+(define (text-deobfuscate text confounder)
   (let ((lc confounder))
     (while (< (string-length lc) (string-length text))
            (set! lc (string-append lc lc)))

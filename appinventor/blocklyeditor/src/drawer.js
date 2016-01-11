@@ -196,6 +196,7 @@ Blockly.Drawer.instanceNameToXMLArray = function(instanceName) {
   var propertyObjects = Blockly.ComponentTypes[typeName].componentInfo.blockProperties;
   for(var i=0;i<propertyObjects.length;i++) {
     //create non-generic get block
+    if (propertyObjects[i].deprecated === "true") continue;
     if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "read-only") {
       mutatorAttributes = {set_or_get:"get", component_type: typeName, instance_name: instanceName, property_name: propertyObjects[i].name, is_generic: "false"};
       xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
@@ -221,6 +222,7 @@ Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
   //create generic method blocks
   var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
   for(var i=0;i<methodObjects.length;i++) {
+    if (methodObjects[i].deprecated === "true") continue;
     mutatorAttributes = {component_type: typeName, method_name: methodObjects[i].name, is_generic:"true"};
     xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
   }
@@ -229,6 +231,7 @@ Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
   var propertyObjects = Blockly.ComponentTypes[typeName].componentInfo.blockProperties;
   for(var i=0;i<propertyObjects.length;i++) {
     //create generic get block
+    if (propertyObjects[i].deprecated === "true") continue;
     if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "read-only") {
       mutatorAttributes = {set_or_get: "get", component_type: typeName, property_name: propertyObjects[i].name, is_generic: "true"};
       xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
@@ -432,6 +435,17 @@ Blockly.Drawer.defaultBlockXMLStrings = {
          '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
          '</block>' +
          '</xml>';}},
+
+    {matchingMutatorAttributes:{component_type:"FirebaseDB", method_name:"GetValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) {
+        return '' +
+            '<xml>' +
+            '<block type="component_method">' +
+              //mutator generator
+            Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+            '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+            '</block>' +
+            '</xml>';}},
 
     // Notifer.ShowTextDialog has cancelable default to TRUE
     {matchingMutatorAttributes:{component_type:"Notifier", method_name:"ShowTextDialog"},

@@ -143,6 +143,7 @@ public class StoredData {
   // Project files
   // Note: FileData has to be Serializable so we can put it into
   //       memcache.
+  @Cached
   @Unindexed
   static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
@@ -179,7 +180,7 @@ public class StoredData {
 
     // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
     // GCS file name (sans bucket).
-    boolean isGCS;
+    Boolean isGCS = false;
 
     // The GCS filename, sans bucket name
     String gcsName;
@@ -189,6 +190,10 @@ public class StoredData {
 
     // DateTime of last backup only used if GCS is enabled
     long lastBackup;
+
+    String userId;              // The userId which owns this file
+                                // if null or the empty string, we haven't initialized
+                                // it yet
   }
 
   // MOTD data.

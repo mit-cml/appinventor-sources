@@ -430,29 +430,8 @@ Blockly.Msg.it_it.switch_language_to_italian = {
 
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
-//TODO: I don't think any of this is useful anymore...Delete?
-    /*Blockly.Msg.LANG_MATH_ONLIST_HELPURL = '';
-     Blockly.Msg.LANG_MATH_ONLIST_INPUT_OFLIST = 'della lista';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SUM = 'somma';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'media';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'mediano';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'modo';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'deviazione standard';
-     Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'elemento casuale';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Riporta la somma di tutti i numeri della lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Riporta il più piccolo fra loro..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Riporta il più grande fra loro..';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Riporta la media aritmetica della lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Riporta il numero mediano della lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Riporta una lista con gli elementi più comuni.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Riporta la deviazione standard della lista.';
-     Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_RANDOM = 'Riporta un elemento casuale della lista.';
-
-     Blockly.Msg.LANG_MATH_CONSTRAIN_HELPURL = 'http://en.wikipedia.org/wiki/Clamping_%28graphics%29';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_CONSTRAIN = 'vincola';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_LOW = 'tra (basso)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_INPUT_HIGH = 'e (alto)';
-     Blockly.Msg.LANG_MATH_CONSTRAIN_TOOLTIP = 'Vincola un numero tra i limiti specificati.';*/
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Riporta il più piccolo fra loro..';
+    Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Riporta il più grande fra loro..';
 
     Blockly.Msg.LANG_MATH_DIVIDE = '\u00F7';
     Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO = 'modulo di';
@@ -1117,6 +1096,11 @@ Blockly.Msg.it_it.switch_language_to_italian = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensors.html#barcodescannerproperties';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensors.html#barcodescannerevents';
     Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensors.html#barcodescannermethods';
+
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_HELPURL = "/reference/components/sensors.html#GyroscopeSensor";
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#gyroscopesensorproperties';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#gyroscopesensorevents';
+    Blockly.Msg.LANG_COMPONENT_BLOCK_GYROSCOPESENSOR_METHODS_HELPURL = '/reference/components/sensors.html#gyroscopesensormethods';
 
     Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensors.html#LocationSensor";
     Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#locationsensorproperties';

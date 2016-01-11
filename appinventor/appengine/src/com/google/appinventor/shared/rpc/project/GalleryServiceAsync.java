@@ -75,16 +75,31 @@ public interface GalleryServiceAsync {
   void getFeaturedApp(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
   /**
+   * @see @link{@link GalleryService#getTutorialApp(int, int)
+   */
+  void getTutorialApp(int start, int count, AsyncCallback<GalleryAppListResult> callback);
+
+  /**
    * @see @link{@link GalleryService#isFeatured(long)
    */
   void isFeatured(long galleryId, AsyncCallback<Boolean> callback);
+
+  /**
+   * @see @link{@link GalleryService#isTutorial(long)
+   */
+  void isTutorial(long galleryId, AsyncCallback<Boolean> callback);
 
   /**
    * @see @link{@link GalleryService#markReportAsResolved(long, long)
    */
   void markAppAsFeatured(long galleryId, AsyncCallback<Boolean> callback);
 
-   /**
+  /**
+   * @see @link{@link GalleryService#markReportAsResolved(long, long)
+   */
+  void markAppAsTutorial(long galleryId, AsyncCallback<Boolean> callback);
+
+  /**
    * @see @link{@link GalleryService#getMostDownloadedApps(int, int)
    */
   void getMostDownloadedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
@@ -137,11 +152,6 @@ public interface GalleryServiceAsync {
    * salvage the gallery app by given galleryId
    */
   void salvageGalleryApp(long galleryId, AsyncCallback<java.lang.Void> callback);
-
-  /**
-   * salvage all gallery apps
-   */
-  void salvageAllGalleryApps(AsyncCallback<java.lang.Void> callback);
 
   /**
    * @see @link{@link GalleryService#isLikedByUser(long)
