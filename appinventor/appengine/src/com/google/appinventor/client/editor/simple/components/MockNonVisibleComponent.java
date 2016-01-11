@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * @author sharon@google.com (Sharon Perl)
  */
-public final class MockNonVisibleComponent extends MockComponent {
+public class MockNonVisibleComponent extends MockComponent {
 
   private final Icon iconWidget;
 
