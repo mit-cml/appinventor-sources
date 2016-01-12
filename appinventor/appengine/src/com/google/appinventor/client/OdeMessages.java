@@ -5469,7 +5469,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createNoProjectsDialogMessage2();
 
-  @DefaultMessage("Welcome to App Inventor!")
+  @DefaultMessage("Welcome to MIT App Inventor!")
   @Description("")
   String createWelcomeDialogText();
 
@@ -5481,7 +5481,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createWelcomeDialogButton();
 
-  @DefaultMessage("Do Not Show Again")
+  @DefaultMessage("Do not show this message again")
   @Description("")
   String doNotShow();
 

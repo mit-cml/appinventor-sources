@@ -1121,9 +1121,11 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-DialogBox {
   background-color: white;
-  border-left: 4px solid #8fc202;
-  border-right: 4px solid #8fc202;
-  border-bottom: 4px solid #8fc202;
+  /*border-top: 5px solid #8fc202;
+  border-left: 7px solid #8fc202;
+  border-right: 7px solid #8fc202;
+  border-bottom: 7px solid #8fc202; */
+  border: 7px solid #FFFFFF;
 }
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1146,10 +1148,10 @@ select.ode-PropertyEditor[disabled] {
 .ode-DialogBox .Caption {
   background-color: #8fc202;
   color: white;
-  font-weight: bold;
-  font-size: 13px;
-  padding: 5px 10px;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
+  /*font-weight: bold;
+  font-size: 13px; */
+  padding: 15px 10px;
+  /*box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);*/
 
 }
 
