@@ -22,6 +22,7 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -54,25 +55,13 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
       @Override
       public boolean validate(String value) {
-        //Pattern validText = Pattern.compile("[\\p{L}][\\p{L}0-9_]*", Pattern.UNICODE_CHARACTER_CLASS);
-        //String newString = validText.toString();
-        if(!value.matches("[A-Za-z][A-Za-z0-9_]*") && value.length() > 0) {
+        errorMessage = TextValidators.getErrorMessage(value);
+        if (errorMessage.length()>0){
           disableOkButton();
-          String noWhitespace = "[\\S]+";
-          String firstCharacterLetter = "[A-Za-z].*";
-          if(!value.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
-            errorMessage = "Project names cannot contain spaces";
-          } else if (!value.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
-            errorMessage = "Project names must begin with a letter";
-          } else { //The text contains a character that is not a letter, number, or underscore
-            errorMessage = "Invalid character. Project names can only contain letters, numbers, and underscores";
-          }
           return false;
-        } else { //this is valid text, return true
-          enableOkButton();
-          errorMessage = "";
-          return true;
         }
+          enableOkButton();
+          return true;
       }
 
       @Override

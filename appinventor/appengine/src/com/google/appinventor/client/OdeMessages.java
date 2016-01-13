@@ -1965,6 +1965,18 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new project name would be the same as an existing one")
   String duplicateProjectNameError(String projectName);
 
+  @DefaultMessage("Project names cannot contain spaces")
+  @Description("Error shown when user types space into project name.")
+  String whitespaceProjectNameError();
+
+  @DefaultMessage("Project names must begin with a letter")
+  @Description("Error shown when user does not type letter as first character in project name.")
+  String firstCharProjectNameError();
+
+  @DefaultMessage("Invalid character. Project names can only contain letters, numbers, and underscores")
+  @Description("Error shown when user types invalid character into project name.")
+  String invalidCharProjectNameError();
+
   // Used in youngandroid/YoungAndroidFormUpgrader.java
 
   @DefaultMessage("This project was created with an older version of the App Inventor " +
