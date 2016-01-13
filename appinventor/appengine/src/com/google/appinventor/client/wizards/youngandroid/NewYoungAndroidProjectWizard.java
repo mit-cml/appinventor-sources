@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
@@ -41,11 +42,10 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
   // UI element for project name
   private LabeledTextBox projectNameTextBox;
 
-
   /**
    * Creates a new YoungAndroid project wizard.
    */
-  public NewYoungAndroidProjectWizard() {
+  public NewYoungAndroidProjectWizard(final ProjectToolbar toolbar) {
     super(MESSAGES.newYoungAndroidProjectWizardCaption());
 
     // Initialize the UI
@@ -104,6 +104,21 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
 
     page.add(projectNameTextBox);
     addPage(page);
+
+    // Create cancel command handler. This handler
+    // arranges to re-enable the project start button
+    // Note that toolbar will be null if we are called
+    // from the Project menu instead of the Start button
+    // on the project toolbar
+
+    if (toolbar != null) {
+      initCancelCommand(new Command() {
+        @Override
+        public void execute() {
+          toolbar.enableStartButton();
+        }
+      });
+    }
 
     // Create finish command (create a new Young Android project)
     initFinishCommand(new Command() {

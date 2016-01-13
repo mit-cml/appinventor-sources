@@ -383,6 +383,11 @@ public class Ode implements EntryPoint {
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
+    // If we started a project, then the start button was disabled (to avoid
+    // a second press while the new project wizard was starting (aka we "debounce"
+    // the button). When the person switches to the projects list view again (here)
+    // we re-enable it.
+    projectToolbar.enableStartButton();
   }
 
   /**

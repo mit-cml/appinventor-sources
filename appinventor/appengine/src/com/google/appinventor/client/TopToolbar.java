@@ -274,7 +274,7 @@ public class TopToolbar extends Composite {
   private static class NewAction implements Command {
     @Override
     public void execute() {
-      new NewYoungAndroidProjectWizard().center();
+      new NewYoungAndroidProjectWizard(null).center();
       // The wizard will switch to the design view when the new
       // project is created.
     }
