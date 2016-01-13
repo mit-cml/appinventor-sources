@@ -64,6 +64,9 @@ public class TopPanel extends Composite {
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
   private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
 
+  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+  private static final String WINDOW_OPEN_LOCATION = "_ai2";
+
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   final Ode ode = Ode.getInstance();
@@ -123,7 +126,7 @@ public class TopPanel extends Composite {
     String guideUrl = config.getGuideUrl();
     if (!Strings.isNullOrEmpty(guideUrl)) {
       TextButton guideLink = new TextButton(MESSAGES.guideTabName());
-      guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl, "_ai2", "scrollbars=1"));
+      guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl));
       guideLink.setStyleName("ode-TopPanelButton");
       links.add(guideLink);
     }
@@ -133,7 +136,7 @@ public class TopPanel extends Composite {
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
       TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
       feedbackLink.addClickHandler(
-          new WindowOpenClickHandler(feedbackUrl, "_blank", "scrollbars=1"));
+        new WindowOpenClickHandler(feedbackUrl));
       feedbackLink.setStyleName("ode-TopPanelButton");
       links.add(feedbackLink);
     }
@@ -267,7 +270,7 @@ public class TopPanel extends Composite {
     logo.setStyleName("ode-Logo");
     String logoUrl = ode.getSystemConfig().getLogoUrl();
     if (!Strings.isNullOrEmpty(logoUrl)) {
-      logo.addClickHandler(new WindowOpenClickHandler(logoUrl, "_ai2", "scrollbars=1"));
+      logo.addClickHandler(new WindowOpenClickHandler(logoUrl));
     }
     panel.add(logo);
     panel.setCellWidth(logo, "50px");
@@ -324,18 +327,14 @@ public class TopPanel extends Composite {
 
   private static class WindowOpenClickHandler implements ClickHandler {
     private final String url;
-    private final String name;
-    private final String features;
 
-    WindowOpenClickHandler(String url, String name, String features) {
+    WindowOpenClickHandler(String url) {
       this.url = url;
-      this.name = name;
-      this.features = features;
     }
 
     @Override
     public void onClick(ClickEvent clickEvent) {
-      Window.open(url, name, features);
+      Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
     }
   }
 
