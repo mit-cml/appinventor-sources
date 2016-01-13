@@ -190,7 +190,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty(description = "Sets visibility of ShowFilterBar. True will show the bar, " +
-      "False will hide it.")
+      "false will hide it.")
   public void ShowFilterBar(boolean showFilter) {
     this.showFilter = showFilter;
     if (showFilter) {

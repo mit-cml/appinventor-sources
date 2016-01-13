@@ -90,7 +90,7 @@ public class TimePicker extends ButtonBase {
   * @return hour in 24-hour format
   */
   @SimpleProperty(
-      description = "The minute of the last time set using the time picker",
+      description = "The minute of the last time set using the time picker.",
       category = PropertyCategory.APPEARANCE)
   public int Minute() {
     return minute;
@@ -101,7 +101,7 @@ public class TimePicker extends ButtonBase {
    * @return instant of the date
    */
   @SimpleProperty(
-    description = "The instant of the last time set using the time picker",
+    description = "The instant of the last time set using the time picker.",
     category = PropertyCategory.APPEARANCE)
   public Calendar Instant() {
     return instant;

@@ -30,8 +30,8 @@ import android.view.WindowManager;
 @DesignerComponent(version = YaVersion.LISTPICKER_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
     description = "<p>A button that, when clicked on, displays a list of " +
-    "texts for the user to choose among. The texts can be specified through " +
-    "the Designer or Blocks Editor by setting the " +
+    "text elements for the user to choose among. The text elements can be " +
+    "specified through the Designer or Blocks Editor by setting the " +
     "<code>ElementsFromString</code> property to their string-separated " +
     "concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or " +
     "by setting the <code>Elements</code> property to a List in the Blocks " +

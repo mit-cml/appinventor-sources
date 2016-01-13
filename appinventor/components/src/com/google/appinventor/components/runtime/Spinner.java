@@ -31,7 +31,7 @@ import com.google.appinventor.components.runtime.util.YailList;
         " (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the " +
         "<code>Elements</code> property to a List in the Blocks editor. " +
         "Spinners are created with the first item already selected. So selecting " +
-        " it does not generate an After Picking event. Consequently it's useful to make the " +
+        " it does not generate an After Picking event. Consequently it is useful to make the " +
         " first Spinner item be a non-choice like \"Select from below...\". </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
@@ -110,7 +110,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   /**
    * Elements property getter method
    */
-  @SimpleProperty(description = "returns a list of text elements to be picked from.",
+  @SimpleProperty(description = "Returns a list of text elements to be picked from.",
       category = PropertyCategory.BEHAVIOR)
   public YailList Elements(){
     return items;
@@ -119,7 +119,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   /**
    * Elements property setter method
    */
-  @SimpleProperty(description = "adds the passed text element to the Spinner list",
+  @SimpleProperty(description = "Adds the passed text element to the Spinner list.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
     // The following conditional handles special cases for the fact that
@@ -173,7 +173,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   /**
    * To display the dropdown list without the user having to click it
    */
-  @SimpleFunction(description = "displays the dropdown list for selection, " +
+  @SimpleFunction(description = "Displays the dropdown list for selection, " +
       "same action as when the user clicks on the spinner.")
   public void DisplayDropdown(){
     view.performClick();

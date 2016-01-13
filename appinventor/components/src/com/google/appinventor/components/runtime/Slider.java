@@ -233,7 +233,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = Component.SLIDER_MIN_VALUE + "")
   @SimpleProperty(description = "Sets the minimum value of slider.  Changing the minimum value " +
-      "also resets Thumbposition to be halfway between the (new) minimum and the maximum. " +
+      "also resets the thumb position to be halfway between the (new) minimum and the maximum. " +
       "If the new minimum is greater than the current maximum, then minimum and maximum will " +
       "both be set to this value.  Setting MinValue resets the thumb position to halfway " +
       "between MinValue and MaxValue and signals the PositionChanged event.",
@@ -264,7 +264,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = Component.SLIDER_MAX_VALUE + "")
   @SimpleProperty(description = "Sets the maximum value of slider.  Changing the maximum value " +
-      "also resets Thumbposition to be halfway between the minimum and the (new) maximum. " +
+      "also resets the thumb position to be halfway between the minimum and the (new) maximum. " +
       "If the new maximum is less than the current minimum, then minimum and maximum will both " +
       "be set to this value.  Setting MaxValue resets the thumb position to halfway " +
       "between MinValue and MaxValue and signals the PositionChanged event.",

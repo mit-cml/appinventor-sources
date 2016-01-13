@@ -141,7 +141,7 @@ public final class WebViewer extends AndroidViewComponent {
    * @return string
    */
   @SimpleProperty(description = "Gets the WebView's String, which is viewable through " +
-      "Javascript in the WebView as the window.AppInventor object",
+      "Javascript in the WebView as the window.AppInventor object.",
       category = PropertyCategory.BEHAVIOR)
   public String WebViewString() {
     return wvInterface.getWebViewString();
@@ -199,7 +199,7 @@ public final class WebViewer extends AndroidViewComponent {
    * @return URL of the page the WebVewier should load
    */
   @SimpleProperty(
-      description = "URL of the page the WebViewer should initially open to.  " +
+      description = "When opening, the WebViewer will initially load to this page.  " +
           "Setting this will load the page.",
       category = PropertyCategory.BEHAVIOR)
   public String HomeUrl() {
@@ -240,7 +240,7 @@ public final class WebViewer extends AndroidViewComponent {
    * @return title of the page being viewed
    */
   @SimpleProperty(
-      description = "Title of the page currently viewed",
+      description = "Title of the page currently being viewed.",
       category = PropertyCategory.BEHAVIOR)
   public String CurrentPageTitle() {
     return (webview.getTitle() == null) ? "" : webview.getTitle();
@@ -357,7 +357,7 @@ public final class WebViewer extends AndroidViewComponent {
    *  Load the given URL
    */
   @SimpleFunction(
-      description = "Load the page at the given URL.")
+      description = "Loads the page at the given URL.")
   public void GoToUrl(String url) {
     webview.loadUrl(url);
   }
@@ -384,7 +384,7 @@ public final class WebViewer extends AndroidViewComponent {
    * @return true if prompting is  required.  False assumes permission is granted.
    */
 
-  @SimpleProperty(description = "If True, then prompt the user of the WebView to give permission to access the geolocation API. " +
+  @SimpleProperty(description = "If true, then prompt the user of the WebView to give permission to access the geolocation API. " +
       "If False, then assume permission is granted.")
   public boolean PromptforPermission() {
     return prompt;
