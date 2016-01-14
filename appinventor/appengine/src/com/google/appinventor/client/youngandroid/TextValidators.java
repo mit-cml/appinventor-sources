@@ -113,11 +113,11 @@ public final class TextValidators {
     String firstCharacterLetter = "[A-Za-z].*";
     if(!filename.matches("[A-Za-z][A-Za-z0-9_]*") && filename.length() > 0) {
       if(!filename.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
-        errorMessage = "Project names cannot contain spaces";
+        errorMessage = MESSAGES.whitespaceProjectNameError();
       } else if (!filename.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
-        errorMessage = "Project names must begin with a letter";
+        errorMessage = MESSAGES.firstCharProjectNameError();
       } else { //The text contains a character that is not a letter, number, or underscore
-        errorMessage = "Invalid character. Project names can only contain letters, numbers, and underscores";
+        errorMessage = MESSAGES.invalidCharProjectNameError();
       }
     }
     return errorMessage;
