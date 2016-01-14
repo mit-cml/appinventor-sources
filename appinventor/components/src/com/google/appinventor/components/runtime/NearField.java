@@ -32,7 +32,9 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     "For now this component supports the reading and writing of text tags only " +
     "(if supported by the device)</p>" +
     "<p>In order to read and write text tags, the component must have its " +
-    "<code>ReadMode</code> property set to True or False respectively.</p>",
+    "<code>ReadMode</code> property set to True or False respectively.</p>" +
+    "<p><strong>Note:</strong> This component will only work on Screen1 of" +
+    " any App Inventor app.</p>",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/nearfield.png")
