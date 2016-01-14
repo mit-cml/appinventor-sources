@@ -145,10 +145,7 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
         @Override
         public boolean validate(String value) {
           errorMessage = TextValidators.getErrorMessage(value);
-          if (errorMessage.length()>0){
-            return false;
-          }
-            return true;
+          return !(errorMessage.length()>0);
         }
 
         @Override
