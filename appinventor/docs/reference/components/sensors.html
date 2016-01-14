@@ -452,6 +452,7 @@
                     </li>
                     <li> <a href="#BarcodeScanner"> BarcodeScanner </a> </li>
                     <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#GyroscopeSensor"> GyroscopeSensor </a></li>
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
                     <li> <a href="#OrientationSensor"> OrientationSensor </a>
@@ -474,7 +475,7 @@
   <dt><code>Enabled</code></dt>
   <dd></dd>
   <dt><code>MinimumInterval</code></dt>
-  <dd>The minimum interval between phone shakes</dd>
+  <dd>The minimum interval, in milliseconds, between phone shakes</dd>
   <dt><code>Sensitivity</code></dt>
   <dd>A number that encodes how sensitive the accelerometer is. The choices are: 1 = weak, 2 = moderate,  3 = strong.</dd>
   <dt><code><em>XAccel</em></code></dt>
@@ -593,6 +594,35 @@ none
   </dl>
 
 
+<h2 id="GyroscopeSensor">GyroscopeSensor</h2>
+
+<p>Non-visible component that can measure angular velocity in three dimensions in units of degrees per second.</p>
+<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have a gyroscope sensor.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Available</em></code></dt>
+  <dd>Indicates whether a gyroscope sensor is available.</dd>
+  <dt><code><em>Enabled</em></code></dt>
+  <dd>If enabled, then sensor events will be generated and <code>XAngularVelocity</code>, <code>YAngularVelocity</code>, and <code>ZAngularVelocity</code> properties will have meaningful values.</dd>
+  <dt><code><em>XAngularVelocity</em></code></dt>
+  <dd>The angular velocity around the X axis, in degrees per second.</dd>
+  <dt><code><em>YAngularVelocity</em></code></dt>
+  <dd>The angular velocity around the Y axis, in degrees per second.</dd>
+  <dt><code><em>ZAngularVelocity</em></code></dt>
+  <dd>The angular velocity around the Z axis, in degrees per second.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GyroscopeChanged(number xAngularVelocity, number yAngularVelocity, number zAngularVelocity, number timestamp)</code></dt>
+  <dd>Indicates that the gyroscope sensor data has changed. The <code>timestamp</code> parameter is the time in nanoseconds at which the event occurred.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
+
 <h2 id="LocationSensor">LocationSensor</h2>
 
 <p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
@@ -656,6 +686,9 @@ component supports the reading and writing of text tags only (if supported by th
 device)</p><p>In order to read and write text tags, the component must
 have its <code>ReadMode</code> property set to True or False
 respectively.</p></p>
+
+<p><strong>Note:</strong> This component will only work on Screen1 of any App
+Inventor app.</p>
 
 <h3>Properties</h3>
 <dl>

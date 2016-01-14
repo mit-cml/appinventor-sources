@@ -383,6 +383,11 @@ public class Ode implements EntryPoint {
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
+    // If we started a project, then the start button was disabled (to avoid
+    // a second press while the new project wizard was starting (aka we "debounce"
+    // the button). When the person switches to the projects list view again (here)
+    // we re-enable it.
+    projectToolbar.enableStartButton();
   }
 
   /**
@@ -1851,6 +1856,46 @@ public class Ode implements EntryPoint {
     HTML message = new HTML("<iframe src=\"" + Url + "\" style=\"border: 0; width: 680px; height: 660px;\"></iframe>");
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * Display a generic warning dialog box.
+   * This method is public because it is intended to be used from other
+   * parts of the client GWT side system.
+   *
+   * Note: We expect our caller to internationalize the messages to be
+   * displayed.
+   *
+   * @param title The title for the dialog box
+   * @param message The message to display
+   * @param buttonString the name of the button, i.e., "OK"
+   */
+
+  public void warningDialog(String title, String messageString, String buttonString) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(title);
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>" + messageString + "</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button okButton = new Button(buttonString);
+    okButton.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    holder.add(okButton);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
   }
