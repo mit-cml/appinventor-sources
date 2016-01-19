@@ -167,7 +167,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Angle property getter.
    */
-  @SimpleProperty(description = "The Angle.",
+  @SimpleProperty(description = "The angle.",
       category = PropertyCategory.BEHAVIOR)
   public double Angle() {
     checkHardwareDevice();
@@ -188,7 +188,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   /**
    * Strength property getter.
    */
-  @SimpleProperty(description = "The Strength.",
+  @SimpleProperty(description = "The strength.",
       category = PropertyCategory.BEHAVIOR)
   public double Strength() {
     checkHardwareDevice();

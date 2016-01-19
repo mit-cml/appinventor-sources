@@ -45,7 +45,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   /**
    * Direction property getter.
    */
-  @SimpleProperty(description = "The Direction, in degrees.",
+  @SimpleProperty(description = "The direction, in degrees.",
       category = PropertyCategory.BEHAVIOR)
   public double Direction() {
     checkHardwareDevice();
@@ -64,7 +64,7 @@ public final class FtcCompassSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     checkHardwareDevice();

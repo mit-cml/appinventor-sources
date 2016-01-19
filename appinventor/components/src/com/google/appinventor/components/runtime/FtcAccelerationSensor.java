@@ -44,7 +44,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * X Acceleration property getter.
    */
-  @SimpleProperty(description = "The X Acceleration, in g's.",
+  @SimpleProperty(description = "The X Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double XAccel() {
     checkHardwareDevice();
@@ -66,7 +66,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Y Acceleration property getter.
    */
-  @SimpleProperty(description = "The Y Acceleration, in g's.",
+  @SimpleProperty(description = "The Y Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double YAccel() {
     checkHardwareDevice();
@@ -88,7 +88,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Z Acceleration property getter.
    */
-  @SimpleProperty(description = "The Z Acceleration, in g's.",
+  @SimpleProperty(description = "The Z Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double ZAccel() {
     checkHardwareDevice();
@@ -110,7 +110,7 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     checkHardwareDevice();

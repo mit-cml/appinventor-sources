@@ -43,7 +43,7 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
   /**
    * Voltage property getter.
    */
-  @SimpleProperty(description = "The Voltage.",
+  @SimpleProperty(description = "The voltage.",
       category = PropertyCategory.BEHAVIOR)
   public double Voltage() {
     checkHardwareDevice();

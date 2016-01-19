@@ -96,7 +96,7 @@ public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     checkHardwareDevice();

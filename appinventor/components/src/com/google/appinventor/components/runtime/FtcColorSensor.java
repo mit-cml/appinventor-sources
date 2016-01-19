@@ -47,7 +47,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   /**
    * Red property getter.
    */
-  @SimpleProperty(description = "The Red values detected by the sensor as an integer.",
+  @SimpleProperty(description = "The red value detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Red() {
     checkHardwareDevice();
@@ -66,7 +66,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   /**
    * Green property getter.
    */
-  @SimpleProperty(description = "The Green values detected by the sensor as an integer.",
+  @SimpleProperty(description = "The green value detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Green() {
     checkHardwareDevice();
@@ -85,7 +85,7 @@ public final class FtcColorSensor extends FtcHardwareDevice {
   /**
    * Blue property getter.
    */
-  @SimpleProperty(description = "The Blue values detected by the sensor as an integer.",
+  @SimpleProperty(description = "The blue value detected by the sensor as an integer.",
       category = PropertyCategory.BEHAVIOR)
   public int Blue() {
     checkHardwareDevice();

@@ -62,7 +62,7 @@ public final class FtcUltrasonicSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
     checkHardwareDevice();
