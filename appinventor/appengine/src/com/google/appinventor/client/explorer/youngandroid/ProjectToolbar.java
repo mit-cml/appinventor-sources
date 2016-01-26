@@ -157,7 +157,8 @@ public class ProjectToolbar extends Toolbar {
               Ode.getInstance().getProjectManager().removeProject(projectId);
               // Show a welcome dialog in case there are no
               // projects saved.
-              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+              if (Ode.getInstance().getProjectManager().getProjects().size() == 0
+                  && Ode.getInstance().getCurrentView() != 2) { //2 is the int for Gallery
                 Ode.getInstance().createNoProjectsDialog(true);
               }
             }
@@ -219,7 +220,7 @@ public class ProjectToolbar extends Toolbar {
         }
       };
       // ok, this is below the call back, but of course it is done first
-      Ode.getInstance().getGalleryService().getApp(p.getGalleryId(),callback);
+      Ode.getInstance().getGalleryService().getApp(p.getGalleryId(), callback);
     }
   }
 

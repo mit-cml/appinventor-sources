@@ -566,7 +566,8 @@ public class TopToolbar extends Composite {
               Ode.getInstance().getProjectManager().removeProject(projectId);
               // Show a welcome dialog in case there are no
               // projects saved.
-              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+              if (Ode.getInstance().getProjectManager().getProjects().size() == 0
+                  && Ode.getInstance().getCurrentView() != 2) { //2 is the int for Gallery
                 Ode.getInstance().createNoProjectsDialog(true);
               }
             }

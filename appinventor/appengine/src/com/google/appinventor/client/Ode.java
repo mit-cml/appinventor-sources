@@ -1390,7 +1390,7 @@ public class Ode implements EntryPoint {
   /**
    * Possibly display the MIT App Inventor "Splash Screen"
    *
-   * @param force Bypass the check to see if they have dimissed this version
+   * @param force Bypass the check to see if they have dismissed this version
    */
   private void createWelcomeDialog(boolean force) {
     if (!shouldShowWelcomeDialog() && !force) {
@@ -1439,7 +1439,8 @@ public class Ode implements EntryPoint {
     getProjectService().getProjects(new AsyncCallback<long[]>() {
         @Override
           public void onSuccess(long [] projectIds) {
-          if (projectIds.length == 0 && !templateLoadingFlag) {
+          if (projectIds.length == 0 && !templateLoadingFlag
+              && Ode.getInstance().getCurrentView() != 2) { //2 is the int for the Gallery
             createNoProjectsDialog(true);
           }
         }
@@ -1460,6 +1461,11 @@ public class Ode implements EntryPoint {
     if (splashConfig.version == 0) {   // Never show splash if version is 0
       return false;             // Check first to avoid others unnecessary calls
     }
+
+    if (currentView == GALLERY) { //don't show the splash if the gallery is the first thing opening
+      return false;
+    }
+
     String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
       getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
     int uversion;
