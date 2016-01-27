@@ -158,7 +158,7 @@ public class ProjectToolbar extends Toolbar {
               // Show a welcome dialog in case there are no
               // projects saved.
               if (Ode.getInstance().getProjectManager().getProjects().size() == 0
-                  && Ode.getInstance().getCurrentView() != 2) { //2 is the int for Gallery
+                  && Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
                 Ode.getInstance().createNoProjectsDialog(true);
               }
             }

@@ -180,7 +180,7 @@ public class Ode implements EntryPoint {
 
   // Remembers the current View
   static final int DESIGNER = 0;
-  static final int PROJECTS = 1;
+  public static final int PROJECTS = 1;
   private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
@@ -1439,8 +1439,9 @@ public class Ode implements EntryPoint {
     getProjectService().getProjects(new AsyncCallback<long[]>() {
         @Override
           public void onSuccess(long [] projectIds) {
+          OdeLog.elog("Current view int:" + String.valueOf(currentView));
           if (projectIds.length == 0 && !templateLoadingFlag
-              && Ode.getInstance().getCurrentView() != 2) { //2 is the int for the Gallery
+              && currentView == PROJECTS) {
             createNoProjectsDialog(true);
           }
         }
