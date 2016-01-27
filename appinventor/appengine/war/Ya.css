@@ -1676,6 +1676,48 @@ textarea::-webkit-input-placeholder {
 .gallery-card {
   width: 160px;
 }
+.gallery-featured-title {
+  font-size:25px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.gallery-featured-description {
+  font-size:13px;
+}
+.gallery-card-featured {
+  width: 41%;
+  text-align: center;
+  background-color: white;
+  border-style:double;
+  border-color:#FFD700;
+  margin: 5px;
+  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 10px;
+  float: left;
+}
+.gallery-card-featured:hover {
+  background-color: #EEE;
+  -webkit-transition: background-color 1s ease;
+  -moz-transition: background-color 1s ease;
+  -o-transition: background-color 1s ease;
+  cursor: pointer;
+}
+.gallery-featured-popup{
+  height:35%;
+  width:35%;
+  text-align:center;
+  padding:15px;
+}
+.gallery-featured-popup-title{
+  font-size:25px;
+  margin:5px;
+}
+.gallery-featured-popup-form{
+  width: 80%;
+  margin:5px;
+  margin-bottom:20px;
+}
 .gallery-app-collection .gallery-card {
   margin: 5px;
   float: left;
@@ -1690,7 +1732,7 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
-  background-color: #EEE;
+ background-color: #EEE;
   -webkit-transition: background-color 1s ease;
   -moz-transition: background-color 1s ease;
   -o-transition: background-color 1s ease;

@@ -125,7 +125,7 @@ public interface GalleryStorageIo {
    * @param galleryId gallery id
    * @return
    */
-  boolean markAppAsFeatured(long galleryId);
+  boolean markAppAsFeatured(long galleryId, String description);
 
   /**
    * mark an app as tutorial

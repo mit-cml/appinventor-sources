@@ -259,6 +259,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       Long galleryId = appFeatureData.galleryKey.getId();
       GalleryApp gApp = new GalleryApp();
       GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+      gApp.setFeatureDescription(appFeatureData.description);
       makeGalleryApp(galleryAppData, gApp);
       apps.add(gApp);
     }
@@ -325,7 +326,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param galleryId gallery id
    * @return
    */
-  public boolean markAppAsFeatured(long galleryId){
+  public boolean markAppAsFeatured(long galleryId, String description){
     final Result<Boolean> result = new Result<Boolean>();
     result.t = false;
     boolean find = false;
@@ -334,13 +335,16 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     for (GalleryAppFeatureData appFeatureData:datastore.query(GalleryAppFeatureData.class).ancestor(galleryKey(galleryId))) {
       find = true;
       datastore.delete(appFeatureData);
+      LOG.info("App " + galleryId + " unfeatured");
       result.t = false;
       break;
     }
     if(!find){
       GalleryAppFeatureData appFeatureData = new GalleryAppFeatureData();
       appFeatureData.galleryKey = galleryKey(galleryId);
+      appFeatureData.description = description;
       datastore.put(appFeatureData);
+      LOG.info("Description added : " + description);
       result.t = true;
     }
     return result.t;

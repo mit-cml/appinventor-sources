@@ -137,7 +137,7 @@ public interface GalleryService extends RemoteService {
    * @param galleryId gallery id
    * @return
    */
-  boolean markAppAsFeatured(long galleryId);
+  boolean markAppAsFeatured(long galleryId, String description);
 
   /**
    * mark an app as tutorial
