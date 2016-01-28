@@ -523,8 +523,8 @@ Blockly.Backpack.prototype.grow = function() {
   if (this.isLarge)
     return;
   var icon = document.getElementById('backpackIcon');
-  var metrics = this.workspace_.getMetrics();
   icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_FULL_);
+  var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1.2)');
   this.MARGIN_SIDE_ = this.MARGIN_SIDE_ / 1.2;
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ * 1.2;
@@ -539,6 +539,8 @@ Blockly.Backpack.prototype.grow = function() {
 Blockly.Backpack.prototype.shrink = function() {
   if (!this.isLarge)
     return;
+  var icon = document.getElementById('backpackIcon');
+  icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
   var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1)');
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 1.2;
