@@ -1965,6 +1965,18 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new project name would be the same as an existing one")
   String duplicateProjectNameError(String projectName);
 
+  @DefaultMessage("Project names cannot contain spaces")
+  @Description("Error shown when user types space into project name.")
+  String whitespaceProjectNameError();
+
+  @DefaultMessage("Project names must begin with a letter")
+  @Description("Error shown when user does not type letter as first character in project name.")
+  String firstCharProjectNameError();
+
+  @DefaultMessage("Invalid character. Project names can only contain letters, numbers, and underscores")
+  @Description("Error shown when user types invalid character into project name.")
+  String invalidCharProjectNameError();
+
   // Used in youngandroid/YoungAndroidFormUpgrader.java
 
   @DefaultMessage("This project was created with an older version of the App Inventor " +
@@ -3449,6 +3461,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String weeksParams();
 
+  @DefaultMessage("quantity")
+  @Description("")
+  String quantityParams();
+
+  @DefaultMessage("duration")
+  @Description("")
+  String durationParams();
+
   @DefaultMessage("years")
   @Description("")
   String yearsParams();
@@ -4395,6 +4415,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetBackgroundPixelColorMethods();
 
+  @DefaultMessage("AddDuration")
+  @Description("")
+  String AddDurationMethods();
+
   @DefaultMessage("AddDays")
   @Description("")
   String AddDaysMethods();
@@ -4431,6 +4455,26 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DurationMethods();
 
+  @DefaultMessage("DurationToSeconds")
+  @Description("")
+  String DurationToSecondsMethods();
+
+  @DefaultMessage("DurationToMinutes")
+  @Description("")
+  String DurationToMinutesMethods();
+
+  @DefaultMessage("DurationToHours")
+  @Description("")
+  String DurationToHoursMethods();
+
+  @DefaultMessage("DurationToDays")
+  @Description("")
+  String DurationToDaysMethods();
+
+  @DefaultMessage("DurationToWeeks")
+  @Description("")
+  String DurationToWeeksMethods();
+
   @DefaultMessage("FormatDate")
   @Description("")
   String FormatDateMethods();
@@ -4450,6 +4494,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Hour")
   @Description("")
   String HourMethods();
+
+  @DefaultMessage("Instant")
+  @Description("")
+  String InstantMethods();
 
   @DefaultMessage("MakeInstant")
   @Description("")

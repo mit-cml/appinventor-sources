@@ -1312,7 +1312,10 @@ Blockly.Versioning.AllUpgradeMaps =
          '<block type="text">' +
          '  <field name="TEXT">MMM d, yyyy</field>' +
          '</block>')
-      ]
+      ],
+
+    // Duration Support was added.
+    3: "noUpgrade"
 
   }, // End Clock upgraders
 
