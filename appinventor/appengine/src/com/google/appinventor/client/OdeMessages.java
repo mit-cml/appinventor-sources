@@ -5746,4 +5746,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String useFrontDeprecated();
 
+  @DefaultMessage("FirebaseDB is an experimental feature " +
+    "which may change in the future or break. Packaged Apps built with this component may not " +
+    "function into the indefinite future.")
+  @Description("")
+  String firebaseExperimentalWarning();
+
 }
