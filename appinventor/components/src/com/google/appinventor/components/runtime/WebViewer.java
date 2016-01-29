@@ -60,7 +60,7 @@ import android.webkit.WebViewClient;
         "<br />and if you set WebView.WebVewString to \"hello\", then the web page will show " +
         "</br ><em>The answer is hello</em>.  " +
         "<br />And if the Web page contains Javascript that executes the command " +
-        "<br /><em>windowAppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
+        "<br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
         "<br />then the value of the WebViewString property will be " +
         "<br /><em>hello from Javascript</em>. ")
 
