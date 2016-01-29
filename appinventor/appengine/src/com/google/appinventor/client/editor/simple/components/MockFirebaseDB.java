@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
@@ -126,22 +128,19 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
     AUTH_SVC.getToken(projectName, callback);
   }
 
-  // Commented out. We are just putting FirebaseDB in the "Experimental"
-  // Category for now
-  // /**
-  //  * Called when the component is dropped in the Designer window
-  //  * we give a warning that firebase is still experimental.
-  //  */
+  /**
+   * Called when the component is dropped in the Designer window
+   * we give a warning that firebase is still experimental.
+   */
 
-  // @Override
-  // public void onCreateFromPalette() {
-  //   if (!warningGiven) {
-  //     warningGiven = true;
-  //     Ode.getInstance().warningDialog("There be Dragons here!", "FirebaseDB is an experimental feature " +
-  //       "which may change in the future or break. Packaged Apps built with this component may not " +
-  //       "function into the indefinite future.", "OK");
-  //   }
-  // }
+  @Override
+  public void onCreateFromPalette() {
+    if (!warningGiven) {
+      warningGiven = true;
+      Ode.getInstance().warningDialog(MESSAGES.warningDialogTitle(),
+        MESSAGES.firebaseExperimentalWarning(), MESSAGES.okButton());
+    }
+  }
 
   /**
    * Enforces the invisibility of the "DeveloperBucket" and "FirebaseToken"
