@@ -217,7 +217,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         cancelable,
         new Runnable() {public void run() {AfterChoosing(button1Text);}},
         new Runnable() {public void run() {AfterChoosing(button2Text);}},
-        new Runnable() {public void run() {AfterChoosing("Cancel");}}
+        new Runnable() {public void run() {AfterChoosing(activity.getString(android.R.string.cancel));}}
         );
   }
 
@@ -254,7 +254,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     //If cancelable is true, then a 3rd button, with text of Cancel will be added
     // and will raise AfterChoosing when pressed.
     if (cancelable)  {
-      final String cancelButtonText="Cancel";
+      // TODO(hal): It would be safer and more consistent to pass in cancelButtonText as a parameter.
+      final String cancelButtonText = activity.getString(android.R.string.cancel);
       alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
           new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
@@ -326,7 +327,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     //If cancelable, then add the CANCEL button
     if (cancelable)  {
-      final String cancelButtonText="Cancel";
+      final String cancelButtonText = activity.getString(android.R.string.cancel);
       alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {

@@ -78,7 +78,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    * @return  encoded properties
    */
   public final String encodeAsJsonString() {
-    return '{' + encodeAsPairs() + '}';
+    return '{' + encodeAsPairs(false) + '}';
   }
 
   /**
@@ -96,8 +96,8 @@ public class Properties<T extends Property> implements Iterable<T> {
    *
    * @return  encoded properties
    */
-  public String encodeAsPairs() {
-    return encode(false);
+  public String encodeAsPairs(boolean forYail) {
+    return encode(forYail, false);
   }
 
   /**
@@ -106,7 +106,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    * @return  encoded properties
    */
   public String encodeAllAsPairs() {
-    return encode(true);
+    return encode(true, true);
   }
 
   /**
@@ -117,7 +117,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    *             value
    * @return  encoded property pairs
    */
-  protected String encode(boolean all) {
+  protected String encode(boolean forYail, boolean all) {
     StringBuilder sb = new StringBuilder();
 
     sb.append(getPrefix());
@@ -126,7 +126,7 @@ public class Properties<T extends Property> implements Iterable<T> {
     for (Property property : this) {
       // Don't encode non-persistable properties or properties being assigned their default value
       // unless encoding for all properties was explicitly requested
-      if (property.isPersisted() &&
+      if ((property.isPersisted() || (property.isYail() && forYail)) &&
           (all || !property.getDefaultValue().equals(property.getValue()))) {
         sb.append(separator);
         separator = ",";

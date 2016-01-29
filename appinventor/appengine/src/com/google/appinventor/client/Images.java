@@ -370,6 +370,12 @@ public interface Images extends Resources {
   ImageResource tinyWebDB();
 
   /**
+   * Designer palette item: FirebaseDB Component
+   */
+  @Source("com/google/appinventor/images/firebaseDB.png")
+  ImageResource firebaseDB();
+
+  /**
    * Designer palette item: TextToSpeech component
    */
   @Source("com/google/appinventor/images/textToSpeech.png")
@@ -436,6 +442,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/web.png")
   ImageResource web();
+
+  /**
+   * Designer palette item: GyroscopeSensor component
+   */
+  @Source("com/google/appinventor/images/gyroscopesensor.png")
+  ImageResource gyroscopesensor();
 
   /**
    * Built in drawer item: control

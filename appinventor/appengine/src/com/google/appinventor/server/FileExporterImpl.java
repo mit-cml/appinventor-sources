@@ -62,12 +62,13 @@ public final class FileExporterImpl implements FileExporter {
     boolean includeProjectHistory,
     boolean includeAndroidKeystore,
     @Nullable String zipName,
+    boolean includeYail,
     boolean fatalError,
     boolean forGallery) throws IOException {
     // Download project source files as a zip.
     if (storageIo instanceof ObjectifyStorageIo) {
       return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
-        includeProjectHistory, includeAndroidKeystore, zipName, fatalError, forGallery);
+        includeProjectHistory, includeAndroidKeystore, zipName, includeYail, forGallery, fatalError);
     } else {
       throw new IllegalArgumentException("Objectify only");
     }
@@ -88,8 +89,11 @@ public final class FileExporterImpl implements FileExporter {
     String metadata = "";
     for (Long projectId : projectIds) {
       try {
+        // Note: We never include Yail files when exporting all source projects
+        // even for Admins. If you are an admin and want to debug a project, download
+        // it explicitly.
         ProjectSourceZip projectSourceZip =
-          exportProjectSourceZip(userId, projectId, false, false, null, false, false);
+          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 

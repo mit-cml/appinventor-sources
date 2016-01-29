@@ -325,6 +325,20 @@
     <url-pattern>/ode2/receivebuild/*</url-pattern>
   </servlet-mapping>
 
+  <!-- default Firebase authentication -->
+  <servlet>
+    <servlet-name>firebaseAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.components.FirebaseAuthServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>firebaseAuthService</servlet-name>
+    <url-pattern>/ode/firebase_auth</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>firebaseAuthService</servlet-name>
+  </filter-mapping>
+
   <!-- Not sure what needs to replace GwtResourceServlet
   <servlet>
     <servlet-name>odeUiServlet</servlet-name>

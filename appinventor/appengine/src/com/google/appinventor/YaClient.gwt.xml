@@ -123,6 +123,10 @@
   <extend-property name="locale" values="ru"/>
   <!-- Korean -->
   <extend-property name="locale" values="ko_KR"/>
+  <!-- Swedish -->
+  <extend-property name="locale" values="sv"/>
+  <!-- Portuguese (Brazilian) -->
+  <extend-property name="locale" values="pt_BR"/>
 
   <set-property-fallback name="locale" value="en"/>
 

@@ -161,11 +161,11 @@ public class JsonUtil {
     if (value instanceof YailList) {
       return ((YailList) value).toJSONString();
     }
-    // The Json tokener used in getOnjectFromJson cannot handle
+    // The Json tokener used in getObjectFromJson cannot handle
     // fractions.  So we Json encode fractions by first converting
     // them to doubles. This is an example of value with Kawa type any
     // being exposed to the rest of App Inventor by the value being
-    // passed to a compoent method, in this case TinyDB or TinyWebDB
+    // passed to a component method, in this case TinyDB or TinyWebDB
     // StoreValue.  See the "warning" comment in runtime.scm at
     // call-component-method.
     if (value instanceof IntFraction) {

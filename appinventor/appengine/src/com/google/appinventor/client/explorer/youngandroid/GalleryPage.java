@@ -470,8 +470,8 @@ panel
       });
       container.add(image);
 
-      if(gallery.getSystemEnvironmet() != null &&
-          gallery.getSystemEnvironmet().toString().equals("Development")){
+      if(gallery.getSystemEnvironment() != null &&
+          gallery.getSystemEnvironment().toString().equals("Development")){
         final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
           // failure message
           MESSAGES.galleryError()) {
@@ -597,10 +597,10 @@ panel
     initLikeSection(container);
     // Adds dynamic feature
     initFeatureSection(container);
+    // Adds dynamic tutorial
+    initTutorialSection(container);
     // Adds dynamic salvage
     initSalvageSection(container);
-    // Adds dynamic salvage
-    initSalvageAllSection(container);
 
     // We are not using views and comments at initial launch
     /*
@@ -1052,34 +1052,6 @@ panel
   }
 
   /**
-   * Helper method called by constructor to initialize the salvage all section
-   * @param container   The container that salvage label reside
-   */
-  private void initSalvageAllSection(Panel container) { //TODO: Update the location of this button
-    if(!canSalvage()){                                   // Permitted to Salvage Apps?
-      return;
-    }
-
-    final Label salvagePrompt = new Label("salvageAll");
-    salvagePrompt.addStyleName("primary-link");
-    container.add(salvagePrompt);
-
-    salvagePrompt.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void bool) {
-                salvagePrompt.setText("done");
-              }
-          };
-        Ode.getInstance().getGalleryService().salvageAllGalleryApps(callback);
-      }
-    });
-  }
-
-  /**
    * Helper method called by constructor to initialize the salvage section
    * @param container   The container that salvage label reside
    */
@@ -1155,6 +1127,57 @@ panel
           };
         Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(),
             markFeaturedCallback);
+      }
+    });
+  }
+
+  /**
+   * Helper method called by constructor to initialize the tutorial section
+   * @param container   The container that feature label reside
+   */
+  private void initTutorialSection(Panel container) { //TODO: Update the location of this button
+    final User currentUser = Ode.getInstance().getUser();
+    if(currentUser.getType() != User.MODERATOR){     //not admin
+      return;
+    }
+
+    final Label tutorialPrompt = new Label(MESSAGES.galleryEmptyText());
+    tutorialPrompt.addStyleName("primary-link");
+    container.add(tutorialPrompt);
+
+    final OdeAsyncCallback<Boolean> isTutorialCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if (bool) { // If the app is already featured before, the prompt should show as unfeatured
+              tutorialPrompt.setText(MESSAGES.galleryUntutorialText());
+            } else {    // otherwise show as featured
+              tutorialPrompt.setText(MESSAGES.galleryTutorialText());
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isTutorial(app.getGalleryAppId(),
+        isTutorialCallback); // This happens when user click on like, we need to check if it's already liked
+
+    tutorialPrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Boolean> markTutorialCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean bool) {
+                if (bool) { // If the app is already featured, the prompt should show as unfeatured
+                  tutorialPrompt.setText(MESSAGES.galleryUntutorialText());
+                } else {    // otherwise show as featured
+                  tutorialPrompt.setText(MESSAGES.galleryTutorialText());
+                }
+                //update gallery list
+                gallery.appWasChanged();
+              }
+          };
+        Ode.getInstance().getGalleryService().markAppAsTutorial(app.getGalleryAppId(),
+            markTutorialCallback);
       }
     });
   }
@@ -1399,7 +1422,7 @@ panel
   private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, MESSAGES.galleryByAuthorText(), MESSAGES.galleryAppsByAuthorSidebar() + MESSAGES.gallerySingleSpaceText() + app.getDeveloperName(), refreshable, true);
+        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, MESSAGES.galleryByAuthorText(), MESSAGES.galleryAppsByAuthorSidebar() + MESSAGES.gallerySingleSpaceText() + app.getDeveloperName(), true, true);
         break;
 //      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
 //        String tagTitle = "Tagged with " + tagSelected;

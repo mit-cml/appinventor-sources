@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -553,17 +555,23 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         }
       }
 
-      setBackgroundDrawable(backgroundDrawable);
-
-      // If the path was null or the empty string, or if IOException was
-      // raised, backgroundDrawable will be null.  The only difference
-      // from the case of a successful image load is that we must draw
-      // in the background color, if present.
-      if (backgroundDrawable == null) {
-        super.setBackgroundColor(backgroundColor);
-      }
+      setBackground();
 
       clearDrawingLayer();  // will call invalidate()
+    }
+
+    private void setBackground() {
+      Drawable setDraw = backgroundDrawable;
+      if (backgroundImagePath != "" && backgroundDrawable != null) {
+        setDraw = backgroundDrawable.getConstantState().newDrawable();
+        setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
+            PorterDuff.Mode.DST_OVER);
+      }
+      else {
+        setDraw = new ColorDrawable(
+            (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
+      }
+      setBackgroundDrawable(setDraw);
     }
 
     private void clearDrawingLayer() {
@@ -578,10 +586,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     public void setBackgroundColor(int color) {
       backgroundColor = color;
 
-      // Only draw the background color if no image.
-      if (backgroundDrawable == null) {
-        super.setBackgroundColor(color);
-      }
+      setBackground();
 
       clearDrawingLayer();
     }

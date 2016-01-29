@@ -559,11 +559,12 @@ public interface StorageIo {
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-                                          boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore,
-                                          @Nullable String zipName,
-                                          boolean fatalError,
-                                          boolean forGallery) throws IOException;
+    boolean includeProjectHistory,
+    boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case

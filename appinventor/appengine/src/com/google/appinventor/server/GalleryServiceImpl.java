@@ -171,6 +171,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * Returns a wrapped class which contains list of tutorial gallery app
+   * @param start start index
+   * @param count count number
+   * @return list of gallery app
+   */
+  public GalleryAppListResult getTutorialApp(int start, int count){
+    return galleryStorageIo.getTutorialApp(start, count);
+  }
+
+  /**
    * check if app is featured already
    * @param galleryId gallery id
    * @return true if featured, otherwise false
@@ -180,12 +190,30 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
+   * check if app is tutorial already
+   * @param galleryId gallery id
+   * @return true if tutorial, otherwise false
+   */
+  public boolean isTutorial(long galleryId){
+    return galleryStorageIo.isTutorial(galleryId);
+  }
+
+  /**
    * mark an app as featured
    * @param galleryId gallery id
    * @return true if successful
    */
   public boolean markAppAsFeatured(long galleryId){
     return galleryStorageIo.markAppAsFeatured(galleryId);
+  }
+
+  /**
+   * mark an app as tutorial
+   * @param galleryId gallery id
+   * @return true if successful
+   */
+  public boolean markAppAsTutorial(long galleryId){
+    return galleryStorageIo.markAppAsTutorial(galleryId);
   }
 
   /**
@@ -347,14 +375,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * salvage all gallery app
-   */
-  @Override
-  public void salvageAllGalleryApps() {
-    galleryStorageIo.salvageAllGalleryApps();
-  }
-
-  /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
    * @param report report
@@ -470,11 +490,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     RawFile aiaFile = null;
     byte[] aiaBytes= null;
     ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-      projectId, true, false, aiaName, false, true);
+      projectId, true, false, aiaName, false, false, true);
     aiaFile = zipFile.getRawFile();
     aiaBytes = aiaFile.getContent();
     LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);
-
     // now stick the aia file into the gcs
 
     //String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);

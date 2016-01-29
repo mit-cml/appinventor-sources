@@ -87,6 +87,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     super(container);
     this.container = container;
     items = YailList.makeEmptyList();
+    // initialize selectionIndex which also sets selection
+    SelectionIndex(0);
     view = new android.widget.ListView(container.$context());
     view.setOnItemClickListener(this);
     view.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
