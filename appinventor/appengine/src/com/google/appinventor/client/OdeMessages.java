@@ -563,6 +563,14 @@ public interface OdeMessages extends Messages {
   @Description("Information about the Companion")
   String companionInformation();
 
+  @DefaultMessage("Update the Companion")
+  @Description("Menu item to update the Companion to the latest version")
+  String companionUpdate();
+
+  @DefaultMessage("You must have a project open to update the Companion")
+  @Description("")
+  String companionUpdateMustHaveProject();
+
   @DefaultMessage("Show Splash Screen")
   @Description("Redisplay the Splash Screen")
   String showSplashMenuItem();

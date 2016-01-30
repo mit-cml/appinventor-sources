@@ -516,6 +516,16 @@ Blockly.ReplMgr.triggerUpdate = function() {
         reset();
     };
 
+    if (top.COMPANION_UPDATE_URL === "") {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_UPDATE);
+        return;
+    }
+
+    if (top.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_CONNECTION);
+        return;
+    }
+
     encoder.add('package', 'update.apk');
     var qs = encoder.toString();
     fetchconn.open("GET", top.COMPANION_UPDATE_URL, true);
@@ -532,6 +542,10 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                              conn.onreadystatechange = function() {
                                                  if (this.readyState == 4 && this.status == 200) {
                                                      console.log("Update: _package success");
+                                                     reset(); //  New companion, no connection left!
+                                                 } else if (this.readyState == 4) {
+                                                     console.log("Update: _package state = 4 probably ok");
+                                                     reset();
                                                  }
                                              };
                                              conn.send(qs);

@@ -95,6 +95,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
   private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
+  private static final String WIDGET_NAME_COMPANIONUPDATE = "CompanionUpdate";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
@@ -223,6 +224,8 @@ public class TopToolbar extends Composite {
     }
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
         new AboutCompanionAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
+        new CompanionUpdateAction()));
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
@@ -756,6 +759,19 @@ public class TopToolbar extends Composite {
       DialogBoxContents.add(holder);
       db.setWidget(DialogBoxContents);
       db.show();
+    }
+  }
+
+  private static class CompanionUpdateAction implements Command {
+    @Override
+    public void execute() {
+      DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+      if (currentProject == null) {
+        Window.alert(MESSAGES.companionUpdateMustHaveProject());
+        return;
+      }
+      DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+      screen.blocksEditor.updateCompanion();
     }
   }
 
