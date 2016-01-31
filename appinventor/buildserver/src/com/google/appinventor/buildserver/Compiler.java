@@ -1057,13 +1057,13 @@ public final class Compiler {
     }
 
     // BEGIN DEBUG -- XXX --
-    System.err.println("runDx -- libraries");
-    for (File aFile : inputList) {
-      System.err.println(" inputList => " + aFile.getAbsolutePath());
-    }
-    for (File aFile : libList) {
-      System.err.println(" libList => " + aFile.getAbsolutePath());
-    }
+    // System.err.println("runDx -- libraries");
+    // for (File aFile : inputList) {
+    //   System.err.println(" inputList => " + aFile.getAbsolutePath());
+    // }
+    // for (File aFile : libList) {
+    //   System.err.println(" libList => " + aFile.getAbsolutePath());
+    // }
     // END DEBUG -- XXX --
 
     // attach the jars of external comps to the libraries list

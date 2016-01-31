@@ -585,7 +585,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected String getCategory() {
       return category;
     }
-    
+
     /**
      * Returns the String representation of the EnumConstant corresponding to this
      * component's category within the Designer (for example, "ARRANGEMENTS").

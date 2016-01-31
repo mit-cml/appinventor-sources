@@ -272,7 +272,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public SimplePalettePanel getComponentPalettePanel() {
     return palettePanel;
   }
-  
+
   @Override
   public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
     return nonVisibleComponentsPanel;

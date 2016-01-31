@@ -8,7 +8,7 @@ import java.util.Map;
  * Listener interface for ComponentDatabase changes
  */
 public interface ComponentDatabaseChangeListener {
-  
+
   /**
    * Invoked after one or more components are added
    */
@@ -26,11 +26,11 @@ public interface ComponentDatabaseChangeListener {
    * Mapping from ComponentType to ComponentFullType
    */
   void onComponentTypeRemoved(Map<String, String> componentTypes);
-  
+
   /**
    * Called when database is reset to contain only internal components
    */
   void onResetDatabase();
-  
-  
+
+
 }
