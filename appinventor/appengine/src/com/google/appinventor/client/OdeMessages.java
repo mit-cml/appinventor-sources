@@ -5590,4 +5590,11 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PostMediaMethods();
 
+  @DefaultMessage("Scale proportionally")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleProportionally();
+
+  @DefaultMessage("Scale to fit")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleToFit();
 }
