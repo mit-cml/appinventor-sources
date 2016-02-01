@@ -3148,6 +3148,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RollProperties();
 
+  @DefaultMessage("Scaling")
+  @Description("A property for scaling images")
+  String ScalingProperties();
+
   @DefaultMessage("SearchResults")
   @Description("")
   String SearchResultsProperties();

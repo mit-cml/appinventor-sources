@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -43,6 +44,8 @@ public final class Image extends AndroidViewComponent {
 
   private String picturePath = "";  // Picture property
 
+  private int scalingMode = Component.SCALING_SCALE_PROPORTIONALLY;
+
   /**
    * Creates a new Image component.
    *
@@ -50,6 +53,7 @@ public final class Image extends AndroidViewComponent {
    */
   public Image(ComponentContainer container) {
     super(container);
+
     view = new ImageView(container.$context()) {
       @Override
       public boolean verifyDrawable(Drawable dr) {
@@ -58,10 +62,10 @@ public final class Image extends AndroidViewComponent {
         return true;
       }
     };
+    view.setFocusable(true);
 
     // Adds the component to its designated container
     container.$add(this);
-    view.setFocusable(true);
   }
 
   @Override
@@ -130,5 +134,29 @@ public final class Image extends AndroidViewComponent {
   // something that is more consistent with sprites.
   public void Animation(String animation) {
     AnimationUtil.ApplyAnimation(view, animation);
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCALING,
+      defaultValue = Component.SCALING_SCALE_PROPORTIONALLY + "")
+  @SimpleProperty(description = "This allows you to scale the picture in " +
+      "three different ways when you change Height or Width property. " +
+      "Setting it to 0 corresponds to Scale proportionally; 1 to Scale to fit.")
+  public void Scaling(int mode) {
+    switch (mode) {
+      case 0:
+        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        break;
+      case 1:
+        view.setScaleType(ImageView.ScaleType.FIT_XY);
+        break;
+      default:
+        throw new IllegalArgumentError("Illegal scaling mode: " + mode);
+    }
+    scalingMode = mode;
+  }
+
+  @SimpleProperty
+  public int Scaling() {
+    return scalingMode;
   }
 }
