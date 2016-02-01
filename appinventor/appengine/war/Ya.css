@@ -987,7 +987,13 @@ select.ode-PropertyEditor[disabled] {
 
 /* class for the Image Mock component */
 .imageComponentCenterPanel {
-    text-align: center;
+  text-align: center;
+}
+
+.imageComponentCenterPanel img {
+  position: relative;
+  top: 50%;
+  transform: translate(0px, -50%);
 }
 
 /* Component Help */
@@ -2093,7 +2099,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-tags {
   max-width: 100%;
   display: block;
-  margin: 10px 0 0; 
+  margin: 10px 0 0;
 }
 .gallery-app-details .app-tags .gwt-Label {
   display: inline-block;
