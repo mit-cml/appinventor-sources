@@ -10,6 +10,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.primitives.Ints;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -154,9 +155,11 @@ abstract class MockImageBase extends MockVisibleComponent {
   }
 
   private void unclipImage() {
-    for (String styleName : new String[]{"left", "top", "width", "height"}) {
-      image.removeStyleName(styleName);
-    }
+    Style style = image.getElement().getStyle();
+    style.clearLeft();
+    style.clearTop();
+    style.clearWidth();
+    style.clearHeight();
   }
 
   // PropertyChangeListener implementation
