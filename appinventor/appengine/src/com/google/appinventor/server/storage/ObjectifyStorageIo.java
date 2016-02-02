@@ -1548,7 +1548,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         compData.fullyQualifiedName = fileName.substring(0,
             fileName.length() - EXTERNAL_COMP_EXTENSION.length());
         compData.version = getNextVersion(compData);
-        compData.gcsPath = EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
+        compData.gcsPath = userId + "/" + EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
             "/" + compData.version + "/" + fileName;
 
         datastore.put(compData);
@@ -1590,7 +1590,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       }
 
       private String getInfoFilePath(ComponentData compData) {
-        return EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName + "/" + INFO_FILE_NAME;
+        return compData.userId + "/" + EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName + "/" + INFO_FILE_NAME;
       }
     };
 
