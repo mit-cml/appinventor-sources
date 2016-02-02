@@ -72,10 +72,7 @@ abstract class MockImageBase extends MockVisibleComponent {
     String url = convertImagePropertyValueToUrl(text);
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
-      Image iconImage = getIconImage();
-      image.setUrlAndVisibleRect(iconImage.getUrl(),
-          iconImage.getOriginLeft(), iconImage.getOriginTop(),
-          iconImage.getWidth(), iconImage.getHeight());
+      image.setUrl(getIconImage().getUrl());
     } else {
       image.setUrl(url);
     }
@@ -126,6 +123,11 @@ abstract class MockImageBase extends MockVisibleComponent {
    * This should be called whenever a property affecting the size is changed
    */
   private void resizeImage() {
+    if (image.getUrl().equals(getIconImage().getUrl())) {
+      unclipImage();
+      return;
+    }
+
     String width = getElement().getStyle().getWidth();
     String height = getElement().getStyle().getHeight();
 
