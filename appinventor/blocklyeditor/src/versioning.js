@@ -1388,7 +1388,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Image": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // ScalePictureToFit was replaced by Scaling property
+    2: "noUpgrade"
 
   }, // End Image upgraders
 

@@ -260,6 +260,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("HorizontalArrangement")) {
         srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Image")) {
+        srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ImagePicker")) {
         srcCompVersion = upgradeImagePickerProperties(componentProperties, srcCompVersion);
 
@@ -908,6 +911,23 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeImageProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // ScalePictureToFit was replaced by Scaling property
+      if (componentProperties.containsKey("ScalePictureToFit")) {
+        JSONValue propValue = componentProperties.remove("ScalePictureToFit");
+        if (propValue.asString().getString().equals("True")) {
+          // 1 corresponds to Scale to fit
+          componentProperties.put("Scaling", new ClientJsonString("1"));
+        }
+      }
+
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
