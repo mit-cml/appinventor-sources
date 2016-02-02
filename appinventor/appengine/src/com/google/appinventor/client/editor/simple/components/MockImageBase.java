@@ -144,11 +144,9 @@ abstract class MockImageBase extends MockVisibleComponent {
           frameHeight / (float) getPreferredHeight());
       int scaledWidth = Double.valueOf(getPreferredWidth() * ratio).intValue();
       int scaledHeight = Double.valueOf(getPreferredHeight() * ratio).intValue();
-      unclipImage();
       image.setSize(scaledWidth + "px", scaledHeight + "px");
 
     } else if (scalingMode.equals("1")) {
-      unclipImage();
       image.setSize("100%", "100%");
 
     } else {
@@ -171,9 +169,7 @@ abstract class MockImageBase extends MockVisibleComponent {
     super.onPropertyChange(propertyName, newValue);
 
     if (propertyName.equals(PROPERTY_NAME_PICTURE)) {
-      setPictureProperty(newValue);
-      resizeImage();
-      refreshForm();
+      setPictureProperty(newValue); // setUrl() triggers onLoad
     } else if (propertyName.equals(PROPERTY_SCALE_PICTURE_TO_FIT)) {
       setScalingProperty(newValue);
       refreshForm();
