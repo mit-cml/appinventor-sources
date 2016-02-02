@@ -146,9 +146,7 @@ public final class Image extends AndroidViewComponent {
     return rotationAngle;
   }
 
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+  @Deprecated
   @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
   public void ScalePictureToFit(boolean scale) {
     if (scale)
