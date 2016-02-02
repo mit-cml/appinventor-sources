@@ -27,11 +27,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 abstract class MockImageBase extends MockVisibleComponent {
   // Property names
   private static final String PROPERTY_NAME_PICTURE = "Picture";
+  private static final String PROPERTY_SCALE_PICTURE_TO_FIT = "ScalePictureToFit";
   private static final String PROPERTY_SCALING = "Scaling";
 
   // Widget for showing the image.
   private final Image image;
   private String picturePropValue;
+  private boolean fitToScale;
   private String scalingMode = "0"; // corresponds to Scale proportionally
 
   MockImageBase(SimpleEditor editor, String type, ImageResource icon) {
@@ -97,6 +99,22 @@ abstract class MockImageBase extends MockVisibleComponent {
   }
 
   /**
+   * property to make the picture scale to fit its parents width and height
+   * @param newValue true will scale the picture
+   */
+  private void setScalingProperty(String newValue) {
+    if (newValue.equals("True")){
+      fitToScale = true;
+      image.setSize("100%", "100%");
+    }
+
+    else {
+      fitToScale = false;
+      image.setSize(getPreferredWidth() + "px", getPreferredHeight() + "px");
+    }
+  }
+
+  /**
    * This resizes the picture according to
    * 1. height and width value of the div tag enclosing the img tag
    * 2. scaling mode. 0 - Scale proportionally, 1 - Scale to fit
@@ -152,6 +170,9 @@ abstract class MockImageBase extends MockVisibleComponent {
 
     if (propertyName.equals(PROPERTY_NAME_PICTURE)) {
       setPictureProperty(newValue); // setUrl() triggers onLoad
+    } else if (propertyName.equals(PROPERTY_SCALE_PICTURE_TO_FIT)) {
+      setScalingProperty(newValue);
+      refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
       resizeImage();
       refreshForm();

@@ -2664,6 +2664,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SaveResponseProperties();
 
+  @DefaultMessage("ScalePictureToFit")
+  @Description("")
+  String ScalePictureToFitProperties();
+
   @DefaultMessage("SensorPort")
   @Description("")
   String SensorPortProperties();
