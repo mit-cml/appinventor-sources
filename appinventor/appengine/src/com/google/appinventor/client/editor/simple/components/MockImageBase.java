@@ -141,15 +141,21 @@ abstract class MockImageBase extends MockVisibleComponent {
           frameHeight / (float) getPreferredHeight());
       int scaledWidth = Double.valueOf(getPreferredWidth() * ratio).intValue();
       int scaledHeight = Double.valueOf(getPreferredHeight() * ratio).intValue();
-      image.setUrl(image.getUrl());  // a trick to reset the image to unclipped mode
+      unclipImage();
       image.setSize(scaledWidth + "px", scaledHeight + "px");
 
     } else if (scalingMode.equals("1")) {
-      image.setUrl(image.getUrl()); // a trick to reset the image to unclipped mode
+      unclipImage();
       image.setSize("100%", "100%");
 
     } else {
       throw new IllegalStateException("Illegal scaling mode: " + scalingMode);
+    }
+  }
+
+  private void unclipImage() {
+    for (String styleName : new String[]{"left", "top", "width", "height"}) {
+      image.removeStyleName(styleName);
     }
   }
 
