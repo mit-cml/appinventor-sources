@@ -792,6 +792,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
 
+  @DefaultMessage("Workspace")
+  @Description("Caption for a workspace box.")
+  String workspaceBoxCaption();
+
   // Used in SaveAllEditorsCommand.java
 
   @DefaultMessage("Saved project at {0}")

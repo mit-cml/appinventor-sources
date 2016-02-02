@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -302,6 +303,7 @@ public class DesignToolbar extends Toolbar {
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
         toggleEditor(true);       // Gray out the blocks button and enable the designer button
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        ViewerBox.getViewerBox().setViewerCaption(MESSAGES.workspaceBoxCaption());
       }
     }
   }
@@ -319,6 +321,7 @@ public class DesignToolbar extends Toolbar {
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
         toggleEditor(false);      // Gray out the Designer button and enable the blocks button
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        ViewerBox.getViewerBox().setViewerCaption(MESSAGES.viewerBoxCaption());
       }
     }
   }

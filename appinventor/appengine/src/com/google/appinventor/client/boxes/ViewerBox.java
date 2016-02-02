@@ -32,13 +32,20 @@ public class ViewerBox extends Box {
   }
 
   /**
+   * Switch between Viewer and Workspace for Designer or Blocks view
+   */
+  public void setViewerCaption(String newTitle) {
+    setCaption(newTitle);
+  }
+
+  /**
    * Creates new empty viewer box.
    */
   private ViewerBox() {
-    super(MESSAGES.viewerBoxCaption(),
-        600,    // height
-        false,  // minimizable
-        false); // removable
+      super(MESSAGES.viewerBoxCaption(),
+          600,    // height
+          false,  // minimizable
+          false); // removable
   }
 
   /**
