@@ -51,8 +51,8 @@ abstract class MockImageBase extends MockVisibleComponent {
     image.addLoadHandler(new LoadHandler() {
       @Override
       public void onLoad(LoadEvent event) {
-        resizeImage();
         refreshForm();
+        resizeImage();  // resize after the new image occupies the form
       }
     });
 
