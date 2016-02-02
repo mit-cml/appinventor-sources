@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -17,7 +18,10 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
@@ -43,6 +47,8 @@ public final class Image extends AndroidViewComponent {
   private final ImageView view;
 
   private String picturePath = "";  // Picture property
+
+  private double rotationAngle = 0.0;
 
   private int scalingMode = Component.SCALING_SCALE_PROPORTIONALLY;
 
@@ -109,12 +115,46 @@ public final class Image extends AndroidViewComponent {
     ViewUtil.setImage(view, drawable);
   }
 
+  /**
+   * Specifies the angle at which the image picture appears rotated.
+   *
+   * @param rotated  the rotation angle
+   */
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.0")
+  @SimpleProperty
+  public void RotationAngle(double rotationAngle) {
+    if (this.rotationAngle == rotationAngle) {
+      return;                   // Nothing to do...
+                                // This also means that you can always set the
+                                // the angle to 0.0 even on older Android devices
+    }
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      container.$form().dispatchErrorOccurredEvent(this, "RotationAngle",
+        ErrorMessages.ERROR_IMAGE_CANNOT_ROTATE);
+      return;
+    }
+    HoneycombUtil.viewSetRotate(view, rotationAngle);
+    this.rotationAngle = rotationAngle;
+  }
+
+  @SimpleProperty(description = "The angle at which the image picture appears rotated. " +
+      "This rotation does not appear on the designer screen, only on the device.",
+      category = PropertyCategory.APPEARANCE)
+  public double RotationAngle() {
+    return rotationAngle;
+  }
+
+
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty
+  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);
+    else
+      view.setScaleType(ImageView.ScaleType.FIT_CENTER);
   }
 
   /**

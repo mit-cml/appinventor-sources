@@ -127,6 +127,7 @@
         <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
         <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+        <pathelement location="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
@@ -230,6 +231,7 @@
           <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
           <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+          <pathelement location="${lib.dir}/firebase/firebase-client-android-2.5.0.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />

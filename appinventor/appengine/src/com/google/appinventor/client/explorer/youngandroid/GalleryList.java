@@ -69,7 +69,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private GalleryAppTab appSearchTab;
   private GalleryAppTab appTutorialTab;
 
-
   public static final int REQUEST_FEATURED = 1;
   public static final int REQUEST_RECENT = 2;
   public static final int REQUEST_SEARCH = 3;
@@ -87,6 +86,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private int appPopularCounter = 0;
   private int appSearchCounter = 0;
   private int appTutorialCounter = 0;
+
   private boolean appRecentExhausted = false;
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
@@ -369,7 +369,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
   /**
    * Loads the proper tab GUI with gallery's app data.
-   * @param apps: list of returned gallery apps from callback.
+   * @param appsResult: list of returned gallery apps from callback.
    * @param requestId: determines the specific type of app data.
    */
   private void refreshApps(GalleryAppListResult appsResult, int requestId, boolean refreshable) {
@@ -427,6 +427,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         }else{
           appSearchTab.getNoResultsFound().setVisible(false);
         }
+        if (refreshable){
+          appSearchCounter = 0;
+        }
+
         if(appSearchCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appSearchTab.getButtonNext().setVisible(false);
         }else{

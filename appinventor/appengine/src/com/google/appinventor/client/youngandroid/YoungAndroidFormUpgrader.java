@@ -18,6 +18,12 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -610,6 +616,15 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The UseFront property was removed, it isn't supported in
+      // newer versions of Android
+      if (componentProperties.containsKey("UseFront")) {
+        componentProperties.remove("UseFront");
+        upgradeWarnDialog(MESSAGES.useFrontDeprecated());
+      }
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -680,10 +695,12 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
+    if (srcCompVersion < 3) {
+      // (2) The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
       // No properties need to be modified to upgrade to version 2.
-      srcCompVersion = 2;
+      // (3) Duration Support was added
+      // No properties need to be added to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -881,6 +898,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 18;
     }
 
+    if (srcCompVersion < 19) {
+      // Added HideKeyboard
+      srcCompVersion = 19;
+    }
+
     return srcCompVersion;
   }
 
@@ -918,6 +940,11 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeImageProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
+      // The RotationAngle property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
       // ScalePictureToFit was replaced by Scaling property
       if (componentProperties.containsKey("ScalePictureToFit")) {
         JSONValue propValue = componentProperties.remove("ScalePictureToFit");
@@ -926,8 +953,7 @@ public final class YoungAndroidFormUpgrader {
           componentProperties.put("Scaling", new ClientJsonString("1"));
         }
       }
-
-      srcCompVersion = 2;
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1409,5 +1435,27 @@ public final class YoungAndroidFormUpgrader {
     }
   }
 
+  private static void upgradeWarnDialog(String aMessage) {
+    final DialogBox dialogBox = new DialogBox(false, true);
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.warningDialogTitle());
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    final HTML message = new HTML(aMessage);
+    message.setStyleName("DialogBox-message");
+    VerticalPanel vPanel = new VerticalPanel();
+    Button okButton = new Button("OK");
+    okButton.addClickListener(new ClickListener() {
+        @Override
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    vPanel.add(message);
+    vPanel.add(okButton);
+    dialogBox.setWidget(vPanel);
+    dialogBox.center();
+    dialogBox.show();
+  }
 
 }

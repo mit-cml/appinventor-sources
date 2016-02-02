@@ -73,6 +73,10 @@ import javax.tools.StandardLocation;
  * </ul>
  *
  * @author spertus@google.com (Ellen Spertus)
+ *
+ * [lyn, 2015/12/29] Added deprecated instance variable to ParameterizedFeature.
+ *   This is inherited by Event, Method, and Property, which are modified
+ *   slightly to handle it.
  */
 public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String OUTPUT_PACKAGE = "";
@@ -198,11 +202,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Inherits name, description
     protected final List<Parameter> parameters;
     protected final boolean userVisible;
+    protected final boolean deprecated; // [lyn, 2015/12/29] added
 
     protected ParameterizedFeature(String name, String description, String feature,
-        boolean userVisible) {
+        boolean userVisible, boolean deprecated) {
       super(name, description, feature);
       this.userVisible = userVisible;
+      this.deprecated = deprecated;
       parameters = Lists.newArrayList();
     }
 
@@ -240,13 +246,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       implements Cloneable, Comparable<Event> {
     // Inherits name, description, and parameters
 
-    protected Event(String name, String description, boolean userVisible) {
-      super(name, description, "Event", userVisible);
+    protected Event(String name, String description, boolean userVisible, boolean deprecated) {
+      super(name, description, "Event", userVisible, deprecated);
     }
 
     @Override
     public Event clone() {
-      Event that = new Event(name, description, userVisible);
+      Event that = new Event(name, description, userVisible, deprecated);
       for (Parameter p : parameters) {
         that.addParameter(p.name, p.type);
       }
@@ -268,8 +274,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Inherits name, description, and parameters
     private String returnType;
 
-    protected Method(String name, String description, boolean userVisible) {
-      super(name, description, "Method", userVisible);
+    protected Method(String name, String description, boolean userVisible, boolean deprecated) {
+      super(name, description, "Method", userVisible, deprecated);
       // returnType defaults to null
     }
 
@@ -279,7 +285,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     @Override
     public Method clone() {
-      Method that = new Method(name, description, userVisible);
+      Method that = new Method(name, description, userVisible, deprecated);
       for (Parameter p : parameters) {
         that.addParameter(p.name, p.type);
       }
@@ -302,24 +308,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String description;
     private PropertyCategory propertyCategory;
     private boolean userVisible;
+    private boolean deprecated;
     private String type;
     private boolean readable;
     private boolean writable;
     private String componentInfoName;
 
     protected Property(String name, String description,
-                       PropertyCategory category, boolean userVisible) {
+                       PropertyCategory category, boolean userVisible, boolean deprecated) {
       this.name = name;
       this.description = description;
       this.propertyCategory = category;
       this.userVisible = userVisible;
+      this.deprecated = deprecated;
       // type defaults to null
       // readable and writable default to false
     }
 
     @Override
     public Property clone() {
-      Property that = new Property(name, description, propertyCategory, userVisible);
+      Property that = new Property(name, description, propertyCategory, userVisible, deprecated);
       that.type = type;
       that.readable = readable;
       that.writable = writable;
@@ -361,6 +369,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected boolean isUserVisible() {
       return userVisible;
+    }
+
+    /**
+     * Returns whether this property is deprecated in the Blocks Editor.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
+    protected boolean isDeprecated() {
+      return deprecated;
     }
 
     /**
@@ -828,7 +845,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     Property property = new Property(propertyName,
                                      simpleProperty.description(),
                                      simpleProperty.category(),
-                                     simpleProperty.userVisible());
+                                     simpleProperty.userVisible(),
+                                     elementUtils.isDeprecated(element));
 
     // Get parameters to tell if this is a getter or setter.
     ExecutableType executableType = (ExecutableType) element.asType();
@@ -942,6 +960,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           priorProperty.readable = priorProperty.readable || newProperty.readable;
           priorProperty.writable = priorProperty.writable || newProperty.writable;
           priorProperty.userVisible = priorProperty.userVisible && newProperty.userVisible;
+          priorProperty.deprecated = priorProperty.deprecated && newProperty.deprecated;
           priorProperty.componentInfoName = componentInfo.name;
         } else {
           // Add the new property to the properties map.
@@ -984,7 +1003,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
         }
         boolean userVisible = simpleEventAnnotation.userVisible();
-        Event event = new Event(eventName, eventDescription, userVisible);
+        boolean deprecated = elementUtils.isDeprecated(element);
+        Event event = new Event(eventName, eventDescription, userVisible, deprecated);
         componentInfo.events.put(event.name, event);
 
         // Verify that this element has an ExecutableType.
@@ -1034,7 +1054,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
         }
         boolean userVisible = simpleFunctionAnnotation.userVisible();
-        Method method = new Method(methodName, methodDescription, userVisible);
+        boolean deprecated = elementUtils.isDeprecated(element);
+        Method method = new Method(methodName, methodDescription, userVisible, deprecated);
         componentInfo.methods.put(method.name, method);
 
         // Verify that this element has an ExecutableType.

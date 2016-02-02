@@ -269,9 +269,9 @@ Blockly.Yail['text_replace_all'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['obsufcated_text'] = function() {
-  // Deobsfucate the TEXT input argument
-  var setupObsfucation = function(input, confounder) {
+Blockly.Yail['obfuscated_text'] = function() {
+  // Deobfuscate the TEXT input argument
+  var setupObfuscation = function(input, confounder) {
     // The algorithm below is also implemented in scheme in runtime.scm
     // If you change it here, you have to change it there!
     // Note: This algorithm is like xor, if applied to its output
@@ -290,8 +290,8 @@ Blockly.Yail['obsufcated_text'] = function() {
     return acc.join('');
   }
   var input = this.getFieldValue('TEXT');
-  var argument = Blockly.Yail.quote_(setupObsfucation(input, this.confounder));
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "text-deobsfucate"
+  var argument = Blockly.Yail.quote_(setupObfuscation(input, this.confounder));
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "text-deobfuscate"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
@@ -300,7 +300,7 @@ Blockly.Yail['obsufcated_text'] = function() {
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
       + Blockly.Yail.YAIL_OPEN_COMBINATION + "text text"
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "deobsfucate text"
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "deobfuscate text"
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };

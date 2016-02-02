@@ -766,6 +766,29 @@ Blockly.Versioning.changeEventParameterName = function(componentType, eventName,
 };
 
 /**
+ * Rename all blocks with oldType to newType
+ * @param oldBlockType: string name of old block type
+ * @param newBlockType: string name of new block type
+ *
+ * @author fturbak@wellesley.edu (Lyn Turbak)
+ */
+
+Blockly.Versioning.renameBlockType = function(oldBlockType, newBlockType) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var i = 0, im = allBlocks.length; i < im; i++) {
+      var blockElem = allBlocks[i];
+      var blockType = blockElem.getAttribute('type');
+      if (blockType == oldBlockType) {
+        blockElem.setAttribute('type', newBlockType);
+      }
+    }
+    return dom; // Return the modified dom, as required by the upgrading structure.
+  }
+}
+
+/**
  * @param componentType: name of component type for method
  * @param methodName: name of method
  * @argumentIndex: index of the default argument block
@@ -1196,7 +1219,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Camera": {
 
     // AI2: The UseFront property was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The UseFront property was removed
+    3: "noUpgrade"
 
   }, // End Camera upgraders
 
@@ -1286,7 +1312,10 @@ Blockly.Versioning.AllUpgradeMaps =
          '<block type="text">' +
          '  <field name="TEXT">MMM d, yyyy</field>' +
          '</block>')
-      ]
+      ],
+
+    // Duration Support was added.
+    3: "noUpgrade"
 
   }, // End Clock upgraders
 
@@ -1374,6 +1403,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End GameClient upgraders
 
+  "GyroscopeSensor": {
+
+    // This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End GyroscopeSensor upgraders
+
   "HorizontalArrangement": {
 
     // AI1: The AlignHorizontal and AlignVertical properties were added.
@@ -1390,8 +1426,12 @@ Blockly.Versioning.AllUpgradeMaps =
     //This is initial version. Placeholder for future upgrades
     1: "noUpgrade",
 
+    // AI2: The RotationAngle property was added.
+    // No blocks need to be modified to upgrade to version 2.
+    2: "noUpgrade",
+    
     // ScalePictureToFit was replaced by Scaling property
-    2: "noUpgrade"
+    3: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -1580,7 +1620,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // see these new options.  (Hal is not sure why not, but it seems to work.)
     // The math convert block was added
     // No language blocks need to be modified to upgrade to version 16.
-    19: "noUpgrade"
+    19: "noUpgrade",
+
+
+    // AI2: In BLOCKS_LANGUAGE_VERSION 20// Rename 'obsufcated_text' text block to 'obfuscated_text'
+    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text')
+
 
   }, // End Language upgraders
 
@@ -1923,7 +1968,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Screen.CompatibililtyMode replaced with Screen.Sizing no blocks need to be
     // changed.
-    18: "noUpgrade"
+    18: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 19:
+    // - The Screen1.HideKeyboard method was added and no block needs to be changed.
+    19: "noUpgrade"
 
   }, // End Screen
 

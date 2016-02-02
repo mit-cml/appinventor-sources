@@ -449,18 +449,18 @@ Blockly.Blocks['text_replace_all'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL}]
 };
 
-Blockly.Blocks['obsufcated_text'] = {
+Blockly.Blocks['obfuscated_text'] = {
   // Text value.
   category: 'Text',
-  helpUrl: Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_HELPURL,
+  helpUrl: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_HELPURL,
   init: function () {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE
+    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE
       + " " + Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
         new Blockly.FieldTextBlockInput(''),
         'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
-    this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
     this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
   },
   domToMutation: function(xmlElement) {
@@ -472,5 +472,5 @@ Blockly.Blocks['obsufcated_text'] = {
     container.setAttribute('confounder', this.confounder);
     return container;
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBSFUCATE}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE}]
 };

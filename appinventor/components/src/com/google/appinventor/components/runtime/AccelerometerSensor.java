@@ -132,7 +132,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "The minimum interval between phone shakes")
+      description = "The minimum interval, in milliseconds, between phone shakes")
   public int MinimumInterval() {
     return minimumInterval;
   }

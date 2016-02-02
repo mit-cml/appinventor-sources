@@ -39,7 +39,7 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
-        new NewAction()));
+        new NewAction(this)));
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
@@ -54,12 +54,23 @@ public class ProjectToolbar extends Toolbar {
   }
 
   private static class NewAction implements Command {
+    ProjectToolbar parent;
+
+    public NewAction(ProjectToolbar parent) {
+      this.parent = parent;
+    }
+
     @Override
     public void execute() {
       if (Ode.getInstance().screensLocked()) {
         return;                 // Refuse to switch if locked (save file happening)
       }
-      new NewYoungAndroidProjectWizard().center();
+      // Disabled the Start New Project button. We do this because on slow machines people
+      // click it multiple times while the wizard (below) is starting. This then causes
+      // a second wizard to start and a very confused user experience.
+      // We will enable the button again when we re-visit the Project List page
+      parent.setButtonEnabled(WIDGET_NAME_NEW, false);
+      new NewYoungAndroidProjectWizard(parent).center();
       // The wizard will switch to the design view when the new
       // project is created.
     }
@@ -236,4 +247,13 @@ public class ProjectToolbar extends Toolbar {
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
         numSelectedProjects > 0);
   }
+
+  // If we started a project, then the start button was disabled (to avoid
+  // a second press while the new project wizard was starting (aka we "debounce"
+  // the button). When the person switches to the projects list view again (here)
+  // we re-enable it.
+  public void enableStartButton() {
+    setButtonEnabled(WIDGET_NAME_NEW, true);
+  }
+
 }
