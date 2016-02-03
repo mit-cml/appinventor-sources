@@ -176,9 +176,10 @@ public final class Image extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCALING,
       defaultValue = Component.SCALING_SCALE_PROPORTIONALLY + "")
-  @SimpleProperty(description = "This allows you to scale the picture in " +
-      "three different ways when you change Height or Width property. " +
-      "Setting it to 0 corresponds to Scale proportionally; 1 to Scale to fit.")
+  @SimpleProperty(description = "This property determines how the picture " +
+      "scales according to the Height or Width of the Image. Scale " +
+      "proportionally (0) preserves the picture aspect ratio. Scale to fit " +
+      "(1) matches the Image area, even if the aspect ratio changes.")
   public void Scaling(int mode) {
     switch (mode) {
       case 0:
