@@ -93,7 +93,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
   private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
-  private static final String WIDGET_NAME_WALKTHROUGH = "Walkthrough";
+  private static final String WIDGET_NAME_WALKTHROUGH = "Walkthroughs";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
@@ -799,8 +799,7 @@ public class TopToolbar extends Composite {
   private static class WalkthroughAction implements Command {
     @Override
     public void execute() {
-      NewUserGetStarted.displayDialog();
-      BlocklyPanel.callSetTutorial();
+      NewUserGetStarted.displayWalkthroughPicker();
     }
   }
 

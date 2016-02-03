@@ -2335,6 +2335,7 @@ textarea::-webkit-input-placeholder {
   padding-left: 15px;
   margin-left: 5px;
   margin-right: 5px;
+  visibility: hidden;
 }
 #closeButton{
   padding-right: 15px;
@@ -2343,7 +2344,11 @@ textarea::-webkit-input-placeholder {
 }
 
 #nextStepErrorMsg {
-  color: red;
+  color: darkred;
   display: none;
   margin-top: 5px;
+}
+
+#walkthroughPicker tbody {
+  cursor: pointer;
 }
