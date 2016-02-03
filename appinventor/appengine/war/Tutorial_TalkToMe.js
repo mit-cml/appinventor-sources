@@ -12,6 +12,7 @@
 
 var Tutorial_TalkToMe = {
 	title: "Talk To Me",
+	difficulty: "easy",
 	noCheck: function(){
 		return true;
 	},
@@ -121,18 +122,9 @@ var Tutorial_TalkToMe = {
 			{
 				text: "Find the block that says When Button1 Click from the Button Drawer. Click and hold this block. Drag it into your workspace. ",
 				validate: function(formName){
-					var blocklies=Blocklies[formName];
-					var truth=false;
-					if (blocklies!=null){
-						var allblocks=blocklies.mainWorkspace.getAllBlocks();
-						for (var i=0; i<allblocks.length; i++ ){
-							var block=allblocks[i];
-							if (block.eventName=="Click" & block.typeName=="Button"){
-								truth=true;
-							}
-						}
-					}
-					return truth;
+					return Tutorial.testForBlock(formName, function(block) {
+						return block.eventName=="Click" & block.typeName=="Button";
+					});
 				},
 				url: "",
 				top: 50,
@@ -141,71 +133,41 @@ var Tutorial_TalkToMe = {
 			{
 				text: "Find the block that says TextToSpeech1.Speak from the TextToSpeech Drawer. Click and hold this block. Drag it inside the Button Click block so that they fit together. ",
 				validate: function(formName){
-					var blocklies=Blocklies[formName];
-					var truth=false;
-					if (blocklies!=null){
-
-						var allblocks=blocklies.mainWorkspace.getAllBlocks();
-						for (var i=0; i<allblocks.length; i++ ){
-							var block=allblocks[i];
-							if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
-								var target=block.previousConnection.targetConnection;
-								if (target!=null){
-									var sourceblock=target.sourceBlock_;
-									if (sourceblock.eventName=="Click" & sourceblock.typeName=="Button"){
-										truth=true;
-									}
-								}
+					return Tutorial.testForBlock(formName, function(block) {
+						if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
+							var target=block.previousConnection.targetConnection;
+							if (target!=null){
+								var sourceblock=target.sourceBlock_;
+								return sourceblock.eventName=="Click" & sourceblock.typeName=="Button";
 							}
 						}
-					}
-					return truth;
+						return false;
+					});
 				},
 				url: ""
 			},
 			{
 				text: "Almost done! Now you just need to tell the TextToSpeech.Speak block what to say. To do that, click on the Text drawer under Built-In. Drag out a text block and plug it into the socket labeled 'message'. ",
 				validate: function(formName){
-					var blocklies=Blocklies[formName];
-
-					var truth=false;
-					if (blocklies!=null){
-
-						var allblocks=blocklies.mainWorkspace.getAllBlocks();
-						for (var i=0; i<allblocks.length; i++ ){
-							var block=allblocks[i];
-							if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
-								var arg=block.getInput("ARG0").connection.targetConnection;
-								if (arg!=null){
-									var source=arg.sourceBlock_;
-									if (source.type=="text"){
-										truth=true;
-									}
-								}
+					return Tutorial.testForBlock(formName, function(block) {
+						if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
+							var arg=block.getInput("ARG0").connection.targetConnection;
+							if (arg!=null){
+								var source=arg.sourceBlock_;
+								return source.type=="text";
 							}
 						}
-					}
-					return truth;
+						return false;
+					});
 				},
 				url: ""
 			},
 			{
 				text: "Clicking on the text block will allow you to type a message. Type the message: Congratulations! You've built your first app!",
 				validate: function(formName){
-					var blocklies=Blocklies[formName];
-					var truth=false;
-					if (blocklies!=null){
-						var allblocks=blocklies.mainWorkspace.getAllBlocks();
-						for (var i=0; i<allblocks.length; i++ ){
-							var block=allblocks[i];
-							if (block.type=="text"){
-								if (block.getTitleValue("TEXT").length>0){
-									truth=true;
-								}
-							}
-						}
-					}
-					return truth;
+					return Tutorial.testForBlock(formName, function(block) {
+						return block.type=="text" && block.getTitleValue("TEXT").length>0;
+					});
 				},
 				url: ""
 			},
