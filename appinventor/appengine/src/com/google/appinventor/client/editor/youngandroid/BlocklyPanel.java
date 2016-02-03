@@ -6,38 +6,24 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.editor.FileEditor;
-import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.YaVersion;
-
 import com.google.common.collect.Maps;
-
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
-
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
-
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -830,6 +816,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static String getLocalizedComponentType(String key) {
     return TranslationDesignerPallete.getCorrespondingString(key);
+  }
 
   public static void switchToBlocksEditor(){
     Ode.getInstance().getDesignToolbar().switchToBlocksEditor();

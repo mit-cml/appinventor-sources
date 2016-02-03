@@ -11,15 +11,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.explorer.commands.BuildCommand;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
-import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
-import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
-import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
-import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
 import com.google.appinventor.client.output.OdeLog;
@@ -33,6 +25,7 @@ import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
@@ -44,16 +37,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-=import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -216,18 +201,18 @@ public class TopToolbar extends Composite {
       helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
           new WindowOpenAction(forumsUrl)));
     }
-    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryLink(),
-        new LibraryAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedLink(),
-        new GetStartedAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsLink(),
-        new TutorialsAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
+        new WindowOpenAction(libraryUrl)));
+    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
+        new WindowOpenAction(getStartedUrl)));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
+        new WindowOpenAction(tutorialsUrl)));
     helpItems.add(new DropDownItem(WIDGET_NAME_WALKTHROUGH, MESSAGES.walkthroughLink(),
         new WalkthroughAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingLink(),
-        new TroubleShootingAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsLink(),
-        new ForumsAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
+        new WindowOpenAction(troubleshootingUrl)));
+    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
+        new WindowOpenAction(forumsUrl)));
     helpItems.add(null);
     String feedbackUrl = config.getFeedbackUrl();
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
@@ -791,7 +776,7 @@ public class TopToolbar extends Composite {
   private static class ShowSplashAction implements Command {
     @Override
     public void execute() {
-      ProjectToolbar.getStarted();
+      Ode.getInstance().showWelcomeDialog();
     }
   }
   private static class WalkthroughAction implements Command {
