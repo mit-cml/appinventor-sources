@@ -58,7 +58,6 @@ public class ComponentUploadWizard extends Wizard {
             @Override
             public void onSuccess(UploadResponse uploadResponse) {
               Component component = Component.valueOf(uploadResponse.getInfo());
-              Ode.getInstance().getComponentManager().addComponent(component);
               ErrorReporter.reportInfo("Uploaded successfully");
             }
           });

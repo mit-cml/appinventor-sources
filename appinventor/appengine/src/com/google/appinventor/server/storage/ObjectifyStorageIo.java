@@ -25,7 +25,6 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
-import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
@@ -40,7 +39,6 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -61,6 +59,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 // GCS imports
@@ -88,6 +87,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -183,7 +183,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
     ObjectifyService.register(CorruptionRecord.class);
-    ObjectifyService.register(ComponentData.class);
     ObjectifyService.register(SplashData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
@@ -1531,172 +1530,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     return modTime.t;
   }
 
-  @Override
-  public Component uploadComponentFile(final String userId, final String fileName, final byte[] content) {
-    final Component addedComponent = new Component();
-
-    JobRetryHelper helper = new JobRetryHelper() {
-      private static final String EXTERNAL_COMP_DIR = "external_comps";
-      private static final String EXTERNAL_COMP_EXTENSION = ".aix";
-      private static final String INFO_FILE_NAME = "info.json";
-
-      @Override
-      public void run(Objectify datastore) throws ObjectifyException {
-        ComponentData compData = new ComponentData();
-        compData.id = null;
-        compData.userId = userId;
-        compData.fullyQualifiedName = fileName.substring(0,
-            fileName.length() - EXTERNAL_COMP_EXTENSION.length());
-        compData.version = getNextVersion(compData);
-        compData.gcsPath = userId + "/" + EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName +
-            "/" + compData.version + "/" + fileName;
-
-        datastore.put(compData);
-
-        addedComponent.set(compData.id, compData.userId, compData.fullyQualifiedName,
-            compData.version);
-
-        try {
-          setGcsFileContent(compData.gcsPath, content);
-          updateInfoFile(compData);
-        } catch (IOException e) {
-          throw CrashReport.createAndLogError(LOG, null,
-            collectComponentErrorInfo(userId, fileName), e);
-        }
-      }
-
-      private long getNextVersion(ComponentData compData) {
-        JSONObject info = getInfoJson(compData);
-        return info == null ? 1 : info.getLong("nextVersion");
-      }
-
-      private void updateInfoFile(ComponentData compData) throws IOException {
-        JSONObject info = getInfoJson(compData);
-        if (info == null) {
-          info = new JSONObject();
-          info.put("nextVersion", 2L);
-          info.put("numOfVersions", 1);
-        } else {
-          info.put("nextVersion", compData.version + 1);
-          info.put("numOfVersions", info.getInt("numOfVersions") + 1);
-        }
-
-        setGcsFileContent(getInfoFilePath(compData), info.toString().getBytes());
-      }
-
-      private JSONObject getInfoJson(ComponentData compData) {
-        byte[] infoContent = getGcsFileContent(getInfoFilePath(compData));
-        return infoContent == null ? null : new JSONObject(new String(infoContent));
-      }
-
-      private String getInfoFilePath(ComponentData compData) {
-        return compData.userId + "/" + EXTERNAL_COMP_DIR + "/" + compData.fullyQualifiedName + "/" + INFO_FILE_NAME;
-      }
-    };
-
-    try {
-      runJobWithRetries(helper, true);
-      return addedComponent;
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-        collectComponentErrorInfo(userId, fileName), e);
-    }
-  }
-
-  @Override
-  public List<Component> getComponents(String userId) {
-    ArrayList<Component> results = new ArrayList<Component>();
-    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    for (ComponentData compData : query.filter("userId", userId).list()) {
-      results.add(new Component(compData.id, compData.userId,
-          compData.fullyQualifiedName, compData.version));
-    }
-    return results;
-  }
-
-  @Override
-  public byte[] getGcsFileContent(String gcsPath) {
-    byte[] results = null;
-    try {
-      GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, gcsPath);
-      int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-      ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
-      GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-      readChannel.read(resultBuffer);
-      results = resultBuffer.array();
-    } catch (IOException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Error reading gcs file at " + gcsPath, e);
-    } catch (NullPointerException e) {
-      LOG.log(Level.WARNING, gcsPath + " doesn't exist in gcs");
-    }
-    return results;
-  }
-
-  @Override
-  public String getGcsPath(Component component) {
-    Objectify datastore = ObjectifyService.begin();
-    ComponentData result = datastore.find(componentKey(component.getId()));
-    return result == null ? null : result.gcsPath;
-  }
-
-  @Override
-  public void deleteComponent(final Component component) {
-    JobRetryHelper helper = new JobRetryHelper() {
-      private static final String EXTERNAL_COMP_DIR = "external_comps";
-      private static final String INFO_FILE_NAME = "info.json";
-
-      @Override
-      public void run(Objectify datastore) {
-        datastore.delete(componentKey(component.getId()));
-
-        String gcsPath = getGcsPath(component);
-        if (gcsPath == null) {
-          throw CrashReport.createAndLogError(LOG, null, "gcs path of " +
-              component.getFullyQualifiedName() + " of version " + component.getVersion() +
-              " is null", new NullPointerException());
-        }
-
-        try {
-          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, gcsPath));
-          updateInfoFile(component);
-        } catch (IOException e) {
-          LOG.log(Level.WARNING, "Unable to delete " + component.getFullyQualifiedName(), e);
-        }
-      }
-
-      private void updateInfoFile(Component comp) throws IOException {
-        JSONObject info = getInfoJson(comp);
-        if (info == null) {
-          throw CrashReport.createAndLogError(LOG, null, "Error reading info.json of " +
-              comp.getFullyQualifiedName(), new NullPointerException());
-        }
-
-        if (info.getInt("numOfVersions") == 1) {
-          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, getInfoFilePath(comp)));
-        } else {
-          info.put("numOfVersions", info.getInt("numOfVersions") - 1);
-          setGcsFileContent(getInfoFilePath(comp), info.toString().getBytes());
-        }
-      }
-
-      private JSONObject getInfoJson(Component comp) {
-        byte[] infoContent = getGcsFileContent(getInfoFilePath(comp));
-        return infoContent == null ? null : new JSONObject(new String(infoContent));
-      }
-
-      private String getInfoFilePath(Component comp) {
-        return EXTERNAL_COMP_DIR + "/" + comp.getFullyQualifiedName() + "/" + INFO_FILE_NAME;
-      }
-    };
-
-    try {
-      runJobWithRetries(helper, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-        collectComponentErrorInfo(component.getAuthorId(), component.getFullyQualifiedName()), e);
-    }
-  }
-
   protected void deleteBlobstoreFile(String blobKeyString) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.
@@ -2419,10 +2252,6 @@ public class ObjectifyStorageIo implements  StorageIo {
     return new Key<FileData>(projectKey, FileData.class, fileName);
   }
 
-  private Key<ComponentData> componentKey(long compId) {
-    return new Key<ComponentData>(ComponentData.class, compId);
-  }
-
   /**
    * Call job.run() if we get a {@link java.util.ConcurrentModificationException}
    * or {@link com.google.appinventor.server.storage.ObjectifyException}
@@ -2504,8 +2333,40 @@ public class ObjectifyStorageIo implements  StorageIo {
     return "user=" + userId + ", project=" + projectId;
   }
 
-  private static String collectComponentErrorInfo(final String userId, final String name) {
-    return "user=" + userId + ", component=" + name;
+  @Override
+  public String uploadTempFile(byte[] content) throws IOException {
+    String uuid = UUID.randomUUID().toString();
+    String fileName = "__TEMP__/" + uuid;
+    setGcsFileContent(fileName, content);
+    return fileName;
+  }
+
+  @Override
+  public InputStream openTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith("__TEMP__")) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+    GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileName);
+    int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+    ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+    GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+    int bytesRead = 0;
+    try {
+      while (bytesRead < fileSize) {
+        bytesRead += readChannel.read(resultBuffer);
+      }
+    } finally {
+      readChannel.close();
+    }
+    return new ByteArrayInputStream(resultBuffer.array());
+  }
+
+  @Override
+  public void deleteTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith("__TEMP__")) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+    gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fileName));
   }
 
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
@@ -2539,12 +2400,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
-  }
-
-  @VisibleForTesting
-  List<ComponentData> getCompDataList(String fullyQualifiedName) {
-    Query<ComponentData> query = ObjectifyService.begin().query(ComponentData.class);
-    return query.filter("fullyQualifiedName", fullyQualifiedName).list();
   }
 
   @VisibleForTesting

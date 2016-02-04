@@ -156,11 +156,8 @@ public class UploadServlet extends OdeServlet {
           throw CrashReport.createAndLogError(LOG, req, null, e);
         }
 
-        String fileName = uriComponents[COMPONENT_PATH_INDEX];
-        Component component = fileImporter.importComponentArchive(
-            userInfoProvider.getUserId(), fileName, uploadedStream);
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
-            component.toString());
+          fileImporter.importTempFile(uploadedStream));
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

@@ -267,20 +267,6 @@ public class StoredData {
     public String message;
   }
 
-  // Component data specific to the user
-  @Unindexed
-  static final class ComponentData {
-    @Id Long id;
-
-    @Indexed String userId;
-
-    @Indexed String fullyQualifiedName;
-
-    @Indexed long version;
-
-    String gcsPath;
-  }
-
   @Cached(expirationSeconds=60)
   @Unindexed
   static final class SplashData {

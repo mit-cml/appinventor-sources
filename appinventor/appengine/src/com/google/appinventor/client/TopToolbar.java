@@ -116,7 +116,6 @@ public class TopToolbar extends Composite {
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
 
   public DropDownButton fileDropDown;
-  public DropDownButton componentsDropDown;
   public DropDownButton connectDropDown;
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
@@ -169,19 +168,6 @@ public class TopToolbar extends Composite {
         new DownloadKeystoreAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
         new DeleteKeystoreAction()));
-
-    // Components -> {My components; Start new component; Import component; Build component}
-    componentItems.add(new DropDownItem(WIDGET_NAME_MY_COMPONENTS, MESSAGES.myComponentsMenuItem(),
-        new MyComponentsAction()));
-    componentItems.add(null);
-    // componentItems.add(new DropDownItem(WIDGET_NAME_START_NEW_COMPONENT, MESSAGES.startNewComponentMenuItem(),
-    //     new StartNewComponentAction()));
-    componentItems.add(new DropDownItem(WIDGET_NAME_IMPORT_COMPONENT, MESSAGES.importComponentMenuItem(),
-        new ImportComponentAction()));
-    // componentItems.add(new DropDownItem(WIDGET_NAME_BUILD_COMPONENT, MESSAGES.buildComponentMenuItem(),
-    //     new BuildComponentAction()));
-    componentItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_COMPONENT, MESSAGES.uploadComponentMenuItem(),
-        new UploadComponentAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
@@ -255,8 +241,6 @@ public class TopToolbar extends Composite {
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
         fileItems, false);
-    componentsDropDown = new DropDownButton(WIDGET_NAME_COMPONENTS, MESSAGES.componentsTabName(),
-        componentItems, false);
     connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectTabName(),
         connectItems, false);
     buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName(),
@@ -266,14 +250,12 @@ public class TopToolbar extends Composite {
 
     // Set the DropDown Styles
     fileDropDown.setStyleName("ode-TopPanelButton");
-    componentsDropDown.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    // toolbar.add(componentsDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
 
@@ -819,20 +801,6 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
-    }
-  }
-
-  private static class MyComponentsAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToComponentsView();
-    }
-  }
-
-  private static class StartNewComponentAction implements Command {
-    @Override
-    public void execute() {
-      // to be added
     }
   }
 

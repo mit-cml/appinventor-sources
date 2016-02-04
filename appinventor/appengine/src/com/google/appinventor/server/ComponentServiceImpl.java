@@ -44,77 +44,44 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
 
   private final FileImporter fileImporter = new FileImporterImpl();
 
-
   @Override
-  public List<Component> getComponents() {
-    return storageIo.getComponents(userInfoProvider.getUserId());
-  }
-
-  @Override
-  public ComponentImportResponse importComponentToProject(Component component, long projectId,
-      String folderPath) {
-    List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
-    String gcsPath = storageIo.getGcsPath(component);
-    ComponentImportResponse response = new ComponentImportResponse(ComponentImportResponse.Status.FAILED);
-    response.setComponentType(component.getFullyQualifiedName());
-
-    if (gcsPath == null) {
-      // component may not come from the datastore so gcsPath is null
-      response.setStatus(ComponentImportResponse.Status.NOT_GCS);
-      return response;
-    }
-
-    try {
-      byte[] compContent = storageIo.getGcsFileContent(gcsPath);
-      Map<String, byte[]> contents =
-          extractContents(new ByteArrayInputStream(compContent));
-      importToProject(contents, projectId, folderPath, response);
-
-    } catch (FileImporterException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(gcsPath, projectId), e);
-    } catch (IOException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(gcsPath, projectId), e);
-    }
-
-    return response;
-  }
-
-  @Override
-  public ComponentImportResponse importComponentToProject(String url, long projectId,
+  public ComponentImportResponse importComponentToProject(String fileOrUrl, long projectId,
       String folderPath) {
     ComponentImportResponse response = new ComponentImportResponse(ComponentImportResponse.Status.FAILED);
 
-    if (isUnknownSource(url)) {
+    if (isUnknownSource(fileOrUrl)) {
       response.setStatus(ComponentImportResponse.Status.UNKNOWN_URL);
       return response;
     }
 
+    Map<String, byte[]> contents;
+    String fileNameToDelete = null;
     try {
-      URL compUrl = new URL(url);
-      Map<String, byte[]> contents = extractContents(compUrl.openStream());
+      if (fileOrUrl.startsWith("__TEMP__")) {
+        fileNameToDelete = fileOrUrl;
+        contents = extractContents(storageIo.openTempFile(fileOrUrl));
+      } else {
+        URL compUrl = new URL(fileOrUrl);
+        contents = extractContents(compUrl.openStream());
+      }
       importToProject(contents, projectId, folderPath, response);
-
+      return response;
     } catch (FileImporterException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(url, projectId), e);
+          collectImportErrorInfo(fileOrUrl, projectId), e);
     } catch (IOException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectImportErrorInfo(url, projectId), e);
+          collectImportErrorInfo(fileOrUrl, projectId), e);
+    } finally {
+      if (fileNameToDelete != null) {
+        try {
+          storageIo.deleteTempFile(fileNameToDelete);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, null,
+            collectImportErrorInfo(fileOrUrl, projectId), e);
+        }
+      }
     }
-
-    return response;
-  }
-
-  @Override
-  public void deleteComponent(Component component) {
-    if (!component.getAuthorId().equals(userInfoProvider.getUserId())) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "The user who is deleting the component with id " + component.getId() +
-          " is not the author.", null);
-    }
-    storageIo.deleteComponent(component);
   }
 
   @Override

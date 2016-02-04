@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
@@ -80,21 +81,18 @@ public interface FileImporter {
       throws IOException;
 
   /**
-   * Adds component archive on the server and imports its content.
-   *
-   * @param userId the userId
-   * @param fileName file name
-   * @param uploadedFileStream uploaded file
-   * @return the component just imported
-   * @throws IOException if any file operation fails
-   */
-  Component importComponentArchive(String userId, String fileName,
-      InputStream uploadedFileStream) throws IOException;
-
-  /**
    * Returns the names of all the projects belonging to the user.
    *
    * @return The set of project names belonging to the provided {@code userId}.
    */
   Set<String> getProjectNames(final String userId);
+
+  /**
+   * importTempFile -- Given an input stream, creates a temporary
+   * file from the content and returns its name
+   *
+   * @param inputstream the files data in an input stream
+   */
+  String importTempFile(InputStream inStream) throws IOException;
+
 }

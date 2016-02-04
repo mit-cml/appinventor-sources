@@ -18,38 +18,15 @@ import java.util.List;
 public interface ComponentService extends RemoteService {
 
   /**
-   * @return A list of user's components
-   */
-  List<Component> getComponents();
-
-  /**
    * Import the component to the project in the server and
    * return a list of ProjectNode that can be added to the client
    *
-   * @param component the component to import
+   * @param url the url of the componenet file or filename of temp file
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
    * @return a list of ProjectNode created from the component
    */
-  ComponentImportResponse importComponentToProject(Component component, long projectId, String folderPath);
-
-  /**
-   * Import the component to the project in the server and
-   * return a list of ProjectNode that can be added to the client
-   *
-   * @param url the url of the componenet file
-   * @param projectId id of the project to which the component will be added
-   * @param folderPath folder to which the component will be stored
-   * @return a list of ProjectNode created from the component
-   */
-  ComponentImportResponse importComponentToProject(String url, long projectId, String folderPath);
-
-  /**
-   * Delete the component uploaded by the user
-   *
-   * @param component the component to be deleted
-   */
-  void deleteComponent(Component component);
+  ComponentImportResponse importComponentToProject(String fileOrUrl, long projectId, String folderPath);
 
   /**
    * Rename the short name of an imported component

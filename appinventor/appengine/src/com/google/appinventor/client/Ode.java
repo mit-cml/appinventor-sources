@@ -19,7 +19,6 @@ import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ComponentListBox;
 import com.google.appinventor.client.boxes.ModerationPageBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
@@ -33,7 +32,6 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.component.ComponentManager;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
@@ -41,7 +39,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.explorer.youngandroid.ComponentToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
@@ -178,9 +175,6 @@ public class Ode implements EntryPoint {
   // Collection of editors
   private EditorManager editorManager;
 
-  // Collection of components
-  private ComponentManager componentManager;
-
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
 
@@ -221,7 +215,6 @@ public class Ode implements EntryPoint {
   private int userProfileTabIndex;
   private int privateUserProfileIndex;
   private int moderationPageTabIndex;
-  private int componentsTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -231,7 +224,7 @@ public class Ode implements EntryPoint {
   private GalleryToolbar galleryPageToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
-  private ComponentToolbar componentToolbar;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -402,14 +395,6 @@ public class Ode implements EntryPoint {
     // the button). When the person switches to the projects list view again (here)
     // we re-enable it.
     projectToolbar.enableStartButton();
-  }
-
-  /**
-   * Switch to the Components tab
-   */
-  public void switchToComponentsView() {
-    currentView = COMPONENTS;
-    deckPanel.showWidget(componentsTabIndex);
   }
 
   /**
@@ -723,7 +708,6 @@ public class Ode implements EntryPoint {
           }
         });
         editorManager = new EditorManager();
-        componentManager = new ComponentManager();
 
         // Initialize UI
         initializeUi();
@@ -837,19 +821,6 @@ public class Ode implements EntryPoint {
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(pVertPanel);
-
-    // Components tab
-    VerticalPanel componentOuterPanel = new VerticalPanel();
-    componentOuterPanel.setWidth("100%");
-    componentOuterPanel.setSpacing(0);
-    HorizontalPanel componentInnerPanel = new HorizontalPanel();
-    componentInnerPanel.setWidth("100%");
-    componentToolbar = new ComponentToolbar();
-    componentInnerPanel.add(ComponentListBox.getInstance());
-    componentOuterPanel.add(componentToolbar);
-    componentOuterPanel.add(componentInnerPanel);
-    componentsTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(componentOuterPanel);
 
     // Design tab
     VerticalPanel dVertPanel = new VerticalPanel();
@@ -1228,24 +1199,6 @@ public class Ode implements EntryPoint {
    */
   public ComponentServiceAsync getComponentService() {
     return componentService;
-  }
-
-  /**
-   * Returns the component manager.
-   *
-   * @return  {@link ComponentManager}
-   */
-  public ComponentManager getComponentManager() {
-    return componentManager;
-  }
-
-  /**
-   * Returns the component tool bar.
-   *
-   * @return  {@link ComponentToolbar}
-   */
-  public ComponentToolbar getComponentToolbar() {
-    return componentToolbar;
   }
 
   /**

@@ -83,7 +83,6 @@ public class ComponentImportWizard extends Wizard {
     }
   }
 
-  private static int MY_COMPONENT_TAB = 2;
   private static int FROM_MY_COMPUTER_TAB = 0;
   private static int URL_TAB = 1;
 
@@ -98,7 +97,6 @@ public class ComponentImportWizard extends Wizard {
     final FileUpload fileUpload = createFileUpload();
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
-    // tabPanel.add(compTable, "My components");
     tabPanel.add(fileUpload, "From my computer");
     tabPanel.add(urlGrid, "URL");
     tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
@@ -115,9 +113,6 @@ public class ComponentImportWizard extends Wizard {
     setPixelSize(200, 150);
     setStylePrimaryName("ode-DialogBox");
 
-    ListDataProvider<Component> dataProvider = provideData();
-    dataProvider.addDataDisplay(compTable);
-
     initFinishCommand(new Command() {
       @Override
       public void execute() {
@@ -126,20 +121,7 @@ public class ComponentImportWizard extends Wizard {
         final YoungAndroidAssetsFolder assetsFolderNode =
             ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
 
-        if (tabPanel.getTabBar().getSelectedTab() == MY_COMPONENT_TAB) {
-          SingleSelectionModel<Component> selectionModel =
-              (SingleSelectionModel<Component>) compTable.getSelectionModel();
-          Component toImport = selectionModel.getSelectedObject();
-
-          if (toImport == null) {
-            showAlert(MESSAGES.noComponentSelectedError());
-            return;
-          }
-
-          ode.getComponentService().importComponentToProject(toImport, projectId,
-              assetsFolderNode.getFileId(), new ImportComponentCallback());
-
-        } else if (tabPanel.getTabBar().getSelectedTab() == URL_TAB) {
+        if (tabPanel.getTabBar().getSelectedTab() == URL_TAB) {
           TextBox urlTextBox = (TextBox) urlGrid.getWidget(1, 0);
           String url = urlTextBox.getText();
 
@@ -165,9 +147,7 @@ public class ComponentImportWizard extends Wizard {
             new OdeAsyncCallback<UploadResponse>() {
               @Override
               public void onSuccess(UploadResponse uploadResponse) {
-                Component toImport = Component.valueOf(uploadResponse.getInfo());
-                ode.getComponentManager().addComponent(toImport);
-
+                String toImport = uploadResponse.getInfo();
                 ode.getComponentService().importComponentToProject(toImport, projectId,
                     assetsFolderNode.getFileId(), new ImportComponentCallback());
               }
@@ -233,14 +213,6 @@ public class ComponentImportWizard extends Wizard {
     FileUpload upload = new FileUpload();
     upload.setName(ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
     return upload;
-  }
-
-  private ListDataProvider<Component> provideData() {
-    ListDataProvider<Component> provider = new ListDataProvider<Component>();
-    for (Component comp : ode.getComponentManager().getComponents()) {
-      provider.getList().add(comp);
-    }
-    return provider;
   }
 
   private void showAlert(String message) {

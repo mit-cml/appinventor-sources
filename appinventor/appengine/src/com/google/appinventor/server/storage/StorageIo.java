@@ -9,13 +9,13 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -461,43 +461,6 @@ public interface StorageIo {
   long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
 
   /**
-   * Uploads a file which is expected to be a .aix zipped file
-   * @param userId the user who owns the file
-   * @param fileName the file name with the extension
-   * @param content  file content
-   * @return the component just uploaded
-   */
-  Component uploadComponentFile(final String userId, final String fileName, final byte[] content);
-
-  /**
-   * Returns a list of components uploaded by the user
-   *
-   * @param userId unique user id
-   * @return list of components
-   */
-  List<Component> getComponents(String userId);
-
-  /**
-   * Returns the content of a file from gcs
-   *
-   * @param gcsPath path to the gcs file
-   * @return the file content in byte array
-   */
-  byte[] getGcsFileContent(String gcsPath);
-
-  /**
-   * @return gcs path to the component file
-   */
-  String getGcsPath(Component component);
-
-  /**
-   * Delete the component from gcs and datastore
-   *
-   * @param component the component to be deleted
-   */
-  void deleteComponent(final Component component);
-
-  /**
    * Deletes a file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project ID
@@ -537,6 +500,37 @@ public interface StorageIo {
    * @return  file content
    */
   byte[] downloadRawFile(String userId, long projectId, String fileId);
+
+  /**
+   * Creates a temporary file with the given content and returns
+   * its file name, which will always begin with __TEMP__
+   * @param content the files content (bytes)
+   *
+   * @return fileName the temporary filename
+   */
+  String uploadTempFile(byte [] content) throws IOException;
+
+  /**
+   * Open an input stream to a temp file.
+   * Verifies it is a temp file by making sure the filename
+   * begins with __TEMP__
+   *
+   * @param fileName
+   *
+   * @return inputstream
+   */
+
+  InputStream openTempFile(String fileName) throws IOException;
+
+  /**
+   * delete a temporary file.
+   * Verify that it is a temporary file by making sure its filename
+   * starts with __TEMP__
+   *
+   * @param fileName
+   */
+
+  void deleteTempFile(String fileName) throws IOException;
 
   // MOTD management
 

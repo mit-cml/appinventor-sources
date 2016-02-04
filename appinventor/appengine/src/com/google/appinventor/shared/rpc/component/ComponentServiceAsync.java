@@ -14,26 +14,10 @@ import java.util.List;
 public interface ComponentServiceAsync {
 
   /**
-   * @see ComponentService#getComponents()
-   */
-  void getComponents(AsyncCallback<List<Component>> callback);
-
-  /**
-   * @see ComponentService#importComponentToProject(Component, long, String)
-   */
-  void importComponentToProject(Component info, long projectId,
-      String folderPath, AsyncCallback<ComponentImportResponse> callback);
-
-  /**
    * @see ComponentService#importComponentToProject(String, long, String)
    */
-  void importComponentToProject(String url, long projectId, String folderPath,
+  void importComponentToProject(String forOrUrl, long projectId, String folderPath,
       AsyncCallback<ComponentImportResponse> callback);
-
-  /**
-   * @see ComponentService#deleteComponent(Component)
-   */
-  void deleteComponent(Component component, AsyncCallback<Void> callback);
 
   /**
    * @see ComponentService#renameImportedComponent(String, String, long)
