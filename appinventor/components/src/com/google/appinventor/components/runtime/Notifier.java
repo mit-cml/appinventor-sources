@@ -64,7 +64,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "and creates Android log entries through the following methods: " +
         "<ul>" +
         "<li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li>" +
-        "<li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, " +
+        "<li> ShowChooseDialog: displays a message and two buttons to let the user choose one of two responses, " +
         "for example, yes or no, after which the AfterChoosing event is raised.</li>" +
         "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
         "which the AfterTextInput event is raised. " +
@@ -80,7 +80,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "&lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li>" +
         "<li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the " +
         "available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, " +
-        "red, silver, teal, white, and yellow</li>" +
+        "red, silver, teal, white, and yellow.</li>" +
         "</ul>",
     nonVisible = true,
     iconName = "images/notifier.png")
@@ -360,7 +360,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Display a temporary notification
+   * Display a temporary notification.
    *
    * @param notice the text of the notification
    */

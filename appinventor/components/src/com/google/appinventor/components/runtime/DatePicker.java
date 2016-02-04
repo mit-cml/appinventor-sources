@@ -71,7 +71,7 @@ public class DatePicker extends ButtonBase {
    * Returns the Year that was last picked using the DatePicker.
    * @return the year in numeric format
    */
-  @SimpleProperty(description = "the Year that was last picked using the DatePicker",
+  @SimpleProperty(description = "The Year that was last picked using the DatePicker.",
       category = PropertyCategory.APPEARANCE)
   public int Year() {
     return year;
@@ -81,7 +81,7 @@ public class DatePicker extends ButtonBase {
    * Returns the number of the Month that was last picked using the DatePicker.
    * @return the month in numeric format
    */
-  @SimpleProperty(description = "the number of the Month that was last picked using the " +
+  @SimpleProperty(description = "The number of the Month that was last picked using the " +
       "DatePicker. Note that months start in 1 = January, 12 = December.",
       category = PropertyCategory.APPEARANCE)
   public int Month() {
@@ -103,7 +103,7 @@ public class DatePicker extends ButtonBase {
    * Returns the Day of the month that was last picked using the DatePicker.
    * @return the day in numeric format
    */
-  @SimpleProperty(description = "the Day of the month that was last picked using the DatePicker.",
+  @SimpleProperty(description = "The Day of the month that was last picked using the DatePicker.",
     category = PropertyCategory.APPEARANCE)
   public int Day() {
     return day;
@@ -113,7 +113,7 @@ public class DatePicker extends ButtonBase {
    * Returns instant of the date that was last picked using the DatePicker.
    * @return instant of the date
    */
-  @SimpleProperty(description = "the instant of the date that was last picked using the DatePicker.",
+  @SimpleProperty(description = "The instant of the date that was last picked using the DatePicker.",
     category = PropertyCategory.APPEARANCE)
   public Calendar Instant() {
     return instant;
@@ -199,7 +199,7 @@ public class DatePicker extends ButtonBase {
   /**
    * Runs when the user sets the date in the Dialog.
    */
-  @SimpleEvent(description = "Event that runs after the user chooses a Date in the dialog")
+  @SimpleEvent(description = "Event that runs after the user chooses a Date in the dialog.")
   public void AfterDateSet() {
     EventDispatcher.dispatchEvent(this, "AfterDateSet");
   }
