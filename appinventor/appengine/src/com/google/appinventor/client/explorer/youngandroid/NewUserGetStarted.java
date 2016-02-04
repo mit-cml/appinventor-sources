@@ -1,18 +1,5 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
-/*import static com.google.appinventor.client.Ode.MESSAGES;
-
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.explorer.project.Project;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-*/
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.Button;
@@ -41,9 +28,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 public class NewUserGetStarted {
 
@@ -92,7 +79,7 @@ public class NewUserGetStarted {
   }
 
   public static void displayWalkthroughPicker() {
-    String content = "Pick a walkthrough:";
+    String content = MESSAGES.walkthroughSelect();
     final DialogBox dialogBox = new DialogBox();
     dialogBox.setText(content);
     dialogBox.setStylePrimaryName("ode-DialogBox-Tutorial");
@@ -102,12 +89,14 @@ public class NewUserGetStarted {
     dialogBox.center();
     dialogBox.setAnimationEnabled(true);
 
-    //elements
-    Button closeButton = new Button("close");
+    //button elements
+    final Button closeButton = new Button(MESSAGES.walkthroughCloseButton());
     closeButton.getElement().setId("closeButton");
-    final Button startButton = new Button("start");
+
+    final Button startButton = new Button(MESSAGES.walkthroughStartButton());
     startButton.getElement().setId("startButton");
     startButton.setEnabled(false);
+
 
     final List<Tutorial> TUTORIALS = new ArrayList<Tutorial>();
 
@@ -118,12 +107,13 @@ public class NewUserGetStarted {
     for (int i = 0; i < tutorialMetaData.length(); i++) {
       JavaScriptTutorialData tutorial = tutorialMetaData.get(i);
       // add the new Tutorial object (name, difficulty, filename)
-      TUTORIALS.add(new Tutorial(tutorial.getName(), Tutorial.Difficulty.fromString(tutorial.getDifficulty()), tutorial.getFileName()));
+      TUTORIALS.add(new Tutorial(tutorial.getName(), Tutorial.Difficulty.fromString(tutorial.getDifficulty()),
+          tutorial.getFileName()));
     }
 
-    final CellTable<Tutorial> table = new CellTable<Tutorial>();
+    final CellTable<Tutorial> allTutorialsTable = new CellTable<Tutorial>();
 
-    // Create name column.
+    // Create name column
     TextColumn<Tutorial> nameColumn = new TextColumn<Tutorial>() {
       @Override
       public String getValue(Tutorial tutorial) {
@@ -131,7 +121,7 @@ public class NewUserGetStarted {
       }
     };
 
-    // Create difficulty column.
+    // Create difficulty column
     TextColumn<Tutorial> difficultyColumn = new TextColumn<Tutorial>() {
       @Override
       public String getValue(Tutorial tutorial) {
@@ -139,16 +129,16 @@ public class NewUserGetStarted {
       }
     };
 
-    table.addColumn(nameColumn, "Name");
+    allTutorialsTable.addColumn(nameColumn, MESSAGES.walkthroughNameColumn());
     nameColumn.setSortable(true);
-    table.addColumn(difficultyColumn, "Difficulty");
+    allTutorialsTable.addColumn(difficultyColumn, MESSAGES.walkthroughDifficultyColumn());
     difficultyColumn.setSortable(true);
 
-    // Create a data provider.
+    // Create a data provider
     ListDataProvider<Tutorial> dataProvider = new ListDataProvider<Tutorial>();
 
-    // Connect the table to the data provider.
-    dataProvider.addDataDisplay(table);
+    // Connect allTutorialsTable to the data provider
+    dataProvider.addDataDisplay(allTutorialsTable);
 
     // Add the data to the data provider, which automatically pushes it to the
     // widget.
@@ -184,22 +174,22 @@ public class NewUserGetStarted {
         return -1;
       }
     });
-    table.addColumnSortHandler(columnSortHandler);
 
-    table.getColumnSortList().push(nameColumn);
+    allTutorialsTable.addColumnSortHandler(columnSortHandler);
+    allTutorialsTable.getColumnSortList().push(nameColumn);
 
-    // Set the width of the table and put the table in fixed width mode.
-    table.setWidth("100%", true);
+    // Set the width of allTutorialsTable and put allTutorialsTable in fixed width mode
+    allTutorialsTable.setWidth("100%", true);
 
-    // Set the width of each column.
-    table.setColumnWidth(nameColumn, 65.0, Unit.PCT);
-    table.setColumnWidth(difficultyColumn, 35.0, Unit.PCT);
+    // Set the width of each column
+    allTutorialsTable.setColumnWidth(nameColumn, 65.0, Unit.PCT);
+    allTutorialsTable.setColumnWidth(difficultyColumn, 35.0, Unit.PCT);
 
 
     // a long-standing bug in GWT's celltable selection is that the first row will not be actively selected
-    // when clicked on after the picker box first appears.
+    // when clicked on after the picker box first appears
     final SingleSelectionModel<Tutorial> selectionModel = new SingleSelectionModel<Tutorial>();
-    table.setSelectionModel(selectionModel);
+    allTutorialsTable.setSelectionModel(selectionModel);
     selectionModel.addSelectionChangeHandler(new Handler() {
        @Override
        public void onSelectionChange(SelectionChangeEvent event) {
@@ -207,21 +197,12 @@ public class NewUserGetStarted {
        }
     });
 
-    VerticalPanel dialogVPanel = new VerticalPanel();
-    HorizontalPanel hPanel = new HorizontalPanel();
-    hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    dialogVPanel.add(table);
-    dialogVPanel.add(hPanel);
-
-    dialogVPanel.setWidth("300px");
-    dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();
       }
     });
-
     startButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -231,15 +212,24 @@ public class NewUserGetStarted {
       }
     });
 
-    hPanel.add(closeButton);
-    hPanel.add(startButton);
+
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    buttonPanel.add(closeButton);
+    buttonPanel.add(startButton);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.add(allTutorialsTable);
+    dialogPanel.add(buttonPanel);
+
+    dialogPanel.setWidth("300px");
+    dialogPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 
     dialogBox.setGlassEnabled(false);
-    dialogBox.setModal(true);
-
+    dialogBox.setModal(false);
 
     // Set the contents of the Widget
-    dialogBox.setWidget(dialogVPanel);
+    dialogBox.setWidget(dialogPanel);
     dialogBox.show();
   }
 
@@ -251,36 +241,18 @@ public class NewUserGetStarted {
     dialogBox.center();
     dialogBox.setAnimationEnabled(true);
 
-    //elements
-    Button closeButton = new Button("close");
+    //button elements
+    Button closeButton = new Button(MESSAGES.walkthroughCloseButton());
     closeButton.getElement().setId("closeButton");
-    Frame frame = new Frame("");
-    frame.getElement().setId("Tutorial_frame");
-    Button nextButton = new Button("next");
-    nextButton.getElement().setId("nextButton");
-    Button backButton = new Button("back");
-    backButton.getElement().setId("backButton");
-    HTML nextStepErrorMsg = new HTML("It looks like you haven't finished this step yet. Try reading through all the instructions again to make sure you've finished the whole step.");
-    nextStepErrorMsg.getElement().setId("nextStepErrorMsg");
-
-
-    VerticalPanel dialogVPanel = new VerticalPanel();
-    HorizontalPanel hPanel = new HorizontalPanel();
-    hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    // dialogVPanel.add(frame);
-    dialogVPanel.add(nextStepErrorMsg);
-    dialogVPanel.add(hPanel);
-
-    dialogVPanel.setWidth("300px");
-    dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();
       }
     });
-    //next button
 
+    Button nextButton = new Button(MESSAGES.walkthroughNextButton());
+    nextButton.getElement().setId("nextButton");
     nextButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -288,6 +260,8 @@ public class NewUserGetStarted {
       }
     });
 
+    Button backButton = new Button(MESSAGES.walkthroughBackButton());
+    backButton.getElement().setId("backButton");
     backButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -295,16 +269,28 @@ public class NewUserGetStarted {
       }
     });
 
-    hPanel.add(closeButton);
-    hPanel.add(backButton);
-    hPanel.add(nextButton);
+    HTML nextStepErrorMsg = new HTML(MESSAGES.walkthroughNextStepErrorText());
+    nextStepErrorMsg.getElement().setId("nextStepErrorMsg");
+
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    buttonPanel.add(closeButton);
+    buttonPanel.add(backButton);
+    buttonPanel.add(nextButton);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.add(nextStepErrorMsg);
+    dialogPanel.add(buttonPanel);
+
+    dialogPanel.setWidth("300px");
+    dialogPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 
     dialogBox.setGlassEnabled(false);
     dialogBox.setModal(false);
     dialogBox.setAutoHideEnabled(false);
 
     // Set the contents of the Widget
-    dialogBox.setWidget(dialogVPanel);
+    dialogBox.setWidget(dialogPanel);
     dialogBox.show();
   }
 }
