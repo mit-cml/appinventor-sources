@@ -15,7 +15,7 @@ import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
+import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.common.collect.Maps;
@@ -470,7 +470,7 @@ public class BlocklyPanel extends HTMLPanel {
     doSetTutorial(tutorialObjectName);
   }
 
-  public static JsArray<NewUserGetStarted.JavaScriptTutorialData> callGetTutorialMetaData() {
+  public static JsArray<Walkthrough.JavaScriptTutorialData> callGetTutorialMetaData() {
     return getTutorialMetaData();
   }
 
@@ -827,7 +827,7 @@ public class BlocklyPanel extends HTMLPanel {
     Ode.getInstance().getDesignToolbar().switchToFormEditor();
   }
   public static void displayDialog(){
-    NewUserGetStarted.displayDialog();
+    Walkthrough.displayDialog();
   }
   public static String getProjectId(){
     return String.valueOf(Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId());
@@ -1046,7 +1046,7 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.Tutorial.setTutorial(tutorialObjectName);
   }-*/;
 
-  public static native JsArray<NewUserGetStarted.JavaScriptTutorialData> getTutorialMetaData()/*-{
+  public static native JsArray<Walkthrough.JavaScriptTutorialData> getTutorialMetaData()/*-{
     return $wnd.Tutorial.getTutorialMetaData();
   }-*/;
 

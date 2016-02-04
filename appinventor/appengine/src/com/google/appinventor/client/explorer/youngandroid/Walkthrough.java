@@ -8,7 +8,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -32,7 +31,7 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-public class NewUserGetStarted {
+public class Walkthrough {
 
   private static class Tutorial {
 
@@ -207,7 +206,7 @@ public class NewUserGetStarted {
       @Override
       public void onClick(ClickEvent event) {
         dialogBox.hide();
-        NewUserGetStarted.displayDialog();
+        Walkthrough.displayDialog();
         BlocklyPanel.callSetTutorial(selectionModel.getSelectedObject().fileName);
       }
     });
