@@ -13,7 +13,7 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
+import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -772,7 +772,7 @@ public class TopToolbar extends Composite {
   private static class WalkthroughAction implements Command {
     @Override
     public void execute() {
-      NewUserGetStarted.displayWalkthroughPicker();
+      Walkthrough.displayWalkthroughPicker();
     }
   }
 
