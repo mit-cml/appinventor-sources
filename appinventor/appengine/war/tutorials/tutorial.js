@@ -90,6 +90,8 @@ var Tutorial = {
 		}
 		return false;
 	},
+//	TODO: testForComponentProperty
+//  TODO: testForScreenProperty (separate from above?)
 	getTutorialMetaData: function() {
 		var tutorialFileNames = Object.keys(window).filter(function(key) {
 			return key.startsWith("Tutorial_");
