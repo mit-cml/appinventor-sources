@@ -19,14 +19,14 @@ var Tutorial_TalkToMe = {
 	steps:
 		[
 			{
-				text: "Welcome to App Inventor! To get started, we'll be guiding you through the process of building an app that allows your phone to talk to you with the press of a button.<br><br>",
+				text: "Welcome to App Inventor! To get started, we'll be guiding you through the process of building an app that allows your phone to talk to you with the press of a button.",
 				validate: function(formName){
 					return true;
 				},
 				url: "",
 			},
 			{
-				text: "Drag a button from the palette to the viewer.<br><br>",
+				text: "Drag a button from the palette to the viewer.",
 				validate: function(formName){
 					return Tutorial.testForComponent("Button");
 				},
@@ -42,21 +42,21 @@ var Tutorial_TalkToMe = {
 				url: "",
 			},
 		  {
-      	text: "Connect your phone or the emulator to App Inventor. You should see your Talk To Me button on the screen.<br><br>If you have never connected your phone (or emulator), <a target='_blank' href='http://appinventor.mit.edu/explore/ai2/setup.html'>follow these instructions</a> and then come back to this tutorial.<br><br>",
+      	text: "Connect your phone or the emulator to App Inventor. You should see your Talk To Me button on the screen.<br><br>If you have never connected your phone (or emulator), <a target='_blank' href='http://appinventor.mit.edu/explore/ai2/setup.html'>follow these instructions</a> and then come back to this tutorial.",
         validate: function (formName) {
         	return true;
         },
         url: "",
       },
 			{
-				text: "Drag a <b>TextToSpeech</b> component from the Media drawer to the viewer. This component will show up in the Non-Visible components area below the phone screen.<br><br>",
+				text: "Drag a <b>TextToSpeech</b> component from the Media drawer to the viewer. This component will show up in the Non-Visible components area below the phone screen.",
 				validate: function(formName){
 					return Tutorial.testForComponent("TextToSpeech");
 				},
 				url: "",
 			},
 			{
-				text: "Now let's program our app! Click the Blocks button to go to the Blocks Tab.<br><br>",
+				text: "Now let's program our app! Click the Blocks button to go to the Blocks Tab.",
 				validate: function(formName){
 					var truth= BlocklyPanel_InBlocksView();
 					return truth;
@@ -64,7 +64,7 @@ var Tutorial_TalkToMe = {
 				url: "",
 			},
 			{
-				text: "Add the <b>when Button1.Click</b> block from the Button1 drawer to the workspace.<br><br>",
+				text: "Add the <b>when Button1.Click</b> block from the Button1 drawer to the workspace.",
 				validate: function(formName){
 					return Tutorial.testForBlock(formName, function(block) {
 						return block.eventName=="Click" & block.typeName=="Button";
@@ -75,7 +75,7 @@ var Tutorial_TalkToMe = {
 				left: 521
 			},
 			{
-				text: "From the TextToSpeech drawer, drag the <b>TextToSpeech1.Speak</b> inside the <b>Button1.Click</b> block so that they fit together.<br><br>",
+				text: "From the TextToSpeech drawer, drag the <b>TextToSpeech1.Speak</b> inside the <b>Button1.Click</b> block so that they fit together.",
 				validate: function(formName){
 					return Tutorial.testForBlock(formName, function(block) {
 						if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
@@ -91,7 +91,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Almost done! Now you just need to tell the <b>TextToSpeech.Speak</b> block what to say.<br>Click on the Text drawer under Built-In. Drag out a <b>text</b> block and plug it into the socket labeled <i>message</i>.<br><br>",
+				text: "Almost done! Now you just need to tell the <b>TextToSpeech.Speak</b> block what to say.<br>Click on the Text drawer under Built-In. Drag out a <b>text</b> block and plug it into the socket labeled <i>message</i>.",
 				validate: function(formName){
 					return Tutorial.testForBlock(formName, function(block) {
 						if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
@@ -107,7 +107,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Click on the text block to type a message. Type the message: Congratulations! You've built your first app!<br><br>",
+				text: "Click on the text block to type a message. Type the message: Congratulations! You've built your first app!",
 				validate: function(formName){
 					return Tutorial.testForBlock(formName, function(block) {
 						return block.type=="text" && block.getTitleValue("TEXT").length>0;
@@ -116,7 +116,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Go to your connected device and click the button. Make sure your volume is up! You should hear the phone speak the phrase out loud. (This works even with the emulator.)<br><br>",
+				text: "Go to your connected device and click the button. Make sure your volume is up! You should hear the phone speak the phrase out loud. (This works even with the emulator.)",
 				validate: function(formName){
 					return true;
 				},

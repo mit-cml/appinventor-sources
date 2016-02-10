@@ -1,5 +1,6 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.Button;
@@ -255,7 +256,9 @@ public class Walkthrough {
     nextButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        OdeLog.log("calling next step");
         BlocklyPanel.callNextStep();
+        OdeLog.log("end of next step");
       }
     });
 

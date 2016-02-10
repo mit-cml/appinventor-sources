@@ -53,6 +53,10 @@ public class ProjectToolbar extends Toolbar {
     setButtonVisible(WIDGET_NAME_PUBLISH_OR_UPDATE, visible);
   }
 
+  public void createFirstNewProject() {
+    new NewYoungAndroidProjectWizard(null).center();
+  }
+
   private static class NewAction implements Command {
     ProjectToolbar parent;
 

@@ -5,7 +5,7 @@ var Tutorial = {
 		Tutorial.currentTutorial=window[tutorial];
 		Tutorial.currentStepIndex = 0;
 		Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
-		console.log(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text)
+//		console.log(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text)
 	},
 
 	changeText: function(message){

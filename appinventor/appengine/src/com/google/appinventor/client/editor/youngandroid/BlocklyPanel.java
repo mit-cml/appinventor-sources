@@ -22,6 +22,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
@@ -454,9 +455,16 @@ public class BlocklyPanel extends HTMLPanel {
     YaBlocksEditor.toggleWarning();
   }
 
-  /**For Integrated Tutorial**/
+  /**For Walkthroughs**/
   public static void callNextStep(){
-    String proj_number=BlocklyPanel.getProjectId();
+    String proj_number;
+    try {
+      proj_number=BlocklyPanel.getProjectId();
+    } catch (UmbrellaException e) {
+      OdeLog.elog("proj num was null" + e);
+      Ode.getInstance().getProjectToolbar().createFirstNewProject();
+      proj_number=BlocklyPanel.getProjectId();
+    }
     String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     doNextStep(proj_number+"_"+currentScreen);
   }

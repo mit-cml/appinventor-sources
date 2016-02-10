@@ -2293,41 +2293,31 @@ textarea::-webkit-input-placeholder {
 
 /* For Tutorial Dialog Boxes */
 .ode-DialogBox-popup {
-  border-top: 4px solid #8fc202
+  border-top: 6px solid #8FC202
   z-index: 5;
 }
 
-/* For Joanie's Tutorial Edits */
+/* For Walkthroughs */
 .ode-DialogBox-Tutorial{
-  left: 468px;
-  top: 199px;
-  
+  left: 340px;
+  top: 200px;
   overflow: visible;
   position: absolute;
-  background-color: rgba(193, 194, 195, 0.909804);
-  border-left-width: 6px;
-  border-left-style: solid;
-  border-left-color: #7EA53C;
-  border-right-width: 6px;
-  border-right-style: solid;
-  border-right-color: #7EA53C;
-  border-bottom-width: 6px;
-  border-bottom-style: solid;
-  border-bottom-color: #7EA53C;
-  border-top-width: 6px;
-  border-top-style: solid;
-  border-top-color: #7EA53C;
-  width: 200px;
+  background-color: #FFFFFF;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #8FC202;
+  width: 340px;
   display: block;
   padding: 10px;
-  padding-right: 150px;
-  box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+  box-shadow: 3px 3px rgba(0,0,0,0.4);
   direction: ltr;
   cursor:move;
 }
 #nextButton{
   padding-left: 15px;
   padding-right: 15px;
+  margin-top: 10px;
 
 }
 #backButton{
@@ -2335,12 +2325,14 @@ textarea::-webkit-input-placeholder {
   padding-left: 15px;
   margin-left: 5px;
   margin-right: 5px;
+  margin-top: 10px;
   visibility: hidden;
 }
 #closeButton{
   padding-right: 15px;
   padding-left: 15px;
   margin-right: 135px;
+  margin-top: 10px;
 }
 
 #nextStepErrorMsg {
