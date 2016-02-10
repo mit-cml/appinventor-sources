@@ -2098,11 +2098,9 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
-  // This error message is displayed as HTML
-
   @DefaultMessage("Basic")
   @Description("")
-  String UIComponentPallette();
+  String basicComponentPallette();
 
   @DefaultMessage("Layout")
   @Description("")

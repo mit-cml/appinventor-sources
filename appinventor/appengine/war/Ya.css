@@ -117,7 +117,7 @@ select {
 }
 
 .ode-Box-header {
-  background: rgba(102, 153, 0, 0.3);
+  background: #bbda67;
   height: 31px;
   border: 1px solid;
   border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
@@ -239,15 +239,8 @@ select {
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
-  background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
-  background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
-  background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
-  background-repeat: repeat-x;
+  background-color: #fafafa;
   border: 1px solid #d4d4d4;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
   *zoom: 1;
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
   -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
@@ -261,12 +254,12 @@ select {
 }
 
 .ode-Logo:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
+  -webkit-filter: drop-shadow(0px 0px 2px #222);
+  filter:         drop-shadow(0px 0px 2px #222);
 }
 
 .ode-LogoText {
-  font-size: 16px;
+  font-size: 18px;
   color: grey;
   font-weight: 500;
   text-shadow: 0px 0px 0px #404040;
@@ -481,11 +474,10 @@ select {
 
 .ode-StatusPanel {
   font-size: 12px;
-  color: #888;
+  background: #fafafa;
   padding: 4px 12px;
-  background: url(images/toolbarBG.png) repeat;
   border: 1px;
-  border-bottom: 1px solid #bbccff;
+  border-bottom: 1px solid #888;
 }
 
 .ode-StatusPanel a {
@@ -538,7 +530,7 @@ select {
   color: black;
   font-size: 13px;
   text-align: center;
-  background-color: #eef2e0;
+  background-color: #e8f2cc;
   border: 2px solid #d2e0a6;
 }
 
@@ -576,7 +568,7 @@ select {
 }
 
 .gwt-Tree .gwt-TreeItem-selected span {
-  background-color: #d2e0a6;
+  background-color: #bbda67;;
 }
 
 /* Young Android Toolbar */
@@ -715,7 +707,7 @@ select {
 .gwt-StackPanelItem div {
   border-top: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
-  background-color: #eef2e0;
+  background-color: #e8f2cc;
   font-size: 13px;
   cursor: pointer;
   height: 14px;
@@ -815,7 +807,7 @@ select {
 }
 
 .ode-PropertiesComponentName {
-  background-color: #eef2e0;
+  background-color: #e8f2cc;
   color: #555;
   font-size: 13px;
   border-bottom: 1px solid #d2d2d2;
@@ -912,7 +904,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockForm {
-  background-color: #d2e0a6;
+  background-color: #e8f2cc;
   border: 2px solid black;
 }
 

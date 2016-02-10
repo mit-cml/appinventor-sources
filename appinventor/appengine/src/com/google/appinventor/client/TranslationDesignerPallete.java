@@ -17,7 +17,7 @@ public class TranslationDesignerPallete {
     // Palette components name
     if (key.equals("User Interface")) {
       OdeLog.wlog("key exists!");
-      value = MESSAGES.UIComponentPallette();
+      value = MESSAGES.basicComponentPallette();
     } else if (key.equals("Layout")) {
       value = MESSAGES.layoutComponentPallette();
     } else if (key.equals("Media")) {
