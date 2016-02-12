@@ -486,8 +486,7 @@ public final class Compiler {
             "<intent-filter> \n" +
             "<action android:name=\"android.provider.Telephony.SMS_RECEIVED\" /> \n" +
             "<action \n" +
-            "android:name=\"com.google.android.apps.googlevoice.SMS_RECEIVED\" \n" +
-            "android:permission=\"com.google.android.apps.googlevoice.permission.RECEIVE_SMS\" /> \n" +
+            "android:name=\"com.google.android.apps.googlevoice.SMS_RECEIVED\" /> \n" +
             "</intent-filter>  \n" +
         "</receiver> \n");
       }
