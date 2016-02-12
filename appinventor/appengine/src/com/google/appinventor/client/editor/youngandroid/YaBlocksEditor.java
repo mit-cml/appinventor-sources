@@ -285,8 +285,6 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
-
-
   private void unloadBlocksEditor() {
     // TODO(sharon): do something about form change listener?
 

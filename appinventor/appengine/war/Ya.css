@@ -474,7 +474,8 @@ select {
 
 .ode-StatusPanel {
   font-size: 12px;
-  background: #fafafa;
+  color: #888;
+  background:#fafafa;
   padding: 4px 12px;
   border: 1px;
   border-bottom: 1px solid #888;
