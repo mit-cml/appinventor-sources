@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -37,5 +37,18 @@ public class CompilerTest extends TestCase {
         "android.permission.ACCESS_MOCK_LOCATION"));
     assertTrue(permissions.contains(
         "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"));
+  }
+
+  public void testGenerateBroadcastReceiver() throws Exception {
+    Set<String> componentTypes = Sets.newHashSet("Texting");
+    Compiler compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048, null);
+    Set<String> classNames = compiler.generateBroadcastReceiver();
+    assertEquals(1, classNames.size());
+    assertTrue(classNames.contains("com.google.appinventor.components.runtime.util.SmsBroadcastReceiver,android.provider.Telephony.SMS_RECEIVED,com.google.android.apps.googlevoice.SMS_RECEIVED"));
+
+    componentTypes = Sets.newHashSet("Texting", "Label");
+    compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048, null);
+    classNames = compiler.generateBroadcastReceiver();
+    assertEquals(1, classNames.size());
   }
 }
