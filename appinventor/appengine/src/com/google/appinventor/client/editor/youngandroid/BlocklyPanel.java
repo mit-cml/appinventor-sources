@@ -15,21 +15,22 @@ import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.wizards.NewProjectWizard;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.ui.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
@@ -455,18 +456,26 @@ public class BlocklyPanel extends HTMLPanel {
     YaBlocksEditor.toggleWarning();
   }
 
-  /**For Walkthroughs**/
+  /**Walkthroughs**/
+  /*
+  * Code for the button functionality on the walkthrough dialogs
+  * Most of the code for walkthrough functionality is in tutorial.js or Walkthrough.java
+  * This is just to talk to blockly.
+  * */
   public static void callNextStep(){
     String proj_number;
-    try {
-      proj_number=BlocklyPanel.getProjectId();
-    } catch (UmbrellaException e) {
-      OdeLog.elog("proj num was null" + e);
+    // if there are no projects, create a new project before going to the next step
+    if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
       Ode.getInstance().getProjectToolbar().createFirstNewProject();
+      //TODO: advance to the next step AFTER the project has been created
+      if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
+        Scheduler.get().scheduleDeferred(); // on other project
+      } 
+    } else {
       proj_number=BlocklyPanel.getProjectId();
+      String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+      doNextStep(proj_number+"_"+currentScreen);
     }
-    String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
-    doNextStep(proj_number+"_"+currentScreen);
   }
   public static void callBackStep(){
     String proj_number=BlocklyPanel.getProjectId();
@@ -848,14 +857,14 @@ public class BlocklyPanel extends HTMLPanel {
     ArrayList<String> ComponentNames = new ArrayList<String>();
     ProjectEditor projectEditor = Ode.getInstance().getDesignToolbar().getCurrentProject().screens.get(currentScreen).formEditor.getProjectEditor();
     if (projectEditor instanceof YaProjectEditor) {
-        YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
-        YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(Ode.getInstance().getCurrentYoungAndroidSourceNode().getFormName());
-        List<String> InstanceNames = myFormEditor.getComponentNames();
-        for (int i=0; i<InstanceNames.size(); i++){
-          String instanceName = InstanceNames.get(i);
-          ComponentNames.add(myFormEditor.getComponentInstanceTypeName(instanceName));
-        }
+      YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+      YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(Ode.getInstance().getCurrentYoungAndroidSourceNode().getFormName());
+      List<String> InstanceNames = myFormEditor.getComponentNames();
+      for (int i=0; i<InstanceNames.size(); i++){
+        String instanceName = InstanceNames.get(i);
+        ComponentNames.add(myFormEditor.getComponentInstanceTypeName(instanceName));
       }
+    }
     return ComponentNames;
   }
   // ------------ Native methods ------------

@@ -204,14 +204,12 @@ public class TopToolbar extends Composite {
           new WindowOpenAction(forumsUrl)));
     }
     helpItems.add(null);
-
     String feedbackUrl = config.getFeedbackUrl();
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
           new WindowOpenAction(feedbackUrl)));
       helpItems.add(null);
     }
-
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
         new AboutCompanionAction()));
     helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),

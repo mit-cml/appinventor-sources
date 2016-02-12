@@ -12,7 +12,6 @@ var Tutorial_DigitalDoodle = {
         {
             text: 'To allow the Canvas to fill the whole screen, verify that the Screen1 property "Scrollable" is unchecked (the box is near the bottom of the Properties pane).',
             validate: function (formName) {
-//                return Tutorial.testForScreenProperty({ Scrollable: false});
                 return true;
             },
             url: "",
@@ -29,8 +28,6 @@ var Tutorial_DigitalDoodle = {
         {
             text: 'Make sure the Canvas component is selected in the Components list so that its properties show up in the Properties Pane.<br><br>Set the Height and Width properties to "Fill Parent".',
             validate: function (formName) {
-//                return Tutorial.testForComponentProperty("Canvas", { Height: "Fill Parent"});
-//                return Tutorial.testForComponentProperty("Canvas", { Width: "Fill Parent"});
                 return true;
             },
             url: "",

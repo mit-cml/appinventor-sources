@@ -47,7 +47,7 @@ var Tutorial_BallBounce = {
             url: "",
         },
         {
-            text: "In the Blocks list on the left, click Ball1 to open the Ball1 blocks drawer. Drag and drop the <b>when Ball1.Flung</b> block onto the workspace.<br><br>Flung refers to the user making a " + '"Fling gesture" with his/her finger to "fling" the ball. Fling is a finger flick gesture.,
+            text: "In the Blocks list on the left, click Ball1 to open the Ball1 blocks drawer. Drag and drop the <b>when Ball1.Flung</b> block onto the workspace.<br><br>Flung refers to the user making a " + '"Fling gesture" with his/her finger to "fling" the ball. Fling is a finger flick gesture.',
             validate: function (formName) {
                 return Tutorial.testForBlock(formName, function (block) {
                     return block.eventName == "Flung" && block.typeName == "Ball";

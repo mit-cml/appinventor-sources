@@ -1,4 +1,4 @@
-/* Step Object */
+/* Example Step Object */
 // step = function(text, validate, url){
 // 	this.text=text;
 // 	this.validate=validate;
@@ -8,7 +8,7 @@
 
 /* Tutorial Object */
 
-/*Every tutorial will be harcoded into a tutorial object which can easily be run */
+/*Every tutorial will be hardcoded into a tutorial object which can easily be run */
 
 var Tutorial_TalkToMe = {
 	title: "Talk To Me",
@@ -17,7 +17,7 @@ var Tutorial_TalkToMe = {
 		return true;
 	},
 	steps:
-		[
+	  [
 			{
 				text: "Welcome to App Inventor! To get started, we'll be guiding you through the process of building an app that allows your phone to talk to you with the press of a button.",
 				validate: function(formName){

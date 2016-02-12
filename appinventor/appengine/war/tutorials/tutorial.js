@@ -5,21 +5,23 @@ var Tutorial = {
 		Tutorial.currentTutorial=window[tutorial];
 		Tutorial.currentStepIndex = 0;
 		Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
-//		console.log(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text)
 	},
 
 	changeText: function(message){
 		document.getElementById('tutorialDialog').getElementsByClassName("Caption")[0].innerHTML=message;
 	},
+
 	changePosition: function(top, left){
 		var div=document.getElementById("tutorialDialog");
 		div.style.left=left+"px";
 		div.style.top=top+"px";
 	},
+
 	changeImage: function(img_src){
 		var e=document.getElementById("Tutorial_frame");
 		e.src=img_src;
 	},
+
 	/**Use to switch between steps **/
 	nextStep: function(formName){
 		var nextStepErrorMsg = document.getElementById("nextStepErrorMsg");
@@ -47,6 +49,7 @@ var Tutorial = {
 			}
 		}
 	},
+
 	backStep: function(formName){
 		if (Tutorial.currentStepIndex!=0){
 			Tutorial.currentStepIndex=Tutorial.currentStepIndex-1;
@@ -60,6 +63,7 @@ var Tutorial = {
 			}
 		}
 	},
+
 	testForComponent: function(component_name){
 		var componentsArrayList=BlocklyPanel_GetComponentNames();
 		var components = componentsArrayList.array;
@@ -70,9 +74,11 @@ var Tutorial = {
 		}
 		return false;
 	},
+
 	testForBlock: function(formName, validatingFunction) {
 		return Tutorial.testForBlocks(formName, validatingFunction, 1);
 	},
+
 	testForBlocks: function(formName, validatingFunction, times) {
 		var blocklies = Blocklies[formName];
 		var count = 0;
@@ -90,8 +96,7 @@ var Tutorial = {
 		}
 		return false;
 	},
-//	TODO: testForComponentProperty
-//  TODO: testForScreenProperty (separate from above?)
+
 	getTutorialMetaData: function() {
 		var tutorialFileNames = Object.keys(window).filter(function(key) {
 			return key.startsWith("Tutorial_");
