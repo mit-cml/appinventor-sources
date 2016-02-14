@@ -376,8 +376,13 @@ public class YaVersion {
   // - FIREBASE_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 149:
   // - CLOCK_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 150:
+  // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - FORM_COMPONENT_VERSION was incremented to 20
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 149;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -664,7 +669,9 @@ public class YaVersion {
   //   Sizing property
   // For FORM_COMPONENT_VERSION 19:
   // - Added HideKeyboard method
-  public static final int FORM_COMPONENT_VERSION = 19;
+  // For FORM_COMPONENT_VERSION 20:
+  // - The argument to Screen.AlignHorizontal was redefined
+  public static final int FORM_COMPONENT_VERSION = 20;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -681,12 +688,17 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The argument to HorizontalArrangemnt.AlignHorizontal was redefined
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 2;
+  // For IMAGE_COMPONENT_VERSION 3:
+  // - Scaling Property added, but hidden for now
+  public static final int IMAGE_COMPONENT_VERSION = 3;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1006,10 +1018,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.35";
+  public static final String PREFERRED_COMPANION = "2.36";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.35" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

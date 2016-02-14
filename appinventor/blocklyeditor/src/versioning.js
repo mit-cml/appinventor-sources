@@ -397,6 +397,45 @@ Blockly.Versioning.getSystemComponentVersion = function (componentType) {
  * those implementing similar upgrades in the future.
  ******************************************************************************/
 
+
+/**
+ * [Hal, 2/20/2016] : Force the user to change the AlignHorizontal
+ * block because the upgrade changed the meaning of the numeric
+ * args.  Note that this procedure scans all blocks.  As a
+ * consequence, if it might be called both by Form and
+ * HorizonralArrangement and to the upgrad the same
+ * setHorizontalArrangement block, but this should be harmless.
+ */
+
+Blockly.Versioning.AlignHorizontal_WarnArgChange = function() {
+  return function (blocksRep) {
+    var mainWorkspace = Blockly.Versioning.ensureWorkspace(blocksRep);
+    var blocks = mainWorkspace.getAllBlocks();
+    for (var i = 0; i < blocks.length; i++) {
+      var block = blocks[i];
+      if (
+	  (block.type == 'component_set_get')
+	  && (block.setOrGet  == 'set')
+	  && (block.propertyName == "AlignHorizontal")
+	  ) {
+	// We could be more clever here and silently change the argument if it
+	// were a literal 2 or 3.  
+	block.setDisabled (true);
+	block.setWarningText (
+             'This SetAlignHorizontal block has been disabled because the \n' +
+	     'meaning of the arguments changed when App Inventor was upgraded.\n' +
+	     'An argument of 1 still means align left, but 2 now means align center \n' +
+	     'and 3 means align right.  Please edit this block to change the \n' +
+	     'argument if necessary, re-enable the block, and reload the page to \n' +
+	     'remove the warning.'
+              );
+	}
+    }
+    return mainWorkspace;
+  }
+}
+
+
 /**----------------------------------------------------------------------------
  * Upgrade to Blocks Language version 17:
  * @author wolber@usfca.edu (David Wolber)
@@ -1417,7 +1456,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Redefined the meaning of the args to HorizontalAlignment
+    4: Blockly.Versioning.AlignHorizontal_WarnArgChange()
 
   }, // End HorizontalArrangement upgraders
 
@@ -1428,7 +1470,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The RotationAngle property was added.
     // No blocks need to be modified to upgrade to version 2.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Scaling property was added (but not in use yet)
+    3: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -1622,7 +1667,6 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 20// Rename 'obsufcated_text' text block to 'obfuscated_text'
     20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text')
-
 
   }, // End Language upgraders
 
@@ -1969,7 +2013,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 19:
     // - The Screen1.HideKeyboard method was added and no block needs to be changed.
-    19: "noUpgrade"
+    19: "noUpgrade",
+
+    // Redefined the meaning of the args to HorizontalAlignment
+    20:  Blockly.Versioning.AlignHorizontal_WarnArgChange()
 
   }, // End Screen
 

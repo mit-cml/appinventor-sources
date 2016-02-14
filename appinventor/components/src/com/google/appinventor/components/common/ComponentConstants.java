@@ -48,8 +48,9 @@ public class ComponentConstants {
    * HorizontalArrangement, VerticalArrangement, and Screen
    */
   public static final int GRAVITY_LEFT = 1;
-  public static final int GRAVITY_RIGHT = 2;
-  public static final int GRAVITY_CENTER_HORIZONTAL = 3;
+  public static final int GRAVITY_CENTER_HORIZONTAL = 2;
+  public static final int GRAVITY_RIGHT = 3;
+
 
   public static final int GRAVITY_TOP = 1;
   public static final int GRAVITY_CENTER_VERTICAL = 2;
