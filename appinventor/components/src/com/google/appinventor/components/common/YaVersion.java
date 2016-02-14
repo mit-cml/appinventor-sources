@@ -376,8 +376,10 @@ public class YaVersion {
   // - FIREBASE_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 149:
   // - CLOCK_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 150:
+  // - IMAGE_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 149;
+  public static final int YOUNG_ANDROID_VERSION = 150;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -686,7 +688,9 @@ public class YaVersion {
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 2;
+  // For IMAGE_COMPONENT_VERSION 3:
+  // - Scaling Property added, but hidden for now
+  public static final int IMAGE_COMPONENT_VERSION = 3;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
