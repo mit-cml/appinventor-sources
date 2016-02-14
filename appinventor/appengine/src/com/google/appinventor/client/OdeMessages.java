@@ -3196,6 +3196,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RollProperties();
 
+  @DefaultMessage("Scaling")
+  @Description("A property for scaling images")
+  String ScalingProperties();
+
   @DefaultMessage("SearchResults")
   @Description("")
   String SearchResultsProperties();
@@ -5734,6 +5738,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PostMediaMethods();
 
+  @DefaultMessage("Scale proportionally")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleProportionally();
+
+  @DefaultMessage("Scale to fit")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleToFit();
+
   @DefaultMessage("Unauthenticate")
   @Description("")
   String UnauthenticateMethods();
@@ -5759,5 +5771,4 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
-
 }
