@@ -1360,7 +1360,7 @@ public class Form extends Activity
    * @param vCode the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-    defaultValue = "6")
+    defaultValue = "7")  // Please keep consistent with Compiler.java
   @SimpleProperty(userVisible = false,
     description = "An integer value which must be incremented each time a new Android "
     +  "Application Package File (APK) is created for the Google Play Store.")
@@ -1374,7 +1374,7 @@ public class Form extends Activity
    * @param vName the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "1.5")
+    defaultValue = "1.6")  // Please keep consistent with Compiler.java
   @SimpleProperty(userVisible = false,
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.")

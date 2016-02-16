@@ -132,17 +132,49 @@
 
   <target name="CopyFtcRes"
           depends="init,components_FtcAars">
+    <!-- Copy resources for FtcCommon, Hardware, and RobotCore, to classes/BuildServer/files/ftcres_tmp. -->
+    <property name="ftcres_tmp.dir" location="${class.dir}/BuildServer/files/ftcres_tmp" />
+    <mkdir dir="${ftcres_tmp.dir}" />
+    <copy todir="${ftcres_tmp.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/FtcCommon-\2"/>
+    </copy>
+    <copy todir="${ftcres_tmp.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/Hardware/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/Hardware-\2"/>
+    </copy>
+    <copy todir="${ftcres_tmp.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/RobotCore/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/RobotCore-\2"/>
+    </copy>
+    <!-- Remove some duplicates entries from the files in
+         classes/BuildServer/files/ftcres_tmp -->
+    <replaceregexp byline="true">
+      <regexp pattern="&lt;(string name=&quot;app_name&quot;&gt;.*&lt;/string)&gt;" />
+      <substitution expression="&lt;!-- \1 --&gt;"/>
+      <fileset dir="${ftcres_tmp.dir}">
+        <include name="**/*.xml"/>
+      </fileset>
+    </replaceregexp>
+    <replaceregexp byline="true">
+      <regexp pattern="&lt;(color name=&quot;.*&quot;&gt;.*&lt;/color)&gt;" />
+      <substitution expression="&lt;!-- \1 --&gt;"/>
+      <fileset dir="${ftcres_tmp.dir}">
+        <include name="**/*.xml"/>
+      </fileset>
+    </replaceregexp>
+    <!-- Copy the modified files to classes/BuildServer/files/ftcres, but don't
+         copy any files that also exist in lib/ftc/res -->
     <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
-    <mkdir dir="${ftcres.dir}" />
-    <!-- Copy resources for FtcCommon, except for any files that are also in lib/ftc/res -->
     <fileset dir="${lib.dir}/ftc/res" id="libftcres.fileset">
       <include name="**/*" />
     </fileset>
     <pathconvert dirsep="/" pathsep="," property="libftcres.filelist" refid="libftcres.fileset">
       <map from="${lib.dir}/ftc/res/" to="" />
     </pathconvert>
+    <mkdir dir="${ftcres.dir}" />
     <copy todir="${ftcres.dir}" flatten="false">
-      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*"
+      <fileset dir="${ftcres_tmp.dir}" includes="**/*"
                excludes="${libftcres.filelist}" />
     </copy>
     <copy todir="${ftcres.dir}" flatten="false">

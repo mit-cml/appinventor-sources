@@ -15,6 +15,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor.IrSeekerIndividualSensor;
@@ -282,7 +283,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The constant for MAX_NEW_I2C_ADDRESS.",
       category = PropertyCategory.BEHAVIOR)
   public int MAX_NEW_I2C_ADDRESS() {
-    return IrSeekerSensor.MAX_NEW_I2C_ADDRESS;
+    return ModernRoboticsUsbDeviceInterfaceModule.MAX_NEW_I2C_ADDRESS;
   }
 
   /**
@@ -291,7 +292,7 @@ public final class FtcIrSeekerSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The constant for MIN_NEW_I2C_ADDRESS.",
       category = PropertyCategory.BEHAVIOR)
   public int MIN_NEW_I2C_ADDRESS() {
-    return IrSeekerSensor.MIN_NEW_I2C_ADDRESS;
+    return ModernRoboticsUsbDeviceInterfaceModule.MIN_NEW_I2C_ADDRESS;
   }
 
   /**

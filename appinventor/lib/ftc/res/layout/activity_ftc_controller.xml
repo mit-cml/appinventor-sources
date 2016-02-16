@@ -135,7 +135,7 @@ http://www.apache.org/licenses/LICENSE-2.0
       android:textColor="#990000"
       android:textStyle="bold"
       android:minLines="2"
-      android:maxLines="4"
+      android:maxLines="6"
       android:text="" />
 
     <TextView

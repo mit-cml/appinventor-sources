@@ -92,8 +92,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
-  private static final String DEFAULT_VERSION_CODE = "6";
-  private static final String DEFAULT_VERSION_NAME = "1.5";
+  private static final String DEFAULT_VERSION_CODE = "7";    // Please keep consistent with Form.java
+  private static final String DEFAULT_VERSION_NAME = "1.6";  // Please keep consistent with Form.java
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";
@@ -521,7 +521,7 @@ public final class Compiler {
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
-        out.write("      android:label=\"@string/AI_app_name\"\n");
+        out.write("      android:label=\"@string/app_name\"\n");
         out.write("      android:configChanges=\"orientation|screenSize\" />\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
@@ -732,6 +732,7 @@ public final class Compiler {
       File genDir = createDirectory(buildDir, "gen");
       String[] packages = {
         "com.qualcomm.ftccommon",
+        "com.qualcomm.hardware",
         "com.qualcomm.robotcore"
       };
       List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);
