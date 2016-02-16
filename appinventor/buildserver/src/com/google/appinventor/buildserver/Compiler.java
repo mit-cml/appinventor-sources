@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -83,6 +83,8 @@ public final class Compiler {
   public static final String NATIVE_TARGET = "native";
   // Must match ComponentListGenerator.ASSETS_TARGET
   private static final String ASSETS_TARGET = "assets";
+  // Must match ComponentListGenerator.BROADCAST_RECEIVER_TARGET
+  private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
   // Must match Component.ASSET_DIRECTORY
   private static final String ASSET_DIRECTORY = "component";
 
@@ -148,6 +150,9 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
 
   private final ConcurrentMap<String, Set<String>> componentAssets =
+    new ConcurrentHashMap<String, Set<String>>();
+
+  private final ConcurrentMap<String, Set<String>> componentBroadcastReceiver =
     new ConcurrentHashMap<String, Set<String>>();
 
   /**
@@ -302,6 +307,35 @@ public final class Compiler {
     System.out.println("Component assets needed, n= " + assetsNeeded.size());
   }
 
+  /**
+   * For each component that declares a Broadcast Receiver, a String will be generated, containing the class
+   * name of the broadcast receiver and followed by any actions it needs (all as one String separated by commas).
+   * @return Set of Strings, one for each Broadcast Receiver
+   */
+  @VisibleForTesting
+  Set<String> generateBroadcastReceiver() {
+    try {
+      loadJsonInfo(componentBroadcastReceiver, BROADCAST_RECEIVER_TARGET);
+    }
+    catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceiver"));
+      return null;
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceiver"));
+      return null;
+    }
+
+    Set<String> broadcastReceivers = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      broadcastReceivers.addAll(componentBroadcastReceiver.get(componentType));
+    }
+    return broadcastReceivers;
+  }
+
 
   // This patches around a bug in AAPT (and other placed in Android)
   // where an ampersand in the name string breaks AAPT.
@@ -312,7 +346,7 @@ public final class Compiler {
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
-  private boolean writeAndroidManifest(File manifestFile, Set<String> permissionsNeeded) {
+  private boolean writeAndroidManifest(File manifestFile, Set<String> permissionsNeeded, Set<String> broadcastReceiversNeeded) {
     // Create AndroidManifest.xml
     String mainClass = project.getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
@@ -475,21 +509,21 @@ public final class Compiler {
         out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
       }
 
-      // BroadcastReceiver for Texting Component
-      if (componentTypes.contains("Texting")) {
-        System.out.println("Android Manifest: including <receiver> tag");
+      //The format for each Broadcast Receiver in broadcastReceiversNeeded is "className,Action1,Action2,..." where
+      //the class name is mandatory, and actions are optional (and as many as needed).
+      for (String broadcastReceiver : broadcastReceiversNeeded) {
+        String[] brNameAndActions = broadcastReceiver.split(",");
+        if (brNameAndActions.length == 0) continue;
         out.write(
-            "<receiver \n" +
-            "android:name=\"com.google.appinventor.components.runtime.util.SmsBroadcastReceiver\" \n" +
-            "android:enabled=\"true\" \n" +
-            "android:exported=\"true\" >\n "  +
-            "<intent-filter> \n" +
-            "<action android:name=\"android.provider.Telephony.SMS_RECEIVED\" /> \n" +
-            "<action \n" +
-            "android:name=\"com.google.android.apps.googlevoice.SMS_RECEIVED\" \n" +
-            "android:permission=\"com.google.android.apps.googlevoice.permission.RECEIVE_SMS\" /> \n" +
-            "</intent-filter>  \n" +
-        "</receiver> \n");
+            "<receiver android:name=\"" + brNameAndActions[0] + "\" >\n");
+        if (brNameAndActions.length > 1){
+          out.write("  <intent-filter>\n");
+          for (int i = 1; i < brNameAndActions.length; i++) {
+            out.write("    <action android:name=\"" + brNameAndActions[i] + "\" />\n");
+          }
+          out.write("  </intent-filter>\n");
+        }
+        out.write("</receiver> \n");
       }
 
       out.write("  </application>\n");
@@ -558,12 +592,19 @@ public final class Compiler {
     if (permissionsNeeded == null) {
       return false;
     }
+
+    // Determine broadcast receiver names and actions.
+    out.println("________Determining BR names and actions");
+    Set<String> broadcastReceiversNeeded = compiler.generateBroadcastReceiver();
+    if (broadcastReceiversNeeded == null) {
+      return false;
+    }
     setProgress(15);
 
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
     File manifestFile = new File(buildDir, "AndroidManifest.xml");
-    if (!compiler.writeAndroidManifest(manifestFile, permissionsNeeded)) {
+    if (!compiler.writeAndroidManifest(manifestFile, permissionsNeeded, broadcastReceiversNeeded)) {
       return false;
     }
     setProgress(20);
