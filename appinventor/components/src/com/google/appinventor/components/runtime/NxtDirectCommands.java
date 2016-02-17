@@ -556,7 +556,7 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     byte[] command = new byte[5];
     command[0] = (byte) 0x00;  // Direct command telegram, response required
     command[1] = (byte) 0x13;  // MESSAGEREAD command
-    copyUBYTEValueToBytes(0, command, 2);  // no remote mailbox
+    copyUBYTEValueToBytes(10 + mailbox, command, 2);
     copyUBYTEValueToBytes(mailbox, command, 3);
     copyBooleanValueToBytes(true, command, 4);  // remove message from mailbox
     byte[] returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
