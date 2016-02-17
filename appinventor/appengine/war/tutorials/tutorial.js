@@ -25,10 +25,7 @@ var Tutorial = {
 	/**Use to switch between steps **/
 	nextStep: function(formName){
 		var nextStepErrorMsg = document.getElementById("nextStepErrorMsg");
-		if (Tutorial.currentStepIndex==Tutorial.currentTutorial.steps.length-1){
-			// shouldn't be hitting this step anymore, but if we did, do nothing
-		}
-		else {
+		if (Tutorial.currentStepIndex !== Tutorial.currentTutorial.steps.length-1){
 			var currentStep = Tutorial.currentTutorial.steps[Tutorial.currentStepIndex];
 			if (!currentStep.validate || currentStep.validate(formName)) {
 				document.getElementById("backButton").style.visibility = 'visible';
