@@ -15,18 +15,22 @@ import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.wizards.NewProjectWizard;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.shared.UmbrellaException;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -468,9 +472,6 @@ public class BlocklyPanel extends HTMLPanel {
     if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
       Ode.getInstance().getProjectToolbar().createFirstNewProject();
       //TODO: advance to the next step AFTER the project has been created
-      if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
-        Scheduler.get().scheduleDeferred(); // on other project
-      } 
     } else {
       proj_number=BlocklyPanel.getProjectId();
       String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
