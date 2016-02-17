@@ -22,11 +22,11 @@ import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -836,13 +836,6 @@ public class BlocklyPanel extends HTMLPanel {
     return TranslationDesignerPallete.getCorrespondingString(key);
   }
 
-  public static void switchToBlocksEditor(){
-    Ode.getInstance().getDesignToolbar().switchToBlocksEditor();
-  }
-
-  public static void switchToFormEditor(){
-    Ode.getInstance().getDesignToolbar().switchToFormEditor();
-  }
   public static void displayDialog(){
     Walkthrough.displayDialog();
   }
@@ -930,10 +923,6 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBackpack());
     $wnd.BlocklyPanel_setBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;));
-    $wnd.BlocklyPanel_SwitchToBlocksEditor=
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchToBlocksEditor());
-    $wnd.BlocklyPanel_SwitchToFormEditor=
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchToFormEditor());
     $wnd.BlocklyPanel_DisplayDialog=
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::displayDialog());
     $wnd.BlocklyPanel_GetProjectId=
