@@ -521,7 +521,7 @@ public final class Compiler {
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
-        out.write("      android:label=\"@string/app_name\"\n");
+        out.write("      android:label=\"@string/title_activity_configuration\"\n");
         out.write("      android:configChanges=\"orientation|screenSize\" />\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");

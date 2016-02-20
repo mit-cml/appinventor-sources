@@ -132,8 +132,8 @@
 
   <target name="CopyFtcRes"
           depends="init,components_FtcAars">
-    <!-- We need to rename and modify the values*.xml resources from FtcCommon,
-         Hardware, and RobotCore to eliminate duplicate entries. -->
+    <!-- We need to rename the values*.xml resource files from FtcCommon,
+         Hardware, and RobotCore. -->
     <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
     <mkdir dir="${ftcres.dir}" />
     <copy todir="${ftcres.dir}" flatten="false">
@@ -148,19 +148,28 @@
       <fileset dir="${build.dir}/components/ftc/RobotCore/res" includes="**/*" />
       <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/RobotCore-\2"/>
     </copy>
-    <!-- Eliminate the duplicates entries (app_name and colors) -->
+    <!-- In values/FtcCommon-values.xml, change app_name to title_activity_configuration -->
+    <replaceregexp byline="true">
+      <regexp pattern="app_name" />
+      <substitution expression="title_activity_configuration"/>
+      <fileset dir="${ftcres.dir}">
+        <include name="values/FtcCommon-values.xml"/>
+      </fileset>
+    </replaceregexp>
+    <!-- In values/RobotCore-values.xml, comment out the app_name string entry -->
     <replaceregexp byline="true">
       <regexp pattern="&lt;(string name=&quot;app_name&quot;&gt;.*&lt;/string)&gt;" />
       <substitution expression="&lt;!-- \1 --&gt;"/>
       <fileset dir="${ftcres.dir}">
-        <include name="**/*.xml"/>
+        <include name="values/RobotCore-values.xml"/>
       </fileset>
     </replaceregexp>
+    <!-- In values/RobotCore-values.xml, comment out all color entries -->
     <replaceregexp byline="true">
       <regexp pattern="&lt;(color name=&quot;.*&quot;&gt;.*&lt;/color)&gt;" />
       <substitution expression="&lt;!-- \1 --&gt;"/>
       <fileset dir="${ftcres.dir}">
-        <include name="**/*.xml"/>
+        <include name="values/RobotCore-values.xml"/>
       </fileset>
     </replaceregexp>
     <!-- Copy the modified files to classes/BuildServer/files/ftcres, but don't
