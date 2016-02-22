@@ -95,6 +95,12 @@ public interface Component {
   static final int LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
 
   /*
+   * Picture scaling constants.
+   */
+  static final int SCALING_SCALE_PROPORTIONALLY = 0;
+  static final int SCALING_SCALE_TO_FIT = 1;
+
+  /*
    * Typeface constants.
    */
   static final int TYPEFACE_DEFAULT = 0;

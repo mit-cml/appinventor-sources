@@ -1042,7 +1042,13 @@ select.ode-PropertyEditor[disabled] {
 
 /* class for the Image Mock component */
 .imageComponentCenterPanel {
-    text-align: center;
+  text-align: center;
+}
+
+.imageComponentCenterPanel img {
+  position: relative;
+  top: 50%;
+  transform: translate(0px, -50%);
 }
 
 /* Component Help */

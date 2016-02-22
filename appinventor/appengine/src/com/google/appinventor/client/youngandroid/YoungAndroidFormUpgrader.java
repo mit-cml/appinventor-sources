@@ -952,6 +952,18 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // ScalePictureToFit was replaced by Scaling property
+      // Note: We will do this upgrade in a future release (jis: 2/12/2016)
+      // if (componentProperties.containsKey("ScalePictureToFit")) {
+      //   JSONValue propValue = componentProperties.remove("ScalePictureToFit");
+      //   if (propValue.asString().getString().equals("True")) {
+      //     // 1 corresponds to Scale to fit
+      //     componentProperties.put("Scaling", new ClientJsonString("1"));
+      //   }
+      // }
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

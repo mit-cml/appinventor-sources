@@ -378,8 +378,7 @@ public final class Compiler {
 
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
       // The market will use the following to filter apps shown to devices that don't support
-      // the specified SDK version.  We right now support building for minSDK 4,
-      // and minSDK 3 as compatibility mode (through a property in Screen 1).
+      // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
       out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
 

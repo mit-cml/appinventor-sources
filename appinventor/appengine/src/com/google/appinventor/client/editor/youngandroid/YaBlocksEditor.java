@@ -610,6 +610,14 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   /*
+   * Trigger a Companion Update
+   */
+  @Override
+  public void updateCompanion() {
+    blocksArea.updateCompanion();
+  }
+
+  /*
    * [lyn, 2014/10/28] Added for accessing current form json from BlocklyPanel
    * Encodes the associated form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
    * to send the form info to the blockly world during code generation.
