@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorController.DeviceMode;
 import com.qualcomm.robotcore.hardware.DcMotorController.RunMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
 
 import java.util.Set;
@@ -90,6 +91,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * DeviceMode_READ_ONLY property getter.
    */
+  @Deprecated
   @SimpleProperty(description = "The constant for DeviceMode_READ_ONLY.",
       category = PropertyCategory.BEHAVIOR)
   public String DeviceMode_READ_ONLY() {
@@ -99,6 +101,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * DeviceMode_WRITE_ONLY property getter.
    */
+  @Deprecated
   @SimpleProperty(description = "The constant for DeviceMode_WRITE_ONLY.",
       category = PropertyCategory.BEHAVIOR)
   public String DeviceMode_WRITE_ONLY() {
@@ -108,6 +111,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * MotorControllerDeviceMode property setter.
    */
+  @Deprecated
   @SimpleProperty
   public void MotorControllerDeviceMode(String deviceMode) {
     checkHardwareDevice();
@@ -133,6 +137,7 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
   /**
    * MotorControllerDeviceMode property getter.
    */
+  @Deprecated
   @SimpleProperty(description = "Set the device into read-only or write-only mode.\n" +
       "Valid values are DeviceMode_READ_ONLY or DeviceMode_WRITE_ONLY.",
       category = PropertyCategory.BEHAVIOR)
@@ -362,8 +367,8 @@ public final class FtcDcMotorController extends FtcHardwareDevice {
     checkHardwareDevice();
     if (dcMotorController != null) {
       try {
-        if (dcMotorController instanceof ModernRoboticsUsbDcMotorController) {
-          return ((ModernRoboticsUsbDcMotorController) dcMotorController).getVoltage();
+        if (dcMotorController instanceof VoltageSensor) {
+          return ((VoltageSensor) dcMotorController).getVoltage();
         }
         if (dcMotorController instanceof MatrixDcMotorController) {
           return ((MatrixDcMotorController) dcMotorController).getBattery();

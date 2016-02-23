@@ -5744,6 +5744,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String CalibrateMethods();
 
+  @DefaultMessage("ClearI2cPortActionFlag")
+  @Description("")
+  String ClearI2cPortActionFlagMethods();
+
   @DefaultMessage("ConvertColorToHSV")
   @Description("")
   String ConvertColorToHSVMethods();
@@ -5956,6 +5960,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GetSwitchesMethods();
 
+  @DefaultMessage("Idle")
+  @Description("")
+  String IdleMethods();
+
   @DefaultMessage("IndividualSensorAngle")
   @Description("")
   String IndividualSensorAngleMethods();
@@ -5995,6 +6003,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("IsI2cPortReady")
   @Description("")
   String IsI2cPortReadyMethods();
+
+  @DefaultMessage("IsStarted")
+  @Description("")
+  String IsStartedMethods();
+
+  @DefaultMessage("IsStopRequested")
+  @Description("")
+  String IsStopRequestedMethods();
 
   @DefaultMessage("IsTouchSensorPressed")
   @Description("")
@@ -6059,6 +6075,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ReadI2cCacheFromController")
   @Description("")
   String ReadI2cCacheFromControllerMethods();
+
+  @DefaultMessage("RequestOpModeStop")
+  @Description("")
+  String RequestOpModeStopMethods();
 
   @DefaultMessage("ResetZAxisIntegrator")
   @Description("")

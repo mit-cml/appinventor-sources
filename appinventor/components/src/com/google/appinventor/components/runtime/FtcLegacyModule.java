@@ -171,6 +171,21 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
     }
   }
   
+  @SimpleFunction(description = "Clear the port action flag; this flag tells the " +
+      "controller to send the current data in its buffer to the I2C device.")
+  public void ClearI2cPortActionFlag(int port) {
+    checkHardwareDevice();
+    if (legacyModule != null) {
+      try {
+        legacyModule.clearI2cPortActionFlag(port);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ClearI2cPortActionFlag",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+  
   @SimpleFunction(description = "Get the port action flag; this flag is set if " +
       "the particular port is busy.")
   public boolean IsI2cPortActionFlagSet(int port) {

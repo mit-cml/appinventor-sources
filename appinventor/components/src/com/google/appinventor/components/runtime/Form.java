@@ -1374,7 +1374,7 @@ public class Form extends Activity
    * @param vName the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "1.6")  // Please keep consistent with Compiler.java
+    defaultValue = "1.6.1")  // Please keep consistent with Compiler.java
   @SimpleProperty(userVisible = false,
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.")

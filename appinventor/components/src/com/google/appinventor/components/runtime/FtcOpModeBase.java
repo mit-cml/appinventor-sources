@@ -66,6 +66,12 @@ public abstract class FtcOpModeBase extends AndroidNonvisibleComponent
     return opMode.getRuntime();
   }
 
+  @SimpleFunction(description = "Requests that this op mode be shut down as if the stop button " +
+      "had been pressed on the driver station.")
+  public void RequestOpModeStop() {
+    opMode.requestOpModeStop();
+  }
+
   // OnDestroyListener implementation
 
   @Override

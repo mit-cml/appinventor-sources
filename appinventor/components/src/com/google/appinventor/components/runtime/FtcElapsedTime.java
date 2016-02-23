@@ -84,7 +84,7 @@ public final class FtcElapsedTime extends AndroidNonvisibleComponent
       return elapsedTime.time();
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "StartTime",
+      form.dispatchErrorOccurredEvent(this, "Time",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return 0;

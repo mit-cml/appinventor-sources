@@ -997,6 +997,13 @@ public final class YoungAndroidFormUpgrader {
       // No designer properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // - The DeviceMode_READ_ONLY property was deprecated.
+      // - The DeviceMode_WRITE_ONLY property was deprecated.
+      // - The MotorControllerDeviceMode property was deprecated.
+      // No designer properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1011,6 +1018,11 @@ public final class YoungAndroidFormUpgrader {
       // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // - The ClearI2cPortActionFlag method was added.
+      // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1040,6 +1052,13 @@ public final class YoungAndroidFormUpgrader {
       // - The RawZ property was added.
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // - The MAX_NEW_I2C_ADDRESS property was added.
+      // - The MIN_NEW_I2C_ADDRESS property was added.
+      // - The I2cAddress property was added
+      // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1086,6 +1105,11 @@ public final class YoungAndroidFormUpgrader {
       // No designer properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // - The ClearI2cPortActionFlag method was added.
+      // No designer properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1101,6 +1125,13 @@ public final class YoungAndroidFormUpgrader {
       // No designer properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // - The Idle method was added.
+      // - The IsStarted method was added.
+      // - The IsStopRequested method was added.
+      // - The RequestOpModeStop method was added.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1110,6 +1141,10 @@ public final class YoungAndroidFormUpgrader {
       // - The Time property was added.
       // No designer properties need to be modified to upgrade to version 3.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // - The RequestOpModeStop method was added.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

@@ -61,7 +61,7 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
     EventDispatcher.dispatchEvent(this, "RunOpMode");
   }
 
-  @SimpleFunction(description = "Pause the Linear Op Mode until start has been pressed.")
+  @SimpleFunction(description = "Pause the linear op mode until start has been pressed.")
   public void WaitForStart() throws InterruptedException {
     linearOpMode.waitForStart();
   }
@@ -71,6 +71,7 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
       "and the latest data is read back in.\n" +
       "This method has a strong guarantee to wait for at least one full hardware\n" +
       "hardware cycle.")
+  @Deprecated
   public void WaitOneFullHardwareCycle() throws InterruptedException {
     linearOpMode.waitOneFullHardwareCycle();
   }
@@ -80,8 +81,25 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
       "and the latest data is read back in.\n" +
       "This method will wait for the current hardware cycle to finish, which is\n" +
       "also the start of the next hardware cycle.")
+  @Deprecated
   public void WaitForNextHardwareCycle() throws InterruptedException {
     linearOpMode.waitForNextHardwareCycle();
+  }
+
+  @SimpleFunction(description = "Puts the current thread to sleep for a bit, allowing other " +
+      "threads in the system to run.")
+  public void Idle() throws InterruptedException {
+    linearOpMode.idle();
+  }
+
+  @SimpleFunction(description = "Whether this op mode has been started.")
+  public boolean IsStarted() {
+    return linearOpMode.isStarted();
+  }
+
+  @SimpleFunction(description = "Whether stopping of this op mode has been requested.")
+  public boolean IsStopRequested() {
+    return linearOpMode.isStopRequested();
   }
 
   @SimpleFunction(description = "Sleep for the given amount of milliseconds.")
@@ -89,7 +107,9 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
     linearOpMode.sleep(milliseconds);
   }
 
-  @SimpleFunction(description = "Returns true as long as the op mode is active.")
+  @SimpleFunction(description = "Returns true as long as the op mode is active. If the op mode " + 
+      "is active, the robot should continue onwards. If the op mode is not active, it should " +
+      "terminate at its earliest convenience.")
   public boolean OpModeIsActive() {
     return linearOpMode.opModeIsActive();
   }
@@ -101,6 +121,6 @@ public final class FtcLinearOpMode extends FtcOpModeBase {
       "RunOpMode event was triggered.",
       category = PropertyCategory.BEHAVIOR)
   public double Time() {
-    return opMode.time;
+    return linearOpMode.time;
   }
 }

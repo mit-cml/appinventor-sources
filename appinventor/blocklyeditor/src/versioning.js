@@ -1450,7 +1450,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // the BatteryVoltage property were added.
     2: "noUpgrade",
     // The MotorControllerDeviceMode property setter was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // The DeviceMode_READ_ONLY, DeviceMode_WRITE_ONLY, and MotorControllerDeviceMode properties
+    // were deprecated.
+    4: "noUpgrade"
 
   }, // End FtcDcMotorController upgraders
 
@@ -1473,7 +1476,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "WriteI2cCacheToModule", "WriteI2cCacheToController"),
         // The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
         Blockly.Versioning.changeMethodName("FtcDeviceInterfaceModule", "WriteI2cPortFlagOnlyToModule", "WriteI2cPortFlagOnlyToController")
-      ]
+      ],
+
+      // The ClearI2cPortActionFlag method was added.
+      3: "noUpgrade"
 
   }, // End FtcDeviceInterfaceModule upgraders
 
@@ -1507,7 +1513,9 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
     // The Calibrate, IsCalibrating, ResetZAxisIntegrator functions and the HeadingMode_CARDINAL,
     // HeadingMode_CARTESIAN, HeadingMode, Heading, RawX, RawY, RawZ properties were added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+    // The MAX_NEW_I2C_ADDRESS, MIN_NEW_I2C_ADDRESS, and I2cAddress properties were added.
+    3: "noUpgrade"
 
   }, // End FtcGyroSensor upgraders
 
@@ -1590,7 +1598,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.changeMethodName("FtcLegacyModule", "WriteI2cCacheToModule", "WriteI2cCacheToController"),
         // The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
         Blockly.Versioning.changeMethodName("FtcLegacyModule", "WriteI2cPortFlagOnlyToModule", "WriteI2cPortFlagOnlyToController")
-      ]
+      ],
+
+      // The ClearI2cPortActionFlag method was added.
+      3: "noUpgrade"
 
   }, // End FtcLegacyModule upgraders
 
@@ -1613,7 +1624,10 @@ Blockly.Versioning.AllUpgradeMaps =
       ],
 
     // The Time property was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // The Idle, IsStarted, IsStopRequested, and RequestOpModeStop methods were added.
+    4: "noUpgrade"
 
   }, // End FtcLinearOpMode upgraders
 
@@ -1623,7 +1637,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // The Time property was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // The RequestOpModeStop method was added.
+    3: "noUpgrade"
 
   }, // End FtcOpMode upgraders
 

@@ -17,6 +17,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro.HeadingMode;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -282,6 +283,65 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       }
     }
     return "";
+  }
+
+  /**
+   * MAX_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MAX_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MAX_NEW_I2C_ADDRESS() {
+    return ModernRoboticsUsbDeviceInterfaceModule.MAX_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * MIN_NEW_I2C_ADDRESS property getter.
+   */
+  @SimpleProperty(description = "The constant for MIN_NEW_I2C_ADDRESS.",
+      category = PropertyCategory.BEHAVIOR)
+  public int MIN_NEW_I2C_ADDRESS() {
+    return ModernRoboticsUsbDeviceInterfaceModule.MIN_NEW_I2C_ADDRESS;
+  }
+
+  /**
+   * I2cAddress property setter.
+   */
+  @SimpleProperty
+  public void I2cAddress(int newAddress) {
+    checkHardwareDevice();
+    if (gyroSensor != null) {
+      try {
+        if (gyroSensor instanceof ModernRoboticsI2cGyro) {
+          ((ModernRoboticsI2cGyro) gyroSensor).setI2cAddress(newAddress);
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+  }
+
+  /**
+   * I2cAddress property getter.
+   */
+  @SimpleProperty(description = "The I2C address of the gyro sensor. " + 
+      "Not all gyro sensors support this feature.",
+      category = PropertyCategory.BEHAVIOR)
+  public int I2cAddress() {
+    checkHardwareDevice();
+    if (gyroSensor != null) {
+      try {
+        if (gyroSensor instanceof ModernRoboticsI2cGyro) {
+          return ((ModernRoboticsI2cGyro) gyroSensor).getI2cAddress();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "I2cAddress",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return 0;
   }
 
   // FtcHardwareDevice implementation

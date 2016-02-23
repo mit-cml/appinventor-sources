@@ -92,8 +92,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
-  private static final String DEFAULT_VERSION_CODE = "7";    // Please keep consistent with Form.java
-  private static final String DEFAULT_VERSION_NAME = "1.6";  // Please keep consistent with Form.java
+  private static final String DEFAULT_VERSION_CODE = "7";      // Please keep consistent with Form.java
+  private static final String DEFAULT_VERSION_NAME = "1.6.1";  // Please keep consistent with Form.java
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";

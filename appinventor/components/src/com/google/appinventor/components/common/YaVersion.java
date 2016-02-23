@@ -412,8 +412,15 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 145:
   // - FTC_GAMEPAD_COMPONENT_VERSION was incremented to 2.
   // - FTC_ROBOT_CONTROLLER_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 146:
+  // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 4.
+  // - FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION was incremented to 3.
+  // - FTC_GYRO_SENSOR_COMPONENT_VERSION was incremented to 3.
+  // - FTC_LEGACY_MODULE_COMPONENT_VERSION was incremented to 3.
+  // - FTC_LINEAR_OP_MODE_COMPONENT_VERSION was incremented to 4.
+  // - FTC_OP_MODE_COMPONENT_VERSION was incremented to 3.
 
-  public static final int YOUNG_ANDROID_VERSION = 145;
+  public static final int YOUNG_ANDROID_VERSION = 146;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -739,7 +746,11 @@ public class YaVersion {
   // - The GetDifferentialControlLoopCoefficientD function was added.
   // For FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION 3:
   // - The MotorControllerDeviceMode property setter was added.
-  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 3;
+  // For FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION 4:
+  // - The DeviceMode_READ_ONLY property was deprecated.
+  // - The DeviceMode_WRITE_ONLY property was deprecated.
+  // - The MotorControllerDeviceMode property was deprecated.
+  public static final int FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION = 4;
 
   // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 2:
   // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
@@ -748,7 +759,9 @@ public class YaVersion {
   // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
   // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
   // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
-  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 2;
+  // For FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION 3:
+  // - The ClearI2cPortActionFlag method was added.
+  public static final int FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION = 3;
 
   public static final int FTC_DIGITAL_CHANNEL_COMPONENT_VERSION = 1;
 
@@ -769,7 +782,11 @@ public class YaVersion {
   // - The RawX property was added.
   // - The RawY property was added.
   // - The RawZ property was added.
-  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 2;
+  // For FTC_GYRO_SENSOR_COMPONENT_VERSION 3:
+  // - The MAX_NEW_I2C_ADDRESS property was added.
+  // - The MIN_NEW_I2C_ADDRESS property was added.
+  // - The I2cAddress property was added
+  public static final int FTC_GYRO_SENSOR_COMPONENT_VERSION = 3;
 
   // For FTC_I2C_DEVICE_COMPONENT_VERSION 2:
   // - The GetI2cReadCache method was renamed GetCopyOfReadBuffer.
@@ -800,7 +817,9 @@ public class YaVersion {
   // - The ReadI2cCacheFromModule method was renamed ReadI2cCacheFromController.
   // - The WriteI2cCacheToModule method was renamed WriteI2cCacheToController.
   // - The WriteI2cPortFlagOnlyToModule method was renamed WriteI2cPortFlagOnlyToController.
-  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 2;
+  // For FTC_LEGACY_MODULE_COMPONENT_VERSION 3:
+  // - The ClearI2cPortActionFlag method was added.
+  public static final int FTC_LEGACY_MODULE_COMPONENT_VERSION = 3;
 
   public static final int FTC_LIGHT_SENSOR_COMPONENT_VERSION = 1;
 
@@ -808,11 +827,18 @@ public class YaVersion {
   // - The WaitOneHardwareCycle method was renamed WaitOneFullHardwareCycle.
   // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 3:
   // - The Time property was added.
-  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 3;
+  // For FTC_LINEAR_OP_MODE_COMPONENT_VERSION 4:
+  // - Idle method was added.
+  // - IsStarted method was added.
+  // - IsStopRequested method was added.
+  // - RequestOpModeStop method was added.
+  public static final int FTC_LINEAR_OP_MODE_COMPONENT_VERSION = 4;
 
   // For FTC_OP_MODE_COMPONENT_VERSION 2:
   // - The Time property was added.
-  public static final int FTC_OP_MODE_COMPONENT_VERSION = 2;
+  // For FTC_OP_MODE_COMPONENT_VERSION 3:
+  // - RequestOpModeStop method was added.
+  public static final int FTC_OP_MODE_COMPONENT_VERSION = 3;
 
   public static final int FTC_OPTICAL_DISTANCE_SENSOR_COMPONENT_VERSION = 1;
 
