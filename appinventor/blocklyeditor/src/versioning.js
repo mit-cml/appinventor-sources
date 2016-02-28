@@ -1878,7 +1878,11 @@ Blockly.Versioning.AllUpgradeMaps =
   "Pedometer": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: The step sensing algorithm was updated to be more accurate.
+    // The GPS related functionality was removed.
+    2: "noUpgrade"
 
   }, // End PhoneCall upgraders
 

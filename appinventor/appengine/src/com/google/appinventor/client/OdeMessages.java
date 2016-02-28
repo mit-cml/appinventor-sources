@@ -3017,6 +3017,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ElapsedTimeProperties();
 
+  @DefaultMessage("SimpleSteps")
+  @Description("")
+  String SimpleStepsProperties();
+
+  @DefaultMessage("WalkSteps")
+  @Description("")
+  String WalkStepsProperties();
+
   @DefaultMessage("Moving")
   @Description("")
   String MovingProperties();
@@ -5601,7 +5609,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PasswordTextBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Component that can count steps.")
+  @DefaultMessage("A Component that acts like a Pedometer. It senses motion via the " +
+    "Accerleromter and attempts to determine if a step has been " +
+    "taken. Using a configurable stride length, it can estimate the " +
+    "distance traveled as well. ")
   @Description("")
   String PedometerHelpStringComponentPallette();
 

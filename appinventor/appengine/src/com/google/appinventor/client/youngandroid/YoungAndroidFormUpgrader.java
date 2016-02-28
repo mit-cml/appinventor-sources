@@ -337,9 +337,10 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("WebViewer")) {
         srcCompVersion = upgradeWebViewerProperties(componentProperties, srcCompVersion);
-
       } else if (componentType.equals("FirebaseDB")) {
         srcCompVersion = upgradeFirebaseDBProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Pedometer")) {
+        srcCompVersion = upgradePedometerProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -1425,9 +1426,19 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeFirebaseDBProperties(Map<String, JSONValue> componentProperties,
-                                                int srcCompVersion) {
+    int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Added AppendValue, RemoveFirst and FirstRemoved
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradePedometerProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The step sensing algorithm was updated to be more accurate.
+      // The GPS related functionality was removed.
       srcCompVersion = 2;
     }
     return srcCompVersion;
