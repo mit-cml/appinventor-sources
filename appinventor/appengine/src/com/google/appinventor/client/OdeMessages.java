@@ -4130,6 +4130,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WalkStepEvents();
 
+  @DefaultMessage("MagnitudeChanged")
+  @Description("")
+  String MagnitudeChangedEvents();
+
   @DefaultMessage("Completed")
   @Description("")
   String CompletedEvents();

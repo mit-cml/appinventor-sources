@@ -269,6 +269,16 @@ public class Pedometer extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "GPSLost");
   }
 
+  /**
+   * Called whenever the accelerometer value updates.
+   *
+   * @param magnitude the smoothed magnitude value used for step detection
+   */
+  @SimpleEvent(description = "This event is run when the accelerometer provides a reading")
+  public void MagnitudeChanged(float magnitude) {
+    EventDispatcher.dispatchEvent(this, "MagnitudeChanged", magnitude);
+  }
+
   // Properties
 
   /**
@@ -550,6 +560,7 @@ public class Pedometer extends AndroidNonvisibleComponent
     } else if (!startPeaking && winPos == 1) {
       lastValues[1] = (lastValues[1] + lastValues[0]) / 2f;
     }
+    MagnitudeChanged(lastValues[winPos]);
 
     long elapsedTimestamp = System.currentTimeMillis();
     if (elapsedTimestamp - stepTimestamp > stopDetectionTimeout) {
