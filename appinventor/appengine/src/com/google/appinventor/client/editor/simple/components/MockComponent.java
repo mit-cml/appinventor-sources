@@ -778,6 +778,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
   }
 
+  @Override
+  public final void onContextMenu(ContextMenuEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    Window.alert("hello world!");
+    this.contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+    this.contextMenu.show();
+  }
+
   /**
    * Invoked by GWT whenever a browser event is dispatched to this component.
    */
@@ -796,16 +806,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       case Event.ONCLICK:
         cancelBrowserEvent(event);
         select();
-        break;
-
-      case Event.ONCONTEXTMENU:
-        event.preventDefault();
-        event.stopPropagation();
-
-        Window.alert("hello world!");
-        this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY());
-        this.contextMenu.show();
-
         break;
 
       default:
