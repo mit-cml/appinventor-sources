@@ -88,7 +88,7 @@ Blockly.Blocks.component_event = {
     // this.onchange = Blockly.WarningHandler.checkErrors;
 
     if (this.getEventTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
+      //this.badBlock();
       this.setDisabled(true);
     }
 
@@ -370,7 +370,7 @@ Blockly.Blocks.component_method = {
     }
     this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
     if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
-      this.badBlock();
+      //this.badBlock();
       this.setDisabled(true);
     }
   },
@@ -558,7 +558,7 @@ Blockly.Blocks.component_set_get = {
 
     if (this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       // [lyn, 2015/12/27] mark deprecated properties as bad
-      this.badBlock();
+      //this.badBlock();
       this.setDisabled(true);
     }
 

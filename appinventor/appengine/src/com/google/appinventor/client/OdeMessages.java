@@ -3594,19 +3594,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Mode_1200HZProperties();
 
-<<<<<<< HEAD
   @DefaultMessage("Mode_600HZ")
-=======
-  @DefaultMessage("quantity")
-  @Description("")
-  String quantityParams();
-
-  @DefaultMessage("duration")
-  @Description("")
-  String durationParams();
-
-  @DefaultMessage("years")
->>>>>>> 581d9c9fbcb3c33846cbe015cfded1f9d7bb57ea
   @Description("")
   String Mode_600HZProperties();
 
@@ -6164,15 +6152,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String IsStartedMethods();
 
-<<<<<<< HEAD
   @DefaultMessage("IsStopRequested")
-=======
-  @DefaultMessage("InitializeValue")
-  @Description("")
-  String InitializeValueMethods();
-
-  @DefaultMessage("Authorize")
->>>>>>> 581d9c9fbcb3c33846cbe015cfded1f9d7bb57ea
   @Description("")
   String IsStopRequestedMethods();
 
