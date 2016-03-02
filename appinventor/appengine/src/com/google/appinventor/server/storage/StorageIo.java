@@ -9,6 +9,7 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -460,6 +461,43 @@ public interface StorageIo {
   long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
 
   /**
+   * Uploads a file which is expected to be a .aix zipped file
+   * @param userId the user who owns the file
+   * @param fileName the file name with the extension
+   * @param content  file content
+   * @return the component just uploaded
+   */
+  Component uploadComponentFile(final String userId, final String fileName, final byte[] content);
+
+  /**
+   * Returns a list of components uploaded by the user
+   *
+   * @param userId unique user id
+   * @return list of components
+   */
+  List<Component> getComponents(String userId);
+
+  /**
+   * Returns the content of a file from gcs
+   *
+   * @param gcsPath path to the gcs file
+   * @return the file content in byte array
+   */
+  byte[] getGcsFileContent(String gcsPath);
+
+  /**
+   * @return gcs path to the component file
+   */
+  String getGcsPath(Component component);
+
+  /**
+   * Delete the component from gcs and datastore
+   *
+   * @param component the component to be deleted
+   */
+  void deleteComponent(final Component component);
+
+  /**
    * Deletes a file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project ID
@@ -521,11 +559,12 @@ public interface StorageIo {
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-                                          boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore,
-                                          @Nullable String zipName,
-                                          boolean includeYail,
-                                          boolean fatalError) throws IOException;
+    boolean includeProjectHistory,
+    boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case

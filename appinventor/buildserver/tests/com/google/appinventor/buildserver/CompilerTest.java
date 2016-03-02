@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 
 import junit.framework.TestCase;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,20 +23,28 @@ public class CompilerTest extends TestCase {
     Set<String> noComponents = Sets.newHashSet();
     Compiler compiler = new Compiler(null, noComponents, System.out, System.err, System.err, false,
                                      2048, null);
-    assertTrue("Permissions for no components not empty. (It should be empty!)",
-        compiler.generatePermissions().isEmpty());
 
-    Set<String> componentTypes = Sets.newHashSet("LocationSensor");
+    compiler.generatePermissions();
+    Map<String,Set<String>> permissions = compiler.getPermissions();
+    assertEquals(0, permissions.size());
+
+    Set<String> componentTypes = Sets.newHashSet("com.google.appinventor.components.runtime.LocationSensor");
     compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048, null);
-    Set<String> permissions = compiler.generatePermissions();
-    assertEquals(4, permissions.size());
-    assertTrue(permissions.contains(
+    compiler.generatePermissions();
+    permissions = compiler.getPermissions();
+    Set<String> flatPermissions = Sets.newHashSet();
+    for (Set<String> compPermissions : permissions.values()) {
+      flatPermissions.addAll(compPermissions);
+    }
+
+    assertEquals(4, flatPermissions.size());
+    assertTrue(flatPermissions.contains(
         "android.permission.ACCESS_FINE_LOCATION"));
-    assertTrue(permissions.contains(
+    assertTrue(flatPermissions.contains(
         "android.permission.ACCESS_COARSE_LOCATION"));
-    assertTrue(permissions.contains(
+    assertTrue(flatPermissions.contains(
         "android.permission.ACCESS_MOCK_LOCATION"));
-    assertTrue(permissions.contains(
+    assertTrue(flatPermissions.contains(
         "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"));
   }
 }

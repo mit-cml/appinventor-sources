@@ -12,6 +12,7 @@ import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectSer
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -201,6 +202,13 @@ public final class FileImporterImpl implements FileImporter {
       storageIo.addFilesToUser(userId, fileName);
     }
     storageIo.uploadRawUserFile(userId, fileName, content);
+  }
+
+  @Override
+  public Component importComponentArchive(String userId, String fileName,
+      InputStream uploadedFileStream) throws IOException {
+    byte[] content = ByteStreams.toByteArray(uploadedFileStream);
+    return storageIo.uploadComponentFile(userId, fileName, content);
   }
 
   @Override

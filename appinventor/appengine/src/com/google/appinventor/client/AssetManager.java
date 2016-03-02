@@ -6,24 +6,24 @@
 
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.util.Base64Util;
 import com.google.appinventor.client.output.OdeLog;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.HashMap;
-import java.util.Collection;
 
 /**
- * Manage known assets for a project and arrange to send them to the
+ * Manage known assets and components for a project and arrange to send them to the
  * attached phone as necessary.
  *
  * @author jis@mit.edu (Jeffrey I. Schiller)
@@ -35,14 +35,18 @@ public final class AssetManager implements ProjectChangeListener {
     String fileId;
     byte [] fileContent;
     boolean loaded;         // true if already loaded to the repl (phone)
+    boolean transferred;           // true if asset received on phone
   }
 
   private HashMap<String, AssetInfo> assets = null;
   private long projectId;
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
+  private YoungAndroidComponentsFolder componentsFolder;
   private static AssetManager INSTANCE;
   private static boolean DEBUG = false;
+  private static final String ASSETS_FOLDER = "assets";
+  private static final String EXTERNAL_COMPS_FOLDER = "external_comps";
 
   private AssetManager() {
     exportMethodsToJavascript();
@@ -66,15 +70,56 @@ public final class AssetManager implements ProjectChangeListener {
     if (projectId != 0) {
       project = Ode.getInstance().getProjectManager().getProject(projectId);
       assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
+      componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
       project.addProjectChangeListener(this);
       assets = new HashMap<String,AssetInfo>();
+      // Add Asset Files
       for (ProjectNode node : assetsFolder.getChildren()) {
-        assetSetup(node);
+        if (nodeFilter(node)) {
+          if (node.getChildren().iterator().hasNext()) {
+            loadAssets(node);
+            continue;
+          }
+          else {
+            assetSetup(node);
+          }
+        }
+      }
+      // Add Component Files
+      for (ProjectNode node : componentsFolder.getChildren()) {
+        if (nodeFilter(node)) {
+          if (node.getChildren().iterator().hasNext()) {
+            loadAssets(node);
+            continue;
+          }
+          else {
+            assetSetup(node);
+          }
+        }
       }
     } else {
       project = null;
       assetsFolder = null;
       assets = null;
+    }
+  }
+
+  /**
+   * Recursively add
+   * @param nodeFolder
+   */
+  public void loadAssets(ProjectNode nodeFolder) {
+    long targetProjectId = nodeFolder.getProjectId();
+    if (this.projectId != targetProjectId) { // We are on a different project so stop and change project
+      loadAssets(targetProjectId); // redo
+      return;
+    }
+    for (ProjectNode node : nodeFolder.getChildren()) {
+      if (node.getChildren().iterator().hasNext()) {  // is a directory
+        loadAssets(node); // setup files inside it
+        continue;
+      }
+      assetSetup(node); // is a file
     }
   }
 
@@ -84,7 +129,40 @@ public final class AssetManager implements ProjectChangeListener {
     assetInfo.fileId = fileId;
     assetInfo.fileContent = null;
     assetInfo.loaded = false; // Set to true when it is loaded to the repl
+    assetInfo.transferred = false; // Set to true when asset is received on phone
     assets.put(fileId, assetInfo);
+  }
+
+  /**
+   * Filter that allows only specific nodes to be sent to AssetManager for Transfer
+   * @param node
+   * @return true to allow transfer
+   */
+  private boolean nodeFilter(ProjectNode node) {
+    boolean allowAll = false; // Set to true to allow all Asset and Component Files!
+    boolean allow = false;
+    String name = node.getName();
+    String fileId = node.getFileId();
+    // Filter : For files in ASSETS_FOLDER
+    if (fileId.startsWith(ASSETS_FOLDER)) {
+      allow = true;
+
+      // Filter : For files in EXTERNAL_COMPS_FOLDER
+      if (fileId.startsWith(ASSETS_FOLDER + '/' + EXTERNAL_COMPS_FOLDER + '/')) {
+        allow = false;
+
+        // Filter : For files in directly in EXTERNAL_COMPS_FOLDER/COMP_FOLDER
+        if (StringUtils.countMatches(fileId, "/") == 3) {
+
+          // Filter : For classes.jar File
+          if (name.equals("classes.jar")) {
+            allow = true;
+
+          }
+        }
+      }
+    }
+    return allow | allowAll;
   }
 
   private void readIn(final AssetInfo assetInfo, final String formName) {
@@ -92,10 +170,11 @@ public final class AssetManager implements ProjectChangeListener {
       new AsyncCallback<String>() {
         @Override
           public void onSuccess(String data) {
-          assetInfo.fileContent = Base64Util.decodeLines(data);
-          assetInfo.loaded = false; // Set to true when it is loaded to the repl
-          refreshAssets1(formName);
-        }
+            assetInfo.fileContent = Base64Util.decodeLines(data);
+            assetInfo.loaded = false; // Set to true when it is loaded to the repl
+            assetInfo.transferred = false; // Set to true when file is received on phone
+            refreshAssets1(formName);
+          }
         @Override
           public void onFailure(Throwable ex) {
           OdeLog.elog("Failed to load asset.");
@@ -138,7 +217,36 @@ public final class AssetManager implements ProjectChangeListener {
     OdeLog.log("AssetManager: formName = " + formName + " received reset.");
     for (AssetInfo a: assets.values()) {
       a.loaded = false;
+      a.transferred = false;
     }
+  }
+
+  public static boolean markAssetTransferred(String transferredAsset) {
+    if (INSTANCE == null)
+      return false;
+    INSTANCE.markAssetTransferred1(transferredAsset);
+    return true;
+  }
+
+  public boolean markAssetTransferred1(String transferredAsset) {
+    if (transferredAsset == null)
+      return false;
+    AssetInfo assetInfo = INSTANCE.assets.get(transferredAsset);
+    assetInfo.transferred = true;
+    return  true;
+  }
+
+  public static boolean checkAssetsTransferred() {
+    if (INSTANCE == null)
+      return false;
+    return INSTANCE.checkAssetsTransferred1();
+  }
+
+  public boolean checkAssetsTransferred1() {
+    for (AssetInfo a : assets.values()) {
+      if (!a.transferred)  return false;
+    }
+    return true;
   }
 
   @Override
@@ -153,7 +261,7 @@ public final class AssetManager implements ProjectChangeListener {
     if (DEBUG)
       OdeLog.log("AssetManager: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
-    if (node instanceof YoungAndroidAssetNode) {
+    if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
     }
   }
@@ -163,7 +271,7 @@ public final class AssetManager implements ProjectChangeListener {
     if (DEBUG)
       OdeLog.log("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
-    if (node instanceof YoungAndroidAssetNode) {
+    if (node instanceof YoungAndroidAssetNode || node instanceof YoungAndroidComponentNode) {
       loadAssets(project.getProjectId());
     }
   }
@@ -173,10 +281,14 @@ public final class AssetManager implements ProjectChangeListener {
       $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;));
     $wnd.AssetManager_reset =
       $entry(@com.google.appinventor.client.AssetManager::reset(Ljava/lang/String;));
+    $wnd.AssetManager_markAssetTransferred =
+      $entry(@com.google.appinventor.client.AssetManager::markAssetTransferred(Ljava/lang/String;));
+    $wnd.AssetManager_checkAssetsTransferred =
+      $entry(@com.google.appinventor.client.AssetManager::checkAssetsTransferred());
   }-*/;
 
   private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{
-    return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content);
+    return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
   }-*/;
 
 }

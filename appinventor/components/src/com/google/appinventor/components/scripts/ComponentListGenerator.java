@@ -43,7 +43,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
 
-      componentList.append(listSeparator).append(component.name);
+      componentList.append(listSeparator).append(component.type);
       listSeparator = "\n";
 
       componentBuildInfo.append(jsonSeparator);
@@ -75,8 +75,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
   }
 
   private static void outputComponentBuildInfo(ComponentInfo component, StringBuilder sb) {
-    sb.append("{\"name\": \"");
-    sb.append(component.name + "\"");
+    sb.append("{\"type\": \"");
+    sb.append(component.type + "\"");
     appendComponentInfo(sb, PERMISSIONS_TARGET, component.permissions);
     appendComponentInfo(sb, LIBRARIES_TARGET, component.libraries);
     appendComponentInfo(sb, NATIVE_TARGET, component.nativeLibraries);

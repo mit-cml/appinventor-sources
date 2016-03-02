@@ -52,7 +52,8 @@ Blockly.ReplMgr.rsState = {
   IDLE : 0,                   // Not connected nor connection requested
   RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
   CONNECTED: 2,               // Connected to Repl
-  WAITING: 3                  // Waiting for the Emulator to start
+  WAITING: 3,                 // Waiting for the Emulator to start
+  CONNECTING: 4               // Connecting to Repl
 };
 
 Blockly.ReplStateObj = function() {};
@@ -119,7 +120,7 @@ Blockly.ReplMgr.buildYail = function() {
         code = code.join('\n');
 
         if (phoneState.componentYail != code) {
-            // We need to send all of the comonent cruft (sorry)
+            // We need to send all of the component cruft (sorry)
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
             this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
@@ -964,6 +965,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
+    var checkAssetsTransfer = window.parent.AssetManager_checkAssetsTransferred;
     xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
@@ -973,11 +975,15 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
-                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                rs.state = Blockly.ReplMgr.rsState.CONNECTING;
                 rs.dialog.hide();
-                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
-                  // Start the connection with the Repl itself
                 refreshAssets(context.formName);    // Start assets loading
+                if (!checkAssetsTransfer()) {
+                   throw "Assets not Transferred"; // throw error if assets transfer is incomplete
+                }
+                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                // Start the connection with the Repl itself
             } catch (err) {
                 console.log("getFromRendezvous(): Error: " + err);
                 setTimeout(poller, 2000); // Queue next attempt
@@ -991,7 +997,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
     var dialog;
-    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
+    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS || window.parent.ReplState.state == this.rsState.CONNECTING) {
         window.parent.ReplState.count = window.parent.ReplState.count + 1;
         if (window.parent.ReplState.count > 40) {
             window.parent.ReplState.state = this.rsState.IDLE;
@@ -1056,13 +1062,15 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
 Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     if (window.parent.ReplState === undefined)
         return false;
-    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTED))
+    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTING && window.parent.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
     var rs = window.parent.ReplState;
     var encoder = new goog.Uri.QueryData();
-    var z = filename.split('/'); // Remove any directory components
-    encoder.add('filename', z[z.length-1]);
+    //var z = filename.split('/'); // Remove any directory components
+    //encoder.add('filename', z[z.length-1]); // remove directory structure
+    var z = filename.slice(filename.indexOf('/') + 1, filename.length); // remove the asset directory
+    encoder.add('filename', z); // keep directory structure
     conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
     conn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {

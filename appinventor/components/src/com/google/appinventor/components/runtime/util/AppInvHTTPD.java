@@ -182,7 +182,7 @@ public class AppInvHTTPD extends NanoHTTPD {
       Log.d(LOG_TAG, "To Eval: " + code);
 
       Response res;
-
+      form.loadComponents();  // load all components before Eval
       try {
         // Don't evaluate a simple "#f" which is used by the poller
         if (input_code.equals("#f")) {
@@ -335,6 +335,10 @@ public class AppInvHTTPD extends NanoHTTPD {
         if (filename != null) { // We have a filename and it has not been declared
                                 // invalid by the code above
           File fileTo = new File(rootDir + "/" + filename);
+          File parentFileTo = fileTo.getParentFile();
+          if (!parentFileTo.exists()) {
+            parentFileTo.mkdirs();
+          }
           if (!fileFrom.renameTo(fileTo)) { // First try rename
             copyFile(fileFrom, fileTo);
             fileFrom.delete();  // Remove temp file

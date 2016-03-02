@@ -37,7 +37,7 @@ Blockly.Component.add = function(name, uid) {
  * @param oldname the Component's current name, e.g., Button1
  * @param newname the newname the component will be given, e.g., Button2
  * @param uid the component's unique id
- * 
+ *
  * Here are the various places that a component's name must be changed, using Button1
  *  as an example name.
  * Blockly.ComponentInstances -- an index containing an entry for each Component used by the app
@@ -221,12 +221,13 @@ Blockly.ComponentTypes.haveType = function(typeName) {
  *
  */
 Blockly.ComponentTypes.populateTypes = function() {
-  
+
   var componentInfoArray = JSON.parse(window.parent.BlocklyPanel_getComponentsJSONString());
   for(var i=0;i<componentInfoArray.length;i++) {
     var componentInfo = componentInfoArray[i];
     var typeName = componentInfo.name;
     Blockly.ComponentTypes[typeName] = {};
+    Blockly.ComponentTypes[typeName].type = componentInfo.type;
     Blockly.ComponentTypes[typeName].componentInfo = componentInfo;
     Blockly.ComponentTypes[typeName].eventDictionary = {};
     Blockly.ComponentTypes[typeName].methodDictionary = {};

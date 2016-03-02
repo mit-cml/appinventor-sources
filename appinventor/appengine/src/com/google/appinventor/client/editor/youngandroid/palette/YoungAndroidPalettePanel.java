@@ -34,6 +34,8 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.properties.CountryChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
@@ -45,16 +47,23 @@ import com.google.appinventor.client.widgets.properties.ScalingChoicePropertyEdi
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextAreaPropertyEditor;
+import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
+import com.google.gwt.dom.client.Style.FontStyle;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,11 +72,10 @@ import java.util.Map;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel {
+public class YoungAndroidPalettePanel extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
 
   // Component database: information about components (including their properties and events)
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-    SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   // Associated editor
   private final YaFormEditor editor;
@@ -76,6 +84,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
+  // store Component Type along with SimplePaleteItem to enable removal of components
+  private final Map<String, SimplePaletteItem> simplePaletteItems;
+
+  private DropTargetProvider dropTargetProvider;
 
   /**
    * Creates a new component palette panel.
@@ -84,6 +96,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
 
     stackPalette = new StackPanel();
 
@@ -92,6 +105,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new NxtPaletteHelper());
 
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
+    simplePaletteItems = new HashMap<String, SimplePaletteItem>();
 
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
@@ -102,6 +116,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
             TranslationDesignerPallete.getCorrespondingString(category.getName()));
       }
     }
+
+    initExtensionPanel();
 
     stackPalette.setWidth("100%");
     initWidget(stackPalette);
@@ -132,20 +148,15 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
+    this.dropTargetProvider = dropTargetProvider;
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
-      String categoryString = COMPONENT_DATABASE.getCategoryString(component);
-      String helpString = COMPONENT_DATABASE.getHelpString(component);
-      String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(component);
-      Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(component);
-      Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(component);
-      ComponentCategory category = ComponentCategory.valueOf(categoryString);
-      if (showOnPalette && showCategory(category)) {
-        addPaletteItem(new SimplePaletteItem(
-            new SimpleComponentDescriptor(component, editor, helpString,
-              categoryDocUrlString, showOnPalette, nonVisible),
-            dropTargetProvider),
-          category);
-      }
+      this.addComponent(component);
+    }
+  }
+
+  public void loadComponents() {
+    for (String component : COMPONENT_DATABASE.getComponentNames()) {
+      this.addComponent(component);
     }
   }
 
@@ -156,11 +167,39 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     // Configure properties
     for (PropertyDefinition property : COMPONENT_DATABASE.getPropertyDefinitions(componentType)) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          ComponentsTranslation.getPropertyName(property.getCaption()),
-          createPropertyEditor(property.getEditorType()));
+              ComponentsTranslation.getPropertyName(property.getCaption()),
+              createPropertyEditor(property.getEditorType()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
+  }
+
+  /**
+   *  Loads a single Component to Palette. Used for adding Components.
+   */
+  @Override
+  public void addComponent(String componentTypeName) {
+    String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
+    String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
+    Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(componentTypeName);
+    Boolean external = COMPONENT_DATABASE.getComponentExternal(componentTypeName);
+    ComponentCategory category = ComponentCategory.valueOf(categoryString);
+    if (showOnPalette && showCategory(category)) {
+      SimplePaletteItem item = new SimplePaletteItem(
+          new SimpleComponentDescriptor(componentTypeName, editor, helpString,
+              categoryDocUrlString, showOnPalette, nonVisible, external),
+            dropTargetProvider);
+      simplePaletteItems.put(componentTypeName, item);
+      addPaletteItem(item, category);
+    }
+  }
+
+  public void removeComponent(String componentTypeName) {
+    String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
+    ComponentCategory category = ComponentCategory.valueOf(categoryString);
+    removePaletteItem(simplePaletteItems.get(componentTypeName), category);
   }
 
   /*
@@ -250,4 +289,65 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       panel.add(component);
     }
   }
+
+  private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
+    VerticalPanel panel = categoryPanels.get(category);
+    panel.remove(component);
+  }
+
+  private void initExtensionPanel() {
+    Anchor addComponentAnchor = new Anchor("Import extension");
+    addComponentAnchor.setStylePrimaryName("ode-ExtensionAnchor");
+    addComponentAnchor.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        new ComponentImportWizard().center();
+      }
+    });
+
+    categoryPanels.get(ComponentCategory.EXTENSION).add(addComponentAnchor);
+    categoryPanels.get(ComponentCategory.EXTENSION).setCellHorizontalAlignment(
+        addComponentAnchor, HasHorizontalAlignment.ALIGN_CENTER);
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    for (String componentType : componentTypes) {
+      this.addComponent(componentType);
+    }
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (String componentType : componentTypes) {
+      this.removeComponent(componentType);
+    }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+
+  }
+
+  @Override
+  public void onResetDatabase() {
+    reloadComponents();
+  }
+
+  @Override
+  public void clearComponents() {
+    for (ComponentCategory category : categoryPanels.keySet()) {
+      VerticalPanel panel = categoryPanels.get(category);
+      panel.clear();
+    }
+  }
+
+  @Override
+  public void reloadComponents() {
+    clearComponents();
+    loadComponents();
+  }
+
 }

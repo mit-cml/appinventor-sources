@@ -275,6 +275,10 @@ public abstract class Wizard extends DialogBox {
     }
   }
 
+  protected final Button getConfirmButton() {
+    return okButton;
+  }
+
   protected void disableOkButton() {
     okButton.setEnabled(false);
   }
