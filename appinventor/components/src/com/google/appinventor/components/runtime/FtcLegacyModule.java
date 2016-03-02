@@ -355,6 +355,21 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
     return new byte[0];
   }
 
+  @SimpleFunction(description = "Whether this I2C controller is alive and operational.")
+  public boolean IsArmed() {
+    checkHardwareDevice();
+    if (legacyModule != null) {
+      try {
+        return legacyModule.isArmed();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsArmed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
   // I2cPortReadyCallback implementation
 
   @Override

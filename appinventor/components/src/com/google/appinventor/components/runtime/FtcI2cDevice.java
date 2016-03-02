@@ -266,6 +266,21 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
     return false;
   }
 
+  @SimpleFunction(description = "Whether this I2C device client is alive and operational.")
+  public boolean IsArmed() {
+    checkHardwareDevice();
+    if (i2cDevice != null) {
+      try {
+        return i2cDevice.isArmed();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsArmed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
   // I2CPortReadyCallback implementation
 
   @Override

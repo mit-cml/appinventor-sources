@@ -2396,6 +2396,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ftcI2cDeviceReaderComponentPallette();
 
+  @DefaultMessage("FtcI2cDeviceSynch")
+  @Description("")
+  String ftcI2cDeviceSynchComponentPallette();
+
   @DefaultMessage("FtcIrSeekerSensor")
   @Description("")
   String ftcIrSeekerSensorComponentPallette();
@@ -3462,6 +3466,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HeadingMode_CARTESIANProperties();
 
+  @DefaultMessage("HeartbeatActionRereadLastRead")
+  @Description("")
+  String HeartbeatActionRereadLastReadProperties();
+
+  @DefaultMessage("HeartbeatActionRewriteLastWritten")
+  @Description("")
+  String HeartbeatActionRewriteLastWrittenProperties();
+
+  @DefaultMessage("HeartbeatInterval")
+  @Description("")
+  String HeartbeatIntervalProperties();
+
   @DefaultMessage("I2cAddress")
   @Description("")
   String I2cAddressProperties();
@@ -3590,6 +3606,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RawZProperties();
 
+  @DefaultMessage("ReadMode_BALANCED")
+  @Description("")
+  String ReadMode_BALANCEDProperties();
+
+  @DefaultMessage("ReadMode_ONLY_ONCE")
+  @Description("")
+  String ReadMode_ONLY_ONCEProperties();
+
+  @DefaultMessage("ReadMode_REPEAT")
+  @Description("")
+  String ReadMode_REPEATProperties();
+  
   @DefaultMessage("Red")
   @Description("")
   String RedProperties();
@@ -4420,6 +4448,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String listOfFtcDcMotorsParams();
 
+  @DefaultMessage("loggingTag")
+  @Description("")
+  String loggingTagParams();
+
   @DefaultMessage("max")
   @Description("")
   String maxParams();
@@ -4460,9 +4492,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ratioParams();
 
+  @DefaultMessage("readMode")
+  @Description("")
+  String readModeParams();
+
   @DefaultMessage("red")
   @Description("")
   String redParams();
+
+  @DefaultMessage("register")
+  @Description("")
+  String registerParams();
 
   @DefaultMessage("saturation")
   @Description("")
@@ -4503,6 +4543,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("voltage")
   @Description("")
   String voltageParams();
+
+  @DefaultMessage("waitForCompletion")
+  @Description("")
+  String waitForCompletionParams();
 
   //Events
   @DefaultMessage("AccelerationChanged")
@@ -5976,6 +6020,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String InitializeMethods();
 
+  @DefaultMessage("IsArmed")
+  @Description("")
+  String IsArmedMethods();
+
   @DefaultMessage("IsBitSet")
   @Description("")
   String IsBitSetMethods();
@@ -6068,6 +6116,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RangeScaleMethods();
 
+  @DefaultMessage("Read")
+  @Description("")
+  String ReadMethods();
+
+  @DefaultMessage("Read1Byte")
+  @Description("")
+  String Read1ByteMethods();
+
   @DefaultMessage("ReadAnalog")
   @Description("")
   String ReadAnalogMethods();
@@ -6128,6 +6184,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetGearRatioMethods();
 
+  @DefaultMessage("SetHeartbeatActionReadWindow")
+  @Description("")
+  String SetHeartbeatActionReadWindowMethods();
+
   @DefaultMessage("SetI2cPortActionFlag")
   @Description("")
   String SetI2cPortActionFlagMethods();
@@ -6139,6 +6199,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetLED")
   @Description("")
   String SetLEDMethods();
+
+  @DefaultMessage("SetLogging")
+  @Description("")
+  String SetLoggingMethods();
+
+  @DefaultMessage("SetLoggingTag")
+  @Description("")
+  String SetLoggingTagMethods();
 
   @DefaultMessage("SetMode")
   @Description("")
@@ -6211,6 +6279,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WaitOneFullHardwareCycle")
   @Description("")
   String WaitOneFullHardwareCycleMethods();
+
+  @DefaultMessage("Write")
+  @Description("")
+  String WriteMethods();
+
+  @DefaultMessage("Write1Byte")
+  @Description("")
+  String Write1ByteMethods();
 
   @DefaultMessage("WriteI2cCacheToController")
   @Description("")
@@ -6555,6 +6631,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("A component for an I2C device reader of an FTC robot.")
   @Description("")
   String FtcI2cDeviceReaderHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides synchronous access for an I2C device of an FTC robot.")
+  @Description("")
+  String FtcI2cDeviceSynchHelpStringComponentPallette();
 
   @DefaultMessage("A component for an IR seeker sensor of an FTC robot.")
   @Description("")

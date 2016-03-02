@@ -600,6 +600,21 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
     return false;
   }
 
+  @SimpleFunction(description = "Whether this I2C controller is alive and operational.")
+  public boolean IsArmed() {
+    checkHardwareDevice();
+    if (deviceInterfaceModule != null) {
+      try {
+        return deviceInterfaceModule.isArmed();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsArmed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
   // for AnalogOutputController 
 
   @SimpleFunction(description = "Sets the channel output voltage.\n" +

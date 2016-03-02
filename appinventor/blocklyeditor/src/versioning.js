@@ -1549,6 +1549,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End FtcI2cDeviceReader upgraders
 
+  "FtcI2cDeviceSynch": {
+
+    // This is the initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End FtcI2cDeviceSynch upgraders
+
   "FtcIrSeekerSensor": {
 
     // This is the initial version. Placeholder for future upgrades

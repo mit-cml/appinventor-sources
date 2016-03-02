@@ -202,6 +202,7 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_DC_MOTOR_CONTROLLER_DEVICE_MODE = 2914;
   public static final int ERROR_FTC_INVALID_HSV = 2915;
   public static final int ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS = 2916;
+  public static final int ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE = 2917;
 
   // Please start the next group of error numbers at 3001.
 
@@ -521,6 +522,9 @@ public final class ErrorMessages {
         "The specified HSV is not valid");
     errorMessages.put(ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS,
         "The specified listOfFtcDcMotors is not valid");
+    errorMessages.put(ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE,
+        "The specified read mode \"%s\" is not valid. The valid modes are " +
+        "REPEAT, BALANCED, and ONLY_ONCE.");
   }
 
   private ErrorMessages() {

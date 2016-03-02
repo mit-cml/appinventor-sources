@@ -413,6 +413,7 @@ public class YaVersion {
   // - FTC_GAMEPAD_COMPONENT_VERSION was incremented to 2.
   // - FTC_ROBOT_CONTROLLER_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 146:
+  // - The FtcI2cDeviceSynch component was added.
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 4.
   // - FTC_DEVICE_INTERFACE_MODULE_COMPONENT_VERSION was incremented to 3.
   // - FTC_GYRO_SENSOR_COMPONENT_VERSION was incremented to 3.
@@ -798,6 +799,8 @@ public class YaVersion {
   public static final int FTC_I2C_DEVICE_COMPONENT_VERSION = 2;
 
   public static final int FTC_I2C_DEVICE_READER_COMPONENT_VERSION = 1;
+
+  public static final int FTC_I2C_DEVICE_SYNCH_COMPONENT_VERSION = 1;
 
   // For FTC_IR_SEEKER_SENSOR_COMPONENT_VERSION 2:
   // - The Mode_1200HZ_AC property was renamed Mode_1200HZ.

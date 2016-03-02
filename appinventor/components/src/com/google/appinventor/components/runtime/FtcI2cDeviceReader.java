@@ -78,6 +78,21 @@ public final class FtcI2cDeviceReader extends FtcHardwareDevice {
     return new byte[0];
   }
 
+  @SimpleFunction(description = "Whether this I2C device client is alive and operational.")
+  public boolean IsArmed() {
+    checkHardwareDevice();
+    if (i2cDevice != null) {
+      try {
+        return i2cDevice.isArmed();
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "IsArmed",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+      }
+    }
+    return false;
+  }
+
   // FtcHardwareDevice implementation
 
   @Override

@@ -32,7 +32,7 @@ import android.graphics.Color;
     nonVisible = true,
     iconName = "images/ftc.png")
 @SimpleObject
-@UsesLibraries(libraries = "FtcRobotCore.jar")
+@UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcColorSensor extends FtcHardwareDevice {
 
   private volatile ColorSensor colorSensor;
