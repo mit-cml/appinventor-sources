@@ -60,6 +60,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
 
+//NEW IMPORTS
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,7 +81,7 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
-    SourcesMouseEvents, DragSource {
+    SourcesMouseEvents, DragSource, ContextMenuHandler {
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_NAME = "Name";
   protected static final String PROPERTY_NAME_UUID = "Uuid";
@@ -87,6 +92,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private static final int ICON_IMAGE_WIDTH = 16;
   private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
+
+  private PopupPanel contextMenu;
 
   /**
    * This class defines the dialog box for renaming a component.
@@ -250,6 +257,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.editor = editor;
     this.type = type;
     this.iconImage = iconImage;
+
+    this.contextMenu = new PopupPanel(true);
+    this.contextMenu.add(new HTML("My Context menu!"));
+    this.contextMenu.hide();
+
+    addDomHandler(this, ContextMenuEvent.getType());
 
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
@@ -783,6 +796,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       case Event.ONCLICK:
         cancelBrowserEvent(event);
         select();
+        break;
+
+      case Event.ONCONTEXTMENU:
+        event.preventDefault();
+        event.stopPropagation();
+
+        Window.alert("hello world!");
+        this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY());
+        this.contextMenu.show();
+
         break;
 
       default:

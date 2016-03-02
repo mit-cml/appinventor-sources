@@ -40,7 +40,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
 public final class MockForm extends MockContainer {
-
+  
   /*
    * Widget for the mock form title bar.
    */
@@ -188,11 +188,11 @@ public final class MockForm extends MockContainer {
   private static int verticalScrollbarWidth;
 
   private MockFormLayout myLayout;
-  
+
   // flag to control attempting to enable/disable vertical
   // alignment when scrollable property is changed
   private boolean initialized = false;
-  
+
   private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
 
   public static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
@@ -231,7 +231,7 @@ public final class MockForm extends MockContainer {
     formWidget.add(new NavigationBar());
 
     initComponent(formWidget);
-    
+
     // Set up the initial state of the vertical alignment property editor and its dropdowns
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
