@@ -428,6 +428,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.FtcUltrasonicSensorHelpStringComponentPallette();
     } else if (key.equals("FtcVoltageSensor-helpString")) {
       value = MESSAGES.FtcVoltageSensorHelpStringComponentPallette();
+    } else if (key.equals("FirebaseDB-helpString")) {
+      value = MESSAGES.FirebaseDBHelpStringComponentPallette();
     }
     return value;
   }

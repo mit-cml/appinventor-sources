@@ -409,8 +409,20 @@ public class YaVersion {
   // - GyroscopeSensor component was added
   // For YOUNG_ANDROID_VERSION 144:
   // - FTC_DC_MOTOR_CONTROLLER_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 145:
+  // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
+  // For YOUNG_ANDROID_VERSION 146:
+  // - CAMERA_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 147:
+  // - IMAGE_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 148:
+  // - FIREBASE_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 149:
+  // - CLOCK_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 150:
+  // - IMAGE_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 144;
+  public static final int YOUNG_ANDROID_VERSION = 150;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -468,7 +480,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 19:
   // The is-number block was modified to include dropdowns for base10, hex, and binary
   // The number-convert blocks was added
-  public static final int BLOCKS_LANGUAGE_VERSION = 19;
+  // For BLOCKS_LANGUAGE_VERSION 20:
+  // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
+  public static final int BLOCKS_LANGUAGE_VERSION = 20;
 
   // ................................. Component Version Numbers ..................................
 
@@ -583,7 +597,9 @@ public class YaVersion {
 
   // For CAMERA_COMPONENT_VERSION 2:
   // - The UseFront property was added.
-   public static final int CAMERA_COMPONENT_VERSION = 2;
+  // For CAMERA_COMPONENT_VERSION 3:
+  // - The UseFront property was removed :-( .
+   public static final int CAMERA_COMPONENT_VERSION = 3;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
@@ -617,7 +633,8 @@ public class YaVersion {
 
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
-  public static final int CLOCK_COMPONENT_VERSION = 2;
+  // - Add Duration Support
+  public static final int CLOCK_COMPONENT_VERSION = 3;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -853,7 +870,11 @@ public class YaVersion {
   // - Added background color & image
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
 
-  public static final int IMAGE_COMPONENT_VERSION = 1;
+  // For IMAGE_COMPONENT_VERSION 2:
+  // - The RotationAngle property was added.
+  // For IMAGE_COMPONENT_VERSION 3:
+  // - Scaling Property added, but hidden for now
+  public static final int IMAGE_COMPONENT_VERSION = 3;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1069,6 +1090,10 @@ public class YaVersion {
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
   public static final int TINYWEBDB_COMPONENT_VERSION = 2;
 
+  // // For FIREBASE_COMPONENT_VERSION 1:
+  // - FirebaseDB component introduced
+  public static final int FIREBASE_COMPONENT_VERSION = 1;
+
   // For TWITTER_COMPONENT_VERSION 2:
   // - The Authorize method and IsAuthorized event handler were added to support
   //   OAuth authentication (now requred by Twitter). These
@@ -1169,10 +1194,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.35";
+  public static final String PREFERRED_COMPANION = "2.36";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.35" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

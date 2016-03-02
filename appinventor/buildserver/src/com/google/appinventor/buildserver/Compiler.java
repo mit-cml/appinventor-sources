@@ -66,6 +66,9 @@ public final class Compiler {
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
 
+  // Copied from SdkLevel.java (which isn't in our class path so we duplicate it here)
+  private static final String LEVEL_GINGERBREAD_MR1 = "10";
+
   public static final String RUNTIME_FILES_DIR = "/files/";
 
   // Build info constants.  Used for permissions, libraries and assets.
@@ -358,13 +361,17 @@ public final class Compiler {
         out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" />\n");
       }
 
+      // Firebase requires at least API 10 (Gingerbread MR1)
+      if (componentTypes.contains("FirebaseDB") && !isForCompanion) {
+        minSDK = LEVEL_GINGERBREAD_MR1;
+      }
+
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
 
       // The market will use the following to filter apps shown to devices that don't support
-      // the specified SDK version.  We right now support building for minSDK 4,
-      // and minSDK 3 as compatibility mode (through a property in Screen 1).
+      // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
       out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
 

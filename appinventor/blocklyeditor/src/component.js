@@ -243,6 +243,7 @@ Blockly.ComponentTypes.populateTypes = function() {
     }
     for(var k=0;k<componentInfo.blockProperties.length;k++) {
       Blockly.ComponentTypes[typeName].properties[componentInfo.blockProperties[k].name] = componentInfo.blockProperties[k];
+      if (componentInfo.blockProperties[k].deprecated == "true") continue;
       if(componentInfo.blockProperties[k].rw == "read-write" || componentInfo.blockProperties[k].rw == "read-only") {
         Blockly.ComponentTypes[typeName].getPropertyList.push(componentInfo.blockProperties[k].name);
       }

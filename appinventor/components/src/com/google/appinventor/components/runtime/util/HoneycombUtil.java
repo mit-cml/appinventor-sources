@@ -32,4 +32,8 @@ public class HoneycombUtil {
     return view.resolveSizeAndState(maxWidth, widthMeasureSpec, childState);
   }
 
+  public static void viewSetRotate(View view, double rotationAngle) {
+    view.setRotation((float) rotationAngle);
+  }
+
 }

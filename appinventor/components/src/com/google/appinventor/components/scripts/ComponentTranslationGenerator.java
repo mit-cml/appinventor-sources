@@ -25,21 +25,31 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("\n\n/* Properties */\n\n");
     for (Property prop : component.properties.values()) {
       String propertyName = prop.name;
-      if (prop.isUserVisible() || component.designerProperties.containsKey(propertyName)) {
+      if (prop.isUserVisible()
+          || component.designerProperties.containsKey(propertyName)
+          || prop.isDeprecated() // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
+                                 // must translate property names so they can be displayed in bad blocks.
+          ) {
         sb.append("    map.put(\"PROPERTY-" + propertyName + "\", MESSAGES." + propertyName + "Properties());\n");
       }
     }
     sb.append("\n\n/* Events */\n\n");
     for (Event event : component.events.values()) {
       String propertyName = event.name;
-      if (event.userVisible) {
+      if (event.userVisible
+          || event.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
+                              // must translate property names so they can be displayed in bad blocks.
+          ) {
         sb.append("    map.put(\"EVENT-" + propertyName + "\", MESSAGES." + propertyName + "Events());\n");
       }
     }
     sb.append("\n\n/* Methods */\n\n");
     for (Method method : component.methods.values()) {
       String propertyName = method.name;
-      if (method.userVisible) {
+      if (method.userVisible
+          || method.deprecated // [lyn, 2015/12/30] For deprecated AI2 blocks (but not AI1 blocks)
+                               // must translate property names so they can be displayed in bad blocks.
+          ) {
         sb.append("    map.put(\"METHOD-" + propertyName + "\", MESSAGES." + propertyName + "Methods());\n");
       }
     }

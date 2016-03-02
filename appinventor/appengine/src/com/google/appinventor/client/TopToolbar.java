@@ -95,6 +95,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
   private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
+  private static final String WIDGET_NAME_COMPANIONUPDATE = "CompanionUpdate";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
@@ -103,6 +104,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
+  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+  private static final String WINDOW_OPEN_LOCATION = "_ai2";
 
   public DropDownButton fileDropDown;
   public DropDownButton connectDropDown;
@@ -193,39 +196,43 @@ public class TopToolbar extends Composite {
     String libraryUrl = config.getLibraryUrl();
     if (!Strings.isNullOrEmpty(libraryUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
-          new WindowOpenAction(libraryUrl, "_ai2", "scrollbars=1")));
+          new WindowOpenAction(libraryUrl)));
     }
     String getStartedUrl = config.getGetStartedUrl();
     if (!Strings.isNullOrEmpty(getStartedUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
-          new WindowOpenAction(getStartedUrl, "_ai2", "scrollbars=1")));
+          new WindowOpenAction(getStartedUrl)));
     }
     String tutorialsUrl = config.getTutorialsUrl();
     if (!Strings.isNullOrEmpty(tutorialsUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
-          new WindowOpenAction(tutorialsUrl, "_ai2", "scrollbars=1")));
+          new WindowOpenAction(tutorialsUrl)));
     }
     String troubleshootingUrl = config.getTroubleshootingUrl();
     if (!Strings.isNullOrEmpty(troubleshootingUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
-          new WindowOpenAction(troubleshootingUrl, "_ai2", "scrollbars=1")));
+          new WindowOpenAction(troubleshootingUrl)));
     }
     String forumsUrl = config.getForumsUrl();
     if (!Strings.isNullOrEmpty(forumsUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
-          new WindowOpenAction(forumsUrl, "_ai2", "scrollbars=1")));
+          new WindowOpenAction(forumsUrl)));
     }
     helpItems.add(null);
     String feedbackUrl = config.getFeedbackUrl();
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
-          new WindowOpenAction(feedbackUrl, "_blank", "scrollbars=1")));
+          new WindowOpenAction(feedbackUrl)));
       helpItems.add(null);
     }
+
     if (config.getFtcCompanion()) {
       helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
           new AboutCompanionAction()));
+      helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
+          new CompanionUpdateAction()));
     }
+
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 
@@ -279,7 +286,7 @@ public class TopToolbar extends Composite {
   private static class NewAction implements Command {
     @Override
     public void execute() {
-      new NewYoungAndroidProjectWizard().center();
+      new NewYoungAndroidProjectWizard(null).center();
       // The wizard will switch to the design view when the new
       // project is created.
     }
@@ -768,6 +775,19 @@ public class TopToolbar extends Composite {
     }
   }
 
+  private static class CompanionUpdateAction implements Command {
+    @Override
+    public void execute() {
+      DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+      if (currentProject == null) {
+        Window.alert(MESSAGES.companionUpdateMustHaveProject());
+        return;
+      }
+      DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+      screen.blocksEditor.updateCompanion();
+    }
+  }
+
   private static class ShowSplashAction implements Command {
     @Override
     public void execute() {
@@ -777,18 +797,14 @@ public class TopToolbar extends Composite {
 
   private static class WindowOpenAction implements Command {
     private final String url;
-    private final String name;
-    private final String features;
 
-    WindowOpenAction(String url, String name, String features) {
+    WindowOpenAction(String url) {
       this.url = url;
-      this.name = name;
-      this.features = features;
     }
 
     @Override
     public void execute() {
-      Window.open(url, name, features);
+      Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
     }
   }
 
