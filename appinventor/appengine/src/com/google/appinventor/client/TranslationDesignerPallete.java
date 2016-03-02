@@ -179,6 +179,7 @@ public class TranslationDesignerPallete {
       value = MESSAGES.votingComponentPallette();
     } else if (key.equals("WebViewer")) {
       value = MESSAGES.webViewerComponentPallette();
+
       // FIRST Tech Challenge
     } else if (key.equals("FtcAccelerationSensor")) {
       value = MESSAGES.ftcAccelerationSensorComponentPallette();
@@ -371,6 +372,9 @@ public class TranslationDesignerPallete {
       value = MESSAGES.WebViewerHelpStringComponentPallette();
     } else if (key.equals("YandexTranslate-helpString")) {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
+    } else if (key.equals("FirebaseDB-helpString")) {
+      value = MESSAGES.FirebaseDBHelpStringComponentPallette();
+
       // FIRST Tech Challenge
     } else if (key.equals("FtcAccelerationSensor-helpString")) {
       value = MESSAGES.FtcAccelerationSensorHelpStringComponentPallette();

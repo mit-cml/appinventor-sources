@@ -142,12 +142,13 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
-  //AccelerometerSensor Errors
+  // AccelerometerSensor Errors
   public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
 
   //Sharing Errors
@@ -204,8 +205,10 @@ public final class ErrorMessages {
   public static final int ERROR_FTC_INVALID_LIST_OF_FTC_DC_MOTORS = 2916;
   public static final int ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE = 2917;
 
-  // Please start the next group of error numbers at 3001.
+  // Image errors
+  public static final int ERROR_IMAGE_CANNOT_ROTATE = 3001;
 
+  // Start the next group of errors at 3100
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -525,6 +528,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE,
         "The specified read mode \"%s\" is not valid. The valid modes are " +
         "REPEAT, BALANCED, and ONLY_ONCE.");
+    // Image errors
+    errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
+        "The version of Android on this device does not support image rotation.");
   }
 
   private ErrorMessages() {

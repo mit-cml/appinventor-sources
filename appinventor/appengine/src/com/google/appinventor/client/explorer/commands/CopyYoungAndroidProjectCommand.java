@@ -16,6 +16,7 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -140,7 +141,18 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       }
 
       newNameTextBox = new LabeledTextBox(checkpoint ? MESSAGES.checkpointNameLabel()
-          : MESSAGES.newNameLabel());
+          : MESSAGES.newNameLabel(), new Validator(){
+        @Override
+        public boolean validate(String value) {
+          errorMessage = TextValidators.getErrorMessage(value);
+          return !(errorMessage.length()>0);
+        }
+
+        @Override
+        public String getErrorMessage() {
+          return errorMessage;
+        }
+      });
       newNameTextBox.setText(defaultNewName);
       newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
         @Override
@@ -150,6 +162,8 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
             handleOkClick(oldProjectNode);
           } else if (keyCode == KeyCodes.KEY_ESCAPE) {
             hide();
+          } else {
+            newNameTextBox.validate();
           }
         }
       });

@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
@@ -21,6 +22,7 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -41,11 +43,10 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
   // UI element for project name
   private LabeledTextBox projectNameTextBox;
 
-
   /**
    * Creates a new YoungAndroid project wizard.
    */
-  public NewYoungAndroidProjectWizard() {
+  public NewYoungAndroidProjectWizard(final ProjectToolbar toolbar) {
     super(MESSAGES.newYoungAndroidProjectWizardCaption());
 
     // Initialize the UI
@@ -54,25 +55,13 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel(), new Validator() {
       @Override
       public boolean validate(String value) {
-        //Pattern validText = Pattern.compile("[\\p{L}][\\p{L}0-9_]*", Pattern.UNICODE_CHARACTER_CLASS);
-        //String newString = validText.toString();
-        if(!value.matches("[A-Za-z][A-Za-z0-9_]*") && value.length() > 0) {
+        errorMessage = TextValidators.getErrorMessage(value);
+        if (errorMessage.length()>0){
           disableOkButton();
-          String noWhitespace = "[\\S]+";
-          String firstCharacterLetter = "[A-Za-z].*";
-          if(!value.matches(noWhitespace)) { //Check to make sure that this project does not contain any whitespace
-            errorMessage = "Project names cannot contain spaces";
-          } else if (!value.matches(firstCharacterLetter)) { //Check to make sure that the first character is a letter
-            errorMessage = "Project names must begin with a letter";
-          } else { //The text contains a character that is not a letter, number, or underscore
-            errorMessage = "Invalid character. Project names can only contain letters, numbers, and underscores";
-          }
           return false;
-        } else { //this is valid text, return true
-          enableOkButton();
-          errorMessage = "";
-          return true;
         }
+          enableOkButton();
+          return true;
       }
 
       @Override
@@ -104,6 +93,21 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
 
     page.add(projectNameTextBox);
     addPage(page);
+
+    // Create cancel command handler. This handler
+    // arranges to re-enable the project start button
+    // Note that toolbar will be null if we are called
+    // from the Project menu instead of the Start button
+    // on the project toolbar
+
+    if (toolbar != null) {
+      initCancelCommand(new Command() {
+        @Override
+        public void execute() {
+          toolbar.enableStartButton();
+        }
+      });
+    }
 
     // Create finish command (create a new Young Android project)
     initFinishCommand(new Command() {

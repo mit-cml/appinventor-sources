@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
+import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
 import com.google.appinventor.client.editor.simple.components.MockFtcGamepad;
 import com.google.appinventor.client.editor.simple.components.MockFtcRobotController;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
@@ -117,6 +118,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/tinyDB.png", images.tinyDB());
     bundledImages.put("images/file.png", images.file());
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
+    bundledImages.put("images/firebaseDB.png", images.firebaseDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
@@ -262,12 +264,16 @@ public final class SimpleComponentDescriptor {
    */
   public static MockComponent createMockComponent(String name, SimpleEditor editor) {
     if (COMPONENT_DATABASE.getNonVisible(name)) {
-      if (name.equals(MockFtcGamepad.TYPE)) {
+      if(name.equals(MockFirebaseDB.TYPE)) {
+        return new MockFirebaseDB(editor, name,
+            getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
+      } else if (name.equals(MockFtcGamepad.TYPE)) {
         return new MockFtcGamepad(editor, name,
             getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
+      } else {
+        return new MockNonVisibleComponent(editor, name,
+            getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
       }
-      return new MockNonVisibleComponent(editor, name,
-          getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
     } else if (name.equals(MockCanvas.TYPE)) {

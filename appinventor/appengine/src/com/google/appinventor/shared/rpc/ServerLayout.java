@@ -165,6 +165,12 @@ public class ServerLayout {
   public static final String GET_MOTD_SERVICE = "getmotd";
 
   /**
+   * Relative path of the {@link com.google.appinventor.server.components.FirebaseAuthServiceImpl}
+   * within the ODE GWT module.
+   */
+  public static final String FIREBASE_AUTH_SERVICE = "firebase_auth";
+
+  /**
    * Relative path of the form through which the user can see and accept
    * the Young Android terms of service.
    */

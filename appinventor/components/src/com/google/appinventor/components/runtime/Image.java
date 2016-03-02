@@ -9,14 +9,19 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.graphics.drawable.Drawable;
@@ -43,6 +48,10 @@ public final class Image extends AndroidViewComponent {
 
   private String picturePath = "";  // Picture property
 
+  private double rotationAngle = 0.0;
+
+  private int scalingMode = Component.SCALING_SCALE_PROPORTIONALLY;
+
   /**
    * Creates a new Image component.
    *
@@ -50,6 +59,7 @@ public final class Image extends AndroidViewComponent {
    */
   public Image(ComponentContainer container) {
     super(container);
+
     view = new ImageView(container.$context()) {
       @Override
       public boolean verifyDrawable(Drawable dr) {
@@ -58,10 +68,10 @@ public final class Image extends AndroidViewComponent {
         return true;
       }
     };
+    view.setFocusable(true);
 
     // Adds the component to its designated container
     container.$add(this);
-    view.setFocusable(true);
   }
 
   @Override
@@ -105,12 +115,46 @@ public final class Image extends AndroidViewComponent {
     ViewUtil.setImage(view, drawable);
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+  /**
+   * Specifies the angle at which the image picture appears rotated.
+   *
+   * @param rotated  the rotation angle
+   */
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.0")
   @SimpleProperty
+  public void RotationAngle(double rotationAngle) {
+    if (this.rotationAngle == rotationAngle) {
+      return;                   // Nothing to do...
+                                // This also means that you can always set the
+                                // the angle to 0.0 even on older Android devices
+    }
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_HONEYCOMB) {
+      container.$form().dispatchErrorOccurredEvent(this, "RotationAngle",
+        ErrorMessages.ERROR_IMAGE_CANNOT_ROTATE);
+      return;
+    }
+    HoneycombUtil.viewSetRotate(view, rotationAngle);
+    this.rotationAngle = rotationAngle;
+  }
+
+  @SimpleProperty(description = "The angle at which the image picture appears rotated. " +
+      "This rotation does not appear on the designer screen, only on the device.",
+      category = PropertyCategory.APPEARANCE)
+  public double RotationAngle() {
+    return rotationAngle;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
+  // @Deprecated -- We will deprecate this in a future release (jis: 2/12/2016)
+  @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.")
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);
+    else
+      view.setScaleType(ImageView.ScaleType.FIT_CENTER);
   }
 
   /**
@@ -130,5 +174,31 @@ public final class Image extends AndroidViewComponent {
   // something that is more consistent with sprites.
   public void Animation(String animation) {
     AnimationUtil.ApplyAnimation(view, animation);
+  }
+
+  @Deprecated
+//  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCALING,
+//      defaultValue = Component.SCALING_SCALE_PROPORTIONALLY + "")
+  @SimpleProperty(description = "This property determines how the picture " +
+      "scales according to the Height or Width of the Image. Scale " +
+      "proportionally (0) preserves the picture aspect ratio. Scale to fit " +
+      "(1) matches the Image area, even if the aspect ratio changes.")
+  public void Scaling(int mode) {
+    switch (mode) {
+      case 0:
+        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        break;
+      case 1:
+        view.setScaleType(ImageView.ScaleType.FIT_XY);
+        break;
+      default:
+        throw new IllegalArgumentError("Illegal scaling mode: " + mode);
+    }
+    scalingMode = mode;
+  }
+
+  @SimpleProperty
+  public int Scaling() {
+    return scalingMode;
   }
 }

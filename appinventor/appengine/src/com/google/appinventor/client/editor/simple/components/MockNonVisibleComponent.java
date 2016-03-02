@@ -57,7 +57,7 @@ public class MockNonVisibleComponent extends MockComponent {
   }
 
   @Override
-  public final void initComponent(Widget widget) {
+  public void initComponent(Widget widget) {
     super.initComponent(widget);
   }
 

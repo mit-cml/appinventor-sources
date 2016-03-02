@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * causes both UIObject#getAbsoluteLeft() and UIObject#getAbsoluteTop() to return
  * inaccurate values. This class contains patched implementations for each.
  *
- * @author William Byrne
+ * @author will2596@gmail.com (William Byrne)
  */
 public abstract class PZAwarePositionCallback implements PopupPanel.PositionCallback {
     // Pinch Zoom flag which is tripped by a handler in Ode.java

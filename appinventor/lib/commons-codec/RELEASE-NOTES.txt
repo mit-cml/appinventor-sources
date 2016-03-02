@@ -1,0 +1,47 @@
+              Apache Commons Codec 1.7 RELEASE NOTES
+
+The codec package contains simple encoder and decoders for
+various formats such as Base64 and Hexadecimal.  In addition to these
+widely used encoders and decoders, the codec package also maintains a
+collection of phonetic encoding utilities.
+
+Feature and fix release.
+
+Commons Codec 1.7 requires a minimum of Java 1.6
+
+Changes in this version include:
+
+New features:
+o CODEC-157:  DigestUtils: Add MD2 APIs. Thanks to ggregory.
+o CODEC-156:  DigestUtils: add APIs named after standard algorithm name SHA-1. Thanks to ggregory.
+o CODEC-155:  DigestUtils.getDigest(String) should throw IllegalArgumentException instead of RuntimeException. Thanks to ggregory.
+o CODEC-153:  Create a class MessageDigestAlgorithms to define standard algorithm names. Thanks to ggregory.
+o CODEC-152:  DigestUtils.getDigest(String) loses the original exception. Thanks to ggregory.
+o CODEC-151:  Remove unnecessary attempt to fill up the salt variable in UnixCrypt. Thanks to lathspell.
+o CODEC-150:  Remove unnecessary call to Math.abs(). Thanks to lathspell.
+o CODEC-148:  More tests and minor things. Thanks to lathspell.
+o CODEC-146:  Added regression tests for PhoneticEngine based on Solr-3.6.0. Thanks to Julius Davies.
+o CODEC-139:  DigestUtils: add updateDigest methods and make methods public. Thanks to dsebastien.
+o CODEC-133:  Add classes for MD5/SHA1/SHA-512-based Unix crypt(3) hash variants. Thanks to lathspell.
+o CODEC-130:  Base64InputStream.skip skips underlying stream, not output. Thanks to tn.
+o CODEC-63:   Implement NYSIIS phonetic encoder. Thanks to bayard.
+
+Fixed Bugs:
+o CODEC-96:   Base64 encode() method is no longer thread-safe, breaking clients using it as a shared BinaryEncoder.
+              Note: the fix breaks binary compatibility, however the changes are to a class (BaseNCodec) which is
+              intended for internal use. Thanks to sebb.
+o CODEC-138:  Complete FilterInputStream interface for BaseNCodecInputStream.
+o CODEC-136:  Use Charset objects when possible, create Charsets for required character encodings.
+o CODEC-132:  BeiderMorseEncoder OOM issues. Thanks to rcmuir.
+o CODEC-131:  DoubleMetaphone javadoc contains dead links. Thanks to smolav.
+
+Changes:
+o CODEC-147:  BeiderMorseEncoder/PhoneticEngine: make results deterministic by using a LinkedHashSet
+              instead of a HashSet.
+o CODEC-143:  StringBuffer could be replaced by StringBuilder for local variables.
+
+
+For complete information on Commons Codec, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Codec website:
+
+http://commons.apache.org/codec/
