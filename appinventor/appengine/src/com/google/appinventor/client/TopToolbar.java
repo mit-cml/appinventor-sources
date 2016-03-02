@@ -152,7 +152,7 @@ public class TopToolbar extends Composite {
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
-        MESSAGES.AICompanionMenuItem(), new WirelessAction()));
+        MESSAGES.aiCompanionMenuItem(), new WirelessAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
         MESSAGES.emulatorMenuItem(), new EmulatorAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
@@ -661,11 +661,11 @@ public class TopToolbar extends Composite {
 
   protected void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
     }
@@ -719,24 +719,22 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
-    if (isReadOnly) {
-      // This may be too simple
-      return;
-    }
-    if (view == 0) {  // We are in the Projects view
+    if (view == Ode.PROJECTS) {
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(),
           Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
+      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
-      buildDropDown.setEnabled(false);
-    } else { // We have to be in the Designer/Blocks view
+    } else if (view == Ode.DESIGNER) { // We are in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
@@ -744,10 +742,26 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           false);
-
+      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
-      buildDropDown.setEnabled(true);
+    } else { // in a view related to Gallery
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(),
+          Ode.getInstance().getProjectManager().getProjects() == null);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
+          Ode.getInstance().getProjectManager().getProjects().size() > 0);
+      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     }
     updateKeystoreFileMenuButtons();
   }

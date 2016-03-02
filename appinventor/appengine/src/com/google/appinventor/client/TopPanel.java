@@ -160,7 +160,7 @@ public class TopPanel extends Composite {
       teachLink.addClickHandler(new WindowOpenClickHandler(teachUrl));
       teachLink.setStyleName("ode-TopPanelButton");
       links.add(teachLink);
-      //teachLink.setVisible(false); //currently doesn't exist, so hide
+      teachLink.setVisible(false); //currently doesn't exist, so hide
     }
 
 
@@ -296,30 +296,6 @@ public class TopPanel extends Composite {
     panel.add(motdBox);
     panel.setCellHorizontalAlignment(motdBox, HorizontalPanel.ALIGN_RIGHT);
     panel.setCellVerticalAlignment(motdBox, HorizontalPanel.ALIGN_BOTTOM);
-  }
-
-  /**
-   * Enables and/or disables buttons based on how many projects exist
-   * (in the case of "Download All Projects") or are selected (in the case
-   * of "Delete" and "Download Source").
-   */
-  public void updateTopMenuButtons(int view) {
-    if (view == 0) {  // We are in the Projects view
-      myProjects.setEnabled(false);
-      myProjects.addStyleDependentName("disabled");
-      gallery.setEnabled(true);
-      gallery.removeStyleDependentName("disabled");
-    } else if (view == 2) { // We are in the Gallery view
-      myProjects.setEnabled(true);
-      myProjects.removeStyleDependentName("disabled");
-      gallery.setEnabled(false);
-      gallery.addStyleDependentName("disabled");
-    } else {
-      myProjects.setEnabled(true);
-      gallery.setEnabled(true);
-      myProjects.removeStyleDependentName("disabled");
-      gallery.removeStyleDependentName("disabled");
-    }
   }
 
   /**
