@@ -171,6 +171,7 @@ public class DesignToolbar extends Toolbar {
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+    Ode.getInstance().getTopPanel().updateTopMenuButtons(0);
   }
 
   private class AddFormAction implements Command {
@@ -281,10 +282,12 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.formEditor);
       toggleEditor(false);
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().getTopPanel().updateTopMenuButtons(1);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().getTopPanel().updateTopMenuButtons(1);
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
@@ -303,6 +306,7 @@ public class DesignToolbar extends Toolbar {
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
         toggleEditor(true);       // Gray out the blocks button and enable the designer button
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        Ode.getInstance().getTopPanel().updateTopMenuButtons(1);
         ViewerBox.getViewerBox().setViewerCaption(MESSAGES.workspaceBoxCaption());
       }
     }
@@ -321,6 +325,7 @@ public class DesignToolbar extends Toolbar {
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
         toggleEditor(false);      // Gray out the Designer button and enable the blocks button
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        Ode.getInstance().getTopPanel().updateTopMenuButtons(1);
         ViewerBox.getViewerBox().setViewerCaption(MESSAGES.viewerBoxCaption());
       }
     }

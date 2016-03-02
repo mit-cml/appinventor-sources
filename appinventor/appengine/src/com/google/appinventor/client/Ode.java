@@ -395,6 +395,7 @@ public class Ode implements EntryPoint {
     }
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
+    getTopPanel().updateTopMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
     // If we started a project, then the start button was disabled (to avoid
     // a second press while the new project wizard was starting (aka we "debounce"
@@ -448,6 +449,7 @@ public class Ode implements EntryPoint {
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
+    getTopPanel().updateTopMenuButtons(currentView);
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
     } else {
@@ -594,6 +596,7 @@ public class Ode implements EntryPoint {
       assetManager.loadAssets(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
+    getTopPanel().updateTopMenuButtons(1);
   }
 
   /**
@@ -1160,6 +1163,10 @@ public class Ode implements EntryPoint {
    */
   public TopToolbar getTopToolbar() {
     return topToolbar;
+  }
+
+  public TopPanel getTopPanel() {
+    return topPanel;
   }
 
   /**

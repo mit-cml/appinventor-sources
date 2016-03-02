@@ -417,10 +417,6 @@ public interface OdeMessages extends Messages {
   @Description("Name of Projects tab")
   String projectsTabName();
 
-  @DefaultMessage("My projects")
-  @Description("Name of My projects menuitem")
-  String projectMenuItem();
-
   @DefaultMessage("Start new project")
   @Description("Label of the menu item for creating a new project")
   String newProjectMenuItem();
@@ -441,11 +437,11 @@ public interface OdeMessages extends Messages {
   @Description("Name of Save as ... menuitem")
   String saveAsMenuItem();
 
-  @DefaultMessage("Checkpoint")
+  @DefaultMessage("Save a checkpoint")
   @Description("Name of Checkpoint menuitem")
   String checkpointMenuItem();
 
-  @DefaultMessage("Import project (.aia) from a repository ...")
+  @DefaultMessage("Import project (.aia) from a template ...")
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
 
@@ -453,9 +449,17 @@ public interface OdeMessages extends Messages {
   @Description("Name of Export Project menuitem")
   String exportProjectMenuItem();
 
+  @DefaultMessage("Export this project (.aia) to my computer")
+  @Description("Name of Export This Project menuitem")
+  String exportThisProjectMenuItem();
+
   @DefaultMessage("Export all projects")
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsMenuItem();
+
+  @DefaultMessage("Advanced options")
+  @Description("Label of the Advanced options category that holds keystore actions")
+  String advancedOptionsMenuItem();
 
   @DefaultMessage("Export app signing keystore")
   @Description("Label of the button for export keystore")
@@ -469,12 +473,12 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
 
-  //Connect
+  //Live-test
   @DefaultMessage("Test")
   @Description("Label of the button leading to Connect related cascade items")
   String connectTabName();
 
-  @DefaultMessage("Companion App")
+  @DefaultMessage("Companion App over WiFi")
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
 
@@ -482,48 +486,24 @@ public interface OdeMessages extends Messages {
   @Description("Message providing details about starting the emulator connection.")
   String emulatorMenuItem();
 
-  @DefaultMessage("Report an Issue")
-  @Description("Link for Report an Issue form")
-  String feedbackLink();
-
-  @DefaultMessage("Gallery")
-  @Description("Name of Gallery tab")
-  String tabNameGallery();
-
-  @DefaultMessage("Moderation")
-  @Description("Name of moderation tab")
-  String tabNameModeration();
-
-  @DefaultMessage("Profile")
-  @Description("Label of the link for private user profile")
-  String privateProfileLink();
-
-  @DefaultMessage("My Projects")
-  @Description("Name of My Projects tab")
-  String tabNameProjects();
-
-  @DefaultMessage("Phone with USB")
+  @DefaultMessage("Companion App with USB")
   @Description("Message providing details about starting a USB connection.")
   String usbMenuItem();
 
-  @DefaultMessage("Reset Connection")
+  @DefaultMessage("Stop live testing on Companion app")
   @Description("Reset all connections.")
   String resetConnectionsMenuItem();
 
-  @DefaultMessage("Hard Reset Emulator")
-  @Description("Hard Reset the Emulator.")
-  String hardResetConnectionsMenuItem();
-
-  //Build
+  //Package
   @DefaultMessage("Package")
   @Description("Label of the button leading to build related cascade items")
   String buildTabName();
 
-  @DefaultMessage("App ( provide QR code for .apk )")
+  @DefaultMessage("Provide QR code for app (.apk)")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
 
-  @DefaultMessage("App ( save .apk to my computer )")
+  @DefaultMessage("Save app (.apk) to my computer")
   @Description("Label of item for building a project and downloading")
   String downloadToComputerMenuItem();
 
@@ -536,54 +516,25 @@ public interface OdeMessages extends Messages {
   @Description("Label for the Help menu")
   String helpTabName();
 
-  @DefaultMessage("About")
-  @Description("Label of the link for About")
-  String aboutMenuItem();
-
-  @DefaultMessage("Companion Information")
-  @Description("Information about the Companion")
-  String companionInformation();
-
-  @DefaultMessage("Update the Companion")
-  @Description("Menu item to update the Companion to the latest version")
-  String companionUpdate();
-
-  @DefaultMessage("You must have a project open to update the Companion")
-  @Description("")
-  String companionUpdateMustHaveProject();
-
-  @DefaultMessage("Show Splash Screen")
-  @Description("Redisplay the Splash Screen")
-  String showSplashMenuItem();
-
-  @DefaultMessage("Library")
-  @Description("Name of Library link")
+  @DefaultMessage("Documentation")
+  @Description("Name of Documentation/Library link")
   String libraryMenuItem();
-
-  @DefaultMessage("Get Started")
-  @Description("Name of Getting Started link")
-  String getStartedMenuItem();
 
   @DefaultMessage("Tutorials")
   @Description("Name of Tutorials link")
   String tutorialsMenuItem();
 
-
   @DefaultMessage("Walkthroughs")
   @Description("Name of Walkthroughs link")
-  String walkthroughLink();
+  String walkthroughMenuItem();
 
   @DefaultMessage("Troubleshooting")
   @Description("Name of Troubleshooting link")
   String troubleshootingMenuItem();
 
-  @DefaultMessage("Forums")
+  @DefaultMessage("User Forums/Report an Issue")
   @Description("Name of Forums link")
   String forumsMenuItem();
-
-  @DefaultMessage("Report an Issue")
-  @Description("Link for Report an Issue form")
-  String feedbackMenuItem();
 
   //Admin
   @DefaultMessage("Admin")
@@ -603,17 +554,51 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String myProjectsTabName();
 
-  @DefaultMessage("Documentation")
-  @Description("Name of Guide link")
-  String guideTabName();
-
-  @DefaultMessage("Report an Issue")
-  @Description("Link for Report an Issue form")
-  String feedbackTabName();
-
   @DefaultMessage("App Gallery")
   @Description("Link for Gallery")
   String galleryTabName();
+
+  @DefaultMessage("Teach")
+  @Description("Link for Educator website")
+  String teachTabName();
+
+  @DefaultMessage("Moderation")
+  @Description("Name of moderation tab")
+  String moderationTabName();
+
+  //Gallery
+  @DefaultMessage("Profile")
+  @Description("Label of the link for private user profile")
+  String privateProfileLink();
+
+  //About
+  @DefaultMessage("About")
+  @Description("Label of the button leading to About related cascade items")
+  String aboutTabName();
+
+  @DefaultMessage("App Inventor Version")
+  @Description("Label of the link for About")
+  String appInventorVersionMenuItem();
+
+  @DefaultMessage("Current Companion Version")
+  @Description("Information about the Companion")
+  String companionInformation();
+
+  @DefaultMessage("Update the Companion")
+  @Description("Menu item to update the Companion to the latest version")
+  String companionUpdate();
+
+  @DefaultMessage("You must have a project open to update the Companion")
+  @Description("")
+  String companionUpdateMustHaveProject();
+
+  @DefaultMessage("Update Companion on Emulator")
+  @Description("Hard Reset the Emulator.")
+  String hardResetConnectionsMenuItem();
+
+  @DefaultMessage("Show Welcome Splash Screen")
+  @Description("Redisplay the Splash Screen")
+  String showSplashMenuItem();
 
   //User email dropdown
   @DefaultMessage("Sign out")
@@ -621,6 +606,7 @@ public interface OdeMessages extends Messages {
   String signOutLink();
 
   //Used in JS tutorial walkthroughs
+
   @DefaultMessage("Select a walkthrough:")
   @Description("Title for the selection dialog for walkthroughs")
   String walkthroughSelect();
@@ -653,7 +639,6 @@ public interface OdeMessages extends Messages {
       "to make sure you have finished the whole step.")
   @Description("Text for instructions to keep trying in walkthrough dialogs")
   String walkthroughNextStepErrorText();
-
 
   //
 

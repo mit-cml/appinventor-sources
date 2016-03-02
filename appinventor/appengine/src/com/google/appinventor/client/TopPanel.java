@@ -7,14 +7,17 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.MotdBox;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.common.version.GitBuildId;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
@@ -22,23 +25,21 @@ import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -54,15 +55,19 @@ public class TopPanel extends Composite {
 
   private final String WIDGET_NAME_MESSAGES = "Messages";
   private final String WIDGET_NAME_PRIVATE_USER_PROFILE = "Profile";
-  private final TextButton gallery;
-  private final TextButton moderation;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
   private static final String WIDGET_NAME_LANGUAGE = "Language";
 
+  private final String WIDGET_NAME_ABOUT = "About";
+  private final String WIDGET_NAME_AIVERSION = "App Inventor Version";
+  private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
+  private static final String WIDGET_NAME_COMPANIONUPDATE = "CompanionUpdate";
+  private static final String WIDGET_NAME_HARDRESET_BUTTON = "EmulatorCompanionResetUpdate";
+  private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
+
   private static final String SIGNOUT_URL = "/ode/_logout";
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
-  private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
@@ -70,6 +75,10 @@ public class TopPanel extends Composite {
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   final Ode ode = Ode.getInstance();
+
+  private final TextButton gallery;
+  private final TextButton moderation;
+  private TextButton myProjects;
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -103,22 +112,18 @@ public class TopPanel extends Composite {
     }
 
     // My Projects Link
-    TextButton myProjects = new TextButton(MESSAGES.myProjectsTabName());
+    myProjects = new TextButton(MESSAGES.myProjectsTabName());
     myProjects.setStyleName("ode-TopPanelButton");
-
     myProjects.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         ode.switchToProjectsView();
       }
     });
-
-    myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
-    // Code on gallerydev branch
     // Gallery Link
-    gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery = new TextButton(MESSAGES.galleryTabName());
     gallery.setStyleName("ode-TopPanelButton");
     gallery.addClickHandler(new ClickHandler() {
       @Override
@@ -128,43 +133,39 @@ public class TopPanel extends Composite {
     });
     links.add(gallery);
 
+    // About -> {AI Version; Current Companion Version; Update the Companion; Update Companion on Emulator; Show Welcome Splash Screen;}
+    List<DropDownItem> aboutItems = Lists.newArrayList();
+    aboutItems.add(new DropDownItem(WIDGET_NAME_AIVERSION, MESSAGES.appInventorVersionMenuItem(),
+        new AIVersionAction()));
+    aboutItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
+        new AboutCompanionAction()));
+    aboutItems.add(null);
+    aboutItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
+        new CompanionUpdateAction()));
+    aboutItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
+        new HardResetAction()));
+    aboutItems.add(null);
+    aboutItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
+        new ShowSplashAction()));
+    DropDownButton about = new DropDownButton(WIDGET_NAME_ABOUT, MESSAGES.aboutTabName(), aboutItems, true);
+    about.setStyleName("ode-TopPanelButton");
+    links.add(about);
+
+    // Teach Link
     Config config = ode.getSystemConfig();
-    String guideUrl = config.getGuideUrl();
-    if (!Strings.isNullOrEmpty(guideUrl)) {
-      TextButton guideLink = new TextButton(MESSAGES.guideTabName());
-      guideLink.addClickHandler(new WindowOpenClickHandler(guideUrl));
-      guideLink.setStyleName("ode-TopPanelButton");
-      links.add(guideLink);
+    //TODO Change this to the Educator site URL
+    String teachUrl = config.getGuideUrl();
+    if (!Strings.isNullOrEmpty(teachUrl)) {
+      TextButton teachLink = new TextButton(MESSAGES.teachTabName());
+      teachLink.addClickHandler(new WindowOpenClickHandler(teachUrl));
+      teachLink.setStyleName("ode-TopPanelButton");
+      links.add(teachLink);
+      //teachLink.setVisible(false); //currently doesn't exist, so hide
     }
 
-    // Feedback Link
-    String feedbackUrl = config.getFeedbackUrl();
-    if (!Strings.isNullOrEmpty(feedbackUrl)) {
-      TextButton feedbackLink = new TextButton(MESSAGES.feedbackTabName());
-      feedbackLink.addClickHandler(
-        new WindowOpenClickHandler(feedbackUrl));
-      feedbackLink.setStyleName("ode-TopPanelButton");
-      links.add(feedbackLink);
-    }
 
-  /*
-  // Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
-      gallery.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
-        }
-      });
-
-      gallery.setStyleName("ode-TopPanelButton");
-      links.add(gallery);
-    }
-    */
-
-    moderation = new TextButton(MESSAGES.tabNameModeration());
+    // Moderation Link
+    moderation = new TextButton(MESSAGES.moderationTabName());
     moderation.setStyleName("ode-TopPanelButton");
     moderation.addClickHandler(new ClickHandler() {
     @Override
@@ -298,6 +299,30 @@ public class TopPanel extends Composite {
   }
 
   /**
+   * Enables and/or disables buttons based on how many projects exist
+   * (in the case of "Download All Projects") or are selected (in the case
+   * of "Delete" and "Download Source").
+   */
+  public void updateTopMenuButtons(int view) {
+    if (view == 0) {  // We are in the Projects view
+      myProjects.setEnabled(false);
+      myProjects.addStyleDependentName("disabled");
+      gallery.setEnabled(true);
+      gallery.removeStyleDependentName("disabled");
+    } else if (view == 2) { // We are in the Gallery view
+      myProjects.setEnabled(true);
+      myProjects.removeStyleDependentName("disabled");
+      gallery.setEnabled(false);
+      gallery.addStyleDependentName("disabled");
+    } else {
+      myProjects.setEnabled(true);
+      gallery.setEnabled(true);
+      myProjects.removeStyleDependentName("disabled");
+      gallery.removeStyleDependentName("disabled");
+    }
+  }
+
+  /**
    * Updates the UI to show the user's email address.
    *
    * @param email the email address
@@ -380,6 +405,130 @@ public class TopPanel extends Composite {
         ChainableCommand cmd = new SaveAllEditorsCommand(null);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
       }
+    }
+  }
+
+  private static class AIVersionAction implements Command {
+    @Override
+    public void execute() {
+      final DialogBox db = new DialogBox(false, true);
+      db.setText("About MIT App Inventor");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("200px");
+      db.setWidth("400px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
+
+      VerticalPanel DialogBoxContents = new VerticalPanel();
+      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
+          "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
+      Config config = Ode.getInstance().getSystemConfig();
+      String releaseNotesUrl = config.getReleaseNotesUrl();
+      if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
+        html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
+            "\" target=\"_blank\">release notes</a>";
+      }
+      String tosUrl = config.getTosUrl();
+      if (!Strings.isNullOrEmpty(tosUrl)) {
+        html += "<BR/><BR/><a href=\"" + tosUrl +
+            "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
+      }
+      HTML message = new HTML(html);
+
+      SimplePanel holder = new SimplePanel();
+      Button ok = new Button("Close");
+      ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          db.hide();
+        }
+      });
+      holder.add(ok);
+      DialogBoxContents.add(message);
+      DialogBoxContents.add(holder);
+      db.setWidget(DialogBoxContents);
+      db.show();
+    }
+  }
+
+  private static class AboutCompanionAction implements Command {
+    @Override
+    public void execute() {
+      final DialogBox db = new DialogBox(false, true);
+      db.setText("About The Companion");
+      db.setStyleName("ode-DialogBox");
+      db.setHeight("200px");
+      db.setWidth("400px");
+      db.setGlassEnabled(true);
+      db.setAnimationEnabled(true);
+      db.center();
+
+      String downloadinfo = "";
+      if (!YaVersion.COMPANION_UPDATE_URL1.equals("")) {
+        String url = "http://" + Window.Location.getHost() + YaVersion.COMPANION_UPDATE_URL1;
+        downloadinfo = "<br/>\n<a href=" + url + ">Download URL: " + url + "</a><br/>\n";
+        downloadinfo += BlocklyPanel.getQRCode(url);
+      }
+
+      VerticalPanel DialogBoxContents = new VerticalPanel();
+      HTML message = new HTML(
+          "Companion Version " + BlocklyPanel.getCompVersion() + downloadinfo
+      );
+
+      SimplePanel holder = new SimplePanel();
+      Button ok = new Button("Close");
+      ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          db.hide();
+        }
+      });
+      holder.add(ok);
+      DialogBoxContents.add(message);
+      DialogBoxContents.add(holder);
+      db.setWidget(DialogBoxContents);
+      db.show();
+    }
+  }
+
+  private static class CompanionUpdateAction implements Command {
+    @Override
+    public void execute() {
+      DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+      if (currentProject == null) {
+        Window.alert(MESSAGES.companionUpdateMustHaveProject());
+        return;
+      }
+      DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+      screen.blocksEditor.updateCompanion();
+    }
+  }
+
+  private void replHardReset() {
+    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    if (currentProject == null) {
+      OdeLog.wlog("DesignToolbar.currentProject is null. "
+          + "Ignoring attempt to do hard reset.");
+      return;
+    }
+    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    ((YaBlocksEditor)screen.blocksEditor).hardReset();
+    TopToolbar instance = Ode.getInstance().getTopToolbar();
+    instance.updateConnectToDropDownButton(false, false, false);
+  }
+
+  private class HardResetAction implements Command {
+    @Override
+    public void execute() {
+      if (Ode.getInstance().okToConnect()) {
+        replHardReset();
+      }
+    }
+  }
+
+  private static class ShowSplashAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().showWelcomeDialog();
     }
   }
 

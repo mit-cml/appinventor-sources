@@ -361,6 +361,10 @@ select {
 
 }
 
+.ode-TopPanelButton-disabled {
+  color: #ccc;
+}
+
 .ActionDropDown-Default {
   padding: 0px 6px;
 }

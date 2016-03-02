@@ -59,9 +59,9 @@
     <property name="use.gcs" value="true" />
 
     <!-- Name of gallery bucket in Google Cloud Store -->
-    <property name="gallery.bucket" value="" />
+    <property name="gallery.bucket" value="name" />
     <!-- Whether or not to use the gallery -->
-    <property name="use.gallery" value="false" />
+    <property name="use.gallery" value="true" />
 
     <!-- Gallery Admin Email -->
     <property name="gallery.admin.email" value="" />
