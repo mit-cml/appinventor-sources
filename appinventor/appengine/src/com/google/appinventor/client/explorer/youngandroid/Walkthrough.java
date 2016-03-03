@@ -207,6 +207,7 @@ public class Walkthrough {
       public void onClick(ClickEvent event) {
         dialogBox.hide();
         Walkthrough.displayDialog();
+        OdeLog.log("File name of tutorial: " + selectionModel.getSelectedObject().fileName);
         BlocklyPanel.callSetTutorial(selectionModel.getSelectedObject().fileName);
       }
     });
