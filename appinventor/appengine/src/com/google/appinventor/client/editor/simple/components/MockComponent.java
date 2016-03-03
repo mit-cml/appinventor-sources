@@ -81,7 +81,7 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
-    SourcesMouseEvents, DragSource { // ContextMenuHandler {
+    SourcesMouseEvents, DragSource, ContextMenuHandler {
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_NAME = "Name";
   protected static final String PROPERTY_NAME_UUID = "Uuid";
@@ -262,7 +262,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.contextMenu.add(new HTML("My Context menu!"));
     this.contextMenu.hide();
 
-    //addDomHandler(this, ContextMenuEvent.getType());
+    addDomHandler(this, ContextMenuEvent.getType());
 
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
@@ -783,13 +783,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     event.preventDefault();
     event.stopPropagation();
 
-    Window.alert("hello world!");
+    Window.alert("hello world 1!");
     this.contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
     this.contextMenu.show();
   }
 
   private void contextMenu(Event event) {
-    Window.alert("hello world!");
+    Window.alert("hello world 2!");
     this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY());
     this.contextMenu.show();
   }
