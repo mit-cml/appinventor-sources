@@ -225,9 +225,13 @@ public class AppInvHTTPD extends NanoHTTPD {
         String versionName = pInfo.versionName;
         if (installer == null)
           installer = "Not Known";
+        // fcqn = true indicates we accept FullyQualifiedComponentNames (FQCN)
+        // This informs the blocks editor whether or not we can accept the new style
+        // fully qualified component names
         res = new Response(HTTP_OK, MIME_JSON, "{\"version\" : \"" + versionName +
           "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"," +
-          " \"installer\" : \"" + installer + "\", \"package\" : \"" + packageName + "\" }");
+          " \"installer\" : \"" + installer + "\", \"package\" : \"" +
+          packageName + "\", \"fqcn\" : true }");
       } catch (NameNotFoundException n) {
         n.printStackTrace();
         res = new Response(HTTP_OK, MIME_JSON, "{\"verison\" : \"Unknown\"");
