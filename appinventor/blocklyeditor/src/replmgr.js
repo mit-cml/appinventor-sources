@@ -89,6 +89,17 @@ Blockly.ReplMgr.buildYail = function() {
         phoneState.componentYail = "";
     }
 
+    var propertyNameConverter;
+    if (this.nofqcn) {
+        propertyNameConverter = function(input) {
+            var s = input.split('.');
+            return s[s.length-1];
+        };
+    } else {
+        propertyNameConverter = function(input) {
+            return input;
+        };
+    }
     var jsonObject = JSON.parse(phoneState.formJson);
     var formProperties;
     var formName;
@@ -105,7 +116,7 @@ Blockly.ReplMgr.buildYail = function() {
             code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
         var sourceType = jsonObject.Source;
         if (sourceType == "Form") {
-            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */));
+            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, propertyNameConverter));
         } else {
             throw "Source type " + sourceType + " is invalid.";
         }
@@ -373,8 +384,26 @@ Blockly.ReplMgr.putYail = (function() {
                             engine.checkversionupgrade(false, json.installer, false);
                             return;
                         }
+                        if (!json.fqcn) {
+                            // Set a compatibility flag to indicate that we
+                            // should trim package names from Component blocks
+                            // because we are talking to an old pre-cdk Companion
+                            context.nofqcn = true;
+                        } else {
+                            context.nofqcn = false;
+                        }
                     }
-                    engine.pollphone();
+                    // We have to reset the yail state because
+                    // we may have a queue of pending yail, yet we may
+                    // have also just changed the nofqcn flag. So we
+                    // need to force re-generation of the yail. When
+                    // we no longer need to be compatible, we can remove this
+                    // code (the reseting code, LEAVE the pollphone() call
+                    // or visit the land of the lost!
+                    context.resetYail(true); // Reset (partial reset)
+                    rs.phoneState.phoneQueue = []; // But flush the queue of pending code
+                    context.pollYail();  // Regenerate
+                    engine.pollphone();  // Next...
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
