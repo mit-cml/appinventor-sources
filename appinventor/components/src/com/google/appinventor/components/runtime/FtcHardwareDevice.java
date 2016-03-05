@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.errors.FtcInitHardwareDeviceRuntimeException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -30,7 +31,9 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     implements Component, OnDestroyListener, Deleteable, FtcRobotController.HardwareDevice {
 
   private volatile String deviceName = "";
-  protected volatile HardwareDevice hardwareDevice;
+  protected volatile HardwareMap hardwareMap;
+  private volatile HardwareDevice hardwareDevice;
+  private volatile Throwable initHardwareDeviceException;
 
   protected FtcHardwareDevice(ComponentContainer container) {
     super(container.$form());
@@ -65,6 +68,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The manufacturer and name of the device.",
       category = PropertyCategory.BEHAVIOR)
   public String Device() {
+    checkHardwareDevice();
     if (hardwareDevice != null) {
       try {
         String device = hardwareDevice.getDeviceName();
@@ -86,6 +90,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The connection information.",
       category = PropertyCategory.BEHAVIOR)
   public String ConnectionInfo() {
+    checkHardwareDevice();
     if (hardwareDevice != null) {
       try {
         String connectionInfo = hardwareDevice.getConnectionInfo();
@@ -107,6 +112,7 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
   @SimpleProperty(description = "The version.",
       category = PropertyCategory.BEHAVIOR)
   public int Version() {
+    checkHardwareDevice();
     if (hardwareDevice != null) {
       try {
         return hardwareDevice.getVersion();
@@ -121,17 +127,18 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
 
   @SimpleFunction(description = "Return text representing the state of the hardware device.")
   public String ToString() {
-    try {
-      if (hardwareDevice != null) {
+    checkHardwareDevice();
+    if (hardwareDevice != null) {
+      try {
         String s = hardwareDevice.toString();
         if (s != null) {
           return s;
         }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        form.dispatchErrorOccurredEvent(this, "ToString",
+            ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
       }
-    } catch (Throwable e) {
-      e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "ToString",
-          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
     return "";
   }
@@ -156,20 +163,34 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
 
   @Override
   public final void initHardwareDevice(OpMode opMode) {
-    Object hardwareDevice = initHardwareDeviceImpl(opMode.hardwareMap);
-    this.hardwareDevice = (hardwareDevice instanceof HardwareDevice) ?
-        ((HardwareDevice) hardwareDevice) : null;
+    try {
+      initHardwareDeviceException = null;
+      hardwareMap = opMode.hardwareMap;
+      Object hardware = initHardwareDeviceImpl();
+      hardwareDevice = (hardware instanceof HardwareDevice) ?
+          ((HardwareDevice) hardware) : null;
+
+      // hardwareDevice is allowed to be null, but hardware should not be null.
+      if (hardware == null) {
+        throw new NullPointerException();
+      }
+    } catch (Throwable e) {
+      initHardwareDeviceException = e;
+    }
   }
 
   @Override
   public final void clearHardwareDevice() {
     clearHardwareDeviceImpl();
+    hardwareMap = null;
     hardwareDevice = null;
   }
 
   // protected methods
 
-  protected abstract Object initHardwareDeviceImpl(HardwareMap hardwareMap);
+  protected abstract Object initHardwareDeviceImpl();
+
+  protected abstract void dispatchDeviceNotFoundError();
 
   protected abstract void clearHardwareDeviceImpl();
 
@@ -177,7 +198,14 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
     return deviceName;
   }
 
-  protected final void deviceNotFound(String type, DeviceMapping<? extends Object> deviceMapping) {
+  protected final void checkHardwareDevice() {
+    if (initHardwareDeviceException != null) {
+      throw new FtcInitHardwareDeviceRuntimeException(initHardwareDeviceException);
+    }
+  }
+
+  protected final void dispatchDeviceNotFoundError(String type,
+      DeviceMapping<? extends Object> deviceMapping) {
     StringBuilder names = new StringBuilder();
     String delimiter = "";
     for (Map.Entry<String, ? extends Object> entry : deviceMapping.entrySet()) {
@@ -185,6 +213,6 @@ public abstract class FtcHardwareDevice extends AndroidNonvisibleComponent
       delimiter = ", ";
     }
     form.dispatchErrorOccurredEvent(this, "", ErrorMessages.ERROR_FTC_INVALID_DEVICE_NAME,
-        type, getDeviceName(), names.toString());
+        type, deviceName, names.toString());
   }
 }

@@ -58,6 +58,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Enable read mode for a particular I2C device and enable the " +
       "I2cPortIsReady event for the given port.")
   public void EnableI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {
@@ -78,6 +79,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Enable write mode for a particular I2C device and enable the " +
       "I2cPortIsReady event for the given port.")
   public void EnableI2cWriteMode(int physicalPort, int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {
@@ -98,6 +100,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Get a copy of the most recent data read in " +
       "from the device. (byte array)")
   public Object GetCopyOfReadBuffer(int physicalPort) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         byte[] copy = legacyModule.getCopyOfReadBuffer(physicalPort);
@@ -116,6 +119,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Get a copy of the data that is set to be " +
       "written out to the device. (byte array)")
   public Object GetCopyOfWriteBuffer(int physicalPort) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         byte[] copy = legacyModule.getCopyOfWriteBuffer(physicalPort);
@@ -134,6 +138,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
       "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(int physicalPort, Object byteArray) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         if (byteArray instanceof byte[]) {
@@ -154,6 +159,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Set the port action flag; this flag tells the " +
       "controller to send the current data in its buffer to the I2C device.")
   public void SetI2cPortActionFlag(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.setI2cPortActionFlag(port);
@@ -168,6 +174,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Get the port action flag; this flag is set if " +
       "the particular port is busy.")
   public boolean IsI2cPortActionFlagSet(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         return legacyModule.isI2cPortActionFlagSet(port);
@@ -183,6 +190,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Read the local cache in from the I2C Controller.\n" +
       "NOTE: unless this method is called the internal cache isn't updated.")
   public void ReadI2cCacheFromController(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.readI2cCacheFromController(port);
@@ -197,6 +205,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Write the local cache to the I2C Controller.\n" +
       "NOTE: unless this method is called the internal cache isn't updated.")
   public void WriteI2cCacheToController(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.writeI2cCacheToController(port);
@@ -211,6 +220,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description = "Write just the port action flag in the local " +
       "cache to the I2C controller.")
   public void WriteI2cPortFlagOnlyToController(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.writeI2cPortFlagOnlyToController(port);
@@ -224,6 +234,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Is the port in read mode?")
   public boolean IsI2cPortInReadMode(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         return legacyModule.isI2cPortInReadMode(port);
@@ -238,6 +249,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Is the port in write mode?")
   public boolean IsI2cPortInWriteMode(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         return legacyModule.isI2cPortInWriteMode(port);
@@ -252,6 +264,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Determine if a physical port is ready.")
   public boolean IsI2cPortReady(int port) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         return legacyModule.isI2cPortReady(port);
@@ -266,6 +279,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Enable a physical port in analog read mode.")
   public void EnableAnalogReadMode(int physicalPort) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.enableAnalogReadMode(physicalPort);
@@ -279,6 +293,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Enable or disable 9V power on a port.")
   public void Enable9v(int physicalPort, boolean enable) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.enable9v(physicalPort, enable);
@@ -292,6 +307,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
 
   @SimpleFunction(description = "Set the value of digital line 0 or 1 while in analog mode.")
   public void SetDigitalLine(int physicalPort, int line, boolean set) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         legacyModule.setDigitalLine(physicalPort, line, set);
@@ -306,6 +322,7 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   @SimpleFunction(description =
       "Read an analog value from a device and return a byte array; only works in analog read mode.")
   public Object ReadAnalog(int physicalPort) {
+    checkHardwareDevice();
     if (legacyModule != null) {
       try {
         byte[] src = legacyModule.readAnalog(physicalPort);
@@ -333,14 +350,14 @@ public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortR
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      legacyModule = hardwareMap.legacyModule.get(getDeviceName());
-      if (legacyModule == null) {
-        deviceNotFound("LegacyModule", hardwareMap.legacyModule);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    legacyModule = hardwareMap.legacyModule.get(getDeviceName());
     return legacyModule;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("LegacyModule", hardwareMap.legacyModule);
   }
 
   @Override

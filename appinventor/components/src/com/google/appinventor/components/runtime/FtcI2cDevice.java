@@ -52,6 +52,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @SimpleFunction(description = "Enable read mode for the I2C device and enable the " +
       "I2cPortIsReady event.")
   public void EnableI2cReadMode(int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         synchronized (registeredForPortReadyCallbackLock) {
@@ -72,6 +73,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @SimpleFunction(description = "Enable write mode for the I2C device and enable the " +
       "I2cPortIsReady event.")
   public void EnableI2cWriteMode(int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         synchronized (registeredForPortReadyCallbackLock) {
@@ -92,6 +94,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @SimpleFunction(description = "Get a copy of the most recent data read in " +
       "from the device. (byte array)")
   public Object GetCopyOfReadBuffer() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         byte[] copy = i2cDevice.getCopyOfReadBuffer();
@@ -110,6 +113,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @SimpleFunction(description = "Get a copy of the data that is set to be " +
       "written out to the device. (byte array)")
   public Object GetCopyOfWriteBuffer() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         byte[] copy = i2cDevice.getCopyOfWriteBuffer();
@@ -128,6 +132,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
       "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(Object byteArray) {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         if (byteArray instanceof byte[]) {
@@ -147,6 +152,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Set the action flag for this I2C port.")
   public void SetI2cPortActionFlag() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         i2cDevice.setI2cPortActionFlag();
@@ -160,6 +166,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   
   @SimpleFunction(description = "Check whether or not the action flag is set for this I2C port.")
   public boolean IsI2cPortActionFlagSet() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         return i2cDevice.isI2cPortActionFlagSet();
@@ -174,6 +181,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Trigger a read of the I2C cache.")
   public void ReadI2cCacheFromController() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         i2cDevice.readI2cCacheFromController();
@@ -187,6 +195,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Trigger a write of the I2C cache.")
   public void WriteI2cCacheToController() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         i2cDevice.writeI2cCacheToController();
@@ -200,6 +209,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Write only the action flag.")
   public void WriteI2cPortFlagOnlyToController() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         i2cDevice.writeI2cPortFlagOnlyToController();
@@ -213,6 +223,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Query whether or not the port is in Read mode.")
   public boolean IsI2cPortInReadMode() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         return i2cDevice.isI2cPortInReadMode();
@@ -227,6 +238,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Query whether or not this port is in write mode.")
   public boolean IsI2cPortInWriteMode() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         return i2cDevice.isI2cPortInWriteMode();
@@ -241,6 +253,7 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
 
   @SimpleFunction(description = "Query whether or not this I2c port is ready.")
   public boolean IsI2cPortReady() {
+    checkHardwareDevice();
     if (i2cDevice != null) {
       try {
         return i2cDevice.isI2cPortReady();
@@ -263,14 +276,14 @@ public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortRead
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
-      if (i2cDevice == null) {
-        deviceNotFound("I2cDevice", hardwareMap.i2cDevice);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    i2cDevice = hardwareMap.i2cDevice.get(getDeviceName());
     return i2cDevice;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("I2cDevice", hardwareMap.i2cDevice);
   }
 
   @Override

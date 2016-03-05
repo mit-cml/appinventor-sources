@@ -71,6 +71,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Direction(String direction) {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         try {
@@ -111,6 +112,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       "Valid values are Direction_FORWARD or Direction_REVERSE.",
       category = PropertyCategory.BEHAVIOR)
   public String Direction() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         Direction direction = dcMotor.getDirection();
@@ -132,6 +134,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleProperty(description = "The port number.",
       category = PropertyCategory.BEHAVIOR)
   public int PortNumber() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.getPortNumber();
@@ -149,6 +152,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Power(double power) {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         dcMotor.setPower(power);
@@ -166,6 +170,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   @SimpleProperty(description = "The current motor power, between -1 and 1.",
       category = PropertyCategory.BEHAVIOR)
   public double Power() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.getPower();
@@ -180,6 +185,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Whether the motor is busy.")
   public boolean IsBusy() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.isBusy();
@@ -194,6 +200,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Allow the motor to float.")
   public void SetPowerFloat() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         dcMotor.setPowerFloat();
@@ -207,6 +214,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Is motor power set to float?")
   public boolean GetPowerFloat() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.getPowerFloat();
@@ -224,6 +232,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void TargetPosition(int position) {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         dcMotor.setTargetPosition(position);
@@ -242,6 +251,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       "REVERSE, the value will be multiplied by -1.",
       category = PropertyCategory.BEHAVIOR)
   public int TargetPosition() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.getTargetPosition();
@@ -261,6 +271,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       "REVERSE, the value will be multiplied by -1.",
       category = PropertyCategory.BEHAVIOR)
   public int CurrentPosition() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         return dcMotor.getCurrentPosition();
@@ -314,6 +325,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void Mode(String runMode) {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         for (RunMode runModeValue : RunMode.values()) {
@@ -341,6 +353,7 @@ public final class FtcDcMotor extends FtcHardwareDevice {
       "RunMode_RUN_TO_POSITION, or RunMode_RESET_ENCODERS.",
       category = PropertyCategory.BEHAVIOR)
   public String Mode() {
+    checkHardwareDevice();
     if (dcMotor != null) {
       try {
         RunMode mode = dcMotor.getMode();
@@ -359,14 +372,14 @@ public final class FtcDcMotor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      dcMotor = hardwareMap.dcMotor.get(getDeviceName());
-      if (dcMotor == null) {
-        deviceNotFound("DcMotor", hardwareMap.dcMotor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    dcMotor = hardwareMap.dcMotor.get(getDeviceName());
     return dcMotor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("DcMotor", hardwareMap.dcMotor);
   }
 
   @Override

@@ -18,8 +18,9 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
-import com.google.appinventor.client.editor.simple.components.MockFtcRobotController;
 import com.google.appinventor.client.editor.simple.components.MockFirebaseDB;
+import com.google.appinventor.client.editor.simple.components.MockFtcGamepad;
+import com.google.appinventor.client.editor.simple.components.MockFtcRobotController;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
@@ -265,6 +266,9 @@ public final class SimpleComponentDescriptor {
     if (COMPONENT_DATABASE.getNonVisible(name)) {
       if(name.equals(MockFirebaseDB.TYPE)) {
         return new MockFirebaseDB(editor, name,
+            getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
+      } else if (name.equals(MockFtcGamepad.TYPE)) {
+        return new MockFtcGamepad(editor, name,
             getImageFromPath(COMPONENT_DATABASE.getIconName(name)));
       } else {
         return new MockNonVisibleComponent(editor, name,

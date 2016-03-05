@@ -44,9 +44,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * X Acceleration property getter.
    */
-  @SimpleProperty(description = "The X Acceleration, in g's.",
+  @SimpleProperty(description = "The X Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double XAccel() {
+    checkHardwareDevice();
     if (accelerationSensor != null) {
       try {
         Acceleration acceleration = accelerationSensor.getAcceleration();
@@ -65,9 +66,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Y Acceleration property getter.
    */
-  @SimpleProperty(description = "The Y Acceleration, in g's.",
+  @SimpleProperty(description = "The Y Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double YAccel() {
+    checkHardwareDevice();
     if (accelerationSensor != null) {
       try {
         Acceleration acceleration = accelerationSensor.getAcceleration();
@@ -86,9 +88,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Z Acceleration property getter.
    */
-  @SimpleProperty(description = "The Z Acceleration, in g's.",
+  @SimpleProperty(description = "The Z Acceleration, in G's.",
       category = PropertyCategory.BEHAVIOR)
   public double ZAccel() {
+    checkHardwareDevice();
     if (accelerationSensor != null) {
       try {
         Acceleration acceleration = accelerationSensor.getAcceleration();
@@ -107,9 +110,10 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (accelerationSensor != null) {
       try {
         String status = accelerationSensor.status();
@@ -128,14 +132,14 @@ public final class FtcAccelerationSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
-      if (accelerationSensor == null) {
-        deviceNotFound("AccelerationSensor", hardwareMap.accelerationSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    accelerationSensor = hardwareMap.accelerationSensor.get(getDeviceName());
     return accelerationSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("AccelerationSensor", hardwareMap.accelerationSensor);
   }
 
   @Override

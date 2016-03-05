@@ -15,7 +15,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.hardware.MatrixServoController;
+import com.qualcomm.hardware.matrix.MatrixServoController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoController.PwmStatus;
@@ -63,6 +63,7 @@ public final class FtcServoController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "PWM enable.")
   public void PwmEnable() {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         servoController.pwmEnable();
@@ -76,6 +77,7 @@ public final class FtcServoController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "PWM disable.")
   public void PwmDisable() {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         servoController.pwmDisable();
@@ -90,6 +92,7 @@ public final class FtcServoController extends FtcHardwareDevice {
   @SimpleFunction(description = "Get the PWM status.\n" +
       "Valid values are PwmStatus_ENABLED or PwmStatus_DISABLED.")
   public String GetPwmStatus() {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         PwmStatus pwmStatus = servoController.getPwmStatus();
@@ -107,6 +110,7 @@ public final class FtcServoController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Set the position of a servo at the given channel.")
   public void SetServoPosition(int channel, double position) {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         servoController.setServoPosition(channel, position);
@@ -120,6 +124,7 @@ public final class FtcServoController extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Get the position of a servo at a given channel.")
   public double GetServoPosition(int channel) {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         return servoController.getServoPosition(channel);
@@ -135,6 +140,7 @@ public final class FtcServoController extends FtcHardwareDevice {
   @SimpleFunction(description = "Set a position and a speed for a servo. The speed parameter is " +
       "ignored if it is not supported by the controller.")
   public void SetServoPositionAndSpeed(int channel, double position, int speed) {
+    checkHardwareDevice();
     if (servoController != null) {
       try {
         if (servoController instanceof MatrixServoController) {
@@ -153,14 +159,14 @@ public final class FtcServoController extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      servoController = hardwareMap.servoController.get(getDeviceName());
-      if (servoController == null) {
-        deviceNotFound("ServoController", hardwareMap.servoController);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    servoController = hardwareMap.servoController.get(getDeviceName());
     return servoController;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("ServoController", hardwareMap.servoController);
   }
 
   @Override

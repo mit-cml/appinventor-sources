@@ -133,19 +133,68 @@
 
   <target name="CopyFtcRes"
           depends="init,components_FtcAars">
+    <!-- We need to rename the values*.xml resource files from FtcCommon,
+         Hardware, and RobotCore. -->
     <property name="ftcres.dir" location="${class.dir}/BuildServer/files/ftcres" />
     <mkdir dir="${ftcres.dir}" />
-    <!-- Copy resources for FtcCommon, except for any files that are also in lib/ftc/res -->
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/FtcCommon-\2"/>
+    </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/Hardware/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/Hardware-\2"/>
+    </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/RobotCore/res" includes="**/*" />
+      <regexpmapper from="^(.*)/(values[^/]*\.xml)$$" to="\1/RobotCore-\2"/>
+    </copy>
+    <!-- In values/FtcCommon-values.xml, change app_name to title_activity_configuration -->
+    <replaceregexp byline="true">
+      <regexp pattern="app_name" />
+      <substitution expression="title_activity_configuration"/>
+      <fileset dir="${ftcres.dir}">
+        <include name="values/FtcCommon-values.xml"/>
+      </fileset>
+    </replaceregexp>
+    <!-- In values/RobotCore-values.xml, comment out the app_name string entry -->
+    <replaceregexp byline="true">
+      <regexp pattern="&lt;(string name=&quot;app_name&quot;&gt;.*&lt;/string)&gt;" />
+      <substitution expression="&lt;!-- \1 --&gt;"/>
+      <fileset dir="${ftcres.dir}">
+        <include name="values/RobotCore-values.xml"/>
+      </fileset>
+    </replaceregexp>
+    <!-- In values/RobotCore-values.xml, comment out all color entries -->
+    <replaceregexp byline="true">
+      <regexp pattern="&lt;(color name=&quot;.*&quot;&gt;.*&lt;/color)&gt;" />
+      <substitution expression="&lt;!-- \1 --&gt;"/>
+      <fileset dir="${ftcres.dir}">
+        <include name="values/RobotCore-values.xml"/>
+      </fileset>
+    </replaceregexp>
+    <!-- Copy the modified files to classes/BuildServer/files/ftcres, but don't
+         copy any files that also exist in lib/ftc/res -->
     <fileset dir="${lib.dir}/ftc/res" id="libftcres.fileset">
       <include name="**/*" />
     </fileset>
     <pathconvert dirsep="/" pathsep="," property="libftcres.filelist" refid="libftcres.fileset">
       <map from="${lib.dir}/ftc/res/" to="" />
     </pathconvert>
+    <!-- Now copy the rest of the resources for FtcCommon, Hardware, and RobotCore -->
     <copy todir="${ftcres.dir}" flatten="false">
       <fileset dir="${build.dir}/components/ftc/FtcCommon/res" includes="**/*"
-               excludes="${libftcres.filelist}" />
+               excludes="**/values*/values*.xml,${libftcres.filelist}" />
     </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/Hardware/res" includes="**/*"
+               excludes="**/values*/values*.xml,${libftcres.filelist}" />
+    </copy>
+    <copy todir="${ftcres.dir}" flatten="false">
+      <fileset dir="${build.dir}/components/ftc/RobotCore/res" includes="**/*"
+               excludes="**/values*/values*.xml,${libftcres.filelist}" />
+    </copy>
+    <!-- Now copy the resources from lib/ftc/res -->
     <copy todir="${ftcres.dir}" flatten="false">
       <fileset dir="${lib.dir}/ftc/res" includes="**/*" />
     </copy>

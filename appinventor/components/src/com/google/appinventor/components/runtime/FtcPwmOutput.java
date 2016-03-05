@@ -45,6 +45,7 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void PulseWidthOutputTime(int time) {
+    checkHardwareDevice();
     if (pwmOutput != null) {
       try {
         pwmOutput.setPulseWidthOutputTime(time);
@@ -63,6 +64,7 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
       "Typically set to a value between 750 and 2,250 to control a servo.",
       category = PropertyCategory.BEHAVIOR)
   public int PulseWidthOutputTime() {
+    checkHardwareDevice();
     if (pwmOutput != null) {
       try {
         return pwmOutput.getPulseWidthOutputTime();
@@ -80,6 +82,7 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void PulseWidthPeriod(int period) {
+    checkHardwareDevice();
     if (pwmOutput != null) {
       try {
         pwmOutput.setPulseWidthPeriod(period);
@@ -98,6 +101,7 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
       "Typically set to 20,000 to control servo.",
       category = PropertyCategory.BEHAVIOR)
   public int PulseWidthPeriod() {
+    checkHardwareDevice();
     if (pwmOutput != null) {
       try {
         return pwmOutput.getPulseWidthPeriod();
@@ -113,14 +117,14 @@ public final class FtcPwmOutput extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
-      if (pwmOutput == null) {
-        deviceNotFound("PWMOutput", hardwareMap.pwmOutput);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    pwmOutput = hardwareMap.pwmOutput.get(getDeviceName());
     return pwmOutput;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("PWMOutput", hardwareMap.pwmOutput);
   }
 
   @Override

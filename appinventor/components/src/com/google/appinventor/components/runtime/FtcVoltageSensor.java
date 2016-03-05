@@ -43,9 +43,10 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
   /**
    * Voltage property getter.
    */
-  @SimpleProperty(description = "The Voltage.",
+  @SimpleProperty(description = "The voltage.",
       category = PropertyCategory.BEHAVIOR)
   public double Voltage() {
+    checkHardwareDevice();
     if (voltageSensor != null) {
       try {
         return voltageSensor.getVoltage();
@@ -61,14 +62,14 @@ public final class FtcVoltageSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
-      if (voltageSensor == null) {
-        deviceNotFound("VoltageSensor", hardwareMap.voltageSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    voltageSensor = hardwareMap.voltageSensor.get(getDeviceName());
     return voltageSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("VoltageSensor", hardwareMap.voltageSensor);
   }
 
   @Override

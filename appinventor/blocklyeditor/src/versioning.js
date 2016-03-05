@@ -1523,7 +1523,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "FtcGamepad": {
 
     // This is the initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // The Type property was added.
+    2: "noUpgrade"
 
   }, // End FtcGamepad upgraders
 
@@ -1673,7 +1676,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // The LogDevices function was added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // The TelemetrySorted property was added.
+    3: "noUpgrade"
 
   }, // End FtcRobotController upgraders
 

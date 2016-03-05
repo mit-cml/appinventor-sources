@@ -14,7 +14,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.hardware.HiTechnicNxtTouchSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtTouchSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -48,6 +48,7 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
       "for some touch sensors this value will only ever be 0 or 1.",
       category = PropertyCategory.BEHAVIOR)
   public double Value() {
+    checkHardwareDevice();
     if (touchSensor != null) {
       try {
         return touchSensor.getValue();
@@ -66,6 +67,7 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "Return true if the touch sensor is being pressed.",
       category = PropertyCategory.BEHAVIOR)
   public boolean IsPressed() {
+    checkHardwareDevice();
     if (touchSensor != null) {
       try {
         return touchSensor.isPressed();
@@ -84,6 +86,7 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
   @SimpleProperty(description = "The status, if supported by the touch sensor.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (touchSensor != null) {
       try {
         String status = null;
@@ -105,14 +108,14 @@ public final class FtcTouchSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      touchSensor = hardwareMap.touchSensor.get(getDeviceName());
-      if (touchSensor == null) {
-        deviceNotFound("TouchSensor", hardwareMap.touchSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    touchSensor = hardwareMap.touchSensor.get(getDeviceName());
     return touchSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("TouchSensor", hardwareMap.touchSensor);
   }
 
   @Override

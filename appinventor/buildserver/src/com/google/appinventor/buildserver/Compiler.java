@@ -95,8 +95,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
-  private static final String DEFAULT_VERSION_CODE = "1";
-  private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_VERSION_CODE = "7";    // Please keep consistent with Form.java
+  private static final String DEFAULT_VERSION_NAME = "1.6";  // Please keep consistent with Form.java
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";
@@ -443,12 +443,12 @@ public final class Compiler {
         if (isMain) {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
-        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
-          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
-        }
         out.write("      </intent-filter>\n");
 
         if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
+          out.write("      </intent-filter>\n");
           out.write("      <meta-data\n");
           out.write("        android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"\n");
           out.write("        android:resource=\"@xml/device_filter\" />\n");
@@ -528,7 +528,7 @@ public final class Compiler {
         out.write("    </activity>\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.configuration.FtcConfigurationActivity\"\n");
-        out.write("      android:label=\"@string/AI_app_name\"\n");
+        out.write("      android:label=\"@string/title_activity_configuration\"\n");
         out.write("      android:configChanges=\"orientation|screenSize\" />\n");
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.ConfigWifiDirectActivity\"\n");
@@ -739,6 +739,7 @@ public final class Compiler {
       File genDir = createDirectory(buildDir, "gen");
       String[] packages = {
         "com.qualcomm.ftccommon",
+        "com.qualcomm.hardware",
         "com.qualcomm.robotcore"
       };
       List<String> genFileNames = Lists.newArrayListWithCapacity(packages.length);

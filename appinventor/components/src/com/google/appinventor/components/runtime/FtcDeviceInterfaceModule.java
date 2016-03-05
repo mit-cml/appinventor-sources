@@ -62,6 +62,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "D7-D0 channel pins. If a particular pin is in output mode, the current output state will " +
       "be reported.")
   public int GetDigitalInputStateByte() {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getDigitalInputStateByte() & 0xFF;
@@ -77,6 +78,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "If a particular bit is set to one, the corresponding channel " +
       "pin will be in output mode; else it will be in input mode.")
   public void SetDigitalIOControlByte(int input) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setDigitalIOControlByte((byte) input);
@@ -90,6 +92,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Get the digital IO control byte.")
   public int GetDigitalIOControlByte() {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getDigitalIOControlByte() & 0xFF;
@@ -105,6 +108,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "If a particular control field bit is set to one, the channel " +
       "pin will be in output mode and will reflect the value of the corresponding field bit.")
   public void SetDigitalOutputByte(int input) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setDigitalOutputByte((byte) input);
@@ -121,6 +125,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "is set to one, the channel pin will be in output mode and will reflect the value of the " +
       "corresponding D7-D0 output set field bit.")
   public int GetDigitalOutputStateByte() {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getDigitalOutputStateByte() & 0xFF;
@@ -135,6 +140,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Indicates whether the LED on the given channel is on or not.")
   public boolean GetLEDState(int channel) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getLEDState(channel);
@@ -149,6 +155,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Turn on or off a particular LED.")
   public void SetLED(int channel, boolean state) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setLED(channel, state);
@@ -163,6 +170,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleProperty(description = "Get the USB serial number of this device.",
       category = PropertyCategory.BEHAVIOR)
   public String SerialNumber() {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         SerialNumber serialNumber = deviceInterfaceModule.getSerialNumber();
@@ -201,6 +209,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Get the mode of a digital channel.\n" +
       "Valid values are Mode_INPUT or Mode_OUTPUT.")
   public String GetDigitalChannelMode(int channel) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         Mode mode = deviceInterfaceModule.getDigitalChannelMode(channel);
@@ -219,6 +228,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Set the mode of a digital channel.\n" +
       "Valid values are Mode_INPUT or Mode_OUTPUT.")
   public void SetDigitalChannelMode(int channel, String mode) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         for (Mode modeValue : Mode.values()) {
@@ -242,6 +252,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "If it's in OUTPUT mode, this will return the output bit.\n" + 
       "If the channel is in INPUT mode, this will return the input bit.")
   public boolean GetDigitalChannelState(int channel) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getDigitalChannelState(channel);
@@ -257,6 +268,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Set the state of a digital channel.\n" +
       "The behavior of this method is undefined for digital channels in INPUT mode.")
   public void SetDigitalChannelState(int channel, boolean state) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setDigitalChannelState(channel, state);
@@ -272,6 +284,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Return the current ADC results from the A0-A7 channel input pins.")
   public int GetAnalogInputValue(int channel) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getAnalogInputValue(channel);
@@ -289,6 +302,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Set the pulse width output time for this channel.\n" +
       "Typically set to a value between 750 and 2,250 to control a servo.")
   public void SetPulseWidthOutputTime(int port, int time) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setPulseWidthOutputTime(port, time);
@@ -303,6 +317,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Set the pulse width output period.\n" +
       "Typically set to 20,000 to control servo.")
   public void SetPulseWidthPeriod(int port, int period) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setPulseWidthPeriod(port, period);
@@ -317,6 +332,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Gets the pulse width for the channel output in " +
       "units of 1 microsecond.")
   public int GetPulseWidthOutputTime(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getPulseWidthOutputTime(port);
@@ -332,6 +348,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Gets the pulse repetition period for the " +
       "channel output in units of 1 microsecond.")
   public int GetPulseWidthPeriod(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.getPulseWidthPeriod(port);
@@ -349,6 +366,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Enable read mode for a particular I2C device and enable the " +
       "I2cPortIsReady event for the given port.")
   public void EnableI2cReadMode(int physicalPort, int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {
@@ -369,6 +387,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Enable write mode for a particular I2C device and enable the " +
       "I2cPortIsReady event for the given port.")
   public void EnableI2cWriteMode(int physicalPort, int i2cAddress, int memAddress, int length) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         synchronized (portsRegisteredForPortReadyCallbackLock) {
@@ -389,6 +408,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Get a copy of the most recent data read in " +
       "from the device. (byte array)")
   public Object GetCopyOfReadBuffer(int physicalPort) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         byte[] copy = deviceInterfaceModule.getCopyOfReadBuffer(physicalPort);
@@ -407,6 +427,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Get a copy of the data that is set to be " +
       "written out to the device. (byte array)")
   public Object GetCopyOfWriteBuffer(int physicalPort) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         byte[] copy = deviceInterfaceModule.getCopyOfWriteBuffer(physicalPort);
@@ -425,6 +446,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Copy a byte array into the buffer that is set " +
       "to be written out to the device.")
   public void CopyBufferIntoWriteBuffer(int physicalPort, Object byteArray) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         if (byteArray instanceof byte[]) {
@@ -445,6 +467,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Set the port action flag; this flag tells the " +
       "controller to send the current data in its buffer to the I2C device.")
   public void SetI2cPortActionFlag(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setI2cPortActionFlag(port);
@@ -459,6 +482,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Get the port action flag; this flag is set if " +
       "the particular port is busy.")
   public boolean IsI2cPortActionFlagSet(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.isI2cPortActionFlagSet(port);
@@ -474,6 +498,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Read the local cache in from the I2C Controller.\n" +
       "NOTE: unless this method is called the internal cache isn't updated.")
   public void ReadI2cCacheFromController(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.readI2cCacheFromController(port);
@@ -488,6 +513,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Write the local cache to the I2C Controller.\n" +
       "NOTE: unless this method is called the internal cache isn't updated.")
   public void WriteI2cCacheToController(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.writeI2cCacheToController(port);
@@ -502,6 +528,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Write just the port action flag in the local " +
       "cache to the I2C controller.")
   public void WriteI2cPortFlagOnlyToController(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.writeI2cPortFlagOnlyToController(port);
@@ -515,6 +542,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Is the port in read mode?")
   public boolean IsI2cPortInReadMode(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.isI2cPortInReadMode(port);
@@ -529,6 +557,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Is the port in write mode?")
   public boolean IsI2cPortInWriteMode(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.isI2cPortInWriteMode(port);
@@ -543,6 +572,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
 
   @SimpleFunction(description = "Determine if a physical port is ready.")
   public boolean IsI2cPortReady(int port) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         return deviceInterfaceModule.isI2cPortReady(port);
@@ -561,6 +591,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "If mode == 0: takes input from -1023-1023, output in the range -4 to +4 volts.\n" +
       "If mode == 1, 2, or 3: takes input from 0-1023, output in the range 0 to 8 volts.")
   public void SetAnalogOutputVoltage(int port, int voltage) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setAnalogOutputVoltage(port, voltage);
@@ -575,6 +606,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   @SimpleFunction(description = "Sets the channel output frequency in the range 1-5,000 Hz in " +
       "mode 1, 2 or 3.")
   public void SetAnalogOutputFrequency(int port, int frequency) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setAnalogOutputFrequency(port, frequency);
@@ -592,6 +624,7 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
       "Mode 2: Square wave output. Range: 0 - 8V.\n" +
       "Mode 3: Triangle wave output. Range: 0 - 8V.")
   public void SetAnalogOutputMode(int port, int mode) {
+    checkHardwareDevice();
     if (deviceInterfaceModule != null) {
       try {
         deviceInterfaceModule.setAnalogOutputMode(port, (byte) mode);
@@ -613,14 +646,14 @@ public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
-      if (deviceInterfaceModule == null) {
-        deviceNotFound("DeviceInterfaceModule", hardwareMap.deviceInterfaceModule);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get(getDeviceName());
     return deviceInterfaceModule;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("DeviceInterfaceModule", hardwareMap.deviceInterfaceModule);
   }
 
   @Override

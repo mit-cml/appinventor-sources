@@ -3718,9 +3718,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TargetPositionProperties();
 
+  @DefaultMessage("TelemetrySorted")
+  @Description("")
+  String TelemetrySortedProperties();
+
   @DefaultMessage("Time")
   @Description("")
   String TimeProperties();
+
+  @DefaultMessage("Type")
+  @Description("")
+  String TypeProperties();
 
   @DefaultMessage("UltrasonicLevel")
   @Description("")

@@ -42,7 +42,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 <resources>
 
-  <string name="AI_app_name">FTC Robot Controller</string>
+  <string name="app_name">FTC Robot Controller</string>
   <string name="ok">OK</string>
 
   <string name="AI_pref_configure_robot_title">Robot Configuration Settings</string>

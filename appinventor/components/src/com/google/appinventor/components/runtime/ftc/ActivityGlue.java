@@ -159,6 +159,10 @@ class ActivityGlue {
     return thisActivity.getString(id);
   }
 
+  Object getSystemService(String s) {
+    return thisActivity.getSystemService(s);
+  }
+
   Window getWindow() {
     return thisActivity.getWindow();
   }

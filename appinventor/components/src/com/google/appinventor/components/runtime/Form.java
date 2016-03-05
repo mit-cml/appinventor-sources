@@ -179,6 +179,7 @@ public class Form extends Activity
   // Listeners for options menu.
   private final Set<OnCreateOptionsMenuListener> onCreateOptionsMenuListeners = Sets.newHashSet();
   private final Set<OnOptionsItemSelectedListener> onOptionsItemSelectedListeners = Sets.newHashSet();
+  private boolean omitExitMenu;
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   // This is passed directly in the Repl.
@@ -663,6 +664,10 @@ public class Form extends Activity
 
   public void registerForOnOptionsItemSelected(OnOptionsItemSelectedListener component) {
     onOptionsItemSelectedListeners.add(component);
+  }
+
+  public void omitExitMenu() {
+    omitExitMenu = true;
   }
 
   public Dialog onCreateDialog(int id) {
@@ -1355,7 +1360,7 @@ public class Form extends Activity
    * @param vCode the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-    defaultValue = "5")
+    defaultValue = "7")  // Please keep consistent with Compiler.java
   @SimpleProperty(userVisible = false,
     description = "An integer value which must be incremented each time a new Android "
     +  "Application Package File (APK) is created for the Google Play Store.")
@@ -1369,7 +1374,7 @@ public class Form extends Activity
    * @param vName the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "1.25")
+    defaultValue = "1.6")  // Please keep consistent with Compiler.java
   @SimpleProperty(userVisible = false,
     description = "A string which can be changed to allow Google Play "
     + "Store users to distinguish between different versions of the App.")
@@ -1765,8 +1770,9 @@ public class Form extends Activity
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu);
     // add the menu items
-    // Comment out the next line if we don't want the exit button
-    //addExitButtonToMenu(menu);
+    if (!omitExitMenu) {
+      addExitButtonToMenu(menu);
+    }
     addAboutInfoToMenu(menu);
     for (OnCreateOptionsMenuListener onCreateOptionsMenuListener : onCreateOptionsMenuListeners) {
       onCreateOptionsMenuListener.onCreateOptionsMenu(menu);

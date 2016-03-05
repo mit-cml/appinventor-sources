@@ -15,8 +15,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import com.qualcomm.hardware.ModernRoboticsI2cGyro;
-import com.qualcomm.hardware.ModernRoboticsI2cGyro.HeadingMode;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro.HeadingMode;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -47,6 +47,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature. " +
       "For the Modern Robotics device this will reset the Z axis heading.")
   public void Calibrate() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         gyroSensor.calibrate();
@@ -61,6 +62,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   @SimpleFunction(description = "Is the gyro performing a calibration operation? " +
       "Not all gyro sensors support this feature.")
   public boolean IsCalibrating() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.isCalibrating();
@@ -99,6 +101,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public String HeadingMode() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         if (gyroSensor instanceof ModernRoboticsI2cGyro) {
@@ -121,6 +124,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
    */
   @SimpleProperty
   public void HeadingMode(String headingMode) {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         for (HeadingMode headingModeValue : HeadingMode.values()) {
@@ -150,6 +154,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int Heading() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.getHeading();
@@ -169,6 +174,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public double Rotation() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.getRotation();
@@ -188,6 +194,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int RawX() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.rawX();
@@ -207,6 +214,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int RawY() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.rawY();
@@ -226,6 +234,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
       "Not all gyro sensors support this feature.",
       category = PropertyCategory.BEHAVIOR)
   public int RawZ() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         return gyroSensor.rawZ();
@@ -241,6 +250,7 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   @SimpleFunction(description = "Set the integrated Z axis to zero. " +
       "Not all gyro sensors support this feature.")
   public void ResetZAxisIntegrator() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         gyroSensor.resetZAxisIntegrator();
@@ -255,9 +265,10 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   /**
    * Status property getter.
    */
-  @SimpleProperty(description = "The Status.",
+  @SimpleProperty(description = "The status.",
       category = PropertyCategory.BEHAVIOR)
   public String Status() {
+    checkHardwareDevice();
     if (gyroSensor != null) {
       try {
         String status = gyroSensor.status();
@@ -276,14 +287,14 @@ public final class FtcGyroSensor extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
-      if (gyroSensor == null) {
-        deviceNotFound("GyroSensor", hardwareMap.gyroSensor);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    gyroSensor = hardwareMap.gyroSensor.get(getDeviceName());
     return gyroSensor;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("GyroSensor", hardwareMap.gyroSensor);
   }
 
   @Override

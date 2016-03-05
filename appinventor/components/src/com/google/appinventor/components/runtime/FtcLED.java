@@ -41,6 +41,7 @@ public final class FtcLED extends FtcHardwareDevice {
 
   @SimpleFunction(description = "Turn on or turn off the LED light.")
   public void Enable(boolean set) {
+    checkHardwareDevice();
     if (led != null) {
       try {
         led.enable(set);
@@ -55,14 +56,14 @@ public final class FtcLED extends FtcHardwareDevice {
   // FtcHardwareDevice implementation
 
   @Override
-  protected Object initHardwareDeviceImpl(HardwareMap hardwareMap) {
-    if (hardwareMap != null) {
-      led = hardwareMap.led.get(getDeviceName());
-      if (led == null) {
-        deviceNotFound("LED", hardwareMap.led);
-      }
-    }
+  protected Object initHardwareDeviceImpl() {
+    led = hardwareMap.led.get(getDeviceName());
     return led;
+  }
+
+  @Override
+  protected void dispatchDeviceNotFoundError() {
+    dispatchDeviceNotFoundError("LED", hardwareMap.led);
   }
 
   @Override

@@ -1,10 +1,10 @@
 License information
 
 ================================================================================
-FtcDriverStation, FtcRobotController, FtcCommon, Hardware, and RobotCore have
-the following license:
+FtcDriverStation, FtcRobotController, FtcCommon, Hardware, RobotCore
+ModernRobotics, Analytics, and WirelessP2p have the following license:
 
-Copyright (c) 2014, 2015 Qualcomm Technologies Inc
+Copyright (c) 2014-2016 Qualcomm Technologies Inc
 
 All rights reserved.
 
@@ -38,29 +38,4 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-Copyright (c) 2014, 2015 Qualcomm Technologies Inc
-
-================================================================================
-ModernRobotics, Analitics, and WirelessP2p have the following license:
-
-Copyright (c) 2014, 2015 Qualcomm Technologies, Inc. All rights reserved.
-Confidential & Proprietary - Qualcomm Technologies, Inc. ("QTI")
-
-The party receiving this software directly from QTI (the "Recipient") may use
-this software as reasonably necessary solely for the purposes set forth in the
-agreement between the Recipient and QTI (the "Agreement"). The software may be
-used in source code form solely by the Recipient's employees (if any) authorized
-by the Agreement. Unless expressly authorized in the Agreement, the Recipient
-may not sublicense, assign, transfer or otherwise provide the source code to any
-third party. Qualcomm Technologies, Inc. retains all ownership rights in and to
-the software
-
-Qualcomm Technologies Inc., will periodically collect anonymous information
-about the device this software is installed on such as the make, model, and
-software versions, but no information that identifies you.
-
-This notice supersedes any other QTI notices contained within the software
-except copyright notices indicating different years of publication for different
-portions of the software. This notice does not supersede the application of any
-third party copyright notice to that third party's code
 
