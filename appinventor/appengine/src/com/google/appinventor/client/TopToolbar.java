@@ -225,12 +225,14 @@ public class TopToolbar extends Composite {
           new WindowOpenAction(feedbackUrl)));
       helpItems.add(null);
     }
+
     if (config.getFtcCompanion()) {
       helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
           new AboutCompanionAction()));
       helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONUPDATE, MESSAGES.companionUpdate(),
           new CompanionUpdateAction()));
     }
+
     helpItems.add(new DropDownItem(WIDGET_NAME_SHOWSPLASH, MESSAGES.showSplashMenuItem(),
         new ShowSplashAction()));
 

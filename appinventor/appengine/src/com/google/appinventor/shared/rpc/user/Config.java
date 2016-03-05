@@ -174,4 +174,5 @@ public class Config implements IsSerializable, Serializable {
   public void setFirebaseURL(String url) {
     firebaseURL = url;
   }
+
 }

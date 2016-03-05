@@ -528,6 +528,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE,
         "The specified read mode \"%s\" is not valid. The valid modes are " +
         "REPEAT, BALANCED, and ONLY_ONCE.");
+
     // Image errors
     errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
         "The version of Android on this device does not support image rotation.");

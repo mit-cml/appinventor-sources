@@ -2020,7 +2020,7 @@ public interface OdeMessages extends Messages {
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
 
-  // Used in client/editor/simple/components/MockHVarrangement.java
+  // Used in client/editor/simple/components/MockHVArrangement.java
 
   @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
@@ -6671,14 +6671,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String YandexTranslateHelpStringComponentPallette();
 
-  @DefaultMessage("A non-visible component allowing you to store data on a Web database powered by Firebase. " +
-      "This allows the users of your app to share data with each other. " +
-      "By default, data will be stored in App Inventor''s shared Firebase database. " +
-      "Otherwise, you can specify the URL for your own Firebase in the \"FirebaseURL\" property. " +
-      "Learn more at <a target=\"_blank\" href=\"http://www.firebase.com\">Firebase.com</a>.")
-  @Description("")
-  String FirebaseDBHelpStringComponentPallette();
-
   // FIRST Tech Challenge component help strings
   @DefaultMessage("A component for an acceleration sensor of an FTC robot.")
   @Description("")
@@ -6800,6 +6792,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FtcVoltageSensorHelpStringComponentPallette();
 
+  @DefaultMessage("A non-visible component allowing you to store data on a Web database powered by Firebase. " +
+      "This allows the users of your app to share data with each other. " +
+      "By default, data will be stored in App Inventor''s shared Firebase database. " +
+      "Otherwise, you can specify the URL for your own Firebase in the \"FirebaseURL\" property. " +
+      "Learn more at <a target=\"_blank\" href=\"http://www.firebase.com\">Firebase.com</a>.")
+  @Description("")
+  String FirebaseDBHelpStringComponentPallette();
 
   //Ode.java messages
   @DefaultMessage("Welcome to App Inventor 2!")
@@ -7149,4 +7148,5 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
+
 }
