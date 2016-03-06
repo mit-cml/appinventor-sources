@@ -209,6 +209,8 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
       }
     } else {
       useDefault = false;
+      url = url + (url.endsWith("/") ? "" : "/");
+
       if (firebaseURL.equals(url)) {
         return;                 // Nothing to do
       } else {
@@ -291,7 +293,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     firebaseToken = JWT;
     resetListener();
   }
-  
+
   private void resetListener() {
     // remove listeners from the old Firebase path
     if (myFirebase != null) {
@@ -421,7 +423,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     // Invoke the application's "GotValue" event handler
     EventDispatcher.dispatchEvent(this, "GotValue", tag, value);
   }
-  
+
   /**
    * Indicates that the data in the Firebase has changed.
    * Launches an event with the tag and value that have been updated.
