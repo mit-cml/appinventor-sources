@@ -79,7 +79,7 @@ public final class FtcI2cDeviceSynch extends FtcHardwareDevice {
   }
 
   @SimpleFunction(description = "Initialize this I2C device")
-  public void Initialize(int i2cAddress, int start, int count, String readMode) {
+  public void Initialize(int i2cAddress) {
     checkHardwareDevice();
     try {
       if (i2cDeviceSynchImpl != null) {
@@ -90,9 +90,21 @@ public final class FtcI2cDeviceSynch extends FtcHardwareDevice {
       if (i2cDevice != null) {
         i2cDeviceSynchImpl = new I2cDeviceSynchImpl(i2cDevice, i2cAddress, false);
         i2cDeviceSynch = i2cDeviceSynchImpl;
+        i2cDeviceSynch.engage();
       }
+    } catch (Throwable e) {
+      e.printStackTrace();
+      form.dispatchErrorOccurredEvent(this, "Initialize",
+          ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
+    }
+  }
 
-      if (i2cDeviceSynch != null && count > 0) {
+  @SimpleFunction(description = "Set the set of registers that we will read and read and read " +
+      "again on every hardware cycle.")
+  public void SetReadWindow(int start, int count, String readMode) {
+    checkHardwareDevice();
+    try {
+      if (i2cDeviceSynch != null) {
         for (ReadMode readModeValue : ReadMode.values()) {
           if (readModeValue.toString().equalsIgnoreCase(readMode)) {
             ReadWindow readWindow = new ReadWindow(start, count, readModeValue);
@@ -100,12 +112,12 @@ public final class FtcI2cDeviceSynch extends FtcHardwareDevice {
             break;
           }
         }
-        form.dispatchErrorOccurredEvent(this, "Initialize",
+        form.dispatchErrorOccurredEvent(this, "SetReadWindow",
             ErrorMessages.ERROR_FTC_INVALID_I2C_DEVICE_SYNCH_READ_MODE, readMode);
       }
     } catch (Throwable e) {
       e.printStackTrace();
-      form.dispatchErrorOccurredEvent(this, "Initialize",
+      form.dispatchErrorOccurredEvent(this, "SetReadWindow",
           ErrorMessages.ERROR_FTC_UNEXPECTED_ERROR, e.toString());
     }
   }
@@ -330,7 +342,7 @@ public final class FtcI2cDeviceSynch extends FtcHardwareDevice {
     return false;
   }
 
-  @SimpleFunction
+  @SimpleFunction(description = "Set the heartbeat action read window.")
   public void SetHeartbeatActionReadWindow(int start, int count, String readMode) {
     checkHardwareDevice();
     if (i2cDeviceSynch != null) {

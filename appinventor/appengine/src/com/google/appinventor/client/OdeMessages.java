@@ -6349,6 +6349,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SetPulseWidthPeriodMethods();
 
+  @DefaultMessage("SetReadWindow")
+  @Description("")
+  String SetReadWindowMethods();
+
   @DefaultMessage("SetServoPosition")
   @Description("")
   String SetServoPositionMethods();
