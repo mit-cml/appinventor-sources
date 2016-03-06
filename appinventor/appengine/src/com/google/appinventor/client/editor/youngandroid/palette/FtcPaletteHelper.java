@@ -43,7 +43,7 @@ class FtcPaletteHelper extends OrderedPaletteHelper {
     ftcComponentNames.add("FtcAnalogInput");
     ftcComponentNames.add("FtcAnalogOutput");
     ftcComponentNames.add("FtcDigitalChannel");
-    ftcComponentNames.add("FtcI2cDeviceSync");
+    ftcComponentNames.add("FtcI2cDeviceSynch");
     ftcComponentNames.add("FtcI2cDeviceReader");
     ftcComponentNames.add("FtcI2cDevice");
     ftcComponentNames.add("FtcPwmOutput");
