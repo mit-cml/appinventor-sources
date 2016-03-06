@@ -599,6 +599,15 @@ public interface OdeMessages extends Messages {
   @Description("Link for Report an Issue form")
   String feedbackMenuItem();
 
+  //Download
+  @DefaultMessage("Download")
+  @Description("Label for the Download menu")
+  String downloadTabName();
+
+  @DefaultMessage("Driver Station")
+  @Description("Download the FTC driver station app")
+  String downloadDriverStationMenuItem();
+
   //Admin
   @DefaultMessage("Admin")
   @Description("Label of the button leading to admin functionality")

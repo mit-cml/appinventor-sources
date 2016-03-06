@@ -95,6 +95,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
+  private static final String DEFAULT_JARSIGNER_ALIAS = "AndroidKey";
+
   private static final String DEFAULT_VERSION_CODE = "7";      // Please keep consistent with Form.java
   private static final String DEFAULT_VERSION_NAME = "1.6.1";  // Please keep consistent with Form.java
   private static final String DEFAULT_APP_NAME = "";
@@ -176,6 +178,8 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForCompanion;
+  private final boolean isFtcRobotController;
+  private final String packageName;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
@@ -315,7 +319,6 @@ public final class Compiler {
   private boolean writeAndroidManifest(File manifestFile, Set<String> permissionsNeeded) {
     // Create AndroidManifest.xml
     String mainClass = project.getMainClass();
-    String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
@@ -357,7 +360,7 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
-      } else if (componentTypes.contains("FtcRobotController")) {
+      } else if (isFtcRobotController) {
         out.write("  <uses-feature android:name=\"android.hardware.usb.accessory\" />\n");
       }
 
@@ -389,7 +392,7 @@ public final class Compiler {
       } else {
         out.write("android:label=\"" + aName + "\" ");
       }
-      if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+      if (isFtcRobotController) {
         out.write("android:icon=\"@drawable/ic_launcher\" ");
         out.write("android:theme=\"@style/AI_AppTheme\"\n");
       } else {
@@ -407,11 +410,12 @@ public final class Compiler {
         // String screenName = formClassName.substring(formClassName.lastIndexOf('.') + 1);
         boolean isMain = formClassName.equals(mainClass);
 
-        if (isMain) {
+        if (isMain && !isFtcRobotController) {
           // The main activity of the application.
           out.write("    <activity android:name=\"." + className + "\" ");
         } else {
-          // A secondary activity of the application.
+          // A secondary activity of the application, or the main activity for an FTC Robot
+          // Controller app.
           out.write("    <activity android:name=\"" + formClassName + "\" ");
         }
 
@@ -422,7 +426,7 @@ public final class Compiler {
         // than here in the manifest.
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
-        } else if (componentTypes.contains("FtcRobotController") && !isForCompanion && isMain) {
+        } else if (isFtcRobotController && isMain) {
           out.write("android:launchMode=\"singleTask\" ");
         } else if (isMain && isForCompanion) {
           out.write("android:launchMode=\"singleTop\" ");
@@ -432,7 +436,7 @@ public final class Compiler {
 
         // The keyboard option prevents the app from stopping when a external (bluetooth)
         // keyboard is attached.
-        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+        if (isFtcRobotController) {
           out.write("android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize\">\n");
         } else {
           out.write("android:configChanges=\"orientation|keyboardHidden|keyboard\">\n");
@@ -445,7 +449,7 @@ public final class Compiler {
         }
         out.write("      </intent-filter>\n");
 
-        if (componentTypes.contains("FtcRobotController") && !isForCompanion) {
+        if (isFtcRobotController) {
           out.write("      <intent-filter>\n");
           out.write("        <action android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\" />\n");
           out.write("      </intent-filter>\n");
@@ -499,7 +503,7 @@ public final class Compiler {
 
       // Add FTC related activities and service to the manifest only if an FtcRobotController
       // component is used in the app.
-      if (componentTypes.contains("FtcRobotController")) {
+      if (isFtcRobotController) {
         out.write("    <activity\n");
         out.write("      android:name=\"com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity\"\n");
         out.write("      android:label=\"@string/settings_activity\" >\n");
@@ -690,7 +694,13 @@ public final class Compiler {
       return false;
     }
 
-    if (componentTypes.contains("FtcRobotController")) {
+    String jarsignerAlias = DEFAULT_JARSIGNER_ALIAS;
+
+    if (compiler.isFtcRobotController) {
+      // Use the ftc debug keystore.
+      keystoreFilePath = getResource(RUNTIME_FILES_DIR + "ftc.debug.keystore");
+      jarsignerAlias = "androiddebugkey";
+
       // Copy resources used in FTC libraries and components.
       if (!compiler.createFtcResources(resDir)) {
         return false;
@@ -733,7 +743,7 @@ public final class Compiler {
     }
     setProgress(35);
 
-    if (componentTypes.contains("FtcRobotController")) {
+    if (compiler.isFtcRobotController) {
       // Generate R.java files used in FTC libraries.
       out.println("________Generating R.java files");
       File genDir = createDirectory(buildDir, "gen");
@@ -802,7 +812,7 @@ public final class Compiler {
 
     // Sign the apk file
     out.println("________Signing the apk file");
-    if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
+    if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath, jarsignerAlias)) {
       return false;
     }
 
@@ -934,6 +944,11 @@ public final class Compiler {
     this.isForCompanion = isForCompanion;
     this.childProcessRamMb = childProcessMaxRam;
     this.dexCacheDir = dexCacheDir;
+
+    isFtcRobotController = componentTypes.contains("FtcRobotController") && !isForCompanion;
+    packageName = isFtcRobotController
+        ? "com.qualcomm.ftcrobotcontroller"
+        : Signatures.getPackageName(project.getMainClass());
   }
 
   /*
@@ -1011,7 +1026,7 @@ public final class Compiler {
           "kawa.repl",
           "-f", yailRuntime,
           "-d", classesDir.getAbsolutePath(),
-          "-P", Signatures.getPackageName(project.getMainClass()) + ".",
+          "-P", packageName + ".",
           "-C");
       // TODO(lizlooney) - we are currently using (and have always used) absolute paths for the
       // source file names. The resulting .class files contain references to the source file names,
@@ -1151,7 +1166,7 @@ public final class Compiler {
     return true;
   }
 
-  private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
+  private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath, String alias) {
     // TODO(user): maybe make a command line flag for the jarsigner location
     String javaHome = System.getProperty("java.home");
     // This works on Mac OS X.
@@ -1180,7 +1195,7 @@ public final class Compiler {
         "-keystore", keystoreAbsolutePath,
         "-storepass", "android",
         apkAbsolutePath,
-        "AndroidKey"
+        alias
     };
     if (!Execution.execute(null, jarsignerCommandLine, System.out, System.err)) {
       LOG.warning("YAIL compiler - jarsigner execution failed.");

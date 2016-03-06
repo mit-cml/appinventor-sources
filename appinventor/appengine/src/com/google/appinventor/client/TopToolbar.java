@@ -85,6 +85,10 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_PROJECT = "Project";
+
+  private static final String WIDGET_NAME_DOWNLOAD = "Download";
+  private static final String WIDGET_NAME_DRIVERSTATION = "DriverStation";
+
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_LIBRARY = "Library";
@@ -110,15 +114,16 @@ public class TopToolbar extends Composite {
   public DropDownButton fileDropDown;
   public DropDownButton connectDropDown;
   public DropDownButton buildDropDown;
+  public DropDownButton downloadDropDown;
   public DropDownButton helpDropDown;
   public DropDownButton adminDropDown;
 
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +--------------------------------------------------------------+
+     * +-----------------------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾ | Download ▾ | Help ▾ | Admin ▾ |
+     * +-----------------------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -126,6 +131,7 @@ public class TopToolbar extends Composite {
     List<DropDownItem> fileItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
+    List<DropDownItem> downloadItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
 
     // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
@@ -188,6 +194,10 @@ public class TopToolbar extends Composite {
           new GenerateYailAction()));
     }
 
+    // Download -> {Driver Station}
+    downloadItems.add(new DropDownItem(WIDGET_NAME_DRIVERSTATION,
+        MESSAGES.downloadDriverStationMenuItem(), new DownloadDriverStationAction()));
+
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
     //  Companion Information, Show Splash Screen}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
@@ -243,6 +253,8 @@ public class TopToolbar extends Composite {
         connectItems, false);
     buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName(),
         buildItems, false);
+    downloadDropDown = new DropDownButton(WIDGET_NAME_DOWNLOAD, MESSAGES.downloadTabName(),
+        downloadItems, false);
     helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpTabName(),
         helpItems, false);
 
@@ -250,6 +262,7 @@ public class TopToolbar extends Composite {
     fileDropDown.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
     buildDropDown.setStyleName("ode-TopPanelButton");
+    downloadDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
@@ -258,6 +271,7 @@ public class TopToolbar extends Composite {
       toolbar.add(connectDropDown);
     }
     toolbar.add(buildDropDown);
+    toolbar.add(downloadDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
     toolbar.add(helpDropDown);
@@ -686,6 +700,14 @@ public class TopToolbar extends Composite {
               }
             });
       }
+    }
+  }
+
+  private static class DownloadDriverStationAction implements Command {
+    @Override
+    public void execute() {
+      ErrorReporter.hide();
+      Downloader.getInstance().setUrl("/FtcDriverStation.apk");
     }
   }
 

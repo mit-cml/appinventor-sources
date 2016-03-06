@@ -90,6 +90,7 @@
         <include name="**/*.css"/>
         <include name="1x1.gif"/>
       </fileset>
+      <fileset dir="${lib.dir}/ftc" includes="FtcDriverStation.apk"/>
     </copy>
     <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
       <filterset>

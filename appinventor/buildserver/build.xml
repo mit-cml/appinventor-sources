@@ -64,6 +64,7 @@
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
+      <fileset dir="${lib.dir}/ftc" includes="ftc.debug.keystore"/>
     </copy>
     <!-- Copy jars -->
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
