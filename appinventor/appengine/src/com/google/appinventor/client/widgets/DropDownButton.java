@@ -47,9 +47,10 @@ public class DropDownButton extends TextButton {
 
     @Override
     public void setPosition(int offsetWidth, int offsetHeight) {
-    	//getAbsoluteLeft/Right() gives the top coordinate of the parent element
-    	//getOffsetWidth/Height() gives the width/height of the element 
-    	//@param offsetWidth and @param offsetHeight refer to the actual width and height of the popuppanel representing hte dropdown as it is rendered 
+      //Helpful notes:
+      //getAbsoluteLeft/Right() gives the top coordinate of the parent element
+      //getOffsetWidth/Height() gives the width/height of the parent element 
+      //@param offsetWidth and @param offsetHeight refer to the actual width and height of the PopupPanel representing the dropdown as it is rendered 
       int left = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteLeft() : getAbsoluteLeft();
       if (rightAlign) {
@@ -59,18 +60,23 @@ public class DropDownButton extends TextButton {
               ? getTrueAbsoluteTop() + getOffsetHeight()
               : getAbsoluteTop() + getOffsetHeight();
       
-      //TODO: What happens when the dropdown is placed above but it goes off the screen that way?
+      /*Values to determine how to display the ContextMenu - above or below*/
       int dropDownBottom = top + offsetHeight;
-      //the y-coordiante of the bottom of the screen is the y-scroll value at the top + the total height covered
       int screenBottom  = Window.getScrollTop()+Window.getClientHeight();
       
-      //if the bottom will go off the current view port, push it up instead
-      //set the top above the parent element so that it's bottom is right above the top of the parent
+      //if the bottom will go off the current browser screen, display the dropdown as a 'dropup' where the ContextMenu appears above instead
       if(dropDownBottom > screenBottom)
       {
-    	  top = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
+    	  int newTop = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
                   ? getTrueAbsoluteTop() -offsetHeight
                   : getAbsoluteTop() - offsetHeight;
+                  
+          //account for the extreeeemely unlikely case where newTop also goes off the screen
+          //in this case, it makes more sense to just go off the bottom of the screen (the screen won't grow up, and so the menu would get completely cut off at the top
+          if(newTop >= 0)
+          {
+        	  top = newTop;
+          }
       }
               
       menu.setPopupPosition(left, top);
