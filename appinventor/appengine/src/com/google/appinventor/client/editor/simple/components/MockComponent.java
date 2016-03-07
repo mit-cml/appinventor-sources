@@ -259,8 +259,23 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.iconImage = iconImage;
 
     this.contextMenu = new PopupPanel(true);
-    this.contextMenu.add(new HTML("My Context menu!"));
+    this.contextMenu.add(new HTML("Delete"));
     this.contextMenu.hide();
+
+    final PopupPanel cm = this.contextMenu;
+
+    //----click handler for context menu--------
+    ClickHandler contextClickHandler = new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        sourceStructureExplorerItem.delete();
+        cm.hide();
+      }
+    };
+
+    contextMenu.sinkEvents(Event.ONCLICK);
+    contextMenu.addHandler(contextClickHandler, ClickEvent.getType());
+    //-----------------------------------------
 
     addDomHandler(this, ContextMenuEvent.getType());
 
@@ -783,13 +798,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     event.preventDefault();
     event.stopPropagation();
 
-    Window.alert("hello world 1!");
-    this.contextMenu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
-    this.contextMenu.show();
+    //Nothing needs to be here
   }
 
   private void contextMenu(Event event) {
-    Window.alert("hello world 2!");
+    event.preventDefault();
+    event.stopPropagation();
+
     this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY());
     this.contextMenu.show();
   }
@@ -811,7 +826,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       case Event.ONCONTEXTMENU:
         cancelBrowserEvent(event);
-        contextMenu(event);
+        if(sourceStructureExplorerItem.canDelete()){
+          contextMenu(event);
+        }
         break;
 
       case Event.ONCLICK:
