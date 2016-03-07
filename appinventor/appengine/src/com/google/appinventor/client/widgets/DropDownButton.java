@@ -46,11 +46,15 @@ public class DropDownButton extends TextButton {
     }
 
     @Override
+    /**
+     * @param offsetWidth width of the ContextMenu being positioned on the parent element
+     * @param offsetHeight height of the ContextMenu being positioned on the parent element
+     * Sets the position of the ContextMenu on the screen given it's dimensions
+     */
     public void setPosition(int offsetWidth, int offsetHeight) {
-      //Helpful notes:
       //getAbsoluteLeft/Right() gives the top coordinate of the parent element
       //getOffsetWidth/Height() gives the width/height of the parent element 
-      //@param offsetWidth and @param offsetHeight refer to the actual width and height of the PopupPanel representing the dropdown as it is rendered 
+    	
       int left = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteLeft() : getAbsoluteLeft();
       if (rightAlign) {
