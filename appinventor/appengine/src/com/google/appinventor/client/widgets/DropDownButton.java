@@ -47,6 +47,9 @@ public class DropDownButton extends TextButton {
 
     @Override
     public void setPosition(int offsetWidth, int offsetHeight) {
+    	//getAbsoluteLeft/Right() gives the top coordinate of the parent element
+    	//getOffsetWidth/Height() gives the width/height of the element 
+    	//@param offsetWidth and @param offsetHeight refer to the actual width and height of the popuppanel representing hte dropdown as it is rendered 
       int left = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteLeft() : getAbsoluteLeft();
       if (rightAlign) {
@@ -55,7 +58,24 @@ public class DropDownButton extends TextButton {
       int top = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteTop() + getOffsetHeight()
               : getAbsoluteTop() + getOffsetHeight();
+      
+      //TODO: What happens when the dropdown is placed above but it goes off the screen that way?
+      int dropDownBottom = top + offsetHeight;
+      //the y-coordiante of the bottom of the screen is the y-scroll value at the top + the total height covered
+      int screenBottom  = Window.getScrollTop()+Window.getClientHeight();
+      
+      //if the bottom will go off the current view port, push it up instead
+      //set the top above the parent element so that it's bottom is right above the top of the parent
+      if(dropDownBottom > screenBottom)
+      {
+    	  top = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
+                  ? getTrueAbsoluteTop() -offsetHeight
+                  : getAbsoluteTop() - offsetHeight;
+      }
+              
       menu.setPopupPosition(left, top);
+    
+    
     }
   }
 
