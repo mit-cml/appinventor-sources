@@ -13,6 +13,12 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.user.client.ui.*;
 
+//NEW IMPORTS
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.user.client.Event;
+
 import java.util.Iterator;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -29,6 +35,8 @@ public class SourceStructureExplorer extends Composite {
   private final Tree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
+
+  private PopupPanel contextMenu;
 
   /**
    * Creates a new source structure explorer.
@@ -93,6 +101,26 @@ public class SourceStructureExplorer extends Composite {
         }
       }
     });
+
+    //-----context menu for source tree------
+
+    this.contextMenu = new PopupPanel(true);
+    this.contextMenu.add(new HTML("MY CONTEXT MENU"));
+    this.contextMenu.hide();
+
+    final PopupPanel cm = this.contextMenu;
+
+    tree.addHandler(new ContextMenuHandler() {
+      @Override
+      public void onContextMenu(ContextMenuEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+        cm.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+        cm.show();
+      }
+    }, ContextMenuEvent.getType());
+
+    tree.sinkEvents(Event.ONCONTEXTMENU);
 
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
@@ -161,12 +189,12 @@ public class SourceStructureExplorer extends Composite {
     deleteButton.setEnabled(false);
   }
 
-  
+
   /* move this logic to declarations of SourceStructureExplorerItem subtypes
   private void showBlocks(SourceStructureExplorerItem item) {
     // are we showing the blocks editor?
     if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
-      YaBlocksEditor editor = 
+      YaBlocksEditor editor =
           (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
       OdeLog.log("Showing item " + item.getItemName());
       if (item.isComponent()) {
@@ -183,9 +211,9 @@ public class SourceStructureExplorer extends Composite {
           (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
       OdeLog.log("Hiding selected item");
       editor.hideComponentBlocks();
-    }  
+    }
   }
-   */  
+   */
 
   /**
    * Clears the tree.
@@ -207,7 +235,7 @@ public class SourceStructureExplorer extends Composite {
     updateTree(items, itemToSelect);
   }
 
-  
+
   /**
    * Updates the tree
    *
@@ -270,5 +298,9 @@ public class SourceStructureExplorer extends Composite {
    */
   public void unselectItem(SourceStructureExplorerItem item) {
     selectItem(item, false);
+  }
+
+  public void itemContextMenu(SourceStructureExplorerItem item) {
+    //TODO: put stuff here
   }
 }

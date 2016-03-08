@@ -258,6 +258,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.type = type;
     this.iconImage = iconImage;
 
+    //*********
     this.contextMenu = new PopupPanel(true);
     this.contextMenu.add(new HTML("Delete"));
     this.contextMenu.hide();
