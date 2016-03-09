@@ -114,16 +114,19 @@ public class SourceStructureExplorer extends Composite {
     final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
       public void onClick(ClickEvent event) {
         deleteItemFromTree();
+        this.contextMenu.hide();
       }
     });
 
     final Button contextMenuRename = new Button("Rename", new ClickHandler() {
       public void onClick(ClickEvent event) {
+        TreeItem treeItem = tree.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             item.rename();
+            this.contextMenu.hide();
           }
         }
       }
@@ -144,11 +147,23 @@ public class SourceStructureExplorer extends Composite {
         event.preventDefault();
         event.stopPropagation();
         cm.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+
+        TreeItem treeItem = tree.getSelectedItem();
+        if (treeItem != null) {
+          Object userObject = treeItem.getUserObject();
+          if (userObject instanceof SourceStructureExplorerItem) {
+            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+            contextMenuDelete.setEnabled(item.canDelete());
+            contextMenuRename.setEnabled(item.canRename());
+          }
+        }
         cm.show();
       }
     }, ContextMenuEvent.getType());
 
     tree.sinkEvents(Event.ONCONTEXTMENU);
+
+  //-------------------------------
 
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
