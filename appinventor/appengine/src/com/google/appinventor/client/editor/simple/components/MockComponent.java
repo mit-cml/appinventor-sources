@@ -258,24 +258,21 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.type = type;
     this.iconImage = iconImage;
 
-    //*********
     this.contextMenu = new PopupPanel(true);
-    this.contextMenu.add(new HTML("Delete"));
-    this.contextMenu.hide();
-
     final PopupPanel cm = this.contextMenu;
 
-    //----click handler for context menu--------
-    ClickHandler contextClickHandler = new ClickHandler() {
-      @Override
+    final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
       public void onClick(ClickEvent event) {
         sourceStructureExplorerItem.delete();
         cm.hide();
       }
-    };
+    });
 
-    contextMenu.sinkEvents(Event.ONCLICK);
-    contextMenu.addHandler(contextClickHandler, ClickEvent.getType());
+    this.contextMenu.add(contextMenuDelete);
+    this.contextMenu.hide();
+
+    // contextMenu.sinkEvents(Event.ONCLICK);
+    // contextMenu.addHandler(contextClickHandler, ClickEvent.getType());
     //-----------------------------------------
 
     addDomHandler(this, ContextMenuEvent.getType());
