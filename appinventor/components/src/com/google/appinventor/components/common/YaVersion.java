@@ -1010,6 +1010,15 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
+  // ACCEPTABLE_COMPANION_PACKAGE is the package name for the
+  // appropriate Companion. Different versions (forks) of App Inventor
+  // should use their own Companion. This variable holds the value
+  // of the Android Package for this version of App Inventor. The
+  // default value here is for the MIT App Inventor service run
+  // by MIT
+
+  public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
+
   public static final String PREFERRED_COMPANION = "2.36";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
