@@ -109,24 +109,33 @@ public class SourceStructureExplorer extends Composite {
 
     //-----context menu for source tree------
 
+    this.contextMenu = new PopupPanel(true);
+    final PopupPanel cm = this.contextMenu;
+
     final VerticalPanel vp = new VerticalPanel();
 
     final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
       public void onClick(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         deleteItemFromTree();
-        this.contextMenu.hide();
+        cm.hide();
       }
     });
 
     final Button contextMenuRename = new Button("Rename", new ClickHandler() {
       public void onClick(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         TreeItem treeItem = tree.getSelectedItem();
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             item.rename();
-            this.contextMenu.hide();
+            cm.hide();
           }
         }
       }
@@ -135,11 +144,10 @@ public class SourceStructureExplorer extends Composite {
     vp.add(contextMenuDelete);
     vp.add(contextMenuRename);
 
-    this.contextMenu = new PopupPanel(true);
     this.contextMenu.add(vp);
     this.contextMenu.hide();
 
-    final PopupPanel cm = this.contextMenu;
+
 
     tree.addHandler(new ContextMenuHandler() {
       @Override
