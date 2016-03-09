@@ -19,6 +19,10 @@ import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import com.google.gwt.user.client.Window;
+
 
 import java.util.Iterator;
 
@@ -105,21 +109,31 @@ public class SourceStructureExplorer extends Composite {
 
     //-----context menu for source tree------
 
+    final VerticalPanel vp = new VerticalPanel();
+
     final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
       public void onClick(ClickEvent event) {
-        Window.alert("How high?");
+        deleteItemFromTree();
       }
-    });)
+    });
 
     final Button contextMenuRename = new Button("Rename", new ClickHandler() {
       public void onClick(ClickEvent event) {
-        Window.alert("How high?");
+        if (treeItem != null) {
+          Object userObject = treeItem.getUserObject();
+          if (userObject instanceof SourceStructureExplorerItem) {
+            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+            item.rename();
+          }
+        }
       }
-    });)
+    });
+
+    vp.add(contextMenuDelete);
+    vp.add(contextMenuRename);
 
     this.contextMenu = new PopupPanel(true);
-    this.contextMenu.add(contextMenuDelete);
-    this.contextMenu.add(contextMenuRename);
+    this.contextMenu.add(vp);
     this.contextMenu.hide();
 
     final PopupPanel cm = this.contextMenu;
