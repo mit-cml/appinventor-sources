@@ -68,6 +68,22 @@ a, a:visited, a:hover {
   border: 1px outset #ccc;
 }
 
+.gwt-PopupPanel .gwt-Button.context-menu-button {
+  border: 0;
+  shadow: none;
+  color: #000;
+  background-color: #FFFFFF;
+  list-style: none;
+  margin: 0;
+  /* 28px on the left for icon or checkbox; 10ex on the right for shortcut. */
+  padding: 1px 32px 1px 8px;
+  white-space: nowrap;
+}
+
+.gwt-PopupPanel .gwt-Button.context-menu-button:hover {
+  background-color: #d6e9f8;
+}
+
 .gwt-CheckBox {
 }
 .gwt-CheckBox-disabled {

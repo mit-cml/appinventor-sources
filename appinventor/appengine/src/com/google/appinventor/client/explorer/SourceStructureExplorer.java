@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
 
 
 import java.util.Iterator;
@@ -143,6 +144,9 @@ public class SourceStructureExplorer extends Composite {
       }
     });
 
+    DOM.setElementAttribute(contextMenuRename.getElement(), "class", "context-menu-button");
+    DOM.setElementAttribute(contextMenuDelete.getElement(), "class", "context-menu-button");
+
     vp.add(contextMenuDelete);
     vp.add(contextMenuRename);
 
@@ -169,11 +173,13 @@ public class SourceStructureExplorer extends Composite {
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            contextMenuDelete.setEnabled(item.canDelete());
-            contextMenuRename.setEnabled(item.canRename());
+            // contextMenuDelete.setEnabled(item.canDelete());
+            // contextMenuRename.setEnabled(item.canRename());
+            if(item.canDelete() && item.canRename()) {
+              cm.show(); //only show the menu if you can delete/rename stuff
+            }
           }
         }
-        cm.show();
       }
     }, ContextMenuEvent.getType());
 

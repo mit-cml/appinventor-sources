@@ -268,6 +268,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       }
     });
 
+    DOM.setElementAttribute(contextMenuDelete.getElement(), "class", "context-menu-button");
+
     this.contextMenu.add(contextMenuDelete);
     this.contextMenu.hide();
 
