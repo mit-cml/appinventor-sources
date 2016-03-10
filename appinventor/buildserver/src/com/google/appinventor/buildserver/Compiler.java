@@ -6,6 +6,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.common.version.FtcConstants;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -97,8 +98,6 @@ public final class Compiler {
 
   private static final String DEFAULT_JARSIGNER_ALIAS = "AndroidKey";
 
-  private static final String DEFAULT_VERSION_CODE = "7";      // Please keep consistent with Form.java
-  private static final String DEFAULT_VERSION_NAME = "1.6.1";  // Please keep consistent with Form.java
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";
@@ -321,8 +320,12 @@ public final class Compiler {
     String mainClass = project.getMainClass();
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
-    String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
-    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
+    String vCode = (project.getVCode() == null)
+        ? FtcConstants.DEFAULT_VERSION_CODE
+        : project.getVCode();
+    String vName = (project.getVName() == null)
+        ? FtcConstants.DEFAULT_VERSION_NAME
+        : cleanName(project.getVName());
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     String minSDK = DEFAULT_MIN_SDK;
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
