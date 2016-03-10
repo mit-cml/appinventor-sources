@@ -109,6 +109,7 @@ public class SourceStructureExplorer extends Composite {
 
     //-----context menu for source tree------
 
+
     this.contextMenu = new PopupPanel(true);
     final PopupPanel cm = this.contextMenu;
 
@@ -130,6 +131,7 @@ public class SourceStructureExplorer extends Composite {
         event.stopPropagation();
 
         TreeItem treeItem = tree.getSelectedItem();
+
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
@@ -148,15 +150,23 @@ public class SourceStructureExplorer extends Composite {
     this.contextMenu.hide();
 
 
-
     tree.addHandler(new ContextMenuHandler() {
       @Override
       public void onContextMenu(ContextMenuEvent event) {
         event.preventDefault();
         event.stopPropagation();
-        cm.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
 
-        TreeItem treeItem = tree.getSelectedItem();
+        int x = event.getNativeEvent().getClientX();
+        int y = event.getNativeEvent().getClientY();
+
+        cm.setPopupPosition(x, y);
+
+//        tree.getSelectedItem().setSelected(false);
+
+        TreeItem treeItem = getTreeItemAt(x, y);
+        OdeLog.log("Right clicked item " + treeItem.getText());
+        tree.setSelectedItem(treeItem);
+
         if (treeItem != null) {
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
@@ -217,6 +227,33 @@ public class SourceStructureExplorer extends Composite {
     panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
+  }
+
+
+  private TreeItem getTreeItemAt(int x, int y) {
+    TreeItem clickedItem = null;
+    // adjust as necessary to return exact or nearest
+    // it can be optimized to bail when you have a hit
+
+    Iterator<TreeItem> iter = tree.treeItemIterator();
+
+    OdeLog.log("Number of elems in tree: " + tree.getItemCount());
+
+//    for (int t = 0; t < tree.getItemCount(); t++) {
+    while (iter.hasNext()) {
+//      TreeItem item = tree.getItem(t);
+      TreeItem item = iter.next();
+      int top = item.getAbsoluteTop();
+      int height = item.getOffsetHeight();
+      int left = item.getAbsoluteLeft();
+      int width = item.getOffsetWidth();
+      if (top >= 0 && height > 0 && left >= 0 && width > 0) {
+        if (y >= top && y < top+height && x >= left && x < left+width) {
+          clickedItem = item;
+        }
+      }
+    }
+    return clickedItem;
   }
 
   private void deleteItemFromTree() {
