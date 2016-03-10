@@ -52,6 +52,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
@@ -59,8 +60,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
-
-//NEW IMPORTS
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
@@ -261,20 +260,18 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.contextMenu = new PopupPanel(true);
     final PopupPanel cm = this.contextMenu;
 
-    final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
+    final Label contextMenuDelete = new Label(MESSAGES.deleteButton());
+    contextMenuDelete.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         sourceStructureExplorerItem.delete();
         cm.hide();
       }
     });
-
-    DOM.setElementAttribute(contextMenuDelete.getElement(), "class", "context-menu-button");
+    contextMenuDelete.setStyleName("ode-ContextMenuButtons");
 
     this.contextMenu.add(contextMenuDelete);
     this.contextMenu.hide();
 
-    // contextMenu.sinkEvents(Event.ONCLICK);
-    // contextMenu.addHandler(contextClickHandler, ClickEvent.getType());
     //-----------------------------------------
 
     addDomHandler(this, ContextMenuEvent.getType());

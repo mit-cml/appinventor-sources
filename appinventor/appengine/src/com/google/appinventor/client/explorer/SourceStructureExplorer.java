@@ -9,20 +9,28 @@ package com.google.appinventor.client.explorer;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.*;
-import com.google.gwt.user.client.ui.*;
-
-//NEW IMPORTS
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.DOM;
 
 
 import java.util.Iterator;
@@ -108,15 +116,15 @@ public class SourceStructureExplorer extends Composite {
       }
     });
 
-    //-----context menu for source tree------
-
-
+    //-----context menu for Components tree------
     this.contextMenu = new PopupPanel(true);
     final PopupPanel cm = this.contextMenu;
 
     final VerticalPanel vp = new VerticalPanel();
 
-    final Button contextMenuDelete = new Button("Delete", new ClickHandler() {
+    final Label contextMenuDelete = new Label(MESSAGES.deleteButton());
+
+    contextMenuDelete.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
@@ -125,8 +133,10 @@ public class SourceStructureExplorer extends Composite {
         cm.hide();
       }
     });
+    contextMenuDelete.setStyleName("ode-ContextMenuButtons");
 
-    final Button contextMenuRename = new Button("Rename", new ClickHandler() {
+    final Label contextMenuRename = new Label(MESSAGES.renameButton());
+    contextMenuRename.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
@@ -143,16 +153,13 @@ public class SourceStructureExplorer extends Composite {
         }
       }
     });
-
-    DOM.setElementAttribute(contextMenuRename.getElement(), "class", "context-menu-button");
-    DOM.setElementAttribute(contextMenuDelete.getElement(), "class", "context-menu-button");
+    contextMenuRename.setStyleName("ode-ContextMenuButtons");
 
     vp.add(contextMenuDelete);
     vp.add(contextMenuRename);
 
     this.contextMenu.add(vp);
     this.contextMenu.hide();
-
 
     tree.addHandler(new ContextMenuHandler() {
       @Override
@@ -166,7 +173,6 @@ public class SourceStructureExplorer extends Composite {
         cm.setPopupPosition(x, y);
 
         TreeItem treeItem = getTreeItemAt(x, y);
-        OdeLog.log("Right clicked item " + treeItem.getText());
         tree.setSelectedItem(treeItem);
 
         if (treeItem != null) {
@@ -234,18 +240,16 @@ public class SourceStructureExplorer extends Composite {
   }
 
 
+  /**
+   * Method to determine which item is being right-clicked based on the x,y coordinates of the event.
+   * @param x mouse click's x coordinate
+   * @param y mouse click's y coordinate
+   */
   private TreeItem getTreeItemAt(int x, int y) {
     TreeItem clickedItem = null;
-    // adjust as necessary to return exact or nearest
-    // it can be optimized to bail when you have a hit
-
     Iterator<TreeItem> iter = tree.treeItemIterator();
 
-    OdeLog.log("Number of elems in tree: " + tree.getItemCount());
-
-//    for (int t = 0; t < tree.getItemCount(); t++) {
     while (iter.hasNext()) {
-//      TreeItem item = tree.getItem(t);
       TreeItem item = iter.next();
       int top = item.getAbsoluteTop();
       int height = item.getOffsetHeight();
