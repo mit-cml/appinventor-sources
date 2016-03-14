@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,7 +38,7 @@ import com.google.appinventor.components.runtime.util.YailList;
     nonVisible = false,
     iconName = "images/spinner.png")
 @SimpleObject
-public final class Spinner extends AndroidViewComponent implements OnItemSelectedListener {
+public final class Spinner extends AndroidViewComponent implements View.OnTouchListener, OnItemSelectedListener {
 
   private final android.widget.Spinner view;
 
@@ -77,8 +78,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     // set regular and dropdown layouts
     adapter = new CustomArrayAdapter(container.$context(), android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    view.setAdapter(adapter);
     view.setOnItemSelectedListener(this);
+    view.setOnTouchListener(this);
+    view.setAdapter(adapter);
     oldSelectionIndex = SelectionIndex();
 
     // Save the default 3-d spinner background in case the user wants it back later
@@ -427,6 +429,14 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
+   * Event is raised before the spinner's options are shown.
+   */
+  @SimpleEvent
+  public void BeforePicking() {
+    EventDispatcher.dispatchEvent(this, "BeforePicking");
+  }
+
+  /**
    * Indicates a user has selected an item
    */
   @SimpleEvent(description = "Event called after the user selects an item from the dropdown list.")
@@ -453,6 +463,12 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
 
   public void onNothingSelected(AdapterView<?> parent) {
     view.setSelection(0);
+  }
+
+  @Override
+  public boolean onTouch(View view, MotionEvent motionEvent) {
+    BeforePicking();
+    return false;
   }
 
   /**
