@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
     description = "A component for an ultrasonic sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcUltrasonicSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcUltrasonicSensor extends FtcHardwareDevice {

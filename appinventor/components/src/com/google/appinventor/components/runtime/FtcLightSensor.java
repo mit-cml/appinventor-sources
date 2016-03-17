@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.LightSensor;
     description = "A component for a light sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcLightSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcLightSensor extends FtcHardwareDevice {

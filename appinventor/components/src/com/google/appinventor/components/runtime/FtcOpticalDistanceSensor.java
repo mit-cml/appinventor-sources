@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
     description = "A component for an optical distance sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcOpticalDistanceSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcOpticalDistanceSensor extends FtcHardwareDevice {

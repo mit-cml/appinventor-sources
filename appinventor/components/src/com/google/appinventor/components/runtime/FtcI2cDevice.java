@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
     description = "A component for an I2C device of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcI2cDevice.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcI2cDevice extends FtcHardwareDevice implements I2cPortReadyCallback {

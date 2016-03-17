@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     description = "A component for an analog output device of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcAnalogOutput.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcAnalogOutput extends FtcHardwareDevice {

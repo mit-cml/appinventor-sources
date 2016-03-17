@@ -129,6 +129,31 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/ftc.png", images.ftc());
+    bundledImages.put("images/ftcAccelerationSensor.png", images.ftcAccelerationSensor());
+    bundledImages.put("images/ftcAnalogInput.png", images.ftcAnalogInput());
+    bundledImages.put("images/ftcAnalogOutput.png", images.ftcAnalogOutput());
+    bundledImages.put("images/ftcColorSensor.png", images.ftcColorSensor());
+    bundledImages.put("images/ftcCompassSensor.png", images.ftcCompassSensor());
+    bundledImages.put("images/ftcDcMotor.png", images.ftcDcMotor());
+    bundledImages.put("images/ftcDcMotorController.png", images.ftcDcMotorController());
+    bundledImages.put("images/ftcDigitalChannel.png", images.ftcDigitalChannel());
+    bundledImages.put("images/ftcGamepad.png", images.ftcGamepad());
+    bundledImages.put("images/ftcGyroSensor.png", images.ftcGyroSensor());
+    bundledImages.put("images/ftcI2cDevice.png", images.ftcI2cDevice());
+    bundledImages.put("images/ftcI2cDeviceReader.png", images.ftcI2cDeviceReader());
+    bundledImages.put("images/ftcIrSeekerSensor.png", images.ftcIrSeekerSensor());
+    bundledImages.put("images/ftcLED.png", images.ftcLED());
+    bundledImages.put("images/ftcLightSensor.png", images.ftcLightSensor());
+    bundledImages.put("images/ftcLinearOpMode.png", images.ftcLinearOpMode());
+    bundledImages.put("images/ftcOpMode.png", images.ftcOpMode());
+    bundledImages.put("images/ftcOpticalDistanceSensor.png", images.ftcOpticalDistanceSensor());
+    bundledImages.put("images/ftcRobotController.png", images.ftcRobotController());
+    bundledImages.put("images/ftcServo.png", images.ftcServo());
+    bundledImages.put("images/ftcServoController.png", images.ftcServoController());
+    bundledImages.put("images/ftcTouchSensor.png", images.ftcTouchSensor());
+    bundledImages.put("images/ftcTouchSensorMultiplexer.png", images.ftcTouchSensorMultiplexer());
+    bundledImages.put("images/ftcUltrasonicSensor.png", images.ftcUltrasonicSensor());
+    bundledImages.put("images/ftcVoltageSensor.png", images.ftcVoltageSensor());
     imagesInitialized = true;
   }
 

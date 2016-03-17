@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     description = "A component for an acceleration sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcAccelerationSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcAccelerationSensor extends FtcHardwareDevice {

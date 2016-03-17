@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
     description = "A component for a gamepad of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcGamepad.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcGamepad extends AndroidNonvisibleComponent

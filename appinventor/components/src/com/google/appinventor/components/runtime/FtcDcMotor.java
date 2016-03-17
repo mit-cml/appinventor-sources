@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     description = "A component for a DC motor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcDcMotor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDcMotor extends FtcHardwareDevice {

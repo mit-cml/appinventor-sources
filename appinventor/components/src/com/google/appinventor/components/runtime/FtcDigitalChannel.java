@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     description = "A component for a single digital channel of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcDigitalChannel.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDigitalChannel extends FtcHardwareDevice {

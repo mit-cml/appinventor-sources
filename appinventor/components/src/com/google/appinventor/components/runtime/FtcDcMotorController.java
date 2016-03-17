@@ -38,7 +38,7 @@ import java.util.Set;
     description = "A component for a DC motor controller of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcDcMotorController.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcDcMotorController extends FtcHardwareDevice {

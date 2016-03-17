@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
     description = "A component for a touch sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcTouchSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcTouchSensor extends FtcHardwareDevice {

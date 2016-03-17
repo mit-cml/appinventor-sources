@@ -30,7 +30,7 @@ import android.graphics.Color;
     description = "A component for a color sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcColorSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcColorSensor extends FtcHardwareDevice {

@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
     description = "A component for a gyro sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcGyroSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcGyroSensor extends FtcHardwareDevice {

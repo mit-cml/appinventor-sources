@@ -55,7 +55,7 @@ public final class MockFtcRobotController extends MockVisibleComponent {
    * @param editor  editor of source file the component belongs to
    */
   public MockFtcRobotController(SimpleEditor editor) {
-    super(editor, TYPE, images.ftc());
+    super(editor, TYPE, images.ftcRobotController());
 
     // Initialize mock FtcRobotController UI
     VerticalPanel panelWidget = new VerticalPanel();

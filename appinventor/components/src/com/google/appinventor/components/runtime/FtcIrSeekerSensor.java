@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor.Mode;
     description = "A component for an IR seeker sensor of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcIrSeekerSensor.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcIrSeekerSensor extends FtcHardwareDevice {

@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     description = "A component for an operation mode for an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcOpMode.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcOpMode extends FtcOpModeBase {
