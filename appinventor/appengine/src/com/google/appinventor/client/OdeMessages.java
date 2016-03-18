@@ -4258,6 +4258,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PositionChangedEvents();
 
+  @DefaultMessage("BeforeSelecting")
+  @Description("")
+  String BeforeSelectingEvents();
+
   @DefaultMessage("AfterSelecting")
   @Description("")
   String AfterSelectingEvents();

@@ -378,8 +378,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - SLIDER_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -839,7 +841,12 @@ public class YaVersion {
   public static final int SLIDER_COMPONENT_VERSION = 2;
 
   // For SPINNER_COMPONENT_VERSION 1:
-  public static final int SPINNER_COMPONENT_VERSION = 1;
+  // - Initial version.
+  // For SLIDER_COMPONENT_VERSION 2:
+  // - Added properties: enabled, height, background color, font bold/italic/size/typeface/color,
+  //   text alignment.
+  // - Added event BeforePicking.
+  public static final int SPINNER_COMPONENT_VERSION = 2;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
@@ -1010,10 +1017,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.36";
+  public static final String PREFERRED_COMPANION = "2.37";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
+  public static final String[] ACCEPTABLE_COMPANIONS = {"2.37"};
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

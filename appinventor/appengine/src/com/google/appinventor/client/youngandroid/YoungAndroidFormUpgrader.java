@@ -6,10 +6,6 @@
 
 package com.google.appinventor.client.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
-import java.util.Map;
-
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.output.OdeLog;
@@ -18,13 +14,12 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.*;
+
+import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * A class that can upgrade a Young Android Form source file.
@@ -123,8 +118,8 @@ public final class YoungAndroidFormUpgrader {
    * Parses the JSON properties and upgrades the component if necessary.
    * This method is called recursively for nested components.
    */
-  private static void upgradeComponent(int srcYaVersion,
-      Map<String, JSONValue> componentProperties, StringBuilder upgradeDetails) {
+  private static void upgradeComponent(int srcYaVersion, Map<String, JSONValue> componentProperties,
+                                       StringBuilder upgradeDetails) {
 
     String componentType = componentProperties.get("$Type").asString().getString();
 
@@ -175,7 +170,8 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static void upgradeComponentProperties(Map<String, JSONValue> componentProperties,
-      String componentType, int srcCompVersion, final int sysCompVersion) {
+                                                 String componentType, int srcCompVersion,
+                                                 final int sysCompVersion) {
     // Compare the source file's component version with the system's component version.
     if (srcCompVersion == 0) {
       // The source file doesn't have a version number for this component.
@@ -206,7 +202,7 @@ public final class YoungAndroidFormUpgrader {
       // NOTE(lizlooney,user) - when a component changes, increment the component's version
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade
       // properties as necessary.
-      if (componentType.equals("AccelerometerSensor")){
+      if (componentType.equals("AccelerometerSensor")) {
         srcCompVersion = upgradeAccelerometerSensorProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("ActivityStarter")) {
@@ -326,7 +322,7 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Texting")) {
         srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
 
-      }  else if (componentType.equals("Notifier")) {
+      } else if (componentType.equals("Notifier")) {
         srcCompVersion = upgradeNotifierProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Twitter")) {
@@ -337,7 +333,8 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("WebViewer")) {
         srcCompVersion = upgradeWebViewerProperties(componentProperties, srcCompVersion);
-
+      } else if (componentType.equals("Spinner")) {
+        srcCompVersion = upgradeSpinnerProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -355,7 +352,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static void unquotePropertyValues(Map<String, JSONValue> componentProperties,
-      String componentType) {
+                                            String componentType) {
     // From the component database, get the map of property names and types for the component type.
     Map<String, String> propertyTypesByName =
         COMPONENT_DATABASE.getPropertyTypesByName(componentType);
@@ -389,7 +386,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                          int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The AccelerometerSensor.MinimumInterval property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -404,7 +401,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
       // properties were added.
@@ -459,7 +456,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeBallProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                           int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Heading property was changed from int to double
       srcCompVersion = 2;
@@ -472,15 +469,16 @@ public final class YoungAndroidFormUpgrader {
       // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
-      }
+    }
     if (srcCompVersion < 5) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 5;
     }
     return srcCompVersion;
   }
+
   private static int upgradeBarcodeScannerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                     int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The UseExternalScanner property was added.
       srcCompVersion = 2;
@@ -489,7 +487,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeBluetoothClientProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The BluetoothClient.Enabled property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -515,7 +513,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeBluetoothServerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The BluetoothServer.Enabled property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -539,8 +537,9 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
+
   private static int upgradeSliderProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                             int srcCompVersion) {
     if (srcCompVersion < 1) {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
@@ -553,7 +552,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeTextToSpeechProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                   int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Added speech pitch and rate
       srcCompVersion = 2;
@@ -578,7 +577,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeButtonProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                             int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -610,7 +609,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeCameraProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                             int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The UseFront property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -629,7 +628,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeCanvasProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                             int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The LineWidth property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -683,7 +682,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeCheckBoxProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                               int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Value property was renamed to Checked.
       handlePropertyRename(componentProperties, "Value", "Checked");
@@ -694,7 +693,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeClockProperties(Map<String, JSONValue> componentProperties,
-    int srcCompVersion) {
+                                            int srcCompVersion) {
     if (srcCompVersion < 3) {
       // (2) The FormatDate and FormatDateTime methods were modified to take another parameter of pattern.
       // No properties need to be modified to upgrade to version 2.
@@ -706,7 +705,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeContactPickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                    int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -736,7 +735,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeDatePickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                 int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The SetDateToDisplay and LaunchPicker methods were added.
       // No properties need to be modified to upgrade to version 2.
@@ -751,7 +750,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeEmailPickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                  int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -766,8 +765,8 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeFileProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
-    if(srcCompVersion < 2) {
+                                           int srcCompVersion) {
+    if (srcCompVersion < 2) {
       // File.AfterFileSaved event was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
@@ -776,7 +775,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeFormProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                           int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Screen.Scrollable property was added.
       // If the form contains a direct child component whose height is set to fill parent,
@@ -856,13 +855,12 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 13) {
       // The Scrollable property was set to False by default.
-      if (componentProperties.containsKey("Scrollable")){
-        String value = ((ClientJsonString)componentProperties.get("Scrollable")).getString();
-        if (value.equals("False")){
+      if (componentProperties.containsKey("Scrollable")) {
+        String value = ((ClientJsonString) componentProperties.get("Scrollable")).getString();
+        if (value.equals("False")) {
           componentProperties.remove("Scrollable");
         }
-      }
-      else {
+      } else {
         componentProperties.put("Scrollable", new ClientJsonString("True"));
       }
       srcCompVersion = 13;
@@ -907,7 +905,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeFusiontablesControlProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                          int srcCompVersion) {
     if (srcCompVersion < 2) {
       // No properties need to be modified to upgrade to version 2.
       // The ApiKey property and the SendQuery and ForgetLogin methods were added.
@@ -924,7 +922,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeHorizontalArrangementProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                            int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
       // to upgrqde to version 2.
@@ -938,7 +936,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeImageProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                            int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The RotationAngle property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -960,7 +958,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeImagePickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                  int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -986,7 +984,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeImageSpriteProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                  int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The SpriteComponent.Rotates property was added
       // No properties need to be modified to upgrade to version 2.
@@ -1013,7 +1011,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeLabelProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                            int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -1029,7 +1027,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeListPickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                 int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -1071,7 +1069,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeListViewProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                               int srcCompVersion) {
     if (srcCompVersion < 2) {
       // Added the Elements property
       srcCompVersion = 2;
@@ -1093,7 +1091,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeLocationSensorProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                     int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The TimeInterval and DistanceInterval properties were added.
       // No properties need to be modified to upgrade to Version 2.
@@ -1114,7 +1112,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradePasswordTextBoxProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                      int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -1129,7 +1127,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradePhoneCallProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The PhoneCallStarted event was added.
       // The PhoneCallEnded event was added.
@@ -1141,7 +1139,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradePhoneNumberPickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                        int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
@@ -1161,7 +1159,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradePlayerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                             int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Player.PlayerError event was added.
       // No properties need to be modified to upgrade to version 2.
@@ -1186,16 +1184,16 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-        // The PlayInForeground method was added.
-        // The OtherPlayerStarted event was added.
-        // Properties related to this component have now been upgraded to version  6.
-        srcCompVersion = 6;
-      }
+      // The PlayInForeground method was added.
+      // The OtherPlayerStarted event was added.
+      // Properties related to this component have now been upgraded to version  6.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
   private static int upgradeSoundProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                            int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The Sound.SoundError event was added.
       // No properties need to be modified to upgrade to version 2.
@@ -1210,7 +1208,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeSoundRecorderProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                    int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The SoundRecorder.RecordFile property was added.
       // No properties need to be modified to upgrade to version 2.
@@ -1221,7 +1219,7 @@ public final class YoungAndroidFormUpgrader {
 
 
   private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                 int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The SetTimeToDisplay and LaunchPicker methods were added.
       // No properties need to be modified to upgrade to version 2.
@@ -1236,7 +1234,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeTinyWebDBProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
       // No properties need to be modified to upgrade to version 2.
@@ -1246,7 +1244,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeVerticalArrangementProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                          int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
       // to upgrqde to version 2.
@@ -1260,7 +1258,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeNotifierProperties(Map<String, JSONValue> componentProperties,
-                                                  int srcCompVersion) {
+                                               int srcCompVersion) {
     if (srcCompVersion < 2) {
       // A new boolean socket was added to allow canceling out of ShowChooseDialog
       // and ShowTextDialog
@@ -1280,7 +1278,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeVideoPlayerProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                                  int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The VideoPlayer.VideoPlayerError event was added.
       // No properties need to be modified to upgrade to version 2.
@@ -1299,15 +1297,15 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
-        // The Volume property (setter only) was created.
-        // No properties need to be modified to upgrade to version 4.
-        srcCompVersion = 5;
-      }
+      // The Volume property (setter only) was created.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
   private static int upgradeTwitterProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                              int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The designer properties ConsumerKey and ConsumerSecret were added
       // No properties need to be modified to upgrade to version 2.
@@ -1350,7 +1348,7 @@ public final class YoungAndroidFormUpgrader {
   }
 
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
+                                              int srcCompVersion) {
     if (srcCompVersion < 2) {
       // The property (and designer property) TextBox.NumbersOnly was added
       // No properties need to be modified to upgrade to version 2.
@@ -1419,8 +1417,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeSpinnerProperties(Map<String, JSONValue> componentProperties,
+                                              int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static void handlePropertyRename(Map<String, JSONValue> componentProperties,
-      String oldPropName, String newPropName) {
+                                           String oldPropName, String newPropName) {
     if (componentProperties.containsKey(oldPropName)) {
       componentProperties.put(newPropName, componentProperties.remove(oldPropName));
     }
@@ -1447,11 +1453,11 @@ public final class YoungAndroidFormUpgrader {
     VerticalPanel vPanel = new VerticalPanel();
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
-        @Override
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
+      @Override
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+      }
+    });
     vPanel.add(message);
     vPanel.add(okButton);
     dialogBox.setWidget(vPanel);
