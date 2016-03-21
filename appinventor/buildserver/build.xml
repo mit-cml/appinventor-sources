@@ -83,7 +83,7 @@
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
-    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/4.2.2/android.jar" />
+    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />

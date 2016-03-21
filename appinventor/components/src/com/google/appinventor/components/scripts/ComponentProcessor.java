@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleBroadcastReceiver;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
@@ -89,6 +90,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.SimpleFunction",
       "com.google.appinventor.components.annotations.SimpleObject",
       "com.google.appinventor.components.annotations.SimpleProperty",
+      "com.google.appinventor.components.annotations.SimpleBroadcastReceiver",
       "com.google.appinventor.components.annotations.UsesAssets",
       "com.google.appinventor.components.annotations.UsesLibraries",
       "com.google.appinventor.components.annotations.UsesNativeLibraries",
@@ -460,6 +462,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> assets;
 
     /**
+     * Class Name and Filter Actions for a Broadcast Receiver
+     */
+    protected final Set<String> classNameAndActionsBR;
+
+    /**
      * Properties of this component that are visible in the Designer.
      * @see DesignerProperty
      */
@@ -519,6 +526,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       libraries = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
+      classNameAndActionsBR = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
       methods = Maps.newTreeMap();
@@ -776,6 +784,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.libraries.addAll(parentComponent.libraries);
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
+        componentInfo.classNameAndActionsBR.addAll(parentComponent.classNameAndActionsBR);
         // Since we don't modify DesignerProperties, we can just call Map.putAll to copy the
         // designer properties from parentComponent to componentInfo.
         componentInfo.designerProperties.putAll(parentComponent.designerProperties);
@@ -828,6 +837,24 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesAssets != null) {
       for (String file : usesAssets.fileNames().split(",")) {
         componentInfo.assets.add(file.trim());
+      }
+    }
+
+    // Gather required actions for Broadcast Receivers. The annotation
+    // has a Class Name and zero or more Filter Actions.  In the
+    // resulting String, Class name will go first, and each Action
+    // will be added, separated by a comma.
+
+    SimpleBroadcastReceiver simpleBroadcastReceiver = element.getAnnotation(SimpleBroadcastReceiver.class);
+    if (simpleBroadcastReceiver != null) {
+      for (String className : simpleBroadcastReceiver.className().split(",")){
+        StringBuffer nameAndActions = new StringBuffer();
+        nameAndActions.append(className.trim());
+        for (String action : simpleBroadcastReceiver.actions().split(",")) {
+          nameAndActions.append("," + action.trim());
+        }
+        componentInfo.classNameAndActionsBR.add(nameAndActions.toString());
+        break; // We only need one class name; If more than one is passed, ignore all but first.
       }
     }
 
