@@ -1364,8 +1364,21 @@ public final class Compiler {
 
       for (int i = 0; i < buildInfo.length(); ++i) {
         JSONObject compJson = buildInfo.getJSONObject(i);
-        JSONArray infoArray = compJson.getJSONArray(targetInfo);
+        JSONArray infoArray = null;
         String type = compJson.getString("type");
+        try {
+          infoArray = compJson.getJSONArray(targetInfo);
+        } catch (JSONException e) {
+          // Older compiled extensions will not have a broadcastReiver
+          // defined. Rather then require them all to be recompiled, we
+          // treat the missing attribute as empty.
+          if (e.getMessage().contains("broadcastReceiver")) {
+            LOG.log(Level.INFO, "Component \"" + type + "\" does not have a broadcast receiver.");
+            continue;
+          } else {
+            throw e;
+          }
+        }
 
         if (!simpleCompTypes.contains(type) && !extCompTypes.contains(type)) {
           continue;
