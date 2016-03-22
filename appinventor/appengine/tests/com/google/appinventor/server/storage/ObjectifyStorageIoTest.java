@@ -8,7 +8,6 @@ package com.google.appinventor.server.storage;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appinventor.server.LocalDatastoreTestCase;
-import com.google.appinventor.server.storage.StoredData.ComponentData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.component.Component;
@@ -20,9 +19,14 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import com.google.common.base.Charsets;
+
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -500,115 +504,18 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testUploadComponentFile() throws Exception {
-    final String USER_ID = "369";
-    final String FULL_NAME = COMPONENT_FILE_NAME1.substring(0,
-        COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
-    final long INIT_VERSION = 1;
-    final String PATH_SUFFIX = FULL_NAME + "/" + INIT_VERSION + "/" + COMPONENT_FILE_NAME1;
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-
-    List<ComponentData> compDataList = storage.getCompDataList(FULL_NAME);
-    assertFalse(compDataList.isEmpty());
-
-    ComponentData firstData = compDataList.get(0);
-    assertEquals(USER_ID, firstData.userId);
-    assertEquals(FULL_NAME, firstData.fullyQualifiedName);
-    assertEquals(INIT_VERSION, firstData.version);
-    assertTrue(firstData.gcsPath.endsWith(PATH_SUFFIX));
-    assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(firstData.gcsPath)));
-
-    // the version of the newly uploaded component is based on nextVersion in info.json
-    final String INFO_PATH = "external_comps" + "/" + FULL_NAME + "/" + "info.json";
-    final long VERSION = 10;
-    final long NUM_OF_VERSIONS = 5;
-    JSONObject info = new JSONObject();
-    info.put("nextVersion", VERSION);
-    info.put("numOfVersions", NUM_OF_VERSIONS);
-    storage.setGcsFileContent(INFO_PATH, info.toString().getBytes());
-
-    Component justAdded = storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1,
-        RAW_FILE_CONTENT1);
-    assertNotNull(justAdded);
-    assertEquals(VERSION, justAdded.getVersion());
-
-    byte[] infoContent = storage.getGcsFileContent(INFO_PATH);
-    JSONObject updatedInfo = new JSONObject(new String(infoContent));
-    assertEquals(NUM_OF_VERSIONS + 1, updatedInfo.getInt("numOfVersions"));
-  }
-
-  public void testGetComponents() {
-    final String USER_ID = "246";
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME2, RAW_FILE_CONTENT1);
-
-    assertEquals(2, storage.getComponents(USER_ID).size());
-
-    final String FULL_NAME_1 = COMPONENT_FILE_NAME1.substring(0,
-        COMPONENT_FILE_NAME1.length() - COMPONENT_EXTENSION_NAME.length());
-
-    final String FULL_NAME_2 = COMPONENT_FILE_NAME2.substring(0,
-        COMPONENT_FILE_NAME2.length() - COMPONENT_EXTENSION_NAME.length());
-
-    final long INIT_VERSION = 1;
-
-    Component comp1 = storage.getComponents(USER_ID).get(0);
-    assertEquals(USER_ID, comp1.getAuthorId());
-    assertEquals(FULL_NAME_1, comp1.getFullyQualifiedName());
-    assertEquals(INIT_VERSION, comp1.getVersion());
-
-    Component comp2 = storage.getComponents(USER_ID).get(1);
-    assertEquals(USER_ID, comp2.getAuthorId());
-    assertEquals(FULL_NAME_2, comp2.getFullyQualifiedName());
-    assertEquals(INIT_VERSION, comp2.getVersion());
-  }
-
-  public void testGetGcsFileContent() throws Exception {
-    String path = "/path/to/heaven.aix";
-
-    storage.setGcsFileContent(path, RAW_FILE_CONTENT1);
-    assertTrue(Arrays.equals(RAW_FILE_CONTENT1, storage.getGcsFileContent(path)));
-
-    path = "/path/to/hell.aix";
-    assertNull(storage.getGcsFileContent(path));
-  }
-
-  public void testGetGcsPath() {
-    final String USER_ID = "135";
-    storage.uploadComponentFile(USER_ID, COMPONENT_FILE_NAME1, RAW_FILE_CONTENT1);
-
-    Component comp = storage.getComponents(USER_ID).get(0);
-    assertNotNull(storage.getGcsPath(comp));
-
-    Component fakeComp = new Component(123, "fakeId", "fakeFullName", 456);
-    assertNull(storage.getGcsPath(fakeComp));
-  }
-
-  public void testDeleteComponent() {
-    Component comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
-        RAW_FILE_CONTENT1);
-    String infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() +
-        "/" + "info.json";
-
-    assertNotNull(storage.getGcsFileContent(infoPath));
-    assertNotNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
-    storage.deleteComponent(comp);
-    assertTrue(storage.getCompDataList(comp.getFullyQualifiedName()).isEmpty());
-    assertNull(storage.getGcsFileContent(infoPath));
-    assertNull(storage.getGcsFileContent(storage.getGcsPath(comp)));
-
-    final int NUM_OF_VERSIONS = 5;
-    for (int i = 0; i < NUM_OF_VERSIONS; ++i) {
-      comp = storage.uploadComponentFile("123", COMPONENT_FILE_NAME1,
-          RAW_FILE_CONTENT1);
+  public void testTempFiles() throws Exception {
+    String fileName = storage.uploadTempFile("test\n".getBytes(Charsets.UTF_8));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(storage.openTempFile(fileName),
+        Charsets.UTF_8));
+    assertTrue(reader.readLine().equals("test"));
+    storage.deleteTempFile(fileName);
+    try {
+      storage.deleteTempFile("frob"); // Should fail because doesn't start with __TEMP__
+      fail();
+    } catch (Exception e) {
+      assertTrue(e instanceof RuntimeException);
     }
-
-    storage.deleteComponent(comp);
-    infoPath = "external_comps" + "/" + comp.getFullyQualifiedName() + "/" +
-        "info.json";
-    byte[] infoContent = storage.getGcsFileContent(infoPath);
-    JSONObject updatedInfo = new JSONObject(new String(infoContent));
-    assertEquals(NUM_OF_VERSIONS - 1, updatedInfo.getInt("numOfVersions"));
   }
 
   /*

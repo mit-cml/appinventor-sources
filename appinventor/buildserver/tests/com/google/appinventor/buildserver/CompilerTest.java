@@ -49,13 +49,14 @@ public class CompilerTest extends TestCase {
   }
 
   public void testGenerateBroadcastReceiver() throws Exception {
-    Set<String> componentTypes = Sets.newHashSet("Texting");
+    Set<String> componentTypes = Sets.newHashSet("com.google.appinventor.components.runtime.Texting");
     Compiler compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048, null);
     Set<String> classNames = compiler.generateBroadcastReceiver();
     assertEquals(1, classNames.size());
     assertTrue(classNames.contains("com.google.appinventor.components.runtime.util.SmsBroadcastReceiver,android.provider.Telephony.SMS_RECEIVED,com.google.android.apps.googlevoice.SMS_RECEIVED"));
 
-    componentTypes = Sets.newHashSet("Texting", "Label");
+    componentTypes = Sets.newHashSet("com.google.appinventor.components.runtime.Texting",
+      "com.google.appinventor.components.runtime.Label");
     compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048, null);
     classNames = compiler.generateBroadcastReceiver();
     assertEquals(1, classNames.size());
