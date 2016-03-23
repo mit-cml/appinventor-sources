@@ -30,7 +30,7 @@ import java.util.List;
     description = "A component for a legacy module of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcLegacyModule.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcLegacyModule extends FtcHardwareDevice implements I2cPortReadyCallback {

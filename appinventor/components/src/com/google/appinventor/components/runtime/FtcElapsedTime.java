@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
     "FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcElapsedTime.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcElapsedTime extends AndroidNonvisibleComponent

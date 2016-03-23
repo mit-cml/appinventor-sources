@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.util.TypeConversion;
     description = "A component for an I2C device of an FTC robot, that provides synchronous access.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcI2cDeviceSynch.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcHardware.jar,FtcRobotCore.jar")
 public final class FtcI2cDeviceSynch extends FtcHardwareDevice {

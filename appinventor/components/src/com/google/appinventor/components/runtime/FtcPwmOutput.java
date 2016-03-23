@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.hardware.PWMOutput;
     description = "A component for a PWM output device of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcPwmOutput.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcPwmOutput extends FtcHardwareDevice {

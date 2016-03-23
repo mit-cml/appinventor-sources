@@ -34,7 +34,7 @@ import java.util.List;
     description = "A component for a device interface module of an FTC robot.",
     category = ComponentCategory.FIRSTTECHCHALLENGE,
     nonVisible = true,
-    iconName = "images/ftc.png")
+    iconName = "images/ftcDeviceInterfaceModule.png")
 @SimpleObject
 @UsesLibraries(libraries = "FtcRobotCore.jar")
 public final class FtcDeviceInterfaceModule extends FtcHardwareDevice
