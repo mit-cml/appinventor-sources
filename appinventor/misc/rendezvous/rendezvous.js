@@ -1,48 +1,14 @@
 var http = require('http');
+var sqlite3 = require('sqlite3');
+var exec = require('child_process').exec;
+// var sys = require('sys');
+var path = require('path');
 var requestHandler = http.IncomingMessage.prototype;
 var memcache = require('memcache');
 var mc = new memcache.Client();
 mc.connect();
 var querystring = require('querystring');
 var fs = require('fs')
-
-/*
- *  Database Handler
- *
- */
-
-var db = { 'connection' : null,
-	   'insert' : function(key, ua, ip) {
-	       var entry;
-	       try {
-		   var data = { 'key' : key, 'ip' : ip, 'ua' : ua,
-				'ts' : (new Date()).toISOString()};
-		   this.queue.push(data);
-		   if (!this.connection) {
-		       console.log('Opening a new connection.');
-		       if (!this.uri) {
-			   console.log("Do not have URI yet, queuing.");
-		       } else {
-			   var nano = require('nano')(this.uri);
-			   this.connection = nano.use('companion');
-		       }
-		   }
-		   while (entry = this.queue.pop())
-		       this.connection.insert(data);
-	       } catch (err) {
-		   console.log(err);
-		   console.log(err.stack);
-		   this.connection = null; // Force reconnect next time
-	       }
-	   },
-	   'queue' : []
-	 }
-
-fs.readFile('/home/appinv/uri', function(err, data) {
-    if (err)
-	throw err;
-    db.uri = data.toString();
-});
 
 /**
  * Add a uniform interface for remote address in Node.js
@@ -88,6 +54,17 @@ requestHandler.__defineGetter__('remote', function remote () {
   }
 });
 
+var dbfile = __dirname + "/rendezvous.sqlite";
+var nodb = true;
+var db = new sqlite3.Database(dbfile, sqlite3.OPEN_READWRITE,
+                              function(err) {
+                                if (!err) {
+                                  nodb = false;
+                                } else {
+                                  exec('logger "Cannot open ' + dbfile + '"');
+                                }
+                              });
+
 var server = function(request, response) {
     var data = "";
     if (request.method == 'POST') { // A phone checking in
@@ -101,7 +78,11 @@ var server = function(request, response) {
 		var json = JSON.stringify(data);
 		mc.set('rr-' + key, json, 120); // Save for two minutes.
 	    }
-	    db.insert(key, request.headers['user-agent'], request.remote.ip);
+            if (!nodb) {
+              db.run("insert into log (time, ip, useragent) values (?, ?, ?)",
+                     [new Date().toISOString(), request.remote.ip, request.headers['user-agent']]);
+            }
+//	    db.insert(key, request.headers['user-agent'], request.remote.ip);
 	    response.writeHead(200, "OK", { "Content-Type" : "text/plain",
 					    "Access-Control-Allow-Origin" : "*",
 					    "Access-Control-Allow-Headers" : "origin, content-type"});
@@ -115,7 +96,14 @@ var server = function(request, response) {
     } else {
 	var url = request.url.split('/');
 	var key = url[url.length-1];
-	if (key) {
+        if (key && (key == 'test')) {
+	  response.writeHead(200, "OK", { "Content-Type" : "application/json",
+					  "Access-Control-Allow-Origin" : "*",
+                                          "Expires" : "Fri, 01 Jan 1990 00:00:00 GMT",
+                                          "Cache-Control" : "no-cache, must-revalidate",
+					  "Access-Control-Allow-Headers" : "origin, content-type"});
+          response.end("Connection OK\n");
+	} else if (key) {
 	    mc.get('rr-' + key, function(err, result) {
 		response.writeHead(200, "OK", { "Content-Type" : "application/json",
 						"Access-Control-Allow-Origin" : "*",
