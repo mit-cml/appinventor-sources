@@ -253,6 +253,7 @@
       files in scripts/templates. -->
       <uptodate property="target.uptodate" targetfile="@{apt-target}">
         <srcfiles dir="${src.dir}" includes="${components.pkg}/**/*"/>
+        <srcfiles dir="${build.dir}/common" includes="CommonVersion.jar" />
       </uptodate>
       <!-- We need to delete all the classes before running javac below. Otherwise, javac will only
       process the Java files whose classes are not up-to-date and we'll end up with only a subset
@@ -375,7 +376,8 @@
        ===================================================================== -->
   <target name="JsonComponentDescription"
           description="Make simple_components.json."
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,common_CommonUtils">
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,
+                   common_CommonUtils,common_CommonVersion">
     <property name="JsonComponentDescription-class.dir"
               location="${class.dir}/JsonComponentDescription" />
     <ai.apt apt-classdir="${JsonComponentDescription-class.dir}"

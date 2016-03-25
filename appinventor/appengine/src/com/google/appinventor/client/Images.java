@@ -563,10 +563,22 @@ public interface Images extends Resources {
   ImageResource ftcDcMotorController();
 
   /*
+   * Designer palette item: FtcDeviceInterfaceModule component
+   */
+  @Source("com/google/appinventor/images/ftcDeviceInterfaceModule.png")
+  ImageResource ftcDeviceInterfaceModule();
+
+  /*
    * Designer palette item: FtcDigitalChannel component
    */
   @Source("com/google/appinventor/images/ftcDigitalChannel.png")
   ImageResource ftcDigitalChannel();
+
+  /*
+   * Designer palette item: FtcElapsedTime component
+   */
+  @Source("com/google/appinventor/images/ftcElapsedTime.png")
+  ImageResource ftcElapsedTime();
 
   /*
    * Designer palette item: FtcGamepad component
@@ -593,6 +605,12 @@ public interface Images extends Resources {
   ImageResource ftcI2cDeviceReader();
 
   /*
+   * Designer palette item: FtcI2cDeviceSynch component
+   */
+  @Source("com/google/appinventor/images/ftcI2cDeviceSynch.png")
+  ImageResource ftcI2cDeviceSynch();
+
+  /*
    * Designer palette item: FtcIrSeekerSensor component
    */
   @Source("com/google/appinventor/images/ftcIrSeekerSensor.png")
@@ -603,6 +621,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/ftcLED.png")
   ImageResource ftcLED();
+
+  /*
+   * Designer palette item: FtcLegacyModule component
+   */
+  @Source("com/google/appinventor/images/ftcLegacyModule.png")
+  ImageResource ftcLegacyModule();
 
   /*
    * Designer palette item: FtcLightSensor component
@@ -627,6 +651,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/ftcOpticalDistanceSensor.png")
   ImageResource ftcOpticalDistanceSensor();
+
+  /*
+   * Designer palette item: FtcPwmOutput component
+   */
+  @Source("com/google/appinventor/images/ftcPwmOutput.png")
+  ImageResource ftcPwmOutput();
 
   /*
    * Designer palette item: FtcRobotController component

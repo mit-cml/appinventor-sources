@@ -11,8 +11,8 @@ package com.google.appinventor.common.version;
  *
  */
 public final class FtcConstants {
-  public static final String DEFAULT_VERSION_CODE = "8";
-  public static final String DEFAULT_VERSION_NAME = "1.7";
+  public static final String DEFAULT_VERSION_CODE = "9";
+  public static final String DEFAULT_VERSION_NAME = "1.75";
 
   private FtcConstants() {
   }
