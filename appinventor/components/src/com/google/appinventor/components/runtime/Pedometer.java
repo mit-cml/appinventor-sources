@@ -24,10 +24,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 /**
@@ -42,7 +38,7 @@ import android.util.Log;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.ACCESS_FINE_LOCATION")
 public class Pedometer extends AndroidNonvisibleComponent
-    implements Component, LocationListener, SensorEventListener, Deleteable {
+    implements Component, SensorEventListener, Deleteable {
   private static final String TAG = "Pedometer";
   private static final String PREFS_NAME = "PedometerPrefs";
 
@@ -54,34 +50,21 @@ public class Pedometer extends AndroidNonvisibleComponent
 
   private final Context context;
   private final SensorManager sensorManager;
-  private final LocationManager locationManager;
-
-  private Location prevLocation;
-  private Location currentLocation;
-  private Location locationWhenGPSLost;
 
   private int       stopDetectionTimeout = 2000;
   private int       winPos = 0, intervalPos = 0;
   private int       numStepsWithFilter = 0, numStepsRaw = 0;
-  private int       lastNumSteps = 0;
   private float     lastValley = 0;
   private float[]   lastValues = new float[WIN_SIZE];
   private float     strideLength = STRIDE_LENGTH;
   private float     totalDistance = 0;
-  private float     distWhenGPSLost = 0;
-  private float     gpsDistance = 0;
   private long[]    stepInterval = new long[NUM_INTERVALS];
   private long      stepTimestamp = 0;
   private long      startTime = 0, prevStopClockTime = 0;
   private boolean   foundValley = false;
   private boolean   startPeaking = false;
   private boolean   foundNonStep = true;
-  private boolean   gpsAvailable = false;
-  private boolean   calibrateSteps = true;
   private boolean   pedometerPaused = true;
-  private boolean   useGps = true;
-  private boolean   statusMoving = false;
-  private boolean   firstGpsReading = true;
 
   private float[] avgWindow = new float[10];
   private int avgPos = 0;
@@ -96,15 +79,10 @@ public class Pedometer extends AndroidNonvisibleComponent
     numStepsWithFilter = 0;
     numStepsRaw = 0;
 
-    firstGpsReading = true;
-    gpsDistance = 0;
-
     foundValley = true;
     lastValley = 0;
 
     sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-    locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
     // Restore preferences
     SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -139,10 +117,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleFunction
   public void Stop() {
     Pause();
-    locationManager.removeUpdates(this);
-    useGps = false;
-    calibrateSteps = false;
-    setGpsAvailable(false);
   }
 
   /**
@@ -153,7 +127,6 @@ public class Pedometer extends AndroidNonvisibleComponent
     numStepsWithFilter = 0;
     numStepsRaw = 0;
     totalDistance = 0;
-    calibrateSteps = false;
     prevStopClockTime = 0;
     startTime = System.currentTimeMillis();
   }
@@ -173,7 +146,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   public void Pause() {
     if (!pedometerPaused) {
       pedometerPaused = true;
-      statusMoving = false;
       sensorManager.unregisterListener(this);
       Log.d(TAG, "Unregistered listener on pause");
       prevStopClockTime += (System.currentTimeMillis() - startTime);
@@ -228,48 +200,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that the device is moving.
-   */
-  @SimpleEvent
-  public void StartedMoving() {
-    EventDispatcher.dispatchEvent(this, "StartedMoving");
-  }
-
-  /**
-   * Indicates that the device has stopped.
-   */
-  @SimpleEvent
-  public void StoppedMoving() {
-    EventDispatcher.dispatchEvent(this, "StoppedMoving");
-  }
-
-  /**
-   * Indicates that the calibration has failed. This could happen is the GPS
-   * is not active, or if the client has set UseGps to false.
-   */
-  @SimpleEvent
-  public void CalibrationFailed() {
-    EventDispatcher.dispatchEvent(this, "CalibrationFailed");
-  }
-
-  /**
-   * Indicates that the GPS is now available to use for distance measurement, and that
-   * calibration is now possible.
-   */
-  @SimpleEvent
-  public void GPSAvailable() {
-    EventDispatcher.dispatchEvent(this, "GPSAvailable");
-  }
-
-  /**
-   * Indicates that the GPS signal is lost.
-   */
-  @SimpleEvent
-  public void GPSLost() {
-    EventDispatcher.dispatchEvent(this, "GPSLost");
-  }
-
-  /**
    * Called whenever the accelerometer value updates.
    *
    * @param magnitude the smoothed magnitude value used for step detection
@@ -280,36 +210,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   // Properties
-
-  /**
-   * Starts the process of calibrating the stride length by comparing number
-   * of steps with the ditance covered (using the GPS).
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "true")
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
-  public void CalibrateStrideLength(boolean cal) {
-    if (!gpsAvailable && cal) {
-      CalibrationFailed();
-    } else {
-      if (cal) {
-        useGps = true;
-      }
-      calibrateSteps = cal;
-    }
-  }
-
-  /**
-   * Tells Whether stride length calibration is currently going on.
-   *
-   * @return {@code true} if stride length calibration is currently going on,
-   *     {@code false} otherwise.
-   */
-  @SimpleProperty
-  public boolean CalibrateStrideLength() {
-    return calibrateSteps;
-  }
 
   /**
    * Specifies the stride length in meters. The application can use this to explicitly set
@@ -323,7 +223,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public void StrideLength(float length) {
-    CalibrateStrideLength(false);
     strideLength = length;
   }
 
@@ -362,37 +261,6 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Specifies whether to use GPS, if signal is available, to compute distance. This is set to
-   * {@code true} by default.
-   *
-   * @param gps {@code true} enables use of GPS,
-   *            {@code false} disables GPS
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "true")
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
-  public void UseGPS(boolean gps) {
-    if (!gps && useGps) {
-      locationManager.removeUpdates(this);
-    } else if (gps && !useGps) {
-      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-          0, 0, this);
-    }
-    useGps = gps;
-  }
-
-  /**
-   * Returns whether the GPS is being used to measure distance.
-   *
-   * @return {@code true} if GPS is being used to measure distance, {@code false} otherwise.
-   */
-  @SimpleProperty
-  public boolean UseGPS() {
-    return useGps;
-  }
-
-  /**
    * Returns the approximate distance traveled in meters.
    *
    * @return approximate distance traveled in meters.
@@ -401,17 +269,6 @@ public class Pedometer extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR)
   public float Distance() {
     return totalDistance;
-  }
-
-  /**
-   * Returns the current status of motion.
-   *
-   * @return {@code true} if moving, {@code false} otherwise.
-   */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
-  public boolean Moving() {
-    return statusMoving;
   }
 
   /**
@@ -477,16 +334,6 @@ public class Pedometer extends AndroidNonvisibleComponent
     return true;
   }
 
-  private void setGpsAvailable(boolean available) {
-    if (!gpsAvailable && available) {
-      gpsAvailable = true;
-      GPSAvailable();
-    } else if (gpsAvailable && !available) {
-      gpsAvailable = false;
-      GPSLost();
-    }
-  }
-
   // SensorEventListener implementation
 
   @Override
@@ -517,25 +364,17 @@ public class Pedometer extends AndroidNonvisibleComponent
         if (areStepsEquallySpaced()) {
           if (foundNonStep) {
             numStepsWithFilter += NUM_INTERVALS;
-            if (!gpsAvailable) {
-              totalDistance += strideLength * NUM_INTERVALS;
-            }
+            totalDistance += strideLength * NUM_INTERVALS;
             foundNonStep = false;
           }
           numStepsWithFilter++;
           WalkStep(numStepsWithFilter, totalDistance);
-          if (!gpsAvailable) {
-            totalDistance += strideLength;
-          }
+          totalDistance += strideLength;
         } else {
           foundNonStep = true;
         }
         numStepsRaw++;
         SimpleStep(numStepsRaw, totalDistance);
-        if (!statusMoving) {
-          statusMoving = true;
-          StartedMoving();
-        }
         foundValley = false;
       }
     }
@@ -564,10 +403,6 @@ public class Pedometer extends AndroidNonvisibleComponent
 
     long elapsedTimestamp = System.currentTimeMillis();
     if (elapsedTimestamp - stepTimestamp > stopDetectionTimeout) {
-      if (statusMoving) {
-        statusMoving = false;
-        StoppedMoving();
-      }
       stepTimestamp = elapsedTimestamp;
     }
     // Once the buffer is full, start peak/valley detection.
@@ -578,75 +413,9 @@ public class Pedometer extends AndroidNonvisibleComponent
     winPos = (winPos + 1) % WIN_SIZE;
   }
 
-  // LocationListener implementation
-
-  @Override
-  public void onLocationChanged(Location loc) {
-    // If pedometer says stopped, return
-    if (!statusMoving || pedometerPaused || !useGps) {
-      return;
-    }
-    float distDelta = 0;
-    currentLocation = loc;
-    if (currentLocation.getAccuracy() > 10) {
-      setGpsAvailable(false);
-      return;
-    } else {
-      setGpsAvailable(true);
-    }
-    if (prevLocation != null) {
-      distDelta = currentLocation.distanceTo(prevLocation);
-      if (distDelta > 0.1 && distDelta < 10) {
-        totalDistance += distDelta;
-        prevLocation = currentLocation;
-      }
-    } else {
-      if (locationWhenGPSLost != null) {
-        float distDarkness =
-            currentLocation.distanceTo(locationWhenGPSLost);
-        totalDistance = distWhenGPSLost +
-            (distDarkness + (totalDistance - distWhenGPSLost)) / 2;
-      }
-      prevLocation = currentLocation;
-    }
-    if (calibrateSteps) {
-      if (!firstGpsReading) {
-        gpsDistance += distDelta;
-        int stepsTaken = numStepsRaw - lastNumSteps;
-        strideLength = gpsDistance / stepsTaken;
-      } else {
-        firstGpsReading = false;
-        lastNumSteps = numStepsRaw;
-      }
-    } else {
-      firstGpsReading = true;
-      gpsDistance = 0;
-    }
-  }
-
-  @Override
-  public void onProviderDisabled(String provider) {
-    distWhenGPSLost = totalDistance;
-    locationWhenGPSLost = currentLocation;
-    firstGpsReading = true;
-    prevLocation = null;
-    setGpsAvailable(false);
-  }
-
-  @Override
-  public void onProviderEnabled(String provider) {
-    setGpsAvailable(true);
-  }
-
-  @Override
-  public void onStatusChanged(String provider, int status, Bundle data) {
-  }
-
   // Deleteable implementation
-
   @Override
   public void onDelete() {
     sensorManager.unregisterListener(this);
-    locationManager.removeUpdates(this);
   }
 }
