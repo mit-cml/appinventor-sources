@@ -1568,7 +1568,7 @@ public interface OdeMessages extends Messages {
     " can import into App Inventor and edit. Try uploading " +
     " images and sounds here instead!")
   @Description("Error message when user tries to upload aia file as media asset")
-  String aiaMediaAsset();
+  String aiaMediaAsset(); 
 
   @DefaultMessage("Request to save {1}" +
       "\n\nA file named {0} already exists in this project." +
