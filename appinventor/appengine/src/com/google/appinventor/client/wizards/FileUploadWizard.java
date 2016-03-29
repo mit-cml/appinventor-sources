@@ -92,6 +92,18 @@ public class FileUploadWizard extends Wizard {
             Window.alert(MESSAGES.filenameBadSize());
             return;
           }
+          int nameLength = uploadFilename.length();
+          String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
+          
+          if (".aia".equals(fileEnd.toLowerCase())) {
+            Anchor aiaHelp = new Anchor("here","http://appinventor.mit.edu/explore/ai2/share.html");
+            Window.alert(MESSAGES.aiaMediaAsset()+aiaHelp);
+            if (Window.confirm(MESSAGES.aiaMediaAsset())) {
+              Window.open("http://appinventor.mit.edu/explore/ai2/share.html", 
+                "AIA_Help", "");
+            }
+            return;
+          } 
           String fn = conflictingExistingFile(folderNode, filename);
           if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
             return;
