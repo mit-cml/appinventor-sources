@@ -377,6 +377,7 @@
         <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/moxieapps/org.moxieapps.gwt.uploader-1.1.0.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>
@@ -427,6 +428,7 @@
         <pathelement location="${lib.dir}/guava/guava-gwt-18.0.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/moxieapps/org.moxieapps.gwt.uploader-1.1.0.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>

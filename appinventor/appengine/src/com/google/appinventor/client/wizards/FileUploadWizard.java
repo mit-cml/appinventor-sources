@@ -65,7 +65,7 @@ public class FileUploadWizard extends Wizard {
    * @param fileUploadedCallback callback to be executed after upload
    */
   public FileUploadWizard(final FolderNode folderNode,
-      final FileUploadedCallback fileUploadedCallback) {
+                          final FileUploadedCallback fileUploadedCallback) {
     super(MESSAGES.fileUploadWizardCaption(), true, false);
 
     // Initialize UI
@@ -104,17 +104,17 @@ public class FileUploadWizard extends Wizard {
                 Ode ode = Ode.getInstance();
                 ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
                 ode.getProjectService().deleteFile(ode.getSessionId(),
-                    node.getProjectId(), node.getFileId(),
-                    new OdeAsyncCallback<Long>(
-                        // message on failure
-                        MESSAGES.deleteFileError()) {
-                      @Override
-                      public void onSuccess(Long date) {
-                        Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
-                        Ode.getInstance().updateModificationDate(node.getProjectId(), date);
+                        node.getProjectId(), node.getFileId(),
+                        new OdeAsyncCallback<Long>(
+                                // message on failure
+                                MESSAGES.deleteFileError()) {
+                          @Override
+                          public void onSuccess(Long date) {
+                            Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
+                            Ode.getInstance().updateModificationDate(node.getProjectId(), date);
 
-                      }
-                    });
+                          }
+                        });
               }
             }
           }
@@ -123,29 +123,29 @@ public class FileUploadWizard extends Wizard {
           // Use the folderNode's project id and file id in the upload URL so that the file is
           // uploaded into that project and that folder in our back-end storage.
           String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-              ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-              folderNode.getFileId() + "/" + filename;
+                  ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+                  folderNode.getFileId() + "/" + filename;
           Uploader.getInstance().upload(upload, uploadUrl,
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-            @Override
-            public void onSuccess(UploadResponse uploadResponse) {
-              switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                    fileUploadedCallback);
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
-              }
-            }
-          });
+                  new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+                    @Override
+                    public void onSuccess(UploadResponse uploadResponse) {
+                      switch (uploadResponse.getStatus()) {
+                        case SUCCESS:
+                          ErrorReporter.hide();
+                          onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                                  fileUploadedCallback);
+                          break;
+                        case FILE_TOO_LARGE:
+                          // The user can resolve the problem by
+                          // uploading a smaller file.
+                          ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                          break;
+                        default:
+                          ErrorReporter.reportError(MESSAGES.fileUploadError());
+                          break;
+                      }
+                    }
+                  });
         } else {
           Window.alert(MESSAGES.noFileSelected());
           new FileUploadWizard(folderNode, fileUploadedCallback).show();
@@ -169,7 +169,7 @@ public class FileUploadWizard extends Wizard {
     // Strip leading path off filename.
     // We need to support both Unix ('/') and Windows ('\\') separators.
     String filename = uploadFilename.substring(
-        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+            Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
     // We need to strip out whitespace from the filename.
     filename = filename.replaceAll("\\s", "");
     return filename;
@@ -196,13 +196,13 @@ public class FileUploadWizard extends Wizard {
   }
 
   private void onUploadSuccess(final FolderNode folderNode, final String filename,
-      long modificationDate, final FileUploadedCallback fileUploadedCallback) {
+                               long modificationDate, final FileUploadedCallback fileUploadedCallback) {
     Ode.getInstance().updateModificationDate(folderNode.getProjectId(), modificationDate);
     finishUpload(folderNode, filename, fileUploadedCallback);
   }
 
   private void finishUpload(FolderNode folderNode, String filename,
-      FileUploadedCallback fileUploadedCallback) {
+                            FileUploadedCallback fileUploadedCallback) {
     String uploadedFileId = folderNode.getFileId() + "/" + filename;
     FileNode uploadedFileNode;
     if (folderNode instanceof YoungAndroidAssetsFolder) {
