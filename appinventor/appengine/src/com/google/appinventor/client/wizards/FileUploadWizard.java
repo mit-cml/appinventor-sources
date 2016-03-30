@@ -99,17 +99,19 @@ public class FileUploadWizard extends Wizard {
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
           if(!TextValidators.isValidCharFilename(filename)){
-            Window.alert(MESSAGES.malformedFilename());
+            //Window.alert(MESSAGES.malformedFilename());
+            createErrorDialog("malformed", folderNode, fileUploadedCallback);
             return;
           } else if (!TextValidators.isValidLengthFilename(filename)){
-            Window.alert(MESSAGES.filenameBadSize());
+            //Window.alert(MESSAGES.filenameBadSize());
+            createErrorDialog("badSize", folderNode, fileUploadedCallback);
             return;
           }
           int nameLength = uploadFilename.length();
           String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
           
           if (".aia".equals(fileEnd.toLowerCase())) {
-            createErrorDialog(MESSAGES.aiaMediaAsset());
+            createErrorDialog("aia", folderNode, fileUploadedCallback);
             return;
           } 
           String fn = conflictingExistingFile(folderNode, filename);
@@ -168,8 +170,7 @@ public class FileUploadWizard extends Wizard {
             }
           });
         } else {
-          Window.alert(MESSAGES.noFileSelected());
-          new FileUploadWizard(folderNode, fileUploadedCallback).show();
+          createErrorDialog("noFile", folderNode, fileUploadedCallback);
         }
       }
     });
@@ -239,37 +240,81 @@ public class FileUploadWizard extends Wizard {
       fileUploadedCallback.onFileUploaded(folderNode, uploadedFileNode);
     }
   }
-  private void createErrorDialog(String errorMessage) {
+
+  private boolean createErrorDialog(String errorType, final FolderNode folderNode,
+      final FileUploadedCallback fileUploadedCallback) {
+    boolean return_val = true
     final DialogBox dialogBox = new DialogBox(false,true);
+    HTML message;
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Error: Cannot upload .aia file as media asset");
     dialogBox.setHeight("150px");
     dialogBox.setWidth("350px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML(errorMessage);
-    message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button ok = new Button ("OK");
-    Button info = new Button ("More Info");
     ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
-    info.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        new FileUploadWizard(folderNode, fileUploadedCallback).show();
+      }
+    });
+    holder.add(ok);
+    if (errorType.equals("aia")) {
+      dialogBox.setText("Error: Cannot upload .aia file as media asset");  
+      message = new HTML(MESSAGES.aiaMediaAsset());
+      
+      Button info = new Button ("More Info");
+      info.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           Window.open("http://appinventor.mit.edu/explore/ai2/share.html", 
             "AIA_Help", "");
         }
-    });
-    holder.add(ok);
-    holder.add(info);
+      });
+      holder.add(info);
+    } else if (errorType.equals("noFile")) {
+      dialogBox.setText("Error: No File Selected");
+      message = new HTML(MESSAGES.noFileSelected());
+    } else if (errorType.equals("malformed")) {
+      dialogBox.setText("Error: Malformed Filename");
+      message = new HTML(MESSAGES.malformedFilename());
+    } else if (errorType.equals("badSize")) {
+      dialogBox.setText("Error: Bad Filename Size");
+      message = new HTML(MESSAGES.filenameBadSize());
+    } else if (errorType.equals("overwrite")) {
+      dialogBox.setText("Confirm Save As...")
+      message = new HTML(MESSAGES.confirmOverwrite());
+      holder.clear()
+      Button overwrite = new Button("Overwrite");
+      overwite.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+      Button cancel = new Button("Cancel");
+      cancel.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          return_val = false
+        }
+      });
+      holder.add(overwrite);
+      holder.add(cancel);
+    }
+    else {
+      dialogBox.setText("Error of unknown type");
+      message = new HTML("Type of error cannot be determined.");
+    }
+
+    
+ 
+    message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
+    return return_val
   }
 }
