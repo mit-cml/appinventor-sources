@@ -249,7 +249,7 @@ public class FileUploadWizard extends Wizard {
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML(errorMessage + "<a href=>Click \"More Info\" to learn more about aia file use!</a>");
+    HTML message = new HTML(errorMessage);
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
     Button ok = new Button ("OK");
