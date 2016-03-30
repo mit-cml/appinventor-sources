@@ -30,6 +30,19 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -96,12 +109,7 @@ public class FileUploadWizard extends Wizard {
           String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
           
           if (".aia".equals(fileEnd.toLowerCase())) {
-            Anchor aiaHelp = new Anchor("here","http://appinventor.mit.edu/explore/ai2/share.html");
-            Window.alert(MESSAGES.aiaMediaAsset()+aiaHelp);
-            if (Window.confirm(MESSAGES.aiaMediaAsset())) {
-              Window.open("http://appinventor.mit.edu/explore/ai2/share.html", 
-                "AIA_Help", "");
-            }
+            createErrorDialog(MESSAGES.aiaMediaAsset());
             return;
           } 
           String fn = conflictingExistingFile(folderNode, filename);
@@ -230,5 +238,38 @@ public class FileUploadWizard extends Wizard {
     if (fileUploadedCallback != null) {
       fileUploadedCallback.onFileUploaded(folderNode, uploadedFileNode);
     }
+  }
+  private void createErrorDialog(String errorMessage) {
+    final DialogBox dialogBox = new DialogBox(false,true);
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Error: Cannot upload .aia file as media asset");
+    dialogBox.setHeight("150px");
+    dialogBox.setWidth("350px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(errorMessage + "<a href=>Click \"More Info\" to learn more about aia file use!</a>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button ok = new Button ("OK");
+    Button info = new Button ("More Info");
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+        }
+      });
+    info.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          Window.open("http://appinventor.mit.edu/explore/ai2/share.html", 
+            "AIA_Help", "");
+        }
+    });
+    holder.add(ok);
+    holder.add(info);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
   }
 }
