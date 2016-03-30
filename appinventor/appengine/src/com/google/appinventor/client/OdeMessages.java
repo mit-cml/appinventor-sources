@@ -1566,7 +1566,7 @@ public interface OdeMessages extends Messages {
     " If you want to share a project for someone to remix," + 
     " you can export your project as an aia file that they " + 
     " can import into App Inventor and edit. Try uploading " +
-    " images and sounds here instead!")
+    " images and sounds instead!")
   @Description("Error message when user tries to upload aia file as media asset")
   String aiaMediaAsset(); 
 
