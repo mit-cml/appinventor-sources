@@ -241,9 +241,8 @@ public class FileUploadWizard extends Wizard {
     }
   }
 
-  private boolean createErrorDialog(String errorType, final FolderNode folderNode,
+  private void createErrorDialog(String errorType, final FolderNode folderNode,
       final FileUploadedCallback fileUploadedCallback) {
-    boolean return_val = true
     final DialogBox dialogBox = new DialogBox(false,true);
     HTML message;
     dialogBox.setStylePrimaryName("ode-DialogBox");
@@ -283,38 +282,16 @@ public class FileUploadWizard extends Wizard {
     } else if (errorType.equals("badSize")) {
       dialogBox.setText("Error: Bad Filename Size");
       message = new HTML(MESSAGES.filenameBadSize());
-    } else if (errorType.equals("overwrite")) {
-      dialogBox.setText("Confirm Save As...")
-      message = new HTML(MESSAGES.confirmOverwrite());
-      holder.clear()
-      Button overwrite = new Button("Overwrite");
-      overwite.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-        }
-      });
-      Button cancel = new Button("Cancel");
-      cancel.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          dialogBox.hide();
-          return_val = false
-        }
-      });
-      holder.add(overwrite);
-      holder.add(cancel);
-    }
-    else {
+    } else {
       dialogBox.setText("Error of unknown type");
       message = new HTML("Type of error cannot be determined.");
     }
 
-    
- 
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
-    return return_val
   }
+  
 }
