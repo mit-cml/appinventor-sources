@@ -116,6 +116,7 @@
              nowarn="@{nowarn}"
              debug="@{debug}"
              debuglevel="@{debuglevel}">
+        <withKotlin/>
         <implicit-elements/>
       </javac>
     </sequential>
@@ -225,6 +226,9 @@
        Define property for external libraries directory.
        ==================================================================== -->
   <property name="lib.dir" location="${appinventor.dir}/lib" />
+  
+  <!-- add in kotlin resource -->
+  <typedef resource="org/jetbrains/kotlin/ant/antlib.xml" classpath="${lib.dir}/kotlin/kotlin-ant.jar"/>
 
   <!-- ====================================================================
        Define property for docs directory.

@@ -110,6 +110,8 @@ public final class Compiler {
    */
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
+  private static final String SIMPLE_KOTLIN_RUNTIME_JAR =
+      RUNTIME_FILES_DIR + "KotlinRuntime.jar";
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
   private static final String MAC_AAPT_TOOL =
@@ -800,7 +802,8 @@ public final class Compiler {
       String classpath =
         getResource(KAWA_RUNTIME) + File.pathSeparator +
         getResource(ACRA_RUNTIME) + File.pathSeparator +
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator + 
+		getResource(SIMPLE_KOTLIN_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
       System.out.println("Libraries Classpath, n " + librariesNeeded.size());
@@ -1006,6 +1009,7 @@ public final class Compiler {
     List<File> class2List = new ArrayList<File>();
     inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
+    inputList.add(new File(getResource(SIMPLE_KOTLIN_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
 

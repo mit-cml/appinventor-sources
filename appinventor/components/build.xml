@@ -113,6 +113,7 @@
     <ai.javac5 destdir="${AndroidRuntime-class.dir}">
       <include name="${components.pkg}/annotations/*.java" />
       <include name="${components.pkg}/runtime/**/*.java" />
+      <include name="${components.pkg}/runtime/**/*.kt" />
       <classpath>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
@@ -145,6 +146,9 @@
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
       <zipfileset src="${build.dir}/common/CommonVersion.jar" />
     </jar>
+	<jar destfile="${public.build.dir}/KotlinRuntime.jar">
+		<zipfileset src="${lib.dir}/kotlin/kotlin-runtime.jar"/>
+	</jar>
   </target>
 
   <!-- =====================================================================
@@ -153,6 +157,7 @@
 
   <path id="libsForAndroidRuntimeTests.path">
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
+    <pathelement location="${public.build.dir}/KotlinRuntime.jar" />
     <pathelement location="${public.build.dir}/CommonConstants.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -216,8 +221,10 @@
              srcdir="${src.dir}"
              includeantruntime="false">
         <include name="${components.pkg}/runtime/*.java" />
+        <include name="${components.pkg}/runtime/*.kt" />
         <classpath>
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
+          <pathelement location="${public.build.dir}/KotlinRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
           <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
@@ -242,6 +249,7 @@
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
+		<withKotlin/>
       </javac>
     </sequential>
   </macrodef>
