@@ -40,7 +40,6 @@ public class GallerySearchIndex {
   private final transient GalleryStorageIo galleryStorageIo =
       GalleryStorageIoInstanceHolder.INSTANCE;
   private static volatile GallerySearchIndex  instance= null;
-  private static Cursor searchCursor;
   private static final int SEARCH_RETRY_MAX = 3;
   private final int NUMBER_FOUND_ACCURACY = 100;
   /**
@@ -113,14 +112,9 @@ public class GallerySearchIndex {
     //TODO page sliced has not implemented yet
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     final Result<Integer> size = new Result<Integer>();
-
-    //New search
-    if (start == 0 || searchCursor == null){
-      searchCursor = Cursor.newBuilder().build();
-    }
     Query query = Query.newBuilder()
             .setOptions(QueryOptions.newBuilder()
-                    .setCursor(searchCursor)
+                    .setOffset(start)
                     .setLimit(count)
                     .setNumberFoundAccuracy(NUMBER_FOUND_ACCURACY)
                     // for deployed apps, uncomment the line below to demo snippeting.
@@ -140,12 +134,14 @@ public class GallerySearchIndex {
         retry = false;
       } catch (SearchException e) {
         if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
-          // No more attempts
-          if (attempts++ >= SEARCH_RETRY_MAX) {
+          attempts++;
+          LOG.info("Query failed on attempt:" + attempts);
+          // No more attempts, stop retrying
+          if (attempts >= SEARCH_RETRY_MAX) {
             retry = false;
           }
-          LOG.info("Query failed on attempt:" + attempts);
         } else {
+          //Not a transient error, Do Not Retry
           retry = false;
           LOG.log(Level.SEVERE, "SEARCH EXCEPTION: " + e.getMessage());
         }
@@ -169,7 +165,6 @@ public class GallerySearchIndex {
         }
       }
       size.t = (int) results.getNumberFound();
-      searchCursor = results.getCursor();
     } else {
       // the search was not successful in the try and catch
       size.t = 0;
