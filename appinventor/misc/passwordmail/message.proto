@@ -1,0 +1,5 @@
+message Message {
+  required string email = 1;
+  optional string url = 2;
+  optional string locale = 3;
+}

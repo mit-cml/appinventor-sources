@@ -27,6 +27,9 @@
 
   </static-files>
 
+  <!-- Permit sessions for location authentication -->
+  <sessions-enabled>true</sessions-enabled>
+
   <!-- Configuration and flags -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
@@ -67,6 +70,22 @@
     <!-- set to true if users need to accept a Terms of Service the first time
       they access App Inventor -->
     <property name="require.tos" value="true" />
+
+    <!-- Flags that select authentication method
+         set auth.usegoogle to true to use Google Accounts
+         set auth.uselocal to permit local users (username is email address) and password.
+         If both are set, the login page will have a link to permit people to use
+         their Google Account.
+         It is an error for neither to be set. Instead of a login page, visitors
+         to the site will receive an error page.
+     -->
+
+    <property name="auth.usegoogle" value="true" />
+    <property name="auth.uselocal" value="true" />
+
+    <!-- Flags associated with localauth code -->
+    <property name="localauth.mailserver" value="https://osiris.mit.edu/passmail/" />
+    <property name="localauth.mailserver.password" value="changeme" />
 
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
