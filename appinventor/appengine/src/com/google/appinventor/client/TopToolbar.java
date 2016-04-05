@@ -102,6 +102,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
+  private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
@@ -112,6 +113,8 @@ public class TopToolbar extends Composite {
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
   public DropDownButton adminDropDown;
+
+  private boolean isReadOnly;
 
   public TopToolbar() {
     /*
@@ -128,37 +131,46 @@ public class TopToolbar extends Composite {
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
 
+    // Should the UI be in read only mode?
+    isReadOnly = Ode.getInstance().isReadOnly();
+
     // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
     fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.projectMenuItem(),
         new SwitchToProjectAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
-        new NewAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
-        new ImportProjectAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
+    if (!isReadOnly) {
+      fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
+          new NewAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
+          new ImportProjectAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
         new ImportTemplateAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-        new DeleteAction()));
-    fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
-        new SaveAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
-        new SaveAsAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointMenuItem(),
-        new CheckpointAction()));
-    fileItems.add(null);
+      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
+          new DeleteAction()));
+      fileItems.add(null);
+      fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
+          new SaveAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
+          new SaveAsAction()));
+      fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointMenuItem(),
+          new CheckpointAction()));
+      fileItems.add(null);
+    }
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
         new ExportAllProjectsAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
-        new UploadKeystoreAction()));
+    if (!isReadOnly) {
+      fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
+          new UploadKeystoreAction()));
+    }
     fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),
         new DownloadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
-        new DeleteKeystoreAction()));
+    if (!isReadOnly) {
+      fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
+          new DeleteKeystoreAction()));
+    }
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
@@ -260,6 +272,8 @@ public class TopToolbar extends Composite {
           MESSAGES.downloadUserSourceMenuItem(), new DownloadUserSourceAction()));
       adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
           MESSAGES.switchToDebugMenuItem(), new SwitchToDebugAction()));
+      adminItems.add(new DropDownItem(WIDGET_NAME_USER_ADMIN,
+          "User Admin", new SwitchToUserAdminAction()));
       adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminTabName(), adminItems,
           false);
       adminDropDown.setStyleName("ode-TopPanelButton");
@@ -867,6 +881,10 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
+    if (isReadOnly) {
+      // This may be too simple
+      return;
+    }
     if (view == 0) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
@@ -927,6 +945,13 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().switchToDebuggingView();
+    }
+  }
+
+  private static class SwitchToUserAdminAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToUserAdminPanel();
     }
   }
 

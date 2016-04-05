@@ -44,10 +44,6 @@ public class OdeAuthFilter implements Filter {
 
   private static final UserService userService = UserServiceFactory.getUserService();
 
-  // Note that if no whitelist exists, then no whitelist will be used.
-//  private static final Whitelist whitelist = new Whitelist();
-  private static final IdMap idmap = IdMap.getInstance();
-
   // Whether this server should use a whitelist to determine who can
   // access it. Value is specified in the <system-properties> section
   // of appengine-web.xml.
@@ -70,22 +66,46 @@ public class OdeAuthFilter implements Filter {
     final HttpServletRequest httpRequest = (HttpServletRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-    // Use Google Accounts authentication
-    if (httpRequest.getUserPrincipal() == null) {
-      return;   // if no principal, block the request
+    // Use Local Authentication
+    String userid = (String) httpRequest.getSession().getAttribute("userid");
+    Object isReadOnlyObject = httpRequest.getSession().getAttribute("readonly");
+    boolean isReadOnly = false;
+    if (isReadOnlyObject != null) {
+      isReadOnly = (boolean) isReadOnlyObject;
+    }
+    LOG.info("isReadOnly = " + isReadOnly);
+    if (userid == null) {        // Invalid Login
+      LOG.info("userid is null on login.");
+      httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+      return;
+    }
+    boolean isAdmin = false;
+    Object oIsAdmin = httpRequest.getSession().getAttribute("isadmin");
+    if (oIsAdmin != null) {
+      isAdmin = (boolean) oIsAdmin;
     }
 
-    doMyFilter(httpRequest, httpResponse, chain);
+    doMyFilter(userid, isAdmin, isReadOnly, httpRequest, httpResponse, chain);
   }
 
   @VisibleForTesting
-  void doMyFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    if (!setUser(request)) {
-      // can't get the user info, so block further request processing
-      response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+  void doMyFilter(String userid, boolean isAdmin, boolean isReadOnly,
+    HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    throws IOException, ServletException {
+
+    // Setup the user object for OdeRemoteServiceServlet
+    setUserFromUserId(userid, isAdmin, isReadOnly);
+    // Setup the session object for AdminInfoService
+    LocalSession.getInstance().set(request.getSession());
+
+    // If using local login, we *must* have an email address because that is how we
+    // find the UserData object.
+    String lemail = localUser.getUserEmail();
+    if (lemail.equals("")) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
+
     try {
       if (useWhitelist.get() && !isUserWhitelisted()) {
         writeWhitelistErrorMessage(response);
@@ -95,7 +115,7 @@ public class OdeAuthFilter implements Filter {
       }
       // If user hasn't accepted terms of service, redirect them,
       // unless they're submitting the acceptance request.
-      if (!localUser.getUserTosAccepted() &&
+      if (!localUser.getUserTosAccepted() && !isReadOnly &&
           !request.getRequestURI().endsWith(ServerLayout.ACCEPT_TOS_SERVLET)) {
         // This indicates to the client side code that the user needs to accept
         // the terms of service. We don't send the redirect here because
@@ -125,33 +145,19 @@ public class OdeAuthFilter implements Filter {
         "service operator.");
   }
 
-  @VisibleForTesting
-  boolean setUser(HttpServletRequest request) {
-    com.google.appengine.api.users.User apiUser = userService.getCurrentUser();
-    if (apiUser != null) {
-      String userId = apiUser.getUserId();
-      String email = apiUser.getEmail();
-      email = idmap.get(email);	// Map the user.
-      User user = storageIo.getUser(userId, email);
-      user.setIsAdmin(userService.isUserAdmin());
-      if (!email.equals(user.getUserEmail())) {
-        user.setUserEmail(email);
-      }
-      localUser.set(user);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   /*
    * Sets the user for the current thread according to the given userId.
    *
    * <p>This method is called from {@link WebStartFileServlet} with the userId
    * that was encrypted in the URL.
    */
-  void setUserFromUserId(String userId) {
+  void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) {
     User user = storageIo.getUser(userId);
+    if (!user.getIsAdmin() && isAdmin) {
+      user.setIsAdmin(true);    // If session says they are an admin (which is the case
+                                // if they are a Google Account with Developer access
+    }
+    user.setReadOnly(isReadOnly);
     localUser.set(user);
   }
 

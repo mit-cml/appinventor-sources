@@ -40,6 +40,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class DesignToolbar extends Toolbar {
 
+  private boolean isReadOnly;   // If the UI is in read only mode
+
   /*
    * A Screen groups together the form editor and blocks editor for an
    * application screen. Name is the name of the screen (form) displayed
@@ -140,6 +142,8 @@ public class DesignToolbar extends Toolbar {
   public DesignToolbar() {
     super();
 
+    isReadOnly = Ode.getInstance().isReadOnly();
+
     projectNameLabel = new Label();
     projectNameLabel.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
@@ -151,7 +155,7 @@ public class DesignToolbar extends Toolbar {
     List<DropDownItem> screenItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems);
 
-    if (AppInventorFeatures.allowMultiScreenApplications()) {
+    if (AppInventorFeatures.allowMultiScreenApplications() && !isReadOnly) {
       addButton(new ToolbarItem(WIDGET_NAME_ADDFORM, MESSAGES.addFormButton(),
           new AddFormAction()));
       addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
@@ -454,7 +458,7 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
 
-    if (AppInventorFeatures.allowMultiScreenApplications()) {
+    if (AppInventorFeatures.allowMultiScreenApplications() && !isReadOnly) {
       if (getCurrentProject() == null || getCurrentProject().currentScreen == "Screen1") {
         setButtonEnabled(WIDGET_NAME_REMOVEFORM, false);
       } else {

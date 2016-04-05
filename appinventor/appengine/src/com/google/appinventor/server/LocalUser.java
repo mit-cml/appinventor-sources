@@ -129,6 +129,16 @@ public class LocalUser implements UserInfoProvider {
   }
 
   @Override
+  public boolean isReadOnly() {
+    return user.get().isReadOnly();
+  }
+
+  @Override
+  public void setReadOnly(boolean value) {
+    user.get().setReadOnly(value);
+  }
+
+  @Override
   public String getSessionId() {
     try {
       return user.get().getSessionId();
