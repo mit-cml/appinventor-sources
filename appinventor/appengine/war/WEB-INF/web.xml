@@ -31,13 +31,13 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- Security constraints: require Google Account login for these urls -->
+
+  <!-- Security constraints: require login for these urls -->
+  <!-- This is how we implement Google Account login -->
+
   <security-constraint>
     <web-resource-collection>
-      <url-pattern>/ode/*</url-pattern>
-      <url-pattern>/</url-pattern>
-      <url-pattern>/index.html</url-pattern>
-      <url-pattern>/Ya_tos_form.html</url-pattern>
+      <url-pattern>/login/google</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>
@@ -63,6 +63,7 @@
     <web-resource-collection>
       <url-pattern>/appstats/*</url-pattern>
       <url-pattern>/convert/</url-pattern>
+      <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
@@ -81,6 +82,17 @@
   <servlet-mapping>
     <servlet-name>BlobUpgradeServlet</servlet-name>
     <url-pattern>/convert</url-pattern>
+  </servlet-mapping>
+
+  <!-- Generate Login Page for OpenID -->
+
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/login/*</url-pattern>
   </servlet-mapping>
 
   <!-- Remote API -->
@@ -208,6 +220,21 @@
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>uploadServlet</servlet-name>
   </filter-mapping>
+
+  <!-- admininfo -->
+  <servlet>
+    <servlet-name>adminInfoService</servlet-name>
+    <servlet-class>com.google.appinventor.server.AdminInfoServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>adminInfoService</servlet-name>
+    <url-pattern>/ode/admininfo</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>adminInfoService</servlet-name>
+  </filter-mapping>
+
 
   <!-- userinfo -->
   <servlet>
