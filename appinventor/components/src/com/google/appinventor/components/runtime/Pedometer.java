@@ -221,7 +221,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = "0.73")
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, description = "stride length in meters")
   public void StrideLength(float length) {
     strideLength = length;
   }
@@ -245,7 +245,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2000")
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, description = "the duration in milliseconds of idleness (no steps detected) after which to go into a \"stopped\" state")
   public void StopDetectionTimeout(int timeout) {
     stopDetectionTimeout = timeout;
   }
@@ -266,7 +266,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    * @return approximate distance traveled in meters.
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, description = "approximate distance traveled in meters.")
   public float Distance() {
     return totalDistance;
   }
@@ -277,13 +277,33 @@ public class Pedometer extends AndroidNonvisibleComponent
    * @return time elapsed in milliseconds since the pedometer was started.
    */
   @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+      category = PropertyCategory.BEHAVIOR, description = "time elapsed in milliseconds since the pedometer was started.")
   public long ElapsedTime() {
     if (pedometerPaused) {
       return prevStopClockTime;
     } else {
       return prevStopClockTime + (System.currentTimeMillis() - startTime);
     }
+  }
+
+  /**
+   * Returns the number of simple steps taken since the pedometer has started.
+   *
+   * @return the number of simple steps since the pedometer was started.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "the number of simple steps taken since the pedometer has started.")
+  public int SimpleSteps() {
+    return numStepsRaw;
+  }
+
+  /**
+   * Returns the number of walk steps taken since the pedometer has started.
+   *
+   * @return the number of walk steps since the pedometer was started.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "the number of walk steps taken since the pedometer has started.")
+  public int WalkSteps() {
+    return numStepsWithFilter;
   }
 
   /**
