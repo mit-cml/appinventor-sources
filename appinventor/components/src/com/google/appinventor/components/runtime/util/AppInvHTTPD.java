@@ -312,6 +312,10 @@ public class AppInvHTTPD extends NanoHTTPD {
       intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
       form.startActivity(intent);
       res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return (res);
     }
 

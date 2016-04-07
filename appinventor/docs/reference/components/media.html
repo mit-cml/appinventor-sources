@@ -802,7 +802,7 @@ and AvailableCountries properties.</p></p>
   <dt><code>Pause()</code></dt>
   <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the <code>Start</code> method.</dd>
   <dt><code>SeekTo(number ms)</code></dt>
-  <dd>Seeks to the requested time (specified in milliseconds) in the video. Note that if the video is paused, the frame shown will not be updated by the seek.</dd>
+  <dd>Seeks to the requested time (specified in milliseconds) in the video. If the video is paused, the frame shown will not be updated by the seek. The player can jump only to key frames in the video, so seeking to times that differ by short intervals may not actually move to different frames.</dd>
   <dt><code>Start()</code></dt>
   <dd>Starts playback of the video.</dd>
 </dl>

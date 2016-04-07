@@ -70,14 +70,14 @@ Blockly.Yail.component_method = function() {
  * Returns a function that generates Yail to call to a method with a return value. The generated
  * function takes no arguments and returns a 2-element Array with the method call code string
  * and the operation order Blockly.Yail.ORDER_ATOMIC.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
 Blockly.Yail.methodWithReturn = function(instanceName, methodName) {
   return function() {
-    return [Blockly.Yail.methodHelper(this, instanceName, methodName, false), 
+    return [Blockly.Yail.methodHelper(this, instanceName, methodName, false),
             Blockly.Yail.ORDER_ATOMIC];
   }
 }
@@ -85,7 +85,7 @@ Blockly.Yail.methodWithReturn = function(instanceName, methodName) {
 /**
  * Returns a function that generates Yail to call to a method with no return value. The generated
  * function takes no arguments and returns the method call code string.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -97,10 +97,10 @@ Blockly.Yail.methodNoReturn = function(instanceName, methodName) {
 }
 
 /**
- * Returns a function that generates Yail to call to a generic method with a return value. 
- * The generated function takes no arguments and returns a 2-element Array with the method call 
+ * Returns a function that generates Yail to call to a generic method with a return value.
+ * The generated function takes no arguments and returns a 2-element Array with the method call
  * code string and the operation order Blockly.Yail.ORDER_ATOMIC.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -112,9 +112,9 @@ Blockly.Yail.genericMethodWithReturn = function(typeName, methodName) {
 }
 
 /**
- * Returns a function that generates Yail to call to a generic method with no return value. 
+ * Returns a function that generates Yail to call to a generic method with no return value.
  * The generated function takes no arguments and returns the method call code string.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -140,7 +140,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
 // first argument type when we're generating yail for a generic block, instead of using
 // type information associated with the socket. The component parameter is treated differently
 // here than the other method parameters. This may be fine, but consider whether
-// to get the type for the first socket in a more general way in this case. 
+// to get the type for the first socket in a more general way in this case.
   var paramObjects = methodBlock.getMethodTypeObject().params;
   var numOfParams = paramObjects.length;
   var yailTypes = [];
@@ -153,37 +153,44 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   //var yailTypes = (generic ? [Blockly.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
-    callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD 
+    callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD
         // TODO(hal, andrew): check for empty socket and generate error if necessary
         + Blockly.Yail.valueToCode(methodBlock, 'COMPONENT', Blockly.Yail.ORDER_NONE)
         + Blockly.Yail.YAIL_SPACER;
   } else {
-    callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD; 
+    callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD;
     name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
+    // special case for handling Clock.Add
+    timeUnit = methodBlock.getFieldValue("TIME_UNIT");
+    if (timeUnit) {
+      if (Blockly.ComponentBlock.isClockMethodName(methodName)) {
+        methodName = "Add"+timeUnit; // For example, AddDays
+      }
+    }
   }
 
   var args = [];
   for (var x = 0; x < numOfParams; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    args.push(Blockly.Yail.YAIL_SPACER 
+    args.push(Blockly.Yail.YAIL_SPACER
               + Blockly.Yail.valueToCode(methodBlock, 'ARG' + x, Blockly.Yail.ORDER_NONE));
   }
 
   return callPrefix
     + Blockly.Yail.YAIL_QUOTE
-    + name 
+    + name
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
     + methodName
-    + Blockly.Yail.YAIL_SPACER 
+    + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     + Blockly.Yail.YAIL_LIST_CONSTRUCTOR
-    + args.join(' ') 
+    + args.join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
     + Blockly.Yail.YAIL_OPEN_COMBINATION
-    + yailTypes.join(' ') 
+    + yailTypes.join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 }
@@ -226,7 +233,7 @@ Blockly.Yail.setproperty = function() {
 
 
 /**
- * Returns a function that takes no arguments, generates Yail code for setting a generic component's 
+ * Returns a function that takes no arguments, generates Yail code for setting a generic component's
  * property and returns the code string.
  *
  * @param {String} instanceName
@@ -252,8 +259,8 @@ Blockly.Yail.genericSetproperty = function() {
 
 
 /**
- * Returns a function that takes no arguments, generates Yail code for getting a component's 
- * property value and returns a 2-element array containing the property getter code string and the 
+ * Returns a function that takes no arguments, generates Yail code for getting a component's
+ * property value and returns a 2-element array containing the property getter code string and the
  * operation order Blockly.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName
@@ -274,8 +281,8 @@ Blockly.Yail.getproperty = function(instanceName) {
 
 
 /**
- * Returns a function that takes no arguments, generates Yail code for getting a generic component's 
- * property value and returns a 2-element array containing the property getter code string and the 
+ * Returns a function that takes no arguments, generates Yail code for getting a generic component's
+ * property value and returns a 2-element array containing the property getter code string and the
  * operation order Blockly.Yail.ORDER_ATOMIC.
  *
  * @param {String} instanceName

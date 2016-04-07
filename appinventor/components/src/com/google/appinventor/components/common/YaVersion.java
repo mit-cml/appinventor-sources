@@ -374,8 +374,12 @@ public class YaVersion {
   // - IMAGE_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 148:
   // - FIREBASE_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 149:
+  // - CLOCK_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 150:
+  // - IMAGE_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 148;
+  public static final int YOUNG_ANDROID_VERSION = 150;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -586,7 +590,8 @@ public class YaVersion {
 
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
-  public static final int CLOCK_COMPONENT_VERSION = 2;
+  // - Add Duration Support
+  public static final int CLOCK_COMPONENT_VERSION = 3;
 
   // For CONTACTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -683,7 +688,9 @@ public class YaVersion {
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
-  public static final int IMAGE_COMPONENT_VERSION = 2;
+  // For IMAGE_COMPONENT_VERSION 3:
+  // - Scaling Property added, but hidden for now
+  public static final int IMAGE_COMPONENT_VERSION = 3;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1003,10 +1010,19 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.35";
+  // ACCEPTABLE_COMPANION_PACKAGE is the package name for the
+  // appropriate Companion. Different versions (forks) of App Inventor
+  // should use their own Companion. This variable holds the value
+  // of the Android Package for this version of App Inventor. The
+  // default value here is for the MIT App Inventor service run
+  // by MIT
+
+  public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
+
+  public static final String PREFERRED_COMPANION = "2.36";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.35" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

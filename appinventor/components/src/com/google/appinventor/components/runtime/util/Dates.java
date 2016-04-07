@@ -32,6 +32,7 @@ public final class Dates {
   public static final int DATE_HOUR = Calendar.HOUR_OF_DAY;
   public static final int DATE_MINUTE = Calendar.MINUTE;
   public static final int DATE_SECOND = Calendar.SECOND;
+  public static final int DATE_MILLISECOND = Calendar.MILLISECOND;
 
   /**
    * Days of the week.
@@ -64,7 +65,10 @@ public final class Dates {
   }                  // COV_NF_LINE
 
   /**
-   * Adds a time interval to the given date.
+   * Adds a time interval to the given date. Adding milliseconds has a separated method because
+   * interval in ms is long, not int.
+   *
+   * @see DateAddInMillis()
    *
    * @param date  date to add to
    * @param intervalKind  kind of interval
@@ -86,6 +90,21 @@ public final class Dates {
         date.add(intervalKind, interval);
         break;
     }
+  }
+
+  /**
+   * Adds an interval of milliseconds to the given date. Unlike other time units,
+   * milliseconds are saved as long, not int.
+   *
+   * @see Dates.DateAdd()
+   *
+   * @param date  date to add to
+   * @param millis an interval to add
+   */
+  @SimpleFunction
+  public static void DateAddInMillis(Calendar date, long millis) {
+    long dateInMillis = date.getTimeInMillis();
+    date.setTimeInMillis(dateInMillis+millis);
   }
 
   /**
@@ -138,6 +157,32 @@ public final class Dates {
   @SimpleFunction
   public static int Day(Calendar date) {
     return date.get(Calendar.DAY_OF_MONTH);
+  }
+
+  /**
+   * Returns the give duration in a specified time unit. Months and Years cannot be supported
+   * due to their inconsistency.
+   *
+   * @param duration duration to convert time unit
+   * @param intervalkind time unit
+   * @return duration converted into a different time unit
+   */
+  @SimpleFunction
+  public static long ConvertDuration(long duration, int intervalKind) {
+            switch (intervalKind) {
+              default:
+                throw new IllegalArgumentException("illegal date/time interval kind in function Duration()");
+              case DATE_WEEK:
+                  return duration/1000/60/60/24/7;
+              case DATE_DAY:
+                  return duration/1000/60/60/24;
+              case DATE_HOUR:
+                  return duration/1000/60/60;
+              case DATE_MINUTE:
+                  return duration/1000/60;
+              case DATE_SECOND:
+                  return duration/1000;
+            }
   }
 
   /**
