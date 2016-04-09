@@ -838,7 +838,7 @@ Blockly.Blocks['math_cos'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_trig.HELPURLS[mode];
+    return Blockly.Blocks.math_trig.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -851,7 +851,7 @@ Blockly.Blocks['math_cos'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_trig.TOOLTIPS[mode];
+      return Blockly.Blocks.math_trig.TOOLTIPS()[mode];
     });
   }
 };
@@ -861,7 +861,7 @@ Blockly.Blocks['math_tan'] = {
   category: 'Math',
   helpUrl: function () {
     var mode = this.getFieldValue('OP');
-    return Blockly.Blocks.math_trig.HELPURLS[mode];
+    return Blockly.Blocks.math_trig.HELPURLS()[mode];
   },
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -874,7 +874,7 @@ Blockly.Blocks['math_tan'] = {
     var thisBlock = this;
     this.setTooltip(function () {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_trig.TOOLTIPS[mode];
+      return Blockly.Blocks.math_trig.TOOLTIPS()[mode];
     });
   }
 };
