@@ -1569,6 +1569,10 @@ public interface OdeMessages extends Messages {
   @Description("Confirmation message shown when conflicting files are about to be deleted.")
   String confirmOverwrite(String newFile, String existingFile);
 
+  @DefaultMessage("Error: AIA files can not be uploaded as media assets.")
+  @Description("Error message reported when an aia file is selected.")
+  String wrongFileTypeSelected();
+  
   // Used in wizards/KeystoreUploadWizard.java
 
   @DefaultMessage("Upload Keystore...")

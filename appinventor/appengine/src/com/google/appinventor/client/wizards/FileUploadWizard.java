@@ -90,7 +90,10 @@ public class FileUploadWizard extends Wizard {
           } else if (!TextValidators.isValidLengthFilename(filename)){
             Window.alert(MESSAGES.filenameBadSize());
             return;
-          }
+          }else if (filename.substring(filename.lastIndexOf('.')+1, filename.length()) == "aia"){
+              Window.alert(MESSAGES.wrongFileTypeSelected());
+              return;
+            }
           String fn = conflictingExistingFile(folderNode, filename);
           if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
             return;
