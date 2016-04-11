@@ -275,7 +275,8 @@ public class ProjectServiceTest {
         "build=../build\n");
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.scm",
         "#|\n$JSON\n" +
-        "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
         "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
