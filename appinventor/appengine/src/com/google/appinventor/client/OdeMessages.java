@@ -1561,19 +1561,11 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
 
-<<<<<<< 7cec0c0ade8f99695d21d897f88544020674ff10
-=======
-  @DefaultMessage("Cannot upload aia file as media asset:" + 
-    " aia files are used as project source files." + 
-    " If you want to share a project for someone to remix," + 
-    " you can export your project as an aia file that they " + 
-    " can import into App Inventor and edit. Try uploading " +
-    " images and sounds instead! Click \"More Info\" to learn " +
-    "more about aia file use.")
+  @DefaultMessage("To use this file, click Projects > Import project (.aia) from" + 
+    " my computer ...")
   @Description("Error message when user tries to upload aia file as media asset")
   String aiaMediaAsset(); 
 
->>>>>>> semi-working solution
   @DefaultMessage("Request to save {1}" +
       "\n\nA file named {0} already exists in this project." +
       "\nDo you want to remove that old file?" +
