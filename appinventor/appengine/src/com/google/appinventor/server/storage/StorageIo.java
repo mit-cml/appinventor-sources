@@ -9,6 +9,8 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
@@ -60,6 +62,16 @@ public interface StorageIo {
   User getUser(String userId, String email);
 
   /**
+   * Returns user data given user email address. If the user data for the given email
+   * doesn't already exist in the storage, it should be created. email
+   * is the email address currently associated with this user.
+   *
+   * @param user email address
+   * @return user data
+   */
+  User getUserFromEmail(String email);
+
+  /**
    * Sets the stored email address for user with id userId
    *
    */
@@ -80,6 +92,14 @@ public interface StorageIo {
    * @param sessionId the session id (uuid) value
    */
   void setUserSessionId(String userId, String sessionId);
+
+  /**
+   * Sets the user's hashed password.
+   *
+   * @param userId user id
+   * @param hashed password
+   */
+  void setUserPassword(String userId, String password);
 
   /**
    * Returns a string with the user's settings.
@@ -583,4 +603,14 @@ public interface StorageIo {
 
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
+
+  StoredData.PWData createPWData(String email);
+  StoredData.PWData findPWData(String uid);
+  void cleanuppwdata();
+
+  // Routines for user admin interface
+
+  List<AdminUser> searchUsers(String partialEmail);
+  void storeUser(AdminUser user) throws AdminInterfaceException;
+
 }

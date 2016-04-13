@@ -58,6 +58,9 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
 
   @Override
   public void saveSettings(final Command command) {
+    if (Ode.getInstance().isReadOnly()) {
+      return;                   // Don't save when in read-only mode
+    }
     if (loading) {
       // If we are in the process of loading, we must defer saving.
       DeferredCommand.addCommand(new Command() {

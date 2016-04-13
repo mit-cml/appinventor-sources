@@ -62,6 +62,9 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
 
   @Override
   public void saveSettings(final Command command) {
+    if (Ode.getInstance().isReadOnly()) {
+      return;                   // No changes when in read only mode
+    }
     String s = encodeSettings();
     OdeLog.log("Saving project settings: " + s);
     Ode.getInstance().getProjectService().storeProjectSettings(

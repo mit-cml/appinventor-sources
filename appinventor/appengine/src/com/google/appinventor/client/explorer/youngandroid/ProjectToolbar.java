@@ -33,11 +33,16 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_PUBLISH_OR_UPDATE = "PublishOrUpdate";
+
+  private boolean isReadOnly;
+
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
   public ProjectToolbar() {
     super();
+    isReadOnly = Ode.getInstance().isReadOnly();
+
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction(this)));
 
@@ -232,6 +237,17 @@ public class ProjectToolbar extends Toolbar {
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
+    if (isReadOnly) {           // If we are read-only, we disable all buttons
+      setButtonText(WIDGET_NAME_PUBLISH_OR_UPDATE, MESSAGES.publishToGalleryButton());
+      setButtonEnabled(WIDGET_NAME_NEW, false);
+      setButtonEnabled(WIDGET_NAME_DELETE, false);
+      setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, false);
+      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(),
+        numSelectedProjects > 0);
+      Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
+        numSelectedProjects > 0);
+      return;
+    }
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     setButtonEnabled(WIDGET_NAME_PUBLISH_OR_UPDATE, numSelectedProjects == 1);
     if(numSelectedProjects == 1 && ProjectListBox.getProjectListBox().getProjectList()
@@ -253,7 +269,9 @@ public class ProjectToolbar extends Toolbar {
   // the button). When the person switches to the projects list view again (here)
   // we re-enable it.
   public void enableStartButton() {
-    setButtonEnabled(WIDGET_NAME_NEW, true);
+    if (!isReadOnly) {
+      setButtonEnabled(WIDGET_NAME_NEW, true);
+    }
   }
 
 }

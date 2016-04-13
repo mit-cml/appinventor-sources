@@ -41,12 +41,14 @@ public class StoredData {
     @Id public String id;
 
     @Indexed public String email;
+    @Indexed public String emaillower;
 
     // User settings
     public String settings;
 
     // Has user accepted terms of service?
     boolean tosAccepted;
+    boolean isAdmin;            // Internal flag for local login administrators
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
@@ -55,6 +57,7 @@ public class StoredData {
     public int emailFrequency;
     public int type;
     String sessionid;           // uuid of active session
+    String password;            // Hashed (PBKDF2 hashing) password
 
     // Path to template project passed as GET parameter
     String templatePath;
@@ -275,6 +278,16 @@ public class StoredData {
     public String content;
     public int height;
     public int width;
+  }
+
+  // Data Structure to keep track of url's emailed out for password
+  // setting and reseting. The Id (which is a UUID) is part of the URL
+  // that is mailed out.
+  @Unindexed
+  public static final class PWData {
+    @Id public String id;              // "Secret" URL part
+    @Indexed public Date timestamp; // So we know when to expire this objects
+    public String email;            // Email of account in question
   }
 
 }
