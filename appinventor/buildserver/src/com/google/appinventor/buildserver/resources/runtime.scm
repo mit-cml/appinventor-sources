@@ -36,8 +36,8 @@
     (syntax-case stx ()
       ((_ short-component-type-name)
        (datum->syntax-object stx
-                 (string-append simple-component-package-name
-                        "."
+                 (string-append ""
+                        ""
                         (symbol->string #'short-component-type-name)))))))
 
 ;;; (add-component Screen1 Label Label1)
@@ -1169,15 +1169,12 @@
             *non-coercible-value*))))
 
 (define (type->class type-name)
-  ;; TODO(sharon):
-  ;; Note that the following will have to change when we have the CDK and
-  ;; components may be defined in packages other than
-  ;; com.google.appinventor.components.runtime
-  (symbol-append
-   'com.google.appinventor.components.runtime.
-   (if (eq? type-name 'Screen)
-       'Form
-       type-name)))
+  ;; This function returns the fully qualified java name of the given YAIL type
+  ;; All Components except Screen are represented in YAIL by their fully qualified java name
+  ;; Screen refers to the class com.google.appinventor.components.runtime.Form
+  (if (eq? type-name 'Screen)
+     'com.google.appinventor.components.runtime.Form
+     type-name))
 
 (define (coerce-to-number arg)
   (cond

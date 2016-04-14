@@ -317,7 +317,22 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFiles(userId, projectId,
-        directory);
+            directory);
+  }
+
+    /**
+     * Deletes all files and folders that are contained inside the given directory. The given directory itself is deleted.
+     * @param sessionId session id
+     * @param projectId project ID
+     * @param directory path of the directory
+     * @return modification date for project
+     */
+  @Override
+  public long deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException {
+      validateSessionId(sessionId);
+      final String userId = userInfoProvider.getUserId();
+      return getProjectRpcImpl(userId, projectId).deleteFolder(userId, projectId,
+              directory);
   }
 
   /**

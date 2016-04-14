@@ -21,6 +21,9 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
   private static final String OUTPUT_FILE_NAME = "ComponentsTranslation.java";
 
   private void outputComponent(ComponentInfo component, StringBuilder sb) {
+    if (component.getExternal()) { // Avoid adding entries for external components
+      return;
+    }
     sb.append("\n\n/* Component: " + component.name + " */\n\n");
     sb.append("\n\n/* Properties */\n\n");
     for (Property prop : component.properties.values()) {
@@ -76,15 +79,21 @@ public final class ComponentTranslationGenerator extends ComponentProcessor {
     sb.append("    }\n");
     sb.append("  }\n\n");
     sb.append("  public static String getPropertyName(String key) {\n");
-    sb.append("    return getName(\"PROPERTY-\" + key);\n");
+    sb.append("    String value = getName(\"PROPERTY-\" + key);\n");
+    sb.append("    if(value == null) return key;\n");
+    sb.append("    return value;\n");
     sb.append("  }\n");
     sb.append("\n");
     sb.append("  public static String getMethodName(String key) {\n");
-    sb.append("    return getName(\"METHOD-\" + key);\n");
+    sb.append("    String value = getName(\"METHOD-\" + key);\n");
+    sb.append("    if(value == null) return key;\n");
+    sb.append("    return value;\n");
     sb.append("  }\n");
     sb.append("\n");
     sb.append("  public static String getEventName(String key) {\n");
-    sb.append("    return getName(\"EVENT-\" + key);\n");
+    sb.append("    String value = getName(\"EVENT-\" + key);\n");
+    sb.append("    if(value == null) return key;\n");
+    sb.append("    return value;\n");
     sb.append("  }\n");
     sb.append("  public static HashMap<String, String> map() {\n");
     sb.append("    HashMap<String, String> map = new HashMap<String, String>();\n");

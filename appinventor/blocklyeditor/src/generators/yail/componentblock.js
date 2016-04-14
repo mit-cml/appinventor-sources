@@ -153,6 +153,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   //var yailTypes = (generic ? [Blockly.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
+    name = Blockly.ComponentTypes[name].type;
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD
         // TODO(hal, andrew): check for empty socket and generate error if necessary
         + Blockly.Yail.valueToCode(methodBlock, 'COMPONENT', Blockly.Yail.ORDER_NONE)
@@ -242,7 +243,7 @@ Blockly.Yail.setproperty = function() {
 Blockly.Yail.genericSetproperty = function() {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var assignLabel = Blockly.Yail.YAIL_QUOTE + this.typeName + Blockly.Yail.YAIL_SPACER
+  var assignLabel = Blockly.Yail.YAIL_QUOTE + Blockly.ComponentTypes[this.typeName].type + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE + propertyName;
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_COMPONENT_TYPE_PROPERTY
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -296,7 +297,7 @@ Blockly.Yail.genericGetproperty = function(typeName) {
     + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
-    + this.typeName
+    + Blockly.ComponentTypes[this.typeName].type
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
     + propertyName

@@ -92,6 +92,11 @@ public interface ProjectServiceAsync {
   void deleteFiles(String sessionId, long projectId, String directory, AsyncCallback<Long> callback);
 
   /**
+   * @see ProjectService#deleteFolder(String, long, String)
+   */
+  void deleteFolder(String sessionId, long projectId, String directory, AsyncCallback<Long> callback);
+
+  /**
    * @see ProjectService#load(long, String)
    */
   void load(long projectId, String fileId, AsyncCallback<String> callback);

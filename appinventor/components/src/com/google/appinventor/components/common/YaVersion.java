@@ -1019,10 +1019,10 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.36";
+  public static final String PREFERRED_COMPANION = "2.36cdk1";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36cdk1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

@@ -53,6 +53,8 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -186,6 +188,7 @@ public class Ode implements EntryPoint {
   private static final int USERPROFILE = 4;
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
+  static final int COMPONENTS = 7;
   private static int currentView = DESIGNER;
 
   /*
@@ -221,6 +224,7 @@ public class Ode implements EntryPoint {
   private GalleryToolbar galleryPageToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -242,6 +246,9 @@ public class Ode implements EntryPoint {
 
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
+
+  // Web service for component related operations
+  private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
 
   private boolean windowClosing;
 
@@ -1186,6 +1193,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Get an instance of the component web service.
+   *
+   * @return component web service instance
+   */
+  public ComponentServiceAsync getComponentService() {
+    return componentService;
+  }
+
+  /**
    * Set the current file editor.
    *
    * @param fileEditor  the file editor, can be null.
@@ -1355,7 +1371,7 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
-    
+
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
 
