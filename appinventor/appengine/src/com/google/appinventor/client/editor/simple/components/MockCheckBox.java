@@ -90,6 +90,7 @@ public final class MockCheckBox extends MockWrapper {
    */
   private void setFontBoldProperty(String text) {
     MockComponentsUtil.setWidgetFontBold(checkboxWidget, text);
+    updatePreferredSize();
   }
 
   /*
@@ -97,6 +98,7 @@ public final class MockCheckBox extends MockWrapper {
    */
   private void setFontItalicProperty(String text) {
     MockComponentsUtil.setWidgetFontItalic(checkboxWidget, text);
+    updatePreferredSize();
   }
 
   /*
@@ -104,6 +106,8 @@ public final class MockCheckBox extends MockWrapper {
    */
   private void setFontSizeProperty(String text) {
     MockComponentsUtil.setWidgetFontSize(checkboxWidget, text);
+    changeProperty(MockVisibleComponent.PROPERTY_NAME_HEIGHT, text);
+    updatePreferredSize();
   }
 
   /*
@@ -111,6 +115,7 @@ public final class MockCheckBox extends MockWrapper {
    */
   private void setFontTypefaceProperty(String text) {
     MockComponentsUtil.setWidgetFontTypeface(checkboxWidget, text);
+    updatePreferredSize();
   }
 
   /*
@@ -118,6 +123,7 @@ public final class MockCheckBox extends MockWrapper {
    */
   private void setTextProperty(String text) {
     checkboxWidget.setText(text);
+    updatePreferredSize();
   }
 
   /*

@@ -3196,6 +3196,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RollProperties();
 
+  @DefaultMessage("Scaling")
+  @Description("A property for scaling images")
+  String ScalingProperties();
+
   @DefaultMessage("SearchResults")
   @Description("")
   String SearchResultsProperties();
@@ -5402,7 +5406,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WebHelpStringComponentPallette();
 
-  @DefaultMessage("Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone\"s hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write(\"The answer is\" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to \"hello\", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString(\"hello from Javascript\")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. ")
+  @DefaultMessage("Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone\"s hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write(\"The answer is\" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to \"hello\", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. ")
   @Description("")
   String WebViewerHelpStringComponentPallette();
 
@@ -5734,6 +5738,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PostMediaMethods();
 
+  @DefaultMessage("Scale proportionally")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleProportionally();
+
+  @DefaultMessage("Scale to fit")
+  @Description("A choice in ScalingChoicePropertyEditor")
+  String scaleToFit();
+
   @DefaultMessage("Unauthenticate")
   @Description("")
   String UnauthenticateMethods();
@@ -5759,5 +5771,4 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
-
 }
