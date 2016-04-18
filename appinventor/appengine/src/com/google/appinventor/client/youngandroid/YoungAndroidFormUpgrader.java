@@ -338,6 +338,8 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("WebViewer")) {
         srcCompVersion = upgradeWebViewerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FirebaseDB")) {
+        srcCompVersion = upgradeFirebaseDBProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -1418,6 +1420,15 @@ public final class YoungAndroidFormUpgrader {
       // IgnoreSslError property added (version 5)
       // ClearCaches method was added (version 6)
       srcCompVersion = 6;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFirebaseDBProperties(Map<String, JSONValue> componentProperties,
+                                                int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added AppendValue, RemoveFirst and FirstRemoved
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

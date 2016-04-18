@@ -1383,6 +1383,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   // Form is renamed to Screen. See below.
 
+  "FirebaseDB": {
+
+    1: "noUpgrade",
+    // AI2 Added AppendValue, RemoveFirst and FirstRemoved
+    2: "noUpgrade"
+  },
+
   "FusiontablesControl": {
 
     // AI1: No changes required

@@ -4891,6 +4891,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StoreValueMethods();
 
+  @DefaultMessage("AppendValue")
+  @Description("")
+  String AppendValueMethods();
+
+  @DefaultMessage("RemoveFirst")
+  @Description("")
+  String RemoveFirstMethods();
+
+  @DefaultMessage("FirstRemoved")
+  @Description("")
+  String FirstRemovedEvents();
+
   @DefaultMessage("InitializeValue")
   @Description("")
   String InitializeValueMethods();

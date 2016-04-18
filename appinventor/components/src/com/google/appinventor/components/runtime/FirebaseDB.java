@@ -15,6 +15,8 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.MutableData;
+import com.firebase.client.Transaction;
 import com.firebase.client.ValueEventListener;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -32,8 +34,10 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -75,6 +79,37 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   private Firebase myFirebase;
   private ChildEventListener childListener;
   private Firebase.AuthStateListener authListener;
+
+  // ReturnVal -- Holder which can be used as a final value but whose content
+  //              remains mutable.
+  private static class ReturnVal {
+    String err;                 // Holder for any errors
+    Object retval;              // Returned value
+
+    Object getRetval() {
+      return retval;
+    }
+
+  }
+
+  private abstract static class Transactional {
+    final Object arg1;
+    final Object arg2;
+    final ReturnVal retv;
+
+    Transactional(Object arg1, Object arg2, ReturnVal retv) {
+      this.arg1 = arg1;
+      this.arg2 = arg2;
+      this.retv = retv;
+    }
+
+    abstract Transaction.Result run(MutableData currentData);
+
+    ReturnVal getResult() {
+      return retv;
+    }
+
+  }
 
   /**
    * Creates a new Firebase component.
@@ -454,7 +489,11 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     Log.e(LOG_TAG, message);
 
     // Invoke the application's "FirebaseError" event handler
-    EventDispatcher.dispatchEvent(this, "FirebaseError", message);
+    boolean dispatched = EventDispatcher.dispatchEvent(this, "FirebaseError", message);
+    if (!dispatched) {
+      // If the handler doesn't exist, then put up our own alert
+      Notifier.oneButtonAlert(form, message, "FirebaseError", "Continue");
+    }
   }
 
   private void connectFirebase() {
@@ -523,4 +562,148 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     }
   }
 
+  @SimpleFunction(description = "Return the first element of a list and atomically remove it. " +
+    "If two devices use this function simultaneously, one will get the first element and the " +
+    "the other will get the second element, or an error if there is no available element. " +
+    "When the element is available, the \"FirstRemoved\" event will be triggered.")
+  public void RemoveFirst(final String tag) {
+    final ReturnVal result = new ReturnVal();
+    Firebase firebaseChild = myFirebase.child(tag);
+    Transactional toRun = new Transactional(null, null, result) {
+        @Override
+        Transaction.Result run(MutableData currentData) {
+          Object value = currentData.getValue();
+          if (value == null) {
+            result.err = "Previous value was empty.";
+            return Transaction.abort();
+          }
+          try {
+            if (value instanceof String) {
+              value = JsonUtil.getObjectFromJson((String) value);
+            } else {
+              result.err = "Invalid JSON object in database (shouldn't happen!)";
+              return Transaction.abort();
+            }
+          } catch (JSONException e) {
+            result.err = "Invalid JSON object in database (shouldn't happen!)";
+            return Transaction.abort();
+          }
+          if (value instanceof List) {
+            if (((List)value).isEmpty()) {
+              result.err = "The list was empty";
+              return Transaction.abort();
+            }
+            result.retval = ((List)value).remove(0);
+            try {
+              value = JsonUtil.getJsonRepresentation(YailList.makeList((List)value));
+            } catch (JSONException e) {
+              result.err = "Could not convert value to JSON.";
+              return Transaction.abort();
+            }
+            currentData.setValue(value);
+            return Transaction.success(currentData);
+          } else {
+            result.err = "You can only remove elements from a list.";
+            return Transaction.abort();
+          }
+        }
+      };
+    firebaseTransaction(toRun, firebaseChild, new Runnable() {
+        @Override
+        public void run() {
+          FirstRemoved(result.getRetval());
+        }
+      });
+  }
+
+  @SimpleEvent(description = "Event triggered by the \"RemoveFirst\" function. The " +
+    "argument \"value\" is the object that was the first in the list, and which is now " +
+    "removed.")
+  public void FirstRemoved(Object value) {
+    EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
+  }
+
+  @SimpleFunction(description = "Append a value to the end of a list atomically. " +
+    "If two devices use this function simultaneously, both will be appended and no " +
+    "data lost.")
+  public void AppendValue(final String tag, final Object valueToAdd) {
+    final ReturnVal result = new ReturnVal();
+    Firebase firebaseChild = myFirebase.child(tag);
+    Transactional toRun = new Transactional(null, null, result) {
+        @Override
+        Transaction.Result run(MutableData currentData) {
+          Object value = currentData.getValue();
+          if (value == null) {
+            result.err = "Previous value was empty.";
+            return Transaction.abort();
+          }
+          try {
+            if (value instanceof String) {
+              value = JsonUtil.getObjectFromJson((String) value);
+            } else {
+              result.err = "Invalid JSON object in database (shouldn't happen!)";
+              return Transaction.abort();
+            }
+          } catch (JSONException e) {
+            result.err = "Invalid JSON object in database (shouldn't happen!)";
+            return Transaction.abort();
+          }
+          if (value instanceof List) {
+            ((List)value).add(valueToAdd);
+            try {
+              value = JsonUtil.getJsonRepresentation(YailList.makeList((List)value));
+            } catch (JSONException e) {
+              result.err = "Could not convert value to JSON.";
+              return Transaction.abort();
+            }
+            currentData.setValue(value);
+            return Transaction.success(currentData);
+          } else {
+            result.err = "You can only append to a list.";
+            return Transaction.abort();
+          }
+        }
+      };
+    firebaseTransaction(toRun, firebaseChild, null);
+  }
+
+  private void firebaseTransaction(final Transactional toRun, Firebase firebase, final Runnable whenDone) {
+    final ReturnVal result = toRun.getResult();
+    firebase.runTransaction(new Transaction.Handler() {
+        @Override
+        public Transaction.Result doTransaction(MutableData currentData) {
+          return toRun.run(currentData);
+        }
+
+        @Override
+        public void onComplete(final FirebaseError firebaseError, boolean committed,
+          DataSnapshot currentData) {
+          if (firebaseError != null) {
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  Log.i(LOG_TAG, "AppendValue(onComplete): firebase: " + firebaseError.getMessage());
+                  Log.i(LOG_TAG, "AppendValue(onComplete): result.err: " + result.err);
+                  FirebaseError(firebaseError.getMessage());
+                }
+              });
+            return;
+          }
+          if (!committed) {
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  Log.i(LOG_TAG, "AppendValue(!committed): result.err: " + result.err);
+                  FirebaseError(result.err);
+                }
+              });
+          } else {
+            if (whenDone != null) {
+              androidUIHandler.post(whenDone);
+            }
+          }
+          return;
+        }
+      });
+  }
 }

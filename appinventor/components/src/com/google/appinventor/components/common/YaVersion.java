@@ -380,8 +380,10 @@ public class YaVersion {
   // - IMAGE_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 151:
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 152:
+  // - FIREBASE_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 151;
+  public static final int YOUNG_ANDROID_VERSION = 152;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -910,9 +912,12 @@ public class YaVersion {
   // - The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
   public static final int TINYWEBDB_COMPONENT_VERSION = 2;
 
-  // // For FIREBASE_COMPONENT_VERSION 1:
+  // For FIREBASE_COMPONENT_VERSION 1:
   // - FirebaseDB component introduced
-  public static final int FIREBASE_COMPONENT_VERSION = 1;
+  // For FIREBASE_COMPONENT_VERSION 2:
+  // - The AppendValue and RemoveFirst functions along
+  //   with the FirstRemoved event were added
+  public static final int FIREBASE_COMPONENT_VERSION = 2;
 
   // For TWITTER_COMPONENT_VERSION 2:
   // - The Authorize method and IsAuthorized event handler were added to support
