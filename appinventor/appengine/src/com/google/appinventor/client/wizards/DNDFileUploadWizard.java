@@ -4,10 +4,8 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
-//import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.FolderNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -15,25 +13,21 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetN
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 import org.moxieapps.gwt.uploader.client.File;
 import org.moxieapps.gwt.uploader.client.Uploader;
 import org.moxieapps.gwt.uploader.client.events.*;
 
-import java.io.PrintWriter;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
+ * This Drag and Drop File Uploader uzes the GWT Uploader from Moxie Group.
+ * Examples and documentation can be found here: http://www.moxiegroup.com/moxieapps/gwt-uploader/
  * Created by Aaron on 3/27/2016.
  */
 public class DNDFileUploadWizard extends Wizard {
-    private Label progress;
     private File currentFile;
     /**
      * Interface for callback to execute after a file is uploaded.
@@ -67,201 +61,166 @@ public class DNDFileUploadWizard extends Wizard {
                             final FileUploadedCallback fileUploadedCallback) {
         super(MESSAGES.fileUploadWizardCaption(), true, false);
 
-        // Initialize UI
-        //final FileUpload upload = new FileUpload();
-        //upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-        progress = new Label();
+        // Prepare File Queue UI
+        final VerticalPanel queuedFilesPanel = new VerticalPanel();
+        Label uploadQueueLabel = new Label("File to be Uploaded:");
+        queuedFilesPanel.add(uploadQueueLabel);
+        final Tree fileUploadQueue = new Tree();
+        setStylePrimaryName("ode-DialogBox");
 
+        // Initalize Uploader
         final Uploader uploader = new Uploader()
-                .setButtonText("<span class=\"gwt-FileUpload\">Click to Upload</span>")
-                .setButtonTextStyle(".buttonText {border:1px solid #222; background: #ccc; color: #BB4B44}")
-                //TODO: Style upload file button
-                .setButtonTextStyle("gwt-FileUpload")
+                .setButtonText("<span class='gwt-Button'>Select File...</span>")
                 .setButtonWidth(150)
-                .setButtonHeight(22)
+                .setButtonHeight(50)
                 .setButtonCursor(Uploader.Cursor.HAND)
-                .setButtonAction(Uploader.ButtonAction.SELECT_FILE)
-                .setFileQueuedHandler(new FileQueuedHandler() {
-                    @Override
-                    public boolean onFileQueued(FileQueuedEvent fileQueuedEvent) {
-                        currentFile = fileQueuedEvent.getFile();
-                        return true;
-                    }
-                })
-                .setUploadStartHandler(new UploadStartHandler() {
-                    @Override
-                    public boolean onUploadStart(UploadStartEvent uploadStartEvent) {
-                        Window.alert("Starting upload of file: "+uploadStartEvent.getFile().getName());
-                        return true;
-                    }
-                })
-                .setUploadErrorHandler(new UploadErrorHandler() {
-                    @Override
-                    public boolean onUploadError(UploadErrorEvent uploadErrorEvent) {
-                        switch (uploadErrorEvent.getErrorCode()) {
-                            case UPLOAD_LIMIT_EXCEEDED:
-                                // The user can resolve the problem by
-                                // uploading a smaller file.
-                                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                                break;
-                            default:
-                                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                                Window.alert(uploadErrorEvent.getMessage());
-                                break;
-                        }
-                        return true;
-                    }
-                })
-                .setUploadSuccessHandler(new UploadSuccessHandler() {
-                    @Override
-                    public boolean onUploadSuccess(UploadSuccessEvent uploadSuccessEvent) {
-                        ErrorReporter.hide();
-                        Window.alert("Successfully uploaded "+uploadSuccessEvent.getFile().getName()+". "+uploadSuccessEvent.getServerData());
-                        return true;
-                    }
-                });
-//        uploader.setUploadProgressHandler(new UploadProgressHandler() {
-//            public boolean onUploadProgress(UploadProgressEvent evt) {
-//                progress.setText(
-//                        NumberFormat.getPercentFormat().format(
-//                                evt.getBytesComplete() / evt.getBytesTotal()
-//                        )
-//                );
-//                return true;
-//            }
-//        }).setFileDialogCompleteHandler(new FileDialogCompleteHandler() {
-//            public boolean onFileDialogComplete(FileDialogCompleteEvent evt) {
-//                progress.setText("Uploading...");
-//                uploader.startUpload();
-//                return true;
+                .setButtonAction(Uploader.ButtonAction.SELECT_FILE); // Changes to "SELECT_FILES" for multi-upload
+        uploader.setFileQueuedHandler(new FileQueuedHandler() {
+            @Override
+            public boolean onFileQueued(final FileQueuedEvent fileQueuedEvent) {
+                currentFile = fileQueuedEvent.getFile();
+                String fileName = shortenFilename(currentFile.getName());
+                //If single file upload, clear tree. Otherwise, use isInTree() to replace redundant files
+                fileUploadQueue.clear();
+                TreeItem treeItem = new TreeItem(new HTML("<span>" + fileName + "</span>"));
+                fileUploadQueue.addItem(treeItem);
+                treeItem.setUserObject(currentFile); // associate File
+                return true;
+            }
+        });
+        uploader.setUploadErrorHandler(new UploadErrorHandler() {
+            @Override
+            public boolean onUploadError(UploadErrorEvent uploadErrorEvent) {
+                switch (uploadErrorEvent.getErrorCode()) {
+                    case UPLOAD_LIMIT_EXCEEDED:
+                        ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                        break;
+                    default:
+                        ErrorReporter.reportError(MESSAGES.fileUploadError());
+                        Window.alert(uploadErrorEvent.getMessage());
+                        break;
+                }
+                return true;
+            }
+        });
+        uploader.setUploadSuccessHandler(new UploadSuccessHandler() {
+            @Override
+            public boolean onUploadSuccess(UploadSuccessEvent uploadSuccessEvent) {
+                ErrorReporter.hide();
+                Ode.getInstance().updateModificationDate(folderNode.getProjectId(), uploadSuccessEvent.getFile().getModificationDate().getTime());
+                finishUpload(folderNode, currentFile.getName(), fileUploadedCallback);
+                return true;
+            }
+        });
+        uploader.setFilePostName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+
+        // fileUploadQueue Selection Handler to remove items from queue
+//        fileUploadQueue.addSelectionHandler(new SelectionHandler<TreeItem>() {
+//            @Override
+//            public void onSelection(SelectionEvent<TreeItem> selectionEvent) {
+//                File file = (File) selectionEvent.getSelectedItem().getUserObject();
+//                uploader.cancelUpload(file.getId(), false);
+//                fileUploadQueue.removeItem(selectionEvent.getSelectedItem());
 //            }
 //        });
 
-        setStylePrimaryName("ode-DialogBox");
-        VerticalPanel panel = new VerticalPanel();
-        panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-
-        panel.add(uploader);
+        // Prepare Uploader UI
+        queuedFilesPanel.add(fileUploadQueue);
+        VerticalPanel uploaderPanel = new VerticalPanel();
+        uploaderPanel.setStyleName("dnd-fileUploaderPanel");
+        uploaderPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+        uploaderPanel.add(uploader);
 
         // Drag and Drop Area
-        // TODO: Update Style Names for new interface
         if (Uploader.isAjaxUploadWithProgressEventsSupported()) {
-            final Label dropFilesLabel = new Label("Choose File");
-            dropFilesLabel.setStyleName("dropFilesLabel");
+            final Label dropFilesLabel = new Label("Drag Your File Here");
+            dropFilesLabel.setStyleName("dnd-dropFilesLabel");
             dropFilesLabel.addDragOverHandler(new DragOverHandler() {
                 public void onDragOver(DragOverEvent event) {
                     if (!uploader.getButtonDisabled()) {
-                        dropFilesLabel.addStyleName("dropFilesLabelHover");
+                        dropFilesLabel.addStyleName("dnd-dropFilesLabelHover");
                     }
                 }
             });
             dropFilesLabel.addDragLeaveHandler(new DragLeaveHandler() {
                 public void onDragLeave(DragLeaveEvent event) {
-                    dropFilesLabel.removeStyleName("dropFilesLabelHover");
+                    dropFilesLabel.removeStyleName("dnd-dropFilesLabelHover");
                 }
             });
             dropFilesLabel.addDropHandler(new DropHandler() {
                 public void onDrop(DropEvent event) {
-                    dropFilesLabel.removeStyleName("dropFilesLabelHover");
-                        //TODO: Implement progressbar
-//                    if (uploader.getStats().getUploadsInProgress() <= 0) {
-//                        progressBarPanel.clear();
-//                        progressBars.clear();
-//                        cancelButtons.clear();
-//                    }
-
+                    dropFilesLabel.removeStyleName("dnd-dropFilesLabelHover");
                     uploader.addFilesToQueue(Uploader.getDroppedFiles(event.getNativeEvent()));
                     event.preventDefault();
                 }
             });
-            panel.add(dropFilesLabel);
+
+            uploaderPanel.add(dropFilesLabel);
         }
+
+        // Assemble final UI
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(uploaderPanel);
+        panel.add(queuedFilesPanel);
+        panel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+        panel.setCellHorizontalAlignment(uploader, HorizontalPanel.ALIGN_CENTER);
+        panel.setCellHorizontalAlignment(fileUploadQueue, HorizontalPanel.ALIGN_RIGHT);
+
         addPage(panel);
 
         // Create finish command (upload a file)
         initFinishCommand(new Command() {
             @Override
             public void execute() {
-                String uploadFilename = currentFile.getName();
-                Window.alert("File name: "+currentFile.getName());
-                if (!uploadFilename.isEmpty()) {
-                    final String filename = makeValidFilename(uploadFilename);
-                    if(!TextValidators.isValidCharFilename(filename)){
-                        Window.alert(MESSAGES.malformedFilename());
-                        return;
-                    } else if (!TextValidators.isValidLengthFilename(filename)){
-                        Window.alert(MESSAGES.filenameBadSize());
-                        return;
-                    }
-                    String fn = conflictingExistingFile(folderNode, filename);
-                    if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
-                        return;
-                    } else {
-                        String fileId = folderNode.getFileId() + "/" + filename;
-                        // We delete all the conflicting files.
-                        for (ProjectNode child : folderNode.getChildren()) {
-                            if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
-                                final ProjectNode node = child;
-                                String filesToClose [] = { node.getFileId()};
-                                Ode ode = Ode.getInstance();
-                                ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
-                                ode.getProjectService().deleteFile(ode.getSessionId(),
-                                        node.getProjectId(), node.getFileId(),
-                                        new OdeAsyncCallback<Long>(
-                                                // message on failure
-                                                MESSAGES.deleteFileError()) {
-                                            @Override
-                                            public void onSuccess(Long date) {
-                                                Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
-                                                Ode.getInstance().updateModificationDate(node.getProjectId(), date);
+                    String uploadFilename = currentFile.getName();
+                    if (!uploadFilename.isEmpty()) {
+                        final String filename = makeValidFilename(uploadFilename);
+                        if (!TextValidators.isValidCharFilename(filename)) {
+                            Window.alert(MESSAGES.malformedFilename());
+                            return;
+                        } else if (!TextValidators.isValidLengthFilename(filename)) {
+                            Window.alert(MESSAGES.filenameBadSize());
+                            return;
+                        }
+                        String fn = conflictingExistingFile(folderNode, filename);
+                        if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
+                            return;
+                        } else {
+                            String fileId = folderNode.getFileId() + "/" + filename;
+                            // We delete all the conflicting files.
+                            for (ProjectNode child : folderNode.getChildren()) {
+                                if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
+                                    final ProjectNode node = child;
+                                    String filesToClose[] = {node.getFileId()};
+                                    Ode ode = Ode.getInstance();
+                                    ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
+                                    ode.getProjectService().deleteFile(ode.getSessionId(),
+                                            node.getProjectId(), node.getFileId(),
+                                            new OdeAsyncCallback<Long>(
+                                                    // message on failure
+                                                    MESSAGES.deleteFileError()) {
+                                                @Override
+                                                public void onSuccess(Long date) {
+                                                    Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
+                                                    Ode.getInstance().updateModificationDate(node.getProjectId(), date);
 
-                                            }
-                                        });
+                                                }
+                                            });
+                                }
                             }
                         }
+                        ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
+
+                        // Use the folderNode's project id and file id in the upload URL so that the file is
+                        // uploaded into that project and that folder in our back-end storage.
+                        String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+                                ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+                                folderNode.getFileId() + "/" + filename;
+                        uploader.setUploadURL(uploadUrl).startUpload();
+                    } else {
+                        Window.alert(MESSAGES.noFileSelected());
+                        new DNDFileUploadWizard(folderNode, fileUploadedCallback).show();
                     }
-                    ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
-
-                    // Use the folderNode's project id and file id in the upload URL so that the file is
-                    // uploaded into that project and that folder in our back-end storage.
-                    String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-                            ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-                            folderNode.getFileId() + "/" + filename;
-                    Window.alert("Upload URL: "+uploadUrl);
-                    //TODO: Implement upload with Moxieapps Uploader
-                    uploader.setUploadURL(uploadUrl);
-                    try {
-                      uploader.startUpload();
-                    } catch (Exception e) {
-                        Window.alert(e.toString());
-
-                    };
-
-//                    Uploader.getInstance().upload(upload, uploadUrl,
-//                            new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-//                                @Override
-//                                public void onSuccess(UploadResponse uploadResponse) {
-//                                    switch (uploadResponse.getStatus()) {
-//                                        case SUCCESS:
-//                                            ErrorReporter.hide();
-//                                            onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-//                                                    fileUploadedCallback);
-//                                            break;
-//                                        case FILE_TOO_LARGE:
-//                                            // The user can resolve the problem by
-//                                            // uploading a smaller file.
-//                                            ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-//                                            break;
-//                                        default:
-//                                            ErrorReporter.reportError(MESSAGES.fileUploadError());
-//                                            break;
-//                                    }
-//                                }
-//                            });
-                } else {
-                    Window.alert(MESSAGES.noFileSelected());
-                    new DNDFileUploadWizard(folderNode, fileUploadedCallback).show();
-                }
             }
         });
     }
@@ -269,12 +228,20 @@ public class DNDFileUploadWizard extends Wizard {
     @Override
     public void show() {
         super.show();
-        int width = 320;
-        int height = 120;
+        int width = 450;
+        int height = 150;
         this.center();
 
         setPixelSize(width, height);
-        super.setPagePanelHeight(120);
+        super.setPagePanelHeight(150);
+    }
+
+    private String shortenFilename(String fileName) {
+        if (fileName.length() > 20) {
+            return fileName.substring(0, 8) + "..." + fileName.substring(fileName.length() - 9, fileName.length());
+        } else {
+            return fileName;
+        }
     }
 
     private String makeValidFilename(String uploadFilename) {
@@ -298,6 +265,16 @@ public class DNDFileUploadWizard extends Wizard {
         return null;
     }
 
+    private boolean isInTree(Tree tree, String treeItemName) {
+        for (int i =0; i < tree.getItemCount(); i++){
+            File file = (File) tree.getItem(i).getUserObject();
+            if (file.getName()==treeItemName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String lastPathComponent (String path) {
         String [] pieces = path.split("/");
         return pieces[pieces.length - 1];
@@ -307,11 +284,6 @@ public class DNDFileUploadWizard extends Wizard {
         return Window.confirm(MESSAGES.confirmOverwrite(newFile, existingFile));
     }
 
-    private void onUploadSuccess(final FolderNode folderNode, final String filename,
-                                 long modificationDate, final FileUploadedCallback fileUploadedCallback) {
-        Ode.getInstance().updateModificationDate(folderNode.getProjectId(), modificationDate);
-        finishUpload(folderNode, filename, fileUploadedCallback);
-    }
 
     private void finishUpload(FolderNode folderNode, String filename,
                               FileUploadedCallback fileUploadedCallback) {
