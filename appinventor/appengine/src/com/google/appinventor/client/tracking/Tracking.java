@@ -22,37 +22,37 @@ public class Tracking {
   public static final String PROJECT_EVENT = "Project";
   public static final String PROJECT_ACTION_PREFIX = "Project_";
   public static final String PROJECT_ACTION_NEW_YA = PROJECT_ACTION_PREFIX +
-          "New-YA";
+      "New-YA";
   public static final String PROJECT_ACTION_DELETE_PROJECT_YA = PROJECT_ACTION_PREFIX +
-          "DeleteProject-YA";
+      "DeleteProject-YA";
   public static final String PROJECT_ACTION_DELETE_FILE_YA = PROJECT_ACTION_PREFIX +
-          "DeleteFile-YA";
+      "DeleteFile-YA";
   public static final String PROJECT_ACTION_PREVIEW_FILE_YA = PROJECT_ACTION_PREFIX +
           "PreviewFile-YA";
   public static final String PROJECT_ACTION_BUILD_BARCODE_YA = PROJECT_ACTION_PREFIX +
-          "BuildBarcode-YA";
+      "BuildBarcode-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +
-          "BuildDownload-YA";
+      "BuildDownload-YA";
   public static final String PROJECT_ACTION_BUILD_YAIL_YA = PROJECT_ACTION_PREFIX +
-          "BuildYail-YA";
+      "BuildYail-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA = PROJECT_ACTION_PREFIX +
-          "DownloadProjectSource-YA";
+      "DownloadProjectSource-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_FILE_YA = PROJECT_ACTION_PREFIX +
-          "DownloadFile-YA";
+      "DownloadFile-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA =
-          PROJECT_ACTION_PREFIX + "DownloadAllProjectsSource-YA";
+      PROJECT_ACTION_PREFIX + "DownloadAllProjectsSource-YA";
   public static final String PROJECT_ACTION_SAVE_YA = PROJECT_ACTION_PREFIX +
-          "Save-YA";
+      "Save-YA";
   public static final String PROJECT_ACTION_SAVE_AS_YA = PROJECT_ACTION_PREFIX +
-          "SaveAs-YA";
+      "SaveAs-YA";
   public static final String PROJECT_ACTION_CHECKPOINT_YA = PROJECT_ACTION_PREFIX +
-          "Checkpoint-YA";
+      "Checkpoint-YA";
   public static final String PROJECT_ACTION_ADDFORM_YA = PROJECT_ACTION_PREFIX +
-          "AddForm-YA";
+      "AddForm-YA";
   public static final String PROJECT_ACTION_REMOVEFORM_YA = PROJECT_ACTION_PREFIX +
-          "RemoveForm-YA";
+      "RemoveForm-YA";
   public static final String PROJECT_SUBACTION_BUILD_YA = PROJECT_ACTION_PREFIX +
-          "Build-Subcommand-YA";
+      "Build-Subcommand-YA";
 
   public static final String USER_EVENT = "User";
   public static final String USER_ACTION_PREFIX = "User_";
@@ -140,63 +140,63 @@ public class Tracking {
    * Initializes the tracker object.
    */
   private static native void gaInit(String key) /*-{
-      var _gat = $wnd["Ode.Tracking"];
-      if (_gat != null) {
-          var tracker = _gat._getTracker(key);
-          if (tracker != null) {
-              tracker._initData();
-              @com.google.appinventor.client.tracking.Tracking::gaTracker = tracker;
-          }
+    var _gat = $wnd["Ode.Tracking"];
+    if (_gat != null) {
+      var tracker = _gat._getTracker(key);
+      if (tracker != null) {
+        tracker._initData();
+        @com.google.appinventor.client.tracking.Tracking::gaTracker = tracker;
       }
+    }
   }-*/;
 
   /*
    * Tracks a page view.
    */
   private static native void gaTrackPageview() /*-{
-      var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-      if (tracker != null) {
-          tracker._trackPageview();
-      }
+    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
+    if (tracker != null) {
+      tracker._trackPageview();
+    }
   }-*/;
 
   /*
    * Track an event as a pageview.  For backwards compatibility purposes only.
    */
   private static native void gaTrackEventAsPage(String event) /*-{
-      var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-      if (tracker != null) {
-          tracker._trackPageview(event);
-      }
+    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
+    if (tracker != null) {
+      tracker._trackPageview(event);
+    }
   }-*/;
 
   /*
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action) /*-{
-      var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-      if (tracker != null) {
-          tracker._trackEvent(event, action);
-      }
+    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
+    if (tracker != null) {
+      tracker._trackEvent(event, action);
+    }
   }-*/;
 
   /*
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action, String label) /*-{
-      var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-      if (tracker != null) {
-          tracker._trackEvent(event, action, label);
-      }
+    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
+    if (tracker != null) {
+      tracker._trackEvent(event, action, label);
+    }
   }-*/;
 
   /*
    * Track an event.
    */
   private static native void gaTrackEvent(String event, String action, String label, int value) /*-{
-      var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
-      if (tracker != null) {
-          tracker._trackEvent(event, action, label, value);
-      }
+    var tracker = @com.google.appinventor.client.tracking.Tracking::gaTracker;
+    if (tracker != null) {
+      tracker._trackEvent(event, action, label, value);
+    }
   }-*/;
 }
