@@ -200,6 +200,7 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
+<<<<<<< HEAD
    * Called whenever the accelerometer value updates.
    *
    * @param magnitude the smoothed magnitude value used for step detection
@@ -207,6 +208,47 @@ public class Pedometer extends AndroidNonvisibleComponent
   @SimpleEvent(description = "This event is run when the accelerometer provides a reading")
   public void MagnitudeChanged(float magnitude) {
     EventDispatcher.dispatchEvent(this, "MagnitudeChanged", magnitude);
+=======
+   * Indicates that the device is moving.
+   */
+  @SimpleEvent
+  public void StartedMoving() {
+    EventDispatcher.dispatchEvent(this, "StartedMoving");
+  }
+
+  /**
+   * Indicates that the device has stopped.
+   */
+  @SimpleEvent
+  public void StoppedMoving() {
+    EventDispatcher.dispatchEvent(this, "StoppedMoving");
+  }
+
+  /**
+   * Indicates that the calibration has failed. This could happen is the GPS
+   * is not active, or if the client has set UseGps to false.
+   */
+  @SimpleEvent
+  public void CalibrationFailed() {
+    EventDispatcher.dispatchEvent(this, "CalibrationFailed");
+  }
+
+  /**
+   * Indicates that the GPS is now available to use for distance measurement, and that
+   * calibration is now possible.
+   */
+  @SimpleEvent
+  public void GPSAvailable() {
+    EventDispatcher.dispatchEvent(this, "GPSAvailable");
+  }
+
+  /**
+   * Indicates that the GPS signal is lost.
+   */
+  @SimpleEvent
+  public void GPSLost() {
+    EventDispatcher.dispatchEvent(this, "GPSLost");
+>>>>>>> parent of ffbb86d... Add MagnitudeChanged event to the pedometer for debugging.
   }
 
   // Properties
@@ -419,7 +461,6 @@ public class Pedometer extends AndroidNonvisibleComponent
     } else if (!startPeaking && winPos == 1) {
       lastValues[1] = (lastValues[1] + lastValues[0]) / 2f;
     }
-    MagnitudeChanged(lastValues[winPos]);
 
     long elapsedTimestamp = System.currentTimeMillis();
     if (elapsedTimestamp - stepTimestamp > stopDetectionTimeout) {

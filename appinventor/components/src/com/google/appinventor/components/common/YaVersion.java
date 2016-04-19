@@ -791,7 +791,10 @@ public class YaVersion {
   // - Added RequestFocus Function (via TextBoxBase)
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
 
-  public static final int PEDOMETER_COMPONENT_VERSION = 1;
+  // For PEDOMETER_COMPONENT_VERSION 2:
+  // - The step sensing algorithm was updated to be more accurate.
+  // - The GPS related functionality was removed.
+  public static final int PEDOMETER_COMPONENT_VERSION = 2;
 
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
