@@ -1268,6 +1268,9 @@ public interface OdeMessages extends Messages {
   String errorGeneratingYail(String formName);
 
   // Used in explorer/commands/CommandRegistory.java
+  @DefaultMessage("Preview...")
+  @Description("Label for the context menu command that previews a file")
+  String previewFileCommand();
 
   @DefaultMessage("Delete...")
   @Description("Label for the context menu command that deletes a file")
