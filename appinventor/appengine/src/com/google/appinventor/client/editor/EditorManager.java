@@ -231,6 +231,12 @@ public final class EditorManager {
    *                     settings and file editors are saved successfully
    */
   public void saveDirtyEditors(final Command afterSaving) {
+    // Note, We don't do any saving if we are in read only mode
+    if (Ode.getInstance().isReadOnly()) {
+      afterSaving.execute();
+      return;
+    }
+
     // Collect the files that need to be saved.
     List<FileDescriptorWithContent> filesToSave = new ArrayList<FileDescriptorWithContent>();
     for (FileEditor fileEditor : dirtyFileEditors) {

@@ -210,7 +210,9 @@
           depends="init,WarLibs,AiSharedLib">
     <property name="AiServerLib-class.dir" location="${class.dir}/AiServerLib" />
     <mkdir dir="${AiServerLib-class.dir}" />
-
+    <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
+      <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
+    </copy>
     <ai.javac destdir="${AiServerLib-class.dir}" >
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>

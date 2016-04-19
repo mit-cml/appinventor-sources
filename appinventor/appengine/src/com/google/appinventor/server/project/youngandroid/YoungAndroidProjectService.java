@@ -198,7 +198,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // this will be perfectly acceptable.  Until that happens, choosing 0 is just as safe as
     // allowing a random number to be chosen when the MockComponent is first created.
     return "#|\n$JSON\n" +
-        "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\"}}\n|#";
