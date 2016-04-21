@@ -99,19 +99,20 @@ public class FileUploadWizard extends Wizard {
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
           if(!TextValidators.isValidCharFilename(filename)){
-            //Window.alert(MESSAGES.malformedFilename());
-            createErrorDialog("malformed", folderNode, fileUploadedCallback);
+            createErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(), 
+              Error.noFileSelected, folderNode, fileUploadedCallback);
             return;
           } else if (!TextValidators.isValidLengthFilename(filename)){
-            //Window.alert(MESSAGES.filenameBadSize());
-            createErrorDialog("badSize", folderNode, fileUploadedCallback);
+            createErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(), 
+              Error.filenameBadSize, folderNode, fileUploadedCallback);
             return;
           }
           int nameLength = uploadFilename.length();
           String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
           
           if (".aia".equals(fileEnd.toLowerCase())) {
-            createErrorDialog("aia", folderNode, fileUploadedCallback);
+            createErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(), 
+              Error.aiaMediaAsset, folderNode, fileUploadedCallback);
             return;
           } 
           String fn = conflictingExistingFile(folderNode, filename);
@@ -170,7 +171,8 @@ public class FileUploadWizard extends Wizard {
             }
           });
         } else {
-          createErrorDialog("noFile", folderNode, fileUploadedCallback);
+          createErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(), 
+              Error.noFileSelected, folderNode, fileUploadedCallback);
         }
       }
     });
@@ -241,8 +243,8 @@ public class FileUploadWizard extends Wizard {
     }
   }
 
-  private void createErrorDialog(String errorType, final FolderNode folderNode,
-      final FileUploadedCallback fileUploadedCallback) {
+  private void createErrorDialog(String title, String body, Error e,
+      final FolderNode folderNode, final FileUploadedCallback fileUploadedCallback) {
     final DialogBox dialogBox = new DialogBox(false,true);
     HTML message;
     dialogBox.setStylePrimaryName("ode-DialogBox");
@@ -261,30 +263,23 @@ public class FileUploadWizard extends Wizard {
       }
     });
     holder.add(ok);
-    if (errorType.equals("aia")) {
-      dialogBox.setText("Error: Cannot upload .aia file as media asset");  
-      message = new HTML(MESSAGES.aiaMediaAsset());
-      
-      Button info = new Button ("More Info");
-      info.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          Window.open("http://appinventor.mit.edu/explore/ai2/share.html", 
-            "AIA_Help", "");
-        }
-      });
-      holder.add(info);
-    } else if (errorType.equals("noFile")) {
-      dialogBox.setText("Error: No File Selected");
-      message = new HTML(MESSAGES.noFileSelected());
-    } else if (errorType.equals("malformed")) {
-      dialogBox.setText("Error: Malformed Filename");
-      message = new HTML(MESSAGES.malformedFilename());
-    } else if (errorType.equals("badSize")) {
-      dialogBox.setText("Error: Bad Filename Size");
-      message = new HTML(MESSAGES.filenameBadSize());
-    } else {
-      dialogBox.setText("Error of unknown type");
-      message = new HTML("Type of error cannot be determined.");
+    dialogBox.setText(title);  
+    message = new HTML(body);
+    
+    switch(e) {
+      case aiaMediaAsset:
+        Button info = new Button ("More Info");
+        info.addClickListener(new ClickListener() {
+          public void onClick(Widget sender) {
+            Window.open(MESSAGES.aiaMediaAssetHelp(), "AIA Help", "");
+          }
+        });
+        holder.add(info);
+      case noFileSelected:
+      case malformedFilename:
+      case filenameBadSize:
+      default:
+        break;
     }
 
     message.setStyleName("DialogBox-message");
@@ -295,3 +290,8 @@ public class FileUploadWizard extends Wizard {
   }
   
 }
+
+enum Error {
+  aiaMediaAsset, noFileSelected, malformedFilename, filenameBadSize
+}
+
