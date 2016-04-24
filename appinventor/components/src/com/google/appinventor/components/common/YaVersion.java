@@ -378,8 +378,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -757,7 +759,9 @@ public class YaVersion {
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 3:
+  // - The speed parameter was added to the LocationChanged event
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;

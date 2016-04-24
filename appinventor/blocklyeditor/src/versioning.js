@@ -1686,7 +1686,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The TimeInterval and DistanceInterval properties were added.
     // No changes required.
-    2: "noUpgrade"
+    2: "noUpgrade",
+    // AI2:
+    // The speed parameter to the LocationChanged event
+    3: "noUpgrade"
 
   }, // End LocationSensor upgraders
 

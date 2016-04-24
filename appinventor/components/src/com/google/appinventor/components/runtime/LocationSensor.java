@@ -42,6 +42,7 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.LOCATIONSENSOR_COMPONENT_VERSION,
     description = "Non-visible component providing location information, " +
     "including longitude, latitude, altitude (if supported by the device), " +
+    "speed (if supported by the device), " +
     "and address.  This can also perform \"geocoding\", converting a given " +
     "address (not necessarily the current one) to a latitude (with the " +
     "<code>LatitudeFromAddress</code> method) and a longitude (with the " +
@@ -78,6 +79,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
       lastLocation = location;
       longitude = location.getLongitude();
       latitude = location.getLatitude();
+      speed = location.getSpeed();
       // If the current location doesn't have altitude information, the prior
       // altitude reading is retained.
       if (location.hasAltitude()) {
@@ -89,7 +91,16 @@ public class LocationSensor extends AndroidNonvisibleComponent
       // So we want to ignore that case rather than generating a changed event.
       if (longitude != UNKNOWN_VALUE || latitude != UNKNOWN_VALUE) {
         hasLocationData = true;
-        LocationChanged(latitude, longitude, altitude);
+        final double argLatitude = latitude;
+        final double argLongitude = longitude;
+        final double argAltitude = altitude;
+        final float argSpeed = speed;
+        androidUIHandler.post(new Runnable() {
+            @Override
+            public void run() {
+              LocationChanged(argLatitude, argLongitude, argAltitude, argSpeed);
+            }
+          });
       }
     }
 
@@ -174,8 +185,12 @@ public class LocationSensor extends AndroidNonvisibleComponent
   private double longitude = UNKNOWN_VALUE;
   private double latitude = UNKNOWN_VALUE;
   private double altitude = UNKNOWN_VALUE;
+  private float speed = UNKNOWN_VALUE;
   private boolean hasLocationData = false;
   private boolean hasAltitude = false;
+
+  // For posting events on the UI thread
+  private final Handler androidUIHandler = new Handler();
 
   // This is used in reverse geocoding.
   private Geocoder geocoder;
@@ -216,10 +231,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * Indicates that a new location has been detected.
    */
   @SimpleEvent
-  public void LocationChanged(double latitude, double longitude, double altitude) {
-    if (enabled) {
-      EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude);
-    }
+  public void LocationChanged(double latitude, double longitude, double altitude, float speed) {
+    EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude, speed);
   }
 
   /**
