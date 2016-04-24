@@ -1094,10 +1094,13 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeLocationSensorProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
+      // Version 2:
       // The TimeInterval and DistanceInterval properties were added.
       // No properties need to be modified to upgrade to Version 2.
-      srcCompVersion = 2;
+      // Version 3:
+      // The speed parameter was added to the LocationChanged event
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
