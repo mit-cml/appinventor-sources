@@ -39,11 +39,23 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -83,7 +95,7 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
-    SourcesMouseEvents, DragSource {
+    SourcesMouseEvents, DragSource, HasAllTouchHandlers {
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
@@ -302,6 +314,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private MockContainer container;
 
   private MouseListenerCollection mouseListeners = new MouseListenerCollection();
+  private HandlerManager handlers;
 
   /**
    * Creates a new instance of the component.
@@ -312,6 +325,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.editor = editor;
     this.type = type;
     this.iconImage = iconImage;
+    this.handlers = new HandlerManager(this);
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(editor.getProjectId());
     componentDefinition = COMPONENT_DATABASE.getComponentDefinition(type);
 
@@ -374,6 +388,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (!isForm()) {
       dragSourceSupport = new DragSourceSupport(this);
       addMouseListener(dragSourceSupport);
+      addTouchStartHandler(dragSourceSupport);
+      addTouchMoveHandler(dragSourceSupport);
+      addTouchEndHandler(dragSourceSupport);
+      addTouchCancelHandler(dragSourceSupport);
     }
   }
 
@@ -390,7 +408,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     initWidget(widget);
 
     // Capture mouse and click events in onBrowserEvent(Event)
-    sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK);
+    sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.TOUCHEVENTS);
 
     // Add the special name property and set the tooltip
     String name = componentName();
@@ -824,6 +842,17 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   @Override
   public final void onBrowserEvent(Event event) {
     switch (event.getTypeInt()) {
+      case Event.ONTOUCHSTART:
+      case Event.ONTOUCHEND:
+        if (isForm()) {
+          select();
+        }
+      case Event.ONTOUCHMOVE:
+      case Event.ONTOUCHCANCEL:
+        cancelBrowserEvent(event);
+        DomEvent.fireNativeEvent(event, handlers);
+        break;
+
       case Event.ONMOUSEDOWN:
       case Event.ONMOUSEUP:
       case Event.ONMOUSEMOVE:
@@ -869,6 +898,26 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   @Override
   public final void removeMouseListener(MouseListener listener) {
     mouseListeners.remove(listener);
+  }
+
+  @Override
+  public final HandlerRegistration addTouchStartHandler(TouchStartHandler handler) {
+    return handlers.addHandler(TouchStartEvent.getType(), handler);
+  }
+
+  @Override
+  public final HandlerRegistration addTouchMoveHandler(TouchMoveHandler handler) {
+    return handlers.addHandler(TouchMoveEvent.getType(), handler);
+  }
+
+  @Override
+  public final HandlerRegistration addTouchEndHandler(TouchEndHandler handler) {
+    return handlers.addHandler(TouchEndEvent.getType(), handler);
+  }
+
+  @Override
+  public final HandlerRegistration addTouchCancelHandler(TouchCancelHandler handler) {
+    return handlers.addHandler(TouchCancelEvent.getType(), handler);
   }
 
   // DragSource implementation

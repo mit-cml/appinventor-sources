@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.widgets.dnd;
 
+import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -15,13 +16,22 @@ import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.TouchStartHandler;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.dom.client.Touch;
 
 /**
  * Provides support for dragging from a {@link DragSource}
  * (typically a widget) to a {@link DropTarget}.
  *
  */
-public final class DragSourceSupport implements MouseListener {
+public final class DragSourceSupport implements MouseListener, TouchStartHandler, TouchMoveHandler, TouchCancelHandler, TouchEndHandler {
   /**
    * Interface to functionality provided by the {@link DOM} class.
    * Used as a testing seam.
@@ -371,6 +381,52 @@ public final class DragSourceSupport implements MouseListener {
    */
   public Widget getDragWidget() {
     return dragWidgetPopup.getWidget();
+  }
+
+  // Touch Handler Implementation
+
+  /**
+   * Call the equivalent mouse event handler for each touch event
+   */
+  @Override
+  public void onTouchStart(TouchStartEvent event) {
+    event.preventDefault();
+    Widget src = (Widget) event.getSource();
+    Touch touch = event.getTargetTouches().get(0);
+    com.google.gwt.dom.client.Element target = com.google.gwt.dom.client.Element.as(touch.getTarget());
+    int x = touch.getRelativeX(target);
+    int y = touch.getRelativeY(target);
+    onMouseDown(src, x, y);
+  }
+
+  @Override
+  public void onTouchMove(TouchMoveEvent event) {
+    Widget src = (Widget) event.getSource();
+    Touch touch = event.getTargetTouches().get(0);
+    com.google.gwt.dom.client.Element target = com.google.gwt.dom.client.Element.as(touch.getTarget());
+    int x = touch.getRelativeX(target);
+    int y = touch.getRelativeY(target);
+    onMouseMove(src, x, y);
+  }
+
+  @Override
+  public void onTouchEnd(TouchEndEvent event) {
+    final Widget src = (Widget) event.getSource();
+    if (src instanceof MockComponent) {  // We only select on CLICK, which isn't generated on mobile
+      DeferredCommand.addCommand(new Command() {
+        @Override
+        public void execute() {
+          ((MockComponent) src).select();
+        }
+      });
+    }
+    onMouseUp(src, dragX, dragY);
+  }
+
+  @Override
+  public void onTouchCancel(TouchCancelEvent event) {
+    Widget src = (Widget) event.getSource();
+    onMouseLeave(src);
   }
 
   // Drag handling
