@@ -96,6 +96,12 @@ public class TopPanel extends Composite {
     links.setStyleName("ode-TopPanelLinks");
     links.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
+    if (Ode.getInstance().isReadOnly()) {
+      Label readOnly = new Label(MESSAGES.readOnlyMode());
+      readOnly.setStyleName("ode-TopPanelWarningLabel");
+      links.add(readOnly);
+    }
+
     // My Projects Link
     TextButton myProjects = new TextButton(MESSAGES.myProjectsTabName());
     myProjects.setStyleName("ode-TopPanelButton");

@@ -77,6 +77,12 @@ public class ServerLayout {
   public static final String USER_INFO_SERVICE = "userinfo";
 
   /**
+   * Relative path of the Admin Info Service within ODE
+   */
+
+  public static final String ADMIN_INFO_SERVICE = "admininfo";
+
+  /**
    * Relative path of the
    * {@link com.google.appinventor.shared.rpc.launch.LaunchService} within
    * the ODE GWT module.

@@ -155,6 +155,7 @@ public class BlocklyPanel extends HTMLPanel {
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
+    addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
   }
 
   /*
@@ -982,6 +983,10 @@ public class BlocklyPanel extends HTMLPanel {
   static native void setPreferredCompanion(String comp, String url) /*-{
     $wnd.PREFERRED_COMPANION = comp;
     $wnd.COMPANION_UPDATE_URL = url;
+  }-*/;
+
+  static native void addAcceptableCompanionPackage(String comp) /*-{
+    $wnd.ACCEPTABLE_COMPANION_PACKAGE = comp;
   }-*/;
 
   static native void addAcceptableCompanion(String comp) /*-{
