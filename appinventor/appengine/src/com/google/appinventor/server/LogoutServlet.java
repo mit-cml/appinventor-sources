@@ -22,7 +22,7 @@ public class LogoutServlet extends OdeServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    res.sendRedirect(UserServiceFactory.getUserService().createLogoutURL("/"));
-    res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+    req.getSession().invalidate();
+    res.sendRedirect("/");
   }
 }

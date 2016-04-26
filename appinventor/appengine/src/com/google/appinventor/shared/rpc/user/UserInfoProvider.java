@@ -77,6 +77,10 @@ public interface UserInfoProvider {
 
   String getSessionId();
 
+  void setReadOnly(boolean value);
+
+  boolean isReadOnly();
+
   void setSessionId(String SessionId);
 
 }

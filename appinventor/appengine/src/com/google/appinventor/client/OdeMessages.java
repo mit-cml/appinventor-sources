@@ -5872,4 +5872,9 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
+
+  @DefaultMessage("You are in Read Only Mode")
+  @Description("")
+  String readOnlyMode();
+
 }

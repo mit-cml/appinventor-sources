@@ -74,10 +74,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     project.addRawFile(new RawFile(RAW_FILE_NAME2, RAW_FILE_CONTENT2));
   }
 
-  private void createUserFiles(String userId, ObjectifyStorageIo storage)
+  private void createUserFiles(String userId, String userEmail, ObjectifyStorageIo storage)
     throws UnsupportedEncodingException {
     // remove files in case they were already created
-    storage.getUser(userId);  // ensure userId exists in the DB
+    storage.getUser(userId, userEmail);  // ensure userId exists in the DB
     storage.deleteUserFile(userId, FILE_NAME1);
     storage.deleteUserFile(userId, FILE_NAME2);
     storage.deleteUserFile(userId, RAW_FILE_NAME1);
@@ -115,39 +115,44 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testSetTosAccepted() {
     final String USER_ID = "100";
+    final String USER_EMAIL = "newuser100@test.com";
     ObjectifyStorageIo.requireTos.setForTest(true);
-    User user = storage.getUser(USER_ID);
+    User user = storage.getUser(USER_ID, USER_EMAIL);
     assertEquals(false, user.getUserTosAccepted());
     storage.setTosAccepted(USER_ID);
-    assertEquals(true, storage.getUser(USER_ID).getUserTosAccepted());
+    assertEquals(true, storage.getUser(USER_ID, USER_EMAIL).getUserTosAccepted());
   }
 
   public void testLoadSettingsNewUser() {
     final String USER_ID = "200";
+    final String USER_EMAIL = "newuser200@test.com";
     assertEquals("", storage.loadSettings(USER_ID));
   }
 
   public void testStoreLoadSettings() {
     final String USER_ID = "300";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser300@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     storage.storeSettings(USER_ID, SETTINGS);
     assertEquals(SETTINGS, storage.loadSettings(USER_ID));
   }
 
   public void testCreateProjectSuccessful() {
     final String USER_ID = "400";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser400@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     storage.createProject(USER_ID, project, SETTINGS);
     assertEquals(1, storage.getProjects(USER_ID).size());
   }
 
   public void testCreateProjectFailFirst() {
     final String USER_ID = "600";
+    final String USER_EMAIL = "newuser600@test.com";
     // fail on first job in createProject (2nd job overall)
     StorageIo throwingStorage = new FailingJobObjectifyStorageIo(2);
 
     try {
-      throwingStorage.getUser(USER_ID);
+      throwingStorage.getUser(USER_ID, USER_EMAIL);
       throwingStorage.createProject(USER_ID, project, SETTINGS);
     } catch (RuntimeException e) {
       assertEquals(0, throwingStorage.getProjects(USER_ID).size());
@@ -159,11 +164,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testCreateProjectFailSecond() {
     final String USER_ID = "700";
+    final String USER_EMAIL = "newuser700@test.com";
     // fail on second job in createProject (3rd job overall)
     StorageIo throwingStorage = new FailingJobObjectifyStorageIo(3);
 
     try {
-      throwingStorage.getUser(USER_ID);
+      throwingStorage.getUser(USER_ID, USER_EMAIL);
       throwingStorage.createProject(USER_ID, project, SETTINGS);
     } catch (RuntimeException e) {
       assertEquals(0, throwingStorage.getProjects(USER_ID).size());
@@ -173,10 +179,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     fail();
   }
 
-
   public void testUploadBeforeAdd() throws BlocksTruncatedException {
     final String USER_ID = "800";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser800@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     try {
       storage.uploadFile(projectId, FILE_NAME1, USER_ID, "does not matter",
@@ -195,7 +201,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUploadUserFileBeforeAdd() {
     final String USER_ID = "900";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser900@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     try {
       storage.uploadUserFile(USER_ID, FILE_NAME1, "does not matter",
           StorageUtil.DEFAULT_CHARSET);
@@ -213,7 +220,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testMuliRoleFile() {
     final String USER_ID = "1000";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1000@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, FILE_NAME1);
     try {
@@ -234,7 +242,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUpdateModificationTime() throws BlocksTruncatedException {
     final String USER_ID = "1100";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1100@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     UserProject uproject = storage.getUserProject(USER_ID, projectId);
     long creationDate = uproject.getDateCreated();
@@ -298,7 +307,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testAddRemoveFile() throws BlocksTruncatedException {
     final String USER_ID = "1200";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1200@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, FILE_NAME1);
     storage.uploadFile(projectId, FILE_NAME1, USER_ID, FILE_CONTENT1, StorageUtil.DEFAULT_CHARSET);
@@ -326,7 +336,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // Note that neither FILE_NAME1 nor FILE_NAME_OUTPUT should exist
     // at the start of this test
     final String USER_ID = "1100";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1100@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     storage.addFilesToUser(USER_ID, FILE_NAME1);
     storage.uploadUserFile(USER_ID, FILE_NAME1, FILE_CONTENT1,
         StorageUtil.DEFAULT_CHARSET);
@@ -351,7 +362,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testUnsupportedEncoding() throws BlocksTruncatedException {
     final String USER_ID = "1100";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1100@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, FILE_NAME1);
     try {
@@ -375,7 +387,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // Note that neither FILE_NAME1 nor FILE_NAME_OUTPUT should exist
     // at the start of this test
     final String USER_ID = "1100";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1100@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     storage.addFilesToUser(USER_ID, FILE_NAME1);
     try {
       storage.uploadUserFile(USER_ID, FILE_NAME1, FILE_CONTENT1, "No such encoding");
@@ -397,7 +410,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testBlobFiles() throws BlocksTruncatedException {
     final String USER_ID = "1300";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1300@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(
         USER_ID, PROJECT_NAME, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
         FORM_QUALIFIED_NAME);
@@ -441,7 +455,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     };
 
     final String USER_ID = "1310";
-    oldStyleStorage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1310@test.com";
+    oldStyleStorage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(
         USER_ID, PROJECT_NAME, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
         FORM_QUALIFIED_NAME);
@@ -460,7 +475,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testGetProject() {
     final String USER_ID = "1400";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1400@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     ProjectData result = storage.getProject(projectId);
     assertEquals(projectId, result.id.longValue());
@@ -470,7 +486,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testGetProject_withNonexistentProject() {
     final String USER_ID = "1500";
-    storage.getUser(USER_ID);
+    final String USER_EMAIL = "newuser1500@test.com";
+    storage.getUser(USER_ID, USER_EMAIL);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     long nonExistentProjectId = (projectId + 10);
     ProjectData result = storage.getProject(nonExistentProjectId);
@@ -479,8 +496,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testWrongUserThrowsException() throws Exception {
     final String USER_ID = "1600";
+    final String USER_EMAIL = "newuser1600@test.com";
     final String USER_ID2 = "1700";
-    createUserFiles(USER_ID, storage);
+    createUserFiles(USER_ID, USER_EMAIL, storage);
 
     long projectId = storage.createProject(USER_ID, project, SETTINGS);
     assertTrue(Arrays.equals(RAW_FILE_CONTENT1,
