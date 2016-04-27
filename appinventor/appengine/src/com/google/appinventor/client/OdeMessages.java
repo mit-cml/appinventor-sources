@@ -2984,6 +2984,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ElapsedTimeProperties();
 
+  @DefaultMessage("SimpleSteps")
+  @Description("")
+  String SimpleStepsProperties();
+
+  @DefaultMessage("WalkSteps")
+  @Description("")
+  String WalkStepsProperties();
+
   @DefaultMessage("Moving")
   @Description("")
   String MovingProperties();
