@@ -374,6 +374,7 @@ public class ImageSprite extends Sprite {
 	 *            bounding box
 	 * @return the bounding box for this sprite
 	 */
+	/*
 	@Override
 	public BoundingBox getBoundingBox(int border) {
 		Log.e("AppInventor", "Getting bounding box as image sprite.");
@@ -383,7 +384,7 @@ public class ImageSprite extends Sprite {
 				(double)vBottomRight[0] - 1 + border, (double)vBottomRight[1] - 1 + border,
 				(double)vBottomLeft[0] - border, (double)vBottomLeft[1] - 1 + border);
 	}
-
+*/
 	/**
 	 * Checks that the spatial relation invariants between the vertices are
 	 * upheld.
