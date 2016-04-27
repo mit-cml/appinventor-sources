@@ -17,6 +17,8 @@ import com.google.appinventor.components.runtime.errors.AssertionFailure;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
+//Gabriel Modifications
+import android.graphics.Matrix;
 
 import android.os.Handler;
 import android.util.Log;
@@ -690,6 +692,8 @@ public abstract class Sprite extends VisibleComponent
     return hitEdge(canvas.Width(), canvas.Height());
   }
 
+  //TODO: Gabriel Modification. Need to update vertices before checking collisions
+  //again for rotated ImageSprites.
   /**
    * Moves the sprite back in bounds if part of it extends out of bounds,
    * having no effect otherwise. If the sprite is too wide to fit on the
@@ -698,7 +702,8 @@ public abstract class Sprite extends VisibleComponent
    * top side of the sprite with the top side of the canvas.
    */
   @SimpleFunction
-  protected final void moveIntoBounds(int canvasWidth, int canvasHeight) {
+  //protected final void moveIntoBounds(int canvasWidth, int canvasHeight) {
+  protected void moveIntoBounds(int canvasWidth, int canvasHeight) {
     boolean moved = false;
 
     // We set the xLeft and/or yTop fields directly, instead of calling X(123) and Y(123), to avoid
@@ -749,6 +754,7 @@ public abstract class Sprite extends VisibleComponent
    * Updates the x- and y-coordinates based on the heading and speed.  The
    * caller is responsible for calling {@link #registerChange()}.
    */
+  //Gabriel Modification. Image Sprites are able to override this method.
   protected void updateCoordinates() {
     xLeft += speed * headingCos;
     yTop += speed * headingSin;
@@ -756,20 +762,23 @@ public abstract class Sprite extends VisibleComponent
 
   // Methods for determining collisions with other Sprites and the edge
   // of the Canvas.
-
-  private final boolean overWestEdge() {
+  //Gabriel Modification. No longer 'private final'.
+  protected boolean overWestEdge() {
     return xLeft < 0;
   }
-
-  private final boolean overEastEdge(int canvasWidth) {
+  
+  //Gabriel Modification. no longer 'private final'
+  protected boolean overEastEdge(int canvasWidth) {
     return xLeft + Width() > canvasWidth;
   }
 
-  private final boolean overNorthEdge() {
+  //Gabriel Modification. no longer 'private final'
+  protected boolean overNorthEdge() {
     return yTop < 0;
   }
 
-  private final boolean overSouthEdge(int canvasHeight) {
+  //Gabriel Modification. no longer 'private final'
+  protected boolean overSouthEdge(int canvasHeight) {
     return yTop + Height() > canvasHeight;
   }
 
