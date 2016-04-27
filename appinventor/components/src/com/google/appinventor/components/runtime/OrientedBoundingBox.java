@@ -14,6 +14,8 @@ import com.google.appinventor.components.runtime.util.BoundingBox;
  *
  */
 public class OrientedBoundingBox extends BoundingBox{
+	private boolean rotates;
+	
 	private double left;
 	private double top;
 	private double right;
@@ -40,6 +42,23 @@ public class OrientedBoundingBox extends BoundingBox{
 	private double vertBottomLeftY;
 
 	/**
+	 * Constructor for a bounding box. All coordinates are inclusive.
+	 *
+	 * @param l
+	 *            leftmost x-coordinate
+	 * @param t
+	 *            topmost y-coordinate
+	 * @param r
+	 *            rightmost x-coordinate
+	 * @param b
+	 *            bottommost y-coordinate
+	 */
+	public OrientedBoundingBox(double l, double t, double r, double b) {
+		super(l, t, r, b);
+		rotates = false;
+	}
+	
+	/**
 	 * Constructor for an oriented bounding box. TODO: Confident I only need 3
 	 * of the vertices. Revise and refactor.
 	 *
@@ -59,7 +78,7 @@ public class OrientedBoundingBox extends BoundingBox{
 	 *            x-coordinate for Bottom Left vertex
 	 * @param vertBottomLeftY
 	 *            y-coordinate for Bottom Left vertex
-	 */
+	 */	
 	public OrientedBoundingBox(double centerX, double centerY, double vertTopRightX, double vertTopRightY,
 			double vertTopLeftX, double vertTopLeftY, double vertBottomRightX, double vertBottomRightY,
 			double vertBottomLeftX, double vertBottomLeftY) {
@@ -68,15 +87,13 @@ public class OrientedBoundingBox extends BoundingBox{
 		// TODO: Confident that from one axis, the other can be derived. So
 		// perhaps just need center and
 		// two vertices.
+		super(Math.min(vertTopLeftX, vertBottomLeftX), Math.min(vertTopLeftY, vertTopRightY),
+				Math.max(vertTopRightX, vertBottomRightX), Math.max(vertBottomLeftY, vertBottomRightY));
+		rotates = true;
 		axisLengthX = vertBottomRightX - vertBottomLeftX;
 		axisLengthY = vertBottomRightY - vertBottomLeftY;
 		axisHeightX = vertBottomLeftX - vertTopLeftX;
 		axisHeightY = vertBottomLeftY - vertTopLeftY;
-		
-		left = Math.min(vertTopLeftX, vertBottomLeftX);
-		right = Math.max(vertTopRightX, vertBottomRightX);
-		top = Math.min(vertTopLeftY, vertTopRightY);
-		bottom = Math.max(vertBottomLeftY, vertBottomRightY);
 
 		double axisLengthMagnitude = Math.sqrt(axisLengthX * axisLengthX + axisLengthY * axisLengthY);
 		axisLengthX = axisLengthX / axisLengthMagnitude;
@@ -109,7 +126,6 @@ public class OrientedBoundingBox extends BoundingBox{
 		this.vertBottomLeftX = vertBottomLeftX;
 		this.vertBottomLeftY = vertBottomLeftY;
 	}
-
 	/**
 	 * Gets the x-coordinate of the top left vertex.
 	 *
