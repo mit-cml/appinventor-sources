@@ -26,6 +26,10 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3SensorPortChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3ColorSensorModeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3UltrasonicSensorModeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenOrientationChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorDistIntervalChoicePropertyEditor;
@@ -89,7 +93,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     paletteHelpers = new HashMap<ComponentCategory, PaletteHelper>();
     // If a category has a palette helper, add it to the paletteHelpers map here.
-    paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new NxtPaletteHelper());
+    paletteHelpers.put(ComponentCategory.LEGOMINDSTORMS, new LegoPaletteHelper());
 
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
 
@@ -190,6 +194,14 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new FloatPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_INTEGER)) {
       return new IntegerPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_SENSOR_PORT)) {
+      return new YoungAndroidLegoEv3SensorPortChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_COLOR_SENSOR_MODE)) {
+      return new YoungAndroidLegoEv3ColorSensorModeChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_ULTRASONIC_SENSOR_MODE)) {
+      return new YoungAndroidLegoEv3UltrasonicSensorModeChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_GYRO_SENSOR_MODE)) {
+      return new YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT)) {
       return new YoungAndroidLegoNxtSensorPortChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR)) {
