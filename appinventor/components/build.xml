@@ -147,7 +147,9 @@
       <zipfileset src="${build.dir}/common/CommonVersion.jar" />
     </jar>
 	<jar destfile="${public.build.dir}/KotlinRuntime.jar">
-		<zipfileset src="${lib.dir}/kotlin/kotlin-runtime.jar"/>
+        <zipfileset src="${lib.dir}/kotlin-runtime.jar">
+            <include name="**/*" if="usekotlin"/>
+        </zipfileset>
 	</jar>
   </target>
 
