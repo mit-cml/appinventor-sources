@@ -376,8 +376,10 @@ public class YaVersion {
   // - FIREBASE_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 149:
   // - CLOCK_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 150:
+  // - PEDOMETER_COMPONENT_VERSION was incremented to 1
 
-  public static final int YOUNG_ANDROID_VERSION = 149;
+  public static final int YOUNG_ANDROID_VERSION = 150;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -791,6 +793,12 @@ public class YaVersion {
   // - Added RequestFocus Function (via TextBoxBase)
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
 
+  // For PEDOMETER_COMPONENT_VERSION 2:
+  // - CalibrationFailed, GPSAvailable, GPSLost, StartedMoving, and StoppedMoving were removed.
+  // - CalibrateStrideLength and UseGPS properties were removed.
+  // - CalibrateStrideLength, Moving, StopDetectionTimeout and UseGPS properties were removed.
+  // - SimpleStep and WalkStep events were updated.
+  // - SimplesSteps and WalkStpes properties were added.
   public static final int PEDOMETER_COMPONENT_VERSION = 1;
 
   // For PHONECALL_COMPONENT_VERSION 2:

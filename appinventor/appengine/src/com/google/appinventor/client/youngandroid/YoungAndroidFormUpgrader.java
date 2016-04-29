@@ -1101,6 +1101,15 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradePedometerProperties(Map<String, JSONValue> componentProperties,
+                                                      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Properties related to this component have now been upgraded to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradePasswordTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
