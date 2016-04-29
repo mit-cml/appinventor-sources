@@ -794,12 +794,18 @@ public class YaVersion {
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
+<<<<<<< HEAD
   // - CalibrationFailed, GPSAvailable, GPSLost, StartedMoving, and StoppedMoving were removed.
   // - CalibrateStrideLength and UseGPS properties were removed.
   // - CalibrateStrideLength, Moving, StopDetectionTimeout and UseGPS properties were removed.
   // - SimpleStep and WalkStep events were updated.
   // - SimplesSteps and WalkStpes properties were added.
   public static final int PEDOMETER_COMPONENT_VERSION = 1;
+=======
+  // - The step sensing algorithm was updated to be more accurate.
+  // - The GPS related functionality was removed.
+  public static final int PEDOMETER_COMPONENT_VERSION = 2;
+>>>>>>> 583560ef3499d672ff5d310dbd9a5899f362e17a
 
   // For PHONECALL_COMPONENT_VERSION 2:
   // - The PhoneCallStarted event was added.
