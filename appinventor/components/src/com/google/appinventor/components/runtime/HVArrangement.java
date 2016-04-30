@@ -218,8 +218,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how the contents of the arrangement are aligned " +
-          " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
-          "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
+          " vertically. The choices are: 1 = aligned at the top, 2 = right aligned, " +
+          "3 = vertically centered.  Alignment has no effect if the arrangement's height " +
           "is automatic.")
   public int AlignVertical() {
     return verticalAlignment;
