@@ -378,8 +378,11 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - FORM_COMPONENT_VERSION was incremented to 20
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -666,7 +669,9 @@ public class YaVersion {
   //   Sizing property
   // For FORM_COMPONENT_VERSION 19:
   // - Added HideKeyboard method
-  public static final int FORM_COMPONENT_VERSION = 19;
+  // For FORM_COMPONENT_VERSION 20:
+  // - The argument to Screen.AlignHorizontal was redefined
+  public static final int FORM_COMPONENT_VERSION = 20;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -683,8 +688,11 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The argument to HorizontalArrangemnt.AlignHorizontal was redefined
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.

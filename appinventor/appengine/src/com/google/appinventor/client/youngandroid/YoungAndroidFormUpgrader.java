@@ -903,6 +903,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 19;
     }
 
+    if (srcCompVersion < 20) {
+      // Redefine arg in AlignHorizontal
+      srcCompVersion = 20;
+    }
+
     return srcCompVersion;
   }
 
@@ -933,6 +938,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // Redefine arg in AlignHorizontal
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
