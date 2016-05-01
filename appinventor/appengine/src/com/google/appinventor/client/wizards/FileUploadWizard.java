@@ -100,11 +100,11 @@ public class FileUploadWizard extends Wizard {
           final String filename = makeValidFilename(uploadFilename);
           if(!TextValidators.isValidCharFilename(filename)){
             createErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(), 
-              Error.noFileSelected, folderNode, fileUploadedCallback);
+              Error.NOFILESELECETED, folderNode, fileUploadedCallback);
             return;
           } else if (!TextValidators.isValidLengthFilename(filename)){
             createErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(), 
-              Error.filenameBadSize, folderNode, fileUploadedCallback);
+              Error.FILENAMEBADSIZE, folderNode, fileUploadedCallback);
             return;
           }
           int nameLength = uploadFilename.length();
@@ -112,7 +112,7 @@ public class FileUploadWizard extends Wizard {
           
           if (".aia".equals(fileEnd.toLowerCase())) {
             createErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(), 
-              Error.aiaMediaAsset, folderNode, fileUploadedCallback);
+              Error.AIAMEDIAASSET, folderNode, fileUploadedCallback);
             return;
           } 
           String fn = conflictingExistingFile(folderNode, filename);
@@ -172,7 +172,7 @@ public class FileUploadWizard extends Wizard {
           });
         } else {
           createErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(), 
-              Error.noFileSelected, folderNode, fileUploadedCallback);
+              Error.NOFILESELECETED, folderNode, fileUploadedCallback);
         }
       }
     });
@@ -267,7 +267,7 @@ public class FileUploadWizard extends Wizard {
     message = new HTML(body);
     
     switch(e) {
-      case aiaMediaAsset:
+      case AIAMEDIAASSET:
         Button info = new Button ("More Info");
         info.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
@@ -275,9 +275,9 @@ public class FileUploadWizard extends Wizard {
           }
         });
         holder.add(info);
-      case noFileSelected:
-      case malformedFilename:
-      case filenameBadSize:
+      case NOFILESELECETED:
+      case MALFORMEDFILENAME:
+      case FILENAMEBADSIZE:
       default:
         break;
     }
@@ -292,6 +292,6 @@ public class FileUploadWizard extends Wizard {
 }
 
 enum Error {
-  aiaMediaAsset, noFileSelected, malformedFilename, filenameBadSize
+  AIAMEDIAASSET, NOFILESELECETED, MALFORMEDFILENAME, FILENAMEBADSIZE
 }
 
