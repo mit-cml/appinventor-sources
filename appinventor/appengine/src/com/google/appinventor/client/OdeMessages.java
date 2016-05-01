@@ -1272,6 +1272,10 @@ public interface OdeMessages extends Messages {
   @Description("Label for the context menu command that previews a file")
   String previewFileCommand();
 
+  @DefaultMessage("Close Preview")
+  @Description("Text for closing a file preview window")
+  String closeFilePreview();
+
   @DefaultMessage("Delete...")
   @Description("Label for the context menu command that deletes a file")
   String deleteFileCommand();
@@ -1279,6 +1283,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Download to my computer")
   @Description("Label for the context menu command that downloads a file")
   String downloadFileCommand();
+
+  // Used in explore/commands/FilePreviewCommand.java
+  @DefaultMessage("Unfortunately, a preview for this file is unavailable.")
+  @Description("Text for files not compatible with HTML5 elements")
+  String filePreviewError();
+
+  @DefaultMessage("Unfortunately, your browser does not support playback of this file.")
+  @Description("Text for browsers not compatable with HTML5 elements")
+  String filePlaybackError();
 
   // Used in explorer/commands/CopyYoungAndroidProjectCommand.java
 

@@ -514,4 +514,22 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+   * Media icon: image
+   */
+  @Source("com/google/appinventor/images/mediaIcon_img.png")
+  ImageResource mediaIconImg();
+
+  /**
+   * Media icon: audio
+   */
+  @Source("com/google/appinventor/images/mediaIcon_audio.png")
+  ImageResource mediaIconAudio();
+
+  /**
+   * Media icon: video
+   */
+  @Source("com/google/appinventor/images/mediaIcon_video.png")
+  ImageResource mediaIconVideo();
+
 }
