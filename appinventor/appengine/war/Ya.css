@@ -573,8 +573,10 @@ select {
 
 .gwt-Tree .gwt-TreeItem span {
   padding: 8px 4px 4px 4px;
+  cursor: pointer;
 }
 
+.gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
 }

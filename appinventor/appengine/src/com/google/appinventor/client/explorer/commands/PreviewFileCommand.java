@@ -60,37 +60,9 @@ public class PreviewFileCommand extends ChainableCommand {
         dialogPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
         dialogPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
 
-        String fileSuffix = node.getProjectId() + "/" + node.getFileId();
-        String fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
-
-        if (StorageUtil.isImageFile(fileSuffix)) { // Image Preview
-            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
-            // Support preview for file types that all major browser support
-            if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif") || fileType.endsWith("bmp")) {
-                Image img = new Image(fileUrl);
-                dialogPanel.add(img);
-            } else {
-                dialogPanel.add(new HTML(MESSAGES.filePreviewError()));
-            }
-        } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview
-            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
-            if (fileType.endsWith("mp3") || fileType.endsWith("wav") || fileType.endsWith("ogg")) {
-                HTML html = new HTML("<audio controls><source src='"+fileUrl+"' type='"+ fileType+"'>"+MESSAGES.filePlaybackError()+"</audio>");
-                dialogPanel.add(html);
-            } else {
-                dialogPanel.add(new HTML(MESSAGES.filePreviewError()));
-            }
-        } else if (StorageUtil.isVideoFile(fileSuffix)) { // Video Preview
-            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
-            if (fileType.endsWith("mp4") || fileType.endsWith("webm")) {
-                HTML html = new HTML("<video width='320' height='240' controls> <source src='"+fileUrl+"' type='"+fileType+"'>"+MESSAGES.filePlaybackError()+"</video>");
-                dialogPanel.add(html);
-            } else {
-                dialogPanel.add(new HTML(MESSAGES.filePreviewError()));
-            }
-        } else {
-            dialogPanel.add(new HTML(MESSAGES.filePreviewError()));
-        }
+        Widget filePreview = generateFilePreview(node);
+        dialogPanel.clear();
+        dialogPanel.add(filePreview);
 
         dialogPanel.add(buttonPanel);
         dialogPanel.setWidth("300px");
@@ -102,5 +74,39 @@ public class PreviewFileCommand extends ChainableCommand {
         dialogBox.setWidget(dialogPanel);
         dialogBox.center();
         dialogBox.show();
+    }
+
+    /**
+     * Generate a file preview to display
+     *
+     * @param node
+     * @return widget
+     */
+    private Widget generateFilePreview(ProjectNode node) {
+        String fileSuffix = node.getProjectId() + "/" + node.getFileId();
+        String fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
+
+        if (StorageUtil.isImageFile(fileSuffix)) { // Image Preview
+            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
+            // Support preview for file types that all major browser support
+            if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif") || fileType.endsWith("bmp")) {
+                Image img = new Image(fileUrl);
+                img.getElement().getStyle().setProperty("maxWidth","600px");
+                return img;
+            }
+        } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview
+            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
+            if (fileType.endsWith("mp3") || fileType.endsWith("wav") || fileType.endsWith("ogg")) {
+                HTML audio = new HTML("<audio controls><source src='"+fileUrl+"' type='"+ fileType+"'>"+MESSAGES.filePlaybackError()+"</audio>");
+                return audio;
+            }
+        } else if (StorageUtil.isVideoFile(fileSuffix)) { // Video Preview
+            String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
+            if (fileType.endsWith("mp4") || fileType.endsWith("webm")) {
+                HTML video = new HTML("<video width='320' height='240' controls> <source src='"+fileUrl+"' type='"+fileType+"'>"+MESSAGES.filePlaybackError()+"</video>");
+                return video;
+            }
+        }
+        return new HTML(MESSAGES.filePreviewError());
     }
 }
