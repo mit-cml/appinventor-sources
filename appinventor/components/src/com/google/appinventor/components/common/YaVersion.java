@@ -387,8 +387,10 @@ public class YaVersion {
   //   Sensor Ev3UI, Ev3Commands were added for EV3 support
   // For YOUNG_ANDROID_VERSION 154:
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 155:
+  // - Extensions Support (non-visible only) added
 
-  public static final int YOUNG_ANDROID_VERSION = 154;
+  public static final int YOUNG_ANDROID_VERSION = 155;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1052,10 +1054,10 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.36";
+  public static final String PREFERRED_COMPANION = "2.36cdk1";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.36cdk1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

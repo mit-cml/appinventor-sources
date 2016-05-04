@@ -9,8 +9,13 @@ package com.google.appinventor.client.youngandroid;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  */
@@ -18,6 +23,11 @@ public final class TextValidators {
 
   private static final int MAX_FILENAME_SIZE = 100;
   private static final int MIN_FILENAME_SIZE = 1;
+
+  protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
+          "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
+          "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
+
   // This class should never be instantiated.
   private TextValidators() {}
 
@@ -41,6 +51,44 @@ public final class TextValidators {
     // Check that project does not already exist
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       Window.alert(MESSAGES.duplicateProjectNameError(projectName));
+      return false;
+    }
+
+    return true;
+  }
+
+  public static boolean checkNewComponentName(String componentName) {
+
+    // Check that it meets the formatting requirements.
+    if (!TextValidators.isValidComponentIdentifier(componentName)) {
+      Window.alert(MESSAGES.malformedComponentNameError());
+      return false;
+    }
+
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if ( projectId == 0) { // Check we have a current Project
+      return false;
+    }
+
+    YaProjectEditor editor = (YaProjectEditor) Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId);
+
+    // Check that it's unique.
+    final List<String> names = editor.getComponentInstances();
+    if (names.contains(componentName)) {
+      Window.alert(MESSAGES.sameAsComponentInstanceNameError());
+      return false;
+    }
+
+    // Check that it is a variable name used in the Yail code
+    if (YAIL_NAMES.contains(componentName)) {
+      Window.alert(MESSAGES.badComponentNameError());
+      return false;
+    }
+
+    //Check that it is not a Component type name
+    SimpleComponentDatabase COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
+    if (COMPONENT_DATABASE.isComponent(componentName)) {
+      Window.alert(MESSAGES.duplicateComponentNameError());
       return false;
     }
 

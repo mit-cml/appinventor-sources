@@ -126,7 +126,7 @@ public class DownloadServlet extends OdeServlet {
         // project in the export
         boolean includeYail = userInfoProvider.getIsAdmin();
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-            projectId, includeProjectHistory, false, zipName, includeYail, false);
+          projectId, includeProjectHistory, false, zipName, includeYail, false, false);
         downloadableFile = zipFile.getRawFile();
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE)) {
@@ -181,7 +181,7 @@ public class DownloadServlet extends OdeServlet {
           zipName = "u" + projectUserId + "_p" + projectId + ".aia";
         }
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
-            projectId, /* include history*/ true, /* include keystore */ true, zipName, true, false);
+          projectId, /* include history*/ true, /* include keystore */ true, zipName, true, false, false);
         downloadableFile = zipFile.getRawFile();
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {

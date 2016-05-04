@@ -36,8 +36,12 @@ public class TranslationDesignerPallete {
       value = MESSAGES.connectivityComponentPallette();
     } else if (key.equals("LEGO\u00AE MINDSTORMS\u00AE")) {
       value = MESSAGES.legoComponentPallette();
+    } else if (key.equals("External Components")) {
+      value = MESSAGES.externalComponentPalette();
     } else if (key.equals("Experimental")) {
       value = MESSAGES.experimentalComponentPallette();
+    } else if (key.equals("External")) {
+       value = MESSAGES.externalComponentPallette();
 
 //     } else if (key.equals("Not ready for prime time")) {
 //       value = MESSAGES.notReadyForPrimeTimeComponentPallette();
@@ -347,7 +351,7 @@ public class TranslationDesignerPallete {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
     } else if (key.equals("FirebaseDB-helpString")) {
       value = MESSAGES.FirebaseDBHelpStringComponentPallette();
-    }
+    } else value = key; //for External Components
     return value;
   }
 }

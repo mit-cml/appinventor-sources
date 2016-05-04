@@ -13,10 +13,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
+
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -157,8 +163,8 @@ public final class ProjectBuilder {
         ByteArrayOutputStream errors = new ByteArrayOutputStream();
         PrintStream userErrors = new PrintStream(errors);
 
-        Set<String> componentTypes =
-          isForCompanion ? getAllComponentTypes() : getComponentTypes(sourceFiles);
+        Set<String> componentTypes = isForCompanion ? getAllComponentTypes() :
+            getComponentTypes(sourceFiles, project.getAssetsDirectory());
 
         // Invoke YoungAndroid compiler
         boolean success =
@@ -191,7 +197,7 @@ public final class ProjectBuilder {
       } finally {
         // On some platforms (OS/X), the java.io.tmpdir contains a symlink. We need to use the
         // canonical path here so that Files.deleteRecursively will work.
-        
+
         // Note (ralph):  deleteRecursively has been removed from the guava-11.0.1 lib
         // Replacing with deleteDirectory, which is supposed to delete the entire directory.
         FileUtils.deleteDirectory(new File(projectRoot.getCanonicalPath()));
@@ -259,17 +265,62 @@ public final class ProjectBuilder {
     return projectFileNames;
   }
 
-  private static Set<String> getComponentTypes(List<String> files)
-      throws IOException {
+  private static Set<String> getComponentTypes(List<String> files, File assetsDir)
+      throws IOException, JSONException {
+    Map<String, String> nameTypeMap = createNameTypeMap(assetsDir);
+
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
       if (f.endsWith(".scm")) {
         File scmFile = new File(f);
-        String scmContent = new String(Files.toByteArray(scmFile), PathUtil.DEFAULT_CHARSET);
-        componentTypes.addAll(getTypesFromScm(scmContent));
+        String scmContent = new String(Files.toByteArray(scmFile),
+            PathUtil.DEFAULT_CHARSET);
+        for (String compName : getTypesFromScm(scmContent)) {
+          componentTypes.add(nameTypeMap.get(compName));
+        }
       }
     }
     return componentTypes;
+  }
+
+  /**
+   * In ode code, component names are used to identify a component though the
+   * variables storing component names appear to be "type". While there's no
+   * harm in ode, here in build server, they need to be separated.
+   * This method returns a name-type map, mapping the component names used in
+   * ode to the corresponding type, aka fully qualified name. The type will be
+   * used to build apk.
+   */
+  private static Map<String, String> createNameTypeMap(File assetsDir)
+      throws IOException, JSONException {
+    Map<String, String> nameTypeMap = Maps.newHashMap();
+
+    JSONArray simpleCompsJson = new JSONArray(Resources.toString(ProjectBuilder.
+        class.getResource("/files/simple_components.json"), Charsets.UTF_8));
+    for (int i = 0; i < simpleCompsJson.length(); ++i) {
+      JSONObject simpleCompJson = simpleCompsJson.getJSONObject(i);
+      nameTypeMap.put(simpleCompJson.getString("name"),
+          simpleCompJson.getString("type"));
+    }
+
+    File extCompsDir = new File(assetsDir, "external_comps");
+    if (!extCompsDir.exists()) {
+      return nameTypeMap;
+    }
+
+    for (File extCompDir : extCompsDir.listFiles()) {
+      if (!extCompDir.isDirectory()) {
+        continue;
+      }
+
+      File extCompJsonFile = new File (extCompDir, "component.json");
+      JSONObject extCompJson = new JSONObject(Resources.toString(
+          extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
+      nameTypeMap.put(extCompJson.getString("name"),
+          extCompJson.getString("type"));
+    }
+
+    return nameTypeMap;
   }
 
   static String createKeyStore(String userName, File projectRoot, String keystoreFileName)

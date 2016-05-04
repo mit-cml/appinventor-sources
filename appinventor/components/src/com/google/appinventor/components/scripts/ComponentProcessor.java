@@ -503,6 +503,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected final String displayName;
 
+    protected final String type;
+    protected boolean external;
+
     private String helpDescription;  // Shorter popup description
     private String category;
     private String categoryString;
@@ -517,6 +520,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       super(element.getSimpleName().toString(),  // Short name
             elementUtils.getDocComment(element),
             "Component");
+      type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
       libraries = Sets.newHashSet();
@@ -528,11 +532,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       methods = Maps.newTreeMap();
       events = Maps.newTreeMap();
       abstractClass = element.getModifiers().contains(Modifier.ABSTRACT);
+      external = false;
       for (AnnotationMirror am : element.getAnnotationMirrors()) {
         DeclaredType dt = am.getAnnotationType();
         String annotationName = am.getAnnotationType().toString();
         if (annotationName.equals(SimpleObject.class.getName())) {
           simpleObject = true;
+          SimpleObject simpleObjectAnnotation = element.getAnnotation(SimpleObject.class);
+          external = simpleObjectAnnotation.external();
         }
         if (annotationName.equals(DesignerComponent.class.getName())) {
           designerComponent = true;
@@ -628,6 +635,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected boolean getNonVisible() {
       return nonVisible;
+    }
+
+    /**
+     * Returns whether this component is an external component or not.
+     *
+     * @return true if the component is external. false otherwise.
+     */
+    protected boolean getExternal() {
+      return external;
     }
 
     /**

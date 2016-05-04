@@ -153,6 +153,14 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching language")
   String switchLanguageButton();
 
+  @DefaultMessage("Delete component")
+  @Description("Text on \"Delete component\" button")
+  String deleteComponentButton();
+
+  @DefaultMessage("Publish")
+  @Description("Text on \"Publish\" button")
+  String publishButton();
+
   // Not used anymore it is now dynamically created and translated at compile time depending on what
   //languages are translated and available.
 
@@ -488,6 +496,84 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
 
+  //Component
+  @DefaultMessage("Components")
+  @Description("Name of Components tab")
+  String componentsTabName();
+
+  @DefaultMessage("My components")
+  @Description("Name of My components menuitem")
+  String myComponentsMenuItem();
+
+  @DefaultMessage("Start new component")
+  @Description("Name of Start new component menuitem")
+  String startNewComponentMenuItem();
+
+  @DefaultMessage("Import component to project ...")
+  @Description("Name of Import component menuitem")
+  String importComponentMenuItem();
+
+  @DefaultMessage("Build component")
+  @Description("Name of Build component menuitem")
+  String buildComponentMenuItem();
+
+  @DefaultMessage("Upload component (.aix) from my computer ...")
+  @Description("Name of Upload component menuitem")
+  String uploadComponentMenuItem();
+
+  @DefaultMessage("Upload Component...")
+  @Description("Caption for component upload wizard.")
+  String componentUploadWizardCaption();
+
+  @DefaultMessage("Import an extension into project")
+  @Description("Caption for component import wizard.")
+  String componentImportWizardCaption();
+
+  @DefaultMessage("Rename extension")
+  @Description("Caption for component rename wizard.")
+  String componentRenameWizardCaption();
+
+  @DefaultMessage("Extension name")
+  @Description("Caption for component Name Label in rename wizard.")
+  String componentNameLabel();
+
+  @DefaultMessage("Import Extension Failed!")
+  @Description("Error message reported when the component import failed")
+  String componentImportError();
+
+  @DefaultMessage("Extension Import failed due to unknown URL")
+  @Description("Error message reported when the component import failed due to unknown url")
+  String componentImportUnknownURLError();
+
+  @DefaultMessage("This Extension is already imported! Use ")
+  @Description("Error message reported when the component import due to already imported extension")
+  String componentAlreadyImportedError();
+
+  @DefaultMessage("The selected file is not a component file!\n" +
+      "Component files are aix files.")
+  @Description("Error message reported when the file selected for upload is not a component archive.")
+  String notComponentArchiveError();
+
+  @DefaultMessage("Please select a component to import")
+  @Description("Error message reported when no component is selected to import.")
+  String noComponentSelectedError();
+
+  @DefaultMessage("Please enter a url")
+  @Description("Error message reported when no url is entered.")
+  String noUrlError();
+
+  @DefaultMessage("Name")
+  @Description("Header for name column of component table")
+  String componentNameHeader();
+
+  @DefaultMessage("Version")
+  @Description("Header for version column of component table")
+  String componentVersionHeader();
+
+  @DefaultMessage("Are you really sure you want to delete the component(s): {0}?")
+  @Description("Confirmation message for deleting component(s)")
+  String confirmDeleteComponents(String componentNames);
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
@@ -655,6 +741,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Send an Email")
   @Description("Title for moderator send email dialog")
   String emailSendTitle();
+
+  @DefaultMessage("My Components")
+  @Description("Caption for component list box.")
+  String componentListBoxCaption();
 
   // Used in boxes/AssetListBox.java
 
@@ -848,6 +938,10 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component name would be the same as a component type name")
   String sameAsComponentTypeNameError();
 
+  @DefaultMessage("Component names cannot be the same as that of a component instance")
+  @Description("Error shown when a new component type would be the same as a component instance name")
+  String sameAsComponentInstanceNameError();
+
   @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
       "Pattern, YailList, YailNumberToString, YailRuntimeError")
@@ -857,8 +951,13 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
-  @Description("Confirmation query for removing a component")
+  @Description("Confirmation query for deleting a component")
   String reallyDeleteComponent();
+
+  @DefaultMessage("Removing this component will delete all components and blocks associated with them in the " +
+          "Project. Are you sure you want to delete?")
+  @Description("Confirmation query for removing a component")
+  String reallyRemoveComponent();
 
   // Used in editor/simple/components/MockButtonBase.java, MockCheckBox.java, MockLabel.java, and
   // MockRadioButton.java
@@ -1850,6 +1949,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a project couldn't be uploaded to the server.")
   String projectUploadError();
 
+  @DefaultMessage("Apps with extensions cannot be uploaded to the Gallery")
+  @Description("Error to report when an app with an extension is attempted to be added to the Gallery")
+  String galleryNoExtensionsPlease();
+
   @DefaultMessage("The selected project is not a project source file!\n" +
       "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
@@ -2093,6 +2196,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
+
+  @DefaultMessage("External")
+  @Description("")
+  String externalComponentPallette();
+
+  @DefaultMessage("External Components")
+  @Description("")
+  String externalComponentPalette();
 
   @DefaultMessage("Experimental")
   @Description("")

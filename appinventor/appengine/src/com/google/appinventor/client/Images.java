@@ -135,6 +135,18 @@ public interface Images extends Resources {
   ImageResource datePickerComponent();
 
   /**
+   * Designer palette item: Delete Component
+   */
+  @Source("com/google/appinventor/images/delete.png")
+  ImageResource deleteComponent();
+
+  /**
+   * Designer palette item: Extension Component
+   */
+  @Source("com/google/appinventor/images/extension.png")
+  ImageResource extension();
+
+  /**
    * Designer palette item: form component
    */
   @Source("com/google/appinventor/images/form.png")

@@ -204,6 +204,11 @@ public final class FileImporterImpl implements FileImporter {
   }
 
   @Override
+  public String importTempFile(InputStream inStream) throws IOException {
+    return storageIo.uploadTempFile(ByteStreams.toByteArray(inStream));
+  }
+
+  @Override
   public Set<String> getProjectNames(final String userId) {
     List<Long> projectIds = storageIo.getProjects(userId);
     Iterable<String> names = Iterables.transform(projectIds, new Function<Long, String>() {

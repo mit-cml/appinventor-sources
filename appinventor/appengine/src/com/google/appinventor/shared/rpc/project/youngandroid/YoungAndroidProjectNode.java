@@ -16,7 +16,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
  *
  */
 public final class YoungAndroidProjectNode extends ProjectRootNode
-    implements HasAssetsFolder<YoungAndroidAssetsFolder> {
+    implements HasAssetsFolder<YoungAndroidAssetsFolder>, HasComponentsFolder<YoungAndroidComponentsFolder> {
   /**
    * Project type for Young Android projects.
    */
@@ -88,4 +88,17 @@ public final class YoungAndroidProjectNode extends ProjectRootNode
     // Should never happen!
     throw new IllegalStateException("Couldn't find package node");
   }
+
+  @Override
+  public YoungAndroidComponentsFolder getComponentsFolder() {
+    for (ProjectNode child : getChildren()) {
+      if (child instanceof YoungAndroidComponentsFolder) {
+        return (YoungAndroidComponentsFolder) child;
+      }
+    }
+
+    // Should never happen!
+    throw new IllegalStateException("Couldn't find component folder");
+  }
+
 }

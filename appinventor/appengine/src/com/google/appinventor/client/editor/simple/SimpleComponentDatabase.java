@@ -6,10 +6,14 @@
 
 package com.google.appinventor.client.editor.simple;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Database holding property and event information of Simple components.
@@ -17,18 +21,30 @@ import com.google.gwt.resources.client.TextResource;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class SimpleComponentDatabase extends ComponentDatabase {
+
+  private static final Map<Long, SimpleComponentDatabase> instances = new HashMap<Long, SimpleComponentDatabase>();
+
   /**
-   * Returns the singleton component database instance.
+   * Returns the  component database instance for projectId
    *
    * @return  component database instance
    */
-  public static SimpleComponentDatabase getInstance() {
-    return SimpleComponentDatabaseInstanceHolder.INSTANCE;
+  public static SimpleComponentDatabase getInstance(long projectId) {
+    if (instances.containsKey(projectId)) {
+      return instances.get(projectId);
+    }
+    SimpleComponentDatabase newSimpleComponentDatabase = new SimpleComponentDatabase();
+    instances.put(projectId, newSimpleComponentDatabase);
+    return newSimpleComponentDatabase;
   }
 
-  private static class SimpleComponentDatabaseInstanceHolder {
-    private SimpleComponentDatabaseInstanceHolder() {} // not to be instantiated
-    private static final SimpleComponentDatabase INSTANCE = new SimpleComponentDatabase();
+  /**
+   * Returns the component database for the current project
+   *
+   * @return component database instance
+   */
+  public static SimpleComponentDatabase getInstance() {
+    return getInstance(Ode.getInstance().getCurrentYoungAndroidProjectId());
   }
 
   /**

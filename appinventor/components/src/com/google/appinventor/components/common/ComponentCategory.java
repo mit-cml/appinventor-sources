@@ -57,6 +57,7 @@ import java.util.Map;
     CONNECTIVITY("Connectivity"),
     LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
     EXPERIMENTAL("Experimental"),
+    EXTENSION("Extension"),
     INTERNAL("For internal use only"),
     // UNINITIALIZED is used as a default value so Swing libraries can still compile
     UNINITIALIZED("Uninitialized");
@@ -76,6 +77,7 @@ import java.util.Map;
       DOC_MAP.put("Connectivity", "connectivity");
       DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
       DOC_MAP.put("Experimental", "experimental");
+      DOC_MAP.put("Extension", "extension");
     }
 
 

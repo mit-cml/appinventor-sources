@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.components.common.YaVersion;
@@ -35,7 +36,9 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +53,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author sharon@google.com (Sharon Perl) added Blockly functionality
  */
 public final class YaBlocksEditor extends FileEditor
-    implements FormChangeListener, BlockDrawerSelectionListener {
+    implements FormChangeListener, BlockDrawerSelectionListener, ComponentDatabaseChangeListener {
 
   // A constant to substract from the total height of the Viewer window, set through
   // the computed height of the user's window (Window.getClientHeight())
@@ -58,8 +61,7 @@ public final class YaBlocksEditor extends FileEditor
   private static final int VIEWER_WINDOW_OFFSET = 170;
 
   // Database of component type descriptions
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   // Keep a map from projectid_formname -> YaBlocksEditor for handling blocks workspace changed
   // callbacks from the BlocklyPanel objects. This has to be static because it is used by
@@ -107,10 +109,13 @@ public final class YaBlocksEditor extends FileEditor
   //Timer used to poll blocks editor to check if it is initialized
   private static Timer timer;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
+
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
 
     this.blocksNode = blocksNode;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());
 
     fullFormName = blocksNode.getProjectId() + "_" + blocksNode.getFormName();
     formToBlocksEditor.put(fullFormName, this);
@@ -129,6 +134,7 @@ public final class YaBlocksEditor extends FileEditor
      }
     });
     initWidget(blocksArea);
+    addComponentDatabaseChangeListener(blocksArea);
 
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();
@@ -372,11 +378,11 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public static String getComponentInfo(String typeName) {
-    return COMPONENT_DATABASE.getTypeDescription(typeName);
+    return SimpleComponentDatabase.getInstance().getTypeDescription(typeName);
   }
 
   public static String getComponentsJSONString() {
-    return COMPONENT_DATABASE.getComponentsJSONString();
+    return SimpleComponentDatabase.getInstance().getComponentsJSONString();
   }
 
   public static String getComponentInstanceTypeName(String formName, String instanceName) {
@@ -618,6 +624,51 @@ public final class YaBlocksEditor extends FileEditor
    */
   protected String encodeFormAsJsonString(boolean forYail) {
     return myFormEditor.encodeFormAsJsonString(forYail);
+  }
+
+  private void addComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.add(cdbChangeListener);
+  }
+
+  private void removeComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
+  private void clearComponentDatabaseChangeListener() {
+    componentDatabaseChangeListeners.clear();
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
+  }
+
+  @Override
+  public void onResetDatabase() {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
   }
 
 }

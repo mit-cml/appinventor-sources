@@ -112,8 +112,10 @@ public final class EditorManager {
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 
+        // Prepare the project before Loading into the editor.
+        // Components are prepared before the project is actually loaded.
         // Load the project into the editor. The actual loading is asynchronous.
-        projectEditor.loadProject();
+        projectEditor.processProject();
       }
     }
     return projectEditor;
