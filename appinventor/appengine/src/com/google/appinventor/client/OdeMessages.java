@@ -1536,10 +1536,18 @@ public interface OdeMessages extends Messages {
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
+  @DefaultMessage("Error: Malformed Filename")
+  @Description("Error message when file name contains characters that would require URL encoding.")
+  String malformedFilenameTitle();
+
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
       "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
+
+  @DefaultMessage("Error: Bad Filename Size")
+  @Description("Error message when filenames are 0 or 101+ characters long")
+  String filenameBadSizeTitle();
 
   @DefaultMessage("File names must be between 1 and 100 characters.")
   @Description("Error message when filenames are 0 or 101+ characters long")
@@ -1557,9 +1565,26 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file couldn't be uploaded because of its size.")
   String fileTooLargeError();
 
+  @DefaultMessage("Error: No File Selected")
+  @Description("Error message reported when a file was not selected.")
+  String noFileSelectedTitle();
+
   @DefaultMessage("Please select a file to upload.")
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
+
+  @DefaultMessage("Error: Cannot upload .aia file as media asset")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAssetTitle();
+
+  @DefaultMessage("To use this file, click Projects > Import project (.aia) from" +
+    " my computer ...")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAsset();
+
+  @DefaultMessage("http://appinventor.mit.edu/explore/ai2/share.html")
+  @Description("URL for more info on using aia files properly")
+  String aiaMediaAssetHelp();
 
   @DefaultMessage("Request to save {1}" +
       "\n\nA file named {0} already exists in this project." +
