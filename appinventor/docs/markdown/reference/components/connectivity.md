@@ -471,6 +471,9 @@ Non-visible component that provides functions for HTTP GET, POST, PUT, and DELET
  If SaveResponse is true and ResponseFileName is empty, then a new file
  name will be generated.
 
+{:id="Web.ResponseTextEncoding" .text} *ResponseTextEncoding*
+: Specifies the Response Text Encoding.
+
 {:id="Web.SaveResponse" .boolean} *SaveResponse*
 : Specifies whether the response should be saved in a file.
 

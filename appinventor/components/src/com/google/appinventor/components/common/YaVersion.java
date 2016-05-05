@@ -583,8 +583,9 @@ public class YaVersion {
   // - REGRESSION_COMPONENT_VERSION was introduced
   // - TEXTTOSPEEECH_COMPONENT_VERSION was incremented to 6
   // - TINYDB_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 224;
+  // For YOUNG_ANDROID_VERSION 225:
+  // - WEB_COMPONENT_VERSION was incremented to 9
+  public static final int YOUNG_ANDROID_VERSION = 225;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1534,7 +1535,9 @@ public class YaVersion {
   // - The XMLTextDecodeAsDictionary method was added.
   // For WEB_COMPONENT_VERSION 8:
   // - PATCH methods added (PatchText, PatchTextWithEncoding, and PatchFile).
-  public static final int WEB_COMPONENT_VERSION = 8;
+  // For WEB_COMPONENT_VERSION 9:
+  // - Added property ResponseTextEncoding
+  public static final int WEB_COMPONENT_VERSION = 9;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

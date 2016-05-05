@@ -3386,7 +3386,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: "noUpgrade",
 
 	// AI2: Added methods PatchText, PatchTextWithEncoding, and PatchFile
-    8: "noUpgrade"
+    8: "noUpgrade",
+
+    // AI2: Added ResponseTextEncoding property
+    9: "noUpgrade"
 
   }, // End Web upgraders
 
