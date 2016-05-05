@@ -1009,7 +1009,6 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   private static String getResponseContent(HttpURLConnection connection,String encoding) throws IOException {
     // Use the content encoding to convert bytes to characters.
-    //String encoding = connection.getContentEncoding();
     if (encoding == null) {
       encoding = "UTF-8";
     }
