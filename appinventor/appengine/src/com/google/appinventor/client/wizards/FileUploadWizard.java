@@ -29,6 +29,20 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -85,10 +99,20 @@ public class FileUploadWizard extends Wizard {
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
           if(!TextValidators.isValidCharFilename(filename)){
-            Window.alert(MESSAGES.malformedFilename());
+            createErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
+              Error.NOFILESELECETED, folderNode, fileUploadedCallback);
             return;
           } else if (!TextValidators.isValidLengthFilename(filename)){
-            Window.alert(MESSAGES.filenameBadSize());
+            createErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
+              Error.FILENAMEBADSIZE, folderNode, fileUploadedCallback);
+            return;
+          }
+          int nameLength = uploadFilename.length();
+          String fileEnd = uploadFilename.substring(nameLength-4, nameLength);
+
+          if (".aia".equals(fileEnd.toLowerCase())) {
+            createErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
+              Error.AIAMEDIAASSET, folderNode, fileUploadedCallback);
             return;
           }
           String fn = conflictingExistingFile(folderNode, filename);
@@ -147,8 +171,8 @@ public class FileUploadWizard extends Wizard {
             }
           });
         } else {
-          Window.alert(MESSAGES.noFileSelected());
-          new FileUploadWizard(folderNode, fileUploadedCallback).show();
+          createErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
+              Error.NOFILESELECETED, folderNode, fileUploadedCallback);
         }
       }
     });
@@ -218,4 +242,55 @@ public class FileUploadWizard extends Wizard {
       fileUploadedCallback.onFileUploaded(folderNode, uploadedFileNode);
     }
   }
+
+  private void createErrorDialog(String title, String body, Error e,
+      final FolderNode folderNode, final FileUploadedCallback fileUploadedCallback) {
+    final DialogBox dialogBox = new DialogBox(false,true);
+    HTML message;
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setHeight("150px");
+    dialogBox.setWidth("350px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel holder = new FlowPanel();
+    Button ok = new Button ("OK");
+    ok.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        dialogBox.hide();
+        new FileUploadWizard(folderNode, fileUploadedCallback).show();
+      }
+    });
+    holder.add(ok);
+    dialogBox.setText(title);
+    message = new HTML(body);
+
+    switch(e) {
+      case AIAMEDIAASSET:
+        Button info = new Button ("More Info");
+        info.addClickListener(new ClickListener() {
+          public void onClick(Widget sender) {
+            Window.open(MESSAGES.aiaMediaAssetHelp(), "AIA Help", "");
+          }
+        });
+        holder.add(info);
+      case NOFILESELECETED:
+      case MALFORMEDFILENAME:
+      case FILENAMEBADSIZE:
+      default:
+        break;
+    }
+
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+}
+
+enum Error {
+  AIAMEDIAASSET, NOFILESELECETED, MALFORMEDFILENAME, FILENAMEBADSIZE
 }
