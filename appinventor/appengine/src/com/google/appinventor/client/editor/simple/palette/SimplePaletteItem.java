@@ -12,6 +12,10 @@ import com.google.appinventor.client.editor.simple.components.MockComponentsUtil
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -65,6 +69,24 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.setWidth("100%");
     add(panel);
     setWidth("100%");
+    
+    addHandlers();
+  }
+  
+  private void addHandlers() {
+	addMouseDownHandler(new MouseDownHandler() {
+	  @Override
+	  public void onMouseDown(MouseDownEvent arg0) {
+	 	 setFocus(true);	
+	  }
+	});
+		
+	addMouseUpHandler(new MouseUpHandler() {
+	  @Override
+      public void onMouseUp(MouseUpEvent arg0) {
+	    setFocus(false);
+	  }
+	});  
   }
 
   /**
