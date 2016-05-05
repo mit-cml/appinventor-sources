@@ -1402,7 +1402,11 @@ public final class YoungAndroidFormUpgrader {
     }
 	if (srcCompVersion < 5) {
       // The ResponseTextEncoding property was added.
-      // No properties need to be modified to upgrade to version 5.
+	  //The default for ResponseTextEncoding from now on is null, but up until now,
+      // all web have been ResponseTextEncoding.
+      // We need to set the MultiLine to UTF-8 when we upgrade old projects.
+	  componentProperties.put("ResponseTextEncoding", new ClientJsonString("UTF-8"));
+      // Properties related to this component have now been upgraded to version 5.
       srcCompVersion = 5;
     }
     return srcCompVersion;
