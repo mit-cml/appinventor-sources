@@ -243,7 +243,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       defaultValue = "UTF-8")
   @SimpleProperty
   public void ResponseTextEncoding(String encoding) {
-	  responseTextEncoding = encoding;
+    responseTextEncoding = encoding;
   }
   /**
    * Returns the request headers.
