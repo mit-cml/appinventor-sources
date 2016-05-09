@@ -2885,6 +2885,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FirebaseURLProperties();
 
+  @DefaultMessage("Persist")
+  @Description("")
+  String PersistProperties();
+
   @DefaultMessage("ProjectBucket")
   @Description("")
   String ProjectBucketProperties();
@@ -4443,6 +4447,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotValueEvents();
 
+  @DefaultMessage("TagList")
+  @Description("")
+  String TagListEvents();
+
   @DefaultMessage("ValueStored")
   @Description("")
   String ValueStoredEvents();
@@ -5155,6 +5163,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("StoreValue")
   @Description("")
   String StoreValueMethods();
+
+  @DefaultMessage("GetTagList")
+  @Description("")
+  String GetTagListMethods();
 
   @DefaultMessage("AppendValue")
   @Description("")

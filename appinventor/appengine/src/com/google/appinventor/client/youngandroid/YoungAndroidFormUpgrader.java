@@ -1435,9 +1435,12 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeFirebaseDBProperties(Map<String, JSONValue> componentProperties,
     int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
+      // Version 2
       // Added AppendValue, RemoveFirst and FirstRemoved
-      srcCompVersion = 2;
+      // Version 3
+      // Added RemoveValue, GetTagList and Persist
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
