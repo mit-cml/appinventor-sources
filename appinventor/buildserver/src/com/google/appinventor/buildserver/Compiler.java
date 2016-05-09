@@ -901,6 +901,7 @@ public final class Compiler {
       int mx = childProcessRamMb - 200;
       Collections.addAll(kawaCommandArgs,
           System.getProperty("java.home") + "/bin/java",
+          "-Dfile.encoding=UTF-8",
           "-mx" + mx + "M",
           "-cp", classpath,
           "kawa.repl",

@@ -1085,6 +1085,11 @@ select.ode-PropertyEditor[disabled] {
   color: #8fc202;
 }
 
+.ode-ComponentHelpPopup > .popupContent > table {
+  width: 100%;
+  word-break: break-word;
+}
+
 .compiler-ErrorMarker {
   color: red;
 }

@@ -69,7 +69,7 @@ import java.util.Map;
     static {
       DOC_MAP.put("User Interface", "userinterface");
       DOC_MAP.put("Layout", "layout");
-      DOC_MAP.put("media", "media");
+      DOC_MAP.put("Media", "media");
       DOC_MAP.put("Drawing and Animation", "animation");
       DOC_MAP.put("Sensors", "sensors");
       DOC_MAP.put("Social", "social");
