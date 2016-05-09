@@ -153,25 +153,6 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching language")
   String switchLanguageButton();
 
-  // Not used anymore it is now dynamically created and translated at compile time depending on what
-  //languages are translated and available.
-
-//  @DefaultMessage("English")
-//  @Description("Label of the button for switching language to English")
-//  String switchLanguageEnglishButton();
-//
-//  @DefaultMessage("Chinese CN")
-//  @Description("Label of the button for switching language to Chinese CN")
-//  String switchLanguageChineseCNButton();
-//
-//  @DefaultMessage("German")
-//  @Description("Label of the button for switching language to German")
-//  String switchLanguageGermanButton();
-//
-//  @DefaultMessage("Vietnamese")
-//  @Description("Label of the button for switching language to Vietnamese")
-//  String switchLanguageVietnameseButton();
-
   //Used in ModerationPage.java
   @DefaultMessage("...")
   @Description("Label of ... ")
@@ -349,7 +330,7 @@ public interface OdeMessages extends Messages {
   // Used in Ode.java
 
   // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("MIT App Inventor 2")
+  @DefaultMessage("MIT App Inventor")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -587,6 +568,11 @@ public interface OdeMessages extends Messages {
   @Description("Name of Tutorials link")
   String tutorialsMenuItem();
 
+
+  @DefaultMessage("Walkthroughs")
+  @Description("Name of Walkthroughs link")
+  String walkthroughLink();
+
   @DefaultMessage("Troubleshooting")
   @Description("Name of Troubleshooting link")
   String troubleshootingMenuItem();
@@ -633,6 +619,41 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Sign out")
   @Description("Label of the link for signing out")
   String signOutLink();
+
+  //Used in JS tutorial walkthroughs
+  @DefaultMessage("Select a walkthrough:")
+  @Description("Title for the selection dialog for walkthroughs")
+  String walkthroughSelect();
+
+  @DefaultMessage("Name")
+  @Description("Text for name column on walkthrough dialogs")
+  String walkthroughNameColumn();
+
+  @DefaultMessage("Difficulty")
+  @Description("Text for difficulty column on walkthrough dialogs")
+  String walkthroughDifficultyColumn();
+
+  @DefaultMessage("Close")
+  @Description("Text for close button on walkthrough dialogs")
+  String walkthroughCloseButton();
+
+  @DefaultMessage("Start")
+  @Description("Text for start button on walkthrough dialogs")
+  String walkthroughStartButton();
+
+  @DefaultMessage("Next")
+  @Description("Text for next button on walkthrough dialogs")
+  String walkthroughNextButton();
+
+  @DefaultMessage("Back")
+  @Description("Text for back button on walkthrough dialogs")
+  String walkthroughBackButton();
+
+  @DefaultMessage("Oops! It looks like you have not finished this step yet. Try reading through all the instructions again " +
+      "to make sure you have finished the whole step.")
+  @Description("Text for instructions to keep trying in walkthrough dialogs")
+  String walkthroughNextStepErrorText();
+
 
   //
 

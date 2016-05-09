@@ -470,4 +470,9 @@ public class DesignToolbar extends Toolbar {
   public DesignProject getCurrentProject() {
     return currentProject;
   }
+
+  public boolean inBlocksView(){
+    return currentView==View.BLOCKS;
+  }
+
 }

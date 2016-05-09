@@ -13,15 +13,15 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.YaVersion;
-
 import com.google.common.collect.Maps;
-
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
-
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -30,14 +30,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
@@ -464,6 +461,37 @@ public class BlocklyPanel extends HTMLPanel {
     YaBlocksEditor.toggleWarning();
   }
 
+  /**Walkthroughs**/
+  /*
+  * Code for the button functionality on the walkthrough dialogs
+  * Most of the code for walkthrough functionality is in tutorial.js or Walkthrough.java
+  * This is just to talk to blockly.
+  * */
+  public static void callNextStep(){
+    String proj_number;
+    // if there are no projects, create a new project before going to the next step
+    if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+      Ode.getInstance().getProjectToolbar().createFirstNewProject();
+      //TODO: advance to the next step AFTER the project has been created
+    } else {
+      proj_number=BlocklyPanel.getProjectId();
+      String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+      doNextStep(proj_number+"_"+currentScreen);
+    }
+  }
+  public static void callBackStep(){
+    String proj_number=BlocklyPanel.getProjectId();
+    String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+    doBackStep(proj_number+"_"+currentScreen);
+  }
+  public static void callSetTutorial(String tutorialObjectName){
+    doSetTutorial(tutorialObjectName);
+  }
+
+  public static JsArray<Walkthrough.JavaScriptTutorialData> callGetTutorialMetaData() {
+    return getTutorialMetaData();
+  }
+
   /**
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
@@ -809,6 +837,31 @@ public class BlocklyPanel extends HTMLPanel {
     return TranslationDesignerPallete.getCorrespondingString(key);
   }
 
+  public static void displayDialog(){
+    Walkthrough.displayDialog();
+  }
+  public static String getProjectId(){
+    return String.valueOf(Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId());
+  }
+  public static boolean inBlocksView(){
+    return Ode.getInstance().getDesignToolbar().inBlocksView();
+  }
+  public static ArrayList<String> getComponentNames(){
+    String currentScreen =  Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+    
+    ArrayList<String> ComponentNames = new ArrayList<String>();
+    ProjectEditor projectEditor = Ode.getInstance().getDesignToolbar().getCurrentProject().screens.get(currentScreen).formEditor.getProjectEditor();
+    if (projectEditor instanceof YaProjectEditor) {
+      YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+      YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(Ode.getInstance().getCurrentYoungAndroidSourceNode().getFormName());
+      List<String> InstanceNames = myFormEditor.getComponentNames();
+      for (int i=0; i<InstanceNames.size(); i++){
+        String instanceName = InstanceNames.get(i);
+        ComponentNames.add(myFormEditor.getComponentInstanceTypeName(instanceName));
+      }
+    }
+    return ComponentNames;
+  }
   // ------------ Native methods ------------
 
   /**
@@ -871,6 +924,14 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBackpack());
     $wnd.BlocklyPanel_setBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;));
+    $wnd.BlocklyPanel_DisplayDialog=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::displayDialog());
+    $wnd.BlocklyPanel_GetProjectId=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getProjectId());
+    $wnd.BlocklyPanel_InBlocksView=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::inBlocksView());
+    $wnd.BlocklyPanel_GetComponentNames=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentNames());
   }-*/;
 
   private native void initJS() /*-{
@@ -978,6 +1039,22 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native String getCompVersion() /*-{
     return $wnd.PREFERRED_COMPANION;
+  }-*/;
+
+  public static native void doNextStep(String formName)/*-{
+    $wnd.Tutorial.nextStep(formName);
+  }-*/;
+
+  public static native void doBackStep(String formName)/*-{
+    $wnd.Tutorial.backStep(formName);
+  }-*/;
+
+  public static native void doSetTutorial(String tutorialObjectName)/*-{
+    $wnd.Tutorial.setTutorial(tutorialObjectName);
+  }-*/;
+
+  public static native JsArray<Walkthrough.JavaScriptTutorialData> getTutorialMetaData()/*-{
+    return $wnd.Tutorial.getTutorialMetaData();
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{

@@ -1,3 +1,4 @@
+
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2013 MIT, All rights reserved
@@ -20,6 +21,7 @@ import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.Walkthrough;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -43,7 +45,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -91,6 +92,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
   private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
+  private static final String WIDGET_NAME_WALKTHROUGH = "Walkthroughs";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
@@ -196,7 +198,7 @@ public class TopToolbar extends Composite {
           new GenerateYailAction()));
     }
 
-    // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue,
+    // Help -> {About, Library, Get Started, Tutorials, Walkthroughs, Troubleshooting, Forums, Report an Issue,
     //  Companion Information, Show Splash Screen}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
@@ -217,6 +219,8 @@ public class TopToolbar extends Composite {
       helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
           new WindowOpenAction(tutorialsUrl)));
     }
+    helpItems.add(new DropDownItem(WIDGET_NAME_WALKTHROUGH, MESSAGES.walkthroughLink(),
+        new WalkthroughAction()));
     String troubleshootingUrl = config.getTroubleshootingUrl();
     if (!Strings.isNullOrEmpty(troubleshootingUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
@@ -261,8 +265,6 @@ public class TopToolbar extends Composite {
     toolbar.add(fileDropDown);
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
-
-    // Commented out language switching until we have a clean Chinese translation. (AFM)
     toolbar.add(helpDropDown);
 
     //Only if logged in as an admin, add the Admin Button
@@ -790,6 +792,19 @@ public class TopToolbar extends Composite {
   }
 
   private static class ShowSplashAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().showWelcomeDialog();
+    }
+  }
+  private static class WalkthroughAction implements Command {
+    @Override
+    public void execute() {
+      Walkthrough.displayWalkthroughPicker();
+    }
+  }
+
+  private static class TroubleShootingAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().showWelcomeDialog();

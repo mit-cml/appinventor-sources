@@ -482,6 +482,7 @@ select {
 .ode-StatusPanel {
   font-size: 12px;
   color: #888;
+  background:#fafafa;
   padding: 4px 12px;
   background: url(images/toolbarBG.png) repeat;
   border: 1px;
@@ -2300,4 +2301,58 @@ textarea::-webkit-input-placeholder {
   display: block;
   height: 0;
   clear: both;
+}
+
+/* For Tutorial Dialog Boxes */
+.ode-DialogBox-popup {
+  border-top: 6px solid #8FC202
+  z-index: 5;
+}
+
+/* For Walkthroughs */
+.ode-DialogBox-Tutorial{
+  left: 340px;
+  top: 200px;
+  overflow: visible;
+  position: absolute;
+  background-color: #FFFFFF;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #8FC202;
+  width: 340px;
+  display: block;
+  padding: 10px;
+  box-shadow: 3px 3px rgba(0,0,0,0.4);
+  direction: ltr;
+  cursor:move;
+}
+#nextButton{
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-top: 10px;
+
+}
+#backButton{
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 10px;
+  visibility: hidden;
+}
+#closeButton{
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: 135px;
+  margin-top: 10px;
+}
+
+#nextStepErrorMsg {
+  color: darkred;
+  display: none;
+  margin-top: 5px;
+}
+
+#walkthroughPicker tbody {
+  cursor: pointer;
 }
