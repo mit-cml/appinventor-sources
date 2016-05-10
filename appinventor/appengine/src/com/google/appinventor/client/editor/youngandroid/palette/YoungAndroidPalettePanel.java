@@ -49,19 +49,17 @@ import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Panel showing Simple components which can be dropped onto the Young Android visual designer
- * panel.
+ * Panel showing Simple components which can be dropped onto the Young Android
+ * visual designer panel.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -69,7 +67,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   // Component database: information about components (including their properties and events)
   private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+    SimpleComponentDatabase.getInstance();
 
   // Associated editor
   private final YaFormEditor editor;
@@ -78,8 +76,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
-
-  private static Widget selectedPanelItemWidget;
 
   /**
    * Creates a new component palette panel.
@@ -111,33 +107,28 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     initWidget(stackPalette);
   }
 
-  public static void selectComponent(Widget panelItemWidget) {
-    if (selectedPanelItemWidget != null) {
-      selectedPanelItemWidget.getElement().getStyle().setProperty("backgroundColor", "white");
-    }
-    selectedPanelItemWidget = panelItemWidget;
-    selectedPanelItemWidget.getElement().getStyle().setProperty("backgroundColor", "#d2e0a6");
-  }
-
   private static boolean showCategory(ComponentCategory category) {
     if (category == ComponentCategory.UNINITIALIZED) {
       return false;
     }
-    if (category == ComponentCategory.INTERNAL
-        && !AppInventorFeatures.showInternalComponentsCategory()) {
+    if (category == ComponentCategory.INTERNAL &&
+        !AppInventorFeatures.showInternalComponentsCategory()) {
       return false;
     }
     return true;
   }
 
   /**
-   * Loads all components to be shown on this palette. Specifically, for each component (except for
-   * those whose category is UNINITIALIZED, or whose category is INTERNAL and we're running on a
-   * production server, or who are specifically marked as not to be shown on the palette), this
-   * creates a corresponding {@link SimplePaletteItem} with the passed {@link DropTargetProvider}
-   * and adds it to the panel corresponding to its category.
+   * Loads all components to be shown on this palette.  Specifically, for
+   * each component (except for those whose category is UNINITIALIZED, or
+   * whose category is INTERNAL and we're running on a production server,
+   * or who are specifically marked as not to be shown on the palette),
+   * this creates a corresponding {@link SimplePaletteItem} with the passed
+   * {@link DropTargetProvider} and adds it to the panel corresponding to
+   * its category.
    *
-   * @param dropTargetProvider provider of targets that palette items can be dropped on
+   * @param dropTargetProvider provider of targets that palette items can be
+   *                           dropped on
    */
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
@@ -149,9 +140,11 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(component);
       ComponentCategory category = ComponentCategory.valueOf(categoryString);
       if (showOnPalette && showCategory(category)) {
-        addPaletteItem(new SimplePaletteItem(new SimpleComponentDescriptor(component, editor,
-            helpString, categoryDocUrlString, showOnPalette, nonVisible), dropTargetProvider),
-            category);
+        addPaletteItem(new SimplePaletteItem(
+            new SimpleComponentDescriptor(component, editor, helpString,
+              categoryDocUrlString, showOnPalette, nonVisible),
+            dropTargetProvider),
+          category);
       }
     }
   }
@@ -165,10 +158,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
           createPropertyEditor(property.getEditorType()));
-      /*
-       * OdeLog.log("Property Caption: " + property.getCaption() + ", " +
-       * TranslationComponentProperty.getName(property.getCaption()));
-       */
+      /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
+          + TranslationComponentProperty.getName(property.getCaption()));*/
     }
   }
 

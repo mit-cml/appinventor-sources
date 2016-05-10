@@ -9,7 +9,6 @@ package com.google.appinventor.client.editor.simple.palette;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
-import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -34,6 +33,9 @@ public class SimplePaletteItem extends DragSourcePanel {
   // Cached prototype of the component that this palette item creates.
   // Properties of the prototype may be queried by accessors.
   private MockComponent componentPrototype;
+
+  //It is here to keep the selected panel item
+  private static Widget selectedPaletteItemWidget;
 
   /**
    * Creates a new palette item.
@@ -72,11 +74,24 @@ public class SimplePaletteItem extends DragSourcePanel {
     addHandlers();
   }
 
+  /**
+   * Selects (sets the background to green of) a palette item when it is clicked.
+   * 
+   * @param paletteItemWidget the Widget of the panel item to be selected
+   */
+  private static void select(Widget paletteItemWidget) {
+    if (selectedPaletteItemWidget != null) {
+      selectedPaletteItemWidget.getElement().getStyle().setProperty("backgroundColor", "white");
+    }
+    selectedPaletteItemWidget = paletteItemWidget;
+    selectedPaletteItemWidget.getElement().getStyle().setProperty("backgroundColor", "#d2e0a6");
+  }
+
   private void addHandlers() {
     addMouseDownHandler(new MouseDownHandler() {
       @Override
       public void onMouseDown(MouseDownEvent arg0) {
-        YoungAndroidPalettePanel.selectComponent(getWidget());
+        select(getWidget());
       }
     });
   }
