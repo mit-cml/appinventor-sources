@@ -90,7 +90,7 @@ Blockly.ReplMgr.buildYail = function() {
     }
 
     var propertyNameConverter;
-    if (this.nofqcn) {
+    if (phoneState.nofqcn) {
         propertyNameConverter = function(input) {
             var s = input.split('.');
             return s[s.length-1];
@@ -397,9 +397,9 @@ Blockly.ReplMgr.putYail = (function() {
                             // Set a compatibility flag to indicate that we
                             // should trim package names from Component blocks
                             // because we are talking to an old pre-cdk Companion
-                            context.nofqcn = true;
+                            rs.phoneState.nofqcn = true;
                         } else {
-                            context.nofqcn = false;
+                            rs.phoneState.nofqcn = false;
                         }
                     }
                     // We have to reset the yail state because
