@@ -101,12 +101,22 @@ public final class MockCheckBox extends MockWrapper {
     updatePreferredSize();
   }
 
+  @Override
+  int getHeightHint() {
+    int hint = super.getHeightHint();
+    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
+      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
+      return Math.round(height);
+    } else {
+      return hint;
+    }
+  }
+
   /*
    * Sets the checkbox's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
     MockComponentsUtil.setWidgetFontSize(checkboxWidget, text);
-    changeProperty(MockVisibleComponent.PROPERTY_NAME_HEIGHT, text);
     updatePreferredSize();
   }
 
