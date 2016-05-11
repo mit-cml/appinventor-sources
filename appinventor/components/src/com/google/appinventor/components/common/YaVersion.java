@@ -378,8 +378,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -715,7 +717,9 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 6:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 6;
+  // For IMAGESPRITE_COMPONENT_VERSION 7:
+  // - The properties xRotationOffsetPercent and yRotationOffsetPercent were added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
