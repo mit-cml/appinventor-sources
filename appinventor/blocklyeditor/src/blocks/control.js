@@ -603,6 +603,23 @@ Blockly.Blocks['controls_openAnotherScreen'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE}]
 };
 
+//Same as openAnotherScreen above but with a dropdown list for screens to make selection more intuitive.
+Blockly.Blocks['controls_openAnotherScreenDropDown'] = {
+  // Open another screen
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE)
+        .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME)
+        .appendField(new Blockly.FieldDropdown(window.parent.BlocklyPanel_getScreenNames), "SCREEN_PICK");
+    this.setPreviousStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE}]
+};
+
 Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
   // Open another screen with start value
   category: 'Control',
@@ -614,6 +631,26 @@ Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
         .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('STARTVALUE')
+        .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE}]
+};
+
+//Same as openAnotherScreenWithStartValue above but with a dropdown list for screens to make selection more intuitive.
+Blockly.Blocks['controls_openAnotherScreenWithStartValueDropDown'] = {
+  // Open another screen with start value
+  category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
+        .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
+        .appendField(new Blockly.FieldDropdown(window.parent.BlocklyPanel_getScreenNames), "SCREEN_PICK");
     this.appendValueInput('STARTVALUE')
         .appendField(Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE)
         .setAlign(Blockly.ALIGN_RIGHT);

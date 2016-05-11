@@ -145,6 +145,27 @@ public class Toolbar extends Composite {
   }
 
   /**
+   * Gets the names of menu items
+   * Originally created for the "OpenAnotherScreen block" in control.js
+   *
+   * @param dropWidgetName name of the drop-down widget
+   * @return the names of the specified menu items - if no matching menu item to widget, will return an empty array
+   */
+  public String[] getDropDownListItems(String dropWidgetName) {
+    List<MenuItem> itemList = dropDownButtonMap.get(dropWidgetName).getItems();
+    if (itemList != null) {
+      int listSize = itemList.size();
+      String[] itemArray = new String[listSize];
+      for (int i = 0; i < listSize; i++) {
+        itemArray[i] = itemList.get(i).getText();
+      }
+      return itemArray;
+    }
+    else
+      return new String[0];
+  }
+
+  /**
    * Adds a button to the toolbar
    *
    * @param item button to add

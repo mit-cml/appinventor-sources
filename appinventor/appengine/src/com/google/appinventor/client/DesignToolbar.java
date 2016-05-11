@@ -467,6 +467,17 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+  /**
+   * Gets the names of screens
+   * Originally created for the "OpenAnotherScreen block" in control.js
+   *
+   * @return the names of screens
+   */
+  public static String[] getScreenNames() {
+    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+    return designToolbar.getDropDownListItems(WIDGET_NAME_SCREENS_DROPDOWN);
+  }
+
   public DesignProject getCurrentProject() {
     return currentProject;
   }

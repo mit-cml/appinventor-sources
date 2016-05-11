@@ -208,4 +208,11 @@ public class DropDownButton extends TextButton {
   public ContextMenu getContextMenu() {
     return menu;
   }
+
+  public List<MenuItem> getItems() {
+    //getter method
+    List<MenuItem> itemsCopy = new ArrayList<MenuItem>();
+    itemsCopy.addAll(items);
+    return itemsCopy;
+  }
 }
