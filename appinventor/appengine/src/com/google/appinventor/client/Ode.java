@@ -729,7 +729,7 @@ public class Ode implements EntryPoint {
         // Initialize UI
         initializeUi();
 
-        topPanel.showUserEmail(user.getUserEmail());
+        topPanel.showUserEmail(user.getUserName());
       }
 
       @Override
