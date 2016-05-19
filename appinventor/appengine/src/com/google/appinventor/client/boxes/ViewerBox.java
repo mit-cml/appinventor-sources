@@ -42,10 +42,10 @@ public class ViewerBox extends Box {
    * Creates new empty viewer box.
    */
   private ViewerBox() {
-      super(MESSAGES.viewerBoxCaption(),
-          600,    // height
-          false,  // minimizable
-          false); // removable
+    super(MESSAGES.viewerBoxCaption(),
+        600,    // height
+        false,  // minimizable
+        false); // removable
   }
 
   /**
