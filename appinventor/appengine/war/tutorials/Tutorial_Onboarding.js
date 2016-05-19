@@ -87,30 +87,12 @@ var Tutorial_Onboarding = {
 				left: window.innerWidth/3
 			},
 			{
-				text: "These are the built-in blocks. They are the general behaviors for your apps and are always available.",
+				text: "You can find all of the code blocks here in the Blocks palette. Click on any item to see its blocks' drawer.",
 				validate: function(formName){
 					return true;
 				},
 				url: "",
 				top: 175,
-				left: 145
-			},
-			{
-				text: "Component blocks will be here, nested under Screen1. These blocks are specific to the components you added to your app in the <b>Viewer</b>.",
-				validate: function(formName){
-					return true;
-				},
-				url: "",
-				top: 395,
-				left: 145
-			},
-			{
-				text: "Any Component blocks are more advanced blocks that operate on groups of similar components and are often used inside of loops, such as changing the positions of a group of sprites.",
-				validate: function(formName){
-					return true;
-				},
-				url: "",
-				top: 420,
 				left: 145
 			},
 			{

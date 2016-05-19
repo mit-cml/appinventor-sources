@@ -1399,7 +1399,6 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Image dialogImage = new Image(Ode.getImageBundle().androidGreenSmall());
-//    dialogImage.setPixelSize(80, 90);
 
     Grid messageGrid = new Grid(2, 1);
     messageGrid.getCellFormatter().setAlignment(0,
@@ -1484,14 +1483,14 @@ public class Ode implements EntryPoint {
    */
   private void createWelcomeDialog(boolean force) {
     //Commenting out for testing of new dialog design --
-//    if (!shouldShowWelcomeDialog() && !force) {
-//      openProjectsTab();
-//      return;
-//    }
+    if (!shouldShowWelcomeDialog() && !force) {
+      openProjectsTab();
+      return;
+    }
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-//    dialogBox.setText(MESSAGES.createWelcomeDialogText());
+    dialogBox.setText(MESSAGES.createWelcomeDialogText());
     dialogBox.setHeight(splashConfig.height + "px");
     dialogBox.setWidth(splashConfig.width + "px");
     dialogBox.setGlassEnabled(true);

@@ -13,7 +13,7 @@ var Tutorial_BallBounce = {
         {
             text: 'To allow the Canvas to fill the whole screen, verify that the Screen1 property "Scrollable" is unchecked (the box is near the bottom of the Properties pane).<br><br>',
             validate: function (formName) {
-//                return Tutorial.testForScreenProperty({ Scrollable: false});
+                // return Tutorial.testForScreenProperty({ Scrollable: false}); //this test for property does not yet exist
                 return true;
             },
             url: "",

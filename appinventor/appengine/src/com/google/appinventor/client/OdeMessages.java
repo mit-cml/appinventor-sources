@@ -457,10 +457,6 @@ public interface OdeMessages extends Messages {
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsMenuItem();
 
-  @DefaultMessage("Advanced options")
-  @Description("Label of the Advanced options category that holds keystore actions")
-  String advancedOptionsMenuItem();
-
   @DefaultMessage("Export app signing keystore")
   @Description("Label of the button for export keystore")
   String downloadKeystoreMenuItem();
@@ -2521,7 +2517,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DetectColorProperties();
 
-  @DefaultMessage("DistanceInterval")
+  @DefaultMessage("DistanceInterval (m)")
   @Description("")
   String DistanceIntervalProperties();
 
@@ -2617,7 +2613,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ImageProperties();
 
-  @DefaultMessage("Interval")
+  @DefaultMessage("Interval (ms)")
   @Description("")
   String IntervalProperties();
 
@@ -2821,7 +2817,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String TimerEnabledProperties();
 
-  @DefaultMessage("TimerInterval")
+  @DefaultMessage("TimerInterval (ms)")
   @Description("")
   String TimerIntervalProperties();
 
@@ -2917,7 +2913,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SelectionProperties();
 
-  @DefaultMessage("TimeInterval")
+  @DefaultMessage("TimeInterval (ms)")
   @Description("")
   String TimeIntervalProperties();
 
