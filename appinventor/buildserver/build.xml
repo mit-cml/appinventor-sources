@@ -186,6 +186,8 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--childProcessRamMb" />
+      <arg value="1024" />
       <arg value="--inputZipFile" />
       <arg value="${local.build.dir}/aiplayapp.zip" />
       <arg value="--userName" />
