@@ -311,9 +311,6 @@ public class ImageSprite extends Sprite {
 
 	@Override
 	protected boolean overNorthEdge() {
-		if(vTopLeft[1] <= 0 || vTopRight[1] <= 0){
-			Log.e("AppInventor", picturePath + " hit north edge.");
-		}
 		return vTopLeft[1] <= 0 || vTopRight[1] <= 0;
 	}
 
