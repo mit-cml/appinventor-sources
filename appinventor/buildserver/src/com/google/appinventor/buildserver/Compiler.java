@@ -176,6 +176,7 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForCompanion;
+  private static boolean isUdoo = true;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
@@ -372,6 +373,10 @@ public final class Compiler {
       // We might also want to allow users to specify minSdk version or targetSDK version.
       out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
 
+      if (isUdoo) {
+        out.write("<uses-feature android:name=\"android.hardware.usb.accessory\" />");
+      }
+
       out.write("  <application ");
 
       // TODO(markf): The preparing to publish doc at
@@ -431,6 +436,14 @@ public final class Compiler {
           out.write("        <category android:name=\"android.intent.category.LAUNCHER\" />\n");
         }
         out.write("      </intent-filter>\n");
+
+        if (isMain && isUdoo) {
+          out.write("<intent-filter>");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_ACCESSORY_ATTACHED\" />");
+          out.write("  <action android:name=\"android.hardware.usb.action.USB_ACCESSORY_DETACHED\" />");
+          out.write("</intent-filter>");
+          out.write("<meta-data android:name=\"android.hardware.usb.action.USB_ACCESSORY_ATTACHED\" android:resource=\"@xml/accessory_filter\"/>");
+        }
 
         if (componentTypes.contains("NearField") && !isForCompanion && isMain) {
           //  make the form respond to NDEF_DISCOVERED
@@ -544,6 +557,21 @@ public final class Compiler {
       return false;
     }
     setProgress(10);
+
+
+    if (isUdoo) {
+      File xmlDir = createDirectory(resDir, "xml");
+      File file = new File(xmlDir, "accessory_filter.xml");
+      String usbRes = "<?xml version=\"1.0\" encoding=\"utf-8\"?><resources><usb-accessory manufacturer=\"UDOO\" model=\"AppInventor\" version=\"1.0\" /></resources>";
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(usbRes);
+        writer.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+      }
+    }
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");

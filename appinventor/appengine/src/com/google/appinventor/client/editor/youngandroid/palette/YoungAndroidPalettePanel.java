@@ -24,6 +24,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidDefaultURLPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGpioDirectionsChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
@@ -34,6 +35,9 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooColorSensorsChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTempHumSensorsChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTransportsChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.CountryChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
@@ -197,6 +201,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT)) {
       return new NonNegativeFloatPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_GPIO_DIRECTIONS)) {
+      return new YoungAndroidGpioDirectionsChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_TRANSPORTS)) {
+      return new YoungAndroidUdooTransportsChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_ARDUINO_CONNECTION)) {
+      return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          Collections.singleton("UdooArduino"));
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS)) {
+      return new YoungAndroidUdooTempHumSensorsChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_UDOO_COLOR_SENSORS)) {
+      return new YoungAndroidUdooColorSensorsChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER)) {
       return new NonNegativeIntegerPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION)) {

@@ -1,3 +1,4 @@
+
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
@@ -514,4 +515,27 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+   * UDOO
+   */
+  @Source("com/google/appinventor/images/udoo.png")
+  ImageResource udoo();
+
+  @Source("com/google/appinventor/images/udooAxis.png")
+  ImageResource udooAxis();
+
+  @Source("com/google/appinventor/images/udooCamera.png")
+  ImageResource udooCamera();
+
+  @Source("com/google/appinventor/images/udooColor.png")
+  ImageResource udooColor();
+
+  @Source("com/google/appinventor/images/udooIc.png")
+  ImageResource udooIc();
+
+  @Source("com/google/appinventor/images/udooTemperature.png")
+  ImageResource udooTemperature();
+
+  @Source("com/google/appinventor/images/udooGear.png")
+  ImageResource udooGear();
 }

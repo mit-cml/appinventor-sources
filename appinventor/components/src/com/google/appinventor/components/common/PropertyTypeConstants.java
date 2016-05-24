@@ -94,6 +94,41 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidColorChoicePropertyEditor#NXT_GENERATED_COLORS
    */
   public static final String PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR = "lego_nxt_generated_color";
+  
+  /**
+   * GPIO directions (in/out).
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGpioDirectionsChoicePropertyEditor#directions
+   */
+  public static final String PROPERTY_TYPE_GPIO_DIRECTIONS = "gpio_directions";
+  
+  /**
+   * UDOO transports
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTransportsChoicePropertyEditor#transports
+   */
+  public static final String PROPERTY_TYPE_UDOO_TRANSPORTS = "udoo_transports";
+  
+  /**
+   * UDOO Arduino connections
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooArduinoConnectionsChoicePropertyEditor#connections
+   */
+  public static final String PROPERTY_TYPE_UDOO_ARDUINO_CONNECTION = "UdooArduino";
+  
+  /**
+   * UDOO temperature humidity sensors
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooTempHumSensorsChoicePropertyEditor#sensors
+   */
+  public static final String PROPERTY_TYPE_UDOO_TEMP_HUM_SENSORS = "udoo_temp_hum_sensors";
+  
+  /**
+   * UDOO color sensors
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidUdooColorSensorsChoicePropertyEditor#sensors
+   */
+  public static final String PROPERTY_TYPE_UDOO_COLOR_SENSORS = "udoo_color_sensors";
 
   /**
    * Non-negative (positive or zero) floating-point values.

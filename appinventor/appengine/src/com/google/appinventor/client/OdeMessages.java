@@ -5691,6 +5691,19 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Error on Fusion Tables query")
   @Description("")
   String FusionTablesStandardErrorMessage();
+  
+  // =========== UDOO
+  @DefaultMessage("PinNumber")
+  @Description("")
+  String PinNumberProperties();
+
+  @DefaultMessage("Direction")
+  @Description("")
+  String DirectionProperties();
+  
+  @DefaultMessage("UdooArduino")
+  @Description("")
+  String UdooArduinoProperties();
 
   @DefaultMessage("SelectionColor")
   @Description("")
@@ -5749,7 +5762,95 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("XMLTextDecode")
   @Description("")
   String XMLTextDecodeMethods();
+  
+  @DefaultMessage("UDOO Connected")
+  @Description("")
+  String ConnectedEvents();
+  
+  @DefaultMessage("analogRead")
+  @Description("")
+  String analogReadMethods();
+  
+  @DefaultMessage("analogWrite")
+  @Description("")
+  String analogWriteMethods();
+  
+  @DefaultMessage("delay")
+  @Description("")
+  String delayMethods();
 
+  @DefaultMessage("digitalRead")
+  @Description("")
+  String digitalReadMethods();
+  
+  @DefaultMessage("digitalWrite")
+  @Description("")
+  String digitalWriteMethods();
+  
+  @DefaultMessage("map")
+  @Description("")
+  String mapMethods();
+  
+  @DefaultMessage("pinMode")
+  @Description("")
+  String pinModeMethods();
+  
+  @DefaultMessage("attach")
+  @Description("")
+  String attachMethods();
+  
+  @DefaultMessage("detach")
+  @Description("")
+  String detachMethods();
+  
+  @DefaultMessage("write")
+  @Description("")
+  String writeMethods();
+  
+  @DefaultMessage("attachInterrupt")
+  @Description("")
+  String attachInterruptMethods();
+  
+  @DefaultMessage("InterruptFired")
+  @Description("")
+  String InterruptFiredEvents();
+  
+  @DefaultMessage("DataReady")
+  @Description("")
+  String DataReadyEvents();
+  
+  @DefaultMessage("ReadSensor")
+  @Description("")
+  String ReadSensorMethods();
+  
+  @DefaultMessage("SetValue")
+  @Description("")
+  String SetValueMethods();
+
+  @DefaultMessage("SelfPicture")
+  @Description("")
+  String SelfPictureMethods();
+
+  @DefaultMessage("Transport")
+  @Description("")
+  String TransportProperties();
+
+  @DefaultMessage("RemoteAddress")
+  @Description("")
+  String RemoteAddressProperties();
+
+  @DefaultMessage("RemotePort")
+  @Description("")
+  String RemotePortProperties();
+
+  @DefaultMessage("RemoteSecret")
+  @Description("")
+  String RemoteSecretProperties();
+
+  @DefaultMessage("SensorType")
+  @Description("")
+  String SensorProperties();
+  
   @DefaultMessage("ExtraKey and ExtraValue are deprecated and will not be supported. " +
       "Please use the new Extras property in Blocks.\n")
   @Description("")

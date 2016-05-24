@@ -62,6 +62,13 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_COLOR = 417;
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
+  // UDOO errors
+  public static final int ERROR_UDOO_ADK_UNAVAILABLE = 450;
+  public static final int ERROR_UDOO_ADK_NO_PERMISSIONS = 451;
+  public static final int ERROR_UDOO_ADK_NO_DEVICE = 452;
+  public static final int ERROR_UDOO_ADK_NO_CONNECTION = 453;
+  public static final int ERROR_UDOO_TCP_NO_CONNECTION = 454;
+  public static final int ERROR_UDOO_SERVO_WRITE = 455;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;
@@ -293,6 +300,19 @@ public final class ErrorMessages {
         "Cannot detect light level when the DetectColor property is set to True.");
     errorMessages.put(ERROR_NXT_INVALID_GENERATE_COLOR,
         "The GenerateColor property is limited to None, Red, Green, or Blue.");
+    // UDOO errors
+    errorMessages.put(ERROR_UDOO_ADK_UNAVAILABLE,
+        "Android ADK not available. Local ADK connections are available only on UDOO boards.");
+    errorMessages.put(ERROR_UDOO_ADK_NO_PERMISSIONS,
+        "Permission denied to access ADK accessory.");
+    errorMessages.put(ERROR_UDOO_ADK_NO_DEVICE,
+        "No ADK accessory found. Is the Arduino sketch uploaded?");
+    errorMessages.put(ERROR_UDOO_ADK_NO_CONNECTION,
+        "Unable to connect to the Arduino. Try to reset it or restart the app.");
+    errorMessages.put(ERROR_UDOO_TCP_NO_CONNECTION,
+        "Could not create TCP connection.");
+    errorMessages.put(ERROR_UDOO_SERVO_WRITE,
+        "Servo accepts only degrees between 0 and 180.");
     // Bluetooth errors
     errorMessages.put(ERROR_BLUETOOTH_NOT_AVAILABLE,
         "Bluetooth is not available.");
