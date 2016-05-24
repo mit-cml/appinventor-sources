@@ -63,7 +63,7 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
+               includes="AndroidRuntime.jar,KotlinRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
@@ -273,6 +273,7 @@
     <fileset dir="${run.lib.dir}" includes="*.jar"/>
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
+    <pathelement location="${build.dir}/components/KotlinRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
