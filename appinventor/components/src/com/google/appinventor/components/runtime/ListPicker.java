@@ -6,7 +6,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.CustomActivities;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -41,7 +40,6 @@ import android.view.WindowManager;
     "Other properties affect the appearance of the button " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
     "whether it can be clicked on (<code>Enabled</code>).</p>")
-@CustomActivities(activityNames = "com.google.appinventor.components.runtime.ListPickerActivity")
 @SimpleObject
 public class ListPicker extends Picker implements ActivityResultListener, Deleteable, OnResumeListener {
 
