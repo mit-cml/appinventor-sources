@@ -152,7 +152,7 @@ public class TopToolbar extends Composite {
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
-        MESSAGES.aiCompanionMenuItem(), new WirelessAction()));
+        MESSAGES.AICompanionMenuItem(), new WirelessAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
         MESSAGES.emulatorMenuItem(), new EmulatorAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
@@ -661,11 +661,11 @@ public class TopToolbar extends Composite {
 
   protected void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
     }
@@ -729,7 +729,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
-      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
@@ -742,7 +742,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           false);
-      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
@@ -757,7 +757,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
-      connectDropDown.setItemEnabled(MESSAGES.aiCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);

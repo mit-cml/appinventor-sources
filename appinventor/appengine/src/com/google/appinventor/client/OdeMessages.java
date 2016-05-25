@@ -476,7 +476,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Companion App over WiFi")
   @Description("Message providing details about starting the wireless connection.")
-  String aiCompanionMenuItem();
+  String AICompanionMenuItem();
 
   @DefaultMessage("Emulator")
   @Description("Message providing details about starting the emulator connection.")

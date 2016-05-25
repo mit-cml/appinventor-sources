@@ -190,7 +190,7 @@ public class Ode implements EntryPoint {
   // Remembers the current View
   static final int DESIGNER = 0;
   static final int PROJECTS = 1;
-  static final int GALLERY = 2;
+  private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
   private static final int PRIVATEUSERPROFILE = 5;
