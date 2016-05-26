@@ -41,26 +41,12 @@ public final class CrashReport {
    * @return  runtime exception wrapping the original exception
    */
   public static RuntimeException createAndLogError(Logger log, HttpServletRequest req,
-      String extraInfo, Throwable exception) {
-    return createAndLogError(log, req, extraInfo, new RuntimeException(exception));
-  }
-
-  /**
-   * Logs an error.
-   *
-   * @param log  logger for to log error
-   * @param req HTTP request (may be {@code null})
-   * @param extraInfo  additional information about the context of the crash
-   *                   (may be {@code null}), preferably formatted as
-   *                   'key1=value1[\n char]key2=value2'
-   * @param exception  exception to log
-   * @return  runtime exception wrapping the original exception
-   */
-  public static RuntimeException createAndLogError(Logger log, HttpServletRequest req,
-      String extraInfo, RuntimeException exception) {
+    String extraInfo, Throwable exception) {
     log.log(Level.SEVERE, exception.getMessage() + ": " + extraInfo + "\n" + extraExtraInfo(req),
-        exception);
-    return exception;
+      exception);
+    return (exception instanceof RuntimeException) ?
+      (RuntimeException) exception :
+      new RuntimeException(exception);
   }
 
   /**
