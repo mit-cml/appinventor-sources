@@ -391,8 +391,10 @@ public class YaVersion {
   // - Extensions Support (non-visible only) added
   // For YOUNG_ANDROID_VERSION 156:
   // - FIREBASE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 157:
+  // - LABEL_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 156;
+  public static final int YOUNG_ANDROID_VERSION = 157;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -734,7 +736,10 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For LABEL_COMPONENT_VERSION 3:
   // - The HasMargins property was added
-  public static final int LABEL_COMPONENT_VERSION = 3;
+  // For LABEL_COMPONENT_VERSION 4:
+  // - The HTML format is defined.
+
+  public static final int LABEL_COMPONENT_VERSION = 4;
 
   // For LISTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
