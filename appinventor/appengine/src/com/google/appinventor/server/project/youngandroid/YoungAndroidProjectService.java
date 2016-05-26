@@ -613,7 +613,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     } catch (IOException e) {
       // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
       Throwable wrappedException = e;
-      int zipFileLength = zipFile.getContent().length;
+      int zipFileLength = zipFile == null ? -1 : zipFile.getContent().length;
       if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
         String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
         wrappedException = new IllegalArgumentException(
