@@ -1514,7 +1514,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: For LABEL_COMPONENT_VERSION 3:
     // - The HasMargins property was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: Add HTMLFormat property
+    4: "noUpgrade"
 
   }, // End Label upgraders
 

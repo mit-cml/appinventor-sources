@@ -1031,10 +1031,11 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
-    if (srcCompVersion < 3) {
-      // The HasMargins property was added.
+    if (srcCompVersion < 4) {
+      // The LabelFormat method was added.  No changes are needed. (3)
+      // The HasMargins property was added. (4)
       componentProperties.put("HasMargins", new ClientJsonString("False"));
-      srcCompVersion = 3;
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

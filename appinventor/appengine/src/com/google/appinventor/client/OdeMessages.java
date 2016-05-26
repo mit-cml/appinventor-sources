@@ -2176,6 +2176,10 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  @DefaultMessage("HTMLFormat")
+  @Description("")
+  String HTMLFormatProperties();
+
   // This error message is displayed as HTML
 
   @DefaultMessage("User Interface")
