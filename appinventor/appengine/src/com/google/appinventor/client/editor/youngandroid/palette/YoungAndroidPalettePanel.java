@@ -39,6 +39,7 @@ import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
 import com.google.appinventor.client.widgets.properties.LanguageChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor;
+import com.google.appinventor.client.widgets.properties.CenterOffsetFloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.ScalingChoicePropertyEditor;
@@ -197,6 +198,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
           YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT)) {
       return new NonNegativeFloatPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CENTER_OFFSET_FLOAT)) {
+      return new CenterOffsetFloatPropertyEditor();  
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER)) {
       return new NonNegativeIntegerPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION)) {

@@ -1489,7 +1489,11 @@ Blockly.Versioning.AllUpgradeMaps =
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
         }
     */
-    6: "ai1CantDoUpgrade" // Just indicates we couldn't do upgrade even if we wanted to
+    6: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
+    
+    // The SpriteComponent.xCenterOffset and SpriteComponent.yCenterOffset were added.
+    // No blocks need to be modified to upgrade to version 7.
+    7: "noUpgrade"
 
   }, // End ImageSprite upgraders
 

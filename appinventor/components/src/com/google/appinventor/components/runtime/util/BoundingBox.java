@@ -10,7 +10,7 @@ package com.google.appinventor.components.runtime.util;
  * Bounding box abstraction, similar to {@link android.graphics.Rect}.
  *
  */
-public final class BoundingBox {
+public class BoundingBox {
   private double left;
   private double top;
   private double right;

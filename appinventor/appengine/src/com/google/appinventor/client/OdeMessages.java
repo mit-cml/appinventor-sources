@@ -1516,6 +1516,21 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("{0} is not a legal number")
   @Description("Error shown after validation of float failed.")
   String notAFloat(String nonNumericText);
+  
+  //Used in widgets/properties/FloatPropertyEditor.java
+  
+  @DefaultMessage("{0} must fall between 0 and 100")
+  @Description("Error shown after validation of bounded float failed.")
+  String notABoundedFloat(String nonNumericText);
+
+
+  @DefaultMessage("X Center of rotation offset")
+  @Description("X-axis offset for the center of rotation in percentage of the width.")
+  String xCenterOffsetProperties();
+  
+  @DefaultMessage("Y Center of rotation offset")
+  @Description("Y-axis offset for the center of rotation in percentage of the height.")
+  String yCenterOffsetProperties();
 
   // Used in widgets/properties/IntegerPropertyEditor.java
 

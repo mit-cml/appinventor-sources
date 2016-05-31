@@ -1009,6 +1009,11 @@ public final class YoungAndroidFormUpgrader {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The SpriteComponent.xCenterOffset and SpriteComponent.yCenterOffset were added.
+      // No properties need to be modified to upgrade to version 7.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

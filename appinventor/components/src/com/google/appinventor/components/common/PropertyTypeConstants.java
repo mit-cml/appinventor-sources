@@ -102,6 +102,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_NON_NEGATIVE_FLOAT = "non_negative_float";
 
   /**
+   * Non-negative (positive or zero) floating-point values bounded to [0-100].
+   * @see com.google.appinventor.client.widgets.properties.CenterOffsetFloatPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CENTER_OFFSET_FLOAT = "bounded_negative_float";
+
+  /**
    * Non-negative (positive or zero) integers.
    * @see com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor
    */

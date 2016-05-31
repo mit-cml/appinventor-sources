@@ -16,6 +16,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.AssertionFailure;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
+import com.google.appinventor.components.runtime.util.OrientedBoundingBox;
 import com.google.appinventor.components.runtime.util.TimerInternal;
 
 import android.os.Handler;
@@ -698,7 +699,7 @@ public abstract class Sprite extends VisibleComponent
    * top side of the sprite with the top side of the canvas.
    */
   @SimpleFunction
-  protected final void moveIntoBounds(int canvasWidth, int canvasHeight) {
+  protected void moveIntoBounds(int canvasWidth, int canvasHeight) {
     boolean moved = false;
 
     // We set the xLeft and/or yTop fields directly, instead of calling X(123) and Y(123), to avoid
@@ -757,19 +758,19 @@ public abstract class Sprite extends VisibleComponent
   // Methods for determining collisions with other Sprites and the edge
   // of the Canvas.
 
-  private final boolean overWestEdge() {
+  protected boolean overWestEdge() {
     return xLeft < 0;
   }
 
-  private final boolean overEastEdge(int canvasWidth) {
+  protected boolean overEastEdge(int canvasWidth) {
     return xLeft + Width() > canvasWidth;
   }
 
-  private final boolean overNorthEdge() {
+  protected boolean overNorthEdge() {
     return yTop < 0;
   }
 
-  private final boolean overSouthEdge(int canvasHeight) {
+  protected boolean overSouthEdge(int canvasHeight) {
     return yTop + Height() > canvasHeight;
   }
 
@@ -845,26 +846,49 @@ public abstract class Sprite extends VisibleComponent
    * @param sprite2 another sprite
    * @return {@code true} if they are in collision, {@code false} otherwise
    */
+   // Note: Consider changing the approach that makes use of a static
+   // colliding method.
+   // This makes special case collision handling much messier than it needs
+   // to be(i.e. using 'instanceof'), since just detecting collision is much simpler than mutating the
+   // model to hold the intersection of two rotated boxes. In the case of 'intersectsWith(...)' the method
+   // can be overridden.
   public static boolean colliding(Sprite sprite1, Sprite sprite2) {
     // If the bounding boxes don't intersect, there can be no collision.
-    BoundingBox rect1 = sprite1.getBoundingBox(1);
-    BoundingBox rect2 = sprite2.getBoundingBox(1);
-    if (!rect1.intersectDestructively(rect2)) {
-      return false;
+	BoundingBox rect1;
+    BoundingBox rect2;
+    
+    // If the bounding boxes don't intersect, there can be no collision.
+    //Note: Work around necessary due to static implementation of this method.
+    if(sprite2 instanceof ImageSprite){
+        rect2 = ((ImageSprite)sprite2).getBoundingBox(1);
+    } else {
+   		rect2 = sprite2.getBoundingBox(1);
+	}
+	
+	if(sprite1 instanceof ImageSprite){
+      rect1 = ((ImageSprite)sprite1).getBoundingBox(1);
+      if(!((OrientedBoundingBox)rect1).intersectDestructively(rect2)) return false;
+    } else {
+      rect1 = sprite1.getBoundingBox(1);
+      if (!rect1.intersectDestructively(rect2)) return false;
     }
 
-    // If we get here, rect1 has been mutated to hold the intersection of the
-    // two bounding boxes.  Now check every point in the intersection to see if
-    // both sprites contain that point.
-    // TODO(user): Handling abutting sprites properly
-    for (double x = rect1.getLeft(); x <= rect1.getRight(); x++) {
-      for (double y = rect1.getTop(); y <= rect1.getBottom(); y++) {
-        if (sprite1.containsPoint(x, y) && sprite2.containsPoint(x, y)) {
-          return true;
-        }
-      }
-    }
-    return false;
+	if (rect1 instanceof OrientedBoundingBox) {
+      return true;
+    } else {
+	    // If we get here, rect1 has been mutated to hold the intersection of the
+	    // two bounding boxes.  Now check every point in the intersection to see if
+	    // both sprites contain that point.
+	    // TODO(user): Handling abutting sprites properly
+	    for (double x = rect1.getLeft(); x <= rect1.getRight(); x++) {
+	      for (double y = rect1.getTop(); y <= rect1.getBottom(); y++) {
+	        if (sprite1.containsPoint(x, y) && sprite2.containsPoint(x, y)) {
+	          return true;
+	        }
+	      }
+	    }
+	    return false;
+	}
   }
 
   /**
