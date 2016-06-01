@@ -832,7 +832,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   // ------------ Native methods ------------
 
   /**
-   * Take a Javascript function, embedded in an opague JavaScriptObject,
+   * Take a Javascript function, embedded in an opaque JavaScriptObject,
    * and call it.
    *
    * @param callback the Javascript callback.
