@@ -456,6 +456,7 @@
 <h2>Table of Contents</h2>
 <ul>
   <li> <a href="#FirebaseDB">FirebaseDB</a></li>
+  <li> <a href="#BluetoothLE">BluetoothLE</a></li>
 </ul>
 
 <h2 id="FirebaseDB">FirebaseDB</h2>
@@ -509,6 +510,118 @@
   <dt><code>StoreValue(text tag, any valueToStore)</code></dt>
   <dd>Asks Firebase to store the given value under the given tag.</dd>
   <dd>If you are having difficulty with the Companion and you are switching between different Firebase accounts, you may need to use this function to clear internal Firebase caches. You can just use the "Do It" function on this block in the blocks editor. Note: You should not normally need to use this block as part of an application.</dd>
+</dl>
+
+<h2 id="BluetoothLE">BluetoothLE</h2>
+
+<p>This is a trial version of BluetoothLE component, blocks need to be specified later</p>
+
+<h3>id="BluetoothLE">Properties</h3>
+<dl>
+  <dt><code><em>AdvertisementScanPeriod</em></code></dt>
+  <dd>Returns the value of ScanPeriod.</dd>
+  <dt><code><em>BatteryValue</em></code></dt>
+  <dd>Return the battery level.</dd>
+  <dt><code><em>ConnectedDeviceRssi</em></code></dt>
+  <dd>Return the RSSI (Received Signal Strength Indicator) of connected device.</dd>
+  <dt><code><em>DeviceList</em></code></dt>
+  <dd>Return a sorted list of BluetoothLE devices as a String.</dd>
+  <dt><code><em>GetAdvertiserAddresses</em></code></dt>
+  <dd>Returns a list of the addresses of devices found during Advertisement scanning.</dd>
+  <dt><code><em>GetAdvertiserNames</em></code></dt>
+  <dd>Returns a list of the names of the devices found during Advertisment scanning.</dd>
+  <dt><code><em>IsDeviceAdvertising</em></code></dt>
+  <dd>Returns true if the device is currently advertising, false otherwise.</dd>
+  <dt><code><em>IsDeviceConnected</em></code></dt>
+  <dd>Return true if a BluetoothLE device is connected; Otherwise, return false.</dd>
+  <dt><code><em>TxPower</em></code></dt>
+  <dd>Return the Tx power.</dd>
+</dl>
+
+<h3 id="BluetoothLE">Events</h3>
+<dl>
+  <dt><code>ByteValueChanged(text byteValue)</code></dt>
+  <dd>Trigger event when byte value from connected BluetoothLE device is changed.</dd>
+  <dt><code>ByteValueRead(text byteValue)</code></dt>
+  <dd>Trigger event when byte value from connected BluetoothLE device is read.</dd>
+  <dt><code>Connected()</code></dt>
+  <dd>Trigger event when a BluetoothLE device is connected.</dd>
+  <dt><code>DeviceFound()</code></dt>
+  <dd>Trigger event when a new BluetoothLE device is found.</dd>
+  <dt><code>FloatValueChanged(number floatValue)</code></dt>
+  <dd>Trigger event when int value from connected BluetoothLE device is changed.</dd>
+  <dt><code>FloatValueRead(number floatValue)</code></dt>
+  <dd>Trigger event when byte value from connected BluetoothLE device is read.</dd>
+  <dt><code>IntValueChanged(number intValue)</code></dt>
+  <dd>Trigger event when int value from connected BluetoothLE device is changed.</dd>
+  <dt><code>IntValueRead(number intValue)</code></dt>
+  <dd>Trigger event when int value from connected BluetoothLE device is read.</dd>
+  <dt><code>RssiChanged(number device_rssi)</code></dt>
+  <dd>Trigger event when RSSI (Received Signal Strength Indicator) of found BluetoothLE device changes</dd>
+  <dt><code>StringValueChanged(text stringValue)</code></dt>
+  <dd>Trigger event when String value from connected BluetoothLE device is changed.</dd>
+  <dt><code>StringValueRead(text stringValue)</code></dt>
+  <dd>Trigger event when String value from connected BluetoothLE device is read.</dd>
+  <dt><code>ValueWrite()</code></dt>
+  <dd>Trigger event when value is successfully written to connected BluetoothLE device.</dd>
+</dl>
+
+<h3 id="BluetoothLE">Methods</h3>
+<dl>
+  <dt><code>Connect(number index)</code></dt>
+  <dd>Connect to a BluetoothLE device with index. Index specifies the position in BluetoothLE device list, starting from 0.</dd>
+  <dt><code>ConnectWithAddress(text address)</code></dt>
+  <dd>Connect to BluetoothLE device with address. Address specifies bluetooth address of the BluetoothLE device.</dd>
+  <dt><code>DisconnectWithAddress(text address)</code></dt>
+  <dd>Disconnect from connected BluetoothLE device with address. Address specifies bluetooth address of the BluetoothLE device.</dd>
+  <dt><code>text FoundDeviceAddress(number index)</code></dt>
+  <dd>Get the address of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.</dd>
+  <dt><code>text FoundDeviceName(number index)</code></dt>
+  <dd>Get the name of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.</dd>
+  <dt><code>number FoundDeviceRssi(number index)</code></dt>
+  <dd>Get the RSSI (Received Signal Strength Indicator) of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.</dd>
+  <dt><code>text GetAdvertisementData(text deviceAddress, text serviceUuid)</code></dt>
+  <dd>Returns the advertisement data associated with the specified device address.</dd>
+  <dt><code>text GetAdvertiserAddress(text deviceName)</code></dt>
+  <dd>Returns the address of the device with the name specified.</dd>
+  <dt><code>list GetAdvertiserServiceUuids(text deviceAddress)</code></dt>
+  <dd>Returns the list of services available on the Adverising device.</dd>
+  <dt><code>text GetCharacteristicbyIndex(number index)</code></dt>
+  <dd>Return Unique ID of selected characteristic with index. Index specified by list of supported characteristics for a connected device, starting from 0.</dd>
+  <dt><code>text GetServicebyIndex(number index)</code></dt>
+  <dd>Return Unique ID of selected service with index. Index specified by list of supported services for a connected device, starting from 0.</dd>
+  <dt><code>text GetSupportedCharacteristics()</code></dt>
+  <dd>Return list of supported characteristics for connected device as a String</dd>
+  <dt><code>text GetSupportedServices()</code></dt>
+  <dd>Return list of supported services for connected device as a String</dd>
+  <dt><code>ReadByteValue(text service_uuid, text characteristic_uuid)</code></dt>
+  <dd>Read Byte value from a connected BluetoothLE device. Service Unique ID and Characteristic Unique ID are required.</dd>
+  <dt><code>ReadFloatValue(text service_uuid, text characteristic_uuid, number floatOffset)</code></dt>
+  <dd>Read Float value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset are required. Offset specifies the start position of reading data.</dd>
+  <dt><code>ReadIntValue(text service_uuid, text characteristic_uuid, number intOffset)</code></dt>
+  <dd>Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset are required. Offset specifies the start position of reading data.</dd>
+  <dt><code>ReadStringValue(text service_uuid, text characteristic_uuid, number strOffset)</code></dt>
+  <dd>Read String value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset are required. Offset specifies the start position of reading data.</dd>
+  <dt><code>ScanAdvertisements(number scanPeriod)</code></dt>
+  <dd>Scans for Bluetooth LE advertisements. scanPeriod specifies how long the scan will run.</dd>
+  <dt><code>StartAdvertising(text inData, text serviceUuid)</code></dt>
+  <dd>Create and publish a Bluetooth LE advertisement. inData specifies the data that will be included in the advertisement. serviceUuid specifies the UUID of the advertisement.</dd>
+  <dt><code>StartScanning()</code></dt>
+  <dd>Start Scanning for BluetoothLE devices.</dd>
+  <dt><code>StopAdvertising()</code></dt>
+  <dd>Stop Bluetooth LE Advertising.</dd>
+  <dt><code>StopScanning()</code></dt>
+  <dd>Stop Scanning for BluetoothLE devices.</dd>
+  <dt><code>StopScanningAdvertisements()</code></dt>
+  <dd>Stops scanning for Bluetooth LE advertisements.</dd>
+  <dt><code>WriteByteValue(text service_uuid, text characteristic_uuid, text value)</code></dt>
+  <dd>Write byte value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value and offset are required. Offset specifies the start position of writing data.</dd>
+  <dt><code>WriteFloatValue(text service_uuid, text characteristic_uuid, number value, number offset)</code></dt>
+  <dd>Write Float value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value and offset are required. Offset specifies the start position of writing data.</dd>
+  <dt><code>WriteIntValue(text service_uuid, text characteristic_uuid, number value, number offset)</code></dt>
+  <dd>Write Integer value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value and offset are required. Offset specifies the start position of writing data.</dd>
+  <dt><code>WriteStringValue(text service_uuid, text characteristic_uuid, text value)</code></dt>
+  <dd>Write String value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and String valueare required.</dd>
 </dl>
 
 <!-- Content ----------------------- -->

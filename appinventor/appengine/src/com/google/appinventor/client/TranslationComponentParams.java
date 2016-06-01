@@ -209,6 +209,11 @@ public class TranslationComponentParams {
     map.put("useBrake", MESSAGES.useBrakeParams());
     map.put("volume", MESSAGES.volumeParams());
     map.put("width", MESSAGES.widthParams());
+    map.put("inData", MESSAGES.inDataParams());
+    map.put("serviceUuid", MESSAGES.serviceUuidParams());
+    map.put("deviceAddress", MESSAGES.deviceAddressParams());
+    map.put("scanPeriod", MESSAGES.scanPeriodParams());
+    map.put("deviceName", MESSAGES.deviceNameParams());
     return map;
   }
 }
