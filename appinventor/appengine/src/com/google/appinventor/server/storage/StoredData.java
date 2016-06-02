@@ -156,6 +156,10 @@ public class StoredData {
       TEMPORARY
     }
 
+    FileData(){
+    	dateCreated = System.currentTimeMillis();
+    }
+    
     // The file name
     @Id String fileName;
 
@@ -194,6 +198,9 @@ public class StoredData {
     // DateTime of last backup only used if GCS is enabled
     long lastBackup;
 
+    // Date file created
+    long dateCreated;
+    
     String userId;              // The userId which owns this file
                                 // if null or the empty string, we haven't initialized
                                 // it yet
