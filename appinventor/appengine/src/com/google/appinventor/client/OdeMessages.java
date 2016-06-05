@@ -3291,6 +3291,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewString")
   @Description("")
   String WebViewStringProperties();
+  
+   @DefaultMessage("ResponseTextEncoding")
+   @Description("")
+   String ResponseTextEncodingProperties();
 
   //Params
   @DefaultMessage("xAccel")

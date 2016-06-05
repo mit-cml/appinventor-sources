@@ -378,8 +378,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - WEB_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -966,7 +968,9 @@ public class YaVersion {
   // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
   // For WEB_COMPONENT_VERSION 4:
   // - Added method XMLTextDecode
-  public static final int WEB_COMPONENT_VERSION = 4;
+  // For WEB_COMPONENT_VERSION 5:
+  // - Added property ResponseTextEncoding
+  public static final int WEB_COMPONENT_VERSION = 5;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
