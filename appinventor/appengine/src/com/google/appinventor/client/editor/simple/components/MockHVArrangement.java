@@ -149,11 +149,16 @@ public class MockHVArrangement extends MockContainer {
       String scrollable = properties.getProperty(PROPERTY_NAME_SCROLLABLE).getValue();
       if (scrollable.equals("True")) {
         myLayout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
+        myLayout.setHAlignmentFlags(ComponentConstants.GRAVITY_LEFT + "");
         changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
+        changeProperty(PROPERTY_NAME_HORIZONTAL_ALIGNMENT, ComponentConstants.GRAVITY_LEFT+ "");
+
         refreshForm();
         myVAlignmentPropertyEditor.disable();
+        myHAlignmentPropertyEditor.disable();
       } else {
         myVAlignmentPropertyEditor.enable();
+        myHAlignmentPropertyEditor.enable();
       }
     }
   }
