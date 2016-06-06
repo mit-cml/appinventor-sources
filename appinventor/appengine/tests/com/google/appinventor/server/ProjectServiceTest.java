@@ -23,6 +23,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
@@ -110,6 +111,8 @@ public class ProjectServiceTest {
     localUserMock.setSessionId("test-session");
     expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
+    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    expectLastCall().anyTimes();
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
 
@@ -121,6 +124,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
+    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
     localUserMock.setSessionId("test-session");
   }
 
@@ -275,7 +279,8 @@ public class ProjectServiceTest {
         "build=../build\n");
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.scm",
         "#|\n$JSON\n" +
-        "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
         "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
@@ -294,7 +299,7 @@ public class ProjectServiceTest {
     // many times getUser or getUserId are called; they'll always
     // return the same result
     expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE)).anyTimes();
+    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
     PowerMock.replayAll();
     do_init();
 
@@ -388,7 +393,7 @@ public class ProjectServiceTest {
     // many times getUser or getUserId are called; they'll always
     // return the same result
     expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE)).anyTimes();
+    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
     PowerMock.replayAll();
     do_init();
 
@@ -468,7 +473,7 @@ public class ProjectServiceTest {
     // many times getUser or getUserId are called; they'll always
     // return the same result
     expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE)).anyTimes();
+    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
     PowerMock.replayAll();
     do_init();
 

@@ -9,6 +9,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.common.primitives.Ints;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -26,16 +28,16 @@ abstract class MockImageBase extends MockVisibleComponent {
   // Property names
   private static final String PROPERTY_NAME_PICTURE = "Picture";
   private static final String PROPERTY_SCALE_PICTURE_TO_FIT = "ScalePictureToFit";
+  private static final String PROPERTY_SCALING = "Scaling";
 
   // Widget for showing the image.
   private final Image image;
   private String picturePropValue;
-  private boolean fitToScale;
+  private String scalingMode = "0"; // corresponds to Scale proportionally
 
   MockImageBase(SimpleEditor editor, String type, ImageResource icon) {
     super(editor, type, icon);
 
-    // Initialize mock image UI
     image = new Image();
     image.addErrorHandler(new ErrorHandler() {
       @Override
@@ -50,8 +52,10 @@ abstract class MockImageBase extends MockVisibleComponent {
       @Override
       public void onLoad(LoadEvent event) {
         refreshForm();
+        resizeImage();  // resize after the new image occupies the form
       }
     });
+
     SimplePanel simplePanel = new SimplePanel();
     simplePanel.setStylePrimaryName("ode-SimpleMockComponent");
     simplePanel.addStyleName("imageComponentCenterPanel");
@@ -67,10 +71,7 @@ abstract class MockImageBase extends MockVisibleComponent {
     String url = convertImagePropertyValueToUrl(text);
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
-      Image iconImage = getIconImage();
-      image.setUrlAndVisibleRect(iconImage.getUrl(),
-          iconImage.getOriginLeft(), iconImage.getOriginTop(),
-          iconImage.getWidth(), iconImage.getHeight());
+      image.setUrl(getIconImage().getUrl());
     } else {
       image.setUrl(url);
     }
@@ -97,19 +98,51 @@ abstract class MockImageBase extends MockVisibleComponent {
   }
 
   /**
-   * property to make the picture scale to fit its parents width and height
-   * @param newValue true will scale the picture
+   * This resizes the picture according to
+   * 1. height and width value of the div tag enclosing the img tag
+   * 2. scaling mode. 0 - Scale proportionally, 1 - Scale to fit
+   *    which correspond to the choices in ScalingChoicePropertyEditor
+   *
+   * This should be called whenever a property affecting the size is changed
    */
-  private void setScalingProperty(String newValue) {
-    if (newValue.equals("True")){
-      fitToScale = true;
-      image.setSize("100%", "100%");
+  private void resizeImage() {
+    if (image.getUrl().equals(getIconImage().getUrl())) {
+      unclipImage();
+      return;
     }
 
-    else {
-      fitToScale = false;
-      image.setSize(getPreferredWidth() + "px", getPreferredHeight() + "px");
+    String width = getElement().getStyle().getWidth();
+    String height = getElement().getStyle().getHeight();
+
+    // the situation right after refreshing the page
+    if (width.isEmpty() || height.isEmpty()) {
+      return;
     }
+
+    int frameWidth = Ints.tryParse(width.substring(0, width.indexOf("px")));
+    int frameHeight = Ints.tryParse(height.substring(0, height.indexOf("px")));
+
+    if (scalingMode.equals("0")) {
+      float ratio = Math.min(frameWidth / (float) getPreferredWidth(),
+          frameHeight / (float) getPreferredHeight());
+      int scaledWidth = Double.valueOf(getPreferredWidth() * ratio).intValue();
+      int scaledHeight = Double.valueOf(getPreferredHeight() * ratio).intValue();
+      image.setSize(scaledWidth + "px", scaledHeight + "px");
+
+    } else if (scalingMode.equals("1")) {
+      image.setSize("100%", "100%");
+
+    } else {
+      throw new IllegalStateException("Illegal scaling mode: " + scalingMode);
+    }
+  }
+
+  private void unclipImage() {
+    Style style = image.getElement().getStyle();
+    style.clearLeft();
+    style.clearTop();
+    style.clearWidth();
+    style.clearHeight();
   }
 
   // PropertyChangeListener implementation
@@ -118,23 +151,26 @@ abstract class MockImageBase extends MockVisibleComponent {
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
-    // Apply changed properties to the mock component
     if (propertyName.equals(PROPERTY_NAME_PICTURE)) {
-      setPictureProperty(newValue);
+      setPictureProperty(newValue); // setUrl() triggers onLoad
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      resizeImage();
       refreshForm();
-    }
-    else if (propertyName.equals(PROPERTY_SCALE_PICTURE_TO_FIT)) {
-      setScalingProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      resizeImage();
       refreshForm();
-
-    }
-    else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
-      image.setWidth(newValue + "px");
+    } else if (propertyName.equals(PROPERTY_SCALING)) {
+      scalingMode = newValue;
+      resizeImage();
       refreshForm();
-
-    }
-    else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-      image.setHeight(newValue + "px");
+    } else if (propertyName.equals(PROPERTY_SCALE_PICTURE_TO_FIT)) {
+      boolean scaleIt = Boolean.parseBoolean(newValue);
+      if (scaleIt) {
+        scalingMode = "1";
+      } else {
+        scalingMode = "0";
+      }
+      resizeImage();
       refreshForm();
     }
   }

@@ -50,15 +50,22 @@ Blockly.Backpack = function(workspace) {
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_SMALL_ = 'media/backpack-smaller.png';
+Blockly.Backpack.prototype.BPACK_CLOSED_ = 'media/backpack-closed.png';
 
 /**
  * URL of the small backpack image.
  * @type {string}
  * @private
  */
-//Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small-highlighted.png';
-Blockly.Backpack.prototype.BPACK_OVER_ = 'media/backpack-small.png';
+//Blockly.Backpack.prototype.BPACK_EMPTY_ = 'media/backpack-small-highlighted.png';
+Blockly.Backpack.prototype.BPACK_EMPTY_ = 'media/backpack-empty.png';
+
+/**
+ * URL of the full backpack image
+ * @type {string}
+ * @private
+ */
+Blockly.Backpack.prototype.BPACK_FULL_ = 'media/backpack-full.png';
 
 /**
  * Width of the image.
@@ -183,7 +190,7 @@ Blockly.Backpack.prototype.createDom = function() {
       {'width': this.WIDTH_, 'height': this.BODY_HEIGHT_, 'id': 'backpackIcon'},
       this.svgGroup_);
   this.svgBody_.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
-      Blockly.pathToBlockly + this.BPACK_SMALL_);
+      Blockly.pathToBlockly + this.BPACK_CLOSED_);
   return this.svgGroup_;
 };
 
@@ -491,9 +498,13 @@ Blockly.Backpack.prototype.setOpen_ = function(state) {
 Blockly.Backpack.prototype.animateBackpack_ = function() {
   var icon = document.getElementById('backpackIcon');
   if (this.isOpen){
-    icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_OVER_);
+    icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_EMPTY_);
   } else {
-    icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_SMALL_);
+    if (this.isLarge) {
+      icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_FULL_);
+    } else {
+      icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
+    }
   }
 }
 
@@ -511,6 +522,8 @@ Blockly.Backpack.prototype.close = function() {
 Blockly.Backpack.prototype.grow = function() {
   if (this.isLarge)
     return;
+  var icon = document.getElementById('backpackIcon');
+  icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_FULL_);
   var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1.2)');
   this.MARGIN_SIDE_ = this.MARGIN_SIDE_ / 1.2;
@@ -526,6 +539,8 @@ Blockly.Backpack.prototype.grow = function() {
 Blockly.Backpack.prototype.shrink = function() {
   if (!this.isLarge)
     return;
+  var icon = document.getElementById('backpackIcon');
+  icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
   var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1)');
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 1.2;

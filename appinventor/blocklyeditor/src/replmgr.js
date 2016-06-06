@@ -368,6 +368,15 @@ Blockly.ReplMgr.putYail = (function() {
                         return;
                     } else {
                         var json = goog.json.parse(this.response);
+                        if (!Blockly.ReplMgr.acceptablePackage(json["package"])) {
+                            dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
+                                                             Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE,
+                                                             Blockly.Msg.REPL_OK, null, 0, function() {
+                                                                 dialog.hide();
+                                                             });
+                            engine.resetcompanion();
+                            return;
+                        }
                         if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
                             engine.checkversionupgrade(false, json.installer, false);
                             return;
@@ -516,6 +525,16 @@ Blockly.ReplMgr.triggerUpdate = function() {
         reset();
     };
 
+    if (top.COMPANION_UPDATE_URL === "") {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_UPDATE);
+        return;
+    }
+
+    if (top.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_CONNECTION);
+        return;
+    }
+
     encoder.add('package', 'update.apk');
     var qs = encoder.toString();
     fetchconn.open("GET", top.COMPANION_UPDATE_URL, true);
@@ -532,6 +551,10 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                              conn.onreadystatechange = function() {
                                                  if (this.readyState == 4 && this.status == 200) {
                                                      console.log("Update: _package success");
+                                                     reset(); //  New companion, no connection left!
+                                                 } else if (this.readyState == 4) {
+                                                     console.log("Update: _package state = 4 probably ok");
+                                                     reset();
                                                  }
                                              };
                                              conn.send(qs);
@@ -550,9 +573,17 @@ Blockly.ReplMgr.triggerUpdate = function() {
     fetchconn.send();
 };
 
+Blockly.ReplMgr.acceptablePackage = function(comppack) {
+    if (comppack == top.ACCEPTABLE_COMPANION_PACKAGE) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 Blockly.ReplMgr.acceptableVersion = function(version) {
-    for (var i = 0; i < window.parent.ACCEPTABLE_COMPANIONS.length; i++) {
-        if (window.parent.ACCEPTABLE_COMPANIONS[i] == version) {
+    for (var i = 0; i < top.ACCEPTABLE_COMPANIONS.length; i++) {
+        if (top.ACCEPTABLE_COMPANIONS[i] == version) {
             return true;
         }
     }

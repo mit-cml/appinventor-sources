@@ -45,17 +45,54 @@ public class DropDownButton extends TextButton {
       super(elem);
     }
 
+    /**
+     * @param offsetWidth width of the ContextMenu being positioned on the parent element
+     * @param offsetHeight height of the ContextMenu being positioned on the parent element
+     * Sets the position of the ContextMenu on the screen given it's dimensions
+     */
     @Override
     public void setPosition(int offsetWidth, int offsetHeight) {
+
+      // getAbsoluteLeft/Right() gives the top coordinate of the parent element
+      // getOffsetWidth/Height() gives the width/height of the parent element
       int left = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteLeft() : getAbsoluteLeft();
+
       if (rightAlign) {
         left += getOffsetWidth() - offsetWidth;
       }
+
       int top = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
               ? getTrueAbsoluteTop() + getOffsetHeight()
               : getAbsoluteTop() + getOffsetHeight();
+
+      // Values to determine how to display the ContextMenu - above or below
+
+      int dropDownBottom = top + offsetHeight;
+      int screenBottom  = Window.getScrollTop()+Window.getClientHeight();
+
+      // if the bottom will go off the current browser screen, display
+      // the dropdown as a 'dropup' where the ContextMenu appears
+      // above instead
+
+      if(dropDownBottom > screenBottom) {
+          int newTop = Window.Navigator.getUserAgent().contains("Chrome") && isPinchZoomed()
+            ? getTrueAbsoluteTop() -offsetHeight
+            : getAbsoluteTop() - offsetHeight;
+
+          // account for the extreeeemely unlikely case where newTop
+          // also goes off the screen in this case, it makes more
+          // sense to just go off the bottom of the screen (the screen
+          // won't grow up, and so the menu would get completely cut
+          // off at the top
+
+          if(newTop >= 0) {
+              top = newTop;
+          }
+      }
+
       menu.setPopupPosition(left, top);
+
     }
   }
 

@@ -40,8 +40,8 @@ public class GallerySearchIndex {
   private final transient GalleryStorageIo galleryStorageIo =
       GalleryStorageIoInstanceHolder.INSTANCE;
   private static volatile GallerySearchIndex  instance= null;
-  private static Cursor searchCursor;
-  private final int appResultMaxAccuracy = 100;
+  private static final int SEARCH_RETRY_MAX = 3;
+  private final int NUMBER_FOUND_ACCURACY = 100;
   /**
    * The default constructor of GallerySearchIndex
    */
@@ -112,33 +112,49 @@ public class GallerySearchIndex {
     //TODO page sliced has not implemented yet
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     final Result<Integer> size = new Result<Integer>();
+    Query query = Query.newBuilder()
+            .setOptions(QueryOptions.newBuilder()
+                    .setOffset(start)
+                    .setLimit(count)
+                    .setNumberFoundAccuracy(NUMBER_FOUND_ACCURACY)
+                    // for deployed apps, uncomment the line below to demo snippeting.
+                    // This will not work on the dev_appserver.
+                    // setFieldsToSnippet("content").
+                    .build())
+            .build(searchWords);
 
-    try {
-      //New search
-      if (start == 0 || searchCursor == null){
-        searchCursor = Cursor.newBuilder().build();
+    Results<ScoredDocument> results = null;
+    int attempts = 0;
+    boolean retry = true;
+    while (retry){
+      try {
+        LOG.info("Sending query " + query);
+        results = getIndex().search(query);
+        // search successful
+        retry = false;
+      } catch (SearchException e) {
+        if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+          attempts++;
+          LOG.info("Query failed on attempt:" + attempts);
+          // No more attempts, stop retrying
+          if (attempts >= SEARCH_RETRY_MAX) {
+            retry = false;
+          }
+        } else {
+          //Not a transient error, Do Not Retry
+          retry = false;
+          LOG.log(Level.SEVERE, "SEARCH EXCEPTION: " + e.getMessage());
+        }
       }
-      Query query = Query.newBuilder()
-          .setOptions(QueryOptions.newBuilder()
-                  .setCursor(searchCursor)
-                  .setLimit(count)
-                  .setNumberFoundAccuracy(appResultMaxAccuracy)
-              // for deployed apps, uncomment the line below to demo snippeting.
-              // This will not work on the dev_appserver.
-              // setFieldsToSnippet("content").
-              .build())
-          .build(searchWords);
-      LOG.info("Sending query " + query);
-      Results<ScoredDocument> results = getIndex().search(query);
-      searchCursor = results.getCursor();
+    }
 
+    if (results != null){
       // Iterate over the documents in the results
       for (ScoredDocument document : results) {
         LOG.info("Find:" + document.getId());
       }
 
       // Iterate over the documents in the results
-      int index = 0;
       for (ScoredDocument document : results) {
         try{
           GalleryApp app = galleryStorageIo.getGalleryApp(Long.parseLong(document.getId()));
@@ -149,10 +165,10 @@ public class GallerySearchIndex {
         }
       }
       size.t = (int) results.getNumberFound();
-    } catch (SearchException e) {
-      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
-        // retry
-      }
+    } else {
+      // the search was not successful in the try and catch
+      size.t = 0;
+      LOG.info("Search failed after " + attempts + " attempts");
     }
     return new GalleryAppListResult(apps, size.t, searchWords);
   }

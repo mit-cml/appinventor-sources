@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Data Transfer Object representing motd.
+ * Data Transfer Object representing a Nonce.
  *
- * @author kerr@google.com (Debby Wallach)
+ * @author Jeffrey I. Schiller (jis@mit.edu)
  */
 public class Nonce implements IsSerializable, Serializable {
   private long id;
