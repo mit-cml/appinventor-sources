@@ -49,10 +49,12 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 
 /**
  * The gallery page shows a single app from the gallery
@@ -80,6 +82,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
   private boolean imageUploaded = false;
 
+  //the max amount of characters shown in featured description
+  private static final int MAX_FEAT_DESC_LENGTH = 250;
+
   private VerticalPanel panel;  // the main panel
   private FlowPanel galleryGUI;
   private FlowPanel appSingle;
@@ -103,6 +108,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appComments;
   private FlowPanel appCommentsList;
   private FlowPanel returnToGallery;
+  private PopupPanel featureAppPopupPanel;
 //private String tagSelected;
 
   public static final int VIEWAPP = 0;
@@ -315,6 +321,7 @@ panel
     appsByTags = new FlowPanel();
     appsRemixes = new FlowPanel();
     returnToGallery = new FlowPanel();
+    featureAppPopupPanel = new PopupPanel(true);
 //    tagSelected = "";
 
     appCreated = new Label();
@@ -1094,6 +1101,51 @@ panel
     featurePrompt.addStyleName("primary-link");
     container.add(featurePrompt);
 
+    //The panel on the popup window with the prompt and form
+    final FlowPanel addDescriptionPanel = new FlowPanel();
+    //The seperate panel with the close and submit button
+    final FlowPanel submitFeaturePanel = new FlowPanel();
+
+    Label addDescriptionLabel = new Label();
+    addDescriptionLabel.setText("Please add a description");
+    addDescriptionLabel.addStyleName("gallery-featured-popup-title");
+    addDescriptionPanel.add(addDescriptionLabel);
+
+    Label featDescriptionPrompt = new Label("Please give a short description about why this app should be featured");
+    addDescriptionPanel.add(featDescriptionPrompt);
+
+    final TextArea featureDesriptionForm = new TextArea();
+    featureDesriptionForm.addStyleName("gallery-featured-popup-form");
+    featureDesriptionForm.setHeight("75px");
+    addDescriptionPanel.add(featureDesriptionForm);
+
+    final Label descriptionLengthError = new Label("Description too long");
+    descriptionLengthError.addStyleName("error");
+    descriptionLengthError.setVisible(false);
+    addDescriptionPanel.add(descriptionLengthError);
+
+    Button cancelFeatureButton = new Button();
+    cancelFeatureButton.setText("Cancel");
+    submitFeaturePanel.add(cancelFeatureButton);
+
+    Button submitFeatureButton = new Button();
+    submitFeatureButton.setText("Submit");
+    submitFeaturePanel.add(submitFeatureButton);
+
+    addDescriptionPanel.add(submitFeaturePanel);
+
+    featureAppPopupPanel.addStyleName("gallery-featured-popup");
+    featureAppPopupPanel.setWidget(addDescriptionPanel);
+
+    //for closing the Popup Panel
+    cancelFeatureButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        featureAppPopupPanel.hide();
+      }
+    });
+
+
     final OdeAsyncCallback<Boolean> isFeaturedCallback = new OdeAsyncCallback<Boolean>(
         // failure message
         MESSAGES.galleryError()) {
@@ -1106,27 +1158,52 @@ panel
             }
           }
       };
+    final OdeAsyncCallback<Boolean> markFeaturedCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+      @Override
+      public void onSuccess(Boolean bool) {
+        if (bool) { // If the app is already featured, the prompt should show as unfeatured
+          featurePrompt.setText(MESSAGES.galleryUnfeaturedText());
+        } else {    // otherwise show as featured
+          featurePrompt.setText(MESSAGES.galleryFeaturedText());
+        }
+        //update gallery list
+        gallery.appWasChanged();
+      }
+    };
+
+
+    submitFeatureButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (featureDesriptionForm.getText().length() > MAX_FEAT_DESC_LENGTH){
+          descriptionLengthError.setVisible(true);
+        }else{
+          descriptionLengthError.setVisible(false);
+          Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(), featureDesriptionForm.getText(),
+                  markFeaturedCallback);
+          featureAppPopupPanel.hide();
+        }
+      }
+    });
+
+    //Set the Feature prompt
     Ode.getInstance().getGalleryService().isFeatured(app.getGalleryAppId(),
-        isFeaturedCallback); // This happens when user click on like, we need to check if it's already liked
+        isFeaturedCallback);
 
     featurePrompt.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Boolean> markFeaturedCallback = new OdeAsyncCallback<Boolean>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Boolean bool) {
-                if (bool) { // If the app is already featured, the prompt should show as unfeatured
-                  featurePrompt.setText(MESSAGES.galleryUnfeaturedText());
-                } else {    // otherwise show as featured
-                  featurePrompt.setText(MESSAGES.galleryFeaturedText());
-                }
-                //update gallery list
-                gallery.appWasChanged();
-              }
-          };
-        Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(),
-            markFeaturedCallback);
+        //If the moderator is featuring the app show the panel
+        if (featurePrompt.getText().equals(MESSAGES.galleryFeaturedText())){
+          featureAppPopupPanel.show();
+          featureAppPopupPanel.center();
+        }else {
+          //If the app has been featured, unfeature it
+          Ode.getInstance().getGalleryService().markAppAsFeatured(app.getGalleryAppId(), featureDesriptionForm.getText(),
+                  markFeaturedCallback);
+        }
+
       }
     });
   }
@@ -1416,7 +1493,7 @@ panel
 
   /**
    * Loads the proper tab GUI with gallery's app data.
-   * @param apps: list of returned gallery apps from callback.
+   * @param appResults: list of returned gallery apps from callback.
    * @param requestId: determines the specific type of app data.
    */
   private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
