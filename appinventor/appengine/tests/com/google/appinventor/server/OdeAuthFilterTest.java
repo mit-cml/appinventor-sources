@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author markf@google.com (Mark Friedman)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ LocalUser.class, OdeAuthFilter.class })
+@PrepareForTest({ LocalUser.class, OdeAuthFilter.class, OdeAuthFilter.UserInfo.class })
 public class OdeAuthFilterTest {
   // If OdeAuthFilterTest (which uses PowerMock.mockStatic) extends LocalDatastoreTestCase, then
   // it will probably fail with Ant version 1.8.2.
@@ -42,6 +42,7 @@ public class OdeAuthFilterTest {
   private HttpServletRequest mockServletRequest;
   private HttpServletResponse mockServletResponse;
   private LocalUser localUserMock;
+  private OdeAuthFilter.UserInfo localUserInfo;
 
   @Before
   public void setUp() throws Exception {
@@ -52,6 +53,9 @@ public class OdeAuthFilterTest {
     localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
     expectLastCall().times(1);
     expect(localUserMock.getUserEmail()).andReturn("NonSuch").times(1);
+    localUserInfo = PowerMock.createMock(OdeAuthFilter.UserInfo.class);
+    expect(localUserInfo.buildCookie(false)).andReturn("NoCookie").anyTimes();
+    expect(localUserInfo.buildCookie(true)).andReturn("NoCookie").anyTimes();
     mockFilterChain = PowerMock.createNiceMock(FilterChain.class);
     mockServletRequest = PowerMock.createNiceMock(HttpServletRequest.class);
     mockServletResponse = PowerMock.createNiceMock(HttpServletResponse.class);
@@ -90,7 +94,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter("NonSuch", false, false, mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false, mockServletRequest, mockServletResponse, mockFilterChain);
 
     // isUserWhitelisted should not have been called.
     assertEquals(0, isUserWhitelistedCounter.get());
@@ -130,7 +134,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter("NonSuch", false, false, mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false, mockServletRequest, mockServletResponse, mockFilterChain);
 
     // isUserWhitelisted should have been called once.
     assertEquals(1, isUserWhitelistedCounter.get());

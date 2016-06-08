@@ -21,6 +21,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="MakeAuthKey">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="MakeAuthKey"/>
+  </target>
+
   <target name="comps">
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
