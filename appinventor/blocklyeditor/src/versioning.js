@@ -1417,7 +1417,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade", 
+    
+    // - Added scrollable property
+    4: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -2187,7 +2190,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade"
+    3: "noUpgrade", 
+
+    // - Added scrollable property
+    4: "noUpgrade", 
 
   }, // End VerticalArrangement upgraders
 

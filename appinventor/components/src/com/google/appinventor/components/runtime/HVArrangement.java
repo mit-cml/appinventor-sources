@@ -341,21 +341,21 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         updateAppearance();
     }
 
-      /**
+  /**
    * Scrollable property getter method.
    *
    * @return  true if the screen is vertically scrollable
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
-    description = "When checked, there will be a vertical scrollbar on the "
-    + "screen, and the height of the application can exceed the physical "
-    + "height of the device. When unchecked, the application height is "
-    + "constrained to the height of the device.")
+    description = "When checked, the height and width of the contents in the arrangement "
+    + "can exceed size of the arrangement and the user can scroll "
+    + "the contents within the arrangement. AlignVertical and "
+    + "AlignHorizontal are inactive for scrollable arrangements.")
   public boolean Scrollable() {
     return scrollable;
   }
 
-    /**
+   /**
    * Scrollable property setter method.
    *
    * @param scrollable  true if the screen should be vertically scrollable

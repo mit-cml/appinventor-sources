@@ -680,11 +680,12 @@ public class YaVersion {
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
-  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
+  // - The scrollable property was added
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
   // - Added background color & image
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -938,11 +939,12 @@ public class YaVersion {
   //   TwitPic. The TwitPic_API_Key property is now deprecated and hidden.
   public static final int TWITTER_COMPONENT_VERSION = 4;
 
-  // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
+  // - The scrollable property was added
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
   // - Added background color & image
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.

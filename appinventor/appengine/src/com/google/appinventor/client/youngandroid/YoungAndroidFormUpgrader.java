@@ -933,7 +933,13 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }, 
+
+    if (srcCompVersion < 4) {
+      // - Added scrollable property
+      srcCompVersion = 4;
     }
+
     return srcCompVersion;
   }
 
@@ -1256,6 +1262,11 @@ public final class YoungAndroidFormUpgrader {
       // - Added background color & image
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // - Added scrollable property
+      srcCompVersion = 4;
+    }
+
     return srcCompVersion;
   }
 
