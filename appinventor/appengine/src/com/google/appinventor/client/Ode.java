@@ -1630,6 +1630,47 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Show a Dialog Box when we receive an SC_PRECONDITION_FAILED
+   * response code to any Async RPC call. This is a signal that
+   * either our session has expired, or our login cookie has otherwise
+   * become invalid. This is a fatal error and the user should not
+   * be permitted to continue (many ignore the red error bar and keep
+   * working, in vain). So now when this happens, we put up this
+   * modal dialog box which cannot be dismissed. Instead it presents
+   * just one option, a "Reload" button which reloads the browser.
+   * This should trigger a re-authentication (or in the case of an
+   * App Inventor upgrade trigging the problem, the loading of newer
+   * code).
+   */
+
+  public void sessionDead() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.invalidSessionDialogText());
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(MESSAGES.sessionDead());
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button reloadSession = new Button(MESSAGES.reloadWindow());
+    reloadSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          reloadWindow(true);
+        }
+      });
+    holder.add(reloadSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
    * Show a Warning Dialog box when another login session has been
    * created. The user is then given two choices. They can either
    * close this session of App Inventor, which will close the current
@@ -1666,7 +1707,7 @@ public class Ode implements EntryPoint {
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
-          reloadWindow();
+          reloadWindow(false);
         }
       });
     holder.add(reloadSession);
@@ -1822,7 +1863,7 @@ public class Ode implements EntryPoint {
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
       @Override
       public void onSuccess(Void result) {
-        reloadWindow();
+        reloadWindow(false);
       }
     };
     cancelSession.addClickListener(new ClickListener() {
@@ -2073,8 +2114,12 @@ public class Ode implements EntryPoint {
      });
   }-*/;
 
-  public static native void reloadWindow() /*-{
-    top.location.reload();
+  public static native void reloadWindow(boolean full) /*-{
+    if (full) {
+      top.location.replace(top.location.origin);
+    } else {
+      top.location.reload();
+    }
   }-*/;
 
 }

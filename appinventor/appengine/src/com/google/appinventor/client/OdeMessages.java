@@ -5800,4 +5800,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String readOnlyMode();
 
+  @DefaultMessage("Either your session has expired, or App Inventor has been upgraded. " +
+    "You will need to \"Reload\" your session to continue. Press the \"Reload\" Button " +
+    "below.")
+  @Description("")
+  String sessionDead();
+
+  @DefaultMessage("Reload")
+  @Description("")
+  String reloadWindow();
+
 }
