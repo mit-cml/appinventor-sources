@@ -304,10 +304,6 @@
     <ai.javac5 destdir="${AnnotationProcessors-class.dir}">
       <include name="${components.pkg}/scripts/*.java" />
       <exclude name="${components.pkg}/scripts/ExternalComponentGenerator.java" />
-      <exclude name="${components.pkg}/scripts/ExternalComponentJsonGenerator.java" />
-      <exclude name="${components.pkg}/scripts/ExternalComponentBuildInfoGenerator.java" />
-      <exclude name="${components.pkg}/scripts/ExternalComponentListGenerator.java" />
-      <exclude name="${components.pkg}/scripts/ExternalComponentPackaging.java"/>
       <classpath>
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
