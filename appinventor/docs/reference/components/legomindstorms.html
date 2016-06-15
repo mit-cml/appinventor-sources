@@ -604,6 +604,46 @@
                           NxtDrive
                         </a>
                       </li>
+                      <li>
+                        <a href="#Ev3Motors">
+                            Ev3Motors
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3ColorSensor">
+                            Ev3ColorSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3GyroSensor">
+                            Ev3GyroSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3TouchSensor">
+                            Ev3TouchSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3UltrasonicSensor">
+                            Ev3UltrasonicSensor
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3Sound">
+                            Ev3Sound
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3UI">
+                            Ev3UI
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3Commands">
+                            Ev3Commands
+                        </a>
+                      </li>
                     </ul>
                     <h2 id="NxtDirectCommands">
                       NxtDirectCommands
@@ -1652,6 +1692,843 @@
                       <dd>
                         Turn the robot counterclockwise indefinitely, with the specified percentage of
                         maximum power.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3Motors">
+                      Ev3Motors
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides both high- and low-level interfaces to a LEGO MINDSTORMS EV3 robot, with functions that can control the motors.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          MotorPorts
+                        </code>
+                      </dt>
+                      <dd>
+                        The motor ports that the motors are connected to. The ports are specified by a sequence of port letters.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          WheelDiameter
+                        </code>
+                      </dt>
+                      <dd>
+                        The diameter of the wheels attached on the motors in centimeters.
+                      </dd>
+                      <dt>
+                        <code>
+                          ReverseDirection
+                        </code>
+                      </dt>
+                      <dd>
+                        It specifies if the direction of the motors is reversed.
+                      </dd>
+                      <dt>
+                        <code>
+                          EnableSpeedRegulation
+                        </code>
+                      </dt>
+                      <dd>
+                        The robot adjusts the power to maintain the speed if speed regulation is enabled.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopBeforeDisconnect
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether to stop the motor before disconnecting.
+                      </dd>
+                      <dt>
+                        <code>
+                          TachoCountChangedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the TachoCountChanged event should fire when the angle is changed.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          RotateIndefinitely
+                        </code>
+                        (number power)
+                      </dt>
+                      <dd>
+                        Start to rotate the motors.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateInTachoCounts
+                        </code>
+                        (number power, number tachoCounts, boolean useBrake)
+                      </dt>
+                      <dd>
+                        Rotate the motors in a number of tacho counts.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateInDuration
+                        </code>
+                        (number power, number milliseconds, boolean useBrake)
+                      </dt>
+                      <dd>
+                        Rotate the motors in a period of time.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateInDistance
+                        </code>
+                        (number power, number distance, boolean useBrake)
+                      </dt>
+                      <dd>
+                        Rotate the motors in a distance.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateSyncIndefinitely
+                        </code>
+                        (number power, number turnRatio)
+                      </dt>
+                      <dd>
+                        Start to rotate the motors at the same speed.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateSyncInDistance
+                        </code>
+                        (number power, number distance, number turnRatio, boolean useBrake)
+                      </dt>
+                      <dd>
+                          Rotate the motors at the same speed for a distance in cm.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateSyncInDuration
+                        </code>
+                        (number power, number milliseconds, number turnRatio, boolean useBrake)
+                      </dt>
+                      <dd>
+                        Rotate the motors at the same speed in a period of time.
+                      </dd>
+                      <dt>
+                        <code>
+                          RotateSyncInTachoCounts
+                        </code>
+                        (number power, number tachoCounts, number turnRatio, boolean useBrake)
+                      </dt>
+                      <dd>
+                        Rotate the motors at the same speed in a number of tacho counts.
+                      </dd>
+                      <dt>
+                        <code>
+                          Stop
+                        </code>
+                        (boolean useBrake)
+                      </dt>
+                      <dd>
+                        Stop the motors of the robot.
+                      </dd>
+                      <dt>
+                        <code>
+                          ToggleDirection
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Toggle the direction of motors.
+                      </dd>
+                      <dt>
+                        <code>
+                          ResetTachoCount
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Set the current tacho count to zero.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetTachoCount
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the current tacho count.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3ColorSensor">
+                      Ev3ColorSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS EV3 robot.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the light level goes below the BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the light level goes between the BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the light level goes above the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          ColorChangedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the ColorChanged event should fire when the Mode property is set to "color" and the detected color changes.
+                      </dd>
+                      <dt>
+                        <code>
+                          Mode
+                        </code>
+                      </dt>
+                      <dd>
+                        Get the current sensor mode.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetLightLevel
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        It returns the light level in percentage, or -1 when the light level cannot be read.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetColorCode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        It returns the color code from 0 to 7 corresponding to no color, black, blue, green, yellow, red, white and brown.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetColorName
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Return the color name in one of "No Color", "Black", "Blue", "Green", "Yellow", "Red", "White", "Brown".
+                      </dd>
+                      <dt>
+                        <code>
+                          SetColorMode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Enter the color detection mode.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetReflectedMode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Make the sensor read the light level with reflected light.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetAmbientMode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Make the sensor read the light level without reflected light.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3GyroSensor">
+                      Ev3GyroSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a high-level interface to a gyro sensor on a LEGO MINDSTORMS EV3 robot.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          Mode
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor mode can be a text constant of either "rate" or "angle", which correspond to SetAngleMode or SetRateMode respectively.
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorValueChangedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the SensorValueChanged event should fire when the sensor value changed.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetSensorValue
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current angle or rotation speed based on current mode, or -1 if the value cannot be read from sensor.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetAngleMode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Measures the orientation of the sensor.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetRateMode
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Measures the angular velocity of the sensor.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3TouchSensor">
+                      Ev3TouchSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS EV3 robot.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          PressedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the Released event should fire when the touch sensor is pressed.
+                      </dd>
+                      <dt>
+                        <code>
+                          ReleasedEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the Released event should fire when the touch sensor is released.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          IsPressed
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns true if the touch sensor is pressed.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3UltrasonicSensor">
+                      Ev3UltrasonicSensor
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS EV3 robot.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          SensorPort
+                        </code>
+                      </dt>
+                      <dd>
+                        The sensor port that the sensor is connected to.
+                        <b>
+                          Must be set in the
+                          Designer
+                        </b>
+                      </dd>
+                      <dt>
+                        <code>
+                          BottomOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The bottom of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          TopOfRange
+                        </code>
+                      </dt>
+                      <dd>
+                        The top of the range used for the BelowRange, WithinRange, and AboveRange events.
+                      </dd>
+                      <dt>
+                        <code>
+                          BelowRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the BelowRange event should fire when the distance goes below the BottomOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          WithinRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the WithinRange event should fire when the distance goes between the BottomOfRange and the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          AboveRangeEventEnabled
+                        </code>
+                      </dt>
+                      <dd>
+                        Whether the AboveRange event should fire when the distance goes above the TopOfRange.
+                      </dd>
+                      <dt>
+                        <code>
+                          Unit
+                        </code>
+                      </dt>
+                      <dd>
+                        The distance unit, which can be either "cm" or "inch".
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GetDistance
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Returns the current distance in centimeters as a value between 0 and 254, or -1 if the distance can not be read.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetCmUnit
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Measure the distance in centimeters.
+                      </dd>
+                      <dt>
+                        <code>
+                          SetInchUnit
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Measure the distance in inches.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3Sound">
+                      Ev3Sound
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, which provides sound functionalities.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          PlayTone
+                        </code>
+                        (number volume, number frequency, number milliseconds)
+                      </dt>
+                      <dd>
+                        Make the robot play a tone.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopSound
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stop any sound on the robot.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3UI">
+                        Ev3UI
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                        A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, with functions to draw graphs on EV3 screen.
+                    </p>
+                    <h3>
+                        Properties
+                    </h3>
+                    <dl>
+                        <dt>
+                            <code>
+                          BluetoothClient
+                            </code>
+                        </dt>
+                        <dd>
+                            The BluetoothClient component that should be used for communication.
+                            <b>
+                                Must be
+                                set in the Designer
+                            </b>
+                        </dd>
+                    </dl>
+                    <h3>
+                        Methods
+                    </h3>
+                    <dl>
+                        <dt>
+                            <code>
+                          DrawPoint
+                            </code>
+                            (number color, number x, number y)
+                        </dt>
+                        <dd>
+                            Draw a point on the screen.
+                        </dd>
+                        <dt>
+                            <code>
+                          DrawIcon
+                            </code>
+                            (number color, number x, number y, number type, number no)
+                        </dt>
+                        <dd>
+                            Draw a built-in icon on screen.
+                        </dd>
+                        <dt>
+                            <code>
+                          DrawLine
+                            </code>
+                            (number color, number x1, number y1, number x2, number y2)
+                        </dt>
+                        <dd>
+                            Draw a line on the screen.
+                        </dd>
+                        <dt>
+                            <code>
+                          DrawRect
+                            </code>
+                            (number color, number x, number y, number width, number height, boolean fill)
+                        </dt>
+                        <dd>
+                            Draw a rectangle on the screen.
+                        </dd>
+                        <dt>
+                            <code>
+                          DrawCircle
+                            </code>
+                            (number color, number x, number y, number radius, boolean fill)
+                        </dt>
+                        <dd>
+                            Draw a circle on the screen.
+                        </dd>
+                        <dt>
+                            <code>
+                          FillScreen
+                            </code>
+                            (number color)
+                        </dt>
+                        <dd>
+                            Fill the screen with a color.
+                        </dd>
+                    </dl>
+                    <h2 id="Ev3Commands">
+                      Ev3Commands
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                      A component that provides a low-level interface to a LEGO MINDSTORMS EV3 robot, with functions to send system or direct commands to EV3 robots.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          BluetoothClient
+                        </code>
+                      </dt>
+                      <dd>
+                        The BluetoothClient component that should be used for communication.
+                        <b>
+                          Must be
+                          set in the Designer
+                        </b>
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          KeepAlive
+                        </code>
+                        (number minutes)
+                      </dt>
+                      <dd>
+                        Keep the EV3 brick from shutdown for a period of time.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetBatteryVoltage
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the battery voltage.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetBatteryCurrent
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the battery current.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetOSVersion
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the OS version on EV3.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetOSBuild
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the OS build on EV3.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetFirmwareVersion
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the firmware version on EV3.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetFirmwareBuild
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the firmware build on EV3.
+                      </dd>
+                      <dt>
+                        <code>
+                          GetHardwareVersion
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Get the hardware version of EV3.
                       </dd>
                     </dl>
                   </div>

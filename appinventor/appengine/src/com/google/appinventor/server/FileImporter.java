@@ -6,9 +6,11 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
@@ -84,4 +86,13 @@ public interface FileImporter {
    * @return The set of project names belonging to the provided {@code userId}.
    */
   Set<String> getProjectNames(final String userId);
+
+  /**
+   * importTempFile -- Given an input stream, creates a temporary
+   * file from the content and returns its name
+   *
+   * @param inputstream the files data in an input stream
+   */
+  String importTempFile(InputStream inStream) throws IOException;
+
 }

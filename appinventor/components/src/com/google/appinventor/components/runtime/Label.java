@@ -68,6 +68,9 @@ public final class Label extends AndroidViewComponent {
   // Backing for text color
   private int textColor;
 
+  // Label Format
+  private boolean htmlFormat;
+
   /**
    * Creates a new Label component.
    *
@@ -105,6 +108,7 @@ public final class Label extends AndroidViewComponent {
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_BLACK);
+    HTMLFormat(false);
     HasMargins(true);
   }
 
@@ -356,7 +360,46 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
-    TextViewUtil.setText(view, text);
+    if (htmlFormat) {
+      TextViewUtil.setTextHTML(view, text);
+    } else {
+      TextViewUtil.setText(view, text);
+    }
+  }
+
+
+  /**
+   * Returns the label's text's format
+   *
+   * @return {@code true} indicates that the label format is html text
+   *         {@code false} lines that the label format is plain text
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "If true, then this label will show html text else it " +
+      "will show plain text. Note: Not all HTML is supported.")
+  public boolean HTMLFormat() {
+    return htmlFormat;
+  }
+
+  /**
+   * Specifies the label's text's format
+   *
+   * @return {@code true} indicates that the label format is html text
+   *         {@code false} lines that the label format is plain text
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false)
+  public void HTMLFormat(boolean fmt) {
+    htmlFormat = fmt;
+    if (htmlFormat) {
+      String txt = TextViewUtil.getText(view);
+      TextViewUtil.setTextHTML(view, txt);
+    } else {
+      String txt = TextViewUtil.getText(view);
+      TextViewUtil.setText(view, txt);
+    }
   }
 
   /**

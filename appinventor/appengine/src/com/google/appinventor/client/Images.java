@@ -135,6 +135,18 @@ public interface Images extends Resources {
   ImageResource datePickerComponent();
 
   /**
+   * Designer palette item: Delete Component
+   */
+  @Source("com/google/appinventor/images/delete.png")
+  ImageResource deleteComponent();
+
+  /**
+   * Designer palette item: Extension Component
+   */
+  @Source("com/google/appinventor/images/extension.png")
+  ImageResource extension();
+
+  /**
    * Designer palette item: form component
    */
   @Source("com/google/appinventor/images/form.png")
@@ -398,6 +410,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/legoMindstormsNxt.png")
   ImageResource legoMindstormsNxt();
+
+  /**
+   * Designer palette item: Lego Mindstorms EV3 components
+   */
+  @Source("com/google/appinventor/images/legoMindstormsEv3.png")
+  ImageResource legoMindstormsEv3();
 
   /**
    * Designer palette item: Bluetooth components

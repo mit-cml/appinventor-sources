@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -520,6 +521,37 @@ public interface StorageIo {
    */
   byte[] downloadRawFile(String userId, long projectId, String fileId);
 
+  /**
+   * Creates a temporary file with the given content and returns
+   * its file name, which will always begin with __TEMP__
+   * @param content the files content (bytes)
+   *
+   * @return fileName the temporary filename
+   */
+  String uploadTempFile(byte [] content) throws IOException;
+
+  /**
+   * Open an input stream to a temp file.
+   * Verifies it is a temp file by making sure the filename
+   * begins with __TEMP__
+   *
+   * @param fileName
+   *
+   * @return inputstream
+   */
+
+  InputStream openTempFile(String fileName) throws IOException;
+
+  /**
+   * delete a temporary file.
+   * Verify that it is a temporary file by making sure its filename
+   * starts with __TEMP__
+   *
+   * @param fileName
+   */
+
+  void deleteTempFile(String fileName) throws IOException;
+
   // MOTD management
 
   /**
@@ -541,11 +573,12 @@ public interface StorageIo {
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-                                          boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore,
-                                          @Nullable String zipName,
-                                          boolean includeYail,
-                                          boolean fatalError) throws IOException;
+    boolean includeProjectHistory,
+    boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
