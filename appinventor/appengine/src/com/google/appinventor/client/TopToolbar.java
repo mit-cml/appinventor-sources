@@ -90,6 +90,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_LIBRARY = "Library";
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
+  private static final String WIDGET_NAME_EXTENSIONS = "Extensions";
   private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
@@ -211,6 +212,11 @@ public class TopToolbar extends Composite {
     if (!Strings.isNullOrEmpty(getStartedUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
           new WindowOpenAction(getStartedUrl)));
+    }
+    String extensionsUrl = config.getExtensionsUrl();
+    if (!Strings.isNullOrEmpty(extensionsUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_EXTENSIONS, MESSAGES.extensionsMenuItem(),
+          new WindowOpenAction(extensionsUrl)));
     }
     String tutorialsUrl = config.getTutorialsUrl();
     if (!Strings.isNullOrEmpty(tutorialsUrl)) {

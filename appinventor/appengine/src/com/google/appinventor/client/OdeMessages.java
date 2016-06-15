@@ -582,6 +582,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Getting Started link")
   String getStartedMenuItem();
 
+  @DefaultMessage("Extensions")
+  @Description("Extensions link")
+  String extensionsMenuItem();
+
   @DefaultMessage("Tutorials")
   @Description("Name of Tutorials link")
   String tutorialsMenuItem();

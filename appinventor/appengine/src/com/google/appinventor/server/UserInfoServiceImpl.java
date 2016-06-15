@@ -49,6 +49,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
 
     config.setLibraryUrl(Flag.createFlag("library.url", "").get());
     config.setGetStartedUrl(Flag.createFlag("getstarted.url", "").get());
+    config.setExtensionsUrl(Flag.createFlag("extensions.url", "").get());
     config.setTutorialsUrl(Flag.createFlag("tutorials.url", "").get());
     config.setTroubleshootingUrl(Flag.createFlag("troubleshooting.url", "").get());
     config.setForumsUrl(Flag.createFlag("forums.url", "").get());
