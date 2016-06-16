@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.Event;
@@ -168,7 +169,7 @@ public class SourceStructureExplorer extends Composite {
         event.stopPropagation();
 
         int x = event.getNativeEvent().getClientX();
-        int y = event.getNativeEvent().getClientY();
+        int y = event.getNativeEvent().getClientY() + Window.getScrollTop();
 
         cm.setPopupPosition(x, y);
 

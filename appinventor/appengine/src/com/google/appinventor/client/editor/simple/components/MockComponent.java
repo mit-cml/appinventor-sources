@@ -802,7 +802,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     event.preventDefault();
     event.stopPropagation();
 
-    this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY());
+    this.contextMenu.setPopupPosition(event.getClientX(), event.getClientY() + Window.getScrollTop());
     this.contextMenu.show();
   }
 
