@@ -714,6 +714,10 @@ public interface OdeMessages extends Messages {
   @Description("Link for Report an Issue form")
   String feedbackTabName();
 
+  @DefaultMessage("Teach")
+  @Description("Link for App Inventor Educators Site")
+  String teachTabName();
+
   @DefaultMessage("Gallery")
   @Description("Link for Gallery")
   String galleryTabName();
