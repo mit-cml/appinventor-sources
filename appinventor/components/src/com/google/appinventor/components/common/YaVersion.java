@@ -378,8 +378,11 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 4
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -680,11 +683,13 @@ public class YaVersion {
 
   public static final int GYROSCOPESENSOR_COMPONENT_VERSION = 1;
 
-  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
-  // - The scrollable property was added
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:  
   // - Added background color & image
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The scrollable property was added
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For IMAGE_COMPONENT_VERSION 2:
@@ -939,11 +944,13 @@ public class YaVersion {
   //   TwitPic. The TwitPic_API_Key property is now deprecated and hidden.
   public static final int TWITTER_COMPONENT_VERSION = 4;
 
-  // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
-  // - The scrollable property was added
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:  
   // - Added background color & image
+    // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
+  // - The scrollable property was added
   public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
