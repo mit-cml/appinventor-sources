@@ -413,7 +413,7 @@ Blockly.Versioning.getSystemComponentVersion = function (componentType) {
  *  * I prefixed all the function names with "v17_" to clarify which
  *    functions are used in the upgrade to YAVersion 17.
  ----------------------------------------------------------------------------*/
-
+ 
 Blockly.Versioning.v17_blocksOverhaul = function(xmlFromFile) {
   // we loaded in something with no version, we need to translate
   var renameAlert = 0;

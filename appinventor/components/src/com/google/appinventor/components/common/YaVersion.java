@@ -454,6 +454,8 @@ public class YaVersion {
   // The number-convert blocks was added
   // For BLOCKS_LANGUAGE_VERSION 20:
   // - Spelling of "Obsfucate" was corrected to Obfuscate in Text Block
+  // For BLOCKS_LANGUAGE_VERSION 21:
+  // - Added mutator to AND and OR logic blocks
   public static final int BLOCKS_LANGUAGE_VERSION = 20;
 
   // ................................. Component Version Numbers ..................................
