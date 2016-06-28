@@ -1387,7 +1387,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     1: "noUpgrade",
     // AI2 Added AppendValue, RemoveFirst and FirstRemoved
-    2: "noUpgrade"
+    2: "noUpgrade",
+    // AI2 Added ClearTag function, GetTagList and Persist
+    3: "noUpgrade"
+
   },
 
   "FusiontablesControl": {
@@ -1511,7 +1514,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: For LABEL_COMPONENT_VERSION 3:
     // - The HasMargins property was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: Add HTMLFormat property
+    4: "noUpgrade"
 
   }, // End Label upgraders
 

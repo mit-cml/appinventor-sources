@@ -356,8 +356,7 @@ public interface OdeMessages extends Messages {
 
   // Used in Ode.java
 
-  // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("MIT App Inventor 2")
+  @DefaultMessage("MIT App Inventor")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -668,6 +667,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Get Started")
   @Description("Name of Getting Started link")
   String getStartedMenuItem();
+
+  @DefaultMessage("Extensions")
+  @Description("Extensions link")
+  String extensionsMenuItem();
 
   @DefaultMessage("Tutorials")
   @Description("Name of Tutorials link")
@@ -2176,6 +2179,10 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  @DefaultMessage("HTMLFormat")
+  @Description("")
+  String HTMLFormatProperties();
+
   // This error message is displayed as HTML
 
   @DefaultMessage("User Interface")
@@ -2884,6 +2891,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("FirebaseURL")
   @Description("")
   String FirebaseURLProperties();
+
+  @DefaultMessage("Persist")
+  @Description("")
+  String PersistProperties();
 
   @DefaultMessage("ProjectBucket")
   @Description("")
@@ -4443,6 +4454,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotValueEvents();
 
+  @DefaultMessage("TagList")
+  @Description("")
+  String TagListEvents();
+
   @DefaultMessage("ValueStored")
   @Description("")
   String ValueStoredEvents();
@@ -5155,6 +5170,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("StoreValue")
   @Description("")
   String StoreValueMethods();
+
+  @DefaultMessage("GetTagList")
+  @Description("")
+  String GetTagListMethods();
 
   @DefaultMessage("AppendValue")
   @Description("")
@@ -6214,5 +6233,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("You are in Read Only Mode")
   @Description("")
   String readOnlyMode();
+
+  @DefaultMessage("Either your session has expired, or App Inventor has been upgraded. " +
+    "You will need to \"Reload\" your session to continue. Press the \"Reload\" Button " +
+    "below.")
+  @Description("")
+  String sessionDead();
+
+  @DefaultMessage("Reload")
+  @Description("")
+  String reloadWindow();
 
 }

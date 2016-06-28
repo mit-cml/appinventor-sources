@@ -6,12 +6,17 @@
 
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.output.OdeLog;
+
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
-import com.google.appinventor.client.output.OdeLog;
+
+import com.google.gwt.http.client.Response;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 
 /**
  * Provides common functionality for asynchronous callbacks from the ODE
@@ -65,6 +70,13 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
     if (caught instanceof BlocksTruncatedException) {
       OdeLog.log("Caught BlocksTruncatedException");
       ErrorReporter.reportError("Caught BlocksTruncatedException");
+      return;
+    }
+    // SC_PRECONDITION_FAILED if our session has expired or login cookie
+    // has become invalid
+    if ((caught instanceof StatusCodeException) &&
+      ((StatusCodeException)caught).getStatusCode() == Response.SC_PRECONDITION_FAILED) {
+      Ode.getInstance().sessionDead();
       return;
     }
     String errorMessage =

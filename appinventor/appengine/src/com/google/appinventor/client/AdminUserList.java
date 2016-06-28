@@ -507,7 +507,7 @@ public class AdminUserList extends Composite {
             Ode.getInstance().getAdminInfoService().switchUser(user, new OdeAsyncCallback<Void>("Oops") {
                 @Override
                 public void onSuccess(Void v) {
-                  Ode.getInstance().reloadWindow();
+                  Ode.getInstance().reloadWindow(false);
                 }
               });
           }
