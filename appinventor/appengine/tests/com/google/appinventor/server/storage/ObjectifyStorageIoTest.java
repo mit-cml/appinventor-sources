@@ -10,6 +10,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -18,13 +19,20 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import com.google.common.base.Charsets;
+
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+
+import org.json.JSONObject;
 
 /**
  * Tests for {@link ObjectifyStorageIo}.
@@ -40,6 +48,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String FILE_NAME2 = "src/File2.blk";
   private static final String RAW_FILE_NAME1 = "assets/File1.jpg";
   private static final String RAW_FILE_NAME2 = "assets/File2.wav";
+  private static final String COMPONENT_FILE_NAME1 = "com.package.Twitter.aix";
+  private static final String COMPONENT_FILE_NAME2 = "com.package.Facebook.aix";
+  private static final String COMPONENT_EXTENSION_NAME = ".aix";
   private static final String FILE_NAME_OUTPUT = "File.apk";
   private static final String FILE_CONTENT1 = "The quick onyx goblin jumps over the lazy dwarf";
   private static final String FILE_CONTENT2 = "This Pangram contains four a's, one b, two c's, "
@@ -48,6 +59,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
       + "eighteen t's, two u's, seven v's, eight w's, two x's, three y's, & one z.";
   private static final byte[] RAW_FILE_CONTENT1 = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
   private static final byte[] RAW_FILE_CONTENT2 = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
+  private static final byte[] RAW_FILE_CONTENT3 = { (byte) 0, (byte) 1, (byte) 2, (byte) 3};
   private static final byte[] FILE_CONTENT_OUTPUT = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
   private static final String FORM_NAME = "Form1";
   private static final String FORM_QUALIFIED_NAME = "com.yourdomain." + FORM_NAME;
@@ -512,10 +524,23 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
+  public void testTempFiles() throws Exception {
+    String fileName = storage.uploadTempFile("test\n".getBytes(Charsets.UTF_8));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(storage.openTempFile(fileName),
+        Charsets.UTF_8));
+    assertTrue(reader.readLine().equals("test"));
+    storage.deleteTempFile(fileName);
+    try {
+      storage.deleteTempFile("frob"); // Should fail because doesn't start with __TEMP__
+      fail();
+    } catch (Exception e) {
+      assertTrue(e instanceof RuntimeException);
+    }
+  }
 
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
-   * failingRun argument to the constructor. Also allows counting 
+   * failingRun argument to the constructor. Also allows counting
    * blob deletions.
    */
   private static class FailingJobObjectifyStorageIo extends ObjectifyStorageIo {
@@ -538,13 +563,13 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         throw new ObjectifyException("job failed (on purpose)");
       }
     }
-    
+
     @Override
     protected void deleteBlobstoreFile(String blobstoreKey) {
       super.deleteBlobstoreFile(blobstoreKey);
       numDeletedBlobs++;
     }
-    
+
     int numBlobsDeleted() {
       return numDeletedBlobs;
     }

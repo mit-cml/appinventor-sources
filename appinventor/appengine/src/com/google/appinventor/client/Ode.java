@@ -54,6 +54,8 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -232,6 +234,7 @@ public class Ode implements EntryPoint {
   private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -254,6 +257,8 @@ public class Ode implements EntryPoint {
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
+  // Web service for component related operations
+  private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
   private boolean windowClosing;
@@ -1238,6 +1243,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Get an instance of the component web service.
+   *
+   * @return component web service instance
+   */
+  public ComponentServiceAsync getComponentService() {
+    return componentService;
+  }
+
+  /**
    * Set the current file editor.
    *
    * @param fileEditor  the file editor, can be null.
@@ -1407,7 +1421,7 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
-    
+
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
 
@@ -1630,6 +1644,47 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Show a Dialog Box when we receive an SC_PRECONDITION_FAILED
+   * response code to any Async RPC call. This is a signal that
+   * either our session has expired, or our login cookie has otherwise
+   * become invalid. This is a fatal error and the user should not
+   * be permitted to continue (many ignore the red error bar and keep
+   * working, in vain). So now when this happens, we put up this
+   * modal dialog box which cannot be dismissed. Instead it presents
+   * just one option, a "Reload" button which reloads the browser.
+   * This should trigger a re-authentication (or in the case of an
+   * App Inventor upgrade trigging the problem, the loading of newer
+   * code).
+   */
+
+  public void sessionDead() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.invalidSessionDialogText());
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(MESSAGES.sessionDead());
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button reloadSession = new Button(MESSAGES.reloadWindow());
+    reloadSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          reloadWindow(true);
+        }
+      });
+    holder.add(reloadSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
    * Show a Warning Dialog box when another login session has been
    * created. The user is then given two choices. They can either
    * close this session of App Inventor, which will close the current
@@ -1666,7 +1721,7 @@ public class Ode implements EntryPoint {
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
-          reloadWindow();
+          reloadWindow(false);
         }
       });
     holder.add(reloadSession);
@@ -1822,7 +1877,7 @@ public class Ode implements EntryPoint {
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
       @Override
       public void onSuccess(Void result) {
-        reloadWindow();
+        reloadWindow(false);
       }
     };
     cancelSession.addClickListener(new ClickListener() {
@@ -2073,8 +2128,12 @@ public class Ode implements EntryPoint {
      });
   }-*/;
 
-  public static native void reloadWindow() /*-{
-    top.location.reload();
+  public static native void reloadWindow(boolean full) /*-{
+    if (full) {
+      top.location.replace(top.location.origin);
+    } else {
+      top.location.reload();
+    }
   }-*/;
 
 }

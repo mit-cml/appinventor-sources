@@ -19,11 +19,13 @@ import javax.tools.FileObject;
 
 /**
  * Tool to generate simple component descriptors as JSON.
- * 
- * The output is a sequence of component descriptions enclosed in square 
- * brackets and separated by commas. Each component description has the 
+ *
+ * The output is a sequence of component descriptions enclosed in square
+ * brackets and separated by commas. Each component description has the
  * following format:
- * { "name": "COMPONENT-TYPE-NAME",
+ * { "type": "COMPONENT-TYPE",
+ *   "name": "COMPONENT-TYPE-NAME",
+ *   "external": "true"|"false",
  *   "version": "VERSION",
  *   "categoryString": "PALETTE-CATEGORY",
  *   "helpString": “DESCRIPTION”,
@@ -31,29 +33,29 @@ import javax.tools.FileObject;
  *   "nonVisible": "true"|"false",
  *   "iconName": "ICON-FILE-NAME",
  *   "properties": [
- *     { "name": "PROPERTY-NAME", 
- *        "editorType": "EDITOR-TYPE", 
+ *     { "name": "PROPERTY-NAME",
+ *        "editorType": "EDITOR-TYPE",
  *        "defaultValue": "DEFAULT-VALUE"},*
  *    ],
  *   "blockProperties": [
- *     { "name": "PROPERTY-NAME", 
- *        "description": "DESCRIPTION", 
+ *     { "name": "PROPERTY-NAME",
+ *        "description": "DESCRIPTION",
  *        "type": "YAIL-TYPE",
  *        "rw": "read-only"|"read-write"|"write-only"|"invisible"},*
  *   ],
  *   "events": [
- *     { "name": "EVENT-NAME", 
- *       "description": "DESCRIPTION", 
+ *     { "name": "EVENT-NAME",
+ *       "description": "DESCRIPTION",
  *       "params": [
- *         { "name": "PARAM-NAME", 
+ *         { "name": "PARAM-NAME",
  *           "type": "YAIL-TYPE"},*
  *       ]},+
  *   ],
  *   “methods”: [
- *     { "name": "METHOD-NAME", 
- *       "description": "DESCRIPTION", 
+ *     { "name": "METHOD-NAME",
+ *       "description": "DESCRIPTION",
  *       "params": [
- *         { "name": "PARAM-NAME", 
+ *         { "name": "PARAM-NAME",
  *       "type": "YAIL-TYPE"},*
  *     ]},+
  *   ]
@@ -68,8 +70,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
   private static final String OUTPUT_FILE_NAME = "simple_components.json";
 
   private void outputComponent(ComponentInfo component, StringBuilder sb) {
-    sb.append("{ \"name\": \"");
+    sb.append("{ \"type\": \"");
+    sb.append(component.type);
+    sb.append("\",\n  \"name\": \"");
     sb.append(component.name);
+    sb.append("\",\n  \"external\": \"");
+    sb.append(Boolean.toString(component.external));
     sb.append("\",\n  \"version\": \"");
     sb.append(component.getVersion());
     sb.append("\",\n  \"categoryString\": \"");
@@ -147,7 +153,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append("\", \"deprecated\": \"" + prop.isDeprecated() + "\"");
     sb.append("}");
   }
-  
+
   private void outputBlockEvent(String eventName, Event event, StringBuilder sb,
                                 boolean userVisible, boolean deprecated) {
     sb.append("{ \"name\": \"");
@@ -164,7 +170,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     outputParameters(event.parameters, sb);
     sb.append("}\n");
   }
-  
+
   private void outputBlockMethod(String methodName, Method method, StringBuilder sb,
                                  boolean userVisible, boolean deprecated) {
     sb.append("{ \"name\": \"");
@@ -187,7 +193,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       sb.append("}");
     }
   }
-  
+
   /*
    *  Output a parameter list (including surrounding [])
    */
@@ -205,7 +211,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     }
     sb.append("]");
   }
-  
+
   @Override
   protected void outputResults() throws IOException {
     StringBuilder sb = new StringBuilder();
@@ -230,7 +236,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     writer.close();
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
   }
-  
+
   /*
    * Format a description string as a json string. Note that the returned value
    * include surrounding double quotes.

@@ -79,7 +79,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @return a {@link GalleryApp} for new galleryApp
    */
   @Override
-  public GalleryApp publishApp(long projectId, String title, String projectName, String description, String moreInfo, String credit) {
+  public GalleryApp publishApp(long projectId, String title, String projectName, String description, String moreInfo, String credit)  throws IOException {
     final String userId = userInfoProvider.getUserId();
     GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, moreInfo, credit, projectId, userId);
     storeAIA(app.getGalleryAppId(),projectId, projectName);
@@ -97,7 +97,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param newImage  true if the user has submitted a new image
    */
   @Override
-  public void updateApp(GalleryApp app, boolean newImage) {
+  public void updateApp(GalleryApp app, boolean newImage) throws IOException {
     updateAppMetadata(app);
     updateAppSource(app.getGalleryAppId(),app.getProjectId(),app.getProjectName());
     if (newImage)
@@ -123,7 +123,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param projectName name of project, this is name in new aia
    */
   @Override
-  public void updateAppSource (long galleryId, long projectId, String projectName) {
+  public void updateAppSource (long galleryId, long projectId, String projectName) throws IOException {
      storeAIA(galleryId,projectId, projectName);
   }
 
@@ -480,7 +480,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param projectId project id
    * @param projectName project name
    */
-  private void storeAIA(long galleryId, long projectId, String projectName) {
+  private void storeAIA(long galleryId, long projectId, String projectName) throws IOException {
 
     final String userId = userInfoProvider.getUserId();
     // build the aia file name using the ai project name and code stolen
@@ -489,41 +489,29 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // grab the data for the aia file using code from DownloadServlet
     RawFile aiaFile = null;
     byte[] aiaBytes= null;
-    try {
-      ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-        projectId, true, false, aiaName, false, false);
-      aiaFile = zipFile.getRawFile();
-      aiaBytes = aiaFile.getContent();
-      LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);
-    }
-    catch (IOException e) {
-      LOG.log(Level.INFO, "Unable to get aia file");
-      e.printStackTrace();
-    }
+    ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
+      projectId, true, false, aiaName, false, false, true);
+    aiaFile = zipFile.getRawFile();
+    aiaBytes = aiaFile.getContent();
+    LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);
     // now stick the aia file into the gcs
-    try {
-      //String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);
-      GallerySettings settings = loadGallerySettings();
-      String galleryKey = settings.getSourceKey(galleryId);
-      // setup cloud
-      GcsService gcsService = GcsServiceFactory.createGcsService();
 
-      //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
-      GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
+    //String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);
+    GallerySettings settings = loadGallerySettings();
+    String galleryKey = settings.getSourceKey(galleryId);
+    // setup cloud
+    GcsService gcsService = GcsServiceFactory.createGcsService();
 
-      GcsFileOptions options = new GcsFileOptions.Builder().mimeType("application/zip")
-          .acl("public-read").cacheControl("no-cache").addUserMetadata("title", aiaName).build();
-      GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
-      writeChannel.write(ByteBuffer.wrap(aiaBytes));
+    //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+    GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
 
-      // Now finalize
-      writeChannel.close();
+    GcsFileOptions options = new GcsFileOptions.Builder().mimeType("application/zip")
+      .acl("public-read").cacheControl("no-cache").addUserMetadata("title", aiaName).build();
+    GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
+    writeChannel.write(ByteBuffer.wrap(aiaBytes));
 
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      LOG.log(Level.INFO, "FAILED GCS");
-      e.printStackTrace();
-    }
+    // Now finalize
+    writeChannel.close();
   }
   /**
    * delete aia file based on given gallery id

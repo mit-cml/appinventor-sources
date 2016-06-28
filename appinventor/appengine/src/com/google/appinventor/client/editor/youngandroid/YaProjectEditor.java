@@ -6,29 +6,45 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -40,7 +56,7 @@ import java.util.HashMap;
  * @author sharon@google.com (Sharon Perl) - added logic for screens in  
  *   DesignToolbar
  */
-public final class YaProjectEditor extends ProjectEditor implements ProjectChangeListener {
+public final class YaProjectEditor extends ProjectEditor implements ProjectChangeListener, ComponentDatabaseChangeListener{
   
   // FileEditors in a YA project come in sets. Every form in the project has 
   // a YaFormEditor for editing the UI, and a YaBlocksEditor for editing the 
@@ -51,9 +67,23 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     YaBlocksEditor blocksEditor = null;
   }
 
+  private  final YaProjectEditor projectEditor;
+
   // Maps form name -> editors for this form
   private final HashMap<String, EditorSet> editorMap = Maps.newHashMap();
   
+  // List of External Components
+  private final List<String> externalComponents = new ArrayList<String>();
+
+  // List of ComponentDatabaseChangeListeners
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
+
+  //State variables to help determine whether we are ready to load Project
+  private boolean externalComponentsLoaded = false;
+
+  // Database of component type descriptions
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
+
   // State variables to help determine whether we are ready to show Screen1  
   // Automatically select the Screen1 form editor when we have finished loading
   // both the form and blocks editors for Screen1 and we have added the 
@@ -81,6 +111,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   public YaProjectEditor(ProjectRootNode projectRootNode) {
     super(projectRootNode);
     project.addProjectChangeListener(this);
+    projectEditor = this;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
   }
 
   private void loadBlocksEditor(String formNamePassedIn) {
@@ -109,6 +141,17 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         }
       });
 
+  }
+
+  /**
+   * Project process is completed before loadProject is started!
+   * Currently Project process loads all External Components into Component Database
+   */
+  @Override
+  public void processProject() {
+    resetExternalComponents();
+    loadExternalComponents();
+    callLoadProject();
   }
 
   // Note: When we add the blocks editors in the loop below we do not actually
@@ -231,13 +274,14 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
   }
 
+
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
     // remove blocks and/or form editor if applicable. Remove screen from 
     // DesignToolbar. If the partner node to this one (blocks or form) was already 
     // removed, calling DesignToolbar.removeScreen a second time will be a no-op.
-    OdeLog.log("YaProjectEditor: got onProjectNodeRemoved for project " 
-        + project.getProjectId() + ", node " + node.getFileId());
+    OdeLog.log("YaProjectEditor: got onProjectNodeRemoved for project "
+            + project.getProjectId() + ", node " + node.getFileId());
     String formName = null;
     if (node instanceof YoungAndroidFormNode) {
       formName = ((YoungAndroidFormNode) node).getFormName();
@@ -268,6 +312,27 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     } else {
       return null;
     }
+  }
+
+  /**
+   * @return a list of component instance names
+   */
+  public List<String> getComponentInstances(String formName) {
+    List<String> components = new ArrayList<String>();
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null) {
+      return components;
+    }
+    components.addAll(editorSet.formEditor.getComponents().keySet());
+    return  components;
+  }
+
+  public List<String> getComponentInstances() {
+    List<String> components = new ArrayList<String>();
+    for (String formName : editorMap.keySet()) {
+      components.addAll(getComponentInstances(formName));
+    }
+    return components;
   }
 
   // Private methods
@@ -326,7 +391,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.get(formName).formEditor = newFormEditor;
     } else {
       EditorSet editors = new EditorSet();
-      editors.formEditor = newFormEditor;
+      editors.formEditor = newFormEditor;http://www.gwtproject.org/javadoc/latest/com/google/gwt/core/client/Scheduler.html
       editorMap.put(formName, editors);
     }
     newFormEditor.loadFile(new Command() {
@@ -354,6 +419,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     
   private boolean readyToShowScreen1() {
     return screen1FormLoaded && screen1BlocksLoaded && screen1Added;
+  }
+
+  private boolean readyToLoadProject() {
+    return externalComponentsLoaded;
   }
 
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
@@ -392,8 +461,182 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }    
   }
   
+  public void addComponent(final ProjectNode node, final Command afterComponentAdded) {
+    final ProjectNode compNode = node;
+    final String fileId = compNode.getFileId();
+    AsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
+      @Override
+      public void onSuccess(ChecksumedLoadFile result) {
+        String jsonFileContent;
+        try {
+          jsonFileContent = result.getContent();
+        } catch (ChecksumedFileException e) {
+          this.onFailure(e);
+          return;
+        }
+        COMPONENT_DATABASE.addComponentDatabaseListener(projectEditor);
+        COMPONENT_DATABASE.addComponent(new ClientJsonParser().parse(
+            jsonFileContent).asObject());
+        externalComponents.add(compNode.getName());
+        if (afterComponentAdded != null) {
+          afterComponentAdded.execute();
+        }
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        if (caught instanceof ChecksumedFileException) {
+          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());
+        }
+        super.onFailure(caught);
+      }
+    };
+    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
+  }
+
+  /**
+   * To remove Component Files from the Project!
+   * @param componentTypes
+   */
+  public  void removeComponent(Map<String, String> componentTypes) {
+    final Ode ode = Ode.getInstance();
+    final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    for (String componentType : componentTypes.keySet()) {
+      final String directory = componentsFolder.getFileId() + "/" + componentTypes.get(componentType) + "/";
+      ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
+          new AsyncCallback<Long>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+            @Override
+            public void onSuccess(Long date) {
+              Iterable<ProjectNode> nodes = componentsFolder.getChildren();
+              for (ProjectNode node : nodes) {
+                if (node.getFileId().startsWith(directory)) {
+                  ode.getProjectManager().getProject(node).deleteNode(node);
+                  ode.updateModificationDate(node.getProjectId(), date);
+                }
+              }
+            }
+          });
+    }
+  }
+
+  private void callLoadProject() {
+    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+      @Override
+      public void execute() {
+        if (!readyToLoadProject()) { // wait till project is processed
+          Scheduler.get().scheduleDeferred(this);
+        } else {
+          loadProject();
+        }
+      }
+    });
+  }
+
+  private void loadExternalComponents() {
+    //Get the list of all ComponentNodes to be Added
+    List<ProjectNode> componentNodes = new ArrayList<ProjectNode>();
+    YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    if (componentsFolder != null) {
+      for (ProjectNode node : componentsFolder.getChildren()) {
+        // Find all components that are json files.
+        final String nodeName = node.getName();
+        if (nodeName.endsWith(".json") && StringUtils.countMatches(node.getFileId(), "/") == 3 ) {
+          componentNodes.add(node);
+        }
+      }
+    }
+    final int componentCount = componentNodes.size();
+    for (ProjectNode componentNode : componentNodes) {
+      addComponent(componentNode, new Command() {
+        @Override
+        public void execute() {
+          if (componentCount == externalComponents.size()) { // This will be true for the last component added
+            externalComponentsLoaded = true;
+          }
+        }
+      });
+    }
+    if (componentCount == 0) {
+      externalComponentsLoaded = true; // to hint that we are ready to load
+    }
+  }
+
+  private void resetExternalComponents() {
+    COMPONENT_DATABASE.addComponentDatabaseListener(this);
+    COMPONENT_DATABASE.resetDatabase();
+    externalComponents.clear();
+  }
+
   private static boolean isScreen1(String formName) {
     return formName.equals(YoungAndroidSourceNode.SCREEN1_FORM_NAME);
   }
 
+  public void addComponentDatbaseListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.add(cdbChangeListener);
+  }
+
+  public void removeComponentDatbaseListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
+  public void clearComponentDatabaseListeners() {
+    componentDatabaseChangeListeners.clear();
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
+    for (String formName : editorMap.keySet()) {
+      EditorSet editors = editorMap.get(formName);
+      editors.formEditor.onComponentTypeAdded(componentTypes);
+      editors.blocksEditor.onComponentTypeAdded(componentTypes);
+    }
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    for (String formName : editorMap.keySet()) {
+      EditorSet editors = editorMap.get(formName);
+      result = result & editors.formEditor.beforeComponentTypeRemoved(componentTypes);
+      result = result & editors.blocksEditor.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
+    for (String formName : editorMap.keySet()) {
+      EditorSet editors = editorMap.get(formName);
+      editors.formEditor.onComponentTypeRemoved(componentTypes);
+      editors.blocksEditor.onComponentTypeRemoved(componentTypes);
+    }
+    removeComponent(componentTypes);
+  }
+
+  @Override
+  public void onResetDatabase() {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
+    for (String formName : editorMap.keySet()) {
+      EditorSet editors = editorMap.get(formName);
+      editors.formEditor.onResetDatabase();
+      editors.blocksEditor.onResetDatabase();
+    }
+  }
 }

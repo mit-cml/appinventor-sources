@@ -230,6 +230,52 @@ select {
 }
 
 /*
+ * ComponentList
+ */
+.ode-ComponentNameLabel {
+  font-weight: bold;
+  font-size: small;
+  color: #555;
+}
+
+.ode-ComponentTable {
+  padding: 0px;
+  margin: 0px;
+  border: 1px;
+}
+
+.ode-ComponentTable td {
+  border-collapse: collapse;
+  font-size: small;
+  color: #555;
+  text-align: left;
+  margin: 0px;
+}
+
+.ode-ComponentRowHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: #fff6c3;
+  border-collapse: collapse;
+}
+
+.ode-ComponentRowUnHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: white
+}
+
+.ode-ComponentHeaderRow {
+  background: url(images/toolbarBG.png) repeat;
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
+}
+
+.ode-ComponentHeaderLabel {
+  color: #112abb;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/*
  * TopPanel
  */
 
@@ -751,9 +797,18 @@ select {
   padding-bottom: 10px;
 }
 
+.ode-SimplePaletteItem-icon {
+  height: 16px;
+  width: 16px;
+}
+
 .ode-SimplePaletteItem-caption {
   font-size: 12px;
   color: #555;
+}
+
+.ode-SimplePalleteItem-button {
+  padding: 2px;
 }
 
 .gwt-SimplePanel {
@@ -1165,6 +1220,29 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-DialogBox .gwt-Button {
   margin: 10px;
+}
+
+.ode-DialogBox table {
+  width: 100%;
+}
+
+/* AI2 Extensions Styles */
+
+a.ode-ExtensionAnchor {
+  display: inline-block;
+  padding-bottom: 8px;
+  font-style: italic;
+  color: grey;
+  -o-transition:color .2s ease-out;
+  -ms-transition:color .2s ease-out;
+  -moz-transition:color .2s ease-out;
+  -webkit-transition:color .2s ease-out;
+  /* ...and now override with proper CSS property */
+  transition:color .2s ease-out;
+}
+
+a.ode-ExtensionAnchor:hover {
+  color: #5B5B5B;
 }
 
 /* Settings dialog boxes */

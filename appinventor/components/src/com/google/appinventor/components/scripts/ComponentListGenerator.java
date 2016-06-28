@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,7 +14,7 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 
 /**
- * Tool to generate a list of the simple component types, and the permissions and libraries
+ * Tool to generate a list of the simple component types, permissions, libraries, and Broadcast Receivers
  * (build info) required for each component.
  *
  * @author lizlooney@google.com (Liz Looney)
@@ -25,6 +25,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static final String LIBRARIES_TARGET = "libraries";
   private static final String ASSETS_TARGET = "assets";
   private static final String NATIVE_TARGET = "native";
+  private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
   // Where to write results.  Build Info is the collection of permissions, asset and library info.
   private static final String COMPONENT_LIST_OUTPUT_FILE_NAME = "simple_components.txt";
   private static final String COMPONENT_BUILD_INFO_OUTPUT_FILE_NAME =
@@ -43,7 +44,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     for (Map.Entry<String, ComponentInfo> entry : components.entrySet()) {
       ComponentInfo component = entry.getValue();
 
-      componentList.append(listSeparator).append(component.name);
+      componentList.append(listSeparator).append(component.type);
       listSeparator = "\n";
 
       componentBuildInfo.append(jsonSeparator);
@@ -75,12 +76,13 @@ public final class ComponentListGenerator extends ComponentProcessor {
   }
 
   private static void outputComponentBuildInfo(ComponentInfo component, StringBuilder sb) {
-    sb.append("{\"name\": \"");
-    sb.append(component.name + "\"");
+    sb.append("{\"type\": \"");
+    sb.append(component.type + "\"");
     appendComponentInfo(sb, PERMISSIONS_TARGET, component.permissions);
     appendComponentInfo(sb, LIBRARIES_TARGET, component.libraries);
     appendComponentInfo(sb, NATIVE_TARGET, component.nativeLibraries);
     appendComponentInfo(sb, ASSETS_TARGET, component.assets);
+    appendComponentInfo(sb, BROADCAST_RECEIVER_TARGET, component.classNameAndActionsBR);
     sb.append("}");
   }
 

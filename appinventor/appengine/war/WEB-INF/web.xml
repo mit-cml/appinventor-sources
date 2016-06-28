@@ -400,4 +400,18 @@
     <url-pattern>/appstats/*</url-pattern>
   </servlet-mapping>
 
+  <!-- components -->
+  <servlet>
+    <servlet-name>componentService</servlet-name>
+    <servlet-class>com.google.appinventor.server.ComponentServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>componentService</servlet-name>
+    <url-pattern>/ode/components</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>componentService</servlet-name>
+  </filter-mapping>
+
 </web-app>

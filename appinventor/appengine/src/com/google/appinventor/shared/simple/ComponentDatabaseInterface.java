@@ -188,12 +188,37 @@ public interface ComponentDatabaseInterface {
   Set<String> getComponentNames();
 
   /**
+   *Returns the type of a component
+   *
+   *@param componentName name of component to query
+   *@return type of the component
+   */
+  String getComponentType(String componentName);
+
+  /**
+   *Returns the name of a component
+   *
+   *@param componentType type of component to query
+   *@return name of the component
+   */
+  String getComponentName(String componentType);
+
+  /**
+   *
+   *Returns the whether a component is external or not
+   *
+   *@param componentName name of component to query
+   *@return true if componentName is external false otherwise
+   */
+  boolean getComponentExternal(String componentName);
+
+  /**
    * Returns the version number of a component.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the component version number
    */
-  int getComponentVersion(String componentTypeName);
+  int getComponentVersion(String componentName);
 
   /**
    * Returns the String version of a component's category.  Note that this
@@ -203,19 +228,19 @@ public interface ComponentDatabaseInterface {
    * time".  The procedure was written this way so that the result could
    * be converted back to a ComponentCategory with valueOf().
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the component's category
    */
-  String getCategoryString(String componentTypeName);
+  String getCategoryString(String componentName);
 
   /**
    * Returns the appropriate piece of the URL in the goro docs for a
    * component's category (or null, if the mapping is not known).
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the URL piece in the docs
    */
-  String getCategoryDocUrlString(String componentTypeName);
+  String getCategoryDocUrlString(String componentName);
 
   /**
    * Returns a helpful message about the component.  This message
@@ -228,20 +253,20 @@ public interface ComponentDatabaseInterface {
    * {@link com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel}.
    * It is not allowed to contain HTML or XML markup.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return helpful message about the component
    */
-  String getHelpString(String componentTypeName);
+  String getHelpString(String componentName);
 
   /**
    * Returns whether the component with this name should be shown on the
    * palette.  As the time this is written (2/22/10), the only component
    * that should not be shown on the palette is Form/Screen.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return whether the component should be shown on the palette
    */
-  boolean getShowOnPalette(String componentTypeName);
+  boolean getShowOnPalette(String componentName);
 
   /**
    * Returns whether the component with this name is a "non-visible" component
@@ -249,68 +274,68 @@ public interface ComponentDatabaseInterface {
    * components can be handled uniformly in the Designer and don't need
    * special MockComponent representations.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return whether the component is non-visible
    */
-  boolean getNonVisible(String componentTypeName);
+  boolean getNonVisible(String componentName);
 
   /**
    * Returns the name of the icon file (last part of the path name) for the
    * icon to be shown in the Designer
    */
-  String getIconName(String componentTypeName);
+  String getIconName(String componentName);
 
   /**
    * Returns a list of a component's property definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of property definition for the component
    */
-  List<PropertyDefinition> getPropertyDefinitions(String componentTypeName);
+  List<PropertyDefinition> getPropertyDefinitions(String componentName);
 
   /**
    * Returns a list of a component's block property definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of block property definition for the component
    */
-  List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentTypeName);
+  List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentName);
 
   /**
    * Returns a list of a component's event definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of event definition for the component
    */
-  List<EventDefinition> getEventDefinitions(String componentTypeName);
+  List<EventDefinition> getEventDefinitions(String componentName);
 
   /**
    * Returns a list of a component's method definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of method definition for the component
    */
-  List<MethodDefinition> getMethodDefinitions(String componentTypeName);
+  List<MethodDefinition> getMethodDefinitions(String componentName);
 
   /*
    * Returns a map of the property names and types for a component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  map of property names and types
    */
-  Map<String, String> getPropertyTypesByName(String componentTypeName);
+  Map<String, String> getPropertyTypesByName(String componentName);
 
   /*
    * Returns the JSON string describing the component type for a component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    */
-  String getTypeDescription(String componentTypeName);
+  String getTypeDescription(String componentName);
 
    /*
-   * Returns true if componentTypeName matches some component
+   * Returns true if componentName matches some component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    */
-  boolean isComponent(String componentTypeName);
+  boolean isComponent(String componentName);
 }

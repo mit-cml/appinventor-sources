@@ -52,7 +52,8 @@ Blockly.ReplMgr.rsState = {
   IDLE : 0,                   // Not connected nor connection requested
   RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
   CONNECTED: 2,               // Connected to Repl
-  WAITING: 3                  // Waiting for the Emulator to start
+  WAITING: 3,                 // Waiting for the Emulator to start
+  CONNECTING: 4               // Connecting to Repl
 };
 
 Blockly.ReplStateObj = function() {};
@@ -88,6 +89,17 @@ Blockly.ReplMgr.buildYail = function() {
         phoneState.componentYail = "";
     }
 
+    var propertyNameConverter;
+    if (phoneState.nofqcn) {
+        propertyNameConverter = function(input) {
+            var s = input.split('.');
+            return s[s.length-1];
+        };
+    } else {
+        propertyNameConverter = function(input) {
+            return input;
+        };
+    }
     var jsonObject = JSON.parse(phoneState.formJson);
     var formProperties;
     var formName;
@@ -104,7 +116,7 @@ Blockly.ReplMgr.buildYail = function() {
             code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
         var sourceType = jsonObject.Source;
         if (sourceType == "Form") {
-            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */));
+            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, propertyNameConverter));
         } else {
             throw "Source type " + sourceType + " is invalid.";
         }
@@ -119,7 +131,7 @@ Blockly.ReplMgr.buildYail = function() {
         code = code.join('\n');
 
         if (phoneState.componentYail != code) {
-            // We need to send all of the comonent cruft (sorry)
+            // We need to send all of the component cruft (sorry)
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
             this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
@@ -381,8 +393,26 @@ Blockly.ReplMgr.putYail = (function() {
                             engine.checkversionupgrade(false, json.installer, false);
                             return;
                         }
+                        if (!json.fqcn) {
+                            // Set a compatibility flag to indicate that we
+                            // should trim package names from Component blocks
+                            // because we are talking to an old pre-cdk Companion
+                            rs.phoneState.nofqcn = true;
+                        } else {
+                            rs.phoneState.nofqcn = false;
+                        }
                     }
-                    engine.pollphone();
+                    // We have to reset the yail state because
+                    // we may have a queue of pending yail, yet we may
+                    // have also just changed the nofqcn flag. So we
+                    // need to force re-generation of the yail. When
+                    // we no longer need to be compatible, we can remove this
+                    // code (the reseting code, LEAVE the pollphone() call
+                    // or visit the land of the lost!
+                    context.resetYail(true); // Reset (partial reset)
+                    rs.phoneState.phoneQueue = []; // But flush the queue of pending code
+                    context.pollYail();  // Regenerate
+                    engine.pollphone();  // Next...
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
@@ -981,6 +1011,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
+    var checkAssetsTransfer = window.parent.AssetManager_checkAssetsTransferred;
     xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
@@ -990,11 +1021,15 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
-                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                rs.state = Blockly.ReplMgr.rsState.CONNECTING;
                 rs.dialog.hide();
-                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
-                  // Start the connection with the Repl itself
                 refreshAssets(context.formName);    // Start assets loading
+                if (!checkAssetsTransfer()) {
+                   throw "Assets not Transferred"; // throw error if assets transfer is incomplete
+                }
+                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                // Start the connection with the Repl itself
             } catch (err) {
                 console.log("getFromRendezvous(): Error: " + err);
                 setTimeout(poller, 2000); // Queue next attempt
@@ -1008,7 +1043,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
     var dialog;
-    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
+    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS || window.parent.ReplState.state == this.rsState.CONNECTING) {
         window.parent.ReplState.count = window.parent.ReplState.count + 1;
         if (window.parent.ReplState.count > 40) {
             window.parent.ReplState.state = this.rsState.IDLE;
@@ -1073,13 +1108,15 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
 Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     if (window.parent.ReplState === undefined)
         return false;
-    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTED))
+    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTING && window.parent.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
     var rs = window.parent.ReplState;
     var encoder = new goog.Uri.QueryData();
-    var z = filename.split('/'); // Remove any directory components
-    encoder.add('filename', z[z.length-1]);
+    //var z = filename.split('/'); // Remove any directory components
+    //encoder.add('filename', z[z.length-1]); // remove directory structure
+    var z = filename.slice(filename.indexOf('/') + 1, filename.length); // remove the asset directory
+    encoder.add('filename', z); // keep directory structure
     conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
     conn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {

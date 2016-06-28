@@ -8,7 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Label component.
@@ -22,7 +22,11 @@ public final class MockLabel extends MockVisibleComponent {
   public static final String TYPE = "Label";
 
   // GWT label widget used to mock a Simple Label
-  private InlineLabel labelWidget;
+  private InlineHTML labelWidget;
+
+  private String savedText;     // Saved text, so if we change from
+                                // text to/from html we have the text
+                                // to set
 
   /**
    * Creates a new MockLabel component.
@@ -33,7 +37,7 @@ public final class MockLabel extends MockVisibleComponent {
     super(editor, TYPE, images.label());
 
     // Initialize mock label UI
-    labelWidget = new InlineLabel();
+    labelWidget = new InlineHTML();
     labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
     initComponent(labelWidget);
   }
@@ -93,7 +97,12 @@ public final class MockLabel extends MockVisibleComponent {
    * Sets the label's Text property to a new value.
    */
   private void setTextProperty(String text) {
-    labelWidget.setText(text);
+    savedText = text;
+    if (getPropertyValue(PROPERTY_NAME_HTMLFORMAT).equals("True")) {
+      labelWidget.setHTML(text);
+    } else {
+      labelWidget.setText(text);
+    }
   }
 
   /*
@@ -134,6 +143,11 @@ public final class MockLabel extends MockVisibleComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_HTMLFORMAT)) {
+      // Just need to re-set the saved text so it is displayed
+      // either as HTML or text as appropriate
+      setTextProperty(savedText);
+      refreshForm();
     }
   }
 }

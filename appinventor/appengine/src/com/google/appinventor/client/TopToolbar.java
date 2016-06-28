@@ -29,6 +29,8 @@ import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.ComponentImportWizard;
+import com.google.appinventor.client.wizards.ComponentUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
@@ -90,6 +92,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_LIBRARY = "Library";
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
+  private static final String WIDGET_NAME_EXTENSIONS = "Extensions";
   private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
@@ -100,6 +103,12 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
+  private static final String WIDGET_NAME_COMPONENTS = "Components";
+  private static final String WIDGET_NAME_MY_COMPONENTS = "MyComponents";
+  private static final String WIDGET_NAME_START_NEW_COMPONENT = "StartNewComponent";
+  private static final String WIDGET_NAME_IMPORT_COMPONENT = "ImportComponent";
+  private static final String WIDGET_NAME_BUILD_COMPONENT = "BuildComponent";
+  private static final String WIDGET_NAME_UPLOAD_COMPONENT = "UploadComponent";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -119,14 +128,15 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------------------------------+
+     * +--------------------------------------------------+
      * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +--------------------------------------------------------------+
+     * +--------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
     List<DropDownItem> fileItems = Lists.newArrayList();
+    List<DropDownItem> componentItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
@@ -211,6 +221,11 @@ public class TopToolbar extends Composite {
     if (!Strings.isNullOrEmpty(getStartedUrl)) {
       helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
           new WindowOpenAction(getStartedUrl)));
+    }
+    String extensionsUrl = config.getExtensionsUrl();
+    if (!Strings.isNullOrEmpty(extensionsUrl)) {
+      helpItems.add(new DropDownItem(WIDGET_NAME_EXTENSIONS, MESSAGES.extensionsMenuItem(),
+          new WindowOpenAction(extensionsUrl)));
     }
     String tutorialsUrl = config.getTutorialsUrl();
     if (!Strings.isNullOrEmpty(tutorialsUrl)) {
@@ -806,6 +821,27 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Window.open(url, WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
+    }
+  }
+
+  private static class ImportComponentAction implements Command {
+    @Override
+    public void execute() {
+      new ComponentImportWizard().center();
+    }
+  }
+
+  private static class BuildComponentAction implements Command {
+    @Override
+    public void execute() {
+      // to be added
+    }
+  }
+
+  private static class UploadComponentAction implements Command {
+    @Override
+    public void execute() {
+      new ComponentUploadWizard().show();
     }
   }
 

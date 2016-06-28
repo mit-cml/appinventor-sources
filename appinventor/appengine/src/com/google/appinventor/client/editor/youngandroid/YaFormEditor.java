@@ -28,6 +28,7 @@ import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescri
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
@@ -63,7 +64,7 @@ import java.util.Map;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YaFormEditor extends SimpleEditor implements FormChangeListener {
+public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener {
 
   private static class FileContentHolder {
     private String content;
@@ -84,8 +85,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // JSON parser
   private static final JSONParser JSON_PARSER = new ClientJsonParser();
 
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   private final YoungAndroidFormNode formNode;
 
@@ -115,6 +115,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // and we rely on the pre-upgraded .scm file for this info.
   private String preUpgradeJsonString;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
   private JSONArray authURL;    // List of App Inventor versions we have been edited on.
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
@@ -129,6 +130,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     super(projectEditor, formNode);
 
     this.formNode = formNode;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());
 
     // Get reference to the source structure explorer
     sourceStructureExplorer =
@@ -158,11 +160,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     });
     palettePanel.setSize("100%", "100%");
+    addComponentDatabaseChangeListener(palettePanel);
 
     // Create designProperties, which will be used as the content of the PropertiesBox.
     designProperties = new PropertiesPanel();
     designProperties.setSize("100%", "100%");
-
     initWidget(componentsPanel);
     setSize("100%", "100%");
   }
@@ -726,4 +728,56 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     blockEditor.onBlocksAreaChanged(getProjectId() + "_" + formNode.getFormName());
   }
 
+  private void addComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.add(cdbChangeListener);
+  }
+
+  private void removeComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
+  private void clearComponentDatabaseChangeListener() {
+    componentDatabaseChangeListeners.clear();
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    List<MockComponent> mockComponents = new ArrayList<MockComponent>(getForm().getChildren());
+    for (String compType : componentTypes) {
+      for (MockComponent mockComp : mockComponents) {
+        if (mockComp.getType().equals(compType)) {
+          mockComp.delete();
+        }
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
+  }
+
+  @Override
+  public void onResetDatabase() {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
+  }
 }

@@ -54,7 +54,8 @@ public final class ComponentHelpWidget extends Image {
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
-      HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(scd.getName() + "-helpString"));
+      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName() + "-helpString";
+      HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(helpTextKey));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the

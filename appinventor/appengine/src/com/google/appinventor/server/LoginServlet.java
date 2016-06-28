@@ -111,6 +111,7 @@ public class LoginServlet extends HttpServlet {
         req.getSession().setAttribute("isadmin", true);          // Tell the session we are admin
       }
       resp.sendRedirect("/");
+      return;
     } else {
       if (useLocal.get() == false) {
         if (useGoogle.get() == false) {

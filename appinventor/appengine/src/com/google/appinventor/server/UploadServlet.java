@@ -10,6 +10,7 @@ import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import org.apache.commons.fileupload.FileItemStream;
@@ -58,6 +59,11 @@ public class UploadServlet extends OdeServlet {
   // Since the file path may contain slashes, it must be the last component in the URI.
   private static final int USERFILE_PATH_INDEX = 4;
   private static final int SPLIT_LIMIT_USERFILE = 5;
+
+  // Constants used when upload kind is "component".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int COMPONENT_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_COMPONENT = 5;
 
 
   // Logging support
@@ -135,6 +141,23 @@ public class UploadServlet extends OdeServlet {
 
         fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_COMPONENT)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_COMPONENT);
+        if (COMPONENT_PATH_INDEX >= uriComponents.length) {
+          throw CrashReport.createAndLogError(LOG, req, null,
+              new IllegalArgumentException("Missing component file path."));
+        }
+
+        InputStream uploadedStream;
+        try {
+          uploadedStream = getRequestStream(req,
+              ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, req, null, e);
+        }
+
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
+          fileImporter.importTempFile(uploadedStream));
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

@@ -6,6 +6,7 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -35,13 +36,13 @@ public interface GalleryService extends RemoteService {
    * @return a {@link GalleryApp} for new galleryApp
    */
   GalleryApp publishApp(long projectId, String projectName, String title,
-    String moreInfo, String credit, String description);
+    String moreInfo, String credit, String description) throws IOException;
   /**
    * update a gallery app
    * @param app info about app being updated
    * @param newImage  true if the user has submitted a new image
    */
-  void updateApp(GalleryApp app, boolean newImage);
+  void updateApp(GalleryApp app, boolean newImage) throws IOException;
 
   /**
    * update a gallery app's source (aia)
@@ -49,7 +50,7 @@ public interface GalleryService extends RemoteService {
    * @param projectId id of project so we can grab source
    * @param projectName name of project, this is name in new aia
    */
-  void updateAppSource (long galleryId, long projectId, String projectName);
+  void updateAppSource (long galleryId, long projectId, String projectName) throws IOException;
   /**
    * update a gallery app's meta data
    * @param app info about app being updated
