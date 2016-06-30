@@ -66,9 +66,9 @@ import java.util.ArrayList;
  * Appinventor fusiontables control.
  *
  * This version has been migrated from the Fusiontables SQL API to the Fusiontables V1.0 API.
+ * And migrated yet again to the V2.0 API (6/29/2016 -- JIS)
  *
  * See <a href="https://developers.google.com/fusiontables/">https://developers.google.com/fusiontables/</a>
- * See <a href="https://developers.google.com/fusiontables/docs/v1/migration_guide">https://developers.google.com/fusiontables/</a>
  *
  * The main change occurs in the way API requests are authorized.  This version uses
  * OAuth 2.0 and makes use of OAuth2Helper. The helper uses the Google AccountManager
@@ -89,7 +89,7 @@ import java.util.ArrayList;
     "Fusion Tables let you store, share, query and visualize data tables; " +
     "this component lets you query, create, and modify these tables.</p> "  +
     "<p>This component uses the " +
-    "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API V1.0</a>. " +
+    "<a href=\"https://developers.google.com/fusiontables/docs/v2/getting_started\" target=\"_blank\">Fusion Tables API V2.0</a>. " +
     "<p>Applications using Fusion Tables must authentication to Google's servers. There " +
     "are two ways this can be done. The first way uses an API Key which you the developer " +
     "obtain (see below). With this approach end-users must also login to access a Fusion Table. " +
@@ -118,7 +118,7 @@ import java.util.ArrayList;
     "\"list from csv row\" blocks.</p>" +
     "<p>Note that you do not need to worry about UTF-encoding the query. " +
     "But you do need to make sure the query follows the syntax described in " +
-    "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, " +
+    "<a href=\"https://developers.google.com/fusiontables/docs/v2/getting_started\" target=\"_blank\">the reference manual</a>, " +
     "which means that things like capitalization for names of columns matters, and " +
     "that single quotes must be used around column names if there are spaces in them.</p>",
     category = ComponentCategory.STORAGE,
@@ -150,16 +150,14 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
 
   private static final String DIALOG_TEXT = "Choose an account to access FusionTables";
-  private static final String FUSION_QUERY_URL = "http://www.google.com/fusiontables/api/query";
-  public static final String FUSIONTABLES_POST = "https://www.googleapis.com/fusiontables/v1/tables";
+  private static final String FUSION_QUERY_URL = "http://www.google.com/fusiontables/v2/query";
+  public static final String FUSIONTABLES_POST = "https://www.googleapis.com/fusiontables/v2/tables";
 
   private static final String DEFAULT_QUERY = "show tables";
   private static final String FUSIONTABLE_SERVICE = "fusiontables";
   private static final int SERVER_TIMEOUT_MS = 30000;
   public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
-
-  public static final String FUSIONTABLES_URL = "https://www.googleapis.com/fusiontables/v1/query";
   public static final String AUTH_TOKEN_TYPE_FUSIONTABLES = "oauth2:https://www.googleapis.com/auth/fusiontables";
   public static final String APP_NAME = "App Inventor";
   private File cachedServiceCredentials = null; // if using service accounts, temp location of credentials.
@@ -329,7 +327,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   @SimpleProperty(
       description = "The query to send to the Fusion Tables API. " +
       "<p>For legal query formats and examples, see the " +
-      "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API v1.0 reference manual</a>.</p> " +
+      "<a href=\"https://developers.google.com/fusiontables/docs/v2/getting_started\" target=\"_blank\">Fusion Tables API v2.0 reference manual</a>.</p> " +
       "<p>Note that you do not need to worry about UTF-encoding the query. " +
       "But you do need to make sure it follows the syntax described in the reference manual, " +
       "which means that things like capitalization for names of columns matters, " +
@@ -371,7 +369,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    */
   @SimpleFunction(description = "Send the query to the Fusiontables server.")
   public void SendQuery() {
-    new QueryProcessorV1(activity).execute(query);
+    new QueryProcessorV2(activity).execute(query);
   }
 
   //Deprecated  -- Won't work after 12/2012
@@ -412,7 +410,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       " values field specifies what values to insert into each column.")
   public void InsertRow(String tableId, String columns, String values) {
     query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + values + ")";
-    new QueryProcessorV1(activity).execute(query);
+    new QueryProcessorV2(activity).execute(query);
   }
 
 
@@ -421,7 +419,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       "required fusion table. The columns field is a comma-separeted list of the columns to retrieve.")
   public void GetRows(String tableId, String columns) {
     query = "SELECT " + columns + " FROM " + tableId;
-    new QueryProcessorV1(activity).execute(query);
+    new QueryProcessorV2(activity).execute(query);
   }
 
   @SimpleFunction(
@@ -431,7 +429,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     "a particular column value is not null.")
   public void GetRowsWithConditions(String tableId, String columns, String conditions) {
     query = "SELECT " + columns + " FROM " + tableId + " WHERE " + conditions;
-    new QueryProcessorV1(activity).execute(query);
+    new QueryProcessorV2(activity).execute(query);
   }
 
 
@@ -517,7 +515,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    * and 'select' are supposed to be GETs and queries such as
    * 'insert' are supposed to be POSTS.
    *
-   * See <a href="https://developers.google.com/fusiontables/docs/v1/using">https://developers.google.com/fusiontables/docs/v1/using</a>
+   * See <a href="https://developers.google.com/fusiontables/docs/v2/using">https://developers.google.com/fusiontables/docs/v2/using</a>
    *
    * @param query the raw SQL string used by App Inventor
    * @param authToken the OAuth 2.0 access token
@@ -533,7 +531,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
           AndroidHttp.newCompatibleTransport(),
           new GsonFactory(),
           new GoogleCredential())
-    .setApplicationName("App Inventor Fusiontables/v1.0")
+    .setApplicationName("App Inventor Fusiontables/v2.0")
     .setJsonHttpRequestInitializer(new GoogleKeyInitializer(ApiKey()))
     .build();
 
@@ -647,7 +645,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   }
 
   /**
-   * Parses SQL API Create query into v1.0 a JSon string which is then submitted as a POST request
+   * Parses SQL API Create query into v2.0 a JSon string which is then submitted as a POST request
    * E.g., parses "
    *   CREATE TABLE Notes (NoteField: STRING,  NoteLength: NUMBER, Date:DATETIME, Location:LOCATION)"
    * into :
@@ -764,10 +762,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    * First uses OAuth2Helper to acquire an access token and then sends the
    * Fusiontables query asynchronously to the server and returns the result.
    *
-   * This version uses the Fusion Tabes V1.0 API.
+   * This version uses the Fusion Tabes V2.0 API.
    */
-  private class QueryProcessorV1 extends AsyncTask<String, Void, String> {
-    private static final String TAG = "QueryProcessorV1";
+  private class QueryProcessorV2 extends AsyncTask<String, Void, String> {
+    private static final String TAG = "QueryProcessorV2";
 
     // alternative log tab used in service account processing
     private static final String STAG =  "FUSION_SERVICE_ACCOUNT";
@@ -778,7 +776,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     /**
      * @param activity, needed to create a progress dialog
      */
-    QueryProcessorV1(Activity activity) {
+    QueryProcessorV2(Activity activity) {
       Log.i(TAG, "Creating AsyncFusiontablesQuery");
       this.activity = activity;
       dialog = new ProgressDialog(activity);
