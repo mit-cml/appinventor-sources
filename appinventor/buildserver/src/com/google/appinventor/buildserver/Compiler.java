@@ -74,7 +74,7 @@ public final class Compiler {
   // Copied from SdkLevel.java (which isn't in our class path so we duplicate it here)
   private static final String LEVEL_GINGERBREAD_MR1 = "10";
 
-  public static final String RUNTIME_FILES_DIR = SLASH + "files" + SLASH;
+  public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
   // Build info constants.  Used for permissions, libraries and assets.
   // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
