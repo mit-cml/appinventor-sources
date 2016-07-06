@@ -997,6 +997,22 @@ Blockly.Versioning.xmlBlockTextToDom = function(xmlBlockText) {
   }
 }
 
+
+Blockly.Versioning.addMutator = function(blocktype) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var allBlocks = dom.getElementsByTagName('block');
+    for (var i = 0, im = allBlocks.length; i < im; i++) {
+      var blockElem = allBlocks[i];
+      var blockType = blockElem.getAttribute('type');
+      if (blockType == oldBlockType) {
+        blockElem.setAttribute('type', newBlockType);
+      }
+    }
+    return dom; 
+  }
+}
+
 /******************************************************************************
  Define component upgrade maps here.
  ******************************************************************************/

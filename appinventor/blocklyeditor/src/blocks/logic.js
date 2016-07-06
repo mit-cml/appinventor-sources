@@ -150,191 +150,191 @@ Blockly.Blocks.logic_compare.OPERATORS = function () {
   ];
 };
 
-// Blockly.Blocks['logic_and'] = {
-//   // Logical operations: 'and'.
-//   category: 'Logic',
-//   helpUrl: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND,
-//   init: function () {
-//     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-//     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
-//     this.appendValueInput('BOOL0')
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-//     this.appendValueInput('BOOL1')
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-//         .appendField(Blockly.Msg.LANG_LOGIC_OPERATION_AND);
-//     this.setInputsInline(true);
-//     // Assign 'this' to a variable for use in the tooltip closure below.
-//     var thisBlock = this;
-//     this.setTooltip(function () {
-//       return Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND;
-//     });
-//     this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
-//     this.emptyInputName = 'EMPTY';
-//     this.repeatingInputName = 'BOOL';
-//     this.itemCount_ = 2;
-//   },
-//   mutationToDom: Blockly.mutationToDom,
-//   domToMutation: Blockly.domToMutation,
-//   decompose: function (workspace) {
-//     return Blockly.decompose(workspace, 'logic_mutator_item', this);
-//   },
-//   compose: Blockly.compose,
-//   saveConnections: Blockly.saveConnections,
-//   addEmptyInput: function () {
-//     var input = this.appendDummyInput(this.emptyInputName);
-//   },
-//   addInput: function (inputNum) {
-//     var input = this.appendValueInput(this.repeatingInputName + inputNum)
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-//     if (inputNum !== 0) {
-//       input.appendField(Blockly.Msg.LANG_LOGIC_OPERATION_AND);
-//     }
-//     return input;
-//   },
-//   updateContainerBlock: function (containerBlock) {
-//     containerBlock.setFieldValue("and", "CONTAINER_TEXT");
-//   },
-//   typeblock: [{translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_AND}]
-// };
-
-// Blockly.Blocks['logic_or'] = {
-//   // Logical operations: 'or'.
-//   category: 'Logic',
-//   helpUrl: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR,
-//   init: function () {
-//     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-//     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
-//     this.appendValueInput('BOOL0')
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-//     this.appendValueInput('BOOL1')
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-//         .appendField(Blockly.Msg.LANG_LOGIC_OPERATION_OR);
-//     this.setInputsInline(true);
-//     // Assign 'this' to a variable for use in the tooltip closure below.
-//     var thisBlock = this;
-//     this.setTooltip(function () {
-//       return Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR;
-//     });
-//     this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
-//     this.emptyInputName = 'EMPTY';
-//     this.repeatingInputName = 'BOOL';
-//     this.itemCount_ = 2;
-//   },
-//   mutationToDom: Blockly.mutationToDom,
-//   domToMutation: Blockly.domToMutation,
-//   decompose: function (workspace) {
-//     return Blockly.decompose(workspace, 'logic_mutator_item', this);
-//   },
-//   compose: Blockly.compose,
-//   saveConnections: Blockly.saveConnections,
-//   addEmptyInput: function () {
-//     var input = this.appendDummyInput(this.emptyInputName);
-//   },
-//   addInput: function (inputNum) {
-//     var input = this.appendValueInput(this.repeatingInputName + inputNum)
-//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-//     if (inputNum !== 0) {
-//       input.appendField(Blockly.Msg.LANG_LOGIC_OPERATION_OR);
-//     }
-//     return input;
-//   },
-//   updateContainerBlock: function (containerBlock) {
-//     containerBlock.setFieldValue("or", "CONTAINER_TEXT");
-//   },
-//   typeblock: [{translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_OR}]
-// };
-
-// Blockly.Blocks['logic_mutator_item'] = {
-//   // Add items.
-//   init: function () {
-//     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-//     this.appendDummyInput().appendField("boolean");
-//     this.setPreviousStatement(true);
-//     this.setNextStatement(true);
-//     this.contextMenu = false;
-//   }
-// };
-
-Blockly.Blocks['logic_operation'] = {
-  // Logical operations: 'and', 'or'.
+Blockly.Blocks['logic_and'] = {
+  // Logical operations: 'and'.
   category: 'Logic',
+  helpUrl: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND,
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
+    this.appendValueInput('BOOL0')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('BOOL1')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-        .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+        .appendField(Blockly.Msg.LANG_LOGIC_OPERATION_AND);
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function () {
-      var op = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.logic_operation.TOOLTIPS()[op];
+      return Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND;
     });
+    this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'BOOL';
+    this.itemCount_ = 2;
   },
-  helpUrl: function () {
-    var op = this.getFieldValue('OP');
-    return Blockly.Blocks.logic_operation.HELPURLS()[op];
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'logic_mutator_item', this);
   },
-  typeblock: [{
-    translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_AND,
-    dropDown: {
-      titleName: 'OP',
-      value: 'AND'
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum !== 0) {
+      input.appendField(Blockly.Msg.LANG_LOGIC_OPERATION_AND);
     }
-  }, {
-    translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_OR,
-    dropDown: {
-      titleName: 'OP',
-      value: 'OR'
-    }
-  }]
-};
-
-Blockly.Blocks.logic_operation.OPERATORS = function () {
-  return [
-    [Blockly.Msg.LANG_LOGIC_OPERATION_AND, 'AND'],
-    [Blockly.Msg.LANG_LOGIC_OPERATION_OR, 'OR']
-  ]
-};
-
-Blockly.Blocks.logic_operation.HELPURLS = function () {
-  return {
-    AND: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND,
-    OR: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR
-  }
-};
-Blockly.Blocks.logic_operation.TOOLTIPS = function () {
-  return {
-    AND: Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND,
-    OR: Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR
-  }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue("and", "CONTAINER_TEXT");
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_AND}]
 };
 
 Blockly.Blocks['logic_or'] = {
-  // Logical operations: 'and', 'or'.
+  // Logical operations: 'or'.
   category: 'Logic',
+  helpUrl: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR,
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A')
+    this.appendValueInput('BOOL0')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B')
+    this.appendValueInput('BOOL1')
         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-        .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_operation.OPERATORS), 'OP');
-    this.setFieldValue('OR', 'OP');
+        .appendField(Blockly.Msg.LANG_LOGIC_OPERATION_OR);
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function () {
-      var op = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.logic_operation.TOOLTIPS[op];
+      return Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR;
     });
+    this.setMutator(new Blockly.Mutator(['logic_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'BOOL';
+    this.itemCount_ = 2;
   },
-  helpUrl: function () {
-    var op = this.getFieldValue('OP');
-    return Blockly.Blocks.logic_operation.HELPURLS[op];
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'logic_mutator_item', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function () {
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+    if (inputNum !== 0) {
+      input.appendField(Blockly.Msg.LANG_LOGIC_OPERATION_OR);
+    }
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue("or", "CONTAINER_TEXT");
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_OR}]
+};
+
+Blockly.Blocks['logic_mutator_item'] = {
+  // Add items.
+  init: function () {
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+    this.appendDummyInput().appendField("boolean");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.contextMenu = false;
   }
 };
+
+// Blockly.Blocks['logic_operation'] = {
+//   // Logical operations: 'and', 'or'.
+//   category: 'Logic',
+//   init: function () {
+//     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+//     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+//     this.appendValueInput('A')
+//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+//     this.appendValueInput('B')
+//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+//         .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+//     this.setInputsInline(true);
+//     // Assign 'this' to a variable for use in the tooltip closure below.
+//     var thisBlock = this;
+//     this.setTooltip(function () {
+//       var op = thisBlock.getFieldValue('OP');
+//       return Blockly.Blocks.logic_operation.TOOLTIPS()[op];
+//     });
+//   },
+//   helpUrl: function () {
+//     var op = this.getFieldValue('OP');
+//     return Blockly.Blocks.logic_operation.HELPURLS()[op];
+//   },
+//   typeblock: [{
+//     translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_AND,
+//     dropDown: {
+//       titleName: 'OP',
+//       value: 'AND'
+//     }
+//   }, {
+//     translatedName: Blockly.Msg.LANG_LOGIC_OPERATION_OR,
+//     dropDown: {
+//       titleName: 'OP',
+//       value: 'OR'
+//     }
+//   }]
+// };
+
+// Blockly.Blocks.logic_operation.OPERATORS = function () {
+//   return [
+//     [Blockly.Msg.LANG_LOGIC_OPERATION_AND, 'AND'],
+//     [Blockly.Msg.LANG_LOGIC_OPERATION_OR, 'OR']
+//   ]
+// };
+
+// Blockly.Blocks.logic_operation.HELPURLS = function () {
+//   return {
+//     AND: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_AND,
+//     OR: Blockly.Msg.LANG_LOGIC_OPERATION_HELPURL_OR
+//   }
+// };
+// Blockly.Blocks.logic_operation.TOOLTIPS = function () {
+//   return {
+//     AND: Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND,
+//     OR: Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR
+//   }
+// };
+
+// Blockly.Blocks['logic_or'] = {
+//   // Logical operations: 'and', 'or'.
+//   category: 'Logic',
+//   init: function () {
+//     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+//     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+//     this.appendValueInput('A')
+//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT));
+//     this.appendValueInput('B')
+//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
+//         .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_operation.OPERATORS), 'OP');
+//     this.setFieldValue('OR', 'OP');
+//     this.setInputsInline(true);
+//     // Assign 'this' to a variable for use in the tooltip closure below.
+//     var thisBlock = this;
+//     this.setTooltip(function () {
+//       var op = thisBlock.getFieldValue('OP');
+//       return Blockly.Blocks.logic_operation.TOOLTIPS[op];
+//     });
+//   },
+//   helpUrl: function () {
+//     var op = this.getFieldValue('OP');
+//     return Blockly.Blocks.logic_operation.HELPURLS[op];
+//   }
+// };

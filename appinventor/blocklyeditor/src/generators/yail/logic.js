@@ -40,19 +40,61 @@ Blockly.Yail['logic_negate'] = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['logic_operation'] = function() {
-  // The and, or logic operations
-  // TODO: (Andrew) Make these take multiple arguments.
-  var mode = this.getFieldValue('OP');
+// Blockly.Yail['logic_operation'] = function() {
+//   // The and, or logic operations
+//   // TODO: (Andrew) Make these take multiple arguments.
+//   console.log("logic this:");
+//   console.log(this);
+//   var mode = this.getFieldValue('OP');
+//   console.log("logic mode:");
+//   console.log(mode);
+//   var tuple = Blockly.Yail.logic_operation.OPERATORS[mode];
+//   console.log("logic tuple:");
+//   console.log(tuple);
+//   var operator = tuple[0];
+//   var order = tuple[1];
+//   var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || Blockly.Yail.YAIL_FALSE;
+//   var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
+//   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
+//       + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
+//       + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+//   return [ code, Blockly.Yail.ORDER_ATOMIC ];
+// };
+
+// Blockly.Yail.logic_operation.OPERATORS = {
+//   AND : [ 'and-delayed', Blockly.Yail.ORDER_NONE ],
+//   OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE ]
+// };
+
+// Blockly.Yail['logic_or'] = function() {
+//   return Blockly.Yail.logic_operation.call(this);
+// }
+
+
+Blockly.Yail['logic_operation'] = function(mode,block) {
+  // The and, or logic operations 
   var tuple = Blockly.Yail.logic_operation.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || Blockly.Yail.YAIL_FALSE;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
-      + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
-      + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
+      + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  for(var i=0;i<block.itemCount_;i++) {
+    var argument = Blockly.Yail.valueToCode(block, 'BOOL' + i, order) || Blockly.Yail.YAIL_FALSE;
+    code += argument + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  for(var i=0;i<block.itemCount_;i++) {
+    code += "boolean" + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
 Blockly.Yail.logic_operation.OPERATORS = {
@@ -60,9 +102,16 @@ Blockly.Yail.logic_operation.OPERATORS = {
   OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE ]
 };
 
+Blockly.Yail['logic_and'] = function() {
+  return Blockly.Yail.logic_operation("AND",this);
+};
+
 Blockly.Yail['logic_or'] = function() {
-  return Blockly.Yail.logic_operation.call(this);
-}
+  return Blockly.Yail.logic_operation("OR",this);
+};
+
+
+
 
 Blockly.Yail['logic_compare'] = function() {
   // Basic logic compare operators
