@@ -73,8 +73,7 @@ out$.svgAsDataUri = function(el, optmetrics, options, cb) {
 
   var textAreas = document.getElementsByTagName("textarea");
   
-  for (var i = 0; i < textAreas.length; i++)
-  {
+  for (var i = 0; i < textAreas.length; i++) {
     textAreas[i].innerHTML = textAreas[i].value;
   }
 
