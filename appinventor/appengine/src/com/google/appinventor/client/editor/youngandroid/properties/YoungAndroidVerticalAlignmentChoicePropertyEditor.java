@@ -27,9 +27,9 @@ public class YoungAndroidVerticalAlignmentChoicePropertyEditor extends ChoicePro
   public static final String BOTTOM = ComponentConstants.GRAVITY_BOTTOM + "";
 
   private static final Choice[] vAlignments = new Choice[] {
-    new Choice(MESSAGES.verticalAlignmentChoiceTop(), TOP),
-    new Choice(MESSAGES.verticalAlignmentChoiceCenter(), CENTER),
-    new Choice(MESSAGES.verticalAlignmentChoiceBottom(), BOTTOM),
+    new Choice(MESSAGES.verticalAlignmentChoiceTop() + " : " + TOP, TOP),
+    new Choice(MESSAGES.verticalAlignmentChoiceCenter() + " : " + CENTER, CENTER),
+    new Choice(MESSAGES.verticalAlignmentChoiceBottom()  + " : " + BOTTOM, BOTTOM),
   };
 
   public YoungAndroidVerticalAlignmentChoicePropertyEditor() {
