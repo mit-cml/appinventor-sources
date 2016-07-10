@@ -7,10 +7,12 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -40,7 +42,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Layout
   private final int orientation;
   private final LinearLayout viewLayout;
-
+  private ViewGroup scrollContainer;
+  private boolean scrollable;
   // translates App Inventor alignment codes to Android gravity
   private final AlignmentUtil alignmentSetter;
 
@@ -75,16 +78,31 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
-    viewLayout.setBaselineAligned(false);
-    alignmentSetter = new AlignmentUtil(viewLayout);
 
+    viewLayout.setBaselineAligned(false);
+    switch (orientation) {
+      case LAYOUT_ORIENTATION_VERTICAL:
+        scrollContainer = new ScrollView(context);
+        break;
+      case LAYOUT_ORIENTATION_HORIZONTAL:
+        scrollContainer = new HorizontalScrollView(context);
+        break;
+    }
+
+    scrollContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
+//    if (scrollable)
+      scrollContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+              ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.MATCH_PARENT));
+
+    alignmentSetter = new AlignmentUtil(viewLayout);
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
     verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
 
       // Save the default values in case the user wants them back later.
-      defaultButtonDrawable = getView().getBackground();
+    defaultButtonDrawable = getView().getBackground();
 
     container.$add(this);
 
@@ -169,7 +187,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public View getView() {
-    return viewLayout.getLayoutManager();
+    return scrollContainer; //: viewLayout.getLayoutManager();
   }
 
  // These property definitions are duplicated in Form.java
@@ -322,6 +340,36 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Update the appearance based on the new value of backgroundImageDrawable.
         updateAppearance();
     }
+
+  /**
+   * Scrollable property getter method.
+   *
+   * @return  true if the screen is vertically scrollable
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "When checked, the height and width of the contents in the arrangement "
+    + "can exceed size of the arrangement and the user can scroll "
+    + "the contents within the arrangement. AlignVertical and "
+    + "AlignHorizontal are inactive for scrollable arrangements.")
+  public boolean Scrollable() {
+    return scrollable;
+  }
+
+   /**
+   * Scrollable property setter method.
+   *
+   * @param scrollable  true if the screen should be vertically scrollable
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
+  @SimpleProperty
+  public void Scrollable(boolean scrollable) {
+    if (this.scrollable == scrollable) {
+      return;
+    }
+    this.scrollable = scrollable;
+  }
+
 
     // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
     // Images take precedence over background colors.
