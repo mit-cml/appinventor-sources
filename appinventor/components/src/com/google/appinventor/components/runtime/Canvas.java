@@ -1072,7 +1072,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleProperty(description = "Determines the alignment of the " +
       "text drawn by DrawText() or DrawAngle() with respect to the " +
-      "point specified by that command.",
+      "point specified by that command: point at the left of the text, point at the center " +
+      "of the text, or point at the right of the text.",
+//    TODO: (Hal) Check that this is still correct for RTL languages.
       category = PropertyCategory.APPEARANCE,
       userVisible = true)
   public int TextAlignment() {
