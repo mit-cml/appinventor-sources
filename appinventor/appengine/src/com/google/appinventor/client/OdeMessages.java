@@ -544,9 +544,9 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the component import failed due to unknown url")
   String componentImportUnknownURLError();
 
-  @DefaultMessage("This Extension is already imported! Use ")
-  @Description("Error message reported when the component import due to already imported extension")
-  String componentAlreadyImportedError();
+  @DefaultMessage("Extension Upgraded : ")
+  @Description("Alert message reported when the component import upgraded an already imported extension")
+  String componentUpgradedAlert();
 
   @DefaultMessage("The selected file is not a component file!\n" +
       "Component files are aix files.")
