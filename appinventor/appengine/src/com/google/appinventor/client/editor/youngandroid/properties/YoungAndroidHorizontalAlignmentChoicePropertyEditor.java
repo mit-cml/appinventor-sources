@@ -23,9 +23,9 @@ public class YoungAndroidHorizontalAlignmentChoicePropertyEditor extends ChoiceP
   public static final String CENTER = ComponentConstants.GRAVITY_CENTER_HORIZONTAL + "";
 
   private static final Choice[] hAlignments = new Choice[] {
-    new Choice(MESSAGES.horizontalAlignmentChoiceLeft(), LEFT),
-    new Choice(MESSAGES.horizontalAlignmentChoiceCenter(), CENTER),
-    new Choice(MESSAGES.horizontalAlignmentChoiceRight(), RIGHT)
+    new Choice(MESSAGES.horizontalAlignmentChoiceLeft() + " : " + LEFT, LEFT),
+    new Choice(MESSAGES.horizontalAlignmentChoiceCenter() + " : " + CENTER, CENTER),
+    new Choice(MESSAGES.horizontalAlignmentChoiceRight()  + " : " + RIGHT, RIGHT)
   };
 
   public YoungAndroidHorizontalAlignmentChoicePropertyEditor() {

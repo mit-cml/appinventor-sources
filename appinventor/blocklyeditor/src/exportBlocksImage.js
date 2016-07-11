@@ -68,12 +68,13 @@ function styles(el, selectorRemap) {
 out$.svgAsDataUri = function(el, optmetrics, options, cb) {
   options = options || {};
   options.scale = options.scale || 1;
-  var xmlns = "http://www.w3.org/2000/xmlns/";  
+  var xmlns = "http://www.w3.org/2000/xmlns/";
   var outer = document.createElement("div");
 
   var textAreas = document.getElementsByTagName("textarea");
-  
-  for (var i = 0; i < textAreas.length; i++) {
+
+  for (var i = 0; i < textAreas.length; i++)
+  {
     textAreas[i].innerHTML = textAreas[i].value;
   }
 

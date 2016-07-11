@@ -17,9 +17,9 @@ public class YoungAndroidAlignmentChoicePropertyEditor extends ChoicePropertyEdi
 
   // Text alignment choices
   private static final Choice[] textAlignments = new Choice[] {
-    new Choice(MESSAGES.leftTextAlignment(), "0"),
-    new Choice(MESSAGES.centerTextAlignment(), "1"),
-    new Choice(MESSAGES.rightTextAlignment(), "2")
+    new Choice(MESSAGES.leftTextAlignment() + " : " + "0", "0"),
+    new Choice(MESSAGES.centerTextAlignment() + " : " + "1", "1"),
+    new Choice(MESSAGES.rightTextAlignment() + " : " + "2", "2")
   };
 
   public YoungAndroidAlignmentChoicePropertyEditor() {
