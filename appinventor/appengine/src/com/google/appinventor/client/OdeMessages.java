@@ -279,9 +279,9 @@ public interface OdeMessages extends Messages {
   String labelConfirm();
 
   @DefaultMessage("Your app \"{0}\" has been removed from the gallery due to inappropriate content. "
-          + "Please review the guidelines at ..."
-          + "If you feel this action has been taken in error, or you would like to discuss the issue, "
-          + "please use the App Inventor forum at: \n")
+          + "Please review the guidelines at http://ai2.appinventor.mit.edu/about/termsofservice.html. "
+          + "If you feel this action has been taken in error, " +
+          "you may reply directly to this e-mail for discussion. \n")
   @Description("Label of the Text of Template 1 of reportlist")
   String inappropriateAppContentRemoveEmail(String title);
 

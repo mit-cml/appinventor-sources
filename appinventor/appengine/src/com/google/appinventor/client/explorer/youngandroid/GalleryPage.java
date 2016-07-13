@@ -903,7 +903,12 @@ panel
     reportText.addStyleName("action-textarea");
     final Button submitReport = new Button(MESSAGES.galleryReportButton());
     submitReport.addStyleName("action-button");
+    final Label descriptionError = new Label();
+    descriptionError.setText("Description required");
+    descriptionError.setStyleName("ode-ErrorMessage");
+    descriptionError.setVisible(false);
     appReportPanel.add(reportPrompt);
+    appReportPanel.add(descriptionError);
     appReportPanel.add(reportText);
     appReportPanel.add(submitReport);
 
@@ -931,8 +936,13 @@ panel
                           submitReport.setEnabled(false);
                         }
                     };
-                  Ode.getInstance().getGalleryService().addAppReport(app, reportText.getText(),
+                  if (!reportText.getText().trim().isEmpty()){
+                    Ode.getInstance().getGalleryService().addAppReport(app, reportText.getText(),
                       reportClickCallback);
+                    descriptionError.setVisible(false);
+                  } else {
+                    descriptionError.setVisible(true);
+                  }
                 }
               });
             }
@@ -1416,7 +1426,7 @@ panel
 
   /**
    * Loads the proper tab GUI with gallery's app data.
-   * @param apps: list of returned gallery apps from callback.
+   * @param appResults: list of returned gallery apps from callback.
    * @param requestId: determines the specific type of app data.
    */
   private void refreshApps(GalleryAppListResult appResults, int requestId, boolean refreshable) {
