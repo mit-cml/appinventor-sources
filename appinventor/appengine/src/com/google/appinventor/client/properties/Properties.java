@@ -159,7 +159,7 @@ public class Properties<T extends Property> implements Iterable<T> {
 
   /**
    * Adds a new property to the collection.
-   * A property of the same name may already already exist.
+   * A property of the same name may already exist.
    *
    * @param property  property to be added
    */
