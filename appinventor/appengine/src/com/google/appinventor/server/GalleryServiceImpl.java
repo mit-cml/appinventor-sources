@@ -82,7 +82,12 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public GalleryApp publishApp(long projectId, String title, String projectName, String description, String moreInfo, String credit)  throws IOException {
     final String userId = userInfoProvider.getUserId();
     GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, moreInfo, credit, projectId, userId);
-    storeAIA(app.getGalleryAppId(),projectId, projectName);
+    try {
+      storeAIA(app.getGalleryAppId(),projectId, projectName);
+    } catch (IOException e) {
+      deleteApp(app.getGalleryAppId());
+      throw e;
+    }
     // see if there is a new image for the app. If so, its in cloud using projectId, need to move
     // to cloud using gallery id
     setGalleryAppImage(app);
@@ -98,8 +103,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public void updateApp(GalleryApp app, boolean newImage) throws IOException {
-    updateAppMetadata(app);
     updateAppSource(app.getGalleryAppId(),app.getProjectId(),app.getProjectName());
+    updateAppMetadata(app);
     if (newImage)
       setGalleryAppImage(app);
   }
