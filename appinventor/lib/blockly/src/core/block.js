@@ -140,6 +140,7 @@ Blockly.Block.prototype.fill = function(workspace, prototypeName) {
   this.inputsInline = false;
   this.rendered = false;
   this.disabled = false;
+  this.undefined = false;
   this.tooltip = '';
   this.contextMenu = true;
 
@@ -346,11 +347,45 @@ Blockly.Block.prototype.unselect = function() {
 };
 
 /**
+ * Mark this block as Undefined. Highlight it in red borders and fill with grey.
+ */
+Blockly.Block.prototype.markUndefinedBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.addUndefinedBlock();
+
+};
+
+/**
+ * Unmark this block as Undefined.
+ */
+Blockly.Block.prototype.unmarkUndefinedBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.removeUndefinedBlock();
+};
+
+/**
+ * Check to see if this block is marked as undefined.
+ */
+Blockly.Block.prototype.isMarkedUndefinedBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  return this.svg_.isUndefinedBlock();
+};
+
+
+/**
  * Mark this block as Bad.  Highlight it visually in Red.
  */
 Blockly.Block.prototype.badBlock = function() {
   goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
   this.svg_.addBadBlock();
+};
+
+/**
+ * Unmark this block as Bad.
+ */
+Blockly.Block.prototype.notBadBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.removeBadBlock();
 };
 
 /**
@@ -441,6 +476,16 @@ Blockly.Block.prototype.dispose = function(healStack, animate,
   // Remove any associated errors or warnings.
   Blockly.WarningHandler.checkDisposedBlock.call(this);
 };
+
+/**
+  Unplug this block from every block connected to it.
+ */
+Blockly.Block.prototype.isolate = function(healStack, bump) {
+  this.unplug(healStack, bump);
+  for (var x = this.childBlocks_.length - 1; x >= 0; x--) {
+    this.childBlocks_[x].unplug(healStack, bump);
+  }
+}
 
 /**
  * Unplug this block from its superior block.  If this block is a statement,
@@ -1561,6 +1606,19 @@ Blockly.Block.prototype.setDisabled = function(disabled) {
   }
   this.disabled = disabled;
   this.svg_.updateDisabled();
+  this.workspace.fireChangeEvent();
+};
+
+/**
+ * Set whether the block is undefined or not.
+ * @param {boolean} undefined True if undefined.
+ */
+Blockly.Block.prototype.setUndefined = function(undefined) {
+  if (this.undefined == undefined) {
+    return;
+  }
+  this.undefined = undefined;
+  this.svg_.updateUndefined();
   this.workspace.fireChangeEvent();
 };
 

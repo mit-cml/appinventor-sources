@@ -119,6 +119,13 @@ Blockly.Css.CONTENT = [
   '  stroke: #f00;',
   '}',
 
+  '.undefinedBlock>.blocklyPath {',
+    '  stroke-width: 3px;',
+    '  stroke: #f00;',
+    '  fill-opacity: .5;',
+    '  stroke-opacity: .5;',
+    '}',
+
   '.badBlockl>.blocklyPathLight {',
   '  display: none;',
   '}',

@@ -410,8 +410,8 @@ Blockly.BlockSvg.connectionUiStep_ = function(ripple) {
  * Change the colour of a block.
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
-  if (this.block_.disabled) {
-    // Disabled blocks don't have colour.
+  if (this.block_.disabled || this.block_.undefined) {
+    // Disabled blocks and undefined don't have colour.
     return;
   }
   var hexColour = Blockly.makeColour(this.block_.getColour());
@@ -443,6 +443,21 @@ Blockly.BlockSvg.prototype.updateDisabled = function() {
 };
 
 /**
+ * Mark a block as defined or Undefined.
+ */
+Blockly.BlockSvg.prototype.updateUndefined = function() {
+  if (this.block_.undefined) {
+    Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+                      'undefinedBlock');
+    this.svgPath_.setAttribute('fill', 'url(#blocklyDisabledPattern)');
+  } else {
+    Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
+                         'undefinedBlock');
+    this.updateColour();
+  }
+};
+
+/**
  * Select this block.  Highlight it visually.
  */
 Blockly.BlockSvg.prototype.addSelect = function() {
@@ -461,10 +476,51 @@ Blockly.BlockSvg.prototype.removeSelect = function() {
 };
 
 /**
+ * Mark this block as undefined.  Highlight it in red borders and fill with grey.
+ */
+Blockly.BlockSvg.prototype.addUndefinedBlock = function() {
+  Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+      'undefinedBlock');
+  this.svgPath_.setAttribute('fill', 'url(#blocklyDisabledPattern)');
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Mark this block as not undefined.
+ */
+Blockly.BlockSvg.prototype.removeUndefinedBlock = function() {
+  Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
+      'undefinedBlock');
+  this.updateColour();
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Check to see if the block is marked as undefined.
+ */
+Blockly.BlockSvg.prototype.isUndefinedBlock = function() {
+  return Blockly.haveClass_(/** @type {!Element} */ (this.svgGroup_),
+    'undefinedBlock');
+};
+
+
+/**
  * Mark this block as bad.  Highlight it visually in red.
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+      'badBlock');
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Unmark this block as bad.
+ */
+Blockly.BlockSvg.prototype.removeBadBlock = function() {
+  Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
       'badBlock');
   // Move the selected block to the top of the stack.
   this.svgGroup_.parentNode.appendChild(this.svgGroup_);
