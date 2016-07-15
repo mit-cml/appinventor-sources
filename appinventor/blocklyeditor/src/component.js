@@ -165,7 +165,6 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  * Verify all blocks after a Component upgrade
  */
 Blockly.Component.verifyAllBlocks = function () {
-  console.log("Verify All Blocks called!");
   var allBlocks = Blockly.mainWorkspace.getAllBlocks();
   for (var x = 0, block; block = allBlocks[x]; ++x) {
     if (block.category != 'Component') {
