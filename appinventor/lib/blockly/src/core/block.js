@@ -140,7 +140,6 @@ Blockly.Block.prototype.fill = function(workspace, prototypeName) {
   this.inputsInline = false;
   this.rendered = false;
   this.disabled = false;
-  this.undefined = false;
   this.tooltip = '';
   this.contextMenu = true;
 
@@ -345,32 +344,6 @@ Blockly.Block.prototype.unselect = function() {
   this.svg_.removeSelect();
   Blockly.fireUiEvent(this.workspace.getCanvas(), 'blocklySelectChange');
 };
-
-/**
- * Mark this block as Undefined. Highlight it in red borders and fill with grey.
- */
-Blockly.Block.prototype.markUndefinedBlock = function() {
-  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
-  this.svg_.addUndefinedBlock();
-
-};
-
-/**
- * Unmark this block as Undefined.
- */
-Blockly.Block.prototype.unmarkUndefinedBlock = function() {
-  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
-  this.svg_.removeUndefinedBlock();
-};
-
-/**
- * Check to see if this block is marked as undefined.
- */
-Blockly.Block.prototype.isMarkedUndefinedBlock = function() {
-  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
-  return this.svg_.isUndefinedBlock();
-};
-
 
 /**
  * Mark this block as Bad.  Highlight it visually in Red.
@@ -1609,18 +1582,6 @@ Blockly.Block.prototype.setDisabled = function(disabled) {
   this.workspace.fireChangeEvent();
 };
 
-/**
- * Set whether the block is undefined or not.
- * @param {boolean} undefined True if undefined.
- */
-Blockly.Block.prototype.setUndefined = function(undefined) {
-  if (this.undefined == undefined) {
-    return;
-  }
-  this.undefined = undefined;
-  this.svg_.updateUndefined();
-  this.workspace.fireChangeEvent();
-};
 
 /**
  * Get whether the block is disabled or not due to parents.

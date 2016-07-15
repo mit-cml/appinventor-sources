@@ -315,12 +315,12 @@ Blockly.Blocks.component_event = {
     var isDefined = validate.call(this);
 
     if (isDefined) {
-      this.setUndefined(false);
+      this.notBadBlock();
       if (this.getEventTypeObject()) {
         this.setTooltip(this.getEventTypeObject().description); // update the tooltipDescription, if block is defined
       }
     } else {
-      this.setUndefined(true);
+      this.badBlock();
     }
 
   },
@@ -620,12 +620,12 @@ Blockly.Blocks.component_method = {
 
     var isDefined = validate.call(this);
     if (isDefined) {
-      this.setUndefined(false);
+      this.notBadBlock();
       if (this.getMethodTypeObject()) {
         this.setTooltip(this.getMethodTypeObject().description); // update the tooltipDescription, if block is defined
       }
     } else {
-      this.setUndefined(true);
+      this.badBlock();
     }
   }
 
@@ -930,12 +930,12 @@ Blockly.Blocks.component_set_get = {
 
     var isDefined = validate.call(this);
     if (isDefined) {
-      this.setUndefined(false);
+      this.notBadBlock();
       if (this.propertyObject) {
         this.setTooltip(this.propertyObject.description); // update the tooltipDescription, if block is defined
       }
     } else {
-      this.setUndefined(true);
+      this.badBlock(true);
     }
 
   }
@@ -1017,9 +1017,9 @@ Blockly.Blocks.component_component_block = {
 
     var isDefined = validate.call(this);
     if (isDefined) {
-      this.setUndefined(false);
+      this.notBadBlock();
     } else {
-      this.setUndefined(true);
+      this.badBlock();
     }
 
 

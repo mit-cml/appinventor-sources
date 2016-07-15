@@ -216,7 +216,7 @@ Blockly.WarningHandler.checkIsInDefinition = function(){
 
 // Check if block is undefined and unplug
 Blockly.WarningHandler.checkIfUndefinedBlock = function() {
-  if (this.undefined === true) {
+  if (this.isBadBlock() === true) {
     var errorMessage = Blockly.ERROR_BLOCK_IS_NOT_DEFINED;
     var healStack = true;
     if (this.type == "component_event") {
