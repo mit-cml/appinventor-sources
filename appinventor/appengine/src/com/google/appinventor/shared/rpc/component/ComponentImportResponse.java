@@ -17,25 +17,27 @@ import java.util.List;
 public class ComponentImportResponse implements IsSerializable{
 
   public enum Status {
-    SUCCESS,
-    ALREADY_IMPORTED,
+    IMPORTED,
+    UPGRADED, //when the old component files were replaced with newer ones
     NOT_GCS,
     UNKNOWN_URL,
     FAILED
   }
 
   private Status status;
+  private long projectId; // necessary to ensure right project
   private String componentType;  // Type of Component
   private List<ProjectNode> nodes; // Added Nodes
 
-  public ComponentImportResponse(Status status, String componentType, List<ProjectNode> nodes) {
+  public ComponentImportResponse(Status status, long projectId, String componentType, List<ProjectNode> nodes) {
     this.status = status;
+    this.projectId = projectId;
     this.componentType = componentType;
     this.nodes = nodes;
   }
 
   public ComponentImportResponse(Status status) {
-    this(status, "", null);
+    this(status, 0, "", null);
   }
 
   private ComponentImportResponse() {
@@ -47,6 +49,14 @@ public class ComponentImportResponse implements IsSerializable{
 
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  public long getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(long projectId){
+    this.projectId = projectId;
   }
 
   public String getComponentType() {

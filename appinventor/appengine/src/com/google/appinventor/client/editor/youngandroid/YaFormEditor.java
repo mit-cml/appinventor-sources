@@ -138,7 +138,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     // Create UI elements for the designer panels.
     nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();
+    addComponentDatabaseChangeListener(nonVisibleComponentsPanel);
     visibleComponentsPanel = new SimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
+    addComponentDatabaseChangeListener(visibleComponentsPanel);
     DockPanel componentsPanel = new DockPanel();
     componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
     componentsPanel.add(visibleComponentsPanel, DockPanel.NORTH);
@@ -719,6 +721,20 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.setVisible(false);
   }
 
+  /**
+   * Runs through all the Mock Components and upgrades if its corresponding Component was Upgraded
+   * @param componentTypes the Component Types that got upgraded
+   */
+  private void updateMockComponents(List<String> componentTypes) {
+    Map<String, MockComponent> componentMap = getComponents();
+    for (MockComponent mockComponent : componentMap.values()) {
+      if (componentTypes.contains(mockComponent.getType())) {
+        mockComponent.upgrade();
+        mockComponent.upgradeComplete();
+      }
+    }
+  }
+
   /*
    * Push changes to a connected phone (or emulator).
    */
@@ -746,6 +762,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onComponentTypeAdded(componentTypes);
     }
+    //Update Mock Components
+    updateMockComponents(componentTypes);
+    //Update the Properties Panel
+    updatePropertiesPanel(form.getSelectedComponent());
   }
 
   @Override

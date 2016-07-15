@@ -162,6 +162,19 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
 };
 
 /**
+ * Verify all blocks after a Component upgrade
+ */
+Blockly.Component.verifyAllBlocks = function () {
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  for (var x = 0, block; block = allBlocks[x]; ++x) {
+    if (block.category != 'Component') {
+      continue;
+    }
+    block.verify();
+  }
+}
+
+/**
  * Blockly.ComponentTypes
  *
  * Object whose fields are names of component types. For a given component type object, the "componentInfo"
@@ -175,7 +188,9 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  *
  * The componentInfo has the following format (where upper-case strings are
  * non-terminals and lower-case strings are literals):
- * { "name": "COMPONENT-TYPE-NAME",
+ * { "type": "COMPONENT-TYPE",
+ *   "name": "COMPONENT-TYPE-NAME",
+ *   "external": "true"|"false",
  *   "version": "VERSION",
  *   "categoryString": "PALETTE-CATEGORY",
  *   "helpString": "DESCRIPTION",
@@ -228,6 +243,7 @@ Blockly.ComponentTypes.populateTypes = function() {
     var typeName = componentInfo.name;
     Blockly.ComponentTypes[typeName] = {};
     Blockly.ComponentTypes[typeName].type = componentInfo.type;
+    Blockly.ComponentTypes[typeName].external = componentInfo.external;
     Blockly.ComponentTypes[typeName].componentInfo = componentInfo;
     Blockly.ComponentTypes[typeName].eventDictionary = {};
     Blockly.ComponentTypes[typeName].methodDictionary = {};
