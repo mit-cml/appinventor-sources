@@ -342,8 +342,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    ArrayAdapter<Spannable> adapter = (ArrayAdapter<Spannable>) parent.getAdapter();
-    Spannable item = (Spannable) adapter.getItem(position);
+    Spannable item = (Spannable) parent.getAdapter().getItem(position);
     this.selection = item.toString();
     this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
 
