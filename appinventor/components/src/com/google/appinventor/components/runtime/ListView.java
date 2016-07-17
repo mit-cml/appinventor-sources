@@ -60,6 +60,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   // The adapter contains spannables rather than strings, since we will be changing the item
   // colors using ForegroundColorSpan
   private ArrayAdapter<Spannable> adapter;
+  private ArrayAdapter<Spannable> adapterCopy;
   private YailList items;
   private int selectionIndex;
   private String selection;
@@ -254,6 +255,11 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
         itemsToColoredText());
     view.setAdapter(adapter);
+
+    adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
+    for (int i = 0; i < adapter.getCount(); ++i) {
+      adapterCopy.insert(adapter.getItem(i), i);
+    }
   }
 
   public Spannable[] itemsToColoredText() {
@@ -339,7 +345,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     ArrayAdapter<Spannable> adapter = (ArrayAdapter<Spannable>) parent.getAdapter();
     Spannable item = (Spannable) adapter.getItem(position);
     this.selection = item.toString();
-    this.selectionIndex = adapter.getPosition(item) + 1; // AI lists are 1-based
+    this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
 
     AfterPicking();
   }
