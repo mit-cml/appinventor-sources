@@ -134,12 +134,26 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   private void importToProject(Map<String, byte[]> contents, long projectId,
       String folderPath, ComponentImportResponse response) throws FileImporterException, IOException {
     List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
+    response.setProjectId(projectId);
     List<String> sourceFiles = storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId);
+    boolean extensionUpgrade = false;
+    String oldCompName; // name with which extension is already imported, we have to grab from the old component files
     for (String name : contents.keySet()) {
       String destination = folderPath + "/external_comps/" + name;
       if (sourceFiles.contains(destination)) {  // Check if source File already contains component files
-        response.setStatus(ComponentImportResponse.Status.ALREADY_IMPORTED);
-        return; // Fail the Import!!
+        // This is an upgrade, if it replaces old component files
+        extensionUpgrade = true;
+        if (StorageUtil.basename(name).equals("component.json")) { // TODO : we need a more secure check
+          // We modify the name property of the new component.json to match that of the already imported component.json
+          JSONObject oldCompJson = new JSONObject(storageIo.downloadFile(
+              userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET));
+          oldCompName = oldCompJson.getString("name");
+          String componentJSONString = new String(contents.get(name), StorageUtil.DEFAULT_CHARSET);
+          JSONObject newCompJSon = new JSONObject(componentJSONString);
+          newCompJSon.put("name", oldCompName); //change the name to the same as that of already imported component
+          componentJSONString = newCompJSon.toString(1); // 1 is the indent factor, let it look beautiful
+          contents.put(name, componentJSONString.getBytes(StorageUtil.DEFAULT_CHARSET));
+        }
       }
       FileNode fileNode = new YoungAndroidComponentNode(StorageUtil.basename(name), destination);
       fileImporter.importFile(userInfoProvider.getUserId(), projectId,
@@ -147,10 +161,13 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
       compNodes.add(fileNode);
     }
 
+    if (extensionUpgrade) {
+      response.setStatus(ComponentImportResponse.Status.UPGRADED);
+    } else {
+      response.setStatus(ComponentImportResponse.Status.IMPORTED);
+    }
     String type = contents.keySet().iterator().next(); // get an element
     type = type.substring(0, type.indexOf('/')); // get the type
-
-    response.setStatus(ComponentImportResponse.Status.SUCCESS);
     response.setComponentType(type);
     response.setNodes(compNodes);
     return;

@@ -6,6 +6,10 @@
 
 package com.google.appinventor.shared.simple;
 
+import com.google.appinventor.components.common.ComponentCategory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +20,131 @@ import java.util.Set;
  * @author lizlooney@google.com (lizlooney)
  */
 public interface ComponentDatabaseInterface {
+
+  /**
+   * Simple component information: component name, its properties
+   */
+  public static class ComponentDefinition {
+    private final String name;
+    private final int version;
+    private final String type;
+    private final boolean external;
+    private final String categoryString;
+    private final String helpString;
+    private final boolean showOnPalette;
+    private final String categoryDocUrlString;
+    private final List<PropertyDefinition> properties;
+    private final List<BlockPropertyDefinition> blockProperties;
+    private final List<EventDefinition> events;
+    private final List<MethodDefinition> methods;
+    private final Map<String, String> propertiesTypesByName;
+    private final boolean nonVisible;
+    private final String iconName;
+    private final String typeDescription;
+
+    public ComponentDefinition(String name, int version, String type, boolean external, String categoryString, String helpString,
+              boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
+      this.name = name;
+      this.version = version;
+      this.type = type;
+      this.external = external;
+      this.categoryString = categoryString;
+      this.helpString = helpString;
+      this.showOnPalette = showOnPalette;
+      this.categoryDocUrlString = ComponentCategory.valueOf(categoryString).getDocName();
+      this.properties = new ArrayList<PropertyDefinition>();
+      this.blockProperties = new ArrayList<BlockPropertyDefinition>();
+      this.events = new ArrayList<EventDefinition>();
+      this.methods = new ArrayList<MethodDefinition>();
+      this.propertiesTypesByName = new HashMap<String, String>();
+      this.nonVisible = nonVisible;
+      this.iconName = iconName;
+      this.typeDescription = typeDescription;
+    }
+
+    public void add(PropertyDefinition property) {
+      properties.add(property);
+      propertiesTypesByName.put(property.getName(), property.getEditorType());
+    }
+
+    public void add(BlockPropertyDefinition blockProperty) {
+      blockProperties.add(blockProperty);
+    }
+
+    public void add(EventDefinition event) {
+      events.add(event);
+    }
+
+    public void add(MethodDefinition method) {
+      methods.add(method);
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public int getVersion() {
+      return version;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public boolean isExternal() {
+      return external;
+    }
+
+    public String getCategoryString() {
+      return categoryString;
+    }
+
+    public String getHelpString() {
+      return helpString;
+    }
+
+    public boolean isShowOnPalette() {
+      return showOnPalette;
+    }
+
+    public String getCategoryDocUrlString() {
+      return categoryDocUrlString;
+    }
+
+    public List<PropertyDefinition> getProperties() {
+      return properties;
+    }
+
+    public List<BlockPropertyDefinition> getBlockProperties() {
+      return blockProperties;
+    }
+
+    public List<EventDefinition> getEvents() {
+      return events;
+    }
+
+    public List<MethodDefinition> getMethods() {
+      return methods;
+    }
+
+    public Map<String, String> getPropertiesTypesByName() {
+      return propertiesTypesByName;
+    }
+
+    public boolean isNonVisible() {
+      return nonVisible;
+    }
+
+    public String getIconName() {
+      return iconName;
+    }
+
+    public String getTypeDescription() {
+      return typeDescription;
+    }
+  }
+
+
   /**
    * Property definition: property name, property editor type and property
    * default value.

@@ -56,29 +56,56 @@ public class ComponentImportWizard extends Wizard {
         Window.alert(MESSAGES.componentImportError());
         return;
       }
-      else if (response.getStatus() == ComponentImportResponse.Status.ALREADY_IMPORTED) {
-        String componentName = SimpleComponentDatabase.getInstance().getComponentName(response.getComponentType());
-        Window.alert(MESSAGES.componentAlreadyImportedError() + componentName + ".");
+      else if (response.getStatus() != ComponentImportResponse.Status.IMPORTED &&
+          response.getStatus() != ComponentImportResponse.Status.UPGRADED) {
+        Window.alert(MESSAGES.componentImportError());
         return;
       }
       else if (response.getStatus() == ComponentImportResponse.Status.UNKNOWN_URL) {
         Window.alert(MESSAGES.componentImportUnknownURLError());
       }
-      else if (response.getStatus() != ComponentImportResponse.Status.SUCCESS) {
-        Window.alert(MESSAGES.componentImportError());
-        return;
+      else if (response.getStatus() == ComponentImportResponse.Status.UPGRADED) {
+        String componentName = SimpleComponentDatabase.getInstance().getComponentName(response.getComponentType());
+        Window.alert(MESSAGES.componentUpgradedAlert() + componentName + " !");
       }
-      List<ProjectNode> compNodes = response.getNodes();
-      for (ProjectNode node : compNodes) {
-        if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-          String fileId = node.getFileId();
-          int start = fileId.indexOf(external_components) + external_components.length();
-          int end = fileId.indexOf('/', start);
-          String typeName = fileId.substring(start, end);
-          new ComponentRenameWizard(typeName, compNodes).center();
 
+      List<ProjectNode> compNodes = response.getNodes();
+      long destinationProjectId = response.getProjectId();
+      long currentProjectId = ode.getCurrentYoungAndroidProjectId();
+      if (currentProjectId != destinationProjectId) {
+        return; // User switched project early!
+      }
+      Project project = ode.getProjectManager().getProject(destinationProjectId);
+      if (project == null) {
+        return; // Project does not exist!
+      }
+      if (response.getStatus() == ComponentImportResponse.Status.UPGRADED) {
+        YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+        YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(destinationProjectId);
+        if (projectEditor == null) {
+          return; // Project is not open!
+        }
+        for (ProjectNode node : compNodes) {
+          project.addNode(componentsFolder, node);
+          if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
+            projectEditor.addComponent(node, null);
+          }
+        }
+
+      } else if (response.getStatus() == ComponentImportResponse.Status.IMPORTED) {
+        for (ProjectNode node : compNodes) {
+          if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
+            String fileId = node.getFileId();
+            int start = fileId.indexOf(external_components) + external_components.length();
+            int end = fileId.indexOf('/', start);
+            String typeName = fileId.substring(start, end);
+            new ComponentRenameWizard(typeName, destinationProjectId, compNodes).center();
+
+          }
         }
       }
+
+
 
     }
   }
