@@ -15,7 +15,7 @@ import java.util.Map;
 public interface ComponentDatabaseChangeListener {
 
   /**
-   * Invoked after one or more components are added
+   * Invoked after one or more components are added or upgraded
    */
   void onComponentTypeAdded(List<String> componentTypes);
 

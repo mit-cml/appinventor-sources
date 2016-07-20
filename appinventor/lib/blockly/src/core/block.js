@@ -354,6 +354,14 @@ Blockly.Block.prototype.badBlock = function() {
 };
 
 /**
+ * Unmark this block as Bad.
+ */
+Blockly.Block.prototype.notBadBlock = function() {
+  goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
+  this.svg_.removeBadBlock();
+};
+
+/**
  * Check to see if this block is bad.
  */
 Blockly.Block.prototype.isBadBlock = function() {
@@ -441,6 +449,16 @@ Blockly.Block.prototype.dispose = function(healStack, animate,
   // Remove any associated errors or warnings.
   Blockly.WarningHandler.checkDisposedBlock.call(this);
 };
+
+/**
+  Unplug this block from every block connected to it.
+ */
+Blockly.Block.prototype.isolate = function(healStack, bump) {
+  this.unplug(healStack, bump);
+  for (var x = this.childBlocks_.length - 1; x >= 0; x--) {
+    this.childBlocks_[x].unplug(healStack, bump);
+  }
+}
 
 /**
  * Unplug this block from its superior block.  If this block is a statement,
@@ -1563,6 +1581,7 @@ Blockly.Block.prototype.setDisabled = function(disabled) {
   this.svg_.updateDisabled();
   this.workspace.fireChangeEvent();
 };
+
 
 /**
  * Get whether the block is disabled or not due to parents.

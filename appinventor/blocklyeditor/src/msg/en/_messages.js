@@ -95,6 +95,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
     Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
     Blockly.ERROR_COMPONENT_DOES_NOT_EXIST = "Component does not exist";
+    Blockly.ERROR_BLOCK_IS_NOT_DEFINED = "This block is not defined. Delete this block!";
 
 // Colour Blocks.
     Blockly.Msg.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';
@@ -979,6 +980,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP = '';
 
 // Components Blocks.
+    Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP = "This block is not defined. Delete this block!";
+
     Blockly.Msg.LANG_COMPONENT_BLOCK_HELPURL = '';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN = 'when ';
     Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO = 'do';
