@@ -1043,6 +1043,15 @@
   ;; (android-log "signal-runtime-error ")
   (primitive-throw (make YailRuntimeError message error-type)))
 
+(define (signal-runtime-form-error message error-type ???)
+  ;; this is like signal-runtime-error, but it generates an error in
+  ;; the form that can be controlled by the Screen.ErrorOccurred handler
+  ...
+  ;;; *this-form*
+  ;;; need to create a java class YailRuntimeForm error
+)
+
+
 ;;; Kludge based on Kawa compilation issues with 'not'
 (define (yail-not foo) (not foo))
 
