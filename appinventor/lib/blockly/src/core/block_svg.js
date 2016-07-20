@@ -442,6 +442,7 @@ Blockly.BlockSvg.prototype.updateDisabled = function() {
   }
 };
 
+
 /**
  * Select this block.  Highlight it visually.
  */
@@ -465,6 +466,16 @@ Blockly.BlockSvg.prototype.removeSelect = function() {
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+      'badBlock');
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Unmark this block as bad.
+ */
+Blockly.BlockSvg.prototype.removeBadBlock = function() {
+  Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
       'badBlock');
   // Move the selected block to the top of the stack.
   this.svgGroup_.parentNode.appendChild(this.svgGroup_);

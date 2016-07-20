@@ -37,20 +37,23 @@ public class ComponentRenameWizard extends Wizard{
 
     private String defaultTypeName;
     private String defaultName;
-    private long projectId;
+    private long destinationProjectId;
 
     private class RenameComponentCallback extends OdeAsyncCallback<Void> {
         @Override
         public void onSuccess(Void result) {
             if (nodes.isEmpty())  return;
-            Project project = ode.getProjectManager().getProject(projectId);
+            Project project = ode.getProjectManager().getProject(destinationProjectId);
             if (project == null) {
                 return;
             }
             YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
-            YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(projectId);
+            YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(destinationProjectId);
+            if (projectEditor == null) {
+                return;
+            }
             for (ProjectNode node : nodes) {
-                project.addNode(componentsFolder,node);
+                project.addNode(componentsFolder, node);
                 if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
                     projectEditor.addComponent(node, null);
                 }
@@ -61,12 +64,12 @@ public class ComponentRenameWizard extends Wizard{
 
 
 
-    protected ComponentRenameWizard(final String defaultTypeName, final List<ProjectNode> compNodes) {
+    protected ComponentRenameWizard(final String defaultTypeName, long projectId, final List<ProjectNode> compNodes) {
         super(MESSAGES.componentRenameWizardCaption(), true, false);
 
         this.defaultTypeName = defaultTypeName;
         this.defaultName = getDefaultName(defaultTypeName);
-        this.projectId = ode.getCurrentYoungAndroidProjectId();
+        this.destinationProjectId = projectId;
         this.nodes = compNodes;
 
         setStylePrimaryName("ode-DialogBox");
@@ -98,7 +101,7 @@ public class ComponentRenameWizard extends Wizard{
                 String newName = renameTextBox.getText();
 
                 if (TextValidators.checkNewComponentName(newName)) {
-                    ode.getComponentService().renameImportedComponent(defaultTypeName, newName, projectId, new RenameComponentCallback());
+                    ode.getComponentService().renameImportedComponent(defaultTypeName, newName, destinationProjectId, new RenameComponentCallback());
 
                 } else {
                     show();
@@ -113,7 +116,7 @@ public class ComponentRenameWizard extends Wizard{
         initCancelCommand(new Command() {
             @Override
             public void execute() {
-                ode.getComponentService().deleteImportedComponent(defaultTypeName, projectId, new AsyncCallback<Void>() {
+                ode.getComponentService().deleteImportedComponent(defaultTypeName, destinationProjectId, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable throwable) {
 

@@ -477,7 +477,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         COMPONENT_DATABASE.addComponentDatabaseListener(projectEditor);
         COMPONENT_DATABASE.addComponent(new ClientJsonParser().parse(
             jsonFileContent).asObject());
-        externalComponents.add(compNode.getName());
+        if (!externalComponents.contains(compNode.getName())) { // In case of upgrade, we do not need to add entry
+          externalComponents.add(compNode.getName());
+        }
         if (afterComponentAdded != null) {
           afterComponentAdded.execute();
         }

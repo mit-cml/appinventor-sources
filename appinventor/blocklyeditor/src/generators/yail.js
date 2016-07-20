@@ -610,12 +610,12 @@ Blockly.Yail.blockToCode1 = function(block) {
   var code = func.call(block);
   if (code instanceof Array) {
     // Value blocks return tuples of code and operator order.
-    if (block.disabled) {
+    if (block.disabled || block.isBadBlock()) {
       code[0] = '';
     }
     return [this.scrub_(block, code[0], true), code[1]];
   } else {
-    if (block.disabled) {
+    if (block.disabled || block.isBadBlock()) {
       code = '';
     }
     return this.scrub_(block, code, true);

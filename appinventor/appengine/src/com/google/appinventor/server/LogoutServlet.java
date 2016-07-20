@@ -7,10 +7,12 @@
 package com.google.appinventor.server;
 
 import com.google.appengine.api.users.UserServiceFactory;
+
 import com.google.appinventor.server.flags.Flag;
 
 import java.io.IOException;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +27,19 @@ public class LogoutServlet extends OdeServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    req.getSession().invalidate();
+//    req.getSession().invalidate();
+    Cookie cookie = new Cookie("AppInventor", null);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);        // This should cause it to be tossed immediately
+    res.addCookie(cookie);
+
+    // The code below is how you logout of Google. We have commented it out
+    // here because in LoginServlet.java we are now destroying the ACSID Cookie
+    // which effectively logs you out from Google's point of view, without effecting
+    // other Google Systems that the user might be using.
+
+    // Note: The code below will logout you out of ALL Google services
+    // (which can be pretty annoying
     if (useGoogle.get() == true) {
       res.sendRedirect(UserServiceFactory.getUserService().createLogoutURL("/"));
       res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);

@@ -20,7 +20,7 @@ public interface ComponentService extends RemoteService {
    * Import the component to the project in the server and
    * return a list of ProjectNode that can be added to the client
    *
-   * @param url the url of the componenet file or filename of temp file
+   * @param fileOrUrl the url of the component file or filename of temp file
    * @param projectId id of the project to which the component will be added
    * @param folderPath folder to which the component will be stored
    * @return a list of ProjectNode created from the component
