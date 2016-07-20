@@ -1457,6 +1457,10 @@
       (max lowest (min x highest)))))
 
 
+;;; The following comment is obsolete, but we'll retain it for history.
+;;; We're now making zero division
+;;; signal a runtime error, unlike previously where it returned NaN.
+;;; OBSOLETE COMMENT:
 ;;; This codes around the complexity (or Kawa bug?) that
 ;;; inexact infinity is different from exact infinity.  For example
 ;;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
@@ -1468,13 +1472,19 @@
 ;;; infinity.
 (define (yail-divide n d)
   (if (= d 0)
-      (/ n 0.0)
+      ;; returning (/ n 0.0) relates to the above obsolete comment
+      ;; (/ n 0.0)
+      ;; We signal a runtime error instead
+      (signal-runtime-error
+       (format #f "Attempt to divide ~A by 0."
+               (get-display-representation n))
+       "Attempt to divide by 0")
       ;; force inexactness so that integer division does not produce
       ;; rationals, which is simpler for App Inventor users.
       ;; In most cases, rationals are converted to decimals anyway at higher levels
       ;; of the system, so that the forcing to inexact would be unnecessary.  But
       ;; there are places where the conversion doesn't happen.  For example, if we
-      ;; inserted the result of dividing 2 by 3 into a ListView or a picker,
+      ;; were to insert the result of dividing 2 by 3 into a ListView or a picker,
       ;; which would appear as the string "2/3" if the division produced a rational.
       (exact->inexact (/ n d))))
 
