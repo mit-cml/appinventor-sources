@@ -84,6 +84,7 @@ public final class ErrorMessages {
   public static final int ERROR_BLUETOOTH_UNSUPPORTED_ENCODING = 519;
   // ActivityStarter errors
   public static final int ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601;
+  public static final int ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602;
   // Media errors
   public static final int ERROR_UNABLE_TO_LOAD_MEDIA = 701;
   public static final int ERROR_UNABLE_TO_PREPARE_MEDIA = 702;
@@ -356,6 +357,8 @@ public final class ErrorMessages {
     // ActivityStarter errors
     errorMessages.put(ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY,
         "No corresponding activity was found.");
+    errorMessages.put(ERROR_ACTIVITY_STARTER_NO_ACTION_INFO,
+        "No Action information in ActivityStarter was found.");
     // Media errors
     errorMessages.put(ERROR_UNABLE_TO_LOAD_MEDIA,
         "Unable to load %s.");
