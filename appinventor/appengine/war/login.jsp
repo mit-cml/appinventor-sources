@@ -2,17 +2,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <%
-   String error = (String) session.getAttribute("error");
-   if (error != null) {
-      session.removeAttribute("error");
-   }
+   String error = request.getParameter("error");
    String useGoogleLabel = (String) request.getAttribute("useGoogleLabel");
    String locale = request.getParameter("locale");
    if (locale == null) {
        locale = "en";
-   }
-   if("zh_CN".equals(locale) || "en".equals(locale)){
-       session.setAttribute("locale", locale);
    }
 %>
 <html>

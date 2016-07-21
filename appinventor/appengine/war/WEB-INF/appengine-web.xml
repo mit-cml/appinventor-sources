@@ -28,7 +28,8 @@
   </static-files>
 
   <!-- Permit sessions for location authentication -->
-  <sessions-enabled>true</sessions-enabled>
+  <!-- Not any more -->
+  <sessions-enabled>false</sessions-enabled>
 
   <!-- Configuration and flags -->
   <system-properties>

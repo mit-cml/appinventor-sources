@@ -5,44 +5,45 @@
 
 package com.google.appinventor.server;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.ServletException;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+
+import com.google.appinventor.server.flags.Flag;
+
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData.PWData;
+
+import com.google.appinventor.server.util.PasswordHash;
+
+import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
 import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-
-import com.google.appinventor.server.flags.Flag;
-import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.server.storage.StorageIo;
-import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.server.storage.StoredData.PWData;
-import com.google.appinventor.server.util.PasswordHash;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * LoginServlet -- Handle logging someone in using an email address for a login
@@ -74,24 +75,39 @@ public class LoginServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     resp.setContentType("text/html; charset=utf-8");
-    PrintWriter out = resp.getWriter();
 
+    PrintWriter out;
+    String locale = "en";
     String [] components = req.getRequestURI().split("/");
     LOG.info("requestURI = " + req.getRequestURI());
     String page = getPage(req);
-    String locale = (String) req.getSession().getAttribute("locale");
-    if (locale == null) {       // Default to English
-      locale = "en";
+
+    // String locale = (String) req.getSession().getAttribute("locale");
+    // if (locale == null) {       // Default to English
+    //   locale = "en";
+    // }
+
+    OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);
+    if (userInfo != null && userInfo.getLocale() != null) {
+      locale = userInfo.getLocale();
     }
+
     String queryString = req.getQueryString();
     HashMap<String, String> params = getQueryMap(queryString);
     String pLocale = params.get("locale");
     if (pLocale != null) {
       if (!pLocale.equals(locale)) { // Hmmm, changed the locale did we...
         locale = pLocale;
-        req.getSession().setAttribute("locale", locale);
+        // Can only set the locale in userInfo if we have a userInfo
+        // If we do not and we are using Google authentication we
+        // will set it later after we have logged ourselves in and
+        // have allocated a userInfo
+        if (userInfo != null) {
+          userInfo.setLocale(locale);
+        }
       }
     }
+
     LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
     ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
 
@@ -106,15 +122,42 @@ public class LoginServlet extends HttpServlet {
       String email = apiUser.getEmail();
       String userId = apiUser.getUserId();
       User user = storageIo.getUser(userId, email);
-      req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
-      if (userService.isUserAdmin()) {                           // If Google says you are an admin
-        req.getSession().setAttribute("isadmin", true);          // Tell the session we are admin
+      // OLD CODE
+      // req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
+      // if (userService.isUserAdmin()) {                           // If Google says you are an admin
+      //   req.getSession().setAttribute("isadmin", true);          // Tell the session we are admin
+      if (userInfo == null) {   // Need to create it
+        userInfo = new OdeAuthFilter.UserInfo();
+        userInfo.setLocale(locale);
       }
-      resp.sendRedirect("/");
+      userInfo.setUserId(user.getUserId()); // This effectively logs us in!
+      userInfo.setIsAdmin(user.getIsAdmin());
+      if (userService.isUserAdmin()) { // If we are a developer, we are always an admin
+        userInfo.setIsAdmin(true);
+      }
+
+      String newCookie = userInfo.buildCookie(false);
+      LOG.info("newCookie = " + newCookie);
+      if (newCookie != null) {
+        Cookie cook = new Cookie("AppInventor", newCookie);
+        cook.setPath("/");
+        resp.addCookie(cook);
+      }
+      // Remove the ACSID Cookie used by Google for Authentication
+      Cookie cook = new Cookie("ACSID", null);
+      cook.setPath("/");
+      cook.setMaxAge(0);
+      resp.addCookie(cook);
+      if (locale.equals("en")) {
+        resp.sendRedirect("/");
+      } else {
+        resp.sendRedirect("/?locale=" + locale);
+      }
       return;
     } else {
       if (useLocal.get() == false) {
         if (useGoogle.get() == false) {
+          out = setCookieOutput(userInfo, resp);
           out.println("<html><head><title>Error</title></head>\n");
           out.println("<body><h1>App Inventor is Mis-Configured</h1>\n");
           out.println("<p>This instance of App Inventor has no authentication mechanism configured.</p>\n");
@@ -122,7 +165,11 @@ public class LoginServlet extends HttpServlet {
           out.println("</html>\n");
           return;
         }
-        resp.sendRedirect("/login/google");
+        if (locale.equals("en")) {
+          resp.sendRedirect("/login/google");
+        } else {
+          resp.sendRedirect("/login/google?locale=" + locale);
+        }
         return;
       }
     }
@@ -142,7 +189,13 @@ public class LoginServlet extends HttpServlet {
       }
       LOG.info("setpw email = " + data.email);
       User user = storageIo.getUserFromEmail(data.email);
-      req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
+      if (userInfo == null) { // Didn't get it from an incoming cookie, so need to create it
+        userInfo = new OdeAuthFilter.UserInfo();
+        userInfo.setLocale(locale);
+      }
+      userInfo.setUserId(user.getUserId()); // This effectively logs us in!
+      out = setCookieOutput(userInfo, resp);
+//      req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
       out.println("<html><head><title>Set Your Password</title>\n");
       out.println("</head>\n<body>\n");
       out.println("<h1>" + bundle.getString("setyourpassword") + "</h1>\n");
@@ -154,12 +207,14 @@ public class LoginServlet extends HttpServlet {
       storageIo.cleanuppwdata();
       return;
     } else if (page.equals("linksent")) {
+      out = setCookieOutput(userInfo, resp);
       out.println("<html><head><title>" + bundle.getString("linksent") + "</title></head>\n");
       out.println("<body>\n");
       out.println("<h1>" + bundle.getString("linksent") + "</h1>\n");
       out.println("<p>" + bundle.getString("checkemail") + "</p>\n");
       return;
     } else if (page.equals("sendlink")) {
+      out = setCookieOutput(userInfo, resp);
       out.println("<head><title>" + bundle.getString("requestreset") + "</title></head>\n");
       out.println("<body>\n");
       out.println("<h1>" + bundle.getString("requestlink") + "</h1>\n");
@@ -200,17 +255,31 @@ public class LoginServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));
     String queryString = input.readLine();
-    PrintWriter out = resp.getWriter();
+    // PrintWriter out = resp.getWriter();
 
-    String locale = (String) req.getSession().getAttribute("locale");
-    if (locale == null) {
-      locale = "en";
+    // String locale = (String) req.getSession().getAttribute("locale");
+    // if (locale == null) {
+    //   locale = "en";
+    // }
+
+    PrintWriter out;
+    String locale = "en";
+
+    OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);
+    if (userInfo != null && userInfo.getLocale() != null) {
+      locale = userInfo.getLocale();
+    }
+
+    if (userInfo == null) {
+      userInfo = new OdeAuthFilter.UserInfo();
+      userInfo.setLocale(locale);
     }
 
     LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
     ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
 
     if (queryString == null) {
+      out = setCookieOutput(userInfo, resp);
       out.println("queryString is null");
       return;
     }
@@ -237,12 +306,13 @@ public class LoginServlet extends HttpServlet {
       storageIo.cleanuppwdata();
       return;
     } else if (page.equals("setpw")) {
-      String userid = (String) req.getSession().getAttribute("userid");
-      if (userid == null) {
+//      String userid = (String) req.getSession().getAttribute("userid");
+//      if (userid == null) {
+      if (userInfo == null || userInfo.getUserId().equals("")) {
         fail(req, resp, "Session Timed Out");
         return;
       }
-      User user = storageIo.getUser(userid);
+      User user = storageIo.getUser(userInfo.getUserId());
       String password = params.get("password");
       if (password == null || password.equals("")) {
         fail(req, resp, bundle.getString("nopassword"));
@@ -290,7 +360,17 @@ public class LoginServlet extends HttpServlet {
       return;
     }
 
-    req.getSession().setAttribute("userid", user.getUserId());
+//    req.getSession().setAttribute("userid", user.getUserId());
+    LOG.info("userInfo = " + userInfo + " user = " + user);
+    userInfo.setUserId(user.getUserId());
+    userInfo.setIsAdmin(user.getIsAdmin());
+    String newCookie = userInfo.buildCookie(false);
+    LOG.info("newCookie = " + newCookie);
+    if (newCookie != null) {
+      Cookie cook = new Cookie("AppInventor", newCookie);
+      cook.setPath("/");
+      resp.addCookie(cook);
+    }
 
     String uri = "/";
     if (!locale.equals("en")) {
@@ -343,9 +423,7 @@ public class LoginServlet extends HttpServlet {
   }
 
   private void fail(HttpServletRequest req, HttpServletResponse resp, String error) throws IOException {
-    req.getSession().setAttribute("error", error);
-    req.getSession().removeAttribute("email"); // Make sure we are not logged in
-    resp.sendRedirect("/login/");
+    resp.sendRedirect("/login/?error=" + error);
     return;
   }
 
@@ -374,4 +452,20 @@ public class LoginServlet extends HttpServlet {
     } catch (IOException e) {
     }
   }
+
+  private PrintWriter setCookieOutput(OdeAuthFilter.UserInfo userInfo, HttpServletResponse resp)
+    throws IOException {
+    if (userInfo != null) {     // if we never had logged in, this will be null!
+      String newCookie = userInfo.buildCookie(true);
+      if (newCookie != null) {
+        Cookie cook = new Cookie("AppInventor", newCookie);
+        cook.setPath("/");
+        resp.addCookie(cook);
+      }
+    }
+    resp.setContentType("text/html; charset=utf-8");
+    PrintWriter out = resp.getWriter();
+    return out;
+  }
+
 }
