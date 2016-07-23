@@ -199,7 +199,10 @@ public final class ErrorMessages {
   public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 3104;
   public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 3105;
 
-  // Start the next group of errors at 3200
+  // Form errors that are signalled in runtime.scm
+  public static final int ERROR_DIVISION_BY_ZERO = 3200;
+
+  // Start the next group of errors at 3300
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -493,6 +496,11 @@ public final class ErrorMessages {
     // Image errors
     errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
         "The version of Android on this device does not support image rotation.");
+    // Form errors signaled in runtime.scm.   The error number used in runtime.scm to call
+    // signal-runtime-form-error must match the error number used here.
+    errorMessages.put(ERROR_DIVISION_BY_ZERO,
+        "Trying to divide %s by 0.  The result might not be valid.");
+
   }
 
   private ErrorMessages() {
