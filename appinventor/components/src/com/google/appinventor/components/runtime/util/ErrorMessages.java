@@ -497,9 +497,9 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
         "The version of Android on this device does not support image rotation.");
     // Form errors signaled in runtime.scm.   The error number used in runtime.scm to call
-    // signal-runtime-form-errror must match the error number used here.
+    // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
-        "Trying to divide %s by zero.  The result will not be a valid number.");
+        "Trying to divide %s by 0.  The result might not be valid.");
 
   }
 

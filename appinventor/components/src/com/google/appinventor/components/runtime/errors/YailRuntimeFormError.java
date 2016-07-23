@@ -9,20 +9,20 @@ package com.google.appinventor.components.runtime.errors;
 import com.google.appinventor.components.runtime.Form;
 
 /**
- * Error signaled by runtime.scm that triggers the Screen's Form.DispatchErrorOccurred
+ * Error signaled by runtime.scm that triggers the Screen's Form.runtimeFormErrorOccurred
  * so that the developer can provide a handler for it.
  *
  * @author halabelson@mit.edu (Hal Abelson)
  */
-public class YailFormRuntimeError {
+public class YailRuntimeFormError {
    
   /**
    *
    * @param form the form where the error should be signaled
    */
   
-  public YailFormRuntimeError(Form form, String functionName,  int errorNumber, String message) {
-    form.formRuntimeErrorOccurredEvent(functionName, errorNumber, message);
+  public YailRuntimeFormError(Form form, String functionName,  int errorNumber, String message) {
+    form.runtimeFormErrorOccurredEvent(functionName, errorNumber, message);
   }
 
 

@@ -830,11 +830,11 @@ public class Form extends Activity
     });
   }
   
-  // This formRuntimeErrorOccurred can be called from runtime.scm in the case of a runtime error.  The event is always
+  // This runtimeFormErrorOccurred can be called from runtime.scm in the case of a runtime error.  The event is always
   // signaled in the active form.   It shows an event dialog, which the end user can dismiss, and which 
   // the app developer can tailor with the Screen.ErrorOccurred event handler.
 
-  public void formRuntimeErrorOccurredEvent(String functionName, int errorNumber, String message) {
+  public void runtimeFormErrorOccurredEvent(String functionName, int errorNumber, String message) {
     Log.d("FORM_RUNTIME_ERROR", "functionName is " + functionName);
     Log.d("FORM_RUNTIME_ERROR", "errorNumber is " + errorNumber);
     Log.d("FORM_RUNTIME_ERROR", "message is " + message);
