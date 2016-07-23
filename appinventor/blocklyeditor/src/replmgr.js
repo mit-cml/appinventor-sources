@@ -756,7 +756,13 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     } else {
         message = Blockly.Msg.REPL_STARTING_EMULATOR;
     }
-    progdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, null, 0, function() {
+    progdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, 'GO', 0, function(resp) {
+        if (resp == 'GO') {
+            if (pc == 1 || pc == 2) {
+                counter = 0;    // Force counter to finish
+            }
+            return;
+        }
         progdialog.hide();
         clearInterval(interval);
         window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;

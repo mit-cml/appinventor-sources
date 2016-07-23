@@ -19,7 +19,8 @@
 ;;;
 
 ;;; also see *debug-form* below
-(define *debug* #f)
+;;;;&&&&&&&&&&&&&&&&
+(define *debug* #t)
 
 (define *this-is-the-repl* #f)
 
@@ -803,6 +804,7 @@
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias YailFormRuntimeError <com.google.appinventor.components.runtime.errors.YailFormRuntimeError>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1043,12 +1045,11 @@
   ;; (android-log "signal-runtime-error ")
   (primitive-throw (make YailRuntimeError message error-type)))
 
-(define (signal-runtime-form-error message error-type ???)
+(define (signal-runtime-form-error function-name error-number message)
   ;; this is like signal-runtime-error, but it generates an error in
   ;; the form that can be controlled by the Screen.ErrorOccurred handler
-  ...
-  ;;; *this-form*
-  ;;; need to create a java class YailRuntimeForm error
+  (android-log (format #f "calling YailRuntimeFormError"))
+  (YailFormRuntimeError *this-form* function-name error-number message)
 )
 
 
@@ -1466,28 +1467,22 @@
       (max lowest (min x highest)))))
 
 
-;;; The following comment is obsolete, but we'll retain it for history.
-;;; We're now making zero division
-;;; signal a runtime error, unlike previously where it returned NaN.
-;;; OBSOLETE COMMENT:
-;;; This codes around the complexity (or Kawa bug?) that
-;;; inexact infinity is different from exact infinity.  For example
-;;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
-;;; Also (/ 0 0) gives an error, while (/ 0 0.0) gives Nan.
-;;; We could make division by zero always signal a runtime error,
-;;; but it seems better to minimize runtime errors, even though that
-;;; makes Nan and =/- infinity visible to users.  Maybe we should avoid Nan
-;;; by making (/ 0 0) and (/ 0 0.0) be runtime errors, even though we keep
-;;; infinity.
+
+;;; This must match the number in ErrorMessages.java
+;;(define ERROR_DIVISION_BY_ZERO 3200)
+
+
+(define-alias errorMessages <com.google.appinventor.components.runtime.util.ErrorMessages>)
+(define ERROR_DIVISION_BY_ZERO errorMessages:ERROR_DIVISION_BY_ZERO)
+
 (define (yail-divide n d)
   (if (= d 0)
-      ;; returning (/ n 0.0) relates to the above obsolete comment
-      ;; (/ n 0.0)
-      ;; We signal a runtime error instead
-      (signal-runtime-error
-       (format #f "Attempt to divide ~A by 0."
-               (get-display-representation n))
-       "Attempt to divide by 0")
+      (begin 
+	;; show a notification to the user to warn about zero divide.  But
+	;; still return the reult of the division, which migth be infinity or Nan
+	(signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+	n))
+
       ;; force inexactness so that integer division does not produce
       ;; rationals, which is simpler for App Inventor users.
       ;; In most cases, rationals are converted to decimals anyway at higher levels
@@ -1495,7 +1490,10 @@
       ;; there are places where the conversion doesn't happen.  For example, if we
       ;; were to insert the result of dividing 2 by 3 into a ListView or a picker,
       ;; which would appear as the string "2/3" if the division produced a rational.
-      (exact->inexact (/ n d))))
+      ;; This also codes around the complexity (or Kawa bug?) that
+      ;; inexact infinity is different from exact infinity.  For example
+      ;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
+  (exact->inexact (/ n d)))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
