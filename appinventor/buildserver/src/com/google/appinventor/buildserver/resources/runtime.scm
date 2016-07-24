@@ -1043,6 +1043,13 @@
   ;; (android-log "signal-runtime-error ")
   (primitive-throw (make YailRuntimeError message error-type)))
 
+(define (signal-runtime-form-error function-name error-number message)
+  ;; this is like signal-runtime-error, but it generates an error in
+  ;; the current Screen that can be modified by the Screen.ErrorOccurred handler
+  (*:runtimeFormErrorOccurredEvent *this-form* function-name error-number message)
+)
+
+
 ;;; Kludge based on Kawa compilation issues with 'not'
 (define (yail-not foo) (not foo))
 
@@ -1456,27 +1463,40 @@
     (lambda (x)
       (max lowest (min x highest)))))
 
+(define-alias errorMessages <com.google.appinventor.components.runtime.util.ErrorMessages>)
+(define ERROR_DIVISION_BY_ZERO errorMessages:ERROR_DIVISION_BY_ZERO)
 
-;;; This codes around the complexity (or Kawa bug?) that
-;;; inexact infinity is different from exact infinity.  For example
-;;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
-;;; Also (/ 0 0) gives an error, while (/ 0 0.0) gives Nan.
-;;; We could make division by zero always signal a runtime error,
-;;; but it seems better to minimize runtime errors, even though that
-;;; makes Nan and =/- infinity visible to users.  Maybe we should avoid Nan
-;;; by making (/ 0 0) and (/ 0 0.0) be runtime errors, even though we keep
-;;; infinity.
 (define (yail-divide n d)
-  (if (= d 0)
-      (/ n 0.0)
-      ;; force inexactness so that integer division does not produce
-      ;; rationals, which is simpler for App Inventor users.
-      ;; In most cases, rationals are converted to decimals anyway at higher levels
-      ;; of the system, so that the forcing to inexact would be unnecessary.  But
-      ;; there are places where the conversion doesn't happen.  For example, if we
-      ;; inserted the result of dividing 2 by 3 into a ListView or a picker,
-      ;; which would appear as the string "2/3" if the division produced a rational.
-      (exact->inexact (/ n d))))
+  ;; For divide by 0 exceptions, we show a notification to the user, but still return
+  ;; a result.  The app developer can
+  ;; change the error  action using the Screen.ErrorOccurred event handler.
+  (cond ((and (= d 0) (= n 0))
+         ;; Treat 0/0 as a special case, returning 0.
+         ;; We do this because Kawa throws an exception of its own if you divide
+         ;; 0 by 0. Whereas it returns "1/0" or +-Inf.0 if the numerator is non-zero.
+         (begin (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+                ;; return 0 in this case.  The zero was chosen arbitrarily.
+                n))
+        ((= d 0)
+         (begin
+           ;; If numerator is not zero, but we're deviding by 0, we show the warning, and
+           ;; Let Kawa do the dvision and return the result, which will be plus or minus infinity.
+           ;; Note that division by zero does not produce a Kawa exception.
+           ;; We also convert the result to inexact, to code around the complexity (or Kawa bug?) that
+           ;; inexact infinity is different from exact infinity.  For example
+           ;; (floor (/ 1 0)) gives an error, while floor (/ 1 0.0) is +inf.
+           (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
+           (exact->inexact (/ n d))))
+        (else
+         ;; Otherise, return the result of the Kawa devision.
+         ;; We force inexactness so that integer division does not produce
+         ;; rationals, which is simpler for App Inventor users.
+         ;; In most cases, rationals are converted to decimals anyway at higher levels
+         ;; of the system, so that the forcing to inexact would be unnecessary.  But
+         ;; there are places where the conversion doesn't happen.  For example, if we
+         ;; were to insert the result of dividing 2 by 3 into a ListView or a picker,
+         ;; which would appear as the string "2/3" if the division produced a rational.
+         (exact->inexact (/ n d)))))
 
 ;;; Trigonometric functions
 (define *pi* 3.14159265)
