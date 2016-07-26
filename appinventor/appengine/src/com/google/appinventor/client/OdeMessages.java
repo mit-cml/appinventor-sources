@@ -2407,6 +2407,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String horizontalArrangementComponentPallette();
 
+  @DefaultMessage("HorizontalScrollArrangement")
+  @Description("")
+  String horizontalScrollArrangementComponentPallette();
+
   @DefaultMessage("TableArrangement")
   @Description("")
   String tableArrangementComponentPallette();
@@ -2414,6 +2418,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("VerticalArrangement")
   @Description("")
   String verticalArrangementComponentPallette();
+
+  @DefaultMessage("VerticalScrollArrangement")
+  @Description("")
+  String verticalScrollArrangementComponentPallette();
 
   // Lego Mindstorms NXT
   @DefaultMessage("NxtColorSensor")
@@ -5692,6 +5700,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HorizontalArrangementHelpStringComponentPallette();
 
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p><p>This version is scrollable.,")
+  @Description("")
+  String HorizontalScrollArrangementHelpStringComponentPallette();
+
   @DefaultMessage("Component for displaying images.  The picture to display, and other aspects of the Image\"s appearance, can be specified in the Designer or in the Blocks Editor.")
   @Description("")
   String ImageHelpStringComponentPallette();
@@ -5851,6 +5863,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("<p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p>")
   @Description("")
   String VerticalArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p><p> This version is scrollable.</p>")
+  @Description("")
+  String VerticalScrollArrangementHelpStringComponentPallette();
 
   @DefaultMessage("A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in Windows Media Video (.wmv) format, 3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal formats, see <a href=\"http://developer.android.com/guide/appendix/media-formats.html\" target=\"_blank\">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.")
   @Description("")

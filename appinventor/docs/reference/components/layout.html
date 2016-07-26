@@ -457,10 +457,12 @@
                     <ul>
                       <li> <a href="#HorizontalArrangement">
                           HorizontalArrangement </a> </li>
+                      <li><a href="#HorizontalScrollArrangement">HorizontalScrollArrangement</a></li>
                       <li> <a href="#TableArrangement"> TableArrangement
                           </a> </li>
                       <li> <a href="#VerticalArrangement"> VerticalArrangement
                         </a> </li>
+                      <li><a href="#VerticalScrollArrangement">VerticalScrollArrangement</a></li>
                     </ul>
                     <h2 id="HorizontalArrangement"> HorizontalArrangement </h2>
                     <img alt="" src="images/horizontalarrangement.png">
@@ -512,6 +514,33 @@
                       <dt> <code> Width </code> </dt>
                       <dd> Horizontal arrangement width (x-size). </dd>
                     </dl>
+
+                    <h2 id="HorizontalScrollArrangement">HorizontalScrollArrangement</h2>
+
+                    <p><p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p><p>This version is scrollable.</p>
+
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>AlignHorizontal</code></dt>
+                      <dd>A number that encodes how contents of the arrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement's width is automatic.</dd>
+                      <dt><code>AlignVertical</code></dt>
+                      <dd>A number that encodes how the contents of the arrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = aligned at the bottom, 3 = vertically centered.  Alignment has no effect if the arrangement's height is automatic.</dd>
+                      <dt><code>BackgroundColor</code></dt>
+                      <dd>Returns the component's background color</dd>
+                      <dt><code>Height</code></dt>
+                      <dd></dd>
+                      <dt><code>HeightPercent</code></dt>
+                      <dd></dd>
+                      <dt><code>Image</code></dt>
+                      <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                      <dt><code>Visible</code></dt>
+                      <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                      <dt><code>Width</code></dt>
+                      <dd></dd>
+                      <dt><code>WidthPercent</code></dt>
+                      <dd></dd>
+                    </dl>
+
                     <h2 id="TableArrangement"> TableArrangement </h2>
                     <p> Use a table arrangement component to display a group of
                       components in a tabular fashion. </p>
@@ -599,6 +628,31 @@
                       <dd> Vertical arrangement height (y-size). </dd>
                       <dt> <code> Width </code> </dt>
                       <dd> Vertical arrangement width (x-size). </dd>
+                    </dl>
+                    <h2 id="VerticalScrollArrangement">VerticalScrollArrangement</h2>
+
+                    <p><p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p><p> This version is scrollable</p>
+
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>AlignHorizontal</code></dt>
+                      <dd>A number that encodes how contents of the arrangement are aligned  horizontally. The choices are: 1 = left aligned, 2 = right aligned,  3 = horizontally centered.  Alignment has no effect if the arrangement's width is automatic.</dd>
+                      <dt><code>AlignVertical</code></dt>
+                      <dd>A number that encodes how the contents of the arrangement are aligned  vertically. The choices are: 1 = aligned at the top, 2 = aligned at the bottom, 3 = vertically centered.  Alignment has no effect if the arrangement's height is automatic.</dd>
+                      <dt><code>BackgroundColor</code></dt>
+                      <dd>Returns the component's background color</dd>
+                      <dt><code>Height</code></dt>
+                      <dd></dd>
+                      <dt><code>HeightPercent</code></dt>
+                      <dd></dd>
+                      <dt><code>Image</code></dt>
+                      <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                      <dt><code>Visible</code></dt>
+                      <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                      <dt><code>Width</code></dt>
+                      <dd></dd>
+                      <dt><code>WidthPercent</code></dt>
+                      <dd></dd>
                     </dl>
                   </div>
                 </div>
