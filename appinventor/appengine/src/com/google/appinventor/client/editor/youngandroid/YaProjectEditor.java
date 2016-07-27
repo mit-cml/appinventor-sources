@@ -23,6 +23,7 @@ import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -474,11 +475,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           this.onFailure(e);
           return;
         }
+        JSONObject componentJSONObject = new ClientJsonParser().parse(jsonFileContent).asObject();
         COMPONENT_DATABASE.addComponentDatabaseListener(projectEditor);
-        COMPONENT_DATABASE.addComponent(new ClientJsonParser().parse(
-            jsonFileContent).asObject());
-        if (!externalComponents.contains(compNode.getName())) { // In case of upgrade, we do not need to add entry
-          externalComponents.add(compNode.getName());
+        COMPONENT_DATABASE.addComponent(componentJSONObject);
+        if (!externalComponents.contains(componentJSONObject.get("name").toString())) { // In case of upgrade, we do not need to add entry
+          externalComponents.add(componentJSONObject.get("name").toString());
         }
         if (afterComponentAdded != null) {
           afterComponentAdded.execute();
