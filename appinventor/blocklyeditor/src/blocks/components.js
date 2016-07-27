@@ -300,7 +300,7 @@ Blockly.Blocks.component_event = {
       for (var x = 0; x < varList.length; ++x) {
         var found = false;
         for (var i = 0, param; param = params[i]; ++i) {
-          if (param.name == varList[x]) {
+          if (window.parent.BlocklyPanel_getLocalizedParameterName(param.name) == varList[x]) {
             found = true;
             break;
           }
@@ -580,7 +580,7 @@ Blockly.Blocks.component_method = {
       for (var x = 0; x < argList.length; ++x) {
         var found = false;
         for (var i = 0, param; param = params[i]; ++i) {
-          if (param.name == argList[x]) {
+          if (window.parent.BlocklyPanel_getLocalizedParameterName(param.name) == argList[x]) {
             var input = argInputList[argList[x]];
             if (!input || !input.connection) {
               modifiedParameters = true;
