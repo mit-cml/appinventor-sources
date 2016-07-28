@@ -24,6 +24,7 @@ import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
@@ -1509,7 +1510,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
           // <Screen>.yail files are missing when user converts AI1 project to AI2
           // instead of blowing up, just create a <Screen>.yail file
-          if (fd == null && fileName.endsWith(".yail")){
+          if (fd == null && (fileName.endsWith(".yail") 
+        		  || YoungAndroidProjectService.PROJECT_PROPERTIES_FILE_NAME.equals(fileName))){
             fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
             fd.userId = userId;
           }
@@ -2793,5 +2795,4 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
 }
-
 
