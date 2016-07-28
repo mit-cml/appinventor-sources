@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -455,7 +456,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     Uri uri = (dataUri.length() != 0) ? Uri.parse(dataUri) : null;
     Intent intent = (uri != null) ? new Intent(action, uri) : new Intent(action);
 
-    if (Action().isEmpty()) {
+    if (TextUtils.isEmpty(Action())) {
       return null;
     }
 
