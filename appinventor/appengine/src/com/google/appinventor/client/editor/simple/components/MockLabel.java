@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
@@ -99,7 +100,7 @@ public final class MockLabel extends MockVisibleComponent {
   private void setTextProperty(String text) {
     savedText = text;
     if (getPropertyValue(PROPERTY_NAME_HTMLFORMAT).equals("True")) {
-      labelWidget.setHTML(text);
+      labelWidget.setHTML(SimpleHtmlSanitizer.sanitizeHtml(text).asString());
     } else {
       labelWidget.setText(text);
     }
