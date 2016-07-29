@@ -227,7 +227,6 @@ public class OdeAuthFilter implements Filter {
     String userId = "";
     boolean isAdmin = false;
     boolean isReadOnly = false;
-    String locale = "en";
     long ts;
 
     transient boolean modified = false;
@@ -240,16 +239,10 @@ public class OdeAuthFilter implements Filter {
       return this.isReadOnly;
     }
 
-    public UserInfo(String userId, boolean isAdmin, String locale) {
+    public UserInfo(String userId, boolean isAdmin) {
       this.userId = userId;
       this.isAdmin = isAdmin;
-      this.locale = locale;
       this.ts = System.currentTimeMillis();
-    }
-
-    public void setLocale(String locale) {
-      this.locale = locale;
-      modified = true;
     }
 
     public void setUserId(String userId) {
@@ -264,10 +257,6 @@ public class OdeAuthFilter implements Filter {
 
     public String getUserId() {
       return userId;
-    }
-
-    public String getLocale() {
-      return locale;
     }
 
     public boolean getIsAdmin() {
@@ -293,7 +282,6 @@ public class OdeAuthFilter implements Filter {
             .setUuid(this.userId)
             .setTs(this.ts)
             .setIsAdmin(this.isAdmin)
-            .setLocale(this.locale)
             .setIsReadOnly(this.isReadOnly).build();
           return Base64Coder.encode(crypter.encrypt(cookie.toByteArray()));
         } else {
@@ -334,7 +322,6 @@ public class OdeAuthFilter implements Filter {
             uInfo.userId = cookieToken.getUuid();
             uInfo.ts = cookieToken.getTs();
             uInfo.isAdmin = cookieToken.getIsAdmin();
-            uInfo.locale = cookieToken.getLocale();
             uInfo.isReadOnly = cookieToken.getIsReadOnly();
             if (uInfo.isValid()) {
               return uInfo;

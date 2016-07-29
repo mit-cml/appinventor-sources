@@ -54,25 +54,23 @@ public final class CookieAuth {
     boolean getIsReadOnly();
 
     /**
-     * <code>optional string locale = 5;</code>
-     */
-    boolean hasLocale();
-    /**
-     * <code>optional string locale = 5;</code>
-     */
-    java.lang.String getLocale();
-    /**
-     * <code>optional string locale = 5;</code>
-     */
-    com.google.protobuf.ByteString
-        getLocaleBytes();
-
-    /**
      * <code>optional uint64 oneProjectId = 6;</code>
+     *
+     * <pre>
+     * locale is deprecated. Kept here so we
+     * do not recycle the id number too soon
+     *  optional string locale = 5;
+     * </pre>
      */
     boolean hasOneProjectId();
     /**
      * <code>optional uint64 oneProjectId = 6;</code>
+     *
+     * <pre>
+     * locale is deprecated. Kept here so we
+     * do not recycle the id number too soon
+     *  optional string locale = 5;
+     * </pre>
      */
     long getOneProjectId();
   }
@@ -149,14 +147,8 @@ public final class CookieAuth {
               isReadOnly_ = input.readBool();
               break;
             }
-            case 42: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000010;
-              locale_ = bs;
-              break;
-            }
             case 48: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000010;
               oneProjectId_ = input.readUInt64();
               break;
             }
@@ -287,58 +279,28 @@ public final class CookieAuth {
       return isReadOnly_;
     }
 
-    public static final int LOCALE_FIELD_NUMBER = 5;
-    private java.lang.Object locale_;
-    /**
-     * <code>optional string locale = 5;</code>
-     */
-    public boolean hasLocale() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional string locale = 5;</code>
-     */
-    public java.lang.String getLocale() {
-      java.lang.Object ref = locale_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          locale_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string locale = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getLocaleBytes() {
-      java.lang.Object ref = locale_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        locale_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int ONEPROJECTID_FIELD_NUMBER = 6;
     private long oneProjectId_;
     /**
      * <code>optional uint64 oneProjectId = 6;</code>
+     *
+     * <pre>
+     * locale is deprecated. Kept here so we
+     * do not recycle the id number too soon
+     *  optional string locale = 5;
+     * </pre>
      */
     public boolean hasOneProjectId() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>optional uint64 oneProjectId = 6;</code>
+     *
+     * <pre>
+     * locale is deprecated. Kept here so we
+     * do not recycle the id number too soon
+     *  optional string locale = 5;
+     * </pre>
      */
     public long getOneProjectId() {
       return oneProjectId_;
@@ -349,7 +311,6 @@ public final class CookieAuth {
       ts_ = 0L;
       isAdmin_ = false;
       isReadOnly_ = false;
-      locale_ = "";
       oneProjectId_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
@@ -386,9 +347,6 @@ public final class CookieAuth {
         output.writeBool(4, isReadOnly_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getLocaleBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt64(6, oneProjectId_);
       }
       getUnknownFields().writeTo(output);
@@ -417,10 +375,6 @@ public final class CookieAuth {
           .computeBoolSize(4, isReadOnly_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getLocaleBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(6, oneProjectId_);
       }
@@ -549,10 +503,8 @@ public final class CookieAuth {
         bitField0_ = (bitField0_ & ~0x00000004);
         isReadOnly_ = false;
         bitField0_ = (bitField0_ & ~0x00000008);
-        locale_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
         oneProjectId_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -600,10 +552,6 @@ public final class CookieAuth {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.locale_ = locale_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
         result.oneProjectId_ = oneProjectId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -634,11 +582,6 @@ public final class CookieAuth {
         }
         if (other.hasIsReadOnly()) {
           setIsReadOnly(other.getIsReadOnly());
-        }
-        if (other.hasLocale()) {
-          bitField0_ |= 0x00000010;
-          locale_ = other.locale_;
-          onChanged();
         }
         if (other.hasOneProjectId()) {
           setOneProjectId(other.getOneProjectId());
@@ -850,109 +793,57 @@ public final class CookieAuth {
         return this;
       }
 
-      private java.lang.Object locale_ = "";
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public boolean hasLocale() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public java.lang.String getLocale() {
-        java.lang.Object ref = locale_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            locale_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public com.google.protobuf.ByteString
-          getLocaleBytes() {
-        java.lang.Object ref = locale_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          locale_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public Builder setLocale(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        locale_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public Builder clearLocale() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        locale_ = getDefaultInstance().getLocale();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string locale = 5;</code>
-       */
-      public Builder setLocaleBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        locale_ = value;
-        onChanged();
-        return this;
-      }
-
       private long oneProjectId_ ;
       /**
        * <code>optional uint64 oneProjectId = 6;</code>
+       *
+       * <pre>
+       * locale is deprecated. Kept here so we
+       * do not recycle the id number too soon
+       *  optional string locale = 5;
+       * </pre>
        */
       public boolean hasOneProjectId() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional uint64 oneProjectId = 6;</code>
+       *
+       * <pre>
+       * locale is deprecated. Kept here so we
+       * do not recycle the id number too soon
+       *  optional string locale = 5;
+       * </pre>
        */
       public long getOneProjectId() {
         return oneProjectId_;
       }
       /**
        * <code>optional uint64 oneProjectId = 6;</code>
+       *
+       * <pre>
+       * locale is deprecated. Kept here so we
+       * do not recycle the id number too soon
+       *  optional string locale = 5;
+       * </pre>
        */
       public Builder setOneProjectId(long value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000010;
         oneProjectId_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional uint64 oneProjectId = 6;</code>
+       *
+       * <pre>
+       * locale is deprecated. Kept here so we
+       * do not recycle the id number too soon
+       *  optional string locale = 5;
+       * </pre>
        */
       public Builder clearOneProjectId() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         oneProjectId_ = 0L;
         onChanged();
         return this;
@@ -983,11 +874,11 @@ public final class CookieAuth {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014cookie.proto\022\ncookieauth\"m\n\006cookie\022\014\n\004" +
+      "\n\014cookie.proto\022\ncookieauth\"]\n\006cookie\022\014\n\004" +
       "uuid\030\001 \002(\t\022\n\n\002ts\030\002 \002(\004\022\017\n\007isAdmin\030\003 \001(\010\022" +
-      "\022\n\nisReadOnly\030\004 \001(\010\022\016\n\006locale\030\005 \001(\t\022\024\n\014o" +
-      "neProjectId\030\006 \001(\004B6\n(com.google.appinven" +
-      "tor.server.cookieauthB\nCookieAuth"
+      "\022\n\nisReadOnly\030\004 \001(\010\022\024\n\014oneProjectId\030\006 \001(" +
+      "\004B6\n(com.google.appinventor.server.cooki" +
+      "eauthB\nCookieAuth"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1006,7 +897,7 @@ public final class CookieAuth {
     internal_static_cookieauth_cookie_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_cookieauth_cookie_descriptor,
-        new java.lang.String[] { "Uuid", "Ts", "IsAdmin", "IsReadOnly", "Locale", "OneProjectId", });
+        new java.lang.String[] { "Uuid", "Ts", "IsAdmin", "IsReadOnly", "OneProjectId", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
