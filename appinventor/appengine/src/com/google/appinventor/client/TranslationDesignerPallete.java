@@ -130,10 +130,14 @@ public class TranslationDesignerPallete {
       // Screen Arrangement
     } else if (key.equals("HorizontalArrangement")) {
       value = MESSAGES.horizontalArrangementComponentPallette();
+    } else if (key.equals("HorizontalScrollArrangement")) {
+      value = MESSAGES.horizontalScrollArrangementComponentPallette();
     } else if (key.equals("TableArrangement")) {
       value = MESSAGES.tableArrangementComponentPallette();
     } else if (key.equals("VerticalArrangement")) {
       value = MESSAGES.verticalArrangementComponentPallette();
+    } else if (key.equals("VerticalScrollArrangement")) {
+      value = MESSAGES.verticalScrollArrangementComponentPallette();
       // Lego Mindstorms NXT
     } else if (key.equals("NxtColorSensor")) {
       value = MESSAGES.nxtColorSensorComponentPallette();
@@ -245,6 +249,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.GyroscopeSensorHelpStringComponentPallette();
     } else if (key.equals("HorizontalArrangement-helpString")) {
       value = MESSAGES.HorizontalArrangementHelpStringComponentPallette();
+    } else if (key.equals("HorizontalScrollArrangement-helpString")) {
+      value = MESSAGES.HorizontalScrollArrangementHelpStringComponentPallette();
     } else if (key.equals("Image-helpString")) {
       value = MESSAGES.ImageHelpStringComponentPallette();
     } else if (key.equals("ImagePicker-helpString")) {
@@ -339,6 +345,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.TwitterHelpStringComponentPallette();
     } else if (key.equals("VerticalArrangement-helpString")) {
       value = MESSAGES.VerticalArrangementHelpStringComponentPallette();
+    } else if (key.equals("VerticalScrollArrangement-helpString")) {
+      value = MESSAGES.VerticalScrollArrangementHelpStringComponentPallette();
     } else if (key.equals("VideoPlayer-helpString")) {
       value = MESSAGES.VideoPlayerHelpStringComponentPallette();
     } else if (key.equals("Voting-helpString")) {

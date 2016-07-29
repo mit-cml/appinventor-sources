@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,23 +13,24 @@ import com.google.appinventor.components.common.ComponentConstants;
  * Mock VerticalArrangement component.
  *
  * @author sharon@google.com (Sharon Perl)
+ * @author jis@mit.edu (Jeffrey I. Schiller)
  */
-public final class MockVerticalArrangement extends MockHVArrangement {
+public final class MockScrollVerticalArrangement extends MockHVArrangement {
 
   /**
    * Component type name.
    */
-  public static final String TYPE = "VerticalArrangement";
+  public static final String TYPE = "VerticalScrollArrangement";
 
   /**
    * Creates a new MockVerticalArrangement component.
    *
    * @param editor  editor of source file the component belongs to
    */
-  public MockVerticalArrangement(SimpleEditor editor) {
+  public MockScrollVerticalArrangement(SimpleEditor editor) {
     super(editor, TYPE, images.vertical(),
       ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
-      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+      ComponentConstants.SCROLLABLE_ARRANGEMENT);
   }
 
 }

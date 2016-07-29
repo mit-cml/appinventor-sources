@@ -84,6 +84,7 @@ public final class ErrorMessages {
   public static final int ERROR_BLUETOOTH_UNSUPPORTED_ENCODING = 519;
   // ActivityStarter errors
   public static final int ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601;
+  public static final int ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602;
   // Media errors
   public static final int ERROR_UNABLE_TO_LOAD_MEDIA = 701;
   public static final int ERROR_UNABLE_TO_PREPARE_MEDIA = 702;
@@ -199,7 +200,10 @@ public final class ErrorMessages {
   public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 3104;
   public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 3105;
 
-  // Start the next group of errors at 3200
+  // Form errors that are signalled in runtime.scm
+  public static final int ERROR_DIVISION_BY_ZERO = 3200;
+
+  // Start the next group of errors at 3300
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -356,6 +360,8 @@ public final class ErrorMessages {
     // ActivityStarter errors
     errorMessages.put(ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY,
         "No corresponding activity was found.");
+    errorMessages.put(ERROR_ACTIVITY_STARTER_NO_ACTION_INFO,
+        "No Action information in ActivityStarter was found.");
     // Media errors
     errorMessages.put(ERROR_UNABLE_TO_LOAD_MEDIA,
         "Unable to load %s.");
@@ -493,6 +499,11 @@ public final class ErrorMessages {
     // Image errors
     errorMessages.put(ERROR_IMAGE_CANNOT_ROTATE,
         "The version of Android on this device does not support image rotation.");
+    // Form errors signaled in runtime.scm.   The error number used in runtime.scm to call
+    // signal-runtime-form-error must match the error number used here.
+    errorMessages.put(ERROR_DIVISION_BY_ZERO,
+        "Trying to divide %s by 0.  The result might not be valid.");
+
   }
 
   private ErrorMessages() {

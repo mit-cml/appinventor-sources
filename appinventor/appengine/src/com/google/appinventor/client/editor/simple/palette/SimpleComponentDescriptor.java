@@ -24,22 +24,27 @@ import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
-import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
-import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
 import com.google.appinventor.client.editor.simple.components.MockRadioButton;
+import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
+import com.google.appinventor.client.editor.simple.components.MockSpinner;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
+import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
-import com.google.appinventor.client.editor.simple.components.MockSpinner;
+
 import com.google.common.collect.Maps;
+
 import com.google.gwt.resources.client.ImageResource;
+
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -317,8 +322,12 @@ public final class SimpleComponentDescriptor {
       return new MockTimePicker(editor);
     } else if (name.equals(MockHorizontalArrangement.TYPE)) {
       return new MockHorizontalArrangement(editor);
+    } else if (name.equals(MockScrollHorizontalArrangement.TYPE)) {
+      return new MockScrollHorizontalArrangement(editor);
     } else if (name.equals(MockVerticalArrangement.TYPE)) {
       return new MockVerticalArrangement(editor);
+    } else if (name.equals(MockScrollVerticalArrangement.TYPE)) {
+      return new MockScrollVerticalArrangement(editor);
     } else if (name.equals(MockTableArrangement.TYPE)) {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockImageSprite.TYPE)) {

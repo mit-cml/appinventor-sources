@@ -1,6 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,19 +14,21 @@ import com.google.appinventor.components.common.YaVersion;
 /**
  * A horizontal arrangement of components
  * @author sharon@google.com (Sharon Perl)
+ * @author jis@mit.edu (Jeffrey I. Schiller)
  *
  */
-@DesignerComponent(version = YaVersion.HORIZONTALARRANGEMENT_COMPONENT_VERSION,
+@DesignerComponent(version = YaVersion.HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION,
     description = "<p>A formatting element in which to place components " +
     "that should be displayed from left to right.  If you wish to have " +
     "components displayed one over another, use " +
-    "<code>VerticalArrangement</code> instead.</p>",
+    "<code>VerticalArrangement</code> instead.</p><p>This version is " +
+    "scrollable.",
     category = ComponentCategory.LAYOUT)
 @SimpleObject
-public class HorizontalArrangement extends HVArrangement {
-  public HorizontalArrangement(ComponentContainer container) {
+public class HorizontalScrollArrangement extends HVArrangement {
+  public HorizontalScrollArrangement(ComponentContainer container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
-      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
+      ComponentConstants.SCROLLABLE_ARRANGEMENT);
   }
 
 }

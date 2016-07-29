@@ -7,23 +7,38 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-import android.os.Handler;
+
 import android.graphics.drawable.Drawable;
+
+import android.os.Handler;
+
 import android.util.Log;
+
 import android.view.View;
+import android.view.ViewGroup;
+
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A container for components that arranges them linearly, either
@@ -40,24 +55,27 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Layout
   private final int orientation;
   private final LinearLayout viewLayout;
-
+  private ViewGroup frameContainer;
+  private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity
-  private final AlignmentUtil alignmentSetter;
+  private AlignmentUtil alignmentSetter;
 
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
   private int verticalAlignment;
-    // Backing for background color
-    private int backgroundColor;
-    // This is the Drawable corresponding to the Image property.
-    // If an Image has never been set or if the most recent Image could not be loaded, this is null.
-    private Drawable backgroundImageDrawable;
-    // Image path
-    private String imagePath = "";
+  // Backing for background color
+  private int backgroundColor;
+  // This is the Drawable corresponding to the Image property.
+  // If an Image has never been set or if the most recent Image could not be loaded, this is null.
+  private Drawable backgroundImageDrawable;
+  // Image path
+  private String imagePath = "";
 
   private Drawable defaultButtonDrawable;
 
   private final Handler androidUIHandler = new Handler();
+
+  private static final String LOG_TAG = "HVArrangement";
 
   /**
    * Creates a new HVArrangement component.
@@ -67,29 +85,53 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
   */
-  public HVArrangement(ComponentContainer container, int orientation) {
+  public HVArrangement(ComponentContainer container, int orientation, boolean scrollable) {
     super(container);
     context = container.$context();
 
     this.orientation = orientation;
+    this.scrollable = scrollable;
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
+
     viewLayout.setBaselineAligned(false);
     alignmentSetter = new AlignmentUtil(viewLayout);
-
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
     verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
 
+    if (scrollable) {
+      switch (orientation) {
+      case LAYOUT_ORIENTATION_VERTICAL:
+        Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
+        frameContainer = new ScrollView(context);
+        break;
+      case LAYOUT_ORIENTATION_HORIZONTAL:
+        Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
+        frameContainer = new HorizontalScrollView(context);
+        break;
+      }
+    } else {
+      Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
+      frameContainer = new FrameLayout(context);
+    }
+
+    frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
+    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+
       // Save the default values in case the user wants them back later.
-      defaultButtonDrawable = getView().getBackground();
+    defaultButtonDrawable = getView().getBackground();
 
     container.$add(this);
-
     BackgroundColor(Component.COLOR_DEFAULT);
+
   }
+
+
 
   // ComponentContainer implementation
 
@@ -120,13 +162,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("(HVArrangement)Width not stable yet... trying again");
+            Log.d(LOG_TAG, "(HVArrangement)Width not stable yet... trying again");
             setChildWidth(component, fWidth, trycount + 1);
           }
         }, 100);                // Try again in 1/10 of a second
     }
     if (width <= LENGTH_PERCENT_TAG) {
-      System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      Log.d(LOG_TAG, "HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
 
@@ -147,7 +189,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("(HVArrangement)Height not stable yet... trying again");
+            Log.d(LOG_TAG, "(HVArrangement)Height not stable yet... trying again");
             setChildHeight(component, fHeight);
           }
         }, 100);                // Try again in 1/10 of a second
@@ -169,10 +211,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public View getView() {
-    return viewLayout.getLayoutManager();
+    return frameContainer; //: viewLayout.getLayoutManager();
   }
-
- // These property definitions are duplicated in Form.java
 
   // The numeric encodings are defined Component Constants
 
@@ -323,24 +363,26 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         updateAppearance();
     }
 
-    // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
-    // Images take precedence over background colors.
-    private void updateAppearance() {
-        // If there is no background image,
-        // the appearance depends solely on the background color and shape.
-        if (backgroundImageDrawable == null) {
-                if (backgroundColor == Component.COLOR_DEFAULT) {
-                    // If there is no background image and color is default,
-                    // restore original 3D bevel appearance.
-                    ViewUtil.setBackgroundDrawable(getView(), defaultButtonDrawable);
-                } else {
-                    // Clear the background image.
-                    ViewUtil.setBackgroundDrawable(getView(), null);
-                    getView().setBackgroundColor(backgroundColor);
-                }
-        } else {
-            // If there is a background image
-            ViewUtil.setBackgroundImage(getView(), backgroundImageDrawable);
-        }
+
+  // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
+  // Images take precedence over background colors.
+  private void updateAppearance() {
+    // If there is no background image,
+    // the appearance depends solely on the background color and shape.
+    if (backgroundImageDrawable == null) {
+      if (backgroundColor == Component.COLOR_DEFAULT) {
+        // If there is no background image and color is default,
+        // restore original 3D bevel appearance.
+        ViewUtil.setBackgroundDrawable(viewLayout.getLayoutManager(), defaultButtonDrawable);
+      } else {
+        // Clear the background image.
+        ViewUtil.setBackgroundDrawable(viewLayout.getLayoutManager(), null);
+        viewLayout.getLayoutManager().setBackgroundColor(backgroundColor);
+      }
+    } else {
+      // If there is a background image
+      ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
     }
+  }
+
 }
