@@ -192,6 +192,8 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Protocol Buffers -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
+    <!-- OWASP -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
       <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>

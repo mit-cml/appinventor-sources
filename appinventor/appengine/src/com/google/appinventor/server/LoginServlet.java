@@ -45,6 +45,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+
 /**
  * LoginServlet -- Handle logging someone in using an email address for a login
  * name and a password, which is stored hashed (and salted). Facilities are
@@ -68,6 +71,7 @@ public class LoginServlet extends HttpServlet {
   private static final Flag<Boolean> useGoogle = Flag.createFlag("auth.usegoogle", true);
   private static final Flag<Boolean> useLocal = Flag.createFlag("auth.uselocal", false);
   private static final UserService userService = UserServiceFactory.getUserService();
+  private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements("p").toFactory();
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -383,7 +387,7 @@ public class LoginServlet extends HttpServlet {
   }
 
   private void fail(HttpServletRequest req, HttpServletResponse resp, String error) throws IOException {
-    resp.sendRedirect("/login/?error=" + error);
+    resp.sendRedirect("/login/?error=" + sanitizer.sanitize(error));
     return;
   }
 

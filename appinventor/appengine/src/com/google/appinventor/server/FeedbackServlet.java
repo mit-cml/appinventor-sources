@@ -6,27 +6,22 @@
 
 package com.google.appinventor.server;
 
-import com.google.appinventor.server.encryption.EncryptionException;
-import com.google.appinventor.server.project.utils.Security;
-import com.google.appinventor.server.LocalUser;
-import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.shared.rpc.RpcResult;
-import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.common.io.ByteStreams;
 
-import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 
 /**
  * Servlet to record feedback when an error occurs in the client.
@@ -44,6 +39,8 @@ public class FeedbackServlet extends OdeServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    PolicyFactory policy = new HtmlPolicyBuilder()
+      .allowElements("p").toFactory();
     String query = req.getQueryString();
     String notes = req.getParameter("notes");
     String foundIn = req.getParameter("foundIn");
@@ -53,6 +50,9 @@ public class FeedbackServlet extends OdeServlet {
     if (foundIn == null) foundIn = "";
     if (faultData == null) faultData = "";
     if (projectId == null) projectId = "-1";
+    notes = policy.sanitize(notes);
+    foundIn = policy.sanitize(foundIn);
+    projectId = policy.sanitize(projectId);
     PrintWriter out = new PrintWriter(resp.getWriter());
     out.println(String.format(template, notes, foundIn, faultData, projectId));
   }
