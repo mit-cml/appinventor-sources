@@ -88,7 +88,7 @@ public class AdminInfoServiceImpl extends OdeRemoteServiceServlet implements Adm
     // session.setAttribute("readonly", true);
 
     OdeAuthFilter.UserInfo nuser = new OdeAuthFilter.UserInfo(user.getId(),
-      false, "en");
+      false);
     nuser.setReadOnly(true);
     String newCookie = nuser.buildCookie(false);
     Cookie cook = new Cookie("AppInventor", newCookie);

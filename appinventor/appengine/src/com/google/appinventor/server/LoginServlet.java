@@ -45,6 +45,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+
 /**
  * LoginServlet -- Handle logging someone in using an email address for a login
  * name and a password, which is stored hashed (and salted). Facilities are
@@ -68,6 +71,7 @@ public class LoginServlet extends HttpServlet {
   private static final Flag<Boolean> useGoogle = Flag.createFlag("auth.usegoogle", true);
   private static final Flag<Boolean> useLocal = Flag.createFlag("auth.uselocal", false);
   private static final UserService userService = UserServiceFactory.getUserService();
+  private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements("p").toFactory();
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -77,36 +81,22 @@ public class LoginServlet extends HttpServlet {
     resp.setContentType("text/html; charset=utf-8");
 
     PrintWriter out;
-    String locale = "en";
     String [] components = req.getRequestURI().split("/");
     LOG.info("requestURI = " + req.getRequestURI());
     String page = getPage(req);
 
-    // String locale = (String) req.getSession().getAttribute("locale");
-    // if (locale == null) {       // Default to English
-    //   locale = "en";
-    // }
-
     OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);
-    if (userInfo != null && userInfo.getLocale() != null) {
-      locale = userInfo.getLocale();
-    }
 
     String queryString = req.getQueryString();
     HashMap<String, String> params = getQueryMap(queryString);
-    String pLocale = params.get("locale");
-    if (pLocale != null) {
-      if (!pLocale.equals(locale)) { // Hmmm, changed the locale did we...
-        locale = pLocale;
-        // Can only set the locale in userInfo if we have a userInfo
-        // If we do not and we are using Google authentication we
-        // will set it later after we have logged ourselves in and
-        // have allocated a userInfo
-        if (userInfo != null) {
-          userInfo.setLocale(locale);
-        }
-      }
+    // These params are passed around so they can take effect even if we
+    // were not logged in.
+    String locale = params.get("locale");
+    if (locale == null) {
+      locale = "en";
     }
+    String repo = params.get("repo");
+    String galleryId = params.get("galleryId");
 
     LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
     ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
@@ -122,14 +112,9 @@ public class LoginServlet extends HttpServlet {
       String email = apiUser.getEmail();
       String userId = apiUser.getUserId();
       User user = storageIo.getUser(userId, email);
-      // OLD CODE
-      // req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
-      // if (userService.isUserAdmin()) {                           // If Google says you are an admin
-      //   req.getSession().setAttribute("isadmin", true);          // Tell the session we are admin
-      if (userInfo == null) {   // Need to create it
-        userInfo = new OdeAuthFilter.UserInfo();
-        userInfo.setLocale(locale);
-      }
+
+      userInfo = new OdeAuthFilter.UserInfo(); // Create a new userInfo object
+
       userInfo.setUserId(user.getUserId()); // This effectively logs us in!
       userInfo.setIsAdmin(user.getIsAdmin());
       if (userService.isUserAdmin()) { // If we are a developer, we are always an admin
@@ -148,11 +133,8 @@ public class LoginServlet extends HttpServlet {
       cook.setPath("/");
       cook.setMaxAge(0);
       resp.addCookie(cook);
-      if (locale.equals("en")) {
-        resp.sendRedirect("/");
-      } else {
-        resp.sendRedirect("/?locale=" + locale);
-      }
+      String uri = buildUri("/", locale, repo, galleryId);
+      resp.sendRedirect(uri);
       return;
     } else {
       if (useLocal.get() == false) {
@@ -165,11 +147,8 @@ public class LoginServlet extends HttpServlet {
           out.println("</html>\n");
           return;
         }
-        if (locale.equals("en")) {
-          resp.sendRedirect("/login/google");
-        } else {
-          resp.sendRedirect("/login/google?locale=" + locale);
-        }
+        String uri = buildUri("/login/google", locale, repo, galleryId);
+        resp.sendRedirect(uri);
         return;
       }
     }
@@ -189,10 +168,7 @@ public class LoginServlet extends HttpServlet {
       }
       LOG.info("setpw email = " + data.email);
       User user = storageIo.getUserFromEmail(data.email);
-      if (userInfo == null) { // Didn't get it from an incoming cookie, so need to create it
-        userInfo = new OdeAuthFilter.UserInfo();
-        userInfo.setLocale(locale);
-      }
+      userInfo = new OdeAuthFilter.UserInfo(); // Create new userInfo object
       userInfo.setUserId(user.getUserId()); // This effectively logs us in!
       out = setCookieOutput(userInfo, resp);
 //      req.getSession().setAttribute("userid", user.getUserId()); // This effectively logs us in!
@@ -245,6 +221,9 @@ public class LoginServlet extends HttpServlet {
     req.setAttribute("localeLabel", locale);
     req.setAttribute("pleaselogin", bundle.getString("pleaselogin"));
     req.setAttribute("login", bundle.getString("login"));
+    req.setAttribute("repo", repo);
+    req.setAttribute("locale", locale);
+    req.setAttribute("galleryId", galleryId);
     try {
       req.getRequestDispatcher("/login.jsp").forward(req, resp);
     } catch (ServletException e) {
@@ -255,28 +234,14 @@ public class LoginServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));
     String queryString = input.readLine();
-    // PrintWriter out = resp.getWriter();
-
-    // String locale = (String) req.getSession().getAttribute("locale");
-    // if (locale == null) {
-    //   locale = "en";
-    // }
 
     PrintWriter out;
-    String locale = "en";
 
     OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);
-    if (userInfo != null && userInfo.getLocale() != null) {
-      locale = userInfo.getLocale();
-    }
 
     if (userInfo == null) {
       userInfo = new OdeAuthFilter.UserInfo();
-      userInfo.setLocale(locale);
     }
-
-    LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
-    ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
 
     if (queryString == null) {
       out = setCookieOutput(userInfo, resp);
@@ -286,6 +251,16 @@ public class LoginServlet extends HttpServlet {
 
     HashMap<String, String> params = getQueryMap(queryString);
     String page = getPage(req);
+    String locale = params.get("locale");
+    if (locale == null) {
+      locale = "en";
+    }
+
+    ResourceBundle bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
+
+    String repo = params.get("repo");
+    String galleryId = params.get("galleryId");
+    LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
     if (page.equals("sendlink")) {
       String email = params.get("email");
       if (email == null) {
@@ -301,13 +276,9 @@ public class LoginServlet extends HttpServlet {
       String link = trimPage(req) + pwData.id + "/setpw";
       sendmail(email, link, locale);
       resp.sendRedirect("/login/linksent/");
-//      req.getSession().setAttribute("error", link);
-//      resp.sendRedirect("/");
       storageIo.cleanuppwdata();
       return;
     } else if (page.equals("setpw")) {
-//      String userid = (String) req.getSession().getAttribute("userid");
-//      if (userid == null) {
       if (userInfo == null || userInfo.getUserId().equals("")) {
         fail(req, resp, "Session Timed Out");
         return;
@@ -330,10 +301,7 @@ public class LoginServlet extends HttpServlet {
       }
 
       storageIo.setUserPassword(user.getUserId(),  hashedPassword);
-      String uri = "/";
-      if (!locale.equals("en")) {
-        uri += "?locale=" + locale;
-      }
+      String uri = buildUri("/", locale, repo, galleryId);
       resp.sendRedirect(uri);   // Logged in, go to service
       return;
     }
@@ -360,7 +328,6 @@ public class LoginServlet extends HttpServlet {
       return;
     }
 
-//    req.getSession().setAttribute("userid", user.getUserId());
     LOG.info("userInfo = " + userInfo + " user = " + user);
     userInfo.setUserId(user.getUserId());
     userInfo.setIsAdmin(user.getIsAdmin());
@@ -372,10 +339,7 @@ public class LoginServlet extends HttpServlet {
       resp.addCookie(cook);
     }
 
-    String uri = "/";
-    if (!locale.equals("en")) {
-      uri += "?locale=" + locale;
-    }
+    String uri = buildUri("/", locale, repo, galleryId);
     resp.sendRedirect(uri);
   }
 
@@ -423,7 +387,7 @@ public class LoginServlet extends HttpServlet {
   }
 
   private void fail(HttpServletRequest req, HttpServletResponse resp, String error) throws IOException {
-    resp.sendRedirect("/login/?error=" + error);
+    resp.sendRedirect("/login/?error=" + sanitizer.sanitize(error));
     return;
   }
 
@@ -466,6 +430,22 @@ public class LoginServlet extends HttpServlet {
     resp.setContentType("text/html; charset=utf-8");
     PrintWriter out = resp.getWriter();
     return out;
+  }
+
+  private String buildUri(String uri, String locale, String repo, String galleryId) {
+    String separator = "?";
+    if (locale != null && !locale.equals("")) {
+      uri += separator + "locale=" + locale;
+      separator = "&";
+    }
+    if (repo != null && !repo.equals("")) {
+      uri += separator + "repo=" + repo;
+      separator = "&";
+    }
+    if (galleryId != null && !galleryId.equals("")) {
+      uri += separator + "galleryId=" + galleryId;
+    }
+    return (uri);
   }
 
 }

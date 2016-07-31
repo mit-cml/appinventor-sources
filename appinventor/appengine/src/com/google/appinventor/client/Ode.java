@@ -755,11 +755,22 @@ public class Ode implements EntryPoint {
               return;
             case Response.SC_PRECONDITION_FAILED:
               String locale = Window.Location.getParameter("locale");
-              if (locale == null || locale.equals("")) {
-                Window.Location.replace("/login/");
-              } else {
-                Window.Location.replace("/login/?locale=" + locale);
+              String repo = Window.Location.getParameter("repo");
+              galleryId = Window.Location.getParameter("galleryId");
+              String separator = "?";
+              String uri = "/login/";
+              if (locale != null && !locale.equals("")) {
+                uri += separator + "locale=" + locale;
+                separator = "&";
               }
+              if (repo != null & !repo.equals("")) {
+                uri += separator + "repo=" + repo;
+                separator = "&";
+              }
+              if (galleryId != null && !galleryId.equals("")) {
+                uri += separator + "galleryId=" + galleryId;
+              }
+              Window.Location.replace(uri);
               return;           // likely not reached
           }
         }

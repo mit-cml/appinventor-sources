@@ -8,7 +8,9 @@ message cookie {
   required uint64 ts = 2;
   optional bool isAdmin = 3;
   optional bool isReadOnly = 4;
-  optional string locale = 5;
+// locale is deprecated. Kept here so we
+// do not recycle the id number too soon
+//  optional string locale = 5;
   optional uint64 oneProjectId = 6;
 }
 
