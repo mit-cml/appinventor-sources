@@ -133,7 +133,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
         // The value 10 px was chosen strictly for style.
         // 10 px is the same as ROUNDED_CORNERS_RADIUS defined in
         // com.google.appinventor.components.runtime.ButtonBase.
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "30px");
+        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "10px");
         break;
       case 2:
         // Rectangular Button
