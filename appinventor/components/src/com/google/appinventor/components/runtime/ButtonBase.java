@@ -18,7 +18,15 @@ import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.view.MotionEvent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -94,6 +102,10 @@ public abstract class ButtonBase extends AndroidViewComponent
   // If an Image has never been set or if the most recent Image
   // could not be loaded, this is null.
   private Drawable backgroundImageDrawable;
+
+  // This is the bitmap from backgroundImageDrawable 
+  // obtained using BitmapDrawable's getBitmap() method.
+  private Bitmap backgroundBitmap;
 
   /**
    * Creates a new ButtonBase component.
@@ -380,8 +392,38 @@ public abstract class ButtonBase extends AndroidViewComponent
         setShape();
       }
     } else {
-      // If there is a background image
-      ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+      if ((shape == Component.BUTTON_SHAPE_DEFAULT)) {
+        ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+      } else {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        backgroundBitmap = ((BitmapDrawable) backgroundImageDrawable).getBitmap(); 
+
+        Bitmap result = Bitmap.createBitmap(backgroundBitmap.getWidth(), backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+
+        switch (shape) {
+          case Component.BUTTON_SHAPE_ROUNDED:
+            canvas.drawRoundRect(new RectF(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight()), 100f, 100f, paint);
+            //100f was used because the rounded feature could not be seen with 10f in companion, emulator, and phone. 
+            break;
+          case Component.BUTTON_SHAPE_RECT:
+            canvas.drawRect(new RectF(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight()), paint);
+            break;
+          case Component.BUTTON_SHAPE_OVAL:
+            canvas.drawOval(new RectF(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight()), paint);
+            break;
+          default: //This should never happen like the case in MockButtonBase.java
+            throw new IllegalArgumentException();
+        }
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        canvas.drawBitmap(backgroundBitmap, null, new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight()), paint);
+
+        ViewUtil.setBackgroundImage(view, new BitmapDrawable(result));
+      }
     }
   }
 
