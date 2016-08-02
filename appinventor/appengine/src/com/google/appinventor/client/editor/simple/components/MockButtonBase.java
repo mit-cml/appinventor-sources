@@ -118,10 +118,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    //if (hasImage) { // Becomes invalid.
-      //return;		// Becomes invalid.
-    //}				// Becomes invalid.
-
     switch(shape) {
       case 0:
         // Default Button
@@ -156,7 +152,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
   private void setBackgroundColorProperty(String text) {
     backgroundColor = text;
     // Android Buttons do not show a background color if they have an image.
-    // Still valid.
     if (hasImage) {
       return;
     }
