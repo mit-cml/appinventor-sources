@@ -316,7 +316,6 @@ public abstract class ButtonBase extends AndroidViewComponent
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
-      //updateAppearance();
       return;
     }
 
@@ -415,7 +414,7 @@ public abstract class ButtonBase extends AndroidViewComponent
           case Component.BUTTON_SHAPE_OVAL:
             canvas.drawOval(new RectF(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight()), paint);
             break;
-          default: //This should never happen like the case in MockButtonBase.java
+          default: 
             throw new IllegalArgumentException();
         }
 
