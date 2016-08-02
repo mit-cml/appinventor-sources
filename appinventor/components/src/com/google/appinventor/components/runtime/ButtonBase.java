@@ -316,6 +316,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
+      //updateAppearance();
       return;
     }
 
