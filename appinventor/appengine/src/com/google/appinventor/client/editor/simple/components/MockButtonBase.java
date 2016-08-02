@@ -118,9 +118,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
