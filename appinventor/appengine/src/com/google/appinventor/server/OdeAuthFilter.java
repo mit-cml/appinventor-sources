@@ -64,6 +64,8 @@ public class OdeAuthFilter implements Filter {
   @VisibleForTesting
   static final Flag<Boolean> useWhitelist = Flag.createFlag("use.whitelist", false);
   static final Flag<String> sessionKeyFile = Flag.createFlag("session.keyfile", "WEB-INF/authkey");
+  static final Flag<Integer> idleTimeout = Flag.createFlag("session.idletimeout", 120);
+  static final Flag<Integer> renewTime = Flag.createFlag("session.renew", 30);
 
   private final LocalUser localUser = LocalUser.getInstance();
 
@@ -272,7 +274,7 @@ public class OdeAuthFilter implements Filter {
       try {
         long offset = System.currentTimeMillis() - this.ts;
         offset /= 1000;
-        if (offset > 4*3600) {    // Renew if more then 4 hours old
+        if (offset > (60*renewTime.get())) {    // Renew if it is time
           modified = true;
           ts = System.currentTimeMillis();
         }
@@ -296,10 +298,13 @@ public class OdeAuthFilter implements Filter {
     boolean isValid() {
       long offset = System.currentTimeMillis() - this.ts;
       offset /= 1000;
-      // Reject if older then 5 hours or if greater then 60 seconds
-      // in the future. We allow for 60 seconds in the future to deal
-      // with potential clock skew between app inventor servers
-      if (offset < -60 || offset > 3600*5) {
+
+      // Reject if older then idleTimeout (minutes) or if greater then
+      // 60 seconds in the future. We allow for 60 seconds in the
+      // future to deal with potential clock skew between app inventor
+      // servers
+
+      if (offset < -60 || offset > (60*idleTimeout.get())) {
         return false;
       } else {
         return true;

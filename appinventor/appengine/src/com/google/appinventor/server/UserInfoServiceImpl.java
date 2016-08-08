@@ -60,6 +60,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setGuideUrl(Flag.createFlag("guide.url", "").get());
     config.setReferenceComponentsUrl(Flag.createFlag("reference.components.url", "").get());
     config.setFirebaseURL(Flag.createFlag("firebase.url", "").get());
+    config.setNoop(Flag.createFlag("session.noop", 0).get());
 
     // Check to see if we need to upgrade this user's project to GCS
     storageIo.checkUpgrade(userInfoProvider.getUserId());
@@ -158,4 +159,14 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   public void deleteUserFile(String fileName) {
     storageIo.deleteUserFile(userInfoProvider.getUserId(), fileName);
   }
+
+  /**
+   * No-Op (No Operation). However because we are going through
+   * OdeAuthFilter to get this far, a session cookie due for renewal
+   * will be renewed.
+   */
+  @Override
+  public void noop() {
+  }
+
 }

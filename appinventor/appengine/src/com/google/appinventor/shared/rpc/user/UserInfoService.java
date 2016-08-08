@@ -82,5 +82,9 @@ public interface UserInfoService extends RemoteService {
    */
   void deleteUserFile(String fileName);
 
+  /**
+   * No-Op Do nothing, but will refresh the session cookie as a side-effect
+   */
+  void noop();
 
 }
