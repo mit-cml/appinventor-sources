@@ -107,10 +107,28 @@
          buildserver to match -->
     <property name="build.send.git.version" value="true" />
 
+    <!-- Session Management Variables. -->
+    <!-- We define three variables here.
+         All variables are defined in minutes
+         session.idletimeout - defines how long until an idle session
+                               is considered invalid.
+         session.renew       - defines the time after which a new session
+                               cookie is generated.
+         session.noop        - defines the time interval between no-op calls
+                               from Ode. 0 means never perform a no-op (the default)
+
+         Note: If renew is > idletimeout, then people will get logged
+         out involuntarily after idletimeout because their session
+         will never renew and therefore is considered idle.
+    -->
+
+    <property name="session.idletimeout" value="120" />
+    <property name="session.renew" value="30" />
+    <property name="session.noop" value="0" />
+
     <!-- Set this to true to enable the use of Wifi connections from the blocks editor to
          the phone. The phone must have an up-to-date copy of the MIT AICompanion App to
          use this feature. -->
-
     <property name="wifi.enabled" value="true" />
 
     <!-- Firebase Secret for the shared datastore -->

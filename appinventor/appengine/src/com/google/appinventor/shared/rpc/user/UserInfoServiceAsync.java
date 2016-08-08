@@ -65,4 +65,10 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#deleteUserFile(String)
    */
   void deleteUserFile(String fileName, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#noop(String)
+   */
+  void noop(AsyncCallback<Void> callback);
+
 }

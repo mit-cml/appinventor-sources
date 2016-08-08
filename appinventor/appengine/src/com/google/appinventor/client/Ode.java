@@ -675,6 +675,26 @@ public class Ode implements EntryPoint {
         user = result.getUser();
         isReadOnly = user.isReadOnly();
 
+        // Setup noop timer (if enabled)
+        int noop = config.getNoop();
+        if (noop > 0) {
+          // If we have a noop time, setup a timer to do the noop
+          Timer t = new Timer() {
+              @Override
+              public void run() {
+                userInfoService.noop(new AsyncCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void e) {
+                    }
+                    @Override
+                    public void onFailure(Throwable e) {
+                    }
+                  });
+              }
+            };
+            t.scheduleRepeating(1000*60*noop);
+        }
+
         // If user hasn't accepted terms of service, ask them to.
         if (!user.getUserTosAccepted() && !isReadOnly) {
           // We expect that the redirect to the TOS page should be handled
