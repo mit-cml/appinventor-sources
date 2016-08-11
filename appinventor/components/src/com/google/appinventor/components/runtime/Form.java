@@ -35,6 +35,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,6 +76,9 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+
+import android.view.View.OnGenericMotionListener;
+import android.view.MotionEvent;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -201,6 +205,11 @@ public class Form extends Activity
 
   private ProgressDialog progress;
   private static boolean _initialized = false;
+
+  
+  public KeyEvent.Callback keyCatchingComponent;
+  public OnGenericMotionListener motionCatchingComponent;
+
 
   public static class PercentStorageRecord {
     public enum Dim {
@@ -442,20 +451,92 @@ public class Form extends Activity
    * that the closing screen animation is applied. (In API level
    * 5, we can simply override the onBackPressed method rather
    * than bothering with onKeyDown)
+   *
+   * This method also redirects KeyEvents to components that use a Gamepad
    */
+
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-      if (!BackPressed()) {
-        boolean handled = super.onKeyDown(keyCode, event);
-        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-        return handled;
-      } else {
-        return true;
+    boolean handled = false;
+
+      if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (!BackPressed()) {
+          handled = super.onKeyDown(keyCode, event);
+          AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+          return handled;
+       } else {
+         return true;
+       }
       }
+
+  //This allows an OTG component to grab and use the KeyEvents
+   if(keyCatchingComponent != null){
+
+      try{
+        Class[] keyArgs = new Class[2];
+        keyArgs[0] = int.class;
+        keyArgs[1] = KeyEvent.class;
+
+        Method catchKey = keyCatchingComponent.getClass().getMethod("onKeyDown", keyArgs);
+        return ((Boolean)catchKey.invoke(keyCatchingComponent, keyCode, event));
+      } catch (Throwable e){
+        Log.e("Exception", e.getMessage());
+        System.out.println(e.getMessage());
+      }
+
+      return false;
     }
-    return super.onKeyDown(keyCode, event);
+    else{
+      return super.onKeyDown(keyCode, event);
+    }
   }
+
+  //For the use of componentes implementing OTG gamepads
+  @Override
+  public boolean onKeyUp(int keyCode, KeyEvent event){
+   if(keyCatchingComponent != null){
+      try{
+        Class[] keyArgs = new Class[2];
+        keyArgs[0] = int.class;
+        keyArgs[1] = KeyEvent.class;
+
+        Method catchKey = keyCatchingComponent.getClass().getMethod("onKeyUp", keyArgs);
+        return ((Boolean)catchKey.invoke(keyCatchingComponent, keyCode, event));
+      } catch (Throwable e){
+        Log.e("Exception", e.getMessage());
+      }
+
+      return false;
+    }
+    else{
+      return super.onKeyDown(keyCode, event);
+    }
+  }
+
+
+ //For the use of componentes implementing OTG gamepads
+  @Override
+  public boolean onGenericMotionEvent(MotionEvent event){
+    Log.d("FORM RT", event.toString());
+    if(motionCatchingComponent != null){
+      try{
+        Class[] motionArgs = new Class[2];
+        motionArgs[0] = View.class;
+        motionArgs[1] = MotionEvent.class;
+
+        Method catchMotion= motionCatchingComponent.getClass().getMethod("onGenericMotion", motionArgs);
+        return ((Boolean)catchMotion.invoke(motionCatchingComponent, getCurrentFocus(), event));
+      } catch (Throwable e){
+        Log.e("Exception", e.getMessage());
+      }
+      return false;
+    }
+    else{
+      return super.onGenericMotionEvent(event);
+    }
+  }
+
+
 
   @SimpleEvent(description = "Device back button pressed.")
   public boolean BackPressed() {
@@ -809,9 +890,9 @@ public class Form extends Activity
     });
   }
 
-  // This is like dispatchErrorOccurredEvent, except that it defaults to showing
+  // This is like dispatchErrorOccurred, except that it defaults to showing
   // a message dialog rather than an alert.   The app writer can override either of these behaviors,
-  // but using the event dialog version frees the app writer from the need to explicitly override
+  // but using the event dialog version frees the app writer of the need to explicitly override
   // the alert behavior in the case
   // where a message dialog is what's generally needed.
   public void dispatchErrorOccurredEventDialog(final Component component, final String functionName,
@@ -830,18 +911,7 @@ public class Form extends Activity
     });
   }
 
-  // This runtimeFormErrorOccurred can be called from runtime.scm in
-  // the case of a runtime error.  The event is always signaled in the
-  // active form. It triggers the normal Form error system which fires
-  // the ErrorOccurred event. This can be handled by the App Inventor
-  // programmer. If it isn't a Notifier (toast) is displayed showing
-  // the error.
-  public void runtimeFormErrorOccurredEvent(String functionName, int errorNumber, String message) {
-    Log.d("FORM_RUNTIME_ERROR", "functionName is " + functionName);
-    Log.d("FORM_RUNTIME_ERROR", "errorNumber is " + errorNumber);
-    Log.d("FORM_RUNTIME_ERROR", "message is " + message);
-    dispatchErrorOccurredEvent((Component) activeForm, functionName, errorNumber, message);
-  }
+
 
   /**
    * Scrollable property getter method.
@@ -1096,9 +1166,9 @@ public class Form extends Activity
 
   /**
    * The requested screen orientation. Commonly used values are
-      unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
-      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
-      "complete list of possible settings.
+   *   unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+   *  "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " +
+   *  "complete list of possible settings.
    *
    * ScreenOrientation property getter method.
    *
@@ -1927,6 +1997,25 @@ public class Form extends Activity
     // onTouchEvent of its View.
     frameLayout.requestDisallowInterceptTouchEvent(true);
   }
+
+  //Components that want to use a Gamepad need to call this to enable the gamepad,
+  //otherwise the Android-typical behaviors for key presses (selecting buttons, going back a screen)
+  //will take precedent. The component should pass itself as a parameter to get 
+  //KeyEvents, and pass null as a parameter to pass them to form instead
+  public KeyEvent.Callback dontGrabKeyEventsForComponent(KeyEvent.Callback component){
+    keyCatchingComponent = component;
+    return component;
+  }
+
+  public void dontGrabMotionEventsForComponent(OnGenericMotionListener component){
+    motionCatchingComponent = component;
+  }
+
+  public KeyEvent.Callback getKeyCatchingComponent(){
+    return keyCatchingComponent;
+  }
+
+
 
 
   // This is used by Repl to throttle error messages which can get out of
