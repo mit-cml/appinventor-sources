@@ -262,6 +262,19 @@ public interface ProjectService extends RemoteService {
       BlocksTruncatedException;
 
   /**
+   * Saves a screenshot of the blocks
+   * This is called on the client side when a user leaves a blocks editor
+   *
+   * @param sessionId the current session id used to detect multiple sessions
+   * @param projectId the project ID
+   * @param fileId the fileId (filename) of the screenshot
+   * @param content the base64 encoded screenshot
+   */
+
+  public RpcResult screenshot(String sessionId, long projectId, String fileId, String content)
+    throws InvalidSessionException;
+
+  /**
    * Invokes a build command for the project on the back-end.
    *
    * @param projectId  project ID

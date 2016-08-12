@@ -43,6 +43,13 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  public static boolean takeScreenShots() {
+    // If true, we take a screenshot whenever a user leaves a blocks editor
+    // This screenshot is saved with their project but only available for
+    // download if you are an administrator
+    return false;
+  }
+
   public static boolean trackClientEvents() {
     // Set this to true if you want to track events with Google Analytics.
     return false;

@@ -9,19 +9,33 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
+
 import com.google.appinventor.client.output.OdeLog;
+
 import com.google.appinventor.client.tracking.Tracking;
+
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+
 import com.google.appinventor.client.widgets.Toolbar;
+
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.Scheduler;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -179,10 +193,21 @@ public class DesignToolbar extends Toolbar {
       if (ode.screensLocked()) {
         return;                 // Don't permit this if we are locked out (saving files)
       }
-      ProjectRootNode projectRootNode = ode.getCurrentYoungAndroidProjectRootNode();
+      final ProjectRootNode projectRootNode = ode.getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
-        ChainableCommand cmd = new AddFormCommand();
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_ADDFORM_YA, projectRootNode);
+        Runnable doSwitch = new Runnable() {
+            @Override
+            public void run() {
+              ChainableCommand cmd = new AddFormCommand();
+              cmd.startExecuteChain(Tracking.PROJECT_ACTION_ADDFORM_YA, projectRootNode);
+            }
+          };
+        // take a screenshot of the current blocks if we are in the blocks editor
+        if (currentView == View.BLOCKS) {
+          Ode.getInstance().screenShotMaybe(doSwitch, false);
+        } else {
+          doSwitch.run();
+        }
       }
     }
   }
@@ -225,7 +250,18 @@ public class DesignToolbar extends Toolbar {
 
     @Override
     public void execute() {
-      doSwitchScreen(projectId, name, currentView);
+      // If we are in the blocks view, we should take a screenshot
+      // of the blocks as we swtich to a different screen
+      if (currentView == View.BLOCKS) {
+        Ode.getInstance().screenShotMaybe(new Runnable() {
+            @Override
+            public void run() {
+              doSwitchScreen(projectId, name, currentView);
+            }
+          }, false);
+      } else {
+        doSwitchScreen(projectId, name, currentView);
+      }
     }
   }
 
@@ -315,10 +351,16 @@ public class DesignToolbar extends Toolbar {
         return;
       }
       if (currentView != View.FORM) {
-        long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
-        switchToScreen(projectId, currentProject.currentScreen, View.FORM);
-        toggleEditor(false);      // Gray out the Designer button and enable the blocks button
-        Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        // We are leaving a blocks editor, so take a screenshot
+        Ode.getInstance().screenShotMaybe(new Runnable() {
+            @Override
+            public void run() {
+              long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
+              switchToScreen(projectId, currentProject.currentScreen, View.FORM);
+              toggleEditor(false);      // Gray out the Designer button and enable the blocks button
+              Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+            }
+          }, false);
       }
     }
   }
@@ -470,4 +512,9 @@ public class DesignToolbar extends Toolbar {
   public DesignProject getCurrentProject() {
     return currentProject;
   }
+
+  public View getCurrentView() {
+    return currentView;
+  }
+
 }

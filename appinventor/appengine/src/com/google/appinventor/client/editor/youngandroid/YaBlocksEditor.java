@@ -29,6 +29,7 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
@@ -318,6 +319,11 @@ public final class YaBlocksEditor extends FileEditor
       if (editor instanceof YaBlocksEditor)
         editor.sendComponentData();
     }
+  }
+
+  @Override
+  public void getBlocksImage(Callback callback) {
+    blocksArea.getBlocksImage(callback);
   }
 
   public synchronized void sendComponentData() {

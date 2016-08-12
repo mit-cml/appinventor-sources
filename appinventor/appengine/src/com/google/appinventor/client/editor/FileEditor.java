@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 
@@ -171,6 +172,9 @@ public abstract class FileEditor extends Composite {
    */
 
   public void updateCompanion() {
+  }
+
+  public void getBlocksImage(Callback callback) {
   }
 
 }

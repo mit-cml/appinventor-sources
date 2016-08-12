@@ -502,6 +502,15 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return date;
   }
 
+  @Override
+  public RpcResult screenshot(String sessionId, long projectId, String fileId, String content)
+    throws InvalidSessionException {
+    validateSessionId(sessionId);
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).screenshot(userId, projectId, fileId,
+      content);
+  }
+
   /**
    * Invokes a build command for the project on the back-end.
    *

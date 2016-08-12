@@ -288,6 +288,28 @@ public abstract class CommonProjectService {
   }
 
   /**
+   * Saves a screenshot of a current blocks editor. This is called from the client side
+   * whenever the user leaves a blocks editor. The data is shipped to us in base64 encoding
+   * which we decode and then store in the project.
+   *
+   * @param userId user who owns the projectId
+   * @param projectId project id for the project
+   * @param fileId the filename to store the screenshot in
+   * @param content the base64 encoded content
+   */
+
+  public RpcResult screenshot(String userId, long projectId, String fileId, String content) {
+    byte [] binContent = Base64Util.decodeLines(content);
+    try {
+      storageIo.uploadRawFile(projectId, fileId, userId, true, binContent);
+    } catch (BlocksTruncatedException e) {
+      // should never happen because force is set to true
+    }
+    return RpcResult.createSuccessfulRpcResult("", "");
+  }
+
+
+  /**
    * Invokes a build command for the project.
    *
    * @param user the User that owns the {@code projectId}.

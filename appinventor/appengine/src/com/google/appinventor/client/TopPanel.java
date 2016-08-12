@@ -347,7 +347,13 @@ public class TopPanel extends Composite {
   private static class SignOutAction implements Command {
     @Override
     public void execute() {
-      Window.Location.replace(SIGNOUT_URL);
+      // Maybe take a screenshot
+      Ode.getInstance().screenShotMaybe(new Runnable() {
+          @Override
+          public void run() {
+            Window.Location.replace(SIGNOUT_URL);
+          }
+        }, true);               // Wait for i/o
     }
   }
 

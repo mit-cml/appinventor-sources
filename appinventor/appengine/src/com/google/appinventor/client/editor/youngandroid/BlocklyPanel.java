@@ -20,6 +20,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.common.collect.Maps;
 
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -649,6 +650,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     DesignToolbar.popScreen();
   }
 
+  public void getBlocksImage(Callback callback) {
+    doFetchBlocksImage(formName, callback);
+  }
+
   // The code below (4 methods worth) is for creating a GWT dialog box
   // from the blockly code. See the comment in replmgr.js for more
   // information.
@@ -1057,4 +1062,16 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   public static native void doVerifyAllBlocks(String formName) /*-{
       $wnd.Blocklies[formName].Component.verifyAllBlocks();
   }-*/;
+
+  public static native void doFetchBlocksImage(String formName, Callback<String,String> callback) /*-{
+      var callb = $entry(function(result, error) {
+          if (error) {
+             callback.@com.google.gwt.core.client.Callback::onFailure(Ljava/lang/Object;)(error);
+          } else {
+             callback.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(result);
+          }
+      });
+      $wnd.Blocklies[formName].ExportBlocksImage.getUri(callb);
+  }-*/;
+
 }

@@ -495,7 +495,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     RawFile aiaFile = null;
     byte[] aiaBytes= null;
     ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-      projectId, true, false, aiaName, false, false, true);
+      projectId, true, false, aiaName, false, false, false, true);
     aiaFile = zipFile.getRawFile();
     aiaBytes = aiaFile.getContent();
     LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);

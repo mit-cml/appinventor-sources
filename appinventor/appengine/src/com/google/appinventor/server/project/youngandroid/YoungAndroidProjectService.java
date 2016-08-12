@@ -573,7 +573,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
-        projectName + ".aia", true, true, false);
+        projectName + ".aia", true, false, true, false);
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
       bufferedOutputStream.close();

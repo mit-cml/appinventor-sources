@@ -76,7 +76,7 @@ public class DownloadServletTest {
   public void testDownloadProjectSourceZipWithoutTitle() throws Exception {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234");
-    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null, false, false, false))
+    expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false, null, false, false, false, false))
         .andReturn(dummyZip);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -92,7 +92,7 @@ public class DownloadServletTest {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234/My Project Title 123");
     expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false,
-        "MyProjectTitle123.aia", false, false, false))
+        "MyProjectTitle123.aia", false, false, false, false))
         .andReturn(dummyZipWithTitle);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -108,7 +108,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/12345");
-    expect(exporterMock.exportProjectSourceZip(USER_ID, 12345L, true, false, null, false, false, false))
+    expect(exporterMock.exportProjectSourceZip(USER_ID, 12345L, true, false, null, false, false, false, false))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();

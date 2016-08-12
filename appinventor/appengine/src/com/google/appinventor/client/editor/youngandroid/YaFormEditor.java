@@ -47,6 +47,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -565,6 +566,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
 
     return mockComponent;
+  }
+
+  @Override
+  public void getBlocksImage(Callback callback) {
+    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
+    blockEditor.getBlocksImage(callback);
   }
 
   /*

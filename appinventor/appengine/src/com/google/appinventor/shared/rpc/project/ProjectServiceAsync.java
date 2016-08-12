@@ -142,6 +142,13 @@ public interface ProjectServiceAsync {
   void save(String sessionId, List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
 
   /**
+   * @see ProjectService#screnshot(String, long, String, String)
+   */
+
+  void screenshot(String sessionId, long projectId, String fileId, String content,
+    AsyncCallback<RpcResult> callback);
+
+  /**
    * @see ProjectService#build(long, String, String)
    */
   void build(long projectId, String nonce, String target, AsyncCallback<RpcResult> callback);

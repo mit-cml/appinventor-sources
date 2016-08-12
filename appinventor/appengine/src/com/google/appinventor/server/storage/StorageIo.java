@@ -577,6 +577,7 @@ public interface StorageIo {
     boolean includeAndroidKeystore,
     @Nullable String zipName,
     final boolean includeYail,
+    final boolean includeScreenShots,
     final boolean forGallery,
     final boolean fatalError) throws IOException;
 

@@ -63,12 +63,13 @@ public final class FileExporterImpl implements FileExporter {
     boolean includeAndroidKeystore,
     @Nullable String zipName,
     boolean includeYail,
+    boolean includeScreenShots,
     boolean fatalError,
     boolean forGallery) throws IOException {
     // Download project source files as a zip.
     if (storageIo instanceof ObjectifyStorageIo) {
       return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
-        includeProjectHistory, includeAndroidKeystore, zipName, includeYail, forGallery, fatalError);
+        includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
     } else {
       throw new IllegalArgumentException("Objectify only");
     }
@@ -93,7 +94,7 @@ public final class FileExporterImpl implements FileExporter {
         // even for Admins. If you are an admin and want to debug a project, download
         // it explicitly.
         ProjectSourceZip projectSourceZip =
-          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false);
+          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 

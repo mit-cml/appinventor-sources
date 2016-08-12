@@ -1509,7 +1509,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
           // <Screen>.yail files are missing when user converts AI1 project to AI2
           // instead of blowing up, just create a <Screen>.yail file
-          if (fd == null && fileName.endsWith(".yail")){
+          if (fd == null && (fileName.endsWith(".yail") || (fileName.endsWith(".png")))){
             fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
             fd.userId = userId;
           }
@@ -1900,6 +1900,8 @@ public class ObjectifyStorageIo implements  StorageIo {
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
    * @param zipName  the name of the zip file, if a specific one is desired
+   * @param includeYail include any yail files in the project
+   * @param includeScreenShots include any screen shots stored with the project
    * @param fatalError Signal a fatal error if a file is not found
    * @param forGallery flag to indicate we are exporting for the gallery
    * @return  project with the content as requested by params.
@@ -1910,6 +1912,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     final boolean includeAndroidKeystore,
     @Nullable String zipName,
     final boolean includeYail,
+    final boolean includeScreenShots,
     final boolean forGallery,
     final boolean fatalError) throws IOException {
     validateGCS();
@@ -1944,6 +1947,10 @@ public class ObjectifyStorageIo implements  StorageIo {
             if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
               if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
                 // Skip legacy remix history files that were previous stored with the project
+                continue;
+              }
+              if (fileName.startsWith("screenshots") && !includeScreenShots) {
+                // Only include screenshots if asked...
                 continue;
               }
               if (fileName.endsWith(".yail") && !includeYail) {
