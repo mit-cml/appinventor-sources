@@ -11,6 +11,8 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesActivities;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -41,6 +43,11 @@ import android.view.WindowManager;
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
     "whether it can be clicked on (<code>Enabled</code>).</p>")
 @SimpleObject
+@UsesActivities(activities = {
+    @ActivityElement(name = "com.google.appinventor.components.runtime.ListPickerActivity",
+                     configChanges = "orientation|keyboardHidden",
+                     screenOrientation = "behind")
+})
 public class ListPicker extends Picker implements ActivityResultListener, Deleteable, OnResumeListener {
 
   private static final String LIST_ACTIVITY_CLASS = ListPickerActivity.class.getName();

@@ -18,6 +18,15 @@ import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesNativeLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesActivities;
+import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+import com.google.appinventor.components.annotations.androidmanifest.MetaDataElement;
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.DataElement;
+import com.google.appinventor.components.annotations.androidmanifest.CategoryElement;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,6 +34,7 @@ import com.google.common.collect.Sets;
 
 import java.io.IOException;
 import java.io.Writer;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +57,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import java.lang.annotation.Annotation;
+
+import java.lang.reflect.InvocationTargetException;
+
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -78,6 +93,10 @@ import javax.tools.StandardLocation;
  * [lyn, 2015/12/29] Added deprecated instance variable to ParameterizedFeature.
  *   This is inherited by Event, Method, and Property, which are modified
  *   slightly to handle it.
+ *
+ * [Will, 2016/9/20] Added methods to process annotations in the package
+ *   com.google.appinventor.components.annotations.androidmanifest and the
+ *   appropriate calls in {@link #processComponent(Element)}.
  */
 public abstract class ComponentProcessor extends AbstractProcessor {
   private static final String OUTPUT_PACKAGE = "";
@@ -90,10 +109,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.SimpleFunction",
       "com.google.appinventor.components.annotations.SimpleObject",
       "com.google.appinventor.components.annotations.SimpleProperty",
+      // TODO(Will): Remove the following string once the deprecated
+      //             @SimpleBroadcastReceiver annotation is removed. It should
+      //             should remain for the time being because otherwise we'll break
+      //             extensions currently using @SimpleBroadcastReceiver.
       "com.google.appinventor.components.annotations.SimpleBroadcastReceiver",
       "com.google.appinventor.components.annotations.UsesAssets",
       "com.google.appinventor.components.annotations.UsesLibraries",
       "com.google.appinventor.components.annotations.UsesNativeLibraries",
+      "com.google.appinventor.components.annotations.UsesActivities",
+      "com.google.appinventor.components.annotations.UsesBroadcastReceivers",
       "com.google.appinventor.components.annotations.UsesPermissions");
 
   // Returned by getRwString()
@@ -462,7 +487,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> assets;
 
     /**
-     * Class Name and Filter Actions for a Broadcast Receiver
+     * Activities required by this component.
+     */
+    protected final Set<String> activities;
+
+    /**
+     * Broadcast receivers required by this component.
+     */
+    protected final Set<String> broadcastReceivers;
+  
+    /**
+     * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
+     *             annotation is removed. It should should remain for the time being
+     *             because otherwise we'll break extensions currently using it.
+     *
+     * Class Name and Filter Actions for a simple Broadcast Receiver
      */
     protected final Set<String> classNameAndActionsBR;
 
@@ -526,6 +565,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       libraries = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
+      activities = Sets.newHashSet();
+      broadcastReceivers = Sets.newHashSet();
       classNameAndActionsBR = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -784,6 +825,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.libraries.addAll(parentComponent.libraries);
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
+        componentInfo.activities.addAll(parentComponent.activities);
+        componentInfo.broadcastReceivers.addAll(parentComponent.broadcastReceivers);
+        // TODO(Will): Remove the following call once the deprecated
+        //             @SimpleBroadcastReceiver annotation is removed. It should
+        //             should remain for the time being because otherwise we'll break
+        //             extensions currently using @SimpleBroadcastReceiver.
         componentInfo.classNameAndActionsBR.addAll(parentComponent.classNameAndActionsBR);
         // Since we don't modify DesignerProperties, we can just call Map.putAll to copy the
         // designer properties from parentComponent to componentInfo.
@@ -840,11 +887,52 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
     }
 
-    // Gather required actions for Broadcast Receivers. The annotation
+    // Gather the required activities and build their element strings.
+    UsesActivities usesActivities = element.getAnnotation(UsesActivities.class);
+    if (usesActivities != null) {
+      try {
+        for (ActivityElement ae : usesActivities.activities()) {
+          componentInfo.activities.add(activityElementToString(ae));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "activity attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "activity attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Gather the required broadcast receivers and build their element strings.
+    UsesBroadcastReceivers usesBroadcastReceivers = element.getAnnotation(UsesBroadcastReceivers.class);
+    if (usesBroadcastReceivers != null) {
+      try {
+        for (ReceiverElement re : usesBroadcastReceivers.receivers()) {
+          componentInfo.broadcastReceivers.add(receiverElementToString(re));
+        }
+      } catch (IllegalAccessException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "IllegalAccessException when gathering " +
+            "broadcast receiver attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      } catch (InvocationTargetException e) {
+        messager.printMessage(Diagnostic.Kind.ERROR, "InvocationTargetException when gathering " +
+            "broadcast receiver attributes and subelements for component " + componentInfo.name);
+        throw new RuntimeException(e);
+      }
+    }
+  
+    // TODO(Will): Remove the following legacy code once the deprecated
+    //             @SimpleBroadcastReceiver annotation is removed. It should
+    //             should remain for the time being because otherwise we'll break
+    //             extensions currently using @SimpleBroadcastReceiver.
+    //
+    // Gather required actions for legacy Broadcast Receivers. The annotation
     // has a Class Name and zero or more Filter Actions.  In the
     // resulting String, Class name will go first, and each Action
     // will be added, separated by a comma.
-
+  
     SimpleBroadcastReceiver simpleBroadcastReceiver = element.getAnnotation(SimpleBroadcastReceiver.class);
     if (simpleBroadcastReceiver != null) {
       for (String className : simpleBroadcastReceiver.className().split(",")){
@@ -924,6 +1012,163 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     property.componentInfoName = componentInfoName;
 
     return property;
+  }
+
+  // Transform an @ActivityElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String activityElementToString(ActivityElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <activity> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("    <activity ");
+    elementString.append(elementAttributesToString(element));
+    elementString.append(">\\n");
+
+    // Now, we collect any <activity> subelements.
+    elementString.append(subelementsToString(element.metaDataElements()));
+    elementString.append(subelementsToString(element.intentFilters()));
+
+    // Finally, we close the <activity> element and create its String.
+    return elementString.append("    </activity>\\n").toString();
+  }
+
+  // Transform a @ReceiverElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String receiverElementToString(ReceiverElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <receiver> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("    <receiver ");
+    elementString.append(elementAttributesToString(element));
+    elementString.append(">\\n");
+
+    // Now, we collect any <receiver> subelements.
+    elementString.append(subelementsToString(element.metaDataElements()));
+    elementString.append(subelementsToString(element.intentFilters()));
+
+    // Finally, we close the <receiver> element and create its String.
+    return elementString.append("    </receiver>\\n").toString();
+  }
+
+  // Transform a @MetaDataElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String metaDataElementToString(MetaDataElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <meta-data> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("      <meta-data ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <meta-data> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Transform an @IntentFilterElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String intentFilterElementToString(IntentFilterElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <intent-filter> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("      <intent-filter ");
+    elementString.append(elementAttributesToString(element));
+    elementString.append(">\\n");
+    
+    // Now, we collect any <intent-filter> subelements.
+    elementString.append(subelementsToString(element.actionElements()));
+    elementString.append(subelementsToString(element.categoryElements()));
+    elementString.append(subelementsToString(element.dataElements()));
+
+    // Finally, we close the <intent-filter> element and create its String.
+    return elementString.append("    </intent-filter>\\n").toString();
+  }
+
+  // Transform an @ActionElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String actionElementToString(ActionElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <action> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("        <action ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <action> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Transform an @CategoryElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String categoryElementToString(CategoryElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <category> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("        <category ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <category> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Transform an @DataElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String dataElementToString(DataElement element)
+      throws IllegalAccessException, InvocationTargetException {
+    // First, we build the <data> element's opening tag including any
+    // receiver element attributes.
+    StringBuilder elementString = new StringBuilder("        <data ");
+    elementString.append(elementAttributesToString(element));
+    // Finally, we close the <data> element and create its String.
+    return elementString.append("/>\\n").toString();
+  }
+
+  // Build the attribute String for a given XML element modeled by an
+  // annotation.
+  //
+  // Note that we use the fully qualified names for certain classes in the
+  // "java.lang.reflect" package to avoid namespace collisions.
+  private static String elementAttributesToString(Annotation element)
+      throws IllegalAccessException, InvocationTargetException {
+    StringBuilder attributeString = new StringBuilder("");
+    Class<? extends Annotation> clazz = element.annotationType();
+    java.lang.reflect.Method[] methods = clazz.getDeclaredMethods();
+    String attributeSeparator = "";
+    for (java.lang.reflect.Method method : methods) {
+      int modCode = method.getModifiers();
+      if (java.lang.reflect.Modifier.isPublic(modCode)
+          && !java.lang.reflect.Modifier.isStatic(modCode)) {
+        if (method.getReturnType().getSimpleName().equals("String")) {
+          // It is an XML element attribute.
+          String attributeValue = (String) method.invoke(clazz.cast(element));
+          if (!attributeValue.equals("")) {
+            attributeString.append(attributeSeparator);
+            attributeString.append("android:");
+            attributeString.append(method.getName());
+            attributeString.append("=\\\"");
+            attributeString.append(attributeValue);
+            attributeString.append("\\\"");
+            attributeSeparator = " ";
+          }
+        }
+      }
+    }
+    return attributeString.toString();
+  }
+  
+  // Build the subelement String for a given array of XML elements modeled by
+  // corresponding annotations.
+  private static String subelementsToString(Annotation[] subelements)
+      throws IllegalAccessException, InvocationTargetException {
+    StringBuilder subelementString = new StringBuilder("");
+    for (Annotation subelement : subelements) {
+      if (subelement instanceof MetaDataElement) {
+        subelementString.append(metaDataElementToString((MetaDataElement) subelement));
+      } else if (subelement instanceof IntentFilterElement) {
+        subelementString.append(intentFilterElementToString((IntentFilterElement) subelement));
+      } else if (subelement instanceof ActionElement) {
+        subelementString.append(actionElementToString((ActionElement) subelement));
+      } else if (subelement instanceof CategoryElement) {
+        subelementString.append(categoryElementToString((CategoryElement) subelement));
+      } else if (subelement instanceof DataElement) {
+        subelementString.append(dataElementToString((DataElement) subelement));
+      }
+    }
+    return subelementString.toString();
   }
 
   private void processProperties(ComponentInfo componentInfo,

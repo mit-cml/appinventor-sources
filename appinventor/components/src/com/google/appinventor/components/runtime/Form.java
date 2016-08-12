@@ -95,7 +95,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
     description = "Top-level component containing all other components in the program",
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
+    "android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
   implements Component, ComponentContainer, HandlesEventDispatching,
   OnGlobalLayoutListener {
