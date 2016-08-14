@@ -16,6 +16,7 @@ import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.common.collect.Maps;
@@ -37,7 +38,9 @@ import com.google.gwt.user.client.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Collections;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -778,6 +781,59 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doSwitchLanguage(formName, languageSetting);
   }
 
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+  public void startSearch(String query,String filter) {
+    JsArray object = doStartSearch(formName, query,filter);
+    try{
+      int count= object.getSize();
+      if(count == 0){
+        ErrorReporter.reportError("No results found");
+      }
+    }
+    catch(Exception e){
+
+    }
+  }
+
+  public void zoomToSearchBlock(int zoomTo) {
+    doZoomToSearchedBlock(formName,zoomTo);
+  }
+
+  public void stopSearch() {
+    doStopSearch(formName);
+    ErrorReporter.hide();
+  }
+
+  public List<String> querySuggest(String query) {
+    int i;
+    List<String> suggestionList = new LinkedList<String>();
+    JsArray object = doQuerySuggest(formName, query);
+    for(i =0; i < object.getSize();i++){
+      suggestionList.add(object.getString(i));
+    }
+    OdeLog.log("Generating Query Suggestions...Complete");
+    return suggestionList;
+  }
+
+  public List<String> getBlockTypes(String query) {
+    int i;
+    List<String> typesList = new LinkedList<String>();
+    JsArray object = doGetBlockTypes(formName,query);
+    for(i =0; i < object.getSize();i++){
+      typesList.add(object.getString(i));
+    }
+    typesList.add("comments only");
+    Collections.sort(typesList);
+
+    return typesList;
+  }
+
+  public String getFormName() {
+    return formName;
+  }
+
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
   /**
    * Trigger and Update of the Companion if the Companion is connected
    * and an update is available. Note: We do not compare the currently
@@ -1035,6 +1091,29 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   public static native void doSwitchLanguage(String formName, String language) /*-{
     $wnd.Blocklies[formName].language_switch.switchLanguage(language);
   }-*/;
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+  public static native JsArray doStartSearch(String formName, String query, String filter) /*-{
+    return $wnd.Blocklies[formName].SearchBlocks.start(query,filter);
+  }-*/;
+
+  public static native void doZoomToSearchedBlock(String formName, int zoomTo) /*-{
+    $wnd.Blocklies[formName].SearchBlocks.zoomToSearchedBlock(zoomTo);
+  }-*/;
+
+  public static native void doStopSearch(String formName) /*-{
+    $wnd.Blocklies[formName].SearchBlocks.stop();
+  }-*/;
+
+  public static native JsArray doQuerySuggest(String formName,String query) /*-{
+    return $wnd.Blocklies[formName].SearchBlocks.querySuggest(query);
+  }-*/;
+
+  public static native JsArray doGetBlockTypes(String formName,String query) /*-{
+    return $wnd.Blocklies[formName].SearchBlocks.getBlockTypes(query);
+  }-*/;
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
 
   public static native void doUpdateCompanion(String formName) /*-{
     $wnd.Blocklies[formName].ReplMgr.triggerUpdate();
@@ -1058,3 +1137,16 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
       $wnd.Blocklies[formName].Component.verifyAllBlocks();
   }-*/;
 }
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+/*
+Wrapper class sed to read list of strings from Javascript into Java(JSNI)
+*/
+class JsArray extends JavaScriptObject{
+  protected JsArray() { }
+
+  public final native int getSize() /*-{ return this.length; }-*/;
+  public final native String getString(int i)  /*-{ return this[i];  }-*/;
+
+}
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
