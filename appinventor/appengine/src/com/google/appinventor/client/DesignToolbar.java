@@ -26,6 +26,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.appinventor.client.boxes.ViewerBox;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +57,10 @@ public class DesignToolbar extends Toolbar {
       this.screenName = name;
       this.formEditor = formEditor;
       this.blocksEditor = blocksEditor;
+    }
+
+    public FileEditor getBlocksEditor(){
+      return this.blocksEditor;
     }
   }
 
@@ -94,6 +99,10 @@ public class DesignToolbar extends Toolbar {
 
     public void setCurrentScreen(String name) {
       currentScreen = name;
+    }
+
+    public Screen getCurrentScreen(){
+      return screens.get(currentScreen);
     }
   }
 
@@ -285,6 +294,7 @@ public class DesignToolbar extends Toolbar {
       toggleEditor(true);
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
     }
+    ViewerBox.getViewerBox().addExistingSearchBox(projectId + "_" + newScreenName);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
   }
@@ -301,6 +311,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
         toggleEditor(true);       // Gray out the blocks button and enable the designer button
+        ViewerBox.getViewerBox().showSearchBox();
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
       }
     }
@@ -318,6 +329,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
         toggleEditor(false);      // Gray out the Designer button and enable the blocks button
+         ViewerBox.getViewerBox().hideSearchBox();
         Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
       }
     }
@@ -348,6 +360,9 @@ public class DesignToolbar extends Toolbar {
       OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
       currentProject = projectMap.get(projectId);
+      String formName = projectId + "_" + currentProject.getCurrentScreen().screenName;
+
+      ViewerBox.getViewerBox().addExistingSearchBox(formName);
       // TODO(sharon): add screens to drop-down menu in the right order
       for (Screen screen : currentProject.screens.values()) {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,

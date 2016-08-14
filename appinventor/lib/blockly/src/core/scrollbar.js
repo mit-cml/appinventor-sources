@@ -140,6 +140,19 @@ Blockly.ScrollbarPair.prototype.set = function(x, y) {
   this.hScroll.set(x);
   this.vScroll.set(y);
 };
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+/**
+ * Drag the scroll bar pair so that the block is centered in the viewer.
+ * @param {Blockly.Block} block The block to be centered
+ * @param {boolean} collapsed Whether the block is collapsed.
+ */
+Blockly.ScrollbarPair.prototype.centerScrolls = function(block, collapsed) {
+  this.hScroll.centerBlockScroll(block, collapsed);
+  this.vScroll.centerBlockScroll(block, collapsed);
+};
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
 
 // --------------------------------------------------------------------
 
@@ -451,6 +464,74 @@ Blockly.Scrollbar.prototype.onMouseUpKnob_ = function() {
   }
 };
 
+
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+/**
+ * Drag the scroll bar so that the block is centered in the viewer.
+ * @param {Blockly.Block} block The block to be centered
+ * @param {boolean} collapsed Whether the block is collapsed.
+ */
+Blockly.Scrollbar.prototype.centerBlockScroll = function(block, collapsed) {
+  var blockWH = this.horizontal_ ? block.svg_.width : block.svg_.height;
+
+  //Get the workspace's metrics
+  var hostMet = this.workspace_.getMetrics();
+  var hostMetWH = this.horizontal_ ? hostMet.viewWidth : hostMet.viewHeight;
+
+  if (collapsed && (blockWH >= hostMetWH)) {
+    blockWH = blockWH/2;
+    var outerLength = this.horizontal_ ? hostMet.viewWidth : hostMet.viewHeight;
+    outerLength -= Blockly.Scrollbar.scrollbarThickness;
+    var currentRatio = outerLength/ (this.horizontal_ ? hostMet.contentWidth : hostMet.contentHeight);
+  } else {
+    var currentRatio = this.ratio_;
+  }
+
+  //Get the content (drawing surface's) upper left most coordinate
+  var content = this.horizontal_ ? hostMet.contentLeft : hostMet.contentTop;
+  //Get the view's upper left most coordinate
+  var viewCurrent = this.horizontal_ ? hostMet.viewLeft : hostMet.viewTop;
+  var viewWidthOrHeight = this.horizontal_ ? hostMet.viewWidth : hostMet.viewHeight;
+  var blockXY = block.getRelativeToSurfaceXY();
+
+  //Get the upper left coordinate where the viewer should be to center the block --
+  //    1) Take block's top left corner
+  //    2) Add half of it's width/height (depending on axis)
+  //    3) Subtract half of the view's width or height
+  var moveBlock = (this.horizontal_ ? blockXY.x : blockXY.y) + (blockWH/2) - (viewWidthOrHeight/2);
+
+  //Delta is the difference between moveBlock and where the view currently is relative to the drawing surface
+  //    multiplied by the ratio (ratio representing ratio of scrollbar to drawing surface)
+  var delta = (moveBlock - viewCurrent) * currentRatio;
+
+  //Get starting position of scroll bar (it's top left coordinate)
+  var startKnob = parseFloat(this.svgKnob_.getAttribute(this.horizontal_ ? 'x' : 'y'));
+
+  //Get the new position of the scroll bar
+  var knobValue = startKnob + delta;
+  
+  //Move the scroll bar
+  this.svgKnob_.setAttribute(this.horizontal_? 'x' : 'y', (knobValue));
+
+  //Move the workspace accordingly
+  this.onScroll_();
+
+  var axis = this.horizontal_ ? 'width' : 'height';
+  var barLength = parseFloat(this.svgBackground_.getAttribute(axis));
+  var knobLength = parseFloat(this.svgKnob_.getAttribute(axis));
+
+  //If the scrollbar scrolls past where it is supposed to be constrained to
+  if ((knobValue + knobLength) > (barLength - knobLength)) {
+    //Resize the scrollbar with the new metrics of the workspace set from this.onScroll_()
+    this.resize(this.workspace_.getMetrics());
+  }
+
+};
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+
+
 /**
  * Constrain the knob's position within the minimum (0) and maximum
  * (length of scrollbar) values allowed for the scrollbar.
@@ -521,3 +602,11 @@ Blockly.Scrollbar.insertAfter_ = function(newNode, refNode) {
     parentNode.appendChild(newNode);
   }
 };
+
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+Blockly.Scrollbar.prototype.getSVG = function() {
+  return this.svgKnob_;
+};
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+

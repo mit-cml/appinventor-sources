@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.search.cecetsui</groupId>
+  <artifactId>searchBlocks</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <appengine.target.version>1.8.7</appengine.target.version>
+  </properties>
+
+  <build>
+      <pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>com.google.appengine</groupId>
+                  <artifactId>appengine-maven-plugin</artifactId>
+                  <version>${appengine.target.version}</version>
+              </plugin>
+          </plugins>
+      </pluginManagement>
+  </build>
+  <modules>
+    <module>searchBlocks-war</module>
+    <module>searchBlocks-ear</module>
+  </modules>
+</project>
