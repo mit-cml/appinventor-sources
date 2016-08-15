@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -20,11 +21,14 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Panel in the Simple design editor holding visible Simple components.
  *
  */
-public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget {
+public final class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
   // UI elements
   private final VerticalPanel phoneScreen;
   private final CheckBox checkboxShowHiddenComponents;
@@ -172,5 +176,25 @@ public final class SimpleVisibleComponentsPanel extends Composite implements Dro
   @Override
   public void onDrop(DragSource source, int x, int y, int offsetX, int offsetY) {
     nonVisibleComponentsPanel.onDrop(source, -1, -1, offsetX, offsetY);
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    return true;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+
+  }
+
+  @Override
+  public void onResetDatabase() {
+
   }
 }

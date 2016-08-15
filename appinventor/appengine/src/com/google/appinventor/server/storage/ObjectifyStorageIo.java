@@ -30,15 +30,18 @@ import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.PWData;
 import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -59,6 +62,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 // GCS imports
@@ -86,8 +90,11 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
+
+import org.json.JSONObject;
 
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
@@ -142,7 +149,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @VisibleForTesting
   abstract class JobRetryHelper {
-    public abstract void run(Objectify datastore) throws ObjectifyException;
+    private IOException exception = null;
+    public abstract void run(Objectify datastore) throws ObjectifyException, IOException;
     /*
      * Called before retrying the job. Note that the underlying datastore
      * still has the transaction active, so restrictions about operations
@@ -150,6 +158,12 @@ public class ObjectifyStorageIo implements  StorageIo {
      */
     public void onNonFatalError() {
       // Default is to do nothing
+    }
+    public void onIOException(IOException error) {
+      exception = error;
+    }
+    public IOException getIOException() {
+      return exception;
     }
   }
 
@@ -172,6 +186,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
     ObjectifyService.register(CorruptionRecord.class);
+    ObjectifyService.register(PWData.class);
     ObjectifyService.register(SplashData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
@@ -217,9 +232,10 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   /*
-   * Note that the User returned by this method will always have isAdmin set to
-   * false. We leave it to the caller to determine whether the user has admin
-   * priviledges.
+   * We return isAdmin if the UserData object has the flag set. However
+   * even if we return it as false, if the user is logging in with Google
+   * Credentials and the apiUser indicates they are an admin of the app,
+   * then isAdmin will be set by our caller.
    */
   @Override
   public User getUser(final String userId, final String email) {
@@ -241,11 +257,42 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) {
           UserData userData = datastore.find(userKey(userId));
-          if (userData == null) {
-            userData = createUser(datastore, userId, email);
+          boolean viaemail = false; // Which datastore copy did we find it with...
+          Objectify qDatastore = null;
+          if (userData == null) { // Attempt to find them by email
+            LOG.info("Did not find userId " + userId);
+            if (email != null) {
+              qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction
+              userData = qDatastore.query(UserData.class).filter("email", email).get();
+              if (userData == null) { // Still null!
+                userData = qDatastore.query(UserData.class).filter("emaillower", email.toLowerCase()).get();
+              }
+              // Need to fix userId...
+              if (userData != null) {
+                LOG.info("Found based on email, userData.id = " + userData.id);
+                if (!userData.id.equals(userId)) {
+                  user.setUserId(userData.id);
+                  LOG.info("Set user.setUserId");
+                }
+                viaemail = true;
+              }
+            }
+            if (userData == null) { // No joy, create it.
+              userData = createUser(datastore, userId, email);
+            }
           } else if (email != null && !email.equals(userData.email)) {
             userData.email = email;
+            userData.emaillower = email.toLowerCase();
             datastore.put(userData);
+          }
+          // Add emaillower if it isn't already there
+          if (userData.emaillower == null) {
+            userData.emaillower = userData.email.toLowerCase();
+            if (viaemail) {
+              qDatastore.put(userData);
+            } else {
+              datastore.put(userData);
+            }
           }
           if(userData.emailFrequency == 0){
             // when users of old version access UserData,
@@ -260,7 +307,9 @@ public class ObjectifyStorageIo implements  StorageIo {
           user.setUserEmailFrequency(userData.emailFrequency);
           user.setType(userData.type);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
+          user.setIsAdmin(userData.isAdmin);
           user.setSessionId(userData.sessionid);
+          user.setPassword(userData.password);
         }
       }, false);                // Transaction not needed. If we fail there is nothing to rollback
     } catch (ObjectifyException e) {
@@ -276,7 +325,36 @@ public class ObjectifyStorageIo implements  StorageIo {
     return user;
   }
 
+  // Get User from email address alone. This version will create the user
+  // if they don't exist
+  @Override
+  public User getUserFromEmail(String email) {
+    String emaillower = email.toLowerCase();
+    LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
+    Objectify datastore = ObjectifyService.begin();
+    String newId = UUID.randomUUID().toString();
+    // First try lookup using entered case (which will be the case for Google Accounts)
+    UserData user = datastore.query(UserData.class).filter("email", email).get();
+    if (user == null) {
+      LOG.info("getUserFromEmail: first attempt failed using " + email);
+      // Now try lower case version
+      user = datastore.query(UserData.class).filter("emaillower", emaillower).get();
+      if (user == null) {       // Finally, create it (in lower case)
+        LOG.info("getUserFromEmail: second attempt failed using " + emaillower);
+        user = createUser(datastore, newId, email);
+      }
+    }
+    User retUser = new User(user.id, email, user.name, user.link, 0, user.tosAccepted,
+      false, user.type, user.sessionid);
+    retUser.setPassword(user.password);
+    return retUser;
+  }
+
   private UserData createUser(Objectify datastore, String userId, String email) {
+    String emaillower = null;
+    if (email != null) {
+      emaillower = email.toLowerCase();
+    }
     UserData userData = new UserData();
     userData.id = userId;
     userData.tosAccepted = false;
@@ -285,6 +363,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.name = User.getDefaultName(email);
     userData.type = User.USER;
     userData.link = "";
+    userData.emaillower = email == null ? "" : emaillower;
     userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
     datastore.put(userData);
     return userData;
@@ -309,7 +388,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public void setUserEmail(final String userId, final String email) {
+  public void setUserEmail(final String userId, String inputemail) {
+    final String email = inputemail.toLowerCase();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -410,6 +490,26 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         }
       }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    memcache.delete(cachekey);  // Flush cached copy because it changed
+  }
+
+  @Override
+  public void setUserPassword(final String userId, final String password) {
+    String cachekey = User.usercachekey + "|" + userId;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.password = password;
+            datastore.put(userData);
+          }
+        }
+      }, true);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
@@ -1800,16 +1900,18 @@ public class ObjectifyStorageIo implements  StorageIo {
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
    * @param zipName  the name of the zip file, if a specific one is desired
-
+   * @param fatalError Signal a fatal error if a file is not found
+   * @param forGallery flag to indicate we are exporting for the gallery
    * @return  project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
-                                                 final boolean includeProjectHistory,
-                                                 final boolean includeAndroidKeystore,
-                                                 @Nullable String zipName,
-                                                 final boolean includeYail,
-                                                 final boolean fatalError) throws IOException {
+    final boolean includeProjectHistory,
+    final boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException {
     validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
@@ -1826,15 +1928,19 @@ public class ObjectifyStorageIo implements  StorageIo {
 
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     final ZipOutputStream out = new ZipOutputStream(zipFile);
+    out.setComment("Built with MIT App Inventor");
 
     try {
-      runJobWithRetries(new JobRetryHelper() {
+      JobRetryHelper job = new JobRetryHelper() {
         @Override
-        public void run(Objectify datastore) {
+        public void run(Objectify datastore) throws IOException {
           Key<ProjectData> projectKey = projectKey(projectId);
           boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
             String fileName = fd.fileName;
+            if (fileName.startsWith("assets/external_comps") && forGallery) {
+              throw new IOException("FATAL Error, external component in gallery app");
+            }
             if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
               if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
                 // Skip legacy remix history files that were previous stored with the project
@@ -1862,8 +1968,12 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
           }
         }
-      }, false);
-
+      };
+      runJobWithRetries(job, true);
+      IOException error = job.getIOException();
+      if (error != null) {
+        throw error;
+      }
       // Process the file contents outside of the job since we can't read
       // blobs in the job.
       for (FileData fd : fileData) {
@@ -2029,14 +2139,20 @@ public class ObjectifyStorageIo implements  StorageIo {
     return motd.t;
   }
 
+  // Find a user by email address. This version does *not* create a new user
+  // if the user does not exist
   @Override
-  public String findUserByEmail(final String email) throws NoSuchElementException {
+  public String findUserByEmail(String inputemail) throws NoSuchElementException {
+    String email = inputemail.toLowerCase();
     Objectify datastore = ObjectifyService.begin();
     // note: if there are multiple users with the same email we'll only
     // get the first one. we don't expect this to happen
-    UserData userData = datastore.query(UserData.class).filter("email", email).get();
-    if (userData == null) {
-      throw new NoSuchElementException("Couldn't find a user with email " + email);
+    UserData userData = datastore.query(UserData.class).filter("email", inputemail).get();
+    if (userData == null) {     // Mixed case didn't work, try lower case
+      userData = datastore.query(UserData.class).filter("email", email).get();
+      if (userData == null) {
+        throw new NoSuchElementException("Couldn't find a user with email " + inputemail);
+      }
     }
     return userData.id;
   }
@@ -2205,6 +2321,65 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   }
 
+  @Override
+  public PWData createPWData(final String email) {
+    Objectify datastore = ObjectifyService.begin();
+    final PWData pwData = new PWData();
+    pwData.id = UUID.randomUUID().toString();
+    pwData.email = email;
+    pwData.timestamp = new Date();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            datastore.put(pwData);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return pwData;
+  }
+
+  @Override
+  public StoredData.PWData findPWData(final String uid) {
+    final Result<PWData> result = new Result<PWData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            PWData pwData = datastore.find(pwdataKey(uid));
+            if (pwData != null) {
+              result.t = pwData;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+  // Remove up to 10 expired PWData elements from the datastore
+  @Override
+  public void cleanuppwdata() {
+    Objectify datastore = ObjectifyService.begin();
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to set a password
+    // Note: we remove data after 24 hours.
+    try {
+      datastore.delete(datastore.query(PWData.class)
+        .filter("timestamp <", new Date((new Date()).getTime() - 3600*24*1000L))
+        .limit(10).fetchKeys());
+    } catch (Exception ex) {
+        LOG.log(Level.WARNING, "Exception during cleanupNonces", ex);
+    }
+  }
+
+  private Key<StoredData.PWData> pwdataKey(String uid) {
+    return new Key<StoredData.PWData>(PWData.class, uid);
+  }
+
   // Create a name for a blob from a project id and file name. This is mostly
   // to help with debugging and viewing the blobstore via the admin console.
   // We don't currently use these blob names anywhere else.
@@ -2271,12 +2446,16 @@ public class ObjectifyStorageIo implements  StorageIo {
         LOG.log(Level.WARNING, "Optimistic concurrency failure", ex);
       } catch (ObjectifyException oe) {
         String message = oe.getMessage();
-        if (message != null && message.startsWith("Blocks")) { // This one is fatal!
+        if (message != null &&
+          (message.startsWith("Blocks") || message.startsWith("User Al"))) { // This one is fatal!
           throw oe;
         }
         // maybe this should be a fatal error? I think only thing
         // that creates this exception is this method.
         job.onNonFatalError();
+      } catch (IOException e) {
+        job.onIOException(e);
+        break;
       } finally {
         if (useTransaction && datastore.getTxn().isActive()) {
           try {
@@ -2310,6 +2489,42 @@ public class ObjectifyStorageIo implements  StorageIo {
     return "user=" + userId + ", project=" + projectId;
   }
 
+  @Override
+  public String uploadTempFile(byte[] content) throws IOException {
+    String uuid = UUID.randomUUID().toString();
+    String fileName = "__TEMP__/" + uuid;
+    setGcsFileContent(fileName, content);
+    return fileName;
+  }
+
+  @Override
+  public InputStream openTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith("__TEMP__")) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+    GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileName);
+    int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+    ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+    GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+    int bytesRead = 0;
+    try {
+      while (bytesRead < fileSize) {
+        bytesRead += readChannel.read(resultBuffer);
+      }
+    } finally {
+      readChannel.close();
+    }
+    return new ByteArrayInputStream(resultBuffer.array());
+  }
+
+  @Override
+  public void deleteTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith("__TEMP__")) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+    gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fileName));
+  }
+
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
 
   @VisibleForTesting
@@ -2341,6 +2556,15 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
+  }
+
+  @VisibleForTesting
+  void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
+    GcsOutputChannel outputChannel = gcsService.createOrReplace(
+        new GcsFilename(GCS_BUCKET_NAME, gcsPath),
+        GcsFileOptions.getDefaultInstance());
+    outputChannel.write(ByteBuffer.wrap(content));
+    outputChannel.close();
   }
 
   // Return time in ISO_8660 format
@@ -2476,4 +2700,98 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  // The routines below are part of the user admin interface. Called from AdminInfoServiceImpl
+
+  @Override
+  public List<AdminUser> searchUsers(final String partialEmail) {
+    final List<AdminUser> retval = new ArrayList();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            Query<UserData> userDataQuery = datastore.query(UserData.class).filter("email >=", partialEmail);
+            int count = 0;
+            for (UserData user : userDataQuery) {
+              boolean isModerator = (user.type == 1);
+              retval.add(new AdminUser(user.id, user.name, user.email, user.tosAccepted,
+                  user.isAdmin, isModerator, user.visited));
+              count++;
+              if (count > 20) {
+                break;
+              }
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return retval;
+  }
+
+  @Override
+  public void storeUser(final AdminUser user) throws AdminInterfaceException {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) throws ObjectifyException {
+            UserData userData = null;
+            if (user.getId() != null) {
+              userData = datastore.find(userKey(user.getId()));
+            }
+            if (userData != null) {
+              userData.email = user.getEmail();
+              userData.emaillower = userData.email.toLowerCase();
+              String password = user.getPassword();
+              if (password != null && !password.equals("")) {
+                userData.password = user.getPassword();
+              }
+              userData.isAdmin = user.getIsAdmin();
+              if (user.getIsModerator()) {
+                userData.type = User.MODERATOR;
+              } else {
+                userData.type = User.USER;
+              }
+              datastore.put(userData);
+            } else {            // New User
+              String emaillower = user.getEmail().toLowerCase();
+              Objectify qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction
+              UserData tuser = qDatastore.query(UserData.class).filter("email", emaillower).get();
+              if (tuser != null) {
+                // This is a total kludge, but we have to do things this way because of
+                // how runJobWithRetries works
+                throw new ObjectifyException("User Already exists = " + user.getEmail());
+              }
+              userData = new UserData();
+              userData.id = UUID.randomUUID().toString();
+              userData.tosAccepted = false;
+              userData.settings = "";
+              userData.email = user.getEmail();
+              userData.emaillower = emaillower;
+              userData.type = User.USER;
+              userData.link = "";
+              userData.name = User.getDefaultName(user.getEmail());
+              userData.emailFrequency = User.DEFAULT_EMAIL_NOTIFICATION_FREQUENCY;
+              if (user.getIsModerator()) {
+                userData.type = User.MODERATOR;
+              } else {
+                userData.type = User.USER;
+              }
+              if (!user.getPassword().equals("")) {
+                userData.password = user.getPassword();
+              }
+              userData.isAdmin = user.getIsAdmin();
+              datastore.put(userData);
+            }
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      if (e.getMessage().startsWith("User Al")) {
+        throw new AdminInterfaceException(e.getMessage());
+      }
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
 }
+
+

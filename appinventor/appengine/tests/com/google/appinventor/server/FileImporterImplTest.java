@@ -197,4 +197,5 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
       assertEquals(UploadResponse.Status.NOT_PROJECT_ARCHIVE, e.uploadResponse.getStatus());
     }
   }
+
 }

@@ -28,7 +28,8 @@ public final class MockVerticalArrangement extends MockHVArrangement {
    */
   public MockVerticalArrangement(SimpleEditor editor) {
     super(editor, TYPE, images.vertical(),
-        ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
+      ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
   }
-  
+
 }

@@ -12,6 +12,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.appinventor.client.boxes.AdminUserListBox;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PrivateUserProfileTabPanel;
@@ -53,9 +54,13 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.component.ComponentService;
+import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.admin.AdminInfoService;
+import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
 import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
@@ -163,6 +168,11 @@ public class Ode implements EntryPoint {
   // Nonce Information
   private String nonce;
 
+  // Read Only Flag: If true, the UI will not permit operations which permit
+  // write requests
+
+  private boolean isReadOnly;
+
   private String sessionId = generateUuid(); // Create new session id
   private Random random = new Random(); // For generating random nonce
 
@@ -186,6 +196,7 @@ public class Ode implements EntryPoint {
   private static final int USERPROFILE = 4;
   private static final int PRIVATEUSERPROFILE = 5;
   private static final int MODERATIONPAGE = 6;
+  private static final int USERADMIN = 7;
   private static int currentView = DESIGNER;
 
   /*
@@ -209,6 +220,7 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private int galleryTabIndex;
   private int galleryAppTabIndex;
+  private int userAdminTabIndex;
   private int userProfileTabIndex;
   private int privateUserProfileIndex;
   private int moderationPageTabIndex;
@@ -219,8 +231,10 @@ public class Ode implements EntryPoint {
   private ProjectToolbar projectToolbar;
   private GalleryToolbar galleryListToolbar;
   private GalleryToolbar galleryPageToolbar;
+  private AdminUserListBox uaListBox;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -242,6 +256,10 @@ public class Ode implements EntryPoint {
 
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
+
+  // Web service for component related operations
+  private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
+  private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
 
   private boolean windowClosing;
 
@@ -388,6 +406,15 @@ public class Ode implements EntryPoint {
     // the button). When the person switches to the projects list view again (here)
     // we re-enable it.
     projectToolbar.enableStartButton();
+  }
+
+  /**
+   * Switch to the User Admin Panel
+   */
+
+  public void switchToUserAdminPanel() {
+    currentView = USERADMIN;
+    deckPanel.showWidget(userAdminTabIndex);
   }
 
   /**
@@ -646,8 +673,30 @@ public class Ode implements EntryPoint {
       public void onSuccess(Config result) {
         config = result;
         user = result.getUser();
+        isReadOnly = user.isReadOnly();
+
+        // Setup noop timer (if enabled)
+        int noop = config.getNoop();
+        if (noop > 0) {
+          // If we have a noop time, setup a timer to do the noop
+          Timer t = new Timer() {
+              @Override
+              public void run() {
+                userInfoService.noop(new AsyncCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void e) {
+                    }
+                    @Override
+                    public void onFailure(Throwable e) {
+                    }
+                  });
+              }
+            };
+            t.scheduleRepeating(1000*60*noop);
+        }
+
         // If user hasn't accepted terms of service, ask them to.
-        if (!user.getUserTosAccepted()) {
+        if (!user.getUserTosAccepted() && !isReadOnly) {
           // We expect that the redirect to the TOS page should be handled
           // by the onFailure method below. The server should return a
           // "forbidden" error if the TOS wasn't accepted.
@@ -724,6 +773,25 @@ public class Ode implements EntryPoint {
               // forbidden => need tos accept
               Window.open("/" + ServerLayout.YA_TOS_FORM, "_self", null);
               return;
+            case Response.SC_PRECONDITION_FAILED:
+              String locale = Window.Location.getParameter("locale");
+              String repo = Window.Location.getParameter("repo");
+              galleryId = Window.Location.getParameter("galleryId");
+              String separator = "?";
+              String uri = "/login/";
+              if (locale != null && !locale.equals("")) {
+                uri += separator + "locale=" + locale;
+                separator = "&";
+              }
+              if (repo != null & !repo.equals("")) {
+                uri += separator + "repo=" + repo;
+                separator = "&";
+              }
+              if (galleryId != null && !galleryId.equals("")) {
+                uri += separator + "galleryId=" + galleryId;
+              }
+              Window.Location.replace(uri);
+              return;           // likely not reached
           }
         }
         super.onFailure(caught);
@@ -847,7 +915,7 @@ public class Ode implements EntryPoint {
     //workColumns.add(switchToDesignerButton);
 
     Box palletebox = PaletteBox.getPaletteBox();
-    palletebox.setWidth("222px");
+    palletebox.setWidth("240px");
     workColumns.add(palletebox);
 
     Box viewerbox = ViewerBox.getViewerBox();
@@ -901,6 +969,17 @@ public class Ode implements EntryPoint {
     aVertPanel.add(appPanel);
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
+
+    // User Admin Panel
+    VerticalPanel uaVertPanel = new VerticalPanel();
+    uaVertPanel.setWidth("100%");
+    uaVertPanel.setSpacing(0);
+    HorizontalPanel adminUserListPanel = new HorizontalPanel();
+    adminUserListPanel.setWidth("100%");
+    adminUserListPanel.add(AdminUserListBox.getAdminUserListBox());
+    uaVertPanel.add(adminUserListPanel);
+    userAdminTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(uaVertPanel);
 
     // KM: DEBUGGING BEGIN
     // User profile tab
@@ -1168,6 +1247,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Get an instance of the Admin Info service
+   *
+   * @return admin info service instance
+   */
+  public AdminInfoServiceAsync getAdminInfoService() {
+    return adminInfoService;
+  }
+
+  /**
    * Get an instance of the help web service.
    *
    * @return help service instance
@@ -1183,6 +1271,15 @@ public class Ode implements EntryPoint {
    */
   public LaunchServiceAsync getLaunchService() {
     return launchService;
+  }
+
+  /**
+   * Get an instance of the component web service.
+   *
+   * @return component web service instance
+   */
+  public ComponentServiceAsync getComponentService() {
+    return componentService;
   }
 
   /**
@@ -1355,7 +1452,7 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
-    
+
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
 
@@ -1481,6 +1578,10 @@ public class Ode implements EntryPoint {
    */
   private void showSurveySplash() {
     // Create the UI elements of the DialogBox
+    if (isReadOnly) {           // Bypass the survey if we are read-only
+      maybeShowSplash();
+      return;
+    }
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createWelcomeDialogText());
@@ -1541,7 +1642,7 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-    if (AppInventorFeatures.showSplashScreen()) {
+    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       openProjectsTab();
@@ -1571,6 +1672,47 @@ public class Ode implements EntryPoint {
     if (showSplash) {
       maybeShowSplash();
     }
+  }
+
+  /**
+   * Show a Dialog Box when we receive an SC_PRECONDITION_FAILED
+   * response code to any Async RPC call. This is a signal that
+   * either our session has expired, or our login cookie has otherwise
+   * become invalid. This is a fatal error and the user should not
+   * be permitted to continue (many ignore the red error bar and keep
+   * working, in vain). So now when this happens, we put up this
+   * modal dialog box which cannot be dismissed. Instead it presents
+   * just one option, a "Reload" button which reloads the browser.
+   * This should trigger a re-authentication (or in the case of an
+   * App Inventor upgrade trigging the problem, the loading of newer
+   * code).
+   */
+
+  public void sessionDead() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.invalidSessionDialogText());
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(MESSAGES.sessionDead());
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button reloadSession = new Button(MESSAGES.reloadWindow());
+    reloadSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          reloadWindow(true);
+        }
+      });
+    holder.add(reloadSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
   }
 
   /**
@@ -1610,7 +1752,7 @@ public class Ode implements EntryPoint {
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
-          reloadWindow();
+          reloadWindow(false);
         }
       });
     holder.add(reloadSession);
@@ -1766,7 +1908,7 @@ public class Ode implements EntryPoint {
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
       @Override
       public void onSuccess(Void result) {
-        reloadWindow();
+        reloadWindow(false);
       }
     };
     cancelSession.addClickListener(new ClickListener() {
@@ -1966,6 +2108,16 @@ public class Ode implements EntryPoint {
     return nonce;
   }
 
+  public boolean isReadOnly() {
+    return isReadOnly;
+  }
+
+  // This is called from AdminUserList when we are switching users
+  // See the comment there...
+  public void setReadOnly() {
+    isReadOnly = true;
+  }
+
   // Code to lock out certain screen and project switching code
   // These are locked out while files are being saved
   // lockScreens(true) is called from EditorManager when it
@@ -2007,8 +2159,12 @@ public class Ode implements EntryPoint {
      });
   }-*/;
 
-  private static native void reloadWindow() /*-{
-    top.location.reload();
+  public static native void reloadWindow(boolean full) /*-{
+    if (full) {
+      top.location.replace(top.location.origin);
+    } else {
+      top.location.reload();
+    }
   }-*/;
 
 }

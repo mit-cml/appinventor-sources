@@ -26,7 +26,8 @@ import com.google.appinventor.components.common.YaVersion;
 @SimpleObject
 public class HorizontalArrangement extends HVArrangement {
   public HorizontalArrangement(ComponentContainer container) {
-    super(container, ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL);
+    super(container, ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
+      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
   }
 
 }

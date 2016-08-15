@@ -153,6 +153,14 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching language")
   String switchLanguageButton();
 
+  @DefaultMessage("Delete component")
+  @Description("Text on \"Delete component\" button")
+  String deleteComponentButton();
+
+  @DefaultMessage("Publish")
+  @Description("Text on \"Publish\" button")
+  String publishButton();
+
   // Not used anymore it is now dynamically created and translated at compile time depending on what
   //languages are translated and available.
 
@@ -271,9 +279,9 @@ public interface OdeMessages extends Messages {
   String labelConfirm();
 
   @DefaultMessage("Your app \"{0}\" has been removed from the gallery due to inappropriate content. "
-          + "Please review the guidelines at ..."
-          + "If you feel this action has been taken in error, or you would like to discuss the issue, "
-          + "please use the App Inventor forum at: \n")
+          + "Please review the guidelines at http://ai2.appinventor.mit.edu/about/termsofservice.html. "
+          + "If you feel this action has been taken in error, " +
+          "you may reply directly to this e-mail for discussion. \n")
   @Description("Label of the Text of Template 1 of reportlist")
   String inappropriateAppContentRemoveEmail(String title);
 
@@ -348,8 +356,7 @@ public interface OdeMessages extends Messages {
 
   // Used in Ode.java
 
-  // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("MIT App Inventor 2")
+  @DefaultMessage("MIT App Inventor")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -488,6 +495,84 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
 
+  //Component
+  @DefaultMessage("Components")
+  @Description("Name of Components tab")
+  String componentsTabName();
+
+  @DefaultMessage("My components")
+  @Description("Name of My components menuitem")
+  String myComponentsMenuItem();
+
+  @DefaultMessage("Start new component")
+  @Description("Name of Start new component menuitem")
+  String startNewComponentMenuItem();
+
+  @DefaultMessage("Import component to project ...")
+  @Description("Name of Import component menuitem")
+  String importComponentMenuItem();
+
+  @DefaultMessage("Build component")
+  @Description("Name of Build component menuitem")
+  String buildComponentMenuItem();
+
+  @DefaultMessage("Upload component (.aix) from my computer ...")
+  @Description("Name of Upload component menuitem")
+  String uploadComponentMenuItem();
+
+  @DefaultMessage("Upload Component...")
+  @Description("Caption for component upload wizard.")
+  String componentUploadWizardCaption();
+
+  @DefaultMessage("Import an extension into project")
+  @Description("Caption for component import wizard.")
+  String componentImportWizardCaption();
+
+  @DefaultMessage("Rename extension")
+  @Description("Caption for component rename wizard.")
+  String componentRenameWizardCaption();
+
+  @DefaultMessage("Extension name")
+  @Description("Caption for component Name Label in rename wizard.")
+  String componentNameLabel();
+
+  @DefaultMessage("Import Extension Failed!")
+  @Description("Error message reported when the component import failed")
+  String componentImportError();
+
+  @DefaultMessage("Extension Import failed due to unknown URL")
+  @Description("Error message reported when the component import failed due to unknown url")
+  String componentImportUnknownURLError();
+
+  @DefaultMessage("Extension Upgraded : ")
+  @Description("Alert message reported when the component import upgraded an already imported extension")
+  String componentUpgradedAlert();
+
+  @DefaultMessage("The selected file is not a component file!\n" +
+      "Component files are aix files.")
+  @Description("Error message reported when the file selected for upload is not a component archive.")
+  String notComponentArchiveError();
+
+  @DefaultMessage("Please select a component to import")
+  @Description("Error message reported when no component is selected to import.")
+  String noComponentSelectedError();
+
+  @DefaultMessage("Please enter a url")
+  @Description("Error message reported when no url is entered.")
+  String noUrlError();
+
+  @DefaultMessage("Name")
+  @Description("Header for name column of component table")
+  String componentNameHeader();
+
+  @DefaultMessage("Version")
+  @Description("Header for version column of component table")
+  String componentVersionHeader();
+
+  @DefaultMessage("Are you really sure you want to delete the component(s): {0}?")
+  @Description("Confirmation message for deleting component(s)")
+  String confirmDeleteComponents(String componentNames);
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
@@ -583,6 +668,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Getting Started link")
   String getStartedMenuItem();
 
+  @DefaultMessage("Extensions")
+  @Description("Extensions link")
+  String extensionsMenuItem();
+
   @DefaultMessage("Tutorials")
   @Description("Name of Tutorials link")
   String tutorialsMenuItem();
@@ -655,6 +744,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Send an Email")
   @Description("Title for moderator send email dialog")
   String emailSendTitle();
+
+  @DefaultMessage("My Components")
+  @Description("Caption for component list box.")
+  String componentListBoxCaption();
 
   // Used in boxes/AssetListBox.java
 
@@ -848,6 +941,10 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component name would be the same as a component type name")
   String sameAsComponentTypeNameError();
 
+  @DefaultMessage("Component names cannot be the same as that of a component instance")
+  @Description("Error shown when a new component type would be the same as a component instance name")
+  String sameAsComponentInstanceNameError();
+
   @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
       "Pattern, YailList, YailNumberToString, YailRuntimeError")
@@ -857,8 +954,13 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
-  @Description("Confirmation query for removing a component")
+  @Description("Confirmation query for deleting a component")
   String reallyDeleteComponent();
+
+  @DefaultMessage("Removing this component will delete all components and blocks associated with them in the " +
+          "Project. Are you sure you want to delete?")
+  @Description("Confirmation query for removing a component")
+  String reallyRemoveComponent();
 
   // Used in editor/simple/components/MockButtonBase.java, MockCheckBox.java, MockLabel.java, and
   // MockRadioButton.java
@@ -1536,10 +1638,18 @@ public interface OdeMessages extends Messages {
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
+  @DefaultMessage("Error: Malformed Filename")
+  @Description("Error message when file name contains characters that would require URL encoding.")
+  String malformedFilenameTitle();
+
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
       "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
+
+  @DefaultMessage("Error: Bad Filename Size")
+  @Description("Error message when filenames are 0 or 101+ characters long")
+  String filenameBadSizeTitle();
 
   @DefaultMessage("File names must be between 1 and 100 characters.")
   @Description("Error message when filenames are 0 or 101+ characters long")
@@ -1557,9 +1667,26 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file couldn't be uploaded because of its size.")
   String fileTooLargeError();
 
+  @DefaultMessage("Error: No File Selected")
+  @Description("Error message reported when a file was not selected.")
+  String noFileSelectedTitle();
+
   @DefaultMessage("Please select a file to upload.")
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
+
+  @DefaultMessage("Error: Cannot upload .aia file as media asset")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAssetTitle();
+
+  @DefaultMessage("To use this file, click Projects > Import project (.aia) from" +
+    " my computer ...")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAsset();
+
+  @DefaultMessage("http://appinventor.mit.edu/explore/ai2/share.html")
+  @Description("URL for more info on using aia files properly")
+  String aiaMediaAssetHelp();
 
   @DefaultMessage("Request to save {1}" +
       "\n\nA file named {0} already exists in this project." +
@@ -1850,6 +1977,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a project couldn't be uploaded to the server.")
   String projectUploadError();
 
+  @DefaultMessage("Apps with extensions cannot be uploaded to the Gallery")
+  @Description("Error to report when an app with an extension is attempted to be added to the Gallery")
+  String galleryNoExtensionsPlease();
+
   @DefaultMessage("The selected project is not a project source file!\n" +
       "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
@@ -2048,6 +2179,10 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  @DefaultMessage("HTMLFormat")
+  @Description("")
+  String HTMLFormatProperties();
+
   // This error message is displayed as HTML
 
   @DefaultMessage("User Interface")
@@ -2093,6 +2228,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
+
+  @DefaultMessage("External")
+  @Description("")
+  String externalComponentPallette();
+
+  @DefaultMessage("External Components")
+  @Description("")
+  String externalComponentPalette();
 
   @DefaultMessage("Experimental")
   @Description("")
@@ -2264,6 +2407,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String horizontalArrangementComponentPallette();
 
+  @DefaultMessage("HorizontalScrollArrangement")
+  @Description("")
+  String horizontalScrollArrangementComponentPallette();
+
   @DefaultMessage("TableArrangement")
   @Description("")
   String tableArrangementComponentPallette();
@@ -2272,7 +2419,11 @@ public interface OdeMessages extends Messages {
   @Description("")
   String verticalArrangementComponentPallette();
 
-  // Lego Mindstorms
+  @DefaultMessage("VerticalScrollArrangement")
+  @Description("")
+  String verticalScrollArrangementComponentPallette();
+
+  // Lego Mindstorms NXT
   @DefaultMessage("NxtColorSensor")
   @Description("")
   String nxtColorSensorComponentPallette();
@@ -2300,6 +2451,39 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("NxtUltrasonicSensor")
   @Description("")
   String nxtUltrasonicSensorComponentPallette();
+
+  // Lego Mindstorms EV3
+  @DefaultMessage("Ev3Commands")
+  @Description("")
+  String ev3CommandsComponentPallette();
+
+  @DefaultMessage("Ev3UI")
+  @Description("")
+  String ev3UIComponentPallette();
+
+  @DefaultMessage("Ev3Sound")
+  @Description("")
+  String ev3SoundComponentPallette();
+
+  @DefaultMessage("Ev3Motors")
+  @Description("")
+  String ev3MotorsComponentPallette();
+
+  @DefaultMessage("Ev3TouchSensor")
+  @Description("")
+  String ev3TouchSensorComponentPallette();
+
+  @DefaultMessage("Ev3ColorSensor")
+  @Description("")
+  String ev3ColorSensorComponentPallette();
+
+  @DefaultMessage("Ev3GyroSensor")
+  @Description("")
+  String ev3GyroSensorComponentPallette();
+
+  @DefaultMessage("Ev3UltrasonicSensor")
+  @Description("")
+  String ev3UltrasonicSensorComponentPallette();
 
   // Storage
   @DefaultMessage("ActivityStarter")
@@ -2716,6 +2900,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FirebaseURLProperties();
 
+  @DefaultMessage("Persist")
+  @Description("")
+  String PersistProperties();
+
   @DefaultMessage("ProjectBucket")
   @Description("")
   String ProjectBucketProperties();
@@ -2983,6 +3171,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ElapsedTime")
   @Description("")
   String ElapsedTimeProperties();
+
+  @DefaultMessage("SimpleSteps")
+  @Description("")
+  String SimpleStepsProperties();
+
+  @DefaultMessage("WalkSteps")
+  @Description("")
+  String WalkStepsProperties();
 
   @DefaultMessage("Moving")
   @Description("")
@@ -3267,6 +3463,34 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewString")
   @Description("")
   String WebViewStringProperties();
+
+  @DefaultMessage("EnableSpeedRegulation")
+  @Description("")
+  String EnableSpeedRegulationProperties();
+
+  @DefaultMessage("Mode")
+  @Description("")
+  String ModeProperties();
+
+  @DefaultMessage("MotorPorts")
+  @Description("")
+  String MotorPortsProperties();
+
+  @DefaultMessage("ReverseDirection")
+  @Description("")
+  String ReverseDirectionProperties();
+
+  @DefaultMessage("SensorValueChangedEventEnabled")
+  @Description("")
+  String SensorValueChangedEventEnabledProperties();
+
+  @DefaultMessage("TachoCountChangedEventEnabled")
+  @Description("")
+  String TachoCountChangedEventEnabledProperties();
+
+  @DefaultMessage("Unit")
+  @Description("")
+  String UnitProperties();
 
   //Params
   @DefaultMessage("xAccel")
@@ -3889,6 +4113,58 @@ public interface OdeMessages extends Messages {
   @Description("")
   String timestampParams();
 
+  @DefaultMessage("colorCode")
+  @Description("")
+  String colorCodeParams();
+
+  @DefaultMessage("colorName")
+  @Description("")
+  String colorNameParams();
+
+  @DefaultMessage("fill")
+  @Description("")
+  String fillParams();
+
+  @DefaultMessage("frequency")
+  @Description("")
+  String frequencyParams();
+
+  @DefaultMessage("height")
+  @Description("")
+  String heightParams();
+
+  @DefaultMessage("no")
+  @Description("")
+  String noParams();
+
+  @DefaultMessage("rate")
+  @Description("")
+  String rateParams();
+
+  @DefaultMessage("sensorValue")
+  @Description("")
+  String sensorValueParams();
+
+  @DefaultMessage("tachoCount")
+  @Description("")
+  String tachoCountParams();
+
+  @DefaultMessage("tachoCounts")
+  @Description("")
+  String tachoCountsParams();
+
+  @DefaultMessage("useBrake")
+  @Description("")
+  String useBrakeParams();
+
+  @DefaultMessage("volume")
+  @Description("")
+  String volumeParams();
+
+  @DefaultMessage("width")
+  @Description("")
+  String widthParams();
+
   //Events
   @DefaultMessage("AccelerationChanged")
   @Description("")
@@ -4186,6 +4462,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String GotValueEvents();
 
+  @DefaultMessage("TagList")
+  @Description("")
+  String TagListEvents();
+
   @DefaultMessage("ValueStored")
   @Description("")
   String ValueStoredEvents();
@@ -4277,6 +4557,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GyroscopeChanged")
   @Description("")
   String GyroscopeChangedEvents();
+
+  @DefaultMessage("TachoCountChanged")
+  @Description("")
+  String TachoCountChangedEvents();
+
+  @DefaultMessage("SensorValueChanged")
+  @Description("")
+  String SensorValueChangedEvents();
 
   //Methods
   @DefaultMessage("ResolveActivity")
@@ -4891,6 +5179,22 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StoreValueMethods();
 
+  @DefaultMessage("GetTagList")
+  @Description("")
+  String GetTagListMethods();
+
+  @DefaultMessage("AppendValue")
+  @Description("")
+  String AppendValueMethods();
+
+  @DefaultMessage("RemoveFirst")
+  @Description("")
+  String RemoveFirstMethods();
+
+  @DefaultMessage("FirstRemoved")
+  @Description("")
+  String FirstRemovedEvents();
+
   @DefaultMessage("InitializeValue")
   @Description("")
   String InitializeValueMethods();
@@ -5135,6 +5439,133 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RequestTranslationMethods();
 
+  @DefaultMessage("GetBatteryCurrent")
+  @Description("")
+  String GetBatteryCurrentMethods();
+
+  @DefaultMessage("GetBatteryVoltage")
+  @Description("")
+  String GetBatteryVoltageMethods();
+
+  @DefaultMessage("GetHardwareVersion")
+  @Description("")
+  String GetHardwareVersionMethods();
+
+  @DefaultMessage("SetAngleMode")
+  @Description("")
+  String SetAngleModeMethods();
+
+  @DefaultMessage("SetRateMode")
+  @Description("")
+  String SetRateModeMethods();
+
+  @DefaultMessage("SetCmUnit")
+  @Description("")
+  String SetCmUnitMethods();
+
+  @DefaultMessage("SetInchUnit")
+  @Description("")
+  String SetInchUnitMethods();
+
+  @DefaultMessage("SetColorMode")
+  @Description("")
+  String SetColorModeMethods();
+
+  @DefaultMessage("SetReflectedMode")
+  @Description("")
+  String SetReflectedModeMethods();
+
+  @DefaultMessage("SetAmbientMode")
+  @Description("")
+  String SetAmbientModeMethods();
+
+  @DefaultMessage("RotateIndefinitely")
+  @Description("")
+  String RotateIndefinitelyMethods();
+
+  @DefaultMessage("RotateInDistance")
+  @Description("")
+  String RotateInDistanceMethods();
+
+  @DefaultMessage("RotateInDuration")
+  @Description("")
+  String RotateInDurationMethods();
+
+  @DefaultMessage("RotateInTachoCounts")
+  @Description("")
+  String RotateInTachoCountsMethods();
+
+  @DefaultMessage("RotateSyncIndefinitely")
+  @Description("")
+  String RotateSyncIndefinitelyMethods();
+
+  @DefaultMessage("RotateSyncInDistance")
+  @Description("")
+  String RotateSyncInDistanceMethods();
+
+  @DefaultMessage("RotateSyncInDuration")
+  @Description("")
+  String RotateSyncInDurationMethods();
+
+  @DefaultMessage("RotateSyncInTachoCounts")
+  @Description("")
+  String RotateSyncInTachoCountsMethods();
+
+  @DefaultMessage("ToggleDirection")
+  @Description("")
+  String ToggleDirectionMethods();
+
+  @DefaultMessage("GetTachoCount")
+  @Description("")
+  String GetTachoCountMethods();
+
+  @DefaultMessage("ResetTachoCount")
+  @Description("")
+  String ResetTachoCountMethods();
+
+  @DefaultMessage("GetSensorValue")
+  @Description("")
+  String GetSensorValueMethods();
+
+  @DefaultMessage("GetColorCode")
+  @Description("")
+  String GetColorCodeMethods();
+
+  @DefaultMessage("GetColorName")
+  @Description("")
+  String GetColorNameMethods();
+
+  @DefaultMessage("FillScreen")
+  @Description("")
+  String FillScreenMethods();
+
+  @DefaultMessage("DrawRect")
+  @Description("")
+  String DrawRectMethods();
+
+  @DefaultMessage("DrawIcon")
+  @Description("")
+  String DrawIconMethods();
+
+  @DefaultMessage("GetOSVersion")
+  @Description("")
+  String GetOSVersionMethods();
+
+  @DefaultMessage("GetOSBuild")
+  @Description("")
+  String GetOSBuildMethods();
+
+  @DefaultMessage("GetFirmwareBuild")
+  @Description("")
+  String GetFirmwareBuildMethods();
+
+  @DefaultMessage("SetPower")
+  @Description("")
+  String SetPowerMethods();
+
+  @DefaultMessage("StopSound")
+  @Description("")
+  String StopSoundMethods();
 
   //Mock Components
   @DefaultMessage("add items...")
@@ -5213,6 +5644,38 @@ public interface OdeMessages extends Messages {
   @Description("")
   String EmailPickerHelpStringComponentPallette();
 
+  @DefaultMessage("A component that provides both high- and low-level interfaces to control the motors on LEGO MINDSTORMS EV3.")
+  @Description("")
+  String Ev3MotorsHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3TouchSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a gyro sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3GyroSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3ColorSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3UltrasonicSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a low-level interface to a LEGO MINDSTORMS EV3 robot, with functions to send system or direct commands to EV3 robots.")
+  @Description("")
+  String Ev3CommandsHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, which provides graphic functionalities.")
+  @Description("")
+  String Ev3UIHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to sound functionalities on LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3SoundHelpStringComponentPallette();
+
   @DefaultMessage("Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.")
   @Description("")
   String FileHelpStringComponentPallette();
@@ -5236,6 +5699,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("<p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p>")
   @Description("")
   String HorizontalArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p><p>This version is scrollable.,")
+  @Description("")
+  String HorizontalScrollArrangementHelpStringComponentPallette();
 
   @DefaultMessage("Component for displaying images.  The picture to display, and other aspects of the Image\"s appearance, can be specified in the Designer or in the Blocks Editor.")
   @Description("")
@@ -5261,7 +5728,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ListViewHelpStringComponentPallette();
 
-  @DefaultMessage("Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform \"geocoding\", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>\n<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>\nLocation information might not be immediately available when an app starts.  You\"ll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event")
+  @DefaultMessage("Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address.  This can also perform \"geocoding\", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>\n <p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>\nLocation information might not be immediately available when an app starts.  You''ll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event")
   @Description("")
   String LocationSensorHelpStringComponentPallette();
 
@@ -5309,7 +5776,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PasswordTextBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Component that can count steps.")
+  @DefaultMessage("A Component that acts like a Pedometer. It senses motion via the " +
+    "Accerleromter and attempts to determine if a step has been " +
+    "taken. Using a configurable stride length, it can estimate the " +
+    "distance traveled as well. ")
   @Description("")
   String PedometerHelpStringComponentPallette();
 
@@ -5393,6 +5863,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("<p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p>")
   @Description("")
   String VerticalArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p><p> This version is scrollable.</p>")
+  @Description("")
+  String VerticalScrollArrangementHelpStringComponentPallette();
 
   @DefaultMessage("A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in Windows Media Video (.wmv) format, 3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal formats, see <a href=\"http://developer.android.com/guide/appendix/media-formats.html\" target=\"_blank\">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.")
   @Description("")
@@ -5771,4 +6245,19 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
+
+  @DefaultMessage("You are in Read Only Mode")
+  @Description("")
+  String readOnlyMode();
+
+  @DefaultMessage("Either your session has expired, or App Inventor has been upgraded. " +
+    "You will need to \"Reload\" your session to continue. Press the \"Reload\" Button " +
+    "below.")
+  @Description("")
+  String sessionDead();
+
+  @DefaultMessage("Reload")
+  @Description("")
+  String reloadWindow();
+
 }

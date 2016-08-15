@@ -28,13 +28,16 @@ import com.google.appinventor.client.editor.simple.palette.SimpleComponentDescri
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -45,6 +48,7 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
@@ -60,7 +64,7 @@ import java.util.Map;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YaFormEditor extends SimpleEditor implements FormChangeListener {
+public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener {
 
   private static class FileContentHolder {
     private String content;
@@ -81,8 +85,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // JSON parser
   private static final JSONParser JSON_PARSER = new ClientJsonParser();
 
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
+  private final SimpleComponentDatabase COMPONENT_DATABASE;
 
   private final YoungAndroidFormNode formNode;
 
@@ -112,6 +115,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // and we rely on the pre-upgraded .scm file for this info.
   private String preUpgradeJsonString;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
+  private JSONArray authURL;    // List of App Inventor versions we have been edited on.
+
+  private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
   /**
    * Creates a new YaFormEditor.
@@ -123,6 +130,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     super(projectEditor, formNode);
 
     this.formNode = formNode;
+    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());
 
     // Get reference to the source structure explorer
     sourceStructureExplorer =
@@ -130,7 +138,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     // Create UI elements for the designer panels.
     nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();
+    addComponentDatabaseChangeListener(nonVisibleComponentsPanel);
     visibleComponentsPanel = new SimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
+    addComponentDatabaseChangeListener(visibleComponentsPanel);
     DockPanel componentsPanel = new DockPanel();
     componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
     componentsPanel.add(visibleComponentsPanel, DockPanel.NORTH);
@@ -152,11 +162,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     });
     palettePanel.setSize("100%", "100%");
+    addComponentDatabaseChangeListener(palettePanel);
 
     // Create designProperties, which will be used as the content of the PropertiesBox.
     designProperties = new PropertiesPanel();
     designProperties.setSize("100%", "100%");
-
     initWidget(componentsPanel);
     setSize("100%", "100%");
   }
@@ -383,6 +393,67 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       final Command afterUpgradeComplete) {
     JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(
         fileContentHolder.getFileContent(), JSON_PARSER);
+
+    // BEGIN PROJECT TAGGING CODE
+
+    // |-------------------------------------------------------------------|
+    // | Project Tagging Code:                                             |
+    // | Because of the likely proliferation of various versions of App    |
+    // | Inventor, we want to mark a project with the history of which     |
+    // | versions have seen it. We do that with the "authURL" tag which we |
+    // | add to the Form files. It is a JSON array of versions identified  |
+    // | by the hostname portion of the URL of the service editing the     |
+    // | project. Older projects will not have this field, so if we detect |
+    // | an older project (YAV < OLD_PROJECT_YAV) we create the list and   |
+    // | add ourselves. If we read in a project where YAV >=               |
+    // | OLD_PROJECT_YAV *and* there is no authURL, we assume that it was  |
+    // | created on a version of App Inventor that doesn't support project |
+    // | tagging and we add an "*UNKNOWN*" tag to indicate this. So for    |
+    // | example if you examine a (newer) project and look in the          |
+    // | Screen1.scm file, you should just see an authURL that looks like  |
+    // | ["ai2.appinventor.mit.edu"]. This would indicate a project that   |
+    // | has only been edited on MIT App Inventor. If instead you see      |
+    // | something like ["localhost", "ai2.appinventor.mit.edu"] it        |
+    // | implies that at some point in its history this project was edited |
+    // | using the local dev server on someone's own computer.             |
+    // |-------------------------------------------------------------------|
+
+    authURL = (JSONArray) propertiesObject.get("authURL");
+    String ourHost = Window.Location.getHostName();
+    JSONValue us = new ClientJsonString(ourHost);
+    if (authURL != null) {
+      List<JSONValue> values = authURL.asArray().getElements();
+      boolean foundUs = false;
+      for (JSONValue value : values) {
+        if (value.asString().getString().equals(ourHost)) {
+          foundUs = true;
+          break;
+        }
+      }
+      if (!foundUs) {
+        authURL.asArray().getElements().add(us);
+      }
+    } else {
+      // Kludgey way to create an empty JSON array. But we cannot call ClientJsonArray ourselves
+      // because it is not a public class. So rather then make it public (and violate an abstraction
+      // barrier). We create the array this way. Sigh.
+      authURL = JSON_PARSER.parse("[]").asArray();
+      // Warning: If YaVersion isn't present, we will get an NPF on
+      // the line below. But it should always be there...
+      // Note: YaVersion although a numeric value is stored as a Json String so we have
+      // to parse it as a string and then convert it to a number in Java.
+      int yav = Integer.parseInt(propertiesObject.get("YaVersion").asString().getString());
+      // If yav is > OLD_PROJECT_YAV, and we still don't have an
+      // authURL property then we likely originated from a non-MIT App
+      // Inventor instance so add an *Unknown* tag before our tag
+      if (yav > OLD_PROJECT_YAV) {
+        authURL.asArray().getElements().add(new ClientJsonString("*UNKNOWN*"));
+      }
+      authURL.asArray().getElements().add(us);
+    }
+
+    // END OF PROJECT TAGGING CODE
+
     preUpgradeJsonString =  propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
     if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
@@ -567,6 +638,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   protected String encodeFormAsJsonString(boolean forYail) {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
+    // Include authURL in output if it is non-null
+    if (authURL != null) {
+      sb.append("\"authURL\":").append(authURL.toJson()).append(",");
+    }
     sb.append("\"YaVersion\":\"").append(YaVersion.YOUNG_ANDROID_VERSION).append("\",");
     sb.append("\"Source\":\"Form\",");
     sb.append("\"Properties\":");
@@ -646,6 +721,20 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.setVisible(false);
   }
 
+  /**
+   * Runs through all the Mock Components and upgrades if its corresponding Component was Upgraded
+   * @param componentTypes the Component Types that got upgraded
+   */
+  private void updateMockComponents(List<String> componentTypes) {
+    Map<String, MockComponent> componentMap = getComponents();
+    for (MockComponent mockComponent : componentMap.values()) {
+      if (componentTypes.contains(mockComponent.getType())) {
+        mockComponent.upgrade();
+        mockComponent.upgradeComplete();
+      }
+    }
+  }
+
   /*
    * Push changes to a connected phone (or emulator).
    */
@@ -655,4 +744,60 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     blockEditor.onBlocksAreaChanged(getProjectId() + "_" + formNode.getFormName());
   }
 
+  private void addComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.add(cdbChangeListener);
+  }
+
+  private void removeComponentDatabaseChangeListener(ComponentDatabaseChangeListener cdbChangeListener) {
+    componentDatabaseChangeListeners.remove(cdbChangeListener);
+  }
+
+  private void clearComponentDatabaseChangeListener() {
+    componentDatabaseChangeListeners.clear();
+  }
+
+  @Override
+  public void onComponentTypeAdded(List<String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeAdded(componentTypes);
+    }
+    //Update Mock Components
+    updateMockComponents(componentTypes);
+    //Update the Properties Panel
+    updatePropertiesPanel(form.getSelectedComponent());
+  }
+
+  @Override
+  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
+    }
+    List<MockComponent> mockComponents = new ArrayList<MockComponent>(getForm().getChildren());
+    for (String compType : componentTypes) {
+      for (MockComponent mockComp : mockComponents) {
+        if (mockComp.getType().equals(compType)) {
+          mockComp.delete();
+        }
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onComponentTypeRemoved(componentTypes);
+    }
+  }
+
+  @Override
+  public void onResetDatabase() {
+    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
+      cdbChangeListener.onResetDatabase();
+    }
+  }
 }

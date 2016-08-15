@@ -6,18 +6,24 @@
 
 package com.google.appinventor.server;
 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appinventor.server.cookieauth.CookieAuth;
+import java.io.Serializable;
+
 import com.google.appinventor.server.flags.Flag;
+
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.user.User;
+
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -25,8 +31,15 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.keyczar.Crypter;
+import org.keyczar.exceptions.KeyczarException;
+
+import org.keyczar.util.Base64Coder;
+
 
 /**
  * An authentication filter that uses Google Accounts for logged-in users.
@@ -40,19 +53,19 @@ public class OdeAuthFilter implements Filter {
 
   private static final Logger LOG = Logger.getLogger(OdeAuthFilter.class.getName());
 
+  private static Crypter crypter = null; // accessed through getCrypter only
+  private static final Object crypterSync = new Object();
+
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
-
-  private static final UserService userService = UserServiceFactory.getUserService();
-
-  // Note that if no whitelist exists, then no whitelist will be used.
-//  private static final Whitelist whitelist = new Whitelist();
-  private static final IdMap idmap = IdMap.getInstance();
 
   // Whether this server should use a whitelist to determine who can
   // access it. Value is specified in the <system-properties> section
   // of appengine-web.xml.
   @VisibleForTesting
   static final Flag<Boolean> useWhitelist = Flag.createFlag("use.whitelist", false);
+  static final Flag<String> sessionKeyFile = Flag.createFlag("session.keyfile", "WEB-INF/authkey");
+  static final Flag<Integer> idleTimeout = Flag.createFlag("session.idletimeout", 120);
+  static final Flag<Integer> renewTime = Flag.createFlag("session.renew", 30);
 
   private final LocalUser localUser = LocalUser.getInstance();
 
@@ -70,22 +83,56 @@ public class OdeAuthFilter implements Filter {
     final HttpServletRequest httpRequest = (HttpServletRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-    // Use Google Accounts authentication
-    if (httpRequest.getUserPrincipal() == null) {
-      return;   // if no principal, block the request
+    // Use Local Authentication
+    // String userid = (String) httpRequest.getSession().getAttribute("userid");
+    // Object isReadOnlyObject = httpRequest.getSession().getAttribute("readonly");
+    // boolean isReadOnly = false;
+    // if (isReadOnlyObject != null) {
+    //   isReadOnly = (boolean) isReadOnlyObject;
+    // }
+    // LOG.info("isReadOnly = " + isReadOnly);
+    // if (userid == null) {        // Invalid Login
+    //   LOG.info("userid is null on login.");
+    //   httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+    //   return;
+    // }
+
+    // Use Local Authentication
+    UserInfo userInfo = getUserInfo(httpRequest);
+    if (userInfo == null) {        // Invalid Login
+      LOG.info("uinfo is null on login.");
+      httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+      return;
     }
 
-    doMyFilter(httpRequest, httpResponse, chain);
+    String userId = userInfo.userId;
+    boolean isAdmin = userInfo.isAdmin;
+    boolean isReadOnly = userInfo.isReadOnly;
+
+//    Object oIsAdmin = httpRequest.getSession().getAttribute("isadmin");
+//    if (oIsAdmin != null) {
+//      isAdmin = (boolean) oIsAdmin;
+//    }
+
+    doMyFilter(userInfo, isAdmin, isReadOnly, httpRequest, httpResponse, chain);
   }
 
   @VisibleForTesting
-  void doMyFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    if (!setUser(request)) {
-      // can't get the user info, so block further request processing
-      response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+  void doMyFilter(UserInfo userInfo, boolean isAdmin, boolean isReadOnly,
+    HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    throws IOException, ServletException {
+
+    // Setup the user object for OdeRemoteServiceServlet
+    setUserFromUserId(userInfo.userId, isAdmin, isReadOnly);
+
+    // If using local login, we *must* have an email address because that is how we
+    // find the UserData object.
+    String lemail = localUser.getUserEmail();
+    if (lemail.equals("")) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
+
     try {
       if (useWhitelist.get() && !isUserWhitelisted()) {
         writeWhitelistErrorMessage(response);
@@ -95,13 +142,21 @@ public class OdeAuthFilter implements Filter {
       }
       // If user hasn't accepted terms of service, redirect them,
       // unless they're submitting the acceptance request.
-      if (!localUser.getUserTosAccepted() &&
+      if (!localUser.getUserTosAccepted() && !isReadOnly &&
           !request.getRequestURI().endsWith(ServerLayout.ACCEPT_TOS_SERVLET)) {
         // This indicates to the client side code that the user needs to accept
         // the terms of service. We don't send the redirect here because
         // it isn't understood properly by GWT RPC
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return;
+      }
+      String newCookie = userInfo.buildCookie(true);
+      if (newCookie != null) {  // If we get a value here, it is time to renew
+                                // the Cookie
+        LOG.info("Renewing the authentication Cookie");
+        Cookie cook = new Cookie("AppInventor", newCookie);
+        cook.setPath("/");
+        response.addCookie(cook);
       }
       chain.doFilter(request, response);
     } finally {
@@ -125,33 +180,19 @@ public class OdeAuthFilter implements Filter {
         "service operator.");
   }
 
-  @VisibleForTesting
-  boolean setUser(HttpServletRequest request) {
-    com.google.appengine.api.users.User apiUser = userService.getCurrentUser();
-    if (apiUser != null) {
-      String userId = apiUser.getUserId();
-      String email = apiUser.getEmail();
-      email = idmap.get(email);	// Map the user.
-      User user = storageIo.getUser(userId, email);
-      user.setIsAdmin(userService.isUserAdmin());
-      if (!email.equals(user.getUserEmail())) {
-        user.setUserEmail(email);
-      }
-      localUser.set(user);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   /*
    * Sets the user for the current thread according to the given userId.
    *
    * <p>This method is called from {@link WebStartFileServlet} with the userId
    * that was encrypted in the URL.
    */
-  void setUserFromUserId(String userId) {
+  void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) {
     User user = storageIo.getUser(userId);
+    if (!user.getIsAdmin() && isAdmin) {
+      user.setIsAdmin(true);    // If session says they are an admin (which is the case
+                                // if they are a Google Account with Developer access
+    }
+    user.setReadOnly(isReadOnly);
     localUser.set(user);
   }
 
@@ -180,5 +221,137 @@ public class OdeAuthFilter implements Filter {
    */
   @Override
   public void init(FilterConfig arg0) throws ServletException {
+  }
+
+  // --- Support Routines for encrypted cookies --- //
+
+  public static class UserInfo implements Serializable {
+    String userId = "";
+    boolean isAdmin = false;
+    boolean isReadOnly = false;
+    long ts;
+
+    transient boolean modified = false;
+
+    public UserInfo() {
+      this.ts = System.currentTimeMillis();
+    }
+
+    public boolean getReadOnly() {
+      return this.isReadOnly;
+    }
+
+    public UserInfo(String userId, boolean isAdmin) {
+      this.userId = userId;
+      this.isAdmin = isAdmin;
+      this.ts = System.currentTimeMillis();
+    }
+
+    public void setUserId(String userId) {
+      this.userId = userId;
+      modified = true;
+    }
+
+    public void setReadOnly(boolean value) {
+      this.isReadOnly = value;
+      modified = true;
+    }
+
+    public String getUserId() {
+      return userId;
+    }
+
+    public boolean getIsAdmin() {
+      return isAdmin;
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+      this.isAdmin = isAdmin;
+      modified = true;
+    }
+
+    public String buildCookie(boolean ifNeeded) {
+      try {
+        long offset = System.currentTimeMillis() - this.ts;
+        offset /= 1000;
+        if (offset > (60*renewTime.get())) {    // Renew if it is time
+          modified = true;
+          ts = System.currentTimeMillis();
+        }
+        if (!ifNeeded || modified) {
+          Crypter crypter = getCrypter();
+          CookieAuth.cookie cookie = CookieAuth.cookie.newBuilder()
+            .setUuid(this.userId)
+            .setTs(this.ts)
+            .setIsAdmin(this.isAdmin)
+            .setIsReadOnly(this.isReadOnly).build();
+          return Base64Coder.encode(crypter.encrypt(cookie.toByteArray()));
+        } else {
+          return null;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    // Verify the timestamp
+    boolean isValid() {
+      long offset = System.currentTimeMillis() - this.ts;
+      offset /= 1000;
+
+      // Reject if older then idleTimeout (minutes) or if greater then
+      // 60 seconds in the future. We allow for 60 seconds in the
+      // future to deal with potential clock skew between app inventor
+      // servers
+
+      if (offset < -60 || offset > (60*idleTimeout.get())) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+
+  public static UserInfo getUserInfo(HttpServletRequest request) {
+    try {
+      Cookie [] cookies = request.getCookies();
+      if (cookies != null)
+        for (Cookie cookie : cookies) {
+          if ("AppInventor".equals(cookie.getName())) {
+            String rawData = cookie.getValue();
+            LOG.info("getUserInfo: rawCookie = " + rawData);
+            Crypter crypter = getCrypter();
+            CookieAuth.cookie cookieToken = CookieAuth.cookie.parseFrom(
+              crypter.decrypt(Base64Coder.decode(rawData)));
+            UserInfo uInfo = new UserInfo();
+            uInfo.userId = cookieToken.getUuid();
+            uInfo.ts = cookieToken.getTs();
+            uInfo.isAdmin = cookieToken.getIsAdmin();
+            uInfo.isReadOnly = cookieToken.getIsReadOnly();
+            if (uInfo.isValid()) {
+              return uInfo;
+            } else {
+              return null;
+            }
+          }
+        }
+      return null;
+    } catch (KeyczarException e) {
+      LOG.log(Level.SEVERE, "Error parsing provided cookie", e);
+      return null;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static Crypter getCrypter() throws KeyczarException {
+    synchronized(crypterSync) {
+      if (crypter != null) {
+        return crypter;
+      } else {
+        crypter = new Crypter(sessionKeyFile.get());
+        return crypter;
+      }
+    }
   }
 }

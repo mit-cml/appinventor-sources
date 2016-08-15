@@ -159,16 +159,27 @@ public class Properties<T extends Property> implements Iterable<T> {
 
   /**
    * Adds a new property to the collection.
-   * A property of the same name must not already exist.
+   * A property of the same name may already exist.
    *
    * @param property  property to be added
-   * @throws IllegalStateException  if a same-named property already exists
    */
   protected void addProperty(T property) {
     T oldProperty = propertiesMap.put(property.getName(), property);
     if (oldProperty != null) {
       propertiesMap.put(property.getName(), oldProperty);  // restore state
       throw new IllegalStateException("property already exists: " + property.getName());
+    }
+  }
+
+  /**
+   * Removes a property from the collection
+   * The property may not exist in the collection
+   *
+   * @param propertyName name of the property to be removed
+   */
+  protected void removeProperty(String propertyName) {
+    if (propertiesMap.containsKey(propertyName)) {
+      propertiesMap.remove(propertyName);
     }
   }
 
@@ -194,6 +205,10 @@ public class Properties<T extends Property> implements Iterable<T> {
       OdeLog.wlog(e.toString());
       return false;
     }
+  }
+
+  public final boolean hasProperty(String name) {
+    return propertiesMap.containsKey(name);
   }
 
   /**

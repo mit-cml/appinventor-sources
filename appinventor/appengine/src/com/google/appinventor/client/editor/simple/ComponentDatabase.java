@@ -6,7 +6,8 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
+import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
@@ -24,67 +25,18 @@ import java.util.Set;
  */
 class ComponentDatabase implements ComponentDatabaseInterface {
 
-  /*
-   * Simple component information: component name, its properties
-   */
-  private static class Component {
-    private final String name;
-    private final int version;
-    private final String categoryString;
-    private final String helpString;
-    private final boolean showOnPalette;
-    private final String categoryDocUrlString;
-    private final List<PropertyDefinition> properties;
-    private final List<BlockPropertyDefinition> blockProperties;
-    private final List<EventDefinition> events;
-    private final List<MethodDefinition> methods;
-    private final Map<String, String> propertiesTypesByName;
-    private final boolean nonVisible;
-    private final String iconName;
-    private final String typeDescription;
 
-    Component(String name, int version, String categoryString, String helpString,
-        boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
-      this.name = name;
-      this.version = version;
-      this.categoryString = categoryString;
-      this.helpString = helpString;
-      this.showOnPalette = showOnPalette;
-      this.categoryDocUrlString = ComponentCategory.valueOf(categoryString).getDocName();
-      this.properties = new ArrayList<PropertyDefinition>();
-      this.blockProperties = new ArrayList<BlockPropertyDefinition>();
-      this.events = new ArrayList<EventDefinition>();
-      this.methods = new ArrayList<MethodDefinition>();
-      this.propertiesTypesByName = new HashMap<String, String>();
-      this.nonVisible = nonVisible;
-      this.iconName = iconName;
-      this.typeDescription = typeDescription;
-    }
-
-    void add(PropertyDefinition property) {
-      properties.add(property);
-      propertiesTypesByName.put(property.getName(), property.getEditorType());
-    }
-
-    void add(BlockPropertyDefinition blockProperty) {
-      blockProperties.add(blockProperty);
-    }
-
-    void add(EventDefinition event) {
-      events.add(event);
-    }
-
-    void add(MethodDefinition method) {
-      methods.add(method);
-    }
-  }
 
   // Maps component names to component descriptors
-  private final Map<String, Component> components;
+  private final Map<String, ComponentDefinition> components;
 
-  // Maps component names to component descriptors
-  private final String componentsJSONString;
+  // Components in JSON String generated from internal components
+  private final String internalComponentsJSONString;
+  // Components in JSON String generated from components
+  private String componentsJSONString;
 
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners =
+      new ArrayList<ComponentDatabaseChangeListener>();
 
   /**
    * Creates a new component database.
@@ -93,11 +45,66 @@ class ComponentDatabase implements ComponentDatabaseInterface {
    *          a JSONArray of components
    */
   ComponentDatabase(JSONArray array) {
-    components = new HashMap<String, Component>();
+    components = new HashMap<String, ComponentDefinition>();
+    List<String> newComponents = new ArrayList<String>();
     for (JSONValue component : array.getElements()) {
-      initComponent(component.asObject());
+      if (initComponent(component.asObject())) {
+        newComponents.add(component.asObject().get("name").asString().getString());
+      }
     }
-    componentsJSONString = array.toJson();
+    internalComponentsJSONString = generateComponentsJSON();
+    componentsJSONString = internalComponentsJSONString;
+    fireComponentsAdded(newComponents);
+  }
+
+  public boolean addComponent(JSONValue component) {
+    if (!initComponent(component.asObject())) return false;
+    List<String> newComponents = new ArrayList<String>();
+    newComponents.add(component.asObject().get("name").asString().getString());
+    componentsJSONString = generateComponentsJSON();
+    fireComponentsAdded(newComponents);
+    return true;
+  }
+
+  public int addComponents(JSONArray array) {
+    int compsAdded = 0;
+    List<String> newComponents = new ArrayList<String>();
+    for ( JSONValue component : array.getElements()) {
+      if(initComponent(component.asObject())) {
+        newComponents.add(component.asObject().get("name").asString().getString());
+        ++compsAdded;
+      }
+    }
+    componentsJSONString = generateComponentsJSON();
+    fireComponentsAdded(newComponents);
+    return compsAdded;
+  }
+
+  public boolean removeComponent(String componentName) {
+    List<String> removedComponents = new ArrayList<String>();
+    removedComponents.add(componentName);
+    Map<String, String> removedComponentsMap = new HashMap<String, String>();
+    for (String componentType : removedComponents) {
+      removedComponentsMap.put(componentType, getComponentType(componentType));
+    }
+    if (!fireBeforeComponentsRemoved(removedComponents)) {
+      throw new IllegalStateException("Failed to remove Component!");
+    }
+    if (components.remove(componentName) != null) {
+      componentsJSONString = generateComponentsJSON();
+      fireComponentsRemoved(removedComponentsMap);
+      return true;
+    }
+    return false;
+  }
+  /**
+   * Resets the Component Database to include only Internal Components
+   */
+  public void resetDatabase() {
+    components.clear();
+    componentsJSONString = "";
+    addComponents(new ClientJsonParser().parse(internalComponentsJSONString).asArray());
+    fireResetDatabase();
   }
 
   @Override
@@ -105,132 +112,172 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return components.keySet();
   }
 
-  @Override
-  public int getComponentVersion(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public ComponentDefinition getComponentDefinition(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.version;
+    return component;
   }
 
   @Override
-  public String getCategoryString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public int getComponentVersion(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.categoryString;
+    return component.getVersion();
   }
 
   @Override
-  public String getCategoryDocUrlString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
-    if (component == null) {
+  public String getComponentType(String componentName){
+    ComponentDefinition component = components.get(componentName);
+    if(component == null){
       throw new IllegalArgumentException();
     }
 
-    return component.categoryDocUrlString;
+    return component.getType();
   }
 
   @Override
-  public String getHelpString(String componentTypeName) {
-    Component component = components.get(componentTypeName);
-    if (component == null) {
-      throw new IllegalArgumentException();
+  public String getComponentName(String componentType) {
+    for (String componentName : components.keySet()) {
+      ComponentDefinition component = components.get(componentName);
+      if (component.getType() == componentType) {
+        return componentName;
+      }
     }
-
-    return component.helpString;
+    return "";
   }
 
   @Override
-  public boolean getShowOnPalette(String componentTypeName) {
-    Component component = components.get(componentTypeName);
-    if (component == null) {
+  public boolean getComponentExternal(String componentName){
+    ComponentDefinition component = components.get(componentName);
+    if(component == null){
       throw new IllegalArgumentException();
     }
 
-    return component.showOnPalette;
+    return component.isExternal();
   }
 
   @Override
-  public boolean getNonVisible(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getCategoryString(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
-    return component.nonVisible;
+
+    return component.getCategoryString();
   }
 
   @Override
-  public String getIconName(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getCategoryDocUrlString(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
-    return component.iconName;
+
+    return component.getCategoryDocUrlString();
   }
 
   @Override
-  public List<PropertyDefinition> getPropertyDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getHelpString(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.properties;
+    return component.getHelpString();
   }
 
   @Override
-  public List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean getShowOnPalette(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.blockProperties;
+    return component.isShowOnPalette();
   }
 
   @Override
-  public List<EventDefinition> getEventDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean getNonVisible(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
-
-    return component.events;
+    return component.isNonVisible();
   }
 
   @Override
-  public List<MethodDefinition> getMethodDefinitions(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public String getIconName(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
-
-    return component.methods;
+    return component.getIconName();
   }
 
   @Override
-  public Map<String, String> getPropertyTypesByName(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<PropertyDefinition> getPropertyDefinitions(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.propertiesTypesByName;
+    return component.getProperties();
   }
 
   @Override
-  public String getTypeDescription(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException();
     }
 
-    return component.typeDescription;
+    return component.getBlockProperties();
+  }
+
+  @Override
+  public List<EventDefinition> getEventDefinitions(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.getEvents();
+  }
+
+  @Override
+  public List<MethodDefinition> getMethodDefinitions(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.getMethods();
+  }
+
+  @Override
+  public Map<String, String> getPropertyTypesByName(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.getPropertiesTypesByName();
+  }
+
+  @Override
+  public String getTypeDescription(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.getTypeDescription();
   }
 
   public String getComponentsJSONString() {
@@ -241,25 +288,34 @@ class ComponentDatabase implements ComponentDatabaseInterface {
    * Creates a component descriptor from the contents of the JSON file and puts
    * it in the components map.
    */
-  private void initComponent(JSONObject componentNode) {
+  private boolean initComponent(JSONObject componentNode) {
     Map<String, JSONValue> properties = componentNode.getProperties();
-    Component component = new Component(properties.get("name").asString().getString(),
-        Integer.parseInt(properties.get("version").asString().getString()), properties
-            .get("categoryString").asString().getString(), properties.get("helpString").asString()
-            .getString(), Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
-        Boolean.valueOf(properties.get("nonVisible").asString().getString()), properties
-            .get("iconName").asString().getString(), componentNode.toJson());
+    String name = properties.get("name").asString().getString();
+    if(components.containsKey(name)) {
+      // This must be a component upgrade! We remove existing entry
+      components.remove(name);
+    }
+    ComponentDefinition component = new ComponentDefinition(name,
+        Integer.parseInt(properties.get("version").asString().getString()),
+        properties.get("type").asString().getString(),
+        Boolean.valueOf(properties.get("external").asString().getString()),
+        properties.get("categoryString").asString().getString(),
+        properties.get("helpString").asString().getString(),
+        Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
+        Boolean.valueOf(properties.get("nonVisible").asString().getString()),
+        properties.get("iconName").asString().getString(), componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     findComponentBlockProperties(component, properties.get("blockProperties").asArray());
     findComponentEvents(component, properties.get("events").asArray());
     findComponentMethods(component, properties.get("methods").asArray());
-    components.put(component.name, component);
+    components.put(component.getName(), component);
+    return true;
   }
 
   /*
    * Enters property information into the component descriptor.
    */
-  private void findComponentProperties(Component component, JSONArray propertiesArray) {
+  private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
       component.add(new PropertyDefinition(properties.get("name").asString().getString(),
@@ -271,7 +327,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   /*
    * Enters block property information into the component descriptor.
    */
-  private void findComponentBlockProperties(Component component, JSONArray blockPropertiesArray) {
+  private void findComponentBlockProperties(ComponentDefinition component, JSONArray blockPropertiesArray) {
     for (JSONValue blockPropertyValue : blockPropertiesArray.getElements()) {
       Map<String, JSONValue> blockProperties = blockPropertyValue.asObject().getProperties();
       component.add(new BlockPropertyDefinition(blockProperties.get("name").asString().getString(),
@@ -283,7 +339,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   /*
    * Enters event information into the component descriptor.
    */
-  private void findComponentEvents(Component component, JSONArray eventsArray) {
+  private void findComponentEvents(ComponentDefinition component, JSONArray eventsArray) {
     for (JSONValue eventValue : eventsArray.getElements()) {
       Map<String, JSONValue> event = eventValue.asObject().getProperties();
 
@@ -307,7 +363,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   /*
    * Enters method information into the component descriptor.
    */
-  private void findComponentMethods(Component component, JSONArray methodsArray) {
+  private void findComponentMethods(ComponentDefinition component, JSONArray methodsArray) {
     for (JSONValue blockPropertyValue : methodsArray.getElements()) {
       Map<String, JSONValue> method = blockPropertyValue.asObject().getProperties();
 
@@ -328,9 +384,21 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     }
   }
 
+  private String generateComponentsJSON(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    String separator = "";
+    for(Map.Entry<String, ComponentDefinition> comp : components.entrySet()){
+      sb.append(separator).append(comp.getValue().getTypeDescription());
+      separator=",";
+    }
+    sb.append("]");
+    return sb.toString();
+  }
+
   @Override
-  public boolean isComponent(String componentTypeName) {
-    Component component = components.get(componentTypeName);
+  public boolean isComponent(String componentName) {
+    ComponentDefinition component = components.get(componentName);
     if (component == null) {
       return false;
     }
@@ -338,5 +406,42 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return true;
   }
 
+  public void addComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+    componentDatabaseChangeListeners.add(listener);
+  }
+
+  public void removeComponentDatabaseListener(ComponentDatabaseChangeListener listener) {
+    componentDatabaseChangeListeners.remove(listener);
+  }
+
+  private List<ComponentDatabaseChangeListener> copyComponentDatbaseChangeListeners() {
+    return new ArrayList<ComponentDatabaseChangeListener>(componentDatabaseChangeListeners);
+  }
+
+  private void fireComponentsAdded(List<String> componentTypes) {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onComponentTypeAdded(componentTypes);
+    }
+  }
+
+  private boolean fireBeforeComponentsRemoved(List<String> componentTypes) {
+    boolean result = true;
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      result = result & listener.beforeComponentTypeRemoved(componentTypes);
+    }
+    return result;
+  }
+
+  private void fireComponentsRemoved(Map<String, String> componentTypes) {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onComponentTypeRemoved(componentTypes);
+    }
+  }
+
+  private void fireResetDatabase() {
+    for (ComponentDatabaseChangeListener listener : copyComponentDatbaseChangeListeners()) {
+      listener.onResetDatabase();;
+    }
+  }
 
 }

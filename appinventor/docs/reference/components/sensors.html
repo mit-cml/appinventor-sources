@@ -456,6 +456,7 @@
                     <li> <a href="#LocationSensor"> LocationSensor </a></li>
                     <li> <a href="#NearField">NearField</a></li>
                     <li> <a href="#OrientationSensor"> OrientationSensor </a>
+                    <li> <a href="#Pedometer">Pedometer</a></li>
                     <li> <a href="#ProximitySensor"> ProximitySensor </a>
                     </li>
                   </ul>
@@ -644,7 +645,7 @@ none
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
-<p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
+<p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
 <p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>
 Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
 
@@ -682,7 +683,7 @@ Location information might not be immediately available when an app starts.  You
 
 <h3>Events</h3>
 <dl>
-  <dt><code>LocationChanged(number latitude, number longitude, number altitude)</code></dt>
+  <dt><code>LocationChanged(number latitude, number longitude, number altitude, number speed)</code></dt>
   <dd>Indicates that a new location has been detected.</dd>
   <dt><code>StatusChanged(text provider, text status)</code></dt>
   <dd>Indicates that the status of the location provider service has changed, such as when a
@@ -791,6 +792,55 @@ none
                         pitch, number roll) </code> </dt>
                     <dd> Called when the orientation has changed. </dd>
                   </dl>
+
+                  <h2 id="Pedometer">Pedometer</h2>
+
+                  <p>A Component that acts like a Pedometer. It senses
+                  motion via the Accerleromter and attempts to
+                  determine if a step has been taken. Using a
+                  configurable stride length, it can estimate the
+                  distance traveled as well. </p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code><em>Distance</em></code></dt>
+                    <dd>The approximate distance traveled in meters.</dd>
+                    <dt><code><em>ElapsedTime</em></code></dt>
+                    <dd>Time elapsed in milliseconds since the pedometer was started.</dd>
+                    <dt><code><em>SimpleSteps</em></code></dt>
+                    <dd>The number of simple steps taken since the pedometer has started.</dd>
+                    <dt><code>StopDetectionTimeout</code></dt>
+                    <dd>The duration in milliseconds of idleness (no steps detected) after which to go into a "stopped" state</dd>
+                    <dt><code>StrideLength</code></dt>
+                    <dd>Set the average stride length in meters.</dd>
+                    <dt><code><em>WalkSteps</em></code></dt>
+                    <dd>the number of walk steps taken since the pedometer has started.</dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>SimpleStep(number simpleSteps, number distance)</code></dt>
+                    <dd>This event is run when a raw step is detected</dd>
+                    <dt><code>WalkStep(number walkSteps, number distance)</code></dt>
+                    <dd>This event is run when a walking step is detected. A walking step is a step that appears to be involved in forward motion.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  <dl>
+                    <dt><code>Pause()</code></dt>
+                    <dd>Pause counting of steps and distance.</dd>
+                    <dt><code>Reset()</code></dt>
+                    <dd>Resets the step counter, distance measure and time running.</dd>
+                    <dt><code>Resume()</code></dt>
+                    <dd>Resumes counting, synonym of Start.</dd>
+                    <dt><code>Save()</code></dt>
+                    <dd>Saves the pedometer state to the phone. Permits permits accumulation of steps and distance between invocations of an App that uses the pedometer. Different Apps will have their own saved state.</dd>
+                    <dt><code>Start()</code></dt>
+                    <dd>Start counting steps</dd>
+                    <dt><code>Stop()</code></dt>
+                    <dd>Stop counting steps</dd>
+                  </dl>
+
                   <!-- ===== start: ProximitySensor ==== -->
                   <h2 id="ProximitySensor">ProximitySensor </h2>
                   <p> A sensor component that can measure the proximity of an object (in cm)

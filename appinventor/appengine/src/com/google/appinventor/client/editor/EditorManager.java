@@ -112,8 +112,10 @@ public final class EditorManager {
         // Tell the DesignToolbar about this project
         Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 
+        // Prepare the project before Loading into the editor.
+        // Components are prepared before the project is actually loaded.
         // Load the project into the editor. The actual loading is asynchronous.
-        projectEditor.loadProject();
+        projectEditor.processProject();
       }
     }
     return projectEditor;
@@ -231,6 +233,12 @@ public final class EditorManager {
    *                     settings and file editors are saved successfully
    */
   public void saveDirtyEditors(final Command afterSaving) {
+    // Note, We don't do any saving if we are in read only mode
+    if (Ode.getInstance().isReadOnly()) {
+      afterSaving.execute();
+      return;
+    }
+
     // Collect the files that need to be saved.
     List<FileDescriptorWithContent> filesToSave = new ArrayList<FileDescriptorWithContent>();
     for (FileEditor fileEditor : dirtyFileEditors) {

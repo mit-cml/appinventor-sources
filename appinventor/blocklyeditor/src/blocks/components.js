@@ -72,12 +72,27 @@ Blockly.Blocks.component_event = {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     this.componentDropDown.setValue(this.instanceName);
 
+    var localizedEventName;
+    if (this.getEventTypeObject()) {
+      localizedEventName = window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name);
+    }
+    else {
+      localizedEventName = window.parent.BlocklyPanel_getLocalizedEventName(this.eventName);
+    }
+
     this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
-        .appendField('.' + window.parent.BlocklyPanel_getLocalizedEventName(this.getEventTypeObject().name));
+        .appendField('.' + localizedEventName);
     this.componentDropDown.setValue(this.instanceName);
     this.setParameterOrientation(horizParams);
-    this.setTooltip(this.getEventTypeObject().description);
+    var tooltipDescription;
+    if (this.getEventTypeObject()) {
+      tooltipDescription = this.getEventTypeObject().description;
+    }
+    else {
+      tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
+    }
+    this.setTooltip(tooltipDescription);
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
@@ -87,10 +102,12 @@ Blockly.Blocks.component_event = {
     // [lyn, 12/23/2013] Move this out of domToMutation into top-level component_event
     // this.onchange = Blockly.WarningHandler.checkErrors;
 
-    if (this.getEventTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+    if (this.getEventTypeObject() && this.getEventTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       this.badBlock();
       this.setDisabled(true);
     }
+
+    this.verify(); // verify the block and mark it accordingly
 
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
@@ -100,6 +117,9 @@ Blockly.Blocks.component_event = {
 
   setParameterOrientation: function(isHorizontal) {
     var params = this.getParameters();
+    if (!params)  {
+      params = [];
+    }
     var oldDoInput = this.getInput("DO");
     if (!oldDoInput || (isHorizontal !== this.horizontalParameters && params.length > 0)) {
       this.horizontalParameters = isHorizontal;
@@ -163,7 +183,7 @@ Blockly.Blocks.component_event = {
   },
   // Return a list of parameter names
   getParameters: function () {
-    return this.getEventTypeObject().params;
+    return this.getEventTypeObject() && this.getEventTypeObject().params;
   },
   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
   rename : function(oldname, newname) {
@@ -221,8 +241,12 @@ Blockly.Blocks.component_event = {
   },
 
   getEventTypeObject : function() {
-    return Blockly.ComponentTypes[this.typeName].eventDictionary[this.eventName];
+    if (Blockly.ComponentTypes[this.typeName]) {
+      return Blockly.ComponentTypes[this.typeName].eventDictionary[this.eventName];
+    }
+    return null;
   },
+
   typeblock : function(){
     var tb = [];
     var instanceNames = Blockly.ComponentInstances.getInstanceNames();
@@ -251,8 +275,58 @@ Blockly.Blocks.component_event = {
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   },
+
+  // check if the block corresponds to an event inside componentTypes[typeName].eventDictionary
+  verify : function () {
+
+    var validate = function() {
+      // check component type
+      var componentType = Blockly.ComponentTypes[this.typeName];
+      if (!componentType) {
+        return false; // component does NOT exist! should not happen!
+      }
+      var eventDictionary = componentType.eventDictionary;
+      var event = eventDictionary[this.eventName];
+      // check event name
+      if (!event) {
+        return false; // no such event : this event was for another version!  block is undefined!
+      }
+      // check parameters
+      var varList = this.getVars();
+      var params = event.params;
+      if (varList.length != params.length) {
+        return false; // parameters have changed
+      }
+      for (var x = 0; x < varList.length; ++x) {
+        var found = false;
+        for (var i = 0, param; param = params[i]; ++i) {
+          if (window.parent.BlocklyPanel_getLocalizedParameterName(param.name) == varList[x]) {
+            found = true;
+            break;
+          }
+        }
+        if (!found)  {
+          return false; // parameter name changed
+        }
+      }
+      // No need to check event return type, events do not return.
+      return true; // passed all our tests! block is defined!
+    }
+    var isDefined = validate.call(this);
+
+    if (isDefined) {
+      this.notBadBlock();
+      if (this.getEventTypeObject()) {
+        this.setTooltip(this.getEventTypeObject().description); // update the tooltipDescription, if block is defined
+      }
+    } else {
+      this.badBlock();
+    }
+
+  },
+
   // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
-  errors: [{name:"checkIfIAmADuplicateEventHandler"}, {name:"checkComponentNotExistsError"}],
+  errors: [{name:"checkIfUndefinedBlock"},{name:"checkIfIAmADuplicateEventHandler"}, {name:"checkComponentNotExistsError"}],
   onchange: Blockly.WarningHandler.checkErrors
 };
 
@@ -305,7 +379,13 @@ Blockly.Blocks.component_method = {
     if(!this.isGeneric) {
       this.componentDropDown.setValue(this.instanceName);
     }
-
+    var methodTypeObject = this.getMethodTypeObject();
+    var localizedMethodName;
+    if (methodTypeObject) {
+      localizedMethodName = window.parent.BlocklyPanel_getLocalizedMethodName(methodTypeObject.name);
+    } else {
+      localizedMethodName = this.methodName;
+    }
     if(!this.isGeneric) {
       if (this.typeName == "Clock" && Blockly.ComponentBlock.isClockMethodName(this.methodName)) {
         var timeUnitDropDown = Blockly.ComponentBlock.createClockAddDropDown();
@@ -344,35 +424,56 @@ Blockly.Blocks.component_method = {
         this.appendDummyInput()
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL)
           .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
-          .appendField('.' + window.parent.BlocklyPanel_getLocalizedMethodName(this.getMethodTypeObject().name));
+          .appendField('.' + localizedMethodName);
       }
       this.componentDropDown.setValue(this.instanceName);
     } else {
       this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + window.parent.BlocklyPanel_getLocalizedMethodName(this.getMethodTypeObject().name));
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + localizedMethodName);
       var compInput = this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
         .setAlign(Blockly.ALIGN_RIGHT);
     }
-    this.setTooltip(this.getMethodTypeObject().description);
-    for (var i = 0, param; param = this.getMethodTypeObject().params[i]; i++) {
+
+    var tooltipDescription;
+    if (methodTypeObject) {
+      tooltipDescription = methodTypeObject.description;
+    } else {
+      tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
+    }
+    this.setTooltip(tooltipDescription);
+
+    var params = [];
+    if (methodTypeObject) {
+      params = methodTypeObject.params;
+    }
+    for (var i = 0, param; param = params[i]; i++) {
       var newInput = this.appendValueInput("ARG" + i).appendField(window.parent.BlocklyPanel_getLocalizedParameterName(param.name));
       newInput.setAlign(Blockly.ALIGN_RIGHT);
-      var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT)
+      var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
       newInput.connection.setCheck(blockyType);
     }
-    // methodType.returnType is a Yail type
-    if (this.getMethodTypeObject().returnType) {
+
+    if (!methodTypeObject) {
+      this.setOutput(false);
+      this.setPreviousStatement(false);
+      this.setNextStatement(false);
+    } // methodType.returnType is a Yail type
+    else if (methodTypeObject.returnType) {
       this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(this.getMethodTypeObject().returnType,Blockly.Blocks.Utilities.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+
+    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+
     if (this.getMethodTypeObject().deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       this.badBlock();
       this.setDisabled(true);
     }
+
+    this.verify(); // verify the block and mark it accordingly
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -385,7 +486,32 @@ Blockly.Blocks.component_method = {
     }
   },
   getMethodTypeObject : function() {
-    return Blockly.ComponentTypes[this.typeName].methodDictionary[this.methodName];
+    if (Blockly.ComponentTypes[this.typeName]) {
+      return Blockly.ComponentTypes[this.typeName].methodDictionary[this.methodName]
+    }
+    return null;
+  },
+
+  getArgInputs: function() {
+    var argList = [];
+    for (var i = 0, input; input = this.getInput('ARG' + i); i++) {
+      for (var x = 0, field; field = input.fieldRow[x]; ++x) {
+        argList[field.getValue()] = input;
+        break;
+      }
+    }
+    return argList;
+  },
+
+  getArgs: function() {
+    var argList = [];
+    for (var i = 0, input; input = this.getInput('ARG' + i); i++) {
+      for (var x = 0, field; field = input.fieldRow[x]; ++x) {
+        argList.push(field.getValue());
+        break;
+      }
+    }
+    return argList;
   },
 
   //this.typeblock = [{ translatedName: 'call ' + this.instanceName + '.' + this.methodType.name }];
@@ -426,7 +552,83 @@ Blockly.Blocks.component_method = {
       }
     }
     return tb;
+  },
+
+  // check if block corresponds to a method inside componentTypes[typeName].methodDictionary
+  verify : function() {
+
+    var validate = function() {
+      // check component type
+      var componentType = Blockly.ComponentTypes[this.typeName];
+      if (!componentType) {
+        return false; // component does NOT exist! should not happen!
+      }
+      var methodDictionary = Blockly.ComponentTypes[this.typeName].methodDictionary;
+      var method = methodDictionary[this.methodName];
+      // check method name
+      if (!method) {
+        return false; // no such method : this method was for another version! block is undefined!
+      }
+      // check parameters
+      var argList = this.getArgs();
+      var argInputList = this.getArgInputs();
+      var params = method.params;
+      var modifiedParameters = false;
+      if (argList.length != params.length) {
+        modifiedParameters = true; // parameters have changed
+      }
+      for (var x = 0; x < argList.length; ++x) {
+        var found = false;
+        for (var i = 0, param; param = params[i]; ++i) {
+          if (window.parent.BlocklyPanel_getLocalizedParameterName(param.name) == argList[x]) {
+            var input = argInputList[argList[x]];
+            if (!input || !input.connection) {
+              modifiedParameters = true;
+              break; // invalid input or connection
+            }
+            var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT);
+            input.connection.setCheck(blockyType); // correct type
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          modifiedParameters = true;
+        }
+      }
+      // check return type
+      var modifiedReturnType = false;
+      if (method.returnType) {
+        if (!this.outputConnection) {
+          modifiedReturnType = true; // missing return type
+        }
+        else {
+          this.changeOutput(Blockly.Blocks.Utilities.YailTypeToBlocklyType(method.returnType,Blockly.Blocks.Utilities.OUTPUT));
+        }
+      }
+      else if (!method.returnType) {
+        if (this.outputConnection) {
+          modifiedReturnType = true; // unexpected return type
+        }
+      }
+
+      if (modifiedParameters || modifiedReturnType) {
+        return false; // method changed
+      }
+      return true; // passed all our tests! block is defined!
+    }
+
+    var isDefined = validate.call(this);
+    if (isDefined) {
+      this.notBadBlock();
+      if (this.getMethodTypeObject()) {
+        this.setTooltip(this.getMethodTypeObject().description); // update the tooltipDescription, if block is defined
+      }
+    } else {
+      this.badBlock();
+    }
   }
+
 };
 
 
@@ -476,7 +678,12 @@ Blockly.Blocks.component_set_get = {
     } else {
       this.setColour(Blockly.ComponentBlock.COLOUR_GET);
     }
-
+    var tooltipDescription;
+    if (this.propertyObject) {
+      tooltipDescription = this.propertyObject.description;
+    } else {
+      tooltipDescription = Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP;
+    }
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
       function() {
@@ -487,7 +694,7 @@ Blockly.Blocks.component_set_get = {
         this.setValue(selection);
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
-        thisBlock.setTooltip(thisBlock.getPropertyObject(thisBlock.propertyName).description);
+        thisBlock.setTooltip(tooltipDescription);
       }
     );
 
@@ -552,15 +759,17 @@ Blockly.Blocks.component_set_get = {
     //add appropriate type checking to block
     this.setTypeCheck();
 
-    this.setTooltip(this.getPropertyObject(this.propertyName).description);
+    this.setTooltip(tooltipDescription);
 
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
 
-    if (this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
+    if (thisBlock.propertyObject && this.propertyObject.deprecated === "true" && this.workspace === Blockly.mainWorkspace) {
       // [lyn, 2015/12/27] mark deprecated properties as bad
       this.badBlock();
       this.setDisabled(true);
     }
+
+    this.verify();
 
   },
 
@@ -582,19 +791,24 @@ Blockly.Blocks.component_set_get = {
   },
 
   getPropertyBlocklyType : function(propertyName,inputOrOutput) {
-    var yailType = this.getPropertyObject(propertyName).type;
+    var yailType = "any"; // necessary for undefined propertyObject
+    if (this.getPropertyObject(propertyName)) {
+      yailType = this.getPropertyObject(propertyName).type;
+    }
     var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(yailType,inputOrOutput);
     return blocklyType;
   },
   getPropertyDropDownList : function() {
     var dropDownList = [];
-    var propertyNames = [];
-    if (this.propertyObject.deprecated == "true") { // [lyn, 2015/12/27] Handle deprecated properties specially
-      propertyNames = [this.propertyObject.name]; // Only list the deprecated property name and no others
-    } else if(this.setOrGet == "set") {
-      propertyNames = Blockly.ComponentTypes[this.typeName].setPropertyList;
-    } else {
-      propertyNames = Blockly.ComponentTypes[this.typeName].getPropertyList;
+    var propertyNames = [this.propertyName];
+    if (this.propertyObject) {
+      if (this.propertyObject.deprecated == "true") { // [lyn, 2015/12/27] Handle deprecated properties specially
+        propertyNames = [this.propertyObject.name]; // Only list the deprecated property name and no others
+      } else if(this.setOrGet == "set") {
+        propertyNames = Blockly.ComponentTypes[this.typeName].setPropertyList;
+      } else {
+        propertyNames = Blockly.ComponentTypes[this.typeName].getPropertyList;
+      }
     }
 
     for(var i=0;i<propertyNames.length;i++) {
@@ -603,7 +817,10 @@ Blockly.Blocks.component_set_get = {
     return dropDownList;
   },
   getPropertyObject : function(propertyName) {
-    return Blockly.ComponentTypes[this.typeName].properties[propertyName];
+    if (Blockly.ComponentTypes[this.typeName]) {
+      return Blockly.ComponentTypes[this.typeName].properties[propertyName];
+    }
+    return null;
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -681,6 +898,46 @@ Blockly.Blocks.component_set_get = {
     }
 
     return tb;
+  },
+
+  verify : function() {
+
+    var validate = function() {
+      // check component type
+      var componentType = Blockly.ComponentTypes[this.typeName];
+      if (!componentType) {
+        return false; // component does NOT exist! should not happen!
+      }
+      var properties = componentType.properties;
+      var property = properties[this.propertyName];
+      // check property name
+      if (!property) {
+        return false; // no such event : this property was for another version!  block is undefined!
+      }
+      // check permissions
+      if (this.setOrGet == "get") {
+        if (componentType.getPropertyList.indexOf(this.propertyName) == -1) {
+          return false;
+        }
+      } else if (this.setOrGet == "set") {
+        if (componentType.setPropertyList.indexOf(this.propertyName) == -1) {
+          return false;
+        }
+      }
+      this.setTypeCheck(); // correct the type
+      return true; // passed all our tests! block is defined
+    }
+
+    var isDefined = validate.call(this);
+    if (isDefined) {
+      this.notBadBlock();
+      if (this.propertyObject) {
+        this.setTooltip(this.propertyObject.description); // update the tooltipDescription, if block is defined
+      }
+    } else {
+      this.badBlock(true);
+    }
+
   }
 };
 
@@ -715,7 +972,7 @@ Blockly.Blocks.component_component_block = {
     this.appendDummyInput().appendField(this.componentDropDown, "COMPONENT_SELECTOR");
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
+    this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkIsInDefinition"},{name:"checkComponentNotExistsError"}];
   },
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -745,7 +1002,29 @@ Blockly.Blocks.component_component_block = {
       });
     }
     return tb;
+  },
+
+  verify : function() {
+
+    var validate = function() {
+      // check component type
+      var componentType = Blockly.ComponentTypes[this.typeName];
+      if (!componentType) {
+        return false; // component does NOT exist! should not happen!
+      }
+      return true; // passed all our tests! block is defined
+    }
+
+    var isDefined = validate.call(this);
+    if (isDefined) {
+      this.notBadBlock();
+    } else {
+      this.badBlock();
+    }
+
+
   }
+
 };
 
 Blockly.ComponentBlock.timeUnits = ["Years", "Months", "Weeks", "Days", "Hours", "Minutes", "Seconds", "Duration"];

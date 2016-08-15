@@ -27,9 +27,18 @@
   <import file="../build-common.xml" />
 
   <!-- =====================================================================
-       Define base package path.
+       Define base package path for internal components.
        ===================================================================== -->
   <property name="components.pkg" value="com/google/appinventor/components" />
+  <property name="zxing.pkg" value="com/google/zxing" />
+
+  <!-- =====================================================================
+       Define external components properties.
+       ===================================================================== -->
+  <property name="ExternalComponentGenerator-class.dir" location="${class.dir}/ExternalComponentGenerator" />
+  <property name="ExternalComponent.dir" location="${local.build.dir}/externalComponents" />
+  <property name="ExternalComponent-class.dir" location="${local.build.dir}/externalComponents-class" />
+  <property name="Extensions.dir" location="${local.build.dir}/extensions" />
 
   <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
@@ -104,20 +113,24 @@
   <!-- =====================================================================
        AndroidRuntime: library providing runtime support for components
        ===================================================================== -->
+  <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
   <target name="AndroidRuntime"
           description="Generate runtime library implementing components"
           depends="CommonConstants,HtmlEntities,common_CommonVersion">
-    <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
     <ai.javac5 destdir="${AndroidRuntime-class.dir}">
-      <include name="${components.pkg}/annotations/*.java" />
-      <include name="${components.pkg}/runtime/**/*.java" />
+      <include name="**/*.java" /> <!-- include all java files -->
+      <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
+      <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
+      <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+      <!--<include name="${components.pkg}/annotations/*.java" /> -->
+      <!--<include name="${components.pkg}/runtime/**/*.java" /> -->
       <classpath>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
+        <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
@@ -166,7 +179,7 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
+    <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
   </path>
 
   <path id="AndroidRuntimeTests.path">
@@ -200,7 +213,7 @@
       changes to the Java files in the annotations, common, runtime, and scripts packages and .txt
       files in scripts/templates. -->
       <uptodate property="target.uptodate" targetfile="@{apt-target}">
-        <srcfiles dir="${src.dir}" includes="${components.pkg}/**/*"/>
+        <srcfiles dir="${src.dir}" />
       </uptodate>
       <!-- We need to delete all the classes before running javac below. Otherwise, javac will only
       process the Java files whose classes are not up-to-date and we'll end up with only a subset
@@ -215,12 +228,16 @@
              sourcepath=""
              srcdir="${src.dir}"
              includeantruntime="false">
-        <include name="${components.pkg}/runtime/*.java" />
+        <include name="**/*.java" /> <!-- include all java files -->
+        <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
+        <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
+        <exclude name="${components.pkg}/common/**/*.java" /> <!-- exclude components/common package -->
+        <exclude name="${components.pkg}/annotations/**/*.java" /> <!-- exclude components/annotations package -->
         <classpath>
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
-          <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
+          <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
           <pathelement location="${lib.dir}/json/json.jar" />
@@ -286,6 +303,7 @@
 
     <ai.javac5 destdir="${AnnotationProcessors-class.dir}">
       <include name="${components.pkg}/scripts/*.java" />
+      <exclude name="${components.pkg}/scripts/ExternalComponentGenerator.java" />
       <classpath>
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
@@ -328,60 +346,60 @@
           todir="${public.build.dir}"/>
   </target>
 
-  <!-- =====================================================================
-       XmlComponentDescription: create lang_def.xml for Blocks Editor.
-       ===================================================================== -->
-  <target name="XmlComponentDescription"
-          description="Make ya_lang_def.xml file for Blocks Editor."
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
-    <property name="XmlComponentDescription-class.dir"
-              location="${class.dir}/XmlComponentDescription" />
-    <ai.apt apt-classdir="${XmlComponentDescription-class.dir}"
-            apt-processor="com.google.appinventor.components.scripts.LangDefXmlGenerator"
-            apt-target="${XmlComponentDescription-class.dir}/ya_lang_def.xml"/>
+    <!-- =====================================================================
+         XmlComponentDescription: create lang_def.xml for Blocks Editor.
+         ===================================================================== -->
+    <target name="XmlComponentDescription"
+            description="Make ya_lang_def.xml file for Blocks Editor."
+            depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+      <property name="XmlComponentDescription-class.dir"
+                location="${class.dir}/XmlComponentDescription" />
+      <ai.apt apt-classdir="${XmlComponentDescription-class.dir}"
+              apt-processor="com.google.appinventor.components.scripts.LangDefXmlGenerator"
+              apt-target="${XmlComponentDescription-class.dir}/ya_lang_def.xml"/>
 
-    <copy file="${XmlComponentDescription-class.dir}/ya_lang_def.xml"
-          todir="${public.build.dir}"/>
-  </target>
+      <copy file="${XmlComponentDescription-class.dir}/ya_lang_def.xml"
+            todir="${public.build.dir}"/>
+    </target>
 
-  <!-- =====================================================================
-       ComponentList: create simple_components.txt and
-                      simple_components_build_info.json
-       ===================================================================== -->
-  <target name="ComponentList"
-          description="Make simple_components.txt and simple_components_build_info.json."
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,Barcode">
-    <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
-    <mkdir dir="${ComponentList-class.dir}" />
+    <!-- =====================================================================
+         ComponentList: create simple_components.txt and
+                        simple_components_build_info.json
+         ===================================================================== -->
+    <target name="ComponentList"
+            description="Make simple_components.txt and simple_components_build_info.json."
+            depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,Barcode">
+      <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
+      <mkdir dir="${ComponentList-class.dir}" />
 
-    <ai.apt apt-classdir="${ComponentList-class.dir}"
-            apt-processor="com.google.appinventor.components.scripts.ComponentListGenerator"
-            apt-target="${ComponentList-class.dir}/simple_components.txt"/>
+      <ai.apt apt-classdir="${ComponentList-class.dir}"
+              apt-processor="com.google.appinventor.components.scripts.ComponentListGenerator"
+              apt-target="${ComponentList-class.dir}/simple_components.txt"/>
 
-    <copy file="${ComponentList-class.dir}/simple_components.txt"
-          todir="${public.build.dir}"/>
-    <copy file="${ComponentList-class.dir}/simple_components_build_info.json"
-          todir="${public.build.dir}"/>
-  </target>
+      <copy file="${ComponentList-class.dir}/simple_components.txt"
+            todir="${public.build.dir}"/>
+      <copy file="${ComponentList-class.dir}/simple_components_build_info.json"
+            todir="${public.build.dir}"/>
+    </target>
 
-  <!-- =====================================================================
-       ComponentTranslation: create ComponentsTranslation.java
-       ===================================================================== -->
-  <target name="ComponentTranslation"
-          description="Build ComponentsTranslation.java at build time
-                       from annotations"
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
-    <property name="ComponentTranslation-class.dir" location="${class.dir}/ComponentTranslation" />
-    <mkdir dir="${ComponentTranslation-class.dir}" />
+    <!-- =====================================================================
+         ComponentTranslation: create ComponentsTranslation.java
+         ===================================================================== -->
+    <target name="ComponentTranslation"
+            description="Build ComponentsTranslation.java at build time
+                         from annotations"
+            depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+      <property name="ComponentTranslation-class.dir" location="${class.dir}/ComponentTranslation" />
+      <mkdir dir="${ComponentTranslation-class.dir}" />
 
-    <ai.apt apt-classdir="${ComponentTranslation-class.dir}"
-            apt-processor="com.google.appinventor.components.scripts.ComponentTranslationGenerator"
-            apt-target="${ComponentTranslation-class.dir}/ComponentsTranslation.java"/>
+      <ai.apt apt-classdir="${ComponentTranslation-class.dir}"
+              apt-processor="com.google.appinventor.components.scripts.ComponentTranslationGenerator"
+              apt-target="${ComponentTranslation-class.dir}/ComponentsTranslation.java"/>
 
-    <copy file="${ComponentTranslation-class.dir}/ComponentsTranslation.java"
-          todir="${public.build.dir}/ComponentTranslation/src/com/google/appinventor/client/" />
+      <copy file="${ComponentTranslation-class.dir}/ComponentsTranslation.java"
+            todir="${public.build.dir}/ComponentTranslation/src/com/google/appinventor/client/" />
 
-  </target>
+    </target>
 
   <!-- =====================================================================
        ComponentDocumentation: create component documentation from source
@@ -428,13 +446,142 @@
       <include name="${barcode.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${lib.dir}/QRGenerator/core.jar" />
-        <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
+        <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
       </classpath>
     </ai.javac5>
 
     <jar basedir="${Barcode-class.dir}"
          destfile="${public.build.dir}/Barcode.jar" />
 
+  </target>
+
+
+  <!-- =====================================================================
+       ExternalComponentGenerator: create required extension files
+       ===================================================================== -->
+  <target name="ExternalComponentGenerator"
+          description="generate extension files"
+          depends="AndroidRuntime, JsonComponentDescription, ComponentList">
+    <property  name="buildserver.files.library.dir" location="../buildserver/build/classes/BuildServer/files"/>
+    <mkdir dir="${ExternalComponentGenerator-class.dir}" />
+    <mkdir dir="${ExternalComponent.dir}" />
+    <mkdir dir="${ExternalComponent-class.dir}" />
+    <ai.javac5 destdir="${ExternalComponentGenerator-class.dir}">
+      <include name="${components.pkg}/scripts/ExternalComponentGenerator.java" />
+      <classpath>
+        <pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </ai.javac5>
+    <java classname="com.google.appinventor.components.scripts.ExternalComponentGenerator">
+      <arg value="${public.build.dir}/simple_components.json" />
+      <arg value="${public.build.dir}/simple_components_build_info.json" />
+      <arg value="${ExternalComponent.dir}"/>
+      <arg value="${AndroidRuntime-class.dir}" />
+      <arg value="${buildserver.files.library.dir}"/>
+      <arg value="${ExternalComponent-class.dir}"/>
+      <classpath>
+        <pathelement location="${ExternalComponentGenerator-class.dir}" />
+        <pathelement location="${lib.dir}/json/json.jar" />
+      </classpath>
+    </java>
+  </target>
+
+  <!-- =====================================================================
+        unjarAllExtensionLibraries : Unjarring extension's library in order for the extensions'dex to work properly.
+        ===================================================================== -->
+  <target name="unjarAllExtensionLibraries" depends="ExternalComponentGenerator">
+    <foreach target="unjarExtensionLibraries" param="extension" inheritall="true">
+      <path>
+        <dirset dir="${ExternalComponent-class.dir}">
+          <include name="*" />
+        </dirset>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="unjarExtensionLibraries">
+    <basename property="extensionClassFolder" file="${extension}" />
+    <unzip dest="${ExternalComponent-class.dir}/${extensionClassFolder}">
+      <fileset dir="${ExternalComponent-class.dir}/${extensionClassFolder}">
+        <include name="**/*.jar" />
+      </fileset>
+    </unzip>
+  </target>
+
+  <!-- =====================================================================
+       jarAllExtensions: create ${extension}.jar and AndroidRuntime.jar for each extension.
+       ===================================================================== -->
+  <target name="jarAllExtensions" depends="unjarAllExtensionLibraries" >
+    <foreach target="jarExtension" param="extension" inheritall="true">
+      <path>
+        <dirset dir="${ExternalComponent-class.dir}">
+          <include name="*" />
+        </dirset>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="jarExtension">
+    <basename property="extensionClassFolder" file="${extension}" />
+    <jar destfile="${ExternalComponent-class.dir}/${extensionClassFolder}.jar"
+         basedir="${ExternalComponent-class.dir}/${extensionClassFolder}"
+         includes="**/*.class"
+         excludes="*.jar" />
+    <copy file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar"
+          tofile="${ExternalComponent.dir}/${extensionClassFolder}/files/AndroidRuntime.jar"/>
+    <echo>Generated build file AndroidRuntime.jar [${extensionClassFolder}]</echo>
+  </target>
+
+  <!-- =====================================================================
+       dexAllExtensions: create classes.dex for each extension.
+       ===================================================================== -->
+  <target name="dexAllExtensions" depends="jarAllExtensions">
+    <foreach target="dexExtension" param="extension">
+      <path>
+        <fileset dir="${ExternalComponent-class.dir}" >
+          <include name="*.jar"/>
+        </fileset>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="dexExtension" depends="">
+    <basename property="extensionType" file="${extension}" suffix=".jar"/>
+    <java jar="${lib.dir}/android/tools/dx.jar"
+          fork="true"
+          failonerror="true">
+      <arg value="--dex"/>
+      <arg value="--no-strict"/>
+      <arg value="--output"/>
+      <arg value="${ExternalComponent.dir}/${extensionType}/classes.jar"/>
+      <arg value="${ExternalComponent-class.dir}/${extensionType}.jar"/>
+    </java>
+    <echo>Dexing extension: ${extensionType}</echo>
+  </target>
+
+
+
+  <!-- =====================================================================
+      extensions: create ${extension}.aix for each external component.
+       ===================================================================== -->
+  <target name="packExtension">
+    <basename property="extensionType" file="${extension}" />
+    <zip destfile="${Extensions.dir}/${extensionType}.aix"
+         basedir="${ExternalComponent.dir}"
+         includes="${extensionType}/"
+    />
+
+  </target>
+
+  <target name="extensions" depends="ExternalComponentGenerator, jarAllExtensions, dexAllExtensions">
+    <mkdir dir="${Extensions.dir}" />
+    <foreach target="packExtension" param="extension" inheritall="true">
+      <path>
+        <dirset dir="${ExternalComponent.dir}">
+          <include name="*" />
+        </dirset>
+      </path>
+    </foreach>
   </target>
 
 </project>

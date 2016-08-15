@@ -92,7 +92,7 @@ public class WebStartFileServlet extends OdeServlet {
     long projectId = decryptedIds.projectId;
 
     // Set the user in the OdeFilter, which is used everywhere as the UserInfoProvider.
-    odeFilter.setUserFromUserId(userId);
+    odeFilter.setUserFromUserId(userId, false, false);
     try {
       String fileName = uriComponents[4];
       dispatcher.getWebStartSupport().doGet(req, resp, userId, projectId, fileName);
@@ -139,7 +139,7 @@ public class WebStartFileServlet extends OdeServlet {
     long projectId = decryptedIds.projectId;
 
     // Set the user in the OdeFilter, which is used everywhere as the UserInfoProvider.
-    odeFilter.setUserFromUserId(userId);
+    odeFilter.setUserFromUserId(userId, false, false);
     try {
       String fileName = uriComponents[4];
       dispatcher.getWebStartSupport().doPost(req, resp, userId, projectId, fileName);

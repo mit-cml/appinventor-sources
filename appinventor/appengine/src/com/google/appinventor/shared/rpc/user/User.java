@@ -31,13 +31,22 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   // whether user has accepted terms of service
   private boolean tosAccepted;
-  
+
   // whether the user has admin priviledges
   private boolean isAdmin;
+
+  // If set, we inform the client side to go into read only mode
+  // NOTE: isReadOnly is *not* enforced on the server. This is because
+  // only privileged users can assert isReadOnly and we assume that they
+  // are sufficiently trustworthy that they will not attempt to abuse the
+  // system by unsetting it on their client to cause mischief
+  private boolean isReadOnly;
 
   // which type the user has
   private int type;
   private String sessionId;        // Used to ensure only one account active at a time
+
+  private String password;      // Hashed password (if using local login system)
 
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
@@ -90,6 +99,14 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return id;
   }
 
+  /*
+   * Sets the userId. This is needed in the case where the stored
+   * id in userData is different from what Google is now providing.
+   */
+  public void setUserId(String id) {
+    this.id = id;
+  }
+
   /**
    * Returns the user's email address.
    *
@@ -105,6 +122,25 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    */
   public void setUserEmail(String email) {
     this.email = email;
+  }
+
+  /**
+   * fetch the hashed password
+   *
+   * @return hashed password
+   */
+  public String getPassword() {
+    return password;
+  }
+
+
+  /**
+   * sets the hashed password.
+   *
+   * @param hashed password
+   */
+  public void setPassword(String hashedpassword) {
+    this.password = hashedpassword;
   }
 
   /**
@@ -182,12 +218,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   public boolean getUserTosAccepted() {
     return tosAccepted;
   }
-  
+
   @Override
   public boolean getIsAdmin() {
     return isAdmin;
   }
-  
+
   /**
    * Sets whether the user has admin priviledges.
    *
@@ -272,7 +308,22 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.sessionId = sessionId;
   }
 
+  @Override
+  public void setReadOnly(boolean value) {
+    isReadOnly = value;
+  }
+
+  public boolean isReadOnly() {
+    return isReadOnly;
+  }
+
   public User copy() {
-    return new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
+    User retval = new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
+    // We set the isReadOnly flag in the copy in this fashion so we do not have to
+    // modify all the places in the source where we create a "User" object. There are
+    // only a few places where we assert or read the isReadOnly flag, so we want to
+    // limit the places where we have to have knowledge of it to just those places that care
+    retval.setReadOnly(isReadOnly);
+    return retval;
   }
 }

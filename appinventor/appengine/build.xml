@@ -39,7 +39,7 @@
   </condition>
 
   <target name="all"
-          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs">
+          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
   </target>
 
   <target name="tests"
@@ -190,6 +190,10 @@
     <!-- gwt libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
+    <!-- Protocol Buffers -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
+    <!-- OWASP -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
       <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
@@ -210,7 +214,9 @@
           depends="init,WarLibs,AiSharedLib">
     <property name="AiServerLib-class.dir" location="${class.dir}/AiServerLib" />
     <mkdir dir="${AiServerLib-class.dir}" />
-
+    <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
+      <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
+    </copy>
     <ai.javac destdir="${AiServerLib-class.dir}" >
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
@@ -224,6 +230,55 @@
     <jar basedir="${AiServerLib-class.dir}"
          destfile="${local.build.dir}/AiServerLib.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${local.build.dir}/AiServerLib.jar"/>
+  </target>
+
+  <!-- =====================================================================
+       Checks to see if we have our own authkey ZIP file.
+       ===================================================================== -->
+  <target name="CheckAuthKey"
+          depends="init">
+    <available file="${user.home}/.appinventor/authkey.zip"
+               property="authkey.exists" />
+  </target>
+
+  <!-- =====================================================================
+       Makes the authkey file if it doesn't exist. This target needs
+       to be called explicitly. We do not run automatically so we
+       cannot accidentally over-write a valid existing file.
+       ===================================================================== -->
+  <target name="MakeAuthKey"
+          depends="init,CheckAuthKey" unless="${authkey.exists}">
+    <tempfile prefix="mkkey" property="tmp.dir" destdir="${java.io.tmpdir}"/>
+    <mkdir dir="${tmp.dir}/authkey"/>
+    <java failonerror="true" fork="true"
+          jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="create --location=${tmp.dir}/authkey
+                 --purpose=crypt"/>
+    </java>
+    <java failonerror="true" fork="true"
+          jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="addkey --location=${tmp.dir}/authkey"/>
+    </java>
+    <java failonerror="true" fork="true"
+          jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="promote --location=${tmp.dir}/authkey
+                 --version=1"/>
+    </java>
+    <zip destfile="${user.home}/.appinventor/authkey.zip"
+         basedir="${tmp.dir}" includes="authkey/**" />
+    <delete file="${tmp.dir}/authkey/meta"/>
+    <delete file="${tmp.dir}/authkey/1"/>
+  </target>
+
+  <!-- =====================================================================
+       Install the Authkey into the correct location
+       ===================================================================== -->
+  <target name="InstallAuthKey"
+          depends="init,CheckAuthKey,WarLibs">
+    <fail message="You Must Create an Auth Key see misc/docs/authkey.md"
+          unless="${authkey.exists}" />
+    <unzip dest="${build.war.dir}/WEB-INF"
+      src="${user.home}/.appinventor/authkey.zip"/>
   </target>
 
   <!-- =====================================================================
@@ -250,6 +305,7 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.4.3.jar" />
+    <pathelement location="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>

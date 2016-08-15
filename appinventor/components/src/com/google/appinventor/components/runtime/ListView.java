@@ -60,6 +60,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   // The adapter contains spannables rather than strings, since we will be changing the item
   // colors using ForegroundColorSpan
   private ArrayAdapter<Spannable> adapter;
+  private ArrayAdapter<Spannable> adapterCopy;
   private YailList items;
   private int selectionIndex;
   private String selection;
@@ -254,12 +255,18 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     adapter = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1,
         itemsToColoredText());
     view.setAdapter(adapter);
+
+    adapterCopy = new ArrayAdapter<Spannable>(container.$context(), android.R.layout.simple_list_item_1);
+    for (int i = 0; i < adapter.getCount(); ++i) {
+      adapterCopy.insert(adapter.getItem(i), i);
+    }
   }
 
   public Spannable[] itemsToColoredText() {
     // TODO(hal): Generalize this so that different items could have different
     // colors and even fonts and sizes
     int size = items.size();
+    int displayTextSize = textSize;
     Spannable [] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
       // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
@@ -271,7 +278,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);
-      chars.setSpan(new AbsoluteSizeSpan(textSize),0,chars.length(),0);
+      if (!container.$form().getCompatibilityMode()) {
+        displayTextSize = (int) (textSize * container.$form().deviceDensity());
+      }
+      chars.setSpan(new AbsoluteSizeSpan(displayTextSize),0,chars.length(),0);
       objects[i - 1] = chars;
     }
     return objects;
@@ -336,8 +346,10 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    this.selection = parent.getAdapter().getItem(position).toString();
-    this.selectionIndex = position + 1; // AI lists are 1-based
+    Spannable item = (Spannable) parent.getAdapter().getItem(position);
+    this.selection = item.toString();
+    this.selectionIndex = adapterCopy.getPosition(item) + 1; // AI lists are 1-based
+
     AfterPicking();
   }
 

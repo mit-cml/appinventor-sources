@@ -29,7 +29,8 @@ import com.google.appinventor.components.common.YaVersion;
 public class VerticalArrangement extends HVArrangement {
 
   public VerticalArrangement(ComponentContainer container) {
-    super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
+    super(container, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+      ComponentConstants.NONSCROLLABLE_ARRANGEMENT);
   }
 
 }

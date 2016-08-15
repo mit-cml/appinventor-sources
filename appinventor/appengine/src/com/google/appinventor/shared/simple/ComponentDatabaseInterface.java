@@ -6,6 +6,10 @@
 
 package com.google.appinventor.shared.simple;
 
+import com.google.appinventor.components.common.ComponentCategory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +20,131 @@ import java.util.Set;
  * @author lizlooney@google.com (lizlooney)
  */
 public interface ComponentDatabaseInterface {
+
+  /**
+   * Simple component information: component name, its properties
+   */
+  public static class ComponentDefinition {
+    private final String name;
+    private final int version;
+    private final String type;
+    private final boolean external;
+    private final String categoryString;
+    private final String helpString;
+    private final boolean showOnPalette;
+    private final String categoryDocUrlString;
+    private final List<PropertyDefinition> properties;
+    private final List<BlockPropertyDefinition> blockProperties;
+    private final List<EventDefinition> events;
+    private final List<MethodDefinition> methods;
+    private final Map<String, String> propertiesTypesByName;
+    private final boolean nonVisible;
+    private final String iconName;
+    private final String typeDescription;
+
+    public ComponentDefinition(String name, int version, String type, boolean external, String categoryString, String helpString,
+              boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
+      this.name = name;
+      this.version = version;
+      this.type = type;
+      this.external = external;
+      this.categoryString = categoryString;
+      this.helpString = helpString;
+      this.showOnPalette = showOnPalette;
+      this.categoryDocUrlString = ComponentCategory.valueOf(categoryString).getDocName();
+      this.properties = new ArrayList<PropertyDefinition>();
+      this.blockProperties = new ArrayList<BlockPropertyDefinition>();
+      this.events = new ArrayList<EventDefinition>();
+      this.methods = new ArrayList<MethodDefinition>();
+      this.propertiesTypesByName = new HashMap<String, String>();
+      this.nonVisible = nonVisible;
+      this.iconName = iconName;
+      this.typeDescription = typeDescription;
+    }
+
+    public void add(PropertyDefinition property) {
+      properties.add(property);
+      propertiesTypesByName.put(property.getName(), property.getEditorType());
+    }
+
+    public void add(BlockPropertyDefinition blockProperty) {
+      blockProperties.add(blockProperty);
+    }
+
+    public void add(EventDefinition event) {
+      events.add(event);
+    }
+
+    public void add(MethodDefinition method) {
+      methods.add(method);
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public int getVersion() {
+      return version;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public boolean isExternal() {
+      return external;
+    }
+
+    public String getCategoryString() {
+      return categoryString;
+    }
+
+    public String getHelpString() {
+      return helpString;
+    }
+
+    public boolean isShowOnPalette() {
+      return showOnPalette;
+    }
+
+    public String getCategoryDocUrlString() {
+      return categoryDocUrlString;
+    }
+
+    public List<PropertyDefinition> getProperties() {
+      return properties;
+    }
+
+    public List<BlockPropertyDefinition> getBlockProperties() {
+      return blockProperties;
+    }
+
+    public List<EventDefinition> getEvents() {
+      return events;
+    }
+
+    public List<MethodDefinition> getMethods() {
+      return methods;
+    }
+
+    public Map<String, String> getPropertiesTypesByName() {
+      return propertiesTypesByName;
+    }
+
+    public boolean isNonVisible() {
+      return nonVisible;
+    }
+
+    public String getIconName() {
+      return iconName;
+    }
+
+    public String getTypeDescription() {
+      return typeDescription;
+    }
+  }
+
+
   /**
    * Property definition: property name, property editor type and property
    * default value.
@@ -188,12 +317,37 @@ public interface ComponentDatabaseInterface {
   Set<String> getComponentNames();
 
   /**
+   *Returns the type of a component
+   *
+   *@param componentName name of component to query
+   *@return type of the component
+   */
+  String getComponentType(String componentName);
+
+  /**
+   *Returns the name of a component
+   *
+   *@param componentType type of component to query
+   *@return name of the component
+   */
+  String getComponentName(String componentType);
+
+  /**
+   *
+   *Returns the whether a component is external or not
+   *
+   *@param componentName name of component to query
+   *@return true if componentName is external false otherwise
+   */
+  boolean getComponentExternal(String componentName);
+
+  /**
    * Returns the version number of a component.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the component version number
    */
-  int getComponentVersion(String componentTypeName);
+  int getComponentVersion(String componentName);
 
   /**
    * Returns the String version of a component's category.  Note that this
@@ -203,19 +357,19 @@ public interface ComponentDatabaseInterface {
    * time".  The procedure was written this way so that the result could
    * be converted back to a ComponentCategory with valueOf().
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the component's category
    */
-  String getCategoryString(String componentTypeName);
+  String getCategoryString(String componentName);
 
   /**
    * Returns the appropriate piece of the URL in the goro docs for a
    * component's category (or null, if the mapping is not known).
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  the URL piece in the docs
    */
-  String getCategoryDocUrlString(String componentTypeName);
+  String getCategoryDocUrlString(String componentName);
 
   /**
    * Returns a helpful message about the component.  This message
@@ -228,20 +382,20 @@ public interface ComponentDatabaseInterface {
    * {@link com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel}.
    * It is not allowed to contain HTML or XML markup.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return helpful message about the component
    */
-  String getHelpString(String componentTypeName);
+  String getHelpString(String componentName);
 
   /**
    * Returns whether the component with this name should be shown on the
    * palette.  As the time this is written (2/22/10), the only component
    * that should not be shown on the palette is Form/Screen.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return whether the component should be shown on the palette
    */
-  boolean getShowOnPalette(String componentTypeName);
+  boolean getShowOnPalette(String componentName);
 
   /**
    * Returns whether the component with this name is a "non-visible" component
@@ -249,68 +403,68 @@ public interface ComponentDatabaseInterface {
    * components can be handled uniformly in the Designer and don't need
    * special MockComponent representations.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return whether the component is non-visible
    */
-  boolean getNonVisible(String componentTypeName);
+  boolean getNonVisible(String componentName);
 
   /**
    * Returns the name of the icon file (last part of the path name) for the
    * icon to be shown in the Designer
    */
-  String getIconName(String componentTypeName);
+  String getIconName(String componentName);
 
   /**
    * Returns a list of a component's property definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of property definition for the component
    */
-  List<PropertyDefinition> getPropertyDefinitions(String componentTypeName);
+  List<PropertyDefinition> getPropertyDefinitions(String componentName);
 
   /**
    * Returns a list of a component's block property definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of block property definition for the component
    */
-  List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentTypeName);
+  List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentName);
 
   /**
    * Returns a list of a component's event definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of event definition for the component
    */
-  List<EventDefinition> getEventDefinitions(String componentTypeName);
+  List<EventDefinition> getEventDefinitions(String componentName);
 
   /**
    * Returns a list of a component's method definitions.
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  list of method definition for the component
    */
-  List<MethodDefinition> getMethodDefinitions(String componentTypeName);
+  List<MethodDefinition> getMethodDefinitions(String componentName);
 
   /*
    * Returns a map of the property names and types for a component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    * @return  map of property names and types
    */
-  Map<String, String> getPropertyTypesByName(String componentTypeName);
+  Map<String, String> getPropertyTypesByName(String componentName);
 
   /*
    * Returns the JSON string describing the component type for a component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    */
-  String getTypeDescription(String componentTypeName);
+  String getTypeDescription(String componentName);
 
    /*
-   * Returns true if componentTypeName matches some component
+   * Returns true if componentName matches some component
    *
-   * @param componentTypeName  name of component to query
+   * @param componentName  name of component to query
    */
-  boolean isComponent(String componentTypeName);
+  boolean isComponent(String componentName);
 }

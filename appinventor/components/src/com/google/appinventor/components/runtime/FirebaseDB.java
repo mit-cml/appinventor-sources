@@ -12,9 +12,12 @@ import android.util.Log;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
+import com.firebase.client.Config;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.MutableData;
+import com.firebase.client.Transaction;
 import com.firebase.client.ValueEventListener;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -32,8 +35,12 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -70,11 +77,49 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   private String developerBucket;
   private String projectBucket;
   private String firebaseToken;
+  // Note: The two variables below are static because the systems they
+  // interact with within Firebase are also static
+  private static boolean isInitialized = false;  // Whether we have made our first
+                                                 // connection to Firebase
+  private static boolean persist = false;        // Whether or not we are in persistant mode
+                                                 // where variables are kept when an app exits
+                                                 // when off-line
   private Handler androidUIHandler;
   private final Activity activity;
   private Firebase myFirebase;
   private ChildEventListener childListener;
   private Firebase.AuthStateListener authListener;
+
+  // ReturnVal -- Holder which can be used as a final value but whose content
+  //              remains mutable.
+  private static class ReturnVal {
+    String err;                 // Holder for any errors
+    Object retval;              // Returned value
+
+    Object getRetval() {
+      return retval;
+    }
+
+  }
+
+  private abstract static class Transactional {
+    final Object arg1;
+    final Object arg2;
+    final ReturnVal retv;
+
+    Transactional(Object arg1, Object arg2, ReturnVal retv) {
+      this.arg1 = arg1;
+      this.arg2 = arg2;
+      this.retv = retv;
+    }
+
+    abstract Transaction.Result run(MutableData currentData);
+
+    ReturnVal getResult() {
+      return retv;
+    }
+
+  }
 
   /**
    * Creates a new Firebase component.
@@ -136,13 +181,18 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
 
       @Override
       public void onChildRemoved(final DataSnapshot snapshot) {
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            // Signal an event to indicate that the child data was changed.
-            // We post this to run in the Application's main UI thread.
-            DataChanged(snapshot.getKey(), null);
-          }
-        });
+        Log.i(LOG_TAG, "onChildRemoved: " + snapshot.getKey() + " removed.");
+        // We do *NOT* run the code below because triggering an event
+        // with a null argument causes problems in App Inventor programs
+        // If people need to know when a child is removed, we should add
+        // a new event which only takes the tag as a parameter
+        // androidUIHandler.post(new Runnable() {
+        //   public void run() {
+        //     // Signal an event to indicate that the child data was changed.
+        //     // We post this to run in the Application's main UI thread.
+        //     DataChanged(snapshot.getKey(), null);
+        //   }
+        // });
       }
     };
 
@@ -165,6 +215,24 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
         }
       }
     };
+  }
+
+  /**
+   * Initialize: Do runtime intiailization of FirebaseDB
+   * We cannot make a connection to Firebase in the component
+   * Constructor because we do not yet know the value of the
+   * Persist property. The Persist property is used to set the
+   * persistance flag in the Firebase static config. It must
+   * be set prior to any connection happening and cannot be
+   * changed after a Firebase connection (or reference) is made.
+   * So we defer making a connection until we initialize. Initialize
+   * is called from runtime.scm (via Form.java) after all components
+   * and properties have been setup.
+   */
+  public void Initialize() {
+    Log.i(LOG_TAG, "Initalize called!");
+    isInitialized = true;
+    resetListener();
   }
 
   /**
@@ -209,6 +277,8 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
       }
     } else {
       useDefault = false;
+      url = url + (url.endsWith("/") ? "" : "/");
+
       if (firebaseURL.equals(url)) {
         return;                 // Nothing to do
       } else {
@@ -291,8 +361,42 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     firebaseToken = JWT;
     resetListener();
   }
-  
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+    description = "If true, variables will retain their values when off-line and the App " +
+    "exits. Values will be uploaded to Firebase the next time the App is " +
+    "run while connected to the network. This is useful for applications " +
+    "which will gather data while not connected to the network. Note: " +
+    "AppendValue and RemoveFirst will not work correctly when off-line, " +
+    "they require a network connection.<br/><br/> " +
+    "<i>Note</i>: If you set Persist on any Firebase component, on any " +
+    "screen, it makes all Firebase components on all screens persistent. " +
+    "This is a limitation of the low level Firebase library. Also be " +
+    "aware that if you want to set persist to true, you should do so " +
+    "before connecting the Companion for incremental development.")
+  public void Persist(boolean value) {
+    Log.i(LOG_TAG, "Persist Called: Value = " + value);
+    if (persist != value) {     // We are making a change
+      if (isInitialized) {
+        throw new RuntimeException("You cannot change the Persist value of Firebase " +
+          "after Application Initialization, this includes the Companion");
+      }
+      Config config = Firebase.getDefaultConfig();
+      config.setPersistenceEnabled(value);
+      Firebase.setDefaultConfig(config);
+      persist = value;
+      resetListener();
+    }
+  }
+
   private void resetListener() {
+    // If Firebase has not been inialized, then
+    // we do nothing.
+    if (!isInitialized) {
+      return;
+    }
     // remove listeners from the old Firebase path
     if (myFirebase != null) {
       myFirebase.removeEventListener(childListener);
@@ -328,6 +432,17 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
 
      https://www.firebase.com/docs/java-api/javadoc/com/firebase/client/Firebase.html#runTransaction-com.firebase.client.Transaction.Handler-
    */
+
+  /**
+   * Asks Firebase to forget (delete or set to "null") a given tag.
+   *
+   * @param tag The tag to remove
+   */
+
+  @SimpleFunction(description = "Remove the tag from Firebase")
+  public void ClearTag(final String tag) {
+    this.myFirebase.child(tag).removeValue();
+  }
 
   /**
    * Asks Firebase to store the given value under the given tag.
@@ -421,7 +536,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     // Invoke the application's "GotValue" event handler
     EventDispatcher.dispatchEvent(this, "GotValue", tag, value);
   }
-  
+
   /**
    * Indicates that the data in the Firebase has changed.
    * Launches an event with the tag and value that have been updated.
@@ -454,7 +569,11 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     Log.e(LOG_TAG, message);
 
     // Invoke the application's "FirebaseError" event handler
-    EventDispatcher.dispatchEvent(this, "FirebaseError", message);
+    boolean dispatched = EventDispatcher.dispatchEvent(this, "FirebaseError", message);
+    if (!dispatched) {
+      // If the handler doesn't exist, then put up our own alert
+      Notifier.oneButtonAlert(form, message, "FirebaseError", "Continue");
+    }
   }
 
   private void connectFirebase() {
@@ -523,4 +642,181 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     }
   }
 
+  @SimpleFunction(description = "Return the first element of a list and atomically remove it. " +
+    "If two devices use this function simultaneously, one will get the first element and the " +
+    "the other will get the second element, or an error if there is no available element. " +
+    "When the element is available, the \"FirstRemoved\" event will be triggered.")
+  public void RemoveFirst(final String tag) {
+    final ReturnVal result = new ReturnVal();
+    Firebase firebaseChild = myFirebase.child(tag);
+    Transactional toRun = new Transactional(null, null, result) {
+        @Override
+        Transaction.Result run(MutableData currentData) {
+          Object value = currentData.getValue();
+          if (value == null) {
+            result.err = "Previous value was empty.";
+            return Transaction.abort();
+          }
+          try {
+            if (value instanceof String) {
+              value = JsonUtil.getObjectFromJson((String) value);
+            } else {
+              result.err = "Invalid JSON object in database (shouldn't happen!)";
+              return Transaction.abort();
+            }
+          } catch (JSONException e) {
+            result.err = "Invalid JSON object in database (shouldn't happen!)";
+            return Transaction.abort();
+          }
+          if (value instanceof List) {
+            if (((List)value).isEmpty()) {
+              result.err = "The list was empty";
+              return Transaction.abort();
+            }
+            result.retval = ((List)value).remove(0);
+            try {
+              value = JsonUtil.getJsonRepresentation(YailList.makeList((List)value));
+            } catch (JSONException e) {
+              result.err = "Could not convert value to JSON.";
+              return Transaction.abort();
+            }
+            currentData.setValue(value);
+            return Transaction.success(currentData);
+          } else {
+            result.err = "You can only remove elements from a list.";
+            return Transaction.abort();
+          }
+        }
+      };
+    firebaseTransaction(toRun, firebaseChild, new Runnable() {
+        @Override
+        public void run() {
+          FirstRemoved(result.getRetval());
+        }
+      });
+  }
+
+  @SimpleFunction(description = "Get the list of tags for this application. " +
+    "When complete a \"TagList\" event will be triggered with the list of " +
+    "known tags.")
+  public void GetTagList() {
+    Firebase zFireBase = myFirebase.child(""); // Does this really clone the parent?
+    zFireBase.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot data) {
+          Object value = data.getValue();
+          if (value instanceof HashMap) {
+            value = new ArrayList(((HashMap)value).keySet());
+            final List listValue = (List) value;
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  TagList(listValue);
+                }
+              });
+          }
+        }
+        @Override
+        public void onCancelled(FirebaseError error) {
+          // Do Nothing
+        }
+      });
+  }
+
+  @SimpleEvent(description = "Event triggered when we have received the list of known tags. " +
+    "Used with the \"GetTagList\" Function.")
+  public void TagList(List value) {
+    EventDispatcher.dispatchEvent(this, "TagList", value);
+  }
+
+  @SimpleEvent(description = "Event triggered by the \"RemoveFirst\" function. The " +
+    "argument \"value\" is the object that was the first in the list, and which is now " +
+    "removed.")
+  public void FirstRemoved(Object value) {
+    EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
+  }
+
+  @SimpleFunction(description = "Append a value to the end of a list atomically. " +
+    "If two devices use this function simultaneously, both will be appended and no " +
+    "data lost.")
+  public void AppendValue(final String tag, final Object valueToAdd) {
+    final ReturnVal result = new ReturnVal();
+    Firebase firebaseChild = myFirebase.child(tag);
+    Transactional toRun = new Transactional(null, null, result) {
+        @Override
+        Transaction.Result run(MutableData currentData) {
+          Object value = currentData.getValue();
+          if (value == null) {
+            result.err = "Previous value was empty.";
+            return Transaction.abort();
+          }
+          try {
+            if (value instanceof String) {
+              value = JsonUtil.getObjectFromJson((String) value);
+            } else {
+              result.err = "Invalid JSON object in database (shouldn't happen!)";
+              return Transaction.abort();
+            }
+          } catch (JSONException e) {
+            result.err = "Invalid JSON object in database (shouldn't happen!)";
+            return Transaction.abort();
+          }
+          if (value instanceof List) {
+            ((List)value).add(valueToAdd);
+            try {
+              value = JsonUtil.getJsonRepresentation(YailList.makeList((List)value));
+            } catch (JSONException e) {
+              result.err = "Could not convert value to JSON.";
+              return Transaction.abort();
+            }
+            currentData.setValue(value);
+            return Transaction.success(currentData);
+          } else {
+            result.err = "You can only append to a list.";
+            return Transaction.abort();
+          }
+        }
+      };
+    firebaseTransaction(toRun, firebaseChild, null);
+  }
+
+  private void firebaseTransaction(final Transactional toRun, Firebase firebase, final Runnable whenDone) {
+    final ReturnVal result = toRun.getResult();
+    firebase.runTransaction(new Transaction.Handler() {
+        @Override
+        public Transaction.Result doTransaction(MutableData currentData) {
+          return toRun.run(currentData);
+        }
+
+        @Override
+        public void onComplete(final FirebaseError firebaseError, boolean committed,
+          DataSnapshot currentData) {
+          if (firebaseError != null) {
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  Log.i(LOG_TAG, "AppendValue(onComplete): firebase: " + firebaseError.getMessage());
+                  Log.i(LOG_TAG, "AppendValue(onComplete): result.err: " + result.err);
+                  FirebaseError(firebaseError.getMessage());
+                }
+              });
+            return;
+          }
+          if (!committed) {
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  Log.i(LOG_TAG, "AppendValue(!committed): result.err: " + result.err);
+                  FirebaseError(result.err);
+                }
+              });
+          } else {
+            if (whenDone != null) {
+              androidUIHandler.post(whenDone);
+            }
+          }
+          return;
+        }
+      });
+  }
 }

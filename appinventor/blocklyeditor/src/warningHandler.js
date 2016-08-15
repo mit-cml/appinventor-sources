@@ -214,6 +214,27 @@ Blockly.WarningHandler.checkIsInDefinition = function(){
 
 }
 
+// Check if block is undefined and unplug
+Blockly.WarningHandler.checkIfUndefinedBlock = function() {
+  if (this.isBadBlock() === true) {
+    var errorMessage = Blockly.ERROR_BLOCK_IS_NOT_DEFINED;
+    var healStack = true;
+    if (this.type == "component_event") {
+      healStack = false; // unplug all blocks inside
+    }
+    this.isolate(healStack, true);
+    if(this.errorIcon){
+      this.errorIcon.setText(errorMessage);
+    } else {
+      this.setErrorIconText(errorMessage);
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
   for(var i=0;i<params.dropDowns.length;i++){

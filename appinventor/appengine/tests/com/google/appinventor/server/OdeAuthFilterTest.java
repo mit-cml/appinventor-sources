@@ -6,7 +6,9 @@
 package com.google.appinventor.server;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.common.testutils.TestUtils;
 
 import static junit.framework.Assert.*;
@@ -30,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author markf@google.com (Mark Friedman)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ LocalUser.class, OdeAuthFilter.class })
+@PrepareForTest({ LocalUser.class, OdeAuthFilter.class, OdeAuthFilter.UserInfo.class })
 public class OdeAuthFilterTest {
   // If OdeAuthFilterTest (which uses PowerMock.mockStatic) extends LocalDatastoreTestCase, then
   // it will probably fail with Ant version 1.8.2.
@@ -40,6 +42,7 @@ public class OdeAuthFilterTest {
   private HttpServletRequest mockServletRequest;
   private HttpServletResponse mockServletResponse;
   private LocalUser localUserMock;
+  private OdeAuthFilter.UserInfo localUserInfo;
 
   @Before
   public void setUp() throws Exception {
@@ -47,6 +50,12 @@ public class OdeAuthFilterTest {
     localUserMock = PowerMock.createMock(LocalUser.class);
     PowerMock.mockStatic(LocalUser.class);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
+    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    expectLastCall().times(1);
+    expect(localUserMock.getUserEmail()).andReturn("NonSuch").times(1);
+    localUserInfo = PowerMock.createMock(OdeAuthFilter.UserInfo.class);
+    expect(localUserInfo.buildCookie(false)).andReturn("NoCookie").anyTimes();
+    expect(localUserInfo.buildCookie(true)).andReturn("NoCookie").anyTimes();
     mockFilterChain = PowerMock.createNiceMock(FilterChain.class);
     mockServletRequest = PowerMock.createNiceMock(HttpServletRequest.class);
     mockServletResponse = PowerMock.createNiceMock(HttpServletResponse.class);
@@ -75,7 +84,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      boolean setUser(HttpServletRequest req) { return true; }
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null)); return;}
       @Override
       void removeUser() {}
       @Override
@@ -85,7 +94,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter(mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false, mockServletRequest, mockServletResponse, mockFilterChain);
 
     // isUserWhitelisted should not have been called.
     assertEquals(0, isUserWhitelistedCounter.get());
@@ -111,7 +120,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      boolean setUser(HttpServletRequest req) { return true; }
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null)); return;}
       @Override
       void removeUser() {}
       @Override
@@ -125,7 +134,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter(mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false, mockServletRequest, mockServletResponse, mockFilterChain);
 
     // isUserWhitelisted should have been called once.
     assertEquals(1, isUserWhitelistedCounter.get());

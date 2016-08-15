@@ -76,6 +76,13 @@ public abstract class ProjectEditor extends Composite {
   }
 
   /**
+   * Processes the project before loading into the project editor.
+   * To do any any pre-processing of the Project
+   * Calls the loadProject() after prepareProject() is fully executed.
+   * Currently, prepareProject loads all external components associated with project.
+   */
+  public abstract void processProject();
+  /**
    * Loads the project into the project editor.
    * This may result in multiple FileEditors being added.
    */

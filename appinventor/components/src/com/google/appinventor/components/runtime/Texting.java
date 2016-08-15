@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -36,6 +36,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleBroadcastReceiver;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -121,7 +122,9 @@ import android.widget.Toast;
   "google-http-client-android3-beta.jar," +
   "google-oauth-client-beta.jar," +
   "guava-14.0.1.jar")
-
+@SimpleBroadcastReceiver(
+    className = "com.google.appinventor.components.runtime.util.SmsBroadcastReceiver",
+    actions = "android.provider.Telephony.SMS_RECEIVED, com.google.android.apps.googlevoice.SMS_RECEIVED")
 public class Texting extends AndroidNonvisibleComponent
   implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 

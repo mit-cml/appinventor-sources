@@ -9,12 +9,15 @@ package com.google.appinventor.server.storage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +63,16 @@ public interface StorageIo {
   User getUser(String userId, String email);
 
   /**
+   * Returns user data given user email address. If the user data for the given email
+   * doesn't already exist in the storage, it should be created. email
+   * is the email address currently associated with this user.
+   *
+   * @param user email address
+   * @return user data
+   */
+  User getUserFromEmail(String email);
+
+  /**
    * Sets the stored email address for user with id userId
    *
    */
@@ -80,6 +93,14 @@ public interface StorageIo {
    * @param sessionId the session id (uuid) value
    */
   void setUserSessionId(String userId, String sessionId);
+
+  /**
+   * Sets the user's hashed password.
+   *
+   * @param userId user id
+   * @param hashed password
+   */
+  void setUserPassword(String userId, String password);
 
   /**
    * Returns a string with the user's settings.
@@ -500,6 +521,37 @@ public interface StorageIo {
    */
   byte[] downloadRawFile(String userId, long projectId, String fileId);
 
+  /**
+   * Creates a temporary file with the given content and returns
+   * its file name, which will always begin with __TEMP__
+   * @param content the files content (bytes)
+   *
+   * @return fileName the temporary filename
+   */
+  String uploadTempFile(byte [] content) throws IOException;
+
+  /**
+   * Open an input stream to a temp file.
+   * Verifies it is a temp file by making sure the filename
+   * begins with __TEMP__
+   *
+   * @param fileName
+   *
+   * @return inputstream
+   */
+
+  InputStream openTempFile(String fileName) throws IOException;
+
+  /**
+   * delete a temporary file.
+   * Verify that it is a temporary file by making sure its filename
+   * starts with __TEMP__
+   *
+   * @param fileName
+   */
+
+  void deleteTempFile(String fileName) throws IOException;
+
   // MOTD management
 
   /**
@@ -521,11 +573,12 @@ public interface StorageIo {
    * @return  project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-                                          boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore,
-                                          @Nullable String zipName,
-                                          boolean includeYail,
-                                          boolean fatalError) throws IOException;
+    boolean includeProjectHistory,
+    boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    final boolean includeYail,
+    final boolean forGallery,
+    final boolean fatalError) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
@@ -583,4 +636,14 @@ public interface StorageIo {
 
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
+
+  StoredData.PWData createPWData(String email);
+  StoredData.PWData findPWData(String uid);
+  void cleanuppwdata();
+
+  // Routines for user admin interface
+
+  List<AdminUser> searchUsers(String partialEmail);
+  void storeUser(AdminUser user) throws AdminInterfaceException;
+
 }
