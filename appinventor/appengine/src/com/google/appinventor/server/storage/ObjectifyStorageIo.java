@@ -54,6 +54,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
@@ -84,6 +85,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -940,6 +942,41 @@ public class ObjectifyStorageIo implements  StorageIo {
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.galleryId,
           projectData.t.attributionId);
+    }
+  }
+
+  @Override
+  public List<UserProject> getUserProjects(final String userId, final List<Long> projectIds) {
+    final Result<Map<Long,ProjectData>> projectDatas = new Result<Map<Long,ProjectData>>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Map<Long,ProjectData> pd = datastore.get(ProjectData.class, projectIds);
+          if (pd != null) {
+            projectDatas.t = pd;
+          } else {
+            projectDatas.t = null;
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectUserErrorInfo(userId), e);
+    }
+    if (projectDatas.t == null) {
+      throw new RuntimeException("getUserProjects wants to return null, userId = " + userId);
+      // Note we directly throw a RuntimeException instead of calling CrashReport
+      // because we don't have an explicitly caught exception to hand it.
+    } else {
+      List<UserProject> uProjects = Lists.newArrayListWithExpectedSize(projectDatas.t.size());
+      for (ProjectData projectData : projectDatas.t.values()) {
+        uProjects.add(new UserProject(projectData.id, projectData.name,
+            projectData.type, projectData.dateCreated,
+            projectData.dateModified, projectData.galleryId,
+            projectData.attributionId));
+      }
+      return uProjects;
     }
   }
 

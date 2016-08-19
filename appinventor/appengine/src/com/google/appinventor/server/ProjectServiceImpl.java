@@ -240,17 +240,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public List<UserProject> getProjectInfos() {
     String userId = userInfoProvider.getUserId();
     List<Long> projectIds = storageIo.getProjects(userId);
-    List<UserProject> projectInfos = Lists.newArrayListWithExpectedSize(projectIds.size());
-    for (Long projectId : projectIds) {
-      UserProject up = makeUserProject(userId, projectId);
-      if (up != null) {
-        projectInfos.add(up);
-      } else {
-        LOG.log(Level.WARNING, "ProjectId " + projectId +
-          " is missing at the lower level.");
-      }
-    }
-    return projectInfos;
+    return makeUserProjects(userId, projectIds);
   }
 
   /**
@@ -560,6 +550,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private UserProject makeUserProject(String userId, long projectId) {
     return storageIo.getUserProject(userId, projectId);
+  }
+
+  // Bulk fetch UserProjects -- efficiently get all project infos asked for
+  // using a minimum number of datastore API calls
+  private List<UserProject> makeUserProjects(String userId, List<Long> projectIds) {
+    return storageIo.getUserProjects(userId, projectIds);
   }
 
   /*
