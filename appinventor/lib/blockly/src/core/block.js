@@ -2164,13 +2164,10 @@ Blockly.Block.prototype.renderDown = function() {
 Blockly.Block.prototype.searchHighlight = function() {
   goog.asserts.assertObject(this.svg_, 'Block is not rendered.');
   if (Blockly.searched) {
-    // Unselect any previously selected block.
     Blockly.searched.unSearchHighlight();
   }
   Blockly.searched = this;
   this.svg_.addSearchHighlight();
-  // this.svg_.getRootElement().setAttribute('stroke-width','1px');
-  // this.svg_.getRootElement().setAttribute('stroke',this.getColour());
   Blockly.fireUiEvent(this.workspace.getCanvas(), 'blocklySearchedHighlight');
 };
 
@@ -2188,24 +2185,12 @@ Blockly.Block.prototype.unSearchHighlight = function() {
 Blockly.Block.prototype.setNotMatchColour = function() {
   this.originalColour = this.getColour();
   this.setColour(["188","188","188"], true);
-  //this.svg_.getRootElement().setAttribute('opacity','0.2');
-  // var icons = this.getIcons();
-  // for (var x = 0; x < icons.length; x++) {
-  //   var icon = icons[x];
-  //   icon.greyOut(icon.iconShield_);
-  // }
 };
 
 Blockly.Block.prototype.revertColour = function() {
   if (this.originalColour) {
     this.setColour(this.originalColour, false);
-    // this.svg_.getRootElement().removeAttribute('opacity');
   }
-  // var icons = this.getIcons();
-  // for (var x = 0; x < icons.length; x++) {
-  //   var icon = icons[x];
-  //   icon.revertColour(icon.iconShield_);
-  // }
 };
 
 
@@ -2223,8 +2208,6 @@ Blockly.Block.prototype.getBlockString = function(opt_maxLength) {
   }
   text = goog.string.trim(text.join(' ')) || '???';
   if (opt_maxLength) {
-    // TODO: Improve truncation so that text from this block is given priority.
-    // TODO: Handle FieldImage better.
     text = goog.string.truncate(text, opt_maxLength);
   }
   return text;

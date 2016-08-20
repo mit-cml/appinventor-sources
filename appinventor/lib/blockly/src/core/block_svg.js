@@ -1258,10 +1258,8 @@ Blockly.BlockSvg.prototype.renderDrawLeft_ = function(steps, highlightSteps,
 Blockly.BlockSvg.prototype.addSearchHighlight = function() {
     Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
         'blocklySearchedHighlight');
-    //??
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
-    //??
 };
 
 /**

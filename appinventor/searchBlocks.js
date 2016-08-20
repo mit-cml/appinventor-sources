@@ -469,13 +469,3 @@ Blockly.SearchBlocks.handleKey = function(e) {
   }
 
 }
-
-
-
-
-
-
-
-
-
-

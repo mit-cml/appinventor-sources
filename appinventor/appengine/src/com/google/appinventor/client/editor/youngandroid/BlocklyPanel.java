@@ -1138,7 +1138,6 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }-*/;
 }
 
-//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
 /*
 Wrapper class sed to read list of strings from Javascript into Java(JSNI)
 */
@@ -1149,4 +1148,3 @@ class JsArray extends JavaScriptObject{
   public final native String getString(int i)  /*-{ return this[i];  }-*/;
 
 }
-//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//

@@ -72,13 +72,10 @@ public class ViewerBox extends Box {
       this.search.setBlocklyPanel(panel);
       OdeLog.log("Setting the Blockly Panel.");
     } else {
-    // Grid layout = new Grid(1, this.getBoxWidth()/(this.getBoxWidth()/2));
       this.search = new SearchBox(panel);
       OdeLog.log("Creating a new search box.");
-    // layout.setWidget(1, this.getBoxWidth()/(this.getBoxWidth()/2), this.search);
       this.addWidgetToHeader(this.search, DockPanel.EAST);
     }
-    //if not null, return (don't do anything)
   }
   
   /**

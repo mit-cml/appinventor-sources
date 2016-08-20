@@ -140,7 +140,6 @@ Blockly.ScrollbarPair.prototype.set = function(x, y) {
   this.hScroll.set(x);
   this.vScroll.set(y);
 };
- //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
 
 /**
  * Drag the scroll bar pair so that the block is centered in the viewer.
@@ -151,10 +150,6 @@ Blockly.ScrollbarPair.prototype.centerScrolls = function(block, collapsed) {
   this.hScroll.centerBlockScroll(block, collapsed);
   this.vScroll.centerBlockScroll(block, collapsed);
 };
- //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
-
-
-// --------------------------------------------------------------------
 
 /**
  * Class for a pure SVG scrollbar.

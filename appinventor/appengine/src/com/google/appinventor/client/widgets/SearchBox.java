@@ -21,14 +21,14 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 
-
-import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.script.*;
-import  java.lang.Double.*;
-
+import java.lang.Double.*;
 
 import java.lang.String;
 
@@ -70,9 +70,9 @@ public class SearchBox extends Composite {
         /* Search Box */
         MultiWordSuggestOracle blockNames = new MultiWordSuggestOracle();
         searchBox = new SuggestBox(blockNames);
-        searchBox.setTitle("Search Blocks");
+        searchBox.setTitle(MESSAGES.searchText());
         searchBox.setHeight("20px");
-        searchBox.getElement().setAttribute("placeholder","Search Blocks...");
+        searchBox.getElement().setAttribute("placeholder",MESSAGES.searchText());
         searchBox.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -130,7 +130,7 @@ public class SearchBox extends Composite {
         /*Filter Box */
         filterBox = new ListBox();
         filterBox.getElement().getStyle().setProperty("color", "grey");
-        filterBox.addItem("Please select one....");
+        filterBox.addItem(MESSAGES.selectFilterText());
         filterBox.setHeight("20px");
         flag = 0;
         filterBox.addClickHandler(new ClickHandler() {
@@ -138,24 +138,34 @@ public class SearchBox extends Composite {
             public void onClick(ClickEvent event) {
                 if(flag == 0){
                     try{    
-                            flag = 1;
-                            filterBox.clear();
-                            List<String> types = blockArea.getBlockTypes("");
-                            filterBox.addItem("Please select one....");
-                            for(String type:types){
-                               filterBox.addItem(type);
-                            }
-                        } catch (ClassCastException e ) {
-
+                        flag = 1;
+                        filterBox.clear();
+                        List<String> types = blockArea.getBlockTypes("");
+                        filterBox.addItem(MESSAGES.selectFilterText());
+                        for(String type:types){
+                           filterBox.addItem(type);
                         }
+                                  
+                    } catch (ClassCastException e ) {
+
                     }
+                }
               }
-            });
-        
+        });
+        filterBox.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if(filterBox.getSelectedItemText() != MESSAGES.selectFilterText()){
+                    advancedCheckBox.setValue(true);
+                } else {
+                    advancedCheckBox.setValue(false);
+                }
+            }
+        });
 
 
         /* Filters Check Box */
-        advancedCheckBox = new CheckBox("Filters");
+        advancedCheckBox = new CheckBox(MESSAGES.filterText());
         advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
         advancedCheckBox.setHeight("20px");
         advancedCheckBox.addClickHandler(new ClickHandler() {
@@ -165,18 +175,27 @@ public class SearchBox extends Composite {
             if(checked){
                 filterBox.getElement().getStyle().setProperty("color", "black");
                 try {
+                  String currentString = filterBox.getSelectedItemText();
+                  int index = 0;
+                  int currentIndex = 0;
                   filterBox.clear();
-                  filterBox.addItem("Please select one....");
+                  filterBox.addItem(MESSAGES.selectFilterText());
                   List<String> types = blockArea.getBlockTypes("");
                   for(String type:types){
+                    index += 1;
+                    if(type==currentString){
+                        currentIndex = index;
+                    }
                     filterBox.addItem(type);
                   }
+                  filterBox.setItemSelected(currentIndex,true);
                 } catch (ClassCastException e ) {
-
+                    //Exception Safe to Ignore
                 }
             }else{
+                flag = 0;
                 filterBox.clear();
-                filterBox.addItem("Please select one....");
+                filterBox.addItem(MESSAGES.selectFilterText());
                 advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
             }
           }
