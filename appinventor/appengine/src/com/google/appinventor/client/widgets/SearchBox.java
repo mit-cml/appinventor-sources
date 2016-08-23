@@ -34,189 +34,185 @@ import java.lang.String;
 
 public class SearchBox extends Composite {
 
-    private BlocklyPanel blockArea;
-    private SuggestBox searchBox;
-    private CheckBox advancedCheckBox;
-    private ListBox filterBox;
-    private TextButton upButton, downButton,clearButton;
-    private char upArrow = '\u2191';
-    private char downArrow = '\u2193';
-    public int flag;
+  private BlocklyPanel blockArea;
+  private SuggestBox searchBox;
+  private CheckBox advancedCheckBox;
+  private ListBox filterBox;
+  private TextButton upButton, downButton,clearButton;
+  private char upArrow = '\u2191';
+  private char downArrow = '\u2193';
+  public int flag;
 
-    public SearchBox(BlocklyPanel panel) {
-        
+  public SearchBox(BlocklyPanel panel) {
 
-        /* Panel*/
-        blockArea = panel;
-        HorizontalPanel hPanel = new HorizontalPanel();
+    /* Panel*/
+    blockArea = panel;
+    HorizontalPanel hPanel = new HorizontalPanel();
 
-        /*Up and Down Button */
-        upButton = new TextButton(Character.toString(upArrow));
-        upButton.setHeight("20px");
-        upButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent click) {
-                blockArea.zoomToSearchBlock(1);
-            }
-        });
+    /*Up and Down Button */
+    upButton = new TextButton(Character.toString(upArrow));
+    upButton.setHeight("20px");
+    upButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent click) {
+        blockArea.zoomToSearchBlock(1);
+      }
+    });
 
-        downButton = new TextButton(Character.toString(downArrow));
-        downButton.setHeight("20px");
-        downButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent click) {
-                blockArea.zoomToSearchBlock(-1);
-            }
-        });
+    downButton = new TextButton(Character.toString(downArrow));
+    downButton.setHeight("20px");
+    downButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent click) {
+        blockArea.zoomToSearchBlock(-1);
+      }
+    });
 
-        /* Search Box */
-        MultiWordSuggestOracle blockNames = new MultiWordSuggestOracle();
-        searchBox = new SuggestBox(blockNames);
-        searchBox.setTitle(MESSAGES.searchText());
-        searchBox.setHeight("20px");
-        searchBox.getElement().setAttribute("placeholder",MESSAGES.searchText());
-        searchBox.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-                String queried = searchBox.getText();
-                int keyCode = event.getNativeKeyCode();
-                if ((keyCode == KeyCodes.KEY_ENTER) && (queried != "")) {
-                    if (advancedCheckBox.getValue() == false){
-                        blockArea.startSearch(queried,"None");
-                    }else{
-                        blockArea.startSearch(queried,filterBox.getSelectedItemText()); 
-                    }
-                    upButton.setEnabled(true);
-                    downButton.setEnabled(true);
-                    flag = 0;
-                } else if ((keyCode == KeyCodes.KEY_ESCAPE) || (keyCode == KeyCodes.KEY_DELETE) || (keyCode == KeyCodes.KEY_BACKSPACE)) {
-                    blockArea.stopSearch();
-                    upButton.setEnabled(false);
-                    downButton.setEnabled(false);
-                } else if ((keyCode == KeyCodes.KEY_DOWN) || (keyCode == KeyCodes.KEY_LEFT)) {
-                    blockArea.zoomToSearchBlock(-1);
-                    blockArea.zoomToSearchBlock(1);
-                }
-            }
-        }) ;
-
-        searchBox.addKeyPressHandler(new KeyPressHandler() {
-            @Override
-            public void onKeyPress(KeyPressEvent event) {
-                String queried = searchBox.getText();
-                int keyCode = event.getCharCode();
-                try {
-                  MultiWordSuggestOracle multiWordOracle = (MultiWordSuggestOracle)searchBox.getSuggestOracle();
-                  List<String> suggestions = blockArea.querySuggest(queried);
-                  for(String suggestion:suggestions){
-                    multiWordOracle.add(suggestion);
-                  }
-                } catch (ClassCastException e ) {
-
-                }
-            }
-                  
-        }) ;
-
-        /*Clear Button*/
-        clearButton = new TextButton("X");
-        clearButton.setHeight("20px");
-        clearButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent click) {
-                searchBox.setValue("");
-                blockArea.stopSearch();
-            }
-        });
-
-
-        /*Filter Box */
-        filterBox = new ListBox();
-        filterBox.getElement().getStyle().setProperty("color", "grey");
-        filterBox.addItem(MESSAGES.selectFilterText());
-        filterBox.setHeight("20px");
-        flag = 0;
-        filterBox.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if(flag == 0){
-                    try{    
-                        flag = 1;
-                        filterBox.clear();
-                        List<String> types = blockArea.getBlockTypes("");
-                        filterBox.addItem(MESSAGES.selectFilterText());
-                        for(String type:types){
-                           filterBox.addItem(type);
-                        }
-                                  
-                    } catch (ClassCastException e ) {
-
-                    }
-                }
-              }
-        });
-        filterBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                if(filterBox.getSelectedItemText() != MESSAGES.selectFilterText()){
-                    advancedCheckBox.setValue(true);
-                } else {
-                    advancedCheckBox.setValue(false);
-                }
-            }
-        });
-
-
-        /* Filters Check Box */
-        advancedCheckBox = new CheckBox(MESSAGES.filterText());
-        advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
-        advancedCheckBox.setHeight("20px");
-        advancedCheckBox.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            boolean checked = ((CheckBox) event.getSource()).getValue();
-            if(checked){
-                filterBox.getElement().getStyle().setProperty("color", "black");
-                try {
-                  String currentString = filterBox.getSelectedItemText();
-                  int index = 0;
-                  int currentIndex = 0;
-                  filterBox.clear();
-                  filterBox.addItem(MESSAGES.selectFilterText());
-                  List<String> types = blockArea.getBlockTypes("");
-                  for(String type:types){
-                    index += 1;
-                    if(type==currentString){
-                        currentIndex = index;
-                    }
-                    filterBox.addItem(type);
-                  }
-                  filterBox.setItemSelected(currentIndex,true);
-                } catch (ClassCastException e ) {
-                    //Exception Safe to Ignore
-                }
-            }else{
-                flag = 0;
-                filterBox.clear();
-                filterBox.addItem(MESSAGES.selectFilterText());
-                advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
-            }
+    /* Search Box */
+    MultiWordSuggestOracle blockNames = new MultiWordSuggestOracle();
+    searchBox = new SuggestBox(blockNames);
+    searchBox.setTitle(MESSAGES.searchText());
+    searchBox.setHeight("20px");
+    searchBox.getElement().setAttribute("placeholder",MESSAGES.searchText());
+    searchBox.addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        String queried = searchBox.getText();
+        int keyCode = event.getNativeKeyCode();
+        if ((keyCode == KeyCodes.KEY_ENTER) && (queried != "")) {
+          if (advancedCheckBox.getValue() == false){
+            blockArea.startSearch(queried,"None");
+          }else{
+            blockArea.startSearch(queried,filterBox.getSelectedItemText()); 
           }
-        });
+          upButton.setEnabled(true);
+          downButton.setEnabled(true);
+          flag = 0;
+        } else if ((keyCode == KeyCodes.KEY_ESCAPE) || (keyCode == KeyCodes.KEY_DELETE) || (keyCode == KeyCodes.KEY_BACKSPACE)) {
+          blockArea.stopSearch();
+          upButton.setEnabled(false);
+          downButton.setEnabled(false);
+        } else if ((keyCode == KeyCodes.KEY_DOWN) || (keyCode == KeyCodes.KEY_LEFT)) {
+          blockArea.zoomToSearchBlock(-1);
+          blockArea.zoomToSearchBlock(1);
+        }
+      }
+    }) ;
 
-        
-        hPanel.add(searchBox);
-        hPanel.add(clearButton);
-        hPanel.add(upButton);
-        hPanel.add(downButton);
-        hPanel.add(advancedCheckBox);
-        hPanel.add(filterBox);
+    searchBox.addKeyPressHandler(new KeyPressHandler() {
+      @Override
+      public void onKeyPress(KeyPressEvent event) {
+        String queried = searchBox.getText();
+        int keyCode = event.getCharCode();
+        try {
+          MultiWordSuggestOracle multiWordOracle = (MultiWordSuggestOracle)searchBox.getSuggestOracle();
+          List<String> suggestions = blockArea.querySuggest(queried);
+          for(String suggestion:suggestions){
+            multiWordOracle.add(suggestion);
+          }
+        } catch (ClassCastException e ) {
+                    //Throws exception when worspace is empty. Safe to ignore.
+        }
+      }
 
-        upButton.setEnabled(false);
-        downButton.setEnabled(false);
+    }) ;
 
-        initWidget(hPanel);
-    }
+    /*Clear Button*/
+    clearButton = new TextButton("X");
+    clearButton.setHeight("20px");
+    clearButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent click) {
+        searchBox.setValue("");
+        blockArea.stopSearch();
+      }
+    });
 
 
-    public void setBlocklyPanel(BlocklyPanel panel) {
-        this.blockArea = panel;
-    }
+    /*Filter Box */
+    filterBox = new ListBox();
+    filterBox.getElement().getStyle().setProperty("color", "grey");
+    filterBox.addItem(MESSAGES.selectFilterText());
+    filterBox.setHeight("20px");
+    flag = 0;
+    filterBox.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if(flag == 0){
+          try{    
+            flag = 1;
+            filterBox.clear();
+            List<String> types = blockArea.getBlockTypes("");
+            filterBox.addItem(MESSAGES.selectFilterText());
+            for(String type:types){
+             filterBox.addItem(type);
+           }    
+         } catch (ClassCastException e ) {
+                          //Throws exception when worspace is empty. Safe to ignore.
+         }
+       }
+     }
+   });
+    filterBox.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        if(filterBox.getSelectedItemText() != MESSAGES.selectFilterText()){
+          advancedCheckBox.setValue(true);
+        } else {
+          advancedCheckBox.setValue(false);
+        }
+      }
+    });
+
+
+    /* Filters Check Box */
+    advancedCheckBox = new CheckBox(MESSAGES.filterText());
+    advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
+    advancedCheckBox.setHeight("20px");
+    advancedCheckBox.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        boolean checked = ((CheckBox) event.getSource()).getValue();
+        if(checked){
+          filterBox.getElement().getStyle().setProperty("color", "black");
+          try {
+            String currentString = filterBox.getSelectedItemText();
+            int index = 0;
+            int currentIndex = 0;
+            filterBox.clear();
+            filterBox.addItem(MESSAGES.selectFilterText());
+            List<String> types = blockArea.getBlockTypes("");
+            for(String type:types){
+              index += 1;
+              if(type==currentString){
+                currentIndex = index;
+              }
+              filterBox.addItem(type);
+            }
+            filterBox.setItemSelected(currentIndex,true);
+          } catch (ClassCastException e ) {
+                    //Exception Safe to Ignore
+          }
+        }else{
+          flag = 0;
+          filterBox.clear();
+          filterBox.addItem(MESSAGES.selectFilterText());
+          advancedCheckBox.getElement().getStyle().setProperty("color", "grey");
+        }
+      }
+    });
+
+    hPanel.add(searchBox);
+    hPanel.add(clearButton);
+    hPanel.add(upButton);
+    hPanel.add(downButton);
+    hPanel.add(advancedCheckBox);
+    hPanel.add(filterBox);
+
+    upButton.setEnabled(false);
+    downButton.setEnabled(false);
+
+    initWidget(hPanel);
+  }
+
+  public void setBlocklyPanel(BlocklyPanel panel) {
+    this.blockArea = panel;
+  }
 }

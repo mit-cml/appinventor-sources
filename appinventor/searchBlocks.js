@@ -2,16 +2,16 @@
  * Created by cecetsui on 6/30/15.
  * Modified by abhijit5893 7/30/16
  */
-'use strict';
+ 'use strict';
 
-goog.provide('Blockly.SearchBlocks');
+ goog.provide('Blockly.SearchBlocks');
 
-goog.require('Blockly.Workspace');
-goog.require('Blockly.Block');
-goog.require('goog.events');
-goog.require('goog.events.KeyCodes');
-goog.require('goog.events.KeyHandler');
-goog.require('goog.window');
+ goog.require('Blockly.Workspace');
+ goog.require('Blockly.Block');
+ goog.require('goog.events');
+ goog.require('goog.events.KeyCodes');
+ goog.require('goog.events.KeyHandler');
+ goog.require('goog.window');
 
 
 /**
@@ -29,7 +29,7 @@ goog.require('goog.window');
  * @type {Array}
  * @private
  */
-Blockly.SearchBlocks.matchBlocks = null;
+ Blockly.SearchBlocks.matchBlocks = null;
 
 /**
  * An array of the blocks that do not match the query written in.
@@ -39,7 +39,7 @@ Blockly.SearchBlocks.matchBlocks = null;
  * @type {Array}
  * @private
  */
-Blockly.SearchBlocks.notMatchBlocks = null;
+ Blockly.SearchBlocks.notMatchBlocks = null;
 
 /**
  * An object where the keys are the blocks' id matching the
@@ -49,7 +49,7 @@ Blockly.SearchBlocks.notMatchBlocks = null;
  * @type {Object}
  * @private
  */
-Blockly.SearchBlocks.collapsedBlocks = null;
+ Blockly.SearchBlocks.collapsedBlocks = null;
 
 /**
  * Index correlating to which block in the matchBlocks list
@@ -59,7 +59,7 @@ Blockly.SearchBlocks.collapsedBlocks = null;
  * @type {number}
  * @private
  */
-Blockly.SearchBlocks.currentBlockView = -1;
+ Blockly.SearchBlocks.currentBlockView = -1;
 
 
 
@@ -99,12 +99,12 @@ Blockly.SearchBlocks.start = function(query,filter) {
 * @param {String} Block type that need to be filtered
 **/
 Blockly.SearchBlocks.searchComment = function(query,filter){
-    var splitQuery = query.split("+");
-    var i;
-    for( i = 0; i < splitQuery.length;i++ ){
-      splitQuery[i] = splitQuery[i].trim();
-    }
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  var splitQuery = query.split("+");
+  var i;
+  for( i = 0; i < splitQuery.length;i++ ){
+    splitQuery[i] = splitQuery[i].trim();
+  }
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
     var filteredBlocks = []; // Matching blocks
     var notAMatch = []; // Non-matching blocks
     var collapsed = {}; // Object storing any matching blocks within a collapsed block
@@ -136,15 +136,15 @@ Blockly.SearchBlocks.searchComment = function(query,filter){
           block.setNotMatchColour();
         }
       }else{
-         notAMatch.push(block);
-         block.setNotMatchColour();
-      }
-    }
+       notAMatch.push(block);
+       block.setNotMatchColour();
+     }
+   }
 
-    Blockly.SearchBlocks.notMatchBlocks = notAMatch;
-    Blockly.SearchBlocks.matchBlocks = filteredBlocks;
-    Blockly.SearchBlocks.collapsedBlocks = collapsed;
-};
+   Blockly.SearchBlocks.notMatchBlocks = notAMatch;
+   Blockly.SearchBlocks.matchBlocks = filteredBlocks;
+   Blockly.SearchBlocks.collapsedBlocks = collapsed;
+ };
 
 /**
 * Generate the query suggestions for given query.
@@ -153,27 +153,27 @@ Blockly.SearchBlocks.searchComment = function(query,filter){
 * returns the list of query sugggestions for a given query
 **/
 Blockly.SearchBlocks.querySuggest = function(query){
-   var allBlocks = Blockly.mainWorkspace.getAllBlocks();
-   var suggestionList= new Array();
-   for(var index in allBlocks){
-      var block = allBlocks[index];
-      var blockText = block.toString(null, false).toLowerCase().trim();
-      if(blockText.indexOf(query)!= -1){
-        var temp = blockText.replace(/[^\w\s]/g,"");
-        temp = temp.replace(/[^\w\s]/g,"");
-        temp = temp.trim();
-        var tempList = temp.split(' ');
-        if(tempList.length > 1){
-            for(var i in tempList){
-                suggestionList.push(tempList[i]);
-            }
-        } else {
-          suggestionList.push(temp);
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  var suggestionList= new Array();
+  for(var index in allBlocks){
+    var block = allBlocks[index];
+    var blockText = block.toString(null, false).toLowerCase().trim();
+    if(blockText.indexOf(query)!= -1){
+      var temp = blockText.replace(/[^\w\s]/g,"");
+      temp = temp.replace(/[^\w\s]/g,"");
+      temp = temp.trim();
+      var tempList = temp.split(' ');
+      if(tempList.length > 1){
+        for(var i in tempList){
+          suggestionList.push(tempList[i]);
         }
-     
-     }
-   }
-   return suggestionList;
+      } else {
+        suggestionList.push(temp);
+      }
+
+    }
+  }
+return suggestionList;
 };
 
 /**
@@ -182,25 +182,25 @@ Blockly.SearchBlocks.querySuggest = function(query){
 * returns the list of blocktypes
 **/
 Blockly.SearchBlocks.getBlockTypes = function(query){
-     var allBlocks = Blockly.mainWorkspace.getAllBlocks();
-     var typesList= new Array();
-     var typeSuggestList = new Array();
-     for(var index in allBlocks){
-        var block = allBlocks[index];
-        if(typesList.indexOf(block.type) == -1){
-          typesList.push(block.type);
-        }
-      }
-      if(query == ""){
-         return typesList;
-      }
-      
-      for(var index in typesList){
-        if(typesList[index].indexOf(query) != -1){
-          typeSuggestList.push(typesList[index]);
-        }
-      }
-    return typeSuggestList;
+ var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+ var typesList= new Array();
+ var typeSuggestList = new Array();
+ for(var index in allBlocks){
+  var block = allBlocks[index];
+  if(typesList.indexOf(block.type) == -1){
+    typesList.push(block.type);
+  }
+}
+if(query == ""){
+ return typesList;
+}
+
+for(var index in typesList){
+  if(typesList[index].indexOf(query) != -1){
+    typeSuggestList.push(typesList[index]);
+  }
+}
+return typeSuggestList;
 };
 
 
@@ -210,11 +210,11 @@ Blockly.SearchBlocks.getBlockTypes = function(query){
 * @param {List<Block>} The filtered list of blocks that need to be considered for search
 **/
 Blockly.SearchBlocks.getSelectedBlocks = function(query,filter) {
-    var splitQuery = query.split("+");
-    var i;
-    for( i = 0; i < splitQuery.length;i++ ){
-      splitQuery[i] = splitQuery[i].toLowerCase().trim();
-    }
+  var splitQuery = query.split("+");
+  var i;
+  for( i = 0; i < splitQuery.length;i++ ){
+    splitQuery[i] = splitQuery[i].toLowerCase().trim();
+  }
     var filteredBlocks = []; // Matching blocks
     var notAMatch = []; // Non-matching blocks
     var collapsed = {}; // Object storing any matching blocks within a collapsed block
@@ -251,7 +251,7 @@ Blockly.SearchBlocks.getSelectedBlocks = function(query,filter) {
           if(((block.getSurroundParent()!= null) && (block.getSurroundParent().type == filter)) || ((block.getParent()!= null) && (block.getParent().type == filter))){
             filteredBlocks.push(block);
             flag = 1;
-         }
+          }
         } 
       }
       if(flag == 0){   
@@ -265,10 +265,10 @@ Blockly.SearchBlocks.getSelectedBlocks = function(query,filter) {
         var noMatch = [];
         for (var index in collapsedChildren) {
           var childBlock = collapsedChildren[index];
-            var childBlockText = childBlock.toString(null, false).toLowerCase();
+          var childBlockText = childBlock.toString(null, false).toLowerCase();
             if (childBlockText.indexOf(query) != -1) { //Check if query is in descendent's text
               match.push(childBlock);
-            }
+          }
         }
         if (match.length > 0) { //If the collapsed block has blocks in it that have the query
           filteredBlocks.concat(match);
@@ -282,7 +282,7 @@ Blockly.SearchBlocks.getSelectedBlocks = function(query,filter) {
     Blockly.SearchBlocks.notMatchBlocks = notAMatch;
     Blockly.SearchBlocks.matchBlocks = filteredBlocks;
     Blockly.SearchBlocks.collapsedBlocks = collapsed;
-};
+  };
 
 /**
 * Search for the blocks that match based on the criteria. Sets the 
@@ -290,11 +290,11 @@ Blockly.SearchBlocks.getSelectedBlocks = function(query,filter) {
 * @param {String} query The phrase, word, or query that stands as the criteria of search.
 **/
 Blockly.SearchBlocks.getBlocks = function(query) {
-    var splitQuery = query.split("+");
-    var i;
-    for( i = 0; i < splitQuery.length;i++ ){
-      splitQuery[i] = splitQuery[i].toLowerCase().trim();
-    }
+  var splitQuery = query.split("+");
+  var i;
+  for( i = 0; i < splitQuery.length;i++ ){
+    splitQuery[i] = splitQuery[i].toLowerCase().trim();
+  }
     var filteredBlocks = []; // Matching blocks
     var notAMatch = []; // Non-matching blocks
     var collapsed = {}; // Object storing any matching blocks within a collapsed block
@@ -329,24 +329,24 @@ Blockly.SearchBlocks.getBlocks = function(query) {
       for(i = 0; i < splitQuery.length;i++ ){
         if (blockText.indexOf(splitQuery[i]) != -1) { //If query is in block's text
           filteredBlocks.push(block);
-          flag = 1;
-        } 
-      }
-      if(flag == 0){   
-        block.setNotMatchColour();
-        notAMatch.push(block);        
-      }
-      
+        flag = 1;
+      } 
+    }
+    if(flag == 0){   
+      block.setNotMatchColour();
+      notAMatch.push(block);        
+    }
+
       if (block.isCollapsed()) { //If collapsed
         var collapsedChildren = block.getDescendants(); //Inclusive of itself
         var match = [];
         var noMatch = [];
         for (var index in collapsedChildren) {
           var childBlock = collapsedChildren[index];
-            var childBlockText = childBlock.toString(null, false).toLowerCase();
+          var childBlockText = childBlock.toString(null, false).toLowerCase();
             if (childBlockText.indexOf(query) != -1) { //Check if query is in descendent's text
               match.push(childBlock);
-            }
+          }
         }
         if (match.length > 0) { //If the collapsed block has blocks in it that have the query
           filteredBlocks.concat(match);
@@ -360,7 +360,7 @@ Blockly.SearchBlocks.getBlocks = function(query) {
     Blockly.SearchBlocks.notMatchBlocks = notAMatch;
     Blockly.SearchBlocks.matchBlocks = filteredBlocks;
     Blockly.SearchBlocks.collapsedBlocks = collapsed;
-};
+  };
 
 
 /**
@@ -374,18 +374,18 @@ Blockly.SearchBlocks.zoomToSearchedBlock = function(upOrDown) { //called when us
   }
   Blockly.TypeBlock.hide();
   goog.events.unlisten(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
-    var metrics = Blockly.mainWorkspace.getMetrics();
+  var metrics = Blockly.mainWorkspace.getMetrics();
     //Figure out the next block (either viewing the next or previous block)
     if (Blockly.SearchBlocks.currentBlockView <= 0 && upOrDown  < 0) { //Going to the last block from the first
-        Blockly.SearchBlocks.currentBlockView = Blockly.SearchBlocks.matchBlocks.length-1;
+      Blockly.SearchBlocks.currentBlockView = Blockly.SearchBlocks.matchBlocks.length-1;
     } else { //Loop through
-        Blockly.SearchBlocks.currentBlockView = (Blockly.SearchBlocks.currentBlockView + upOrDown) % Blockly.SearchBlocks.matchBlocks.length;
+      Blockly.SearchBlocks.currentBlockView = (Blockly.SearchBlocks.currentBlockView + upOrDown) % Blockly.SearchBlocks.matchBlocks.length;
     }
 
     //Unselect any selected block (so the highlighting does not override)
     if (Blockly.selected) {
-        Blockly.selected.unselect();
-        Blockly.selected = null;
+      Blockly.selected.unselect();
+      Blockly.selected = null;
     }
 
     //Un-highlight the previous block
@@ -404,53 +404,53 @@ Blockly.SearchBlocks.zoomToSearchedBlock = function(upOrDown) { //called when us
       if (isCollapsedBlock != blockToView) {
         //If the block is not the block being viewed, grey it out. (Initially non-gray so user could 
           //see that the collapsed block also has a matching criteria)
-        isCollapsedBlock.setNotMatchColour();
-      }
-    } else {
-      var isCollapsed = false;
-    }
+isCollapsedBlock.setNotMatchColour();
+}
+} else {
+  var isCollapsed = false;
+}
 
     //Highlight block
     blockToView.searchHighlight();
     //Center block in the viewer
     Blockly.mainWorkspace.scrollbar.centerScrolls(blockToView, isCollapsed);
-};
+  };
 
 /**
 * Unhighlight the current searched block.
 **/
 Blockly.SearchBlocks.unHighlightSearchedBlock = function() {
-    if (Blockly.searched) {
-        Blockly.searched.unSearchHighlight();
+  if (Blockly.searched) {
+    Blockly.searched.unSearchHighlight();
         if (Blockly.SearchBlocks.collapsedBlocks[Blockly.searched.id] != undefined) { // If block was originally collapsed
           Blockly.SearchBlocks.collapsedBlocks[Blockly.searched.id].revertColour(); // Revert colour
           Blockly.SearchBlocks.collapsedBlocks[Blockly.searched.id].setCollapsed(true); // Re-collapse block
         }
         Blockly.searched = null;
-    }
-};
+      }
+    };
 
 /**
 * Stop the search process. Unhighlight searched blocks. Re-collapse any blocks. Revert the colors of
 * all blocks.
 **/
 Blockly.SearchBlocks.stop = function() {
-    Blockly.SearchBlocks.unHighlightSearchedBlock();
-    for(var index in Blockly.SearchBlocks.matchBlocks){
-      var block= Blockly.SearchBlocks.matchBlocks[index];
-      if(block.comment != null){
-        block.comment.setVisible(false);
-      }
+  Blockly.SearchBlocks.unHighlightSearchedBlock();
+  for(var index in Blockly.SearchBlocks.matchBlocks){
+    var block= Blockly.SearchBlocks.matchBlocks[index];
+    if(block.comment != null){
+      block.comment.setVisible(false);
     }
-    for (var index in Blockly.SearchBlocks.notMatchBlocks) {
-        var block = Blockly.SearchBlocks.notMatchBlocks[index];
-        block.revertColour();
-    }
-    Blockly.SearchBlocks.notMatchBlocks = null;
-    Blockly.SearchBlocks.matchBlocks = null;
-    Blockly.SearchBlocks.collapsedBlocks = null;
-    goog.events.unlisten(Blockly.TypeBlock.docKh_, 'key', Blockly.SearchBlocks.handleKey);
-    goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
+  }
+  for (var index in Blockly.SearchBlocks.notMatchBlocks) {
+    var block = Blockly.SearchBlocks.notMatchBlocks[index];
+    block.revertColour();
+  }
+  Blockly.SearchBlocks.notMatchBlocks = null;
+  Blockly.SearchBlocks.matchBlocks = null;
+  Blockly.SearchBlocks.collapsedBlocks = null;
+  goog.events.unlisten(Blockly.TypeBlock.docKh_, 'key', Blockly.SearchBlocks.handleKey);
+  goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
 };
 
 /**
