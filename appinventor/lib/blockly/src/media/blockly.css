@@ -253,3 +253,17 @@
 .blocklyIconGroup:hover>.blocklyWarningIconMark {
   fill: #000;
 }
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+.blocklySearchedHighlight>.blocklyPath {
+  stroke-width: 3px;
+  stroke: #f0a;
+}
+.blocklySearchedHighlight>.blocklyPathLight {
+  display: none;
+}
+.blocklyFade {
+  opacity: 0.2;
+  filter: alpha(opacity=20); /* For IE8 and earlier */
+}
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//

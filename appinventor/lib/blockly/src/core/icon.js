@@ -190,3 +190,30 @@ Blockly.Icon.prototype.computeIconLocation = function() {
 Blockly.Icon.prototype.getIconLocation = function() {
   return {x: this.iconX_, y: this.iconY_};
 };
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+Blockly.Icon.prototype.greyOut = function(iconShield) {
+  if (iconShield == null || iconShield == undefined) {
+    return;
+  }
+  Blockly.removeClass_(/** @type {!Element} */ (this.iconGroup_),
+    'blocklyIconGroup');
+  Blockly.removeClass_(/** @type {!Element} */ (iconShield),
+    'blocklyIconShield');
+  Blockly.addClass_(/** @type {!Element} */ (iconShield),
+                    'blocklyIconGrey');
+}
+
+Blockly.Icon.prototype.revertColour = function(iconShield) {
+  if (iconShield == null || iconShield == undefined) {
+    return;
+  }
+  Blockly.removeClass_(/** @type {!Element} */ (iconShield),
+    'blocklyIconGrey');
+  Blockly.addClass_(/** @type {!Element} */ (this.iconGroup_),
+    'blocklyIconGroup');
+  Blockly.addClass_(/** @type {!Element} */ (iconShield),
+    'blocklyIconShield');
+}
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//

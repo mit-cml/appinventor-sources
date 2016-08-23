@@ -18,6 +18,9 @@
     './src/msg/pt_br/_messages.js',
     './src/msg/en/_messages.js',
 
+    //Cece's Search 6/8/15
+    '../searchBlocks.js',
+
     // Lyn's instrumentation code
     "./src/instrument.js",
 

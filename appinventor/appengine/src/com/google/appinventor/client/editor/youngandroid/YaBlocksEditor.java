@@ -29,13 +29,16 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.widgets.SearchBox;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.core.client.Callback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -135,6 +138,8 @@ public final class YaBlocksEditor extends FileEditor
      }
     });
     initWidget(blocksArea);
+    ViewerBox.getViewerBox().addSearchBox(blocksArea);
+    ViewerBox.getViewerBox().hideSearchBox();
     addComponentDatabaseChangeListener(blocksArea);
 
     // Get references to the source structure explorer
@@ -319,11 +324,6 @@ public final class YaBlocksEditor extends FileEditor
       if (editor instanceof YaBlocksEditor)
         editor.sendComponentData();
     }
-  }
-
-  @Override
-  public void getBlocksImage(Callback callback) {
-    blocksArea.getBlocksImage(callback);
   }
 
   public synchronized void sendComponentData() {
@@ -676,5 +676,8 @@ public final class YaBlocksEditor extends FileEditor
       cdbChangeListener.onResetDatabase();
     }
   }
-
+  
+  public BlocklyPanel getBlocksArea() {
+    return blocksArea;
+  }
 }

@@ -1614,6 +1614,19 @@ public interface OdeMessages extends Messages {
   @Description("Tool tip text for header icon for restoring a minimized box.")
   String hdrRestore();
 
+  // Used in widgets/boxes/SearchBox.java
+  @DefaultMessage("Search")
+  @Description("Search Blocks")
+  String searchText();
+
+  @DefaultMessage("Filter")
+  @Description("Search Filters")
+  String filterText();
+
+  @DefaultMessage("Select")
+  @Description("Select a filter from the dopdown box")
+  String selectFilterText();
+
   // Used in widgets/properties/FloatPropertyEditor.java
 
   @DefaultMessage("{0} is not a legal number")

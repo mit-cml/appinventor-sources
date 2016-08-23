@@ -301,6 +301,14 @@ Blockly.Css.CONTENT = [
   '  stroke-width: 1px;',
   '  stroke: #ccc;',
   '}',
+ //****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+  '.blocklyIconGrey {',
+  '  fill: #777;',
+  '  background-color: #777;',
+  '}',
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
 
   '.blocklyIconGroup:hover>.blocklyIconShield {',
   '  fill: #00f;',
