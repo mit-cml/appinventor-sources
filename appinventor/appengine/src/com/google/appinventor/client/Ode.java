@@ -40,7 +40,6 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
@@ -64,8 +63,6 @@ import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
 import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
-import com.google.appinventor.shared.rpc.launch.LaunchService;
-import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
@@ -252,9 +249,6 @@ public class Ode implements EntryPoint {
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
-
-  // Web service for launch related services
-  private final LaunchServiceAsync launchService = GWT.create(LaunchService.class);
 
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
@@ -658,9 +652,6 @@ public class Ode implements EntryPoint {
         }
       }
     });
-
-    // Define bridge methods to Javascript
-    JsonpConnection.defineBridgeMethod();
 
     // Initialize global Ode instance
     instance = this;
@@ -1277,15 +1268,6 @@ public class Ode implements EntryPoint {
    */
   public HelpServiceAsync getHelpService() {
     return helpService;
-  }
-
-  /**
-   * Get an instance of the launch RPC service.
-   *
-   * @return launch service instance
-   */
-  public LaunchServiceAsync getLaunchService() {
-    return launchService;
   }
 
   /**

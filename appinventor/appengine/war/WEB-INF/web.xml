@@ -250,31 +250,6 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
-  <!-- webstartfile
-       Note: this servlet does not require user authentication -->
-  <servlet>
-    <servlet-name>webStartFileServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.WebStartFileServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>webStartFileServlet</servlet-name>
-    <url-pattern>/ode2/webstartfile/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- webstartjnlp -->
-  <servlet>
-    <servlet-name>webStartJnlpServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.WebStartJnlpServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>webStartJnlpServlet</servlet-name>
-    <url-pattern>/ode/webstartjnlp/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>webStartJnlpServlet</servlet-name>
-  </filter-mapping>
-
   <!-- android -->
   <servlet>
     <servlet-name>androidServlet</servlet-name>
@@ -287,20 +262,6 @@
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>androidServlet</servlet-name>
-  </filter-mapping>
-
-  <!-- launch rpc service -->
-  <servlet>
-    <servlet-name>launchService</servlet-name>
-    <servlet-class>com.google.appinventor.server.LaunchServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>launchService</servlet-name>
-    <url-pattern>/ode/launch</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>launchService</servlet-name>
   </filter-mapping>
 
   <!-- accept tos -->
