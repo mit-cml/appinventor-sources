@@ -40,14 +40,13 @@ public class AndroidServlet extends OdeServlet {
     setDefaultHeader(resp);
 
     PrintWriter out = resp.getWriter();
-    String logo = "images/logo_ya.png";
+    String logo = "/images/logo_ya.png";
     StringBuilder htmlString = new StringBuilder();
     htmlString
-        .append("<!-- Copyright 2009 Google Inc. All Rights Reserved. -->\n")
         .append("<html>\n")
         .append("<head>\n")
         .append("<title>App Inventor for Android Downloads</title>\n")
-        .append("<link type=\"text/css\" rel=\"stylesheet\" href=\"Ode.css\">\n")
+        .append("<link type=\"text/css\" rel=\"stylesheet\" href=\"/Ya.css\">\n")
         .append("</head>\n")
         .append("<body>\n")
         .append("<table width=\"100%\"><tr><td height=\"16\" align=\"left\">\n")
@@ -81,7 +80,7 @@ public class AndroidServlet extends OdeServlet {
       if (projectType.equals(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE)) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         // TODO(lizlooney) - we need a 16x16 image for young android.
-        String icon = "images/simple.png";
+        String icon = "/images/logo_16.png";
         if (containsAndroidTarget(storageIo.getProjectOutputFiles(userId, projectId), target)) {
           out.println(makeAndroidTargetRow(projectId, projectName, target, icon));
         }
@@ -91,7 +90,6 @@ public class AndroidServlet extends OdeServlet {
 
     out.println("<table width=\"100%\"><tr><td height=\"12\" align=\"left\">" +
         "<div class=\"ode-Android-footer\">" +
-        "&copy;2009 Google" +
         "</div>" +
         "</td></tr></table>" +
         "</body>" +
@@ -113,7 +111,7 @@ public class AndroidServlet extends OdeServlet {
   private static String makeAndroidTargetRow(long projectId, String projectName,
       String target, String image) {
     String projectUrl = ServerLayout.genFullDownloadPath(projectId, target);
-    return "<tr><td><img src=\"" + image + "\"> <a href=\"" + projectUrl + "\">" +
+    return "<tr><td><img src=\"" + image + "\" width=16 height=16> <a href=\"" + projectUrl + "\">" +
         projectName + "</a></td></tr>";
   }
 

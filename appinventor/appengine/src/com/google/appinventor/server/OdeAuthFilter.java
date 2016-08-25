@@ -101,7 +101,18 @@ public class OdeAuthFilter implements Filter {
     UserInfo userInfo = getUserInfo(httpRequest);
     if (userInfo == null) {        // Invalid Login
       LOG.info("uinfo is null on login.");
-      httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+      // If the URI starts with /ode, then we are being invoked through
+      // the App Inventor client. In that case we are in an XMLHttpRequest
+      // (aka ajax) so we cannot send a redirect to the login page
+      // instead we return SC_PRECONDITION_FAILED which tips off the
+      // client that it needs to reload itself to the login page.
+      String uri = httpRequest.getRequestURI();
+      LOG.info("Not Logged In: uri = " + uri);
+      if (uri.startsWith("/ode")) {
+        httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+      } else {
+        httpResponse.sendRedirect("/login?redirect=" + uri);
+      }
       return;
     }
 

@@ -257,7 +257,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>androidServlet</servlet-name>
-    <url-pattern>/ode/android/*</url-pattern>
+    <url-pattern>/android/*</url-pattern>
   </servlet-mapping>
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
