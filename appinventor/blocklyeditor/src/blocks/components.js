@@ -15,6 +15,7 @@ goog.provide('Blockly.Blocks.components');
 goog.provide('Blockly.ComponentBlock');
 goog.require('Blockly.Blocks.Utilities');
 goog.require('Blockly.TypeBlock');
+goog.require('Blockly.ComponentTypes');
 
 /*
  * All component blocks have category=='Component'. In addition to the standard blocks fields,

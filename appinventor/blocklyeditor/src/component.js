@@ -234,10 +234,12 @@ Blockly.ComponentTypes.haveType = function(typeName) {
 /**
  * Populate Blockly.ComponentTypes object
  *
+ * @param projectId the projectid whose types we are loading. Note: projectId is
+ *        a string at this point. We will convert it to a long in Java code we call
+ *        later.
  */
-Blockly.ComponentTypes.populateTypes = function() {
-
-  var componentInfoArray = JSON.parse(window.parent.BlocklyPanel_getComponentsJSONString());
+Blockly.ComponentTypes.populateTypes = function(projectId) {
+  var componentInfoArray = JSON.parse(window.parent.BlocklyPanel_getComponentsJSONString(projectId));
   for(var i=0;i<componentInfoArray.length;i++) {
     var componentInfo = componentInfoArray[i];
     var typeName = componentInfo.name;

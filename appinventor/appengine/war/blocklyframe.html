@@ -68,7 +68,9 @@
         }
         window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
         Blockly.BlocklyEditor.startup(document.body, formName);
-        Blockly.ComponentTypes.populateTypes();
+        // Tell populateTypes the projectId, which is in the top
+        // window's hash
+        Blockly.ComponentTypes.populateTypes(top.location.hash.substr(1));
         window.parent.BlocklyPanel_initBlocksArea(formName);
         window.parent.BlocklyPanel_checkWarningState(formName);
       }

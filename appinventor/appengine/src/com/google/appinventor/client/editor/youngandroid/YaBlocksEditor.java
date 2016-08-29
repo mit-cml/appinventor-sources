@@ -387,8 +387,8 @@ public final class YaBlocksEditor extends FileEditor
     return SimpleComponentDatabase.getInstance().getTypeDescription(typeName);
   }
 
-  public static String getComponentsJSONString() {
-    return SimpleComponentDatabase.getInstance().getComponentsJSONString();
+  public static String getComponentsJSONString(long projectId) {
+    return SimpleComponentDatabase.getInstance(projectId).getComponentsJSONString();
   }
 
   public static String getComponentInstanceTypeName(String formName, String instanceName) {

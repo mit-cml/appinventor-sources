@@ -161,8 +161,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   // because we have to ensure that the component type data is available when the
   // blocks are loaded!
 
-  @Override
-  public void loadProject() {
+  private void loadProject() {
     // add form editors first, then blocks editors because the blocks editors
     // need access to their corresponding form editors to set up properly
     for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
