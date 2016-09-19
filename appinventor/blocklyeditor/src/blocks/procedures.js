@@ -490,7 +490,7 @@ Blockly.Blocks['procedures_defreturn'] = {
   decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
   compose: Blockly.Blocks.procedures_defnoreturn.compose,
   dispose: Blockly.Blocks.procedures_defnoreturn.dispose,
-  getProcedureDef: Blockly.Blocks.getProcedureDef,
+  getProcedureDef: Blockly.Blocks.procedures_defnoreturn.getProcedureDef,
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
   renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
