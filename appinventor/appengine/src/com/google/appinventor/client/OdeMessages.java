@@ -751,7 +751,7 @@ public interface OdeMessages extends Messages {
 
   // Used in boxes/AssetListBox.java
 
-  @DefaultMessage("Media")
+  @DefaultMessage("Files")
   @Description("Caption for asset list box.")
   String assetListBoxCaption();
 
