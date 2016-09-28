@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol BarcodeScannerDelegate {
+public protocol BarcodeScannerDelegate {
   func receivedResult(result: String)
   func canceled()
 }
@@ -19,12 +19,11 @@ class BarcodeScannerViewController: UINavigationController, ZXCaptureDelegate {
 
   init() {
     self._capture = ZXCapture()
-    self._capture.reader = ZXQRCodeReader()
-    self._capture.camera = self._capture.back()
-    self._capture.focusMode = AVCaptureFocusMode.continuousAutoFocus
     super.init(navigationBarClass: nil, toolbarClass: nil)
     self.view.layer.addSublayer(self._capture.layer)
-    let _cancel = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(BarcodeScannerViewController.cancel))
+    let _cancel = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel,
+                                  target: self,
+                                  action: #selector(BarcodeScannerViewController.cancel))
     _cancel.title = "Cancel"
     self.navigationItem.leftBarButtonItem = _cancel
     self.modalPresentationStyle = UIModalPresentationStyle.fullScreen
@@ -45,6 +44,9 @@ class BarcodeScannerViewController: UINavigationController, ZXCaptureDelegate {
   }
 
   public override func viewDidAppear(_ animated: Bool) {
+    self._capture.focusMode = AVCaptureFocusMode.continuousAutoFocus
+    self._capture.reader = ZXQRCodeReader()
+    self._capture.camera = self._capture.back()
     self._capture.start()
   }
 
@@ -97,12 +99,12 @@ public class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
-  func receivedResult(result: String) {
+  public func receivedResult(result: String) {
     _result = result
     self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(result:)), with: _result, waitUntilDone: false)
   }
 
-  func canceled() {
+  public func canceled() {
     _result = ""
     self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(result:)), with: _result, waitUntilDone: false)
   }

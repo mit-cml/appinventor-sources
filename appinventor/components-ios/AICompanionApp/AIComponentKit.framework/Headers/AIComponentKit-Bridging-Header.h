@@ -4,3 +4,5 @@
 
 #import <AIComponentKit/NetworkUtils.h>
 #import <AIComponentKit/AppInvHTTPD.h>
+#import <AIComponentKit/RetValManager.h>
+#import <ZXingObjC/ZXingObjC.h>

@@ -110,12 +110,29 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 # define SWIFT_UNAVAILABLE __attribute__((unavailable))
 #endif
 #if defined(__has_feature) && __has_feature(modules)
-@import UIKit;
 @import ObjectiveC;
+@import UIKit;
 #endif
 
 #pragma clang diagnostic ignored "-Wproperty-attribute-mismatch"
 #pragma clang diagnostic ignored "-Wduplicate-method-arg"
+
+SWIFT_CLASS("_TtC14AIComponentKit19NonvisibleComponent")
+@interface NonvisibleComponent : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC14AIComponentKit14BarcodeScanner")
+@interface BarcodeScanner : NonvisibleComponent
+@property (nonatomic, readonly, copy) NSString * _Nonnull Result;
+- (void)DoScan;
+- (void)AfterScanWithResult:(NSString * _Nonnull)result;
+@property (nonatomic) BOOL UseExternalScanner;
+- (void)receivedResultWithResult:(NSString * _Nonnull)result;
+- (void)canceled;
+@end
+
 @class NSBundle;
 @class NSCoder;
 
@@ -129,11 +146,6 @@ SWIFT_CLASS("_TtC14AIComponentKit4Form")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-
-SWIFT_CLASS("_TtC14AIComponentKit19NonvisibleComponent")
-@interface NonvisibleComponent : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
 
 
 SWIFT_CLASS("_TtC14AIComponentKit11PhoneStatus")

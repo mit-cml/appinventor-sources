@@ -14,13 +14,13 @@
 		06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463F041D95956800B23DCD /* LaunchScreen.storyboard */; };
 		06463F111D95956800B23DCD /* AICompanionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F101D95956800B23DCD /* AICompanionTests.swift */; };
 		06463F1C1D95956800B23DCD /* AICompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F1B1D95956800B23DCD /* AICompanionUITests.swift */; };
+		067D1B241D9B9ED900A6190E /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B231D9B9ED900A6190E /* AIComponentKit.framework */; };
+		067D1B261D9B9EE900A6190E /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B251D9B9EE900A6190E /* GCDWebServer.framework */; };
+		067D1B281D9B9EEE00A6190E /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */; };
+		067D1B2A1D9BA25A00A6190E /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		067D1B2C1D9BA25A00A6190E /* GCDWebServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B251D9B9EE900A6190E /* GCDWebServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		067D1B2E1D9BA25A00A6190E /* AIComponentKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B231D9B9ED900A6190E /* AIComponentKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		06E3534F1D95B2BD0099BE0F /* TestObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E3534E1D95B2BD0099BE0F /* TestObj.m */; };
-		06E353571D95B7840099BE0F /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353511D95B55F0099BE0F /* AIComponentKit.framework */; };
-		06E353581D95B7840099BE0F /* AIComponentKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353511D95B55F0099BE0F /* AIComponentKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06E353591D95B7840099BE0F /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353531D95B6530099BE0F /* GCDWebServer.framework */; };
-		06E3535A1D95B7840099BE0F /* GCDWebServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353531D95B6530099BE0F /* GCDWebServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06E3535B1D95B7840099BE0F /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353551D95B65F0099BE0F /* ZXingObjC.framework */; };
-		06E3535C1D95B7840099BE0F /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06E353551D95B65F0099BE0F /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,9 +47,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				06E353581D95B7840099BE0F /* AIComponentKit.framework in Embed Frameworks */,
-				06E3535A1D95B7840099BE0F /* GCDWebServer.framework in Embed Frameworks */,
-				06E3535C1D95B7840099BE0F /* ZXingObjC.framework in Embed Frameworks */,
+				067D1B2E1D9BA25A00A6190E /* AIComponentKit.framework in Embed Frameworks */,
+				067D1B2A1D9BA25A00A6190E /* ZXingObjC.framework in Embed Frameworks */,
+				067D1B2C1D9BA25A00A6190E /* GCDWebServer.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,12 +70,12 @@
 		06463F171D95956800B23DCD /* AICompanionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = AICompanionUITests.xctest; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		067D1B231D9B9ED900A6190E /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = "<group>"; };
+		067D1B251D9B9EE900A6190E /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServer.framework; sourceTree = "<group>"; };
+		067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZXingObjC.framework; sourceTree = "<group>"; };
 		06E353341D95A7040099BE0F /* AICompanionApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AICompanionApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		06E3534E1D95B2BD0099BE0F /* TestObj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestObj.m; sourceTree = "<group>"; };
 		06E353501D95B2F20099BE0F /* TestObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestObj.h; sourceTree = "<group>"; };
-		06E353511D95B55F0099BE0F /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = "<group>"; };
-		06E353531D95B6530099BE0F /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServer.framework; sourceTree = "<group>"; };
-		06E353551D95B65F0099BE0F /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZXingObjC.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,9 +83,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06E353571D95B7840099BE0F /* AIComponentKit.framework in Frameworks */,
-				06E353591D95B7840099BE0F /* GCDWebServer.framework in Frameworks */,
-				06E3535B1D95B7840099BE0F /* ZXingObjC.framework in Frameworks */,
+				067D1B241D9B9ED900A6190E /* AIComponentKit.framework in Frameworks */,
+				067D1B261D9B9EE900A6190E /* GCDWebServer.framework in Frameworks */,
+				067D1B281D9B9EEE00A6190E /* ZXingObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,9 +164,9 @@
 		06EC0A1A1D959648001CD8DC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				06E353511D95B55F0099BE0F /* AIComponentKit.framework */,
-				06E353531D95B6530099BE0F /* GCDWebServer.framework */,
-				06E353551D95B65F0099BE0F /* ZXingObjC.framework */,
+				067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */,
+				067D1B251D9B9EE900A6190E /* GCDWebServer.framework */,
+				067D1B231D9B9ED900A6190E /* AIComponentKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -463,7 +463,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"${PROJECT_DIR}",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../build/Debug-iphonesimulator/**",
 				);
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/**";
 				INFOPLIST_FILE = AICompanionApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -482,7 +484,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"${PROJECT_DIR}",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../build/Debug-iphonesimulator/**",
 				);
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/**";
 				INFOPLIST_FILE = AICompanionApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

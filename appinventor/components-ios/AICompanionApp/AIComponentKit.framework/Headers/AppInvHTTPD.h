@@ -11,6 +11,12 @@
 
 @class ReplForm;
 
+@protocol AppInvHTTPDDelegate
+
+- (NSString *)processYAIL:(NSString *)yail;
+
+@end
+
 @interface AppInvHTTPD : GCDWebServer
 
 + (void)setHmacKey:(NSString *)key;
