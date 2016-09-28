@@ -23,6 +23,7 @@ public final class MockVideoPlayer extends MockVisibleComponent {
    * Component type name.
    */
   public static final String TYPE = "VideoPlayer";
+  public static final String PROPERTY_NAME_SOURCE = "Source";
 
   // GWT panel widget used to mock a Simple VideoPlayer
   private final SimplePanel videoPlayerWidget;

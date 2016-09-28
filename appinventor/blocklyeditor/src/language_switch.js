@@ -11,15 +11,15 @@
 
 goog.provide('Blockly.language_switch');
 
-goog.require('Blockly.Msg.en');
-goog.require('Blockly.Msg.zh_cn');
-goog.require('Blockly.Msg.zh_tw');
-goog.require('Blockly.Msg.es_es');
-goog.require('Blockly.Msg.it_it');
-goog.require('Blockly.Msg.ru');
-goog.require('Blockly.Msg.ko_kr');
-goog.require('Blockly.Msg.sv');
-goog.require('Blockly.Msg.pt_br');
+goog.require('AI.Blockly.Msg.en');
+goog.require('AI.Blockly.Msg.zh_cn');
+goog.require('AI.Blockly.Msg.zh_tw');
+goog.require('AI.Blockly.Msg.es_es');
+goog.require('AI.Blockly.Msg.it_it');
+goog.require('AI.Blockly.Msg.ru');
+goog.require('AI.Blockly.Msg.ko_kr');
+goog.require('AI.Blockly.Msg.sv');
+goog.require('AI.Blockly.Msg.pt_br');
 
 Blockly.language_switch = {
   // Switch between languages
@@ -30,38 +30,47 @@ Blockly.language_switch = {
     }
     switch (language) {
       case 'ko_KR':
-        Blockly.Msg.ko_kr.switch_language_to_korean.init();
+        Blockly.Msg.ko.switch_blockly_language_to_ko.init();
+        Blockly.Msg.ko.switch_language_to_korean.init();
         break;
       case 'es_ES':
-          Blockly.Msg.es_es.switch_language_to_spanish_es.init();
-          break;
+        Blockly.Msg.es.switch_blockly_language_to_es.init();
+        Blockly.Msg.es.switch_language_to_spanish_es.init();
+        break;
       case 'zh_TW':
-        Blockly.Msg.zh_tw.switch_language_to_chinese_tw.init();
+        Blockly.Msg.zh.hans.switch_blockly_language_to_zh_hans.init();
+        Blockly.Msg.zh.switch_language_to_chinese_tw.init();
         break;
       case 'zh_CN':
-        Blockly.Msg.zh_cn.switch_language_to_chinese_cn.init();
+        Blockly.Msg.zh.hans.switch_blockly_language_to_zh_hans.init();
+        Blockly.Msg.zh.switch_language_to_chinese_cn.init();
         break;
       case 'fr_FR':
-        Blockly.Msg.fr_fr.switch_language_to_french.init();
+        Blockly.Msg.fr.switch_blockly_language_to_fr.init();
+        Blockly.Msg.fr.switch_language_to_french.init();
         break;
       case 'it_IT':
-        Blockly.Msg.it_it.switch_language_to_italian.init()
+        Blockly.Msg.it.switch_blockly_language_to_it.init();
+        Blockly.Msg.it.switch_language_to_italian.init();
         break;
       case 'ru':
+        Blockly.Msg.ru.switch_blockly_language_to_ru.init();
         Blockly.Msg.ru.switch_language_to_russian.init();
         break;
-      case 'en_US':
-        Blockly.Msg.en.switch_language_to_english.init();
-        break;
-      case 'en':
-      default:
-        Blockly.Msg.en.switch_language_to_english.init();
-        break;
       case 'sv':
+        Blockly.Msg.sv.switch_blockly_language_to_sv.init();
         Blockly.Msg.sv.switch_language_to_swedish.init();
         break;
       case 'pt_BR':
-        Blockly.Msg.pt_br.switch_language_to_portuguese_br.init();
+        Blockly.Msg.pt.br.switch_blockly_language_to_pt_br.init();
+        Blockly.Msg.pt.br.switch_language_to_portuguese_br.init();
+        break;
+      case 'en_US':
+      case 'en':
+      default:
+        Blockly.Msg.en.switch_blockly_language_to_en.init();
+        Blockly.Msg.en.switch_language_to_english.init();
+        break;
     }
     if (Blockly.mainWorkspace) {
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);

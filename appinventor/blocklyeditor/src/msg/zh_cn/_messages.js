@@ -28,14 +28,16 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.zh_cn');
+goog.provide('AI.Blockly.Msg.zh_cn');
+
+goog.require('Blockly.Msg.zh.hans');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
+Blockly.Msg.zh.switch_language_to_chinese_cn = {
   // Switch language to Simplified Chinese.
   category: '',
   helpUrl: '',
@@ -1306,4 +1308,5 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
 };
 
 // Initalize language definition to English
-Blockly.Msg.zh_cn.switch_language_to_chinese_cn.init();
+Blockly.Msg.zh.hans.switch_blockly_language_to_zh_hans.init();
+Blockly.Msg.zh.switch_language_to_chinese_cn.init();

@@ -7,7 +7,6 @@
 package com.google.appinventor.client;
 
 import java.util.Random;
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -119,7 +118,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
@@ -810,7 +808,7 @@ public class Ode implements EntryPoint {
                 uri += separator + "locale=" + locale;
                 separator = "&";
               }
-              if (repo != null & !repo.equals("")) {
+              if (repo != null && !repo.equals("")) {
                 uri += separator + "repo=" + repo;
                 separator = "&";
               }
@@ -848,7 +846,7 @@ public class Ode implements EntryPoint {
     userInfoService.getUserBackpack(new AsyncCallback<String>() {
         @Override
         public void onSuccess(String backpack) {
-          BlocklyPanel.setBackpack(backpack, false);
+          BlocklyPanel.setInitialBackpack(backpack);
         }
         @Override
         public void onFailure(Throwable caught) {
@@ -876,8 +874,6 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private void initializeUi() {
-    BlocklyPanel.initUi();
-
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup

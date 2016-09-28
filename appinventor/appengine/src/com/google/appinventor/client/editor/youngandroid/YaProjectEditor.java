@@ -68,8 +68,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     YaBlocksEditor blocksEditor = null;
   }
 
-  private  final YaProjectEditor projectEditor;
-
   // Maps form name -> editors for this form
   private final HashMap<String, EditorSet> editorMap = Maps.newHashMap();
   
@@ -112,7 +110,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   public YaProjectEditor(ProjectRootNode projectRootNode) {
     super(projectRootNode);
     project.addProjectChangeListener(this);
-    projectEditor = this;
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
   }
 
@@ -475,7 +472,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           return;
         }
         JSONObject componentJSONObject = new ClientJsonParser().parse(jsonFileContent).asObject();
-        COMPONENT_DATABASE.addComponentDatabaseListener(projectEditor);
+        COMPONENT_DATABASE.addComponentDatabaseListener(YaProjectEditor.this);
         COMPONENT_DATABASE.addComponent(componentJSONObject);
         if (!externalComponents.contains(componentJSONObject.get("name").toString())) { // In case of upgrade, we do not need to add entry
           externalComponents.add(componentJSONObject.get("name").toString());

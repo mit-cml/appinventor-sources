@@ -5,13 +5,10 @@
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
-    <include path="/blockly-*.js" expiration="365d">
-      <http-header name="Content-Type" value="application/javascript; charset=UTF-8" />
-    </include>
     <include path="/fonts/*" expiration="365d">
       <http-header name="Content-Type" value="font/ttf" />
     </include>
-    <include path="/media/*" expiration="365d" />
+    <include path="/assets/*" />
     <include path="/companions/*" />
     <include path="/images/*" expiration="365d" />
     <include path="/Ya_tos_form.html" expiration="1d" />

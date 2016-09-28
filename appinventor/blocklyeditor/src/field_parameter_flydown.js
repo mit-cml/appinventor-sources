@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -10,9 +10,9 @@
 
 'use strict';
 
-goog.provide('Blockly.FieldParameterFlydown');
+goog.provide('AI.Blockly.FieldParameterFlydown');
 
-goog.require('Blockly.FieldFlydown');
+goog.require('AI.Blockly.FieldFlydown');
 
 /**
  * Class for a parameter declaration field with flyout menu of getter/setter blocks on mouse over

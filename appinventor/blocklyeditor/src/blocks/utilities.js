@@ -85,7 +85,9 @@ Blockly.Blocks.Utilities.renameCollapsed = function(block, n) {
   if (block.isCollapsed()) {
     var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
     block.removeInput(COLLAPSED_INPUT_NAME);
+    block.collapsed_ = false;
     var text = block.toString(Blockly.COLLAPSE_CHARS);
+    block.collapsed_ = true;
     block.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text);
 
     if(block.type.indexOf("procedures_call") != -1) {

@@ -10,7 +10,7 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
 import com.google.gwt.resources.client.ImageResource;
@@ -49,13 +49,13 @@ public final class ComponentHelpWidget extends Image {
       setTitle(scd.getName());
 
       // Create title from component name.
-      Label titleBar = new Label(TranslationDesignerPallete.getCorrespondingString(scd.getName()));
+      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));
       setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
       String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName() + "-helpString";
-      HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(helpTextKey));
+      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the

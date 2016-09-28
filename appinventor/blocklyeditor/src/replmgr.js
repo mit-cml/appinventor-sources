@@ -1,5 +1,5 @@
 // -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2013-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Visual blocks editor for App Inventor
@@ -10,13 +10,8 @@
 
 'use strict';
 
-goog.provide('Blockly.ReplMgr');
-goog.provide('Blockly.ReplStateObj');
-
-goog.require('Blockly.Component');
-goog.require('Blockly.Util');
-
-Blockly.ReplMgr.yail = null;
+goog.provide('AI.Blockly.ReplMgr');
+goog.provide('AI.Blockly.ReplStateObj');
 
 goog.require('goog.ui.Dialog');
 goog.require('goog.net.XmlHttp');
@@ -28,6 +23,13 @@ goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
 goog.require('goog.crypt.base64');
+
+// App Inventor extensions to Blockly
+goog.require('AI.Blockly.Util');
+goog.require('AI.Events');
+
+if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {}
+Blockly.ReplMgr.yail = null;
 
 top.loadAll = true;             // Use "Chunked" loading for initial form load
                                 // or any case where we have more then one "chunk"
@@ -69,9 +71,17 @@ Blockly.ReplStateObj.prototype = {
     'didversioncheck' : false
 };
 
+// Blockly is only loaded once now, so we can init this here.
+top.ReplState = new Blockly.ReplStateObj();
+top.ReplState.phoneState = {};
+
 // Blockly.mainWorkSpace --- hold the main workspace
 
-Blockly.ReplMgr.buildYail = function() {
+/**
+ * Build YAIL for sending to the companion.
+ * @param {Blockly.WorkspaceSvg} workspace
+ */
+Blockly.ReplMgr.buildYail = function(workspace) {
     var phoneState;
     var code = [];
     var blocks;
@@ -89,14 +99,14 @@ Blockly.ReplMgr.buildYail = function() {
         phoneState.componentYail = "";
     }
 
-    var propertyNameConverter;
+    var nameConverter;
     if (phoneState.nofqcn) {
-        propertyNameConverter = function(input) {
+        nameConverter = function(input) {
             var s = input.split('.');
             return s[s.length-1];
         };
     } else {
-        propertyNameConverter = function(input) {
+        nameConverter = function(input) {
             return input;
         };
     }
@@ -107,7 +117,7 @@ Blockly.ReplMgr.buildYail = function() {
         formProperties = jsonObject.Properties;
         formName = formProperties.$Name;
     }
-    var componentMap = Blockly.Component.buildComponentMap([], [], false, false);
+    var componentMap = Blockly.mainWorkspace.buildComponentMap([], [], false, false);
     var componentNames = [];
     for (var comp in componentMap.components)
         componentNames.push(comp);
@@ -116,7 +126,7 @@ Blockly.ReplMgr.buildYail = function() {
             code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
         var sourceType = jsonObject.Source;
         if (sourceType == "Form") {
-            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, propertyNameConverter));
+            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, nameConverter, workspace.getComponentDatabase()));
         } else {
             throw "Source type " + sourceType + " is invalid.";
         }
@@ -147,11 +157,11 @@ Blockly.ReplMgr.buildYail = function() {
     var success = function() {
         if (this.block.replError)
             this.block.replError = null;
-        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+        this.block.workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
     };
     var failure = function(message) {
         this.block.replError = message;
-        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+        this.block.workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
     };
 
     for (var x = 0; (block = blocks[x]); x++) {
@@ -179,13 +189,13 @@ Blockly.ReplMgr.buildYail = function() {
     }
 };
 
-Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
+Blockly.ReplMgr.sendFormData = function(formJson, packageName, workspace) {
     top.ReplState.phoneState.formJson = formJson;
     top.ReplState.phoneState.packageName = packageName;
     var context = this;
     var poller = function() {   // Keep track of "this"
         context.polltimer = null;
-        return context.pollYail.call(context);
+        return context.pollYail.call(context, workspace);
     };
     if (this.polltimer) {       // We have one running, punt it.
         clearTimeout(this.polltimer);
@@ -193,7 +203,7 @@ Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
     this.polltimer = setTimeout(poller, 500);
 };
 
-Blockly.ReplMgr.pollYail = function() {
+Blockly.ReplMgr.pollYail = function(workspace) {
     var RefreshAssets = top.AssetManager_refreshAssets;
     try {
         if (window === undefined)    // If window is gone, then we are a zombie timer firing
@@ -202,10 +212,10 @@ Blockly.ReplMgr.pollYail = function() {
         return;
     }
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        this.buildYail();
+        this.buildYail(workspace);
     }
     if (top.ReplState.state == this.rsState.CONNECTED) {
-        RefreshAssets(this.formName, function() {});
+        RefreshAssets(function() {});
     }
 };
 
@@ -314,7 +324,9 @@ Blockly.ReplMgr.putYail = (function() {
             conn = goog.net.XmlHttp();
             var blockid;
             if (work.block) {
-                blockid = work.block.id;
+                // Quote blockId as a string due to non-numeric identifiers generated from
+                // Blockly's soup {@see Blockly.utils.genUid.soup_}
+                blockid = '"' + work.block.id + '"';
             } else {
                 if (work.chunking) { // Used to indicate an error in when chunking
                     blockid = "-2";
@@ -404,7 +416,7 @@ Blockly.ReplMgr.putYail = (function() {
                     // or visit the land of the lost!
                     context.resetYail(true); // Reset (partial reset)
                     rs.phoneState.phoneQueue = []; // But flush the queue of pending code
-                    context.pollYail();  // Regenerate
+                    context.pollYail(Blockly.mainWorkspace);  // Regenerate
                     engine.pollphone();  // Next...
                     return;
                 }
@@ -632,7 +644,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
         context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
                                        addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
-        context.runtimeError.setContent(message);
+        context.runtimeError.setTextContent(message);
         context.runtimeError.setVisible(true);
     };
     // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
@@ -664,7 +676,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                 top.loadAllErrorCount = 20;
                 console.log("Error in chunking, disabling.");
                 this.resetYail(true);
-                this.pollYail();
+                this.pollYail(Blockly.mainWorkspace);
             } else if (r.blockid != "-1" && r.blockid != "-2") {
                 block = Blockly.mainWorkspace.getBlockById(r.blockid);
                 if (block === null) {
@@ -701,7 +713,8 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
         }
     }
-    Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+    var handler = Blockly.getMainWorkspace().getWarningHandler();
+    handler && handler.checkAllBlocksForWarningsAndErrors();
 };
 
 Blockly.ReplMgr.setDoitResult = function(block, value) {
@@ -911,9 +924,9 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             progdialog.hide();
             rs.state = context.rsState.ASSET; // Indicate that we are connected, start loading assets
             clearInterval(interval);
-            RefreshAssets(context.formName, function() {
+            RefreshAssets(function() {
                 rs.state = context.rsState.CONNECTED;
-                top.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
             });
         }
     };
@@ -1021,10 +1034,9 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.state = Blockly.ReplMgr.rsState.ASSET;
                 rs.dialog.hide();
-                RefreshAssets(context.formName,
-                              function() {
+                RefreshAssets(function() {
                                   rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-                                  top.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                                  Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
                               });
                 // Start the connection with the Repl itself
             } catch (err) {

@@ -60,10 +60,6 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
   </target>
 
-  <target name="Blockly">
-    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="CopyBlocklyToBuildWar"/>
-  </target>
-
   <!-- Convenient target for just running the blockly related tests -->
   <target name="BlocklyTest">
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
