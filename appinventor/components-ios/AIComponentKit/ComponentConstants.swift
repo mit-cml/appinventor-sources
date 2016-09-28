@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ComponentConstants {
+public class ComponentConstants {
   enum Layout: Int32 {
     case horizontal
     case vertical

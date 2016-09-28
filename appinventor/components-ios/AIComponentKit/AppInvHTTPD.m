@@ -7,7 +7,9 @@
 //
 
 #import "AppInvHTTPD.h"
-#include <CoreFoundation/CoreFoundation.h>
+#import <GCDWebServer/GCDWebServerDataResponse.h>
+#import <AIComponentKit/AIComponentKit-Swift.h>
+#import <CoreFoundation/CoreFoundation.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
@@ -15,79 +17,15 @@
 
 @interface AppInvHTTPD() {
  @private
-  int _port;
   NSString *_wwwroot;
   BOOL _secure;
   ReplForm *_form;
-  NSThread *_listenThread;
-  CFSocketRef _ip4sock;
-  CFSocketRef _ip6sock;
 }
-
-- (void)acceptConnection:(CFSocketNativeHandle)handle;
 
 @end
-
-static void handleConnect(CFSocketRef s, CFSocketCallBackType type, CFDataRef address,
-                          const void *data, void *info) {
-  if (type != kCFSocketAcceptCallBack) {
-    return;
-  }
-  AppInvHTTPD *server = (__bridge_transfer AppInvHTTPD *) info;
-  [server acceptConnection:*((const CFSocketNativeHandle *) data)];
-}
 
 static NSString *_hmacKey = nil;
 static int _hmacSeq = 1;
-static const NSUInteger BUFSIZE = 4096;
-
-@interface AppInvHTTPD_Session : NSThread<NSStreamDelegate> {
- @private
-  __weak AppInvHTTPD *_owner;
-  NSInputStream *_reader;
-  NSOutputStream *_writer;
-  uint8_t buffer[BUFSIZE];
-}
-@end
-
-@implementation AppInvHTTPD_Session
-
-- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode {
-  if (eventCode == NSStreamEventEndEncountered || eventCode == NSStreamEventErrorOccurred) {
-    [self cancel];
-  } else if(eventCode == NSStreamEventHasBytesAvailable) {
-    NSInteger bytesRead;
-    while ((bytesRead = [_reader read:buffer maxLength:BUFSIZE]) > 0) {
-      
-    }
-  }
-}
-
-- (void)main {
-  @autoreleasepool {
-    [[NSRunLoop currentRunLoop] run];
-    _reader.delegate = nil;
-    CFRelease((__bridge CFReadStreamRef) _reader);
-    CFRelease((__bridge CFWriteStreamRef) _writer);
-    _reader = nil;
-    _writer = nil;
-  }
-}
-
-- (id)initWithServer:(AppInvHTTPD *)server socket:(CFSocketNativeHandle)socket {
-  if (self = [super init]) {
-    _owner = server;
-    CFReadStreamRef reader;
-    CFWriteStreamRef writer;
-    CFStreamCreatePairWithSocket(kCFAllocatorDefault, socket, &reader, &writer);
-    _reader = (__bridge NSInputStream *)reader;
-    _writer = (__bridge NSOutputStream *)writer;
-    _reader.delegate = self;
-  }
-  return self;
-}
-
-@end
 
 @implementation AppInvHTTPD
 
@@ -100,84 +38,67 @@ static const NSUInteger BUFSIZE = 4096;
   _hmacSeq = 1;
 }
 
-- (void)acceptConnection:(CFSocketNativeHandle)handle {
-  CFReadStreamRef _read;
-  CFWriteStreamRef _write;
-  CFStreamCreatePairWithSocket(kCFAllocatorDefault, handle, &_read, &_write);
-  NSInputStream *input = (__bridge NSInputStream *) _read;
-  NSOutputStream *output = (__bridge NSOutputStream *) _write;
-  NSInteger read;
-  const NSUInteger BUFSIZE = 4096;
-  uint8_t *buffer = (uint8_t *)malloc(BUFSIZE * sizeof(uint8_t));
-  while ((read = [input read:buffer maxLength:BUFSIZE]) > 0) {
-    
-  }
-  input = nil;
-  output = nil;
-  CFRelease(_read);
-  CFRelease(_write);
+- (GCDWebServerResponse *)getVersion:(GCDWebServerRequest *)request {
+  NSDictionary *dict = @{
+    @"fingerprint": @"iPhone/iOS:9.3.5",
+    @"fqcn": @true,
+    @"installer": @"unknown",
+    @"package": @"edu.mit.appinventor.aicompanion3",
+    @"version": @"2.38"
+  };
+  NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+  GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithData:data contentType:@"application/json"];
+  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+  return response;
 }
 
-- (void)listen {
-  struct sockaddr_in sin;
-  struct sockaddr_in6 sin6;
-
-  CFSocketContext context = {0, (__bridge_retained void *) self, NULL, NULL, NULL};
-
-  _ip4sock = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP,
-                            kCFSocketAcceptCallBack, handleConnect, &context);
-  _ip6sock = CFSocketCreate(kCFAllocatorDefault, PF_INET6, SOCK_STREAM, IPPROTO_TCP,
-                            kCFSocketAcceptCallBack, handleConnect, &context);
-
-  memset(&sin, 0, sizeof(sin));
-  sin.sin_len = sizeof(sin);
-  sin.sin_family = AF_INET;
-  sin.sin_port = htons(_port);
-  sin.sin_addr.s_addr= INADDR_ANY;
-
-  CFDataRef sincfd = CFDataCreate(kCFAllocatorDefault, (UInt8 *)&sin, sizeof(sin));
-
-  CFSocketSetAddress(_ip4sock, sincfd);
-  CFRelease(sincfd);
-
-  memset(&sin6, 0, sizeof(sin6));
-  sin6.sin6_len = sizeof(sin6);
-  sin6.sin6_family = AF_INET6; /* Address family */
-  sin6.sin6_port = htons(_port); /* Or a specific port */
-  sin6.sin6_addr = in6addr_any;
-
-  CFDataRef sin6cfd = CFDataCreate(kCFAllocatorDefault, (UInt8 *)&sin6, sizeof(sin6));
-
-  CFSocketSetAddress(_ip6sock, sin6cfd);
-  CFRelease(sin6cfd);
-
-  // configure run loops for listening
-  CFRunLoopSourceRef socketsource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _ip4sock, 0);
-  CFRunLoopAddSource(CFRunLoopGetCurrent(), socketsource, kCFRunLoopDefaultMode);
-  CFRunLoopSourceRef socketsource6 = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _ip6sock, 0);
-  CFRunLoopAddSource(CFRunLoopGetCurrent(), socketsource6, kCFRunLoopDefaultMode);
-
-  // loop indefinitely
-  [[NSRunLoop currentRunLoop] run];
+- (GCDWebServerResponse *)values:(GCDWebServerRequest *)request {
+  return nil;
 }
 
-- (id)initWithPort:(int)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure
-  form:(ReplForm *)form {
+- (GCDWebServerResponse *)newblocks:(GCDWebServerRequest *)request {
+  return nil;
+}
+
+- (instancetype)initWithPort:(NSUInteger)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure
+       forReplForm:(ReplForm *)form {
   if (self = [super init]) {
-    _port = port;
     _wwwroot = [wwwroot copy];
     _secure = secure;
     _form = form;
-    _listenThread = [[NSThread alloc] initWithTarget:self selector:@selector(listen) object:nil];
-    [_listenThread start];
+    __weak AppInvHTTPD *httpd = self;
+    // AppInvHTTPD paths:
+    // * /_newblocks
+    // * /_values
+    // * /_getversion
+    // * /_update or /_install
+    // * /_package
+    // * method: OPTIONS on any
+    // * method: PUT on any
+    // * method: GET on any
+    [self addHandlerForMethod:@"GET" path:@"/_getversion" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+      return [httpd getVersion:request];
+    }];
+    [self addHandlerForMethod:@"GET" path:@"/_values" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+      return [httpd values:request];
+    }];
+    [self addHandlerForMethod:@"POST" path:@"/_newblocks" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+      return [httpd newblocks:request];
+    }];
+    [self addDefaultHandlerForMethod:@"OPTIONS" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+      return nil;
+    }];
+    [self addDefaultHandlerForMethod:@"PUT" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+      return nil;
+    }];
+    [self startWithPort:port
+            bonjourName:[NSString stringWithFormat:@"AI2 Companion on %@",
+                                                   [UIDevice currentDevice].name]];
   }
   return self;
-}
-
-- (Response *)serveUri:(NSString *)uri method:(NSString *)method headers:(NSDictionary *)headers
-            parameters:(NSDictionary *)params files:(NSDictionary *)files
-                socket:(CFSocketRef)socket {
-  return nil;
 }
 
 @end

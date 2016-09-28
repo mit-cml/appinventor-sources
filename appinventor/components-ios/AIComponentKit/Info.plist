@@ -18,6 +18,8 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>App Inventor uses the camera to scan QR codes.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>

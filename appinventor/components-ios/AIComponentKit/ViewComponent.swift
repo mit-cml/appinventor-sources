@@ -13,33 +13,33 @@ public protocol AbstractMethodsForViewComponent {
 }
 
 public class ViewComponent: VisibleComponent {
-  final var delegate: AbstractMethodsForViewComponent!
-  internal let container: ComponentContainer
+  private final var _delegate: AbstractMethodsForViewComponent!
+  internal let _container: ComponentContainer
 
-  private var percentWidthHolder = kLengthUnknown
-  private var percentHeightHolder = kLengthUnknown
-  private var lastSetWidth = kLengthUnknown
-  private var lastSetHeight = kLengthUnknown
+  private var _percentWidthHolder = kLengthUnknown
+  private var _percentHeightHolder = kLengthUnknown
+  private var _lastSetWidth = kLengthUnknown
+  private var _lastSetHeight = kLengthUnknown
 
-  private var column = kDefaultRowColumn
-  private var row = kDefaultRowColumn
+  private var _column = kDefaultRowColumn
+  private var _row = kDefaultRowColumn
 
   // needs to be public for extensions
   public init(parent: ComponentContainer, delegate: AbstractMethodsForViewComponent!) {
-    self.container = parent
-    self.delegate = delegate
+    self._container = parent
+    self._delegate = delegate
   }
   
   public func Visible() -> Bool {
-    return !delegate.view.isHidden
+    return !_delegate.view.isHidden
   }
   
   public func Visible(visibility: Bool) {
-    delegate.view.isHidden = !visibility
+    _delegate.view.isHidden = !visibility
   }
   
   public func Width() -> Int32 {
-    return Int32(delegate.view.frame.width)
+    return Int32(_delegate.view.frame.width)
   }
   
   public func Width(to: Int32) {
@@ -51,7 +51,7 @@ public class ViewComponent: VisibleComponent {
   }
   
   public func Height() -> Int32 {
-    return Int32(delegate.view.frame.height)
+    return Int32(_delegate.view.frame.height)
   }
   
   public func Height(to: Int32) {
@@ -64,7 +64,7 @@ public class ViewComponent: VisibleComponent {
   
   public var dispatchDelegate: HandlesEventDispatching {
     get {
-      return container.form
+      return _container.form.dispatchDelegate
     }
   }
 }

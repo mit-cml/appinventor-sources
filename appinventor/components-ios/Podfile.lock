@@ -2,13 +2,18 @@ PODS:
   - GCDWebServer (3.3.3):
     - GCDWebServer/Core (= 3.3.3)
   - GCDWebServer/Core (3.3.3)
+  - ZXingObjC (3.1.0):
+    - ZXingObjC/All (= 3.1.0)
+  - ZXingObjC/All (3.1.0)
 
 DEPENDENCIES:
   - GCDWebServer (~> 3.0)
+  - ZXingObjC (~> 3.0)
 
 SPEC CHECKSUMS:
   GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
+  ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: f8bb2fc2fea197510433c6157e59fbae455c4e40
+PODFILE CHECKSUM: 1692506f26823fddcce71a5f5c56a1a366c5bdd4
 
 COCOAPODS: 1.0.1

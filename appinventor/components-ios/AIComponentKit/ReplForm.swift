@@ -9,5 +9,5 @@
 import Foundation
 
 public class ReplForm: Form {
-  
+  private var _httpdServer: AppInvHTTPD?
 }

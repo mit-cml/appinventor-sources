@@ -7,12 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "GCDWebServer.h"
-#import <AIComponentKit/AIComponentKit-Swift.h>
+#import <GCDWebServer/GCDWebServer.h>
+
+@class ReplForm;
+
+@protocol AppInvHTTPDDelegate
+
+- (NSString *)processYAIL:(NSString *)yail;
+
+@end
 
 @interface AppInvHTTPD : GCDWebServer
 
 + (void)setHmacKey:(NSString *)key;
 + (void)resetSeq;
+- (instancetype)initWithPort:(NSUInteger)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure
+  forReplForm:(ReplForm *)form;
 
 @end

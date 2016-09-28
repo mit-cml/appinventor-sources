@@ -8,7 +8,7 @@
 
 import Foundation
 
-let ASSET_DIRECTORY = "component"
+let kAssetDirectory = "component"
 
 enum Alignment: Int32 {
     case normal
@@ -65,9 +65,9 @@ enum DefaultValueColor: String {
   case DEFAULT = "&H00000000"
 }
 
-let FONT_DEFAULT_SIZE: Float = 14.0
-let LAYOUT_ORIENTATION_HORIZONTAL = ComponentConstants.Layout.horizontal
-let LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.Layout.vertical
+let kFontSizeDefault: Float = 14.0
+let kLayoutOrientationHorizontal = ComponentConstants.Layout.horizontal
+let kLayoutOrientationVertical = ComponentConstants.Layout.vertical
 
 enum Scaling: Int32 {
     case proportionally
