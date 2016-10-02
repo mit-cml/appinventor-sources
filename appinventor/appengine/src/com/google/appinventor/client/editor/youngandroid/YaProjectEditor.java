@@ -391,7 +391,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.get(formName).formEditor = newFormEditor;
     } else {
       EditorSet editors = new EditorSet();
-      editors.formEditor = newFormEditor;http://www.gwtproject.org/javadoc/latest/com/google/gwt/core/client/Scheduler.html
+      editors.formEditor = newFormEditor;
       editorMap.put(formName, editors);
     }
     newFormEditor.loadFile(new Command() {
