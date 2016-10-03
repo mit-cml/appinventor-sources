@@ -144,6 +144,8 @@ public class Form extends Activity
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
 
+  
+
   // Layout
   private LinearLayout viewLayout;
 
@@ -1382,11 +1384,11 @@ public class Form extends Activity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Fixed")
   @SimpleProperty(userVisible = false,
-    // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
-    description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
-                  "If set to responsive, screen layouts will use the actual resolution of the device.  " +
-                  "See the documentation on responsive design in App Inventor for more information. " +
-                  "This property appears on Screen1 only and controls the sizing for all screens in the app.")
+  // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
+  description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
+      "If set to responsive, screen layouts will use the actual resolution of the device.  " +
+      "See the documentation on responsive design in App Inventor for more information. " +
+      "This property appears on Screen1 only and controls the sizing for all screens in the app.")
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
@@ -1415,16 +1417,19 @@ public class Form extends Activity
   //   }
   // }
 
+
+
+   
   /**
    * Specifies the App Name.
    *
    * @param aName the display name of the installed application in the phone
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "")
+      defaultValue = "")
   @SimpleProperty(userVisible = false,
-    description = "This is the display name of the installed application in the phone." +
-        "If the AppName is blank, it will be set to the name of the project when the project is built.")
+  description = "This is the display name of the installed application in the phone." +
+      "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1648,6 +1653,17 @@ public class Form extends Activity
     }
   }
 
+
+
+  /**
+   * Returns whether to print lists in JSON format
+   *
+   */
+  // Temporarily akways return true.  We'll hook in a property setter after the rest is debugged
+  public static boolean getUseJSONFormat() {
+    return true;
+  }
+  
   /**
    * Returns the value that was passed to this screen when it was opened
    *

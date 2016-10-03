@@ -1107,15 +1107,9 @@
     (let loop ((result "") (rest-elements bracketed))
       (if (null? rest-elements)
           result
-          (loop (string-append result " " (car rest-elements))
+          (loop (string-append result ", " (car rest-elements))
                 (cdr rest-elements))))))
 
-;;;;!!!! the above should be able to be replaced by show-arglist
-;;;; assuming get sidsplay rep works on Kawa lists
-
-;;(define (show-arglist-no-parens args)
-;;  (let ((s (get-display-representation args)))
-;;    (substring s 1 (- (string-length s) 1))))
 
 ;;; Coerce the list of args to the corresponding list of types
 
@@ -1198,20 +1192,29 @@
    (else *non-coercible-value*)))
 
 
-(define (coerce-to-string arg)
-  (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
-        ((string? arg) arg)
-        ((number? arg) (appinventor-number->string arg))
-        ((boolean? arg) (boolean->string arg))
-        ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
-        ((list? arg)
-         (let ((pieces (map coerce-to-string arg)))
-            (call-with-output-string (lambda (port) (display pieces port)))))
-        (else (call-with-output-string (lambda (port) (display arg port))))))
+
+
+
 
 ;;;!!!!!!
+;; (define (coerce-to-string arg)
+;;   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+;;         ((string? arg) arg)
+;;         ((number? arg) (appinventor-number->string arg))
+;;         ((boolean? arg) (boolean->string arg))
+;;         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
+;;         ((list? arg)
+;;          (let ((pieces (map coerce-to-string arg)))
+;;             (call-with-output-string (lambda (port) (display pieces port)))))
+;;         (else (call-with-output-string (lambda (port) (display arg port))))))
+
 ;; The above should be replaced by this
-;;; !!!!!also modify form.java so UseJSONFormat is true, for testing
+;;; !!!!!also modify form.java so UseJsonFormat is true, for testing
+
+(define (use-json-format)
+  (let ((json? (SimpleForm:getUseJSONFormat)))
+    json?))
+	
 
 (define (coerce-to-string arg)
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
@@ -1220,41 +1223,42 @@
         ((boolean? arg) (boolean->string arg))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((list? arg)
-            (if (SimpleForm:UseJSONFormat)
-                (let ((pieces (map get-json-display-representation arg)))
-                          (string-append "[" (join-strings pieces ", ") "]"))
-                (let ((pieces (map coerce-to-string arg)))
-                            (call-with-output-string (lambda (port) (display pieces port))))))
+	 (if (use-json-format)
+	     (let ((pieces (map get-json-display-representation arg)))
+	       (string-append "[" (join-strings pieces ", ") "]"))
+	     (let ((pieces (map coerce-to-string arg)))
+	       (call-with-output-string (lambda (port) (display pieces port))))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 
+;;; !!!!
 ;;; This is very similar to coerce-to-string, but is intended for places where we
 ;;; want to make the structure more clear.  For example, the empty string should
 ;;; be explicity shown in error messages.
 ;;; This procedure is currently almost completely redundant with coerce-to-string
 ;;; but it give us flexibility to tailor display for other data types
-(define get-display-representation
-  ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
-  ;; which is why this uses 1.0 and -1.0
-  (let ((+inf (/ 1.0 0))
-        (-inf (/ -1.0 0)))
-    (lambda (arg)
-      (cond ((= arg +inf) "+infinity")
-            ((= arg -inf) "-infinity")
-            ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
-            ((symbol? arg)
-             (symbol->string arg))
-            ((string? arg)
-             (if (string=? arg "")
-                 *the-empty-string-printed-rep*
-                 arg))
-            ((number? arg) (appinventor-number->string arg))
-            ((boolean? arg) (boolean->string arg))
-            ((yail-list? arg) (get-display-representation (yail-list->kawa-list arg)))
-            ((list? arg)
-             (let ((pieces (map get-display-representation arg)))
-               (call-with-output-string (lambda (port) (display pieces port)))))
-            (else (call-with-output-string (lambda (port) (display arg port))))))))
+;; (define get-display-representation
+;;   ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
+;;   ;; which is why this uses 1.0 and -1.0
+;;   (let ((+inf (/ 1.0 0))
+;;         (-inf (/ -1.0 0)))
+;;     (lambda (arg)
+;;       (cond ((= arg +inf) "+infinity")
+;;             ((= arg -inf) "-infinity")
+;;             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+;;             ((symbol? arg)
+;;              (symbol->string arg))
+;;             ((string? arg)
+;;              (if (string=? arg "")
+;;                  *the-empty-string-printed-rep*
+;;                  arg))
+;;             ((number? arg) (appinventor-number->string arg))
+;;             ((boolean? arg) (boolean->string arg))
+;;             ((yail-list? arg) (get-display-representation (yail-list->kawa-list arg)))
+;;             ((list? arg)
+;;              (let ((pieces (map get-display-representation arg)))
+;;                (call-with-output-string (lambda (port) (display pieces port)))))
+;;             (else (call-with-output-string (lambda (port) (display arg port))))))))
 
 ;;;;!!!! The above should be replaced by this .....
 
@@ -1267,9 +1271,9 @@
 
 (define get-display-representation
     (lambda (arg)
-        (if (SimpleForm:UseJSONFormat)
-            (get-json-display-representation arg)
-            (get-original-display-representation arg))))
+      (if (use-json-format)
+	  (get-json-display-representation arg)
+	  (get-original-display-representation arg))))
 
 (define get-original-display-representation
    ;;there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
