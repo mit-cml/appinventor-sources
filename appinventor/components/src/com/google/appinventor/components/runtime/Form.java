@@ -1660,7 +1660,7 @@ public class Form extends Activity
    *
    */
   // Temporarily akways return true.  We'll hook in a property setter after the rest is debugged
-  public static boolean getUseJSONFormat() {
+  public static boolean getShowListsInJsonFormat() {
     return true;
   }
   

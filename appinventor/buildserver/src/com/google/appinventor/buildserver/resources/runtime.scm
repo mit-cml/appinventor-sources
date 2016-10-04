@@ -1208,11 +1208,8 @@
 ;;             (call-with-output-string (lambda (port) (display pieces port)))))
 ;;         (else (call-with-output-string (lambda (port) (display arg port))))))
 
-;; The above should be replaced by this
-;;; !!!!!also modify form.java so UseJsonFormat is true, for testing
-
 (define (use-json-format)
-  (let ((json? (SimpleForm:getUseJSONFormat)))
+  (let ((json? (SimpleForm:getShowListsInJsonFormat())))
     json?))
 	
 
