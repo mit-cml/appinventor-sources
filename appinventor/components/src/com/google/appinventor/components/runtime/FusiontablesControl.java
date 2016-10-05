@@ -26,12 +26,15 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.ClientLoginHelper;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IClientLoginHelper;
+import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -404,15 +407,49 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     OAuth2Helper.resetAccountCredential(activity);
   }
 
+  //InsertRow receives a String or a list as a value
   @SimpleFunction(
     description="Inserts a row into the specified fusion table. The tableId field is the id of the" +
       "fusion table. The columns is a comma-separated list of the columns to insert values into. The" +
       " values field specifies what values to insert into each column.")
-  public void InsertRow(String tableId, String columns, String values) {
-    query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + values + ")";
+  public void InsertRow(String tableId, String columns, Object values) {
+    String reformattedValues = "";
+    if(values != null && values instanceof String || values != null && values instanceof gnu.lists.FString) {
+      Log.i("FusionTablesInsertRow", "String:"+values);
+      String valuesString = values.toString();
+      //Single quotes are escape chars and must be replaced with two single quotes (Natalie)
+      if(valuesString.startsWith("\'")){
+        reformattedValues = valuesString;
+      }
+      else if(valuesString.startsWith("\"")) {
+        String quotifiedValues = valuesString.replace("\'", "\'\'");
+        reformattedValues = quotifiedValues.replace("\"", "\'");
+      }
+      else{
+        //Not sure if we want to have a specific error message for this case.
+        //The code below is also probably an incorrect implementation of error messages (Natalie)
+        /*form.dispatchErrorOccurredEventDialog(this, "SendQueryValuesFormat",
+            ErrorMessages.FUSION_TABLES_QUERY_ERROR, query, "Values must either be in a list or be a" +
+                "String formatted as such: \'First\',\'Second\',\'Third\' Please note that single quotes" +
+                "in text must be inputted as two single quotes in a row: \'\'");
+        */
+        return;
+      }
+    }
+    else if(values != null && values instanceof YailList) {
+      Log.i("FusionTablesInsertRow", "YailList:"+values);
+      YailList valuesList = (YailList)values;
+      reformattedValues = "\'" + valuesList.getString(0).replace("\'", "\'\'") + "\'";
+      for (int i = 1; i < valuesList.size(); i++) {
+        reformattedValues += ",\'" + valuesList.getString(i).replace("\'", "\'\'") + "\'";
+      }
+    }
+    else {
+      Log.i("FusionTablesInsertRow", "Not String or YailList:"+values+" of class:"+values.getClass());
+    }
+    query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + reformattedValues + ")";
     new QueryProcessorV2(activity).execute(query);
   }
-
 
   @SimpleFunction(
     description="Gets all the rows from a specified fusion table. The tableId field is the id of the" +
