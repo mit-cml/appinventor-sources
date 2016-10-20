@@ -8,12 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		015A801724ED3B62EC778C62 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B4C4BF823BDCA482F6441C /* Pods_AIComponentKitTests.framework */; };
+		060E3B011DB567BA00C4A9F1 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 060E3B001DB567BA00C4A9F1 /* SchemeKit.framework */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
+		06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */; };
+		06AC1CCB1DB4FA3400A59EB3 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
+		06AC1CCC1DB4FA3400A59EB3 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
+		06AC1CCD1DB4FB6700A59EB3 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
+		06AC1CCE1DB4FB6700A59EB3 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
+		06AC1CCF1DB4FB8200A59EB3 /* GCDWebServer.framework in Resources */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
+		06AC1CD01DB4FB8200A59EB3 /* ZXingObjC.framework in Resources */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
 		06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C94A381D99D10400341AAE /* EventDispatcher.swift */; };
 		06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */; };
 		06DA9F501D8CFBA200389B04 /* Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A26E1D8CE3750013A191 /* Form.swift */; };
@@ -34,7 +43,7 @@
 		06E59EB11D92D16100C42804 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB01D92D16100C42804 /* Button.swift */; };
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
-		B12269CD109CCE20720B32B9 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */; };
+		B12269CD109CCE20720B32B9 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		060E3B001DB567BA00C4A9F1 /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "SchemeKit/build/Debug-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
 		0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		0618A26E1D8CE3750013A191 /* Form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Form.swift; sourceTree = "<group>"; };
 		0618A2701D8CE50A0013A191 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
@@ -63,8 +73,14 @@
 		0618A28C1D8CF4EE0013A191 /* AIComponentKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIComponentKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIComponentKitTests.swift; sourceTree = "<group>"; };
 		0618A2931D8CF4EE0013A191 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
+		06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIComponentKitTests.m; sourceTree = "<group>"; };
+		06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "build/Debug-iphonesimulator/GCDWebServer/GCDWebServer.framework"; sourceTree = "<group>"; };
+		06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "build/Debug-iphonesimulator/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
+		06AC1CD41DB52F4700A59EB3 /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "SchemeKit/build/Debug-iphonesimulator/SchemeKit.framework"; sourceTree = "<group>"; };
 		06C94A381D99D10400341AAE /* EventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
 		06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibleComponent.swift; sourceTree = "<group>"; };
 		06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInvHTTPD.h; sourceTree = "<group>"; };
@@ -92,6 +108,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				060E3B011DB567BA00C4A9F1 /* SchemeKit.framework in Frameworks */,
+				06AC1CCD1DB4FB6700A59EB3 /* GCDWebServer.framework in Frameworks */,
+				06AC1CCE1DB4FB6700A59EB3 /* ZXingObjC.framework in Frameworks */,
 				B12269CD109CCE20720B32B9 /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,6 +119,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06AC1CCB1DB4FA3400A59EB3 /* GCDWebServer.framework in Frameworks */,
+				06AC1CCC1DB4FA3400A59EB3 /* ZXingObjC.framework in Frameworks */,
 				0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */,
 				015A801724ED3B62EC778C62 /* Pods_AIComponentKitTests.framework in Frameworks */,
 			);
@@ -111,6 +132,10 @@
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				060E3B001DB567BA00C4A9F1 /* SchemeKit.framework */,
+				06AC1CD41DB52F4700A59EB3 /* SchemeKit.framework */,
+				06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */,
+				06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */,
 				0618A27D1D8CF3DE0013A191 /* Foundation.framework */,
 				0618A27B1D8CECAC0013A191 /* UIKit.framework */,
 				22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */,
@@ -136,6 +161,8 @@
 			children = (
 				0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */,
 				0618A2931D8CF4EE0013A191 /* Info.plist */,
+				06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */,
+				06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */,
 			);
 			path = AIComponentKitTests;
 			sourceTree = "<group>";
@@ -150,6 +177,7 @@
 				06E59EA81D92C7E800C42804 /* NetworkUtils.m */,
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
+				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -307,6 +335,7 @@
 					};
 					0618A28B1D8CF4EE0013A191 = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -334,6 +363,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06AC1CCF1DB4FB8200A59EB3 /* GCDWebServer.framework in Resources */,
+				06AC1CD01DB4FB8200A59EB3 /* ZXingObjC.framework in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +478,7 @@
 				06E59EAA1D92C7E800C42804 /* NetworkUtils.m in Sources */,
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
+				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -455,6 +487,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,
 				0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -481,6 +514,13 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
+					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -508,6 +548,14 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphoneos",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
+					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphonesimulator",
+				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -528,11 +576,20 @@
 			baseConfigurationReference = 685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
+					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphonesimulator",
+				);
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks $(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer $(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC $(PROJECT_DIR)/SchemeKit/build/Debug-iphonesimulator";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
@@ -543,10 +600,18 @@
 			baseConfigurationReference = 32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
+					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
+				);
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AIComponentKitTests/AIComponentKitTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};

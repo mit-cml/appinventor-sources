@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		060E3B041DB5F02F00C4A9F1 /* kitty.png in Resources */ = {isa = PBXBuildFile; fileRef = 060E3B021DB5F02F00C4A9F1 /* kitty.png */; };
+		060E3B051DB5F02F00C4A9F1 /* meow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 060E3B031DB5F02F00C4A9F1 /* meow.mp3 */; };
 		06463EFC1D95956800B23DCD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463EFB1D95956800B23DCD /* AppDelegate.swift */; };
 		06463EFE1D95956800B23DCD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463EFD1D95956800B23DCD /* ViewController.swift */; };
 		06463F011D95956800B23DCD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463EFF1D95956800B23DCD /* Main.storyboard */; };
@@ -14,12 +16,14 @@
 		06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463F041D95956800B23DCD /* LaunchScreen.storyboard */; };
 		06463F111D95956800B23DCD /* AICompanionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F101D95956800B23DCD /* AICompanionTests.swift */; };
 		06463F1C1D95956800B23DCD /* AICompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463F1B1D95956800B23DCD /* AICompanionUITests.swift */; };
-		067D1B241D9B9ED900A6190E /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B231D9B9ED900A6190E /* AIComponentKit.framework */; };
-		067D1B261D9B9EE900A6190E /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B251D9B9EE900A6190E /* GCDWebServer.framework */; };
-		067D1B281D9B9EEE00A6190E /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */; };
-		067D1B2A1D9BA25A00A6190E /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		067D1B2C1D9BA25A00A6190E /* GCDWebServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B251D9B9EE900A6190E /* GCDWebServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		067D1B2E1D9BA25A00A6190E /* AIComponentKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 067D1B231D9B9ED900A6190E /* AIComponentKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		06C84C841DB55A3600FC897D /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06C84C821DB559A900FC897D /* AIComponentKit.framework */; };
+		06C84C851DB55A3600FC897D /* AIComponentKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06C84C821DB559A900FC897D /* AIComponentKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		06C91B701DB53972002DE645 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CDC1DB5393B00A59EB3 /* GCDWebServer.framework */; };
+		06C91B711DB53972002DE645 /* GCDWebServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CDC1DB5393B00A59EB3 /* GCDWebServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		06C91B721DB53972002DE645 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CDA1DB5393300A59EB3 /* ZXingObjC.framework */; };
+		06C91B731DB53972002DE645 /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CDA1DB5393300A59EB3 /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		06C91B741DB53972002DE645 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CD81DB5370900A59EB3 /* SchemeKit.framework */; };
+		06C91B751DB53972002DE645 /* SchemeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CD81DB5370900A59EB3 /* SchemeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		06E3534F1D95B2BD0099BE0F /* TestObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E3534E1D95B2BD0099BE0F /* TestObj.m */; };
 /* End PBXBuildFile section */
 
@@ -41,15 +45,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		06E3534B1D95ADB20099BE0F /* Embed Frameworks */ = {
+		06C91B781DB53972002DE645 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				067D1B2E1D9BA25A00A6190E /* AIComponentKit.framework in Embed Frameworks */,
-				067D1B2A1D9BA25A00A6190E /* ZXingObjC.framework in Embed Frameworks */,
-				067D1B2C1D9BA25A00A6190E /* GCDWebServer.framework in Embed Frameworks */,
+				06C91B711DB53972002DE645 /* GCDWebServer.framework in Embed Frameworks */,
+				06C84C851DB55A3600FC897D /* AIComponentKit.framework in Embed Frameworks */,
+				06C91B731DB53972002DE645 /* ZXingObjC.framework in Embed Frameworks */,
+				06C91B751DB53972002DE645 /* SchemeKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,6 +62,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		060E3B021DB5F02F00C4A9F1 /* kitty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kitty.png; sourceTree = "<group>"; };
+		060E3B031DB5F02F00C4A9F1 /* meow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = meow.mp3; sourceTree = "<group>"; };
 		06463EF81D95956800B23DCD /* AICompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AICompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463EFB1D95956800B23DCD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		06463EFD1D95956800B23DCD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -70,9 +77,10 @@
 		06463F171D95956800B23DCD /* AICompanionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = AICompanionUITests.xctest; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		067D1B231D9B9ED900A6190E /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = "<group>"; };
-		067D1B251D9B9EE900A6190E /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServer.framework; sourceTree = "<group>"; };
-		067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZXingObjC.framework; sourceTree = "<group>"; };
+		06AC1CD81DB5370900A59EB3 /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SchemeKit.framework; sourceTree = "<group>"; };
+		06AC1CDA1DB5393300A59EB3 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZXingObjC.framework; sourceTree = "<group>"; };
+		06AC1CDC1DB5393B00A59EB3 /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServer.framework; sourceTree = "<group>"; };
+		06C84C821DB559A900FC897D /* AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = "<group>"; };
 		06E353341D95A7040099BE0F /* AICompanionApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AICompanionApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		06E3534E1D95B2BD0099BE0F /* TestObj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestObj.m; sourceTree = "<group>"; };
 		06E353501D95B2F20099BE0F /* TestObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestObj.h; sourceTree = "<group>"; };
@@ -83,9 +91,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				067D1B241D9B9ED900A6190E /* AIComponentKit.framework in Frameworks */,
-				067D1B261D9B9EE900A6190E /* GCDWebServer.framework in Frameworks */,
-				067D1B281D9B9EEE00A6190E /* ZXingObjC.framework in Frameworks */,
+				06C91B701DB53972002DE645 /* GCDWebServer.framework in Frameworks */,
+				06C84C841DB55A3600FC897D /* AIComponentKit.framework in Frameworks */,
+				06C91B721DB53972002DE645 /* ZXingObjC.framework in Frameworks */,
+				06C91B741DB53972002DE645 /* SchemeKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +139,8 @@
 		06463EFA1D95956800B23DCD /* AICompanionApp */ = {
 			isa = PBXGroup;
 			children = (
+				060E3B021DB5F02F00C4A9F1 /* kitty.png */,
+				060E3B031DB5F02F00C4A9F1 /* meow.mp3 */,
 				06463EFB1D95956800B23DCD /* AppDelegate.swift */,
 				06463EFD1D95956800B23DCD /* ViewController.swift */,
 				06463EFF1D95956800B23DCD /* Main.storyboard */,
@@ -164,9 +175,10 @@
 		06EC0A1A1D959648001CD8DC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				067D1B271D9B9EEE00A6190E /* ZXingObjC.framework */,
-				067D1B251D9B9EE900A6190E /* GCDWebServer.framework */,
-				067D1B231D9B9ED900A6190E /* AIComponentKit.framework */,
+				06C84C821DB559A900FC897D /* AIComponentKit.framework */,
+				06AC1CDC1DB5393B00A59EB3 /* GCDWebServer.framework */,
+				06AC1CDA1DB5393300A59EB3 /* ZXingObjC.framework */,
+				06AC1CD81DB5370900A59EB3 /* SchemeKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -178,10 +190,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 06463F201D95956800B23DCD /* Build configuration list for PBXNativeTarget "AICompanionApp" */;
 			buildPhases = (
-				06E3534B1D95ADB20099BE0F /* Embed Frameworks */,
 				06463EF41D95956800B23DCD /* Sources */,
 				06463EF51D95956800B23DCD /* Frameworks */,
 				06463EF61D95956800B23DCD /* Resources */,
+				06C91B781DB53972002DE645 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -280,6 +292,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
+				060E3B051DB5F02F00C4A9F1 /* meow.mp3 in Resources */,
+				060E3B041DB5F02F00C4A9F1 /* kitty.png in Resources */,
 				06463F031D95956800B23DCD /* Assets.xcassets in Resources */,
 				06463F011D95956800B23DCD /* Main.storyboard in Resources */,
 			);
@@ -474,6 +488,7 @@
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanionApp/AICompanionApp/AICompanionApp-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -495,6 +510,7 @@
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanionApp/AICompanionApp/AICompanionApp-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

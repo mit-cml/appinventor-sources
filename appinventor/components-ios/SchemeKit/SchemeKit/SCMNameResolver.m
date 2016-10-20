@@ -6,25 +6,116 @@
 //  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
 //
 
-#import "SCMNameResolver.h"
 #import <objc/runtime.h>
+#import "SCMNameResolver.h"
+#import "SCMMethod.h"
+
+static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod *> *> *methodLookupDict = nil;
 
 @implementation SCMNameResolver
+
+/**
+ *  Looks up the methods for a Class and populates them into methodLookupDict.
+ *
+ *  @param clazz The Class object to reflect methods for.
+ *
+ *  @return A dictionary mapping method names to {@link SCMMethod} instances.
+ */
++ (NSDictionary<NSString *, SCMMethod *> *)lookupMethodsForClass:(Class)clazz {
+  if (!methodLookupDict) {
+    methodLookupDict = [[NSMutableDictionary alloc] init];
+  }
+  NSString *className = [NSString stringWithUTF8String:class_getName(clazz)];
+  NSMutableDictionary<NSString *, SCMMethod *> *result = [methodLookupDict objectForKey:className];
+  if (result) {
+    return result;
+  }
+  if (clazz != [NSObject class]) {
+    result = [[NSMutableDictionary alloc] initWithDictionary:[SCMNameResolver lookupMethodsForClass:class_getSuperclass(clazz)]];
+  } else {
+    result = [[NSMutableDictionary alloc] init];
+  }
+  methodLookupDict[className] = result;
+
+  unsigned int count = 0;
+  unsigned int registeredMethods = 0;
+  Method *methods;
+  
+  // Static (class) methods
+  methods = class_copyMethodList(object_getClass(clazz), &count);
+  if (count > 0) {
+    // Add new static method names
+    for (unsigned int i = 0; i < count; ++i) {
+      SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:YES];
+      result[method.yailName] = method;
+      ++registeredMethods;
+    }
+    free(methods);
+  }
+
+  methods = class_copyMethodList(clazz, &count);
+  if (count > 0) {
+    // Add new instance method names
+    for (unsigned int i = 0; i < count; ++i) {
+      SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:NO];
+      result[method.yailName] = method;
+      ++registeredMethods;
+    }
+    free(methods);
+  }
+  return result;
+}
+
 
 + (Class)classFromQualifiedName:(const char *)name {
   return NSClassFromString([NSString stringWithUTF8String:name]);
 }
 
-+ (NSDictionary *)getMethodsForClass:(Class)clazz {
-  NSMutableDictionary *result = [NSMutableDictionary dictionary];
-  unsigned int count = 0;
-  Method *methods = class_copyMethodList(clazz, &count);
-  
-  return [result copy];
+
++ (NSDictionary<NSString *, SCMMethod *> *)methodsForClass:(Class)clazz {
+  return [SCMNameResolver lookupMethodsForClass:clazz];
 }
 
-+ (SEL)selectorForClass:(Class)clazz withName:(const char *)name argumentTypeList:(NSArray *)args {
-  return nil;
+
++ (SCMMethod *)initializerForClass:(Class)clazz withName:(const char *)name {
+  NSString *initializerName = [NSString stringWithUTF8String:name];
+  NSDictionary<NSString *, SCMMethod *> *methods = [SCMNameResolver methodsForClass:clazz];
+  return methods[initializerName];
+}
+
+
++ (SCMMethod *)initializerWithArgForClass:(Class)clazz withName:(const char *)name {
+  NSString *initializerName = [NSString stringWithFormat:@"%s:", name];
+  NSDictionary<NSString *, SCMMethod *> *methods = [SCMNameResolver methodsForClass:clazz];
+  return methods[initializerName];
+}
+
+
++ (SCMMethod *)naryInitializerForClass:(Class)clazz withName:(const char *)name argCount:(NSInteger)args {
+  NSMutableString *initializerName = [NSMutableString stringWithUTF8String:name];
+  for (NSInteger i = 0; i < args; ++i) {
+    [initializerName appendString:@":"];
+  }
+  NSDictionary<NSString *, SCMMethod *> *methods = [SCMNameResolver methodsForClass:clazz];
+  return methods[initializerName];
+}
+
+
++ (SCMMethod *)methodForClass:(Class)clazz withName:(const char *)name argumentTypeList:(NSArray *)args {
+  NSDictionary<NSString *, SCMMethod *> *methods = [SCMNameResolver methodsForClass:clazz];
+  NSString *methodName = [NSString stringWithUTF8String:name];
+  SCMMethod *method = methods[methodName];
+  // TODO(ewpatton): Implement logic to check argument lists
+  return method;
+}
+
+
++ (SCMMethod *)setterForProperty:(const char *)name inClass:(Class)clazz withType:(NSString *)type {
+  NSString *setterName = [NSString stringWithFormat:@"set%s", name];
+  NSDictionary<NSString *, SCMMethod *> *methods = [SCMNameResolver methodsForClass:clazz];
+  SCMMethod *method = methods[setterName];
+  // TODO(ewpatton): Implement logic to check argument type
+  return method;
 }
 
 @end

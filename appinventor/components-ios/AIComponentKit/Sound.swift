@@ -7,13 +7,15 @@
 //
 
 import Foundation
+import AVKit
 
 public class Sound: NonvisibleComponent {
   private var sourcePath: String = ""
   private var minimumInterval: Int32 = 1
+  private var audioPlayer: AVAudioPlayer?
 
-  public init(container: ComponentContainer) {
-    super.init(dispatcher: container.form.dispatchDelegate)
+  public override init(_ container: ComponentContainer) {
+    super.init(container)
   }
 
   public var Source: String {
@@ -22,6 +24,24 @@ public class Sound: NonvisibleComponent {
     }
     set(path) {
       sourcePath = path
+      if (path == "") {
+        if (audioPlayer != nil) {
+          audioPlayer?.stop()
+        }
+        audioPlayer = nil
+      } else {
+        let path = Bundle.main.path(forResource: path, ofType: nil)
+        if (path == nil) {
+          return;
+        }
+        let url = URL(fileURLWithPath: path!)
+        do {
+          audioPlayer = try AVAudioPlayer(contentsOf:url)
+          audioPlayer?.prepareToPlay()
+        } catch {
+          NSLog("Error loading audio")
+        }
+      }
     }
   }
   
@@ -35,15 +55,21 @@ public class Sound: NonvisibleComponent {
   }
   
   public func Play() {
-    
+    if (audioPlayer != nil) {
+      audioPlayer?.play()
+    }
   }
   
   public func Pause() {
-    
+    if (audioPlayer != nil) {
+      audioPlayer?.pause()
+    }
   }
   
   public func Stop() {
-    
+    if (audioPlayer != nil) {
+      audioPlayer?.stop()
+    }
   }
   
   public func Vibrate(duration: Int32) {

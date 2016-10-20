@@ -8,12 +8,12 @@
 
 import Foundation
 
-public protocol AbstractMethodsForViewComponent {
+@objc public protocol AbstractMethodsForViewComponent: class {
   var view: UIView { get }
 }
 
-public class ViewComponent: VisibleComponent {
-  private final var _delegate: AbstractMethodsForViewComponent!
+public class ViewComponent: NSObject, VisibleComponent {
+  private weak var _delegate: AbstractMethodsForViewComponent?
   internal let _container: ComponentContainer
 
   private var _percentWidthHolder = kLengthUnknown
@@ -25,46 +25,62 @@ public class ViewComponent: VisibleComponent {
   private var _row = kDefaultRowColumn
 
   // needs to be public for extensions
-  public init(parent: ComponentContainer, delegate: AbstractMethodsForViewComponent!) {
+  public init(_ parent: ComponentContainer) {
     self._container = parent
+  }
+  
+  internal func setDelegate(_ delegate: AbstractMethodsForViewComponent) {
     self._delegate = delegate
   }
-  
-  public func Visible() -> Bool {
-    return !_delegate.view.isHidden
+
+  public var view: UIView {
+    get {
+      return (_delegate?.view)!
+    }
   }
-  
-  public func Visible(visibility: Bool) {
-    _delegate.view.isHidden = !visibility
+
+  public var Visible: Bool {
+    get {
+      return !(_delegate?.view.isHidden)!
+    }
+    set(visibility) {
+      _delegate?.view.isHidden = !visibility
+    }
   }
-  
-  public func Width() -> Int32 {
-    return Int32(_delegate.view.frame.width)
+
+  public var Width: Int32 {
+    get {
+      return Int32((_delegate?.view.frame.width)!)
+    }
+    set(to) {
+      var rect = (_delegate?.view.frame)!
+      rect.size.width = CGFloat(to)
+      _delegate?.view.frame = rect
+    }
   }
-  
-  public func Width(to: Int32) {
-    
-  }
-  
+
   public func WidthPercent(toPercent: Int32) {
-    
+    //TODO: implementation
   }
-  
-  public func Height() -> Int32 {
-    return Int32(_delegate.view.frame.height)
+
+  public var Height: Int32 {
+    get {
+      return Int32((_delegate?.view.frame.height)!)
+    }
+    set(to) {
+      var rect = (_delegate?.view.frame)!
+      rect.size.height = CGFloat(to)
+      _delegate?.view.frame = rect
+    }
   }
-  
-  public func Height(to: Int32) {
-    
-  }
-  
+
   public func HeightPercent(toPercent: Int32) {
-    
+    //TODO: implementation
   }
-  
+
   public var dispatchDelegate: HandlesEventDispatching {
     get {
-      return _container.form.dispatchDelegate
+      return (_container.form?.dispatchDelegate)!
     }
   }
 }

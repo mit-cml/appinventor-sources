@@ -8,11 +8,9 @@
 
 import Foundation
 
-public protocol VisibleComponent: Component {
-  func Width() -> Int32
-  func Width(to: Int32)
+@objc public protocol VisibleComponent: Component {
+  var Width: Int32 { get set }
   func WidthPercent(toPercent: Int32)
-  func Height() -> Int32
-  func Height(to: Int32)
+  var Height: Int32 { get set }
   func HeightPercent(toPercent: Int32)
 }

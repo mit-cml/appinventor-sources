@@ -8,8 +8,10 @@
 
 #import "AppInvHTTPD.h"
 #import <GCDWebServer/GCDWebServerDataResponse.h>
+#import <GCDWebServer/GCDWebServerDataRequest.h>
 #import <AIComponentKit/AIComponentKit-Swift.h>
 #import <CoreFoundation/CoreFoundation.h>
+#import <SchemeKit/SchemeKit.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
@@ -20,6 +22,7 @@
   NSString *_wwwroot;
   BOOL _secure;
   ReplForm *_form;
+  SCMInterpreter *_interpreter;
 }
 
 @end
@@ -38,9 +41,33 @@ static int _hmacSeq = 1;
   _hmacSeq = 1;
 }
 
+- (GCDWebServerResponse *)eval:(GCDWebServerDataRequest *)request {
+  if ([request hasBody]) {
+    NSString *yail = request.text;
+    if (!yail) {
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
+      response.statusCode = 400;
+      return response;
+    }
+    NSString *result = [_interpreter evalForm:yail];
+    if (_interpreter.exception) {
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"An internal error occurred"];
+      response.statusCode = 500;
+      return response;
+    } else {
+      return [GCDWebServerDataResponse responseWithText:result];
+    }
+  } else {
+    GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
+    response.statusCode = 400;
+    return response;
+  }
+}
+
 - (GCDWebServerResponse *)getVersion:(GCDWebServerRequest *)request {
+  UIDevice *device = [UIDevice currentDevice];
   NSDictionary *dict = @{
-    @"fingerprint": @"iPhone/iOS:9.3.5",
+    @"fingerprint": [NSString stringWithFormat:@"%@/%@:%@", device.model, device.systemName, device.systemVersion],
     @"fqcn": @true,
     @"installer": @"unknown",
     @"package": @"edu.mit.appinventor.aicompanion3",
@@ -69,6 +96,10 @@ static int _hmacSeq = 1;
     _wwwroot = [wwwroot copy];
     _secure = secure;
     _form = form;
+    _interpreter = [[SCMInterpreter alloc] init];
+    if (_form) {
+      [_interpreter setCurrentForm:_form];
+    }
     __weak AppInvHTTPD *httpd = self;
     // AppInvHTTPD paths:
     // * /_newblocks
@@ -87,6 +118,9 @@ static int _hmacSeq = 1;
     }];
     [self addHandlerForMethod:@"POST" path:@"/_newblocks" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
       return [httpd newblocks:request];
+    }];
+    [self addHandlerForMethod:@"POST" path:@"/_eval" requestClass:[GCDWebServerDataRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerDataRequest *request) {
+      return [httpd eval:request];
     }];
     [self addDefaultHandlerForMethod:@"OPTIONS" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
       return nil;

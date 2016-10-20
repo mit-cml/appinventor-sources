@@ -112,34 +112,126 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #if defined(__has_feature) && __has_feature(modules)
 @import ObjectiveC;
 @import UIKit;
+@import Foundation;
 #endif
 
 #pragma clang diagnostic ignored "-Wproperty-attribute-mismatch"
 #pragma clang diagnostic ignored "-Wduplicate-method-arg"
+@class UIView;
+
+SWIFT_PROTOCOL("_TtP14AIComponentKit31AbstractMethodsForViewComponent_")
+@protocol AbstractMethodsForViewComponent
+@property (nonatomic, readonly, strong) UIView * _Nonnull view;
+@end
+
+@protocol HandlesEventDispatching;
+
+SWIFT_PROTOCOL("_TtP14AIComponentKit9Component_")
+@protocol Component
+@property (nonatomic, readonly, strong) id <HandlesEventDispatching> _Nonnull dispatchDelegate;
+@end
+
+@protocol ComponentContainer;
 
 SWIFT_CLASS("_TtC14AIComponentKit19NonvisibleComponent")
-@interface NonvisibleComponent : NSObject
+@interface NonvisibleComponent : NSObject <Component>
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)dispatcher OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, strong) id <HandlesEventDispatching> _Nonnull dispatchDelegate;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 
 SWIFT_CLASS("_TtC14AIComponentKit14BarcodeScanner")
 @interface BarcodeScanner : NonvisibleComponent
+- (nonnull instancetype)initWithParent:(id <ComponentContainer> _Nonnull)container OBJC_DESIGNATED_INITIALIZER;
 @property (nonatomic, readonly, copy) NSString * _Nonnull Result;
 - (void)DoScan;
 - (void)AfterScanWithResult:(NSString * _Nonnull)result;
 @property (nonatomic) BOOL UseExternalScanner;
 - (void)receivedResultWithResult:(NSString * _Nonnull)result;
 - (void)canceled;
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)dispatcher SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_PROTOCOL("_TtP14AIComponentKit16VisibleComponent_")
+@protocol VisibleComponent <Component>
+@property (nonatomic) int32_t Width;
+- (void)WidthPercentToPercent:(int32_t)toPercent;
+@property (nonatomic) int32_t Height;
+- (void)HeightPercentToPercent:(int32_t)toPercent;
+@end
+
+
+SWIFT_CLASS("_TtC14AIComponentKit13ViewComponent")
+@interface ViewComponent : NSObject <VisibleComponent, Component>
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)parent OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, strong) UIView * _Nonnull view;
+@property (nonatomic) BOOL Visible;
+@property (nonatomic) int32_t Width;
+- (void)WidthPercentToPercent:(int32_t)toPercent;
+@property (nonatomic) int32_t Height;
+- (void)HeightPercentToPercent:(int32_t)toPercent;
+@property (nonatomic, readonly, strong) id <HandlesEventDispatching> _Nonnull dispatchDelegate;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC14AIComponentKit10ButtonBase")
+@interface ButtonBase : ViewComponent
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)parent OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, strong) UIView * _Nonnull view;
+@property (nonatomic) BOOL Enabled;
+@property (nonatomic, copy) NSString * _Nullable Text;
+@property (nonatomic) int32_t TextColor;
+@property (nonatomic, copy) NSString * _Nullable Image;
+- (BOOL)longClick;
+@end
+
+
+SWIFT_CLASS("_TtC14AIComponentKit6Button")
+@interface Button : ButtonBase <AbstractMethodsForViewComponent>
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)parent OBJC_DESIGNATED_INITIALIZER;
+- (void)click;
+- (void)Click;
+- (void)LongClick;
+@end
+
+
+
+
+SWIFT_PROTOCOL("_TtP14AIComponentKit23HandlesEventDispatching_")
+@protocol HandlesEventDispatching
+- (BOOL)canDispatchEventOf:(id <Component> _Nonnull)component called:(NSString * _Nonnull)eventName;
+- (BOOL)dispatchEventOf:(id <Component> _Nonnull)component called:(NSString * _Nonnull)componentName with:(NSString * _Nonnull)eventName having:(NSArray * _Nonnull)args;
+@end
+
+@class Form;
+
+SWIFT_PROTOCOL("_TtP14AIComponentKit18ComponentContainer_")
+@protocol ComponentContainer <HandlesEventDispatching>
+@property (nonatomic, readonly, strong) Form * _Nullable form;
+- (void)add:(ViewComponent * _Nonnull)component;
+- (void)setChildWidthOf:(ViewComponent * _Nonnull)component width:(int32_t)width;
+- (void)setChildHeightOf:(ViewComponent * _Nonnull)component height:(int32_t)height;
+@property (nonatomic, readonly) int32_t Width;
+@property (nonatomic, readonly) int32_t Height;
 @end
 
 @class NSBundle;
 @class NSCoder;
 
 SWIFT_CLASS("_TtC14AIComponentKit4Form")
-@interface Form : UIViewController
+@interface Form : UIViewController <Component, ComponentContainer, HandlesEventDispatching>
 @property (nonatomic, readonly, copy) NSString * _Nonnull APPINVENTOR_URL_SCHEME;
-@property (nonatomic, readonly, strong) Form * _Nonnull form;
+@property (nonatomic, readonly, copy) NSArray<id <Component>> * _Nonnull components;
+- (BOOL)canDispatchEventOf:(id <Component> _Nonnull)component called:(NSString * _Nonnull)eventName;
+- (BOOL)dispatchEventOf:(id <Component> _Nonnull)component called:(NSString * _Nonnull)componentName with:(NSString * _Nonnull)eventName having:(NSArray * _Nonnull)args;
+@property (nonatomic, readonly, strong) id <HandlesEventDispatching> _Nonnull dispatchDelegate;
+@property (nonatomic, readonly, strong) Form * _Nullable form;
+- (void)add:(ViewComponent * _Nonnull)component;
+- (void)setChildWidthOf:(ViewComponent * _Nonnull)component width:(int32_t)width;
+- (void)setChildHeightOf:(ViewComponent * _Nonnull)component height:(int32_t)height;
 @property (nonatomic) int32_t Width;
 @property (nonatomic) int32_t Height;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
@@ -148,8 +240,10 @@ SWIFT_CLASS("_TtC14AIComponentKit4Form")
 
 
 
+
 SWIFT_CLASS("_TtC14AIComponentKit11PhoneStatus")
 @interface PhoneStatus : NonvisibleComponent
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)dispatcher OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
@@ -162,6 +256,7 @@ SWIFT_CLASS("_TtC14AIComponentKit8ReplForm")
 
 SWIFT_CLASS("_TtC14AIComponentKit5Sound")
 @interface Sound : NonvisibleComponent
+- (nonnull instancetype)init:(id <ComponentContainer> _Nonnull)container OBJC_DESIGNATED_INITIALIZER;
 @property (nonatomic, copy) NSString * _Nonnull Source;
 @property (nonatomic) int32_t MinimumInterval;
 - (void)Play;
@@ -169,6 +264,16 @@ SWIFT_CLASS("_TtC14AIComponentKit5Sound")
 - (void)Stop;
 - (void)VibrateWithDuration:(int32_t)duration;
 - (void)SoundErrorWithMessage:(NSString * _Nonnull)message;
+@end
+
+
+
+
+SWIFT_CLASS("_TtC14AIComponentKit16YailRuntimeError")
+@interface YailRuntimeError : NSException
+- (nonnull instancetype)init:(NSString * _Nonnull)message :(NSString * _Nonnull)errorType OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithName:(NSExceptionName _Nonnull)aName reason:(NSString * _Nullable)aReason userInfo:(NSDictionary * _Nullable)aUserInfo SWIFT_UNAVAILABLE;
 @end
 
 #pragma clang diagnostic pop

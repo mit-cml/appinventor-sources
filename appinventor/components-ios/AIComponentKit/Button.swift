@@ -8,6 +8,23 @@
 
 import Foundation
 
-public final class Button: ButtonBase {
+public final class Button: ButtonBase, AbstractMethodsForButton {
+  public override init(_ parent: ComponentContainer) {
+    super.init(parent)
+    super.setDelegate(self)
+    _view.titleLabel?.text = "Button1"
+    parent.add(self)
+  }
+
+  public func click() {
+    Click()
+  }
+
+  public func Click() {
+    EventDispatcher.dispatchEvent(of: self, called: "Click")
+  }
   
+  public func LongClick() {
+    EventDispatcher.dispatchEvent(of: self, called: "LongClick")
+  }
 }

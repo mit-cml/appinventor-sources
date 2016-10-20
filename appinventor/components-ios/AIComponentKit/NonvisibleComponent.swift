@@ -11,8 +11,8 @@ import Foundation
 public class NonvisibleComponent: NSObject, Component {
   private final var _dispatcher: HandlesEventDispatching
 
-  public init(dispatcher: HandlesEventDispatching) {
-    self._dispatcher = dispatcher
+  public init(_ dispatcher: ComponentContainer) {
+    self._dispatcher = (dispatcher.form?.dispatchDelegate)!
   }
 
   public var dispatchDelegate: HandlesEventDispatching {

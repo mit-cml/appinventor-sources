@@ -72,7 +72,7 @@ public class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
   public init(parent container: ComponentContainer) {
     self._container = container
     self._viewController = BarcodeScannerViewController()
-    super.init(dispatcher: container)
+    super.init(container)
     self._viewController.barcodeDelegate = self
   }
 

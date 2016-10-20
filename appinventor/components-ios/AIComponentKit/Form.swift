@@ -14,12 +14,19 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   private let RESULT_NAME = "APP_INVENTOR_RESULT"
   private let ARGUMENT_NAME = "APP_INVENTOR_START"
   public let APPINVENTOR_URL_SCHEME = "appinventor"
-  var activeForm: Form?
+  weak var activeForm: Form?
   private var deviceDensity: Float?
   private var compatScalingFactor: Float?
   private var applicationIsBeingClosed = false
   var formName: String?
   private var screenInitialized = false
+  private var _components: [Component] = []
+  
+  public var components: [Component] {
+    get {
+      return _components
+    }
+  }
   
   public func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     // TODO(ewpatton): Implementation
@@ -37,14 +44,16 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var form: Form {
+  public var form: Form? {
     get {
       return self
     }
   }
 
-  public func add(component: ViewComponent) {
+  public func add(_ component: ViewComponent) {
     // TODO(ewpatton): Implementation
+    _components.append(component)
+    view.addSubview(component.view)
   }
   
   public func setChildWidth(of component: ViewComponent, width: Int32) {

@@ -1,0 +1,84 @@
+//
+//  SCMMethod.m
+//  SchemeKit
+//
+//  Created by Evan Patton on 10/9/16.
+//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
+//
+
+#import "SCMMethod.h"
+
+@interface SCMMethod() {
+ @private
+  Class _class;
+  SEL _selector;
+  NSString *_yailName;
+  NSMethodSignature *_signature;
+  BOOL _static;
+}
+
+@end
+
+@implementation SCMMethod
+
+- (instancetype)initWithMethod:(Method)method forClass:(Class)clazz isStatic:(BOOL)isStatic {
+  if (self = [super init]) {
+    _static = isStatic;
+    _class = clazz;
+    _selector = method_getName(method);
+    
+    // Get Yail method name
+    NSString *name = [NSString stringWithUTF8String:sel_getName(_selector)];
+    NSArray<NSString *> *parts = [name componentsSeparatedByString:@":"];
+    _yailName = parts[0];
+    if ([_yailName isEqualToString:@"init"]) {
+      if (parts.count == 1) {
+        _yailName = name;
+      } else {
+        NSMutableString *tempName = [NSMutableString stringWithString:parts[0]];
+        for (NSUInteger i = 0; i < parts.count - 1; ++i) {
+          [tempName appendString:@":"];
+        }
+        _yailName = [tempName copy];
+      }
+    }
+    
+    // Get method signature
+    if (isStatic) {
+      _signature = [clazz methodSignatureForSelector:_selector];
+    } else {
+      _signature = [clazz instanceMethodSignatureForSelector:_selector];
+    }
+  }
+  return self;
+}
+
+- (NSInvocation *)unboundInvocation {
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:_signature];
+  invocation.selector = _selector;
+  return invocation;
+}
+
+- (NSInvocation *)invocationForInstance:(id)target {
+  NSInvocation *invocation = nil;
+  if (!_static) {
+    invocation = [NSInvocation invocationWithMethodSignature:_signature];
+    invocation.target = target;
+    invocation.selector = _selector;
+  }
+  return invocation;
+}
+
+- (NSInvocation *)staticInvocation {
+  NSInvocation *invocation = nil;
+  if (_static) {
+    invocation = [NSInvocation invocationWithMethodSignature:_signature];
+    invocation.target = _class;
+    invocation.selector = _selector;
+  }
+  return invocation;
+}
+
+@synthesize yailName = _yailName;
+
+@end
