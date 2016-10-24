@@ -1209,7 +1209,7 @@
 ;;         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 (define (use-json-format)
-  (let ((json? (SimpleForm:getShowListsInJsonFormat())))
+  (let ((json? (SimpleForm:getShowListsInJsonFormat)))
     json?))
 	
 
