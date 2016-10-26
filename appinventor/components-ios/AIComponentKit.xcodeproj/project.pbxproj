@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		015A801724ED3B62EC778C62 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B4C4BF823BDCA482F6441C /* Pods_AIComponentKitTests.framework */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -18,12 +17,6 @@
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
 		06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */; };
-		06AC1CCB1DB4FA3400A59EB3 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
-		06AC1CCC1DB4FA3400A59EB3 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
-		06AC1CCD1DB4FB6700A59EB3 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
-		06AC1CCE1DB4FB6700A59EB3 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
-		06AC1CCF1DB4FB8200A59EB3 /* GCDWebServer.framework in Resources */ = {isa = PBXBuildFile; fileRef = 06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */; };
-		06AC1CD01DB4FB8200A59EB3 /* ZXingObjC.framework in Resources */ = {isa = PBXBuildFile; fileRef = 06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */; };
 		06B215FA1DB950F6000B3366 /* HorizontalArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */; };
 		06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B215FB1DB95109000B3366 /* VerticalArrangement.swift */; };
 		06B215FE1DB95116000B3366 /* Web.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B215FD1DB95116000B3366 /* Web.swift */; };
@@ -32,8 +25,11 @@
 		06B216041DB95146000B3366 /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B216031DB95146000B3366 /* Notifier.swift */; };
 		06B216061DB95155000B3366 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B216051DB95155000B3366 /* Image.swift */; };
 		06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B216071DB954A5000B3366 /* ColorUtil.swift */; };
-		06B216101DBC0066000B3366 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B2160F1DBC0066000B3366 /* SchemeKit.framework */; };
 		06B216201DBDACBF000B3366 /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 06B2161E1DBDA4B4000B3366 /* runtime.scm */; };
+		06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747B1DC06F6B003888CB /* GCDWebServer.framework */; };
+		06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */; };
+		06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747D1DC06F6B003888CB /* SchemeKit.framework */; };
+		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
 		06B586F31DC0029B0092C9DD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A27B1D8CECAC0013A191 /* UIKit.framework */; };
 		06B586FB1DC0029B0092C9DD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B586F41DC0029B0092C9DD /* AudioToolbox.framework */; };
 		06B586FC1DC0029B0092C9DD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B586F51DC0029B0092C9DD /* AVFoundation.framework */; };
@@ -63,7 +59,6 @@
 		06E59EB11D92D16100C42804 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB01D92D16100C42804 /* Button.swift */; };
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
-		B12269CD109CCE20720B32B9 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,20 +68,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0618A2831D8CF4EE0013A191;
 			remoteInfo = AIComponentKit;
-		};
-		0657D8F61DC02E1200258142 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0657D8F11DC02E1200258142 /* SchemeKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 06FCDEE01D94383000199DD4;
-			remoteInfo = SchemeKit;
-		};
-		0657D8F81DC02E1200258142 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0657D8F11DC02E1200258142 /* SchemeKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 06FCDEE91D94383000199DD4;
-			remoteInfo = SchemeKitTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -109,13 +90,10 @@
 		062832951DBE9591009605D5 /* LinearLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearLayout.swift; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
-		0657D8F11DC02E1200258142 /* SchemeKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SchemeKit.xcodeproj; path = SchemeKit/SchemeKit.xcodeproj; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIComponentKitTests.m; sourceTree = "<group>"; };
-		06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "build/Debug-iphonesimulator/GCDWebServer/GCDWebServer.framework"; sourceTree = "<group>"; };
-		06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "build/Debug-iphonesimulator/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
 		06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalArrangement.swift; sourceTree = "<group>"; };
 		06B215FB1DB95109000B3366 /* VerticalArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerticalArrangement.swift; sourceTree = "<group>"; };
 		06B215FD1DB95116000B3366 /* Web.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Web.swift; sourceTree = "<group>"; };
@@ -124,8 +102,11 @@
 		06B216031DB95146000B3366 /* Notifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
 		06B216051DB95155000B3366 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		06B216071DB954A5000B3366 /* ColorUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
-		06B2160F1DBC0066000B3366 /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "SchemeKit/build/Debug-iphonesimulator/SchemeKit.framework"; sourceTree = "<group>"; };
 		06B2161E1DBDA4B4000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = AIComponentKit/runtime.scm; sourceTree = SOURCE_ROOT; };
+		06B3747B1DC06F6B003888CB /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "Pods/../build/Release-iphoneos/GCDWebServer/GCDWebServer.framework"; sourceTree = "<group>"; };
+		06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AIComponentKit.framework; path = "Pods/../build/Release-iphoneos/Pods_AIComponentKit.framework"; sourceTree = "<group>"; };
+		06B3747D1DC06F6B003888CB /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "build/Release-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
+		06B3747E1DC06F6B003888CB /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "Pods/../build/Release-iphoneos/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
 		06B586F41DC0029B0092C9DD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		06B586F51DC0029B0092C9DD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		06B586F61DC0029B0092C9DD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -148,11 +129,9 @@
 		06E59EB21D92D19600C42804 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
-		22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
-		A1B4C4BF823BDCA482F6441C /* Pods_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,6 +140,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */,
+				06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */,
+				06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */,
+				06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */,
 				06B586FB1DC0029B0092C9DD /* AudioToolbox.framework in Frameworks */,
 				06B586FC1DC0029B0092C9DD /* AVFoundation.framework in Frameworks */,
 				06B586FD1DC0029B0092C9DD /* CoreGraphics.framework in Frameworks */,
@@ -169,10 +152,6 @@
 				06B587001DC0029B0092C9DD /* ImageIO.framework in Frameworks */,
 				06B587011DC0029B0092C9DD /* QuartzCore.framework in Frameworks */,
 				06B586F31DC0029B0092C9DD /* UIKit.framework in Frameworks */,
-				06B216101DBC0066000B3366 /* SchemeKit.framework in Frameworks */,
-				06AC1CCD1DB4FB6700A59EB3 /* GCDWebServer.framework in Frameworks */,
-				06AC1CCE1DB4FB6700A59EB3 /* ZXingObjC.framework in Frameworks */,
-				B12269CD109CCE20720B32B9 /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,10 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06AC1CCB1DB4FA3400A59EB3 /* GCDWebServer.framework in Frameworks */,
-				06AC1CCC1DB4FA3400A59EB3 /* ZXingObjC.framework in Frameworks */,
 				0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */,
-				015A801724ED3B62EC778C62 /* Pods_AIComponentKitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,6 +169,10 @@
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				06B3747B1DC06F6B003888CB /* GCDWebServer.framework */,
+				06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */,
+				06B3747D1DC06F6B003888CB /* SchemeKit.framework */,
+				06B3747E1DC06F6B003888CB /* ZXingObjC.framework */,
 				06B586F41DC0029B0092C9DD /* AudioToolbox.framework */,
 				06B586F51DC0029B0092C9DD /* AVFoundation.framework */,
 				06B586F61DC0029B0092C9DD /* CoreGraphics.framework */,
@@ -200,13 +180,8 @@
 				06B586F81DC0029B0092C9DD /* CoreVideo.framework */,
 				06B586F91DC0029B0092C9DD /* ImageIO.framework */,
 				06B586FA1DC0029B0092C9DD /* QuartzCore.framework */,
-				06B2160F1DBC0066000B3366 /* SchemeKit.framework */,
-				06AC1CC91DB4FA3400A59EB3 /* GCDWebServer.framework */,
-				06AC1CCA1DB4FA3400A59EB3 /* ZXingObjC.framework */,
 				0618A27D1D8CF3DE0013A191 /* Foundation.framework */,
 				0618A27B1D8CECAC0013A191 /* UIKit.framework */,
-				22EC5C8DAB203E8ACA696705 /* Pods_AIComponentKit.framework */,
-				A1B4C4BF823BDCA482F6441C /* Pods_AIComponentKitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -233,15 +208,6 @@
 				06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */,
 			);
 			path = AIComponentKitTests;
-			sourceTree = "<group>";
-		};
-		0657D8F21DC02E1200258142 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0657D8F71DC02E1200258142 /* SchemeKit.framework */,
-				0657D8F91DC02E1200258142 /* SchemeKitTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		06DA9F571D8D0B4B00389B04 /* util */ = {
@@ -319,7 +285,6 @@
 		06EF8CDF1D8CE2F6009FB227 = {
 			isa = PBXGroup;
 			children = (
-				0657D8F11DC02E1200258142 /* SchemeKit.xcodeproj */,
 				0618A2851D8CF4EE0013A191 /* AIComponentKit */,
 				0618A2901D8CF4EE0013A191 /* AIComponentKitTests */,
 				06EF8CE91D8CE2F7009FB227 /* Products */,
@@ -439,12 +404,6 @@
 			mainGroup = 06EF8CDF1D8CE2F6009FB227;
 			productRefGroup = 06EF8CE91D8CE2F7009FB227 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 0657D8F21DC02E1200258142 /* Products */;
-					ProjectRef = 0657D8F11DC02E1200258142 /* SchemeKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				0618A2831D8CF4EE0013A191 /* AIComponentKit */,
@@ -453,30 +412,11 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-		0657D8F71DC02E1200258142 /* SchemeKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SchemeKit.framework;
-			remoteRef = 0657D8F61DC02E1200258142 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0657D8F91DC02E1200258142 /* SchemeKitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = SchemeKitTests.xctest;
-			remoteRef = 0657D8F81DC02E1200258142 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
-
 /* Begin PBXResourcesBuildPhase section */
 		0618A2821D8CF4EE0013A191 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06AC1CCF1DB4FB8200A59EB3 /* GCDWebServer.framework in Resources */,
-				06AC1CD01DB4FB8200A59EB3 /* ZXingObjC.framework in Resources */,
 				06B216201DBDACBF000B3366 /* runtime.scm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -641,10 +581,9 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
-					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
-					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphoneos",
-					"$(PROJECT_DIR)/SchemeKit/build/Debug-iphonesimulator",
+					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
+					"$(PROJECT_DIR)/build/Release-iphoneos",
+					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
 				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -676,8 +615,11 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/SchemeKit/build/Release-iphoneos",
+					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
+					"$(PROJECT_DIR)/build/Release-iphoneos",
+					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
 				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -724,11 +666,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ENABLE_MODULES = YES;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/build/Debug-iphonesimulator/GCDWebServer",
-					"$(PROJECT_DIR)/build/Debug-iphonesimulator/ZXingObjC",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKitTests;

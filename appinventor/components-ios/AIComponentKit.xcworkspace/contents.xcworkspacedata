@@ -2,10 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:AICompanionApp/AICompanionApp.xcodeproj">
+      location = "group:AICompanionApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SchemeKit/SchemeKit.xcodeproj">
+      location = "group:SchemeKit.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:AIComponentKit.xcodeproj">
