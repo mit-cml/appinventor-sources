@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import AICompanion
+@testable import AICompanionApp
 
 class AICompanionTests: XCTestCase {
     
@@ -21,9 +21,12 @@ class AICompanionTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testSha1Hmac() {
+      let seed = "lwearr"
+      let code = seed.hmac(algorithm: CryptoAlgorithm.SHA1)
+      NSLog("Seed = \(seed)")
+      NSLog("Code = \(code)")
+      XCTAssertEqual("cf81fecc42ff40eacc2e65413d5673ead3ec791b", code)
     }
     
     func testPerformanceExample() {

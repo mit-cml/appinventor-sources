@@ -6,5 +6,6 @@
 //  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
 //
 
-//#import <AIComponentKit/AIComponentKit.h>
-#import "TestObj.h"
+#import <AIComponentKit/AIComponentKit.h>
+#import <CommonCrypto/CommonHMAC.h>
+#import "NSString_SHA1.h"

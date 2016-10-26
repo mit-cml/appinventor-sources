@@ -11,6 +11,8 @@
 #import "SCMMethod.h"
 
 static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod *> *> *methodLookupDict = nil;
+static NSString *JAVA_PACKAGE = @"com.google.appinventor.components.runtime";
+static NSString *SWIFT_PACKAGE = @"AIComponentKit";
 
 @implementation SCMNameResolver
 
@@ -68,7 +70,20 @@ static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod
 
 
 + (Class)classFromQualifiedName:(const char *)name {
-  return NSClassFromString([NSString stringWithUTF8String:name]);
+  NSString *localName = [NSString stringWithUTF8String:name];
+  if ([localName hasPrefix:JAVA_PACKAGE]) {
+    localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
+  }
+  return NSClassFromString(localName);
+}
+
+
++ (Protocol *)protocolFromQualifiedName:(const char *)name {
+  NSString *localName = [NSString stringWithUTF8String:name];
+  if ([localName hasPrefix:JAVA_PACKAGE]) {
+    localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
+  }
+  return NSProtocolFromString(localName);
 }
 
 

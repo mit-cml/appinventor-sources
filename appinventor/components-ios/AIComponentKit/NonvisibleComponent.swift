@@ -15,6 +15,10 @@ public class NonvisibleComponent: NSObject, Component {
     self._dispatcher = (dispatcher.form?.dispatchDelegate)!
   }
 
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
+  }
+  
   public var dispatchDelegate: HandlesEventDispatching {
     get {
       return _dispatcher

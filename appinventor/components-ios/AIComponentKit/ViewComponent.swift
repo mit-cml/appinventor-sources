@@ -28,6 +28,10 @@ public class ViewComponent: NSObject, VisibleComponent {
   public init(_ parent: ComponentContainer) {
     self._container = parent
   }
+
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
+  }
   
   internal func setDelegate(_ delegate: AbstractMethodsForViewComponent) {
     self._delegate = delegate

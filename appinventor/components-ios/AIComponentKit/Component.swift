@@ -110,6 +110,6 @@ let kSliderThumbValue = (kSliderMinValue + kSliderMaxValue)
 let kDefaultValueTextToSpeechCountry = ""
 let kDefaultValueTextToSpeechLanguage = ""
 
-@objc public protocol Component {
+@objc public protocol Component: NSCopying {
   var dispatchDelegate: HandlesEventDispatching { get }
 }

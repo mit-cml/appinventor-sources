@@ -10,9 +10,10 @@ import UIKit
 import AIComponentKit
 import AVKit
 
-class ViewController: UINavigationController {
+public class ViewController: UINavigationController {
   public var Height: Int32 = 0
   public var Width: Int32 = 0
+  private static var controller: ViewController?
 
   public func setChildHeight(of component: ViewComponent, height: Int32) {
     
@@ -25,28 +26,55 @@ class ViewController: UINavigationController {
   @IBOutlet public var form: Form?
 
   @IBOutlet weak var ipAddrLabel: UILabel?
-  @IBOutlet weak var serverStatus: UILabel?
-  @IBOutlet weak var button: UIButton?
-  var httpd: AppInvHTTPD?
-  var temp: TestObj?
+  @IBOutlet weak var versionNumber: UILabel?
+  @IBOutlet weak var connectCode: UITextField?
+  @IBOutlet weak var connectButton: UIButton?
+  @IBOutlet weak var barcodeButton: UIButton?
+  var barcodeScanner: BarcodeScanner?
+//  var httpd: AppInvHTTPD?
 
-  override func viewDidLoad() {
+  public override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     //barcodeScanner = BarcodeScanner(parent: self)
     //pushViewController(form, animated: false);
+    ViewController.controller = self
   }
   
-  override func viewWillAppear(_ animated: Bool) {
+  public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    let seed = "lwearr"
+    let code = seed.sha1
+    NSLog("Seed = \(seed)")
+    NSLog("Code = \(code)")
+    assert("cf81fecc42ff40eacc2e65413d5673ead3ec791b" == code)
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm;
+      form?.Initialize()
+      let repl = form! as! ReplForm
+      repl.startHTTPD(secure: false)
+      repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
+      if ((repl.interpreter?.exception) != nil) {
+        NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+      }
+      repl.interpreter?.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
+      if ((repl.interpreter?.exception) != nil) {
+        NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+      }
+      if let mooning = UIImage(named: "mooning.png") {
+        form?.view.backgroundColor = UIColor(patternImage: mooning)
+      }
       ipAddrLabel = form?.view.viewWithTag(1) as! UILabel?
-      serverStatus = form?.view.viewWithTag(2) as! UILabel?
+      versionNumber = form?.view.viewWithTag(2) as! UILabel?
+      connectCode = form?.view.viewWithTag(3) as! UITextField?
+      connectButton = form?.view.viewWithTag(4) as! UIButton?
+      barcodeButton = form?.view.viewWithTag(5) as! UIButton?
       let ipaddr: String! = NetworkUtils.getIPAddress()
-      ipAddrLabel?.text = "IP Address: " + ipaddr
-      serverStatus?.text = "Server status: running"
-      httpd = AppInvHTTPD(port:8001, rootDirectory:"", secure:false, for:form as! ReplForm)
+      ipAddrLabel?.text = "IP Address: \(ipaddr!)"
+      versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
+      connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControlEvents.primaryActionTriggered)
+      barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControlEvents.primaryActionTriggered)
+//      httpd = AppInvHTTPD(port:8001, rootDirectory:"", secure:false, for:form as! ReplForm)
 //      let temp = UIButton(type: UIButtonType.system)
 //      let image = UIImage(named: "kitty.png")
 //      temp.setBackgroundImage(image, for: UIControlState.normal)
@@ -78,11 +106,11 @@ class ViewController: UINavigationController {
     audioPlayer?.play()
   }
 
-  override func viewDidAppear(_ animated: Bool) {
+  public override func viewDidAppear(_ animated: Bool) {
 //    self.playSound(self)
   }
 
-  override func didReceiveMemoryWarning() {
+  public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
@@ -97,6 +125,34 @@ class ViewController: UINavigationController {
 
   func add(_ component: ViewComponent) {
     
+  }
+  
+  func connect(_ sender: UIButton?) {
+    let code = (connectCode?.text?.sha1)!
+    NSLog("Seed = \((connectCode?.text)!)")
+    NSLog("Code = \(code)")
+    let url = URL(string: "http://rendezvous.appinventor.mit.edu/rendezvous/");
+    var request = URLRequest(url: url!)
+    let values = "key=\(code)&ipaddr=\((NetworkUtils.getIPAddress())!)&port=9987"
+    NSLog("Values = \(values)")
+    request.httpMethod = "POST"
+    request.httpBody = values.data(using: String.Encoding.utf8)
+    URLSession.shared.dataTask(with: request).resume()
+  }
+  
+  func showBarcodeScanner(_ sender: UIButton?) {
+    let repl = (form! as! ReplForm)
+    repl.interpreter?.evalForm("(yail:invoke (lookup-in-form-environment 'BarcodeScanner1) 'DoScan)")
+    if ((repl.interpreter?.exception) != nil) {
+      NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+    }
+  }
+  
+  public class func gotText(_ text: String) {
+    ViewController.controller?.connectCode?.text = text
+    if (text != "") {
+      ViewController.controller?.connect(nil)
+    }
   }
 }
 

@@ -9,6 +9,7 @@
 #import "AppInvHTTPD.h"
 #import <GCDWebServer/GCDWebServerDataResponse.h>
 #import <GCDWebServer/GCDWebServerDataRequest.h>
+#import <GCDWebServer/GCDWebServerURLEncodedFormRequest.h>
 #import <AIComponentKit/AIComponentKit-Swift.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <SchemeKit/SchemeKit.h>
@@ -32,6 +33,8 @@ static int _hmacSeq = 1;
 
 @implementation AppInvHTTPD
 
+@synthesize interpreter = _interpreter;
+
 + (void)setHmacKey:(NSString *)key {
   _hmacKey = [key copy];
   _hmacSeq = 1;
@@ -51,7 +54,8 @@ static int _hmacSeq = 1;
     }
     NSString *result = [_interpreter evalForm:yail];
     if (_interpreter.exception) {
-      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"An internal error occurred"];
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]];
+      [_interpreter clearException];
       response.statusCode = 500;
       return response;
     } else {
@@ -83,11 +87,78 @@ static int _hmacSeq = 1;
 }
 
 - (GCDWebServerResponse *)values:(GCDWebServerRequest *)request {
-  return nil;
+  sleep(10);
+  GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"{\"status\":\"OK\",\"values\":[]}"];
+  response.contentType = @"application/json";
+  response.statusCode = 200;
+  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+  return response;
 }
 
-- (GCDWebServerResponse *)newblocks:(GCDWebServerRequest *)request {
-  return nil;
+- (GCDWebServerResponse *)newblocks:(GCDWebServerURLEncodedFormRequest *)request {
+  if ([request hasBody]) {
+    NSString *yail = request.arguments[@"code"];
+    yail = [yail stringByReplacingOccurrencesOfString:@"\\u000a" withString:@"\n"];
+    if (!yail) {
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
+      response.statusCode = 400;
+      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+      return response;
+    }
+    NSString *result = [_interpreter evalForm:yail];
+    if (_interpreter.exception) {
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]];
+      [_interpreter clearException];
+      response.statusCode = 500;
+      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+      return response;
+    } else {
+      result = [result stringByReplacingOccurrencesOfString:@"\n" withString:@"\\u000a"];
+      NSString *responseText = [NSString stringWithFormat:@"{\"status\":\"OK\",\"values\":[%@]}", [result isEqualToString:@"#undefined"] ? @"" : [NSString stringWithFormat:@"\"%@\"", result] ];
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:responseText];
+      response.contentType = @"application/json";
+      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+      return response;
+    }
+  } else {
+    GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
+    response.statusCode = 400;
+    [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+    [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+    [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+    return response;
+  }
+}
+
+- (GCDWebServerResponse *)handlePut:(GCDWebServerDataRequest *)request {
+  BOOL error = false;
+  if (!request.hasBody) {
+    
+  }
+  GCDWebServerDataResponse *response = nil;
+  if (error) {
+    response = [GCDWebServerDataResponse responseWithText:@"NOTOK"];
+  } else {
+    response = [GCDWebServerDataResponse responseWithText:@"OK"];
+  }
+  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+  return response;
 }
 
 - (instancetype)initWithPort:(NSUInteger)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure
@@ -113,20 +184,26 @@ static int _hmacSeq = 1;
     [self addHandlerForMethod:@"GET" path:@"/_getversion" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
       return [httpd getVersion:request];
     }];
-    [self addHandlerForMethod:@"GET" path:@"/_values" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+    [self addHandlerForMethod:@"POST" path:@"/_values" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
       return [httpd values:request];
     }];
-    [self addHandlerForMethod:@"POST" path:@"/_newblocks" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
+    [self addHandlerForMethod:@"POST" path:@"/_newblocks" requestClass:[GCDWebServerURLEncodedFormRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerURLEncodedFormRequest *request) {
       return [httpd newblocks:request];
     }];
     [self addHandlerForMethod:@"POST" path:@"/_eval" requestClass:[GCDWebServerDataRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerDataRequest *request) {
       return [httpd eval:request];
     }];
     [self addDefaultHandlerForMethod:@"OPTIONS" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
-      return nil;
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"OK"];
+      response.statusCode = 200;
+      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+      return response;
     }];
-    [self addDefaultHandlerForMethod:@"PUT" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerRequest *request) {
-      return nil;
+    [self addDefaultHandlerForMethod:@"PUT" requestClass:[GCDWebServerDataRequest class] processBlock:^GCDWebServerResponse *(__kindof GCDWebServerDataRequest *request) {
+      return [httpd handlePut:request];
     }];
     [self startWithPort:port
             bonjourName:[NSString stringWithFormat:@"AI2 Companion on %@",

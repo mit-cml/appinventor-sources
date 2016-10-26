@@ -16,13 +16,46 @@
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
 
+@class ProtocolWrapper;
+
 /** Used to maintain references to objects GCed by Picrin */
-static NSMutableSet *objects = nil;
+static NSMutableDictionary<id, NSNumber *> *objects = nil;
+static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
+
+
+@interface ProtocolWrapper: NSObject<NSCopying> {
+  Protocol *protocol_;
+}
+- (instancetype)initWithProtocol:(Protocol *)protocol;
+@property (readonly) Protocol *protocol;
+@end
+
+@implementation ProtocolWrapper
+
+- (instancetype)initWithProtocol:(Protocol *)protocol {
+  if (self = [super init]) {
+    self->protocol_ = protocol;
+  }
+  return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
+}
+
+@synthesize protocol = protocol_;
+
+@end
 
 
 struct native_class {
   OBJECT_HEADER
   Class class_;
+};
+
+struct native_protocol {
+  OBJECT_HEADER
+  __unsafe_unretained Protocol *protocol_;
 };
 
 struct native_method {
@@ -107,9 +140,15 @@ yail_make_instance(pic_state *pic);
 
 pic_value
 yail_make_native_class(pic_state *pic, Class clazz) {
+  NSNumber *wrappedValue = nil;
+  if ((wrappedValue = [objects objectForKey:clazz])) {
+    return (pic_value) wrappedValue.unsignedLongLongValue;
+  }
   native_class *native = (native_class *)pic_obj_alloc(pic, offsetof(native_class, class_), YAIL_TYPE_CLASS);
   native->class_ = clazz;
-  return pic_obj_value(native);
+  pic_value value = pic_obj_value(native);
+  objects[clazz] = [NSNumber numberWithUnsignedLongLong:value];
+  return value;
 }
 
 const char *
@@ -119,16 +158,54 @@ yail_native_class_name(pic_state *PIC_UNUSED(pic), struct native_class *data) {
 
 void
 yail_native_class_dtor(pic_state *pic, struct native_class *data) {
-  // no-op
+  [objects removeObjectForKey:data->class_];
+}
+
+#pragma mark Native Protocol values
+
+pic_value
+yail_make_native_protocol(pic_state *pic, Protocol *protocol) {
+  NSNumber *wrappedValue = nil;
+  ProtocolWrapper *wrapper = [protocols objectForKey:NSStringFromProtocol(protocol)];
+  if (wrapper) {
+    if ((wrappedValue = [objects objectForKey:wrapper])) {
+      return (pic_value) wrappedValue.unsignedLongLongValue;
+    }
+  }
+  wrapper = [[ProtocolWrapper alloc] initWithProtocol:protocol];
+  [protocols setObject:wrapper forKey:NSStringFromProtocol(protocol)];
+  native_protocol *native = (native_protocol *)pic_obj_alloc(pic, offsetof(native_protocol, protocol_), YAIL_TYPE_PROTOCOL);
+  native->protocol_ = protocol;
+  pic_value value = pic_obj_value(native);
+  objects[wrapper] = [NSNumber numberWithUnsignedLongLong:value];
+  return value;
+}
+
+const char *
+yail_native_protocol_name(pic_state *PIC_UNUSED(pic), struct native_protocol *data) {
+  return [NSStringFromProtocol(data->protocol_) UTF8String];
+}
+
+void
+yail_native_protocol_dtor(pic_state *pic, struct native_protocol *data) {
+  NSString *protocolName = NSStringFromProtocol(data->protocol_);
+  ProtocolWrapper *wrapper = [protocols objectForKey:protocolName];
+  [protocols removeObjectForKey:protocolName];
+  [objects removeObjectForKey:wrapper];
 }
 
 #pragma mark Native Method values
 
 pic_value
 yail_make_native_method(pic_state *pic, SCMMethod *method) {
+  NSNumber *wrappedValue = nil;
+  if ((wrappedValue = [objects objectForKey:method])) {
+    return (pic_value) wrappedValue.unsignedLongLongValue;
+  }
   native_method *native = (native_method *)pic_obj_alloc(pic, offsetof(native_method, method_), YAIL_TYPE_METHOD);
   native->method_ = method;
-  [objects addObject:method];
+  pic_value value = pic_obj_value(native);
+  objects[method] = [NSNumber numberWithUnsignedLongLong:value];
   return pic_obj_value(native);
 }
 
@@ -139,17 +216,22 @@ yail_native_method_name(pic_state *PIC_UNUSED(pic), struct native_method *obj) {
 
 void
 yail_native_method_dtor(pic_state *pic, struct native_method *method) {
-  [objects removeObject:method->method_];
+  [objects removeObjectForKey:method->method_];
 }
 
 #pragma mark Native Instance values
 
 pic_value
 yail_make_native_instance(pic_state *pic, id object) {
+  NSNumber *wrappedValue = nil;
+  if ((wrappedValue = [objects objectForKey:object])) {
+    return (pic_value) wrappedValue.unsignedLongLongValue;
+  }
   native_instance *native = (native_instance *)pic_obj_alloc(pic, offsetof(native_instance, object_), YAIL_TYPE_INSTANCE);
   native->object_ = object;
-  [objects addObject:object];
-  return pic_obj_value(native);
+  pic_value value = pic_obj_value(native);
+  objects[object] = [NSNumber numberWithUnsignedLongLong:value];
+  return value;
 }
 
 const char *
@@ -162,7 +244,7 @@ yail_native_instance_typename(pic_state *PIC_UNUSED(pic), struct native_instance
 
 void
 yail_native_instance_dtor(pic_state *pic, struct native_instance *instance) {
-  [objects removeObject:instance->object_];
+  [objects removeObjectForKey:instance->object_];
 }
 
 int
@@ -190,13 +272,18 @@ yail_resolve_native_symbol(pic_state *pic, pic_value uid) {
       pic_weak_set(pic, pic->globals, uid, yail_make_native_class(pic, clazz));
       return 0;
     }
+    Protocol *proto = [SCMNameResolver protocolFromQualifiedName:[localSymbol UTF8String]];
+    if (proto != nil) {
+      pic_weak_set(pic, pic->globals, uid, yail_make_native_protocol(pic, proto));
+      return 0;
+    }
   }
   return 1;
 }
 
 void
 yail_set_current_form(pic_state *pic, pic_value form) {
-  pic_set(pic, "yail", "current-form", form);
+  pic_set(pic, "yail", "*this-form*", form);
 }
 
 pic_value
@@ -275,18 +362,34 @@ yail_invoke(pic_state *pic) {
   
   NSMutableArray *argTypes = [NSMutableArray arrayWithCapacity:argc];
   SCMMethod *method = nil;
+  int isStatic = yail_native_class_p(pic, native_object) ? 1 : 0;
   if (yail_native_method_p(pic, native_method)) {
     method = yail_native_method_ptr(pic, native_method)->method_;
   } else if (pic_sym_p(pic, native_method)) {
     const char *name = pic_str(pic, pic_sym_name(pic, native_method));
-    method = [SCMNameResolver methodForClass:[yail_native_instance_ptr(pic, native_object)->object_ class] withName:name argumentTypeList:argTypes];
+    if (isStatic) {
+      method = [SCMNameResolver methodForClass:yail_native_class_ptr(pic, native_object)->class_ withName:name argumentTypeList:argTypes];
+    } else {
+      method = [SCMNameResolver methodForClass:[yail_native_instance_ptr(pic, native_object)->object_ class] withName:name argumentTypeList:argTypes];
+    }
+  } else if (pic_id_p(pic, native_method)) {
+    const char *name = pic_str(pic, pic_id_name(pic, native_method));
+    if (isStatic) {
+      method = [SCMNameResolver methodForClass:yail_native_class_ptr(pic, native_object)->class_ withName:name argumentTypeList:argTypes];
+    } else {
+      method = [SCMNameResolver methodForClass:[yail_native_instance_ptr(pic, native_object)->object_ class] withName:name argumentTypeList:argTypes];
+    }
   }
   if (!method) {
     pic_error(pic, "unrecognized method", 1, native_method);
   }
   NSInvocation *invocation = nil;
   if (yail_native_class_p(pic, native_object)) {
-    invocation = [method invocationForInstance:yail_native_class_ptr(pic, native_object)->class_];
+    if (isStatic) {
+      invocation = [method staticInvocation];
+    } else {
+      invocation = [method invocationForInstance:yail_native_class_ptr(pic, native_object)->class_];
+    }
   } else {
     invocation = [method invocationForInstance:yail_native_instance_ptr(pic, native_object)->object_];
   }
@@ -297,8 +400,22 @@ yail_invoke(pic_state *pic) {
       double value = pic_float(pic, args[i]);
       [invocation setArgument:&value atIndex:j];
     } else if (pic_int_p(pic, args[i])) {
-      int value = pic_int(pic, args[i]);
-      [invocation setArgument:&value atIndex:j];
+      switch ([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
+        case 'f': {
+          float value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'd': {
+          double value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        default: {
+          int value = pic_int(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+        }
+      }
     } else if (pic_str_p(pic, args[i])) {
       const char *str_value = pic_str(pic, args[i]);
       NSString *native_str = [NSString stringWithUTF8String:str_value];
@@ -312,8 +429,13 @@ yail_invoke(pic_state *pic) {
     } else if (yail_native_instance_p(pic, args[i])) {
       id object = yail_native_instance_ptr(pic, args[i])->object_;
       [invocation setArgument:&object atIndex:j];
+    } else if (pic_sym_p(pic, args[i])) {
+      NSString *symname = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, args[i]))];
+      [invocation setArgument:&symname atIndex:j];
     } else {
-      pic_error(pic, "incompatible yail type received %s", 1, pic_typename(pic, pic_type(pic, args[i])));
+      NSLog(@"incompatible yail type received %s in call to %s at index %d",
+            pic_typename(pic, pic_type(pic, args[i])), method.yailName, i);
+      pic_error(pic, "incompatible yail type received", 1, pic_cstr_value(pic, pic_typename(pic, pic_type(pic, args[i]))));
     }
   }
   
@@ -370,11 +492,55 @@ yail_invoke(pic_state *pic) {
   return pic_undef_value(pic);
 }
 
+id yail_to_native(pic_state *pic, pic_value result) {
+  if (pic_str_p(pic, result)) {
+    const char *str = pic_str(pic, result);
+    return [NSString stringWithUTF8String:str];
+  } else if (pic_int_p(pic, result)) {
+    return [NSNumber numberWithInteger:pic_int(pic, result)];
+  } else if (pic_float_p(pic, result)) {
+    return [NSNumber numberWithDouble:pic_float(pic, result)];
+  } else if (yail_native_instance_p(pic, result)) {
+    __unsafe_unretained id unsafeId = yail_native_instance_ptr(pic, result)->object_;
+    return unsafeId;
+  }
+  return nil;
+}
+
+pic_value
+yail_isa(pic_state *pic) {
+  pic_value native_object, native_class;
+  
+  pic_get_args(pic, "oo", &native_object, &native_class);
+  if (!yail_native_instance_p(pic, native_object)) {
+    return pic_false_value(pic);
+  }
+  id object = yail_native_instance_ptr(pic, native_object)->object_;
+  if (yail_native_class_p(pic, native_class)) {
+    Class clazz = yail_native_class_ptr(pic, native_class)->class_;
+    if ([object isKindOfClass:clazz]) {
+      return pic_true_value(pic);
+    } else {
+      return pic_false_value(pic);
+    }
+  } else if (yail_native_protocol_p(pic, native_class)) {
+    Protocol *protocol = yail_native_protocol_ptr(pic, native_class)->protocol_;
+    if ([object conformsToProtocol:protocol]) {
+      return pic_true_value(pic);
+    } else {
+      return pic_false_value(pic);
+    }
+  } else {
+    pic_error(pic, "Expected a native class or protocol", 1, native_class);
+  }
+  
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
   pic_deflibrary(pic, "yail");
-  pic_define(pic, "yail", "current-form", pic_nil_value(pic));
+  pic_define(pic, "yail", "*this-form*", pic_nil_value(pic));
   pic_defun(pic, "yail:find-class", pic_yail_find_class);
   pic_defun(pic, "yail:type?", pic_yail_is_type);
   pic_defun(pic, "yail:set-property!", pic_yail_set_property);
@@ -387,5 +553,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:call-static-method", pic_yail_call_static_method);
   pic_defun(pic, "yail:make-instance", yail_make_instance);
   pic_defun(pic, "yail:invoke", yail_invoke);
-  objects = [NSMutableSet set];
+  pic_defun(pic, "yail:isa", yail_isa);
+  objects = [NSMutableDictionary dictionary];
+  protocols = [NSMutableDictionary dictionary];
 }

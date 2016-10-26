@@ -8,7 +8,9 @@
 
 import Foundation
 
-@objc public protocol HandlesEventDispatching {
+
+
+@objc public protocol HandlesEventDispatching: NSCopying {
     func canDispatchEvent(of component: Component, called eventName: String) -> Bool
     func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool
 }

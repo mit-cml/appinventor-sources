@@ -15,4 +15,16 @@ public class ComponentConstants {
   }
 }
 
+public enum HorizontalGravity: Int32 {
+  case left = 1
+  case right = 2
+  case center = 3
+}
+
+public enum VerticalGravity: Int32 {
+  case top = 1
+  case center = 2
+  case bottom = 3
+}
+
 let kDefaultRowColumn: Int32 = -1;

@@ -20,7 +20,7 @@ public class ButtonBase: ViewComponent {
   final var _view: UIButton
   private weak var _delegate: AbstractMethodsForButton?
   private var _textAlignment = Alignment.center
-  private var _backgroundColor = Color.DEFAULT
+  private var _backgroundColor = Int32(bitPattern: Color.DEFAULT.rawValue)
   private var _fontTypeface = Typeface.normal
   private var _bold = false
   private var _showFeedback = true
@@ -32,6 +32,8 @@ public class ButtonBase: ViewComponent {
   public override init(_ parent: ComponentContainer) {
     self._view = UIButton(type: UIButtonType.system)
     super.init(parent)
+    self._view.backgroundColor = argbToColor(_backgroundColor)
+//    self._view.translatesAutoresizingMaskIntoConstraints = false
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForButton) {
@@ -44,6 +46,16 @@ public class ButtonBase: ViewComponent {
       return _view
     }
   }
+  
+  public var BackgroundColor: Int32 {
+    get {
+      return _backgroundColor
+    }
+    set(argb) {
+      _backgroundColor = argb
+      self._view.backgroundColor = argbToColor(argb)
+    }
+  }
 
   public var Enabled: Bool {
     get {
@@ -53,42 +65,13 @@ public class ButtonBase: ViewComponent {
       _view.isEnabled = enabled
     }
   }
-
-  public var Text: String? {
+  
+  public var FontSize: Float32 {
     get {
-      return _view.title(for: UIControlState.normal)
+      return Float32((_view.titleLabel?.font.pointSize)!)
     }
-    set(text) {
-      _view.setTitle(text, for: UIControlState.normal)
-    }
-  }
-
-  public var TextColor: Int32 {
-    get {
-      var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
-      let color = _view.titleLabel?.textColor
-      color?.getRed(&r, green: &g, blue: &b, alpha: &a)
-      var intColor: Int32 = 0
-      intColor |= ((Int32)(255 * a))
-      intColor <<= 8
-      intColor |= ((Int32)(255 * r))
-      intColor <<= 8
-      intColor |= ((Int32)(255 * g))
-      intColor <<= 8
-      intColor |= ((Int32)(255 * b))
-      return intColor
-    }
-    set(color) {
-      var r: Float = 0.0, g: Float = 0.0, b: Float = 0.0, a: Float = 0.0
-      var mutableColor = color
-      b = Float(mutableColor & 0xFF) / 255.0
-      mutableColor >>= 8
-      g = Float(mutableColor & 0xFF) / 255.0
-      mutableColor >>= 8
-      r = Float(mutableColor & 0xFF) / 255.0
-      mutableColor >>= 8
-      a = Float(mutableColor & 0xFF) / 255.0
-      _view.titleLabel?.textColor = UIColor(colorLiteralRed: r, green: g, blue: b, alpha: a)
+    set(size) {
+      _view.titleLabel?.font = _view.titleLabel?.font.withSize(CGFloat(size))
     }
   }
 
@@ -106,10 +89,39 @@ public class ButtonBase: ViewComponent {
           NSLog("Image is not nil");
           _imagePath = path
           _view.setBackgroundImage(image, for: UIControlState.normal)
+          NSLog("Width: \((image?.size.width)!) Height: \((image?.size.height)!)")
+          _view.frame.size = (image?.size)!
+          let constraints = [
+            _view.widthAnchor.constraint(equalToConstant: (image?.size.width)!),
+            _view.heightAnchor.constraint(equalToConstant: (image?.size.height)!)
+          ]
+          _view.addConstraints(constraints)
+          NSLayoutConstraint.activate(constraints)
+          _view.invalidateIntrinsicContentSize()
+          _view.sizeToFit()
+          _view.setNeedsLayout()
         } else {
           NSLog("Image is nil");
         }
       }
+    }
+  }
+
+  public var Text: String? {
+    get {
+      return _view.title(for: UIControlState.normal)
+    }
+    set(text) {
+      _view.setTitle(text, for: UIControlState.normal)
+    }
+  }
+
+  public var TextColor: Int32 {
+    get {
+      return colorToArgb((_view.titleLabel?.textColor)!)
+    }
+    set(color) {
+      _view.titleLabel?.textColor = argbToColor(color)
     }
   }
 

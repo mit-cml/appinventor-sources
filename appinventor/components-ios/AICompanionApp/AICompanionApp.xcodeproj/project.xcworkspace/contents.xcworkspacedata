@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanion/AICompanion.xcodeproj">
+      location = "self:/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanionApp/AICompanionApp.xcodeproj">
    </FileRef>
 </Workspace>

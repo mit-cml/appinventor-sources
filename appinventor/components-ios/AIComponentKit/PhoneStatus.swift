@@ -12,4 +12,9 @@ public class PhoneStatus : NonvisibleComponent {
   func GetWifiIpAddress() -> String {
     return NetworkUtils.getIPAddress()
   }
+  
+  func isDirect() -> Bool {
+    //TODO: implementation
+    return false
+  }
 }

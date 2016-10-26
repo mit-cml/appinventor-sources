@@ -2,6 +2,8 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,26 +19,62 @@
                         <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iA3-M2-y0N">
-                                <frame key="frameInset" minX="50.00%" width="223" height="41"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="IP Address: 255.255.255.255" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p6J-cD-6g7">
-                                        <frame key="frameInset" width="223" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Server Status: not running" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="223" translatesAutoresizingMaskIntoConstraints="NO" id="feY-3N-R8a">
-                                        <frame key="frameInset" minY="21" width="223" height="21"/>
-                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Title.png" translatesAutoresizingMaskIntoConstraints="NO" id="c0w-mP-8IX">
+                                <constraints>
+                                    <constraint firstAttribute="height" secondItem="c0w-mP-8IX" secondAttribute="width" multiplier="75:450" id="YyK-ji-LzM"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instructions.png" translatesAutoresizingMaskIntoConstraints="NO" id="fs4-4D-vvR">
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="fs4-4D-vvR" secondAttribute="height" multiplier="800:200" constant="1" id="gH7-ya-JMI"/>
+                                </constraints>
+                            </imageView>
+                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Six Character Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gxM-wq-OQv">
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                            </textField>
+                            <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vZO-ch-Rin">
+                                <state key="normal" image="connectwCode.png"/>
+                            </button>
+                            <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmI-n4-yhD">
+                                <state key="normal" image="connectwQR.png"/>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version: Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXu-gl-0yY">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your IP Address is: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ste-Nv-ksy">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.78814870119094849" green="0.78828507661819458" blue="0.78814005851745605" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="c0w-mP-8IX" firstAttribute="leading" relation="lessThanOrEqual" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="1" id="09l-Z4-ElH"/>
+                            <constraint firstAttribute="trailingMargin" relation="lessThanOrEqual" secondItem="c0w-mP-8IX" secondAttribute="trailing" constant="1" id="8Iq-rQ-1HE"/>
+                            <constraint firstItem="aXu-gl-0yY" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="94X-dX-RMS"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="gxM-wq-OQv" secondAttribute="trailing" constant="16" id="9MB-fn-p3n"/>
+                            <constraint firstItem="fs4-4D-vvR" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="8" id="BLo-G5-i5W"/>
+                            <constraint firstItem="c0w-mP-8IX" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leading" id="CUL-N4-If3"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fs4-4D-vvR" secondAttribute="trailing" constant="8" id="Dtc-5I-bmt"/>
+                            <constraint firstItem="gxM-wq-OQv" firstAttribute="top" secondItem="fs4-4D-vvR" secondAttribute="bottom" constant="8" id="IX8-Gz-8Gd"/>
+                            <constraint firstItem="vZO-ch-Rin" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="NDD-Kl-xp3"/>
+                            <constraint firstItem="vZO-ch-Rin" firstAttribute="top" secondItem="gxM-wq-OQv" secondAttribute="bottom" constant="4" id="NRu-Jb-9yq"/>
+                            <constraint firstAttribute="trailing" secondItem="c0w-mP-8IX" secondAttribute="trailing" id="Oft-fQ-qkn"/>
+                            <constraint firstItem="aXu-gl-0yY" firstAttribute="top" secondItem="Ste-Nv-ksy" secondAttribute="bottom" id="SJA-CL-T9W"/>
+                            <constraint firstItem="QmI-n4-yhD" firstAttribute="top" secondItem="vZO-ch-Rin" secondAttribute="bottom" constant="8" id="SOw-1N-yfn"/>
+                            <constraint firstItem="QmI-n4-yhD" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="V6J-uB-GXA"/>
+                            <constraint firstItem="c0w-mP-8IX" firstAttribute="top" secondItem="BYZ-J5-ior" secondAttribute="bottom" id="W9K-zQ-RKR"/>
+                            <constraint firstItem="gxM-wq-OQv" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="Z08-jF-MP0"/>
+                            <constraint firstItem="fs4-4D-vvR" firstAttribute="top" secondItem="c0w-mP-8IX" secondAttribute="bottom" constant="8" id="ZDd-nE-j9W"/>
+                            <constraint firstItem="Ste-Nv-ksy" firstAttribute="top" secondItem="QmI-n4-yhD" secondAttribute="bottom" id="Zyc-T3-4ff"/>
+                            <constraint firstItem="Ste-Nv-ksy" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="ds2-gY-ASF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Ste-Nv-ksy" secondAttribute="trailing" constant="16" id="qMb-TK-qVD"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="aXu-gl-0yY" secondAttribute="trailing" constant="16" id="uiA-T0-V0i"/>
+                        </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="MIT AI Companion" id="XB1-Iu-yvL">
@@ -67,4 +105,10 @@
             <point key="canvasLocation" x="-190" y="690"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Instructions.png" width="800" height="200"/>
+        <image name="Title.png" width="480" height="75"/>
+        <image name="connectwCode.png" width="300" height="49"/>
+        <image name="connectwQR.png" width="300" height="49"/>
+    </resources>
 </document>

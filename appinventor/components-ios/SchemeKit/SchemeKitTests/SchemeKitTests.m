@@ -322,7 +322,26 @@ pic_init_picrin(pic_state *pic)
   MockContainer *container = [[MockContainer alloc] init];
   SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
   [interpreter setCurrentForm:container];
-  XCTAssertTrue([[interpreter evalForm:@"current-form"] containsString:@"MockContainer"]);
+  NSLog(@"*this-form* = %@", [interpreter evalForm:@"*this-form*"]);
+  XCTAssertTrue([[interpreter evalForm:@"*this-form*"] containsString:@"MockContainer"]);
+}
+
+- (void)testNativeInvocation {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  [interpreter evalForm:@"(define (add5 x) (+ x 5))"];
+  id result = [interpreter invokeMethod:@"add5", [NSNumber numberWithInt:5], nil];
+  XCTAssertNotNil(result);
+  XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+  XCTAssertEqual(10, ((NSNumber *)result).intValue);
+}
+
+- (void)testNSArrayToPicrin {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSArray *inputs = @[@1, @2, @3, @4, @5];
+  id result = [interpreter invokeMethod:@"length", inputs, nil];
+  XCTAssertNotNil(result);
+  XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+  XCTAssertEqual(5, [(NSNumber *)result intValue]);
 }
 
 @end

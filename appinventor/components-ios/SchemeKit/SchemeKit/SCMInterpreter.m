@@ -16,6 +16,7 @@
 pic_value yail_make_native_class(pic_state *, Class);
 pic_value yail_make_native_method(pic_state *, SCMMethod *);
 pic_value yail_make_native_instance(pic_state *, id);
+id yail_to_native(pic_state *, pic_value);
 
 extern char *picrin_native_stack_start;
 
@@ -30,13 +31,25 @@ pic_init_picrin(pic_state *pic)
   pic_init_yail(pic);
   pic_in_library(pic, "yail");
   pic_import(pic, "scheme.base");
+  pic_import(pic, "scheme.write");
+  pic_import(pic, "picrin.base");
 }
 
 static NSException *
 exception_from_pic_error(pic_state *pic, pic_value e) {
   const char *msg = pic_str(pic, pic_obj_value(pic_error_ptr(pic, e)->msg));
-  const char *irr = pic_str(pic, pic_error_ptr(pic, e)->irrs);
-  return [NSException exceptionWithName:[NSString stringWithUTF8String:msg] reason:[NSString stringWithUTF8String:irr] userInfo:nil];
+  pic_value e2, port, irrs = pic_error_ptr(pic, e)->irrs;
+  const char *buffer;
+  int buflen = 64;
+  pic_try {
+    port = pic_fmemopen(pic, NULL, buflen, "w");
+    pic_fprintf(pic, port, "~a\0", irrs);
+    pic_fgetbuf(pic, port, &buffer, &buflen);
+  } pic_catch(e2) {
+    NSLog(@"WTF");
+  }
+  NSString *irritants = [NSString stringWithFormat:@"Irritants: %s", buffer];
+  return [NSException exceptionWithName:[NSString stringWithUTF8String:msg] reason:irritants userInfo:nil];
 }
 
 @interface NSString (NSStringFromBuffer)
@@ -70,6 +83,62 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
 
 @synthesize exception = exception_;
 
+- (pic_value)picValueForObjCValue:(id)value {
+  if ([value isKindOfClass:[NSNumber class]]) {
+    NSNumber *number = (NSNumber *)value;
+    char c = number.objCType[0];
+    switch(c) {
+      case 'c':
+      case 's':
+      case 'i':
+      case 'l':
+        if (c != 'l' || sizeof(long) == sizeof(int)) {
+          return pic_int_value(pic_, number.intValue);
+        }
+      case 'q':
+        NSLog(@"[WARN] Support for 64-bit longs is not supported yet.");
+        break;
+      case 'C':
+      case 'S':
+      case 'I':
+      case 'L':
+        if (number.unsignedIntegerValue <= UINT32_MAX) {
+          return pic_int_value(pic_, number.intValue);
+        }
+      case 'Q':
+        NSLog(@"[WARN] Support for 64-bit longs is not supported yet.");
+        break;
+      case 'B':
+        if (number.boolValue) {
+          return pic_true_value(pic_);
+        } else {
+          return pic_false_value(pic_);
+        }
+        break;
+      case 'f':
+      case 'd':
+        return pic_float_value(pic_, number.doubleValue);
+      default:
+        break;
+    }
+  } else if ([value isKindOfClass:[NSString class]]) {
+    const char *buf = [(NSString *)value UTF8String];
+    return pic_str_value(pic_, buf, (int)strlen(buf));
+  } else if ([value isKindOfClass:[NSArray class]]) {
+    NSArray *items = (NSArray *)value;
+    if (items.count == 0) {
+      // special treatment of empty args list
+      return pic_nil_value(pic_);
+    }
+    pic_value *values = (pic_value *) malloc(sizeof(pic_value) * items.count);
+    for (NSUInteger i = 0 ; i < items.count ; ++i ) {
+      values[i] = [self picValueForObjCValue:items[i]];
+    }
+    return pic_make_list(pic_, items.count, values);
+  }
+  return yail_make_native_instance(pic_, value);
+}
+
 - (instancetype)init {
   if (self = [super init]) {
     pic_state *pic = pic_ = pic_open(pic_default_allocf, NULL);
@@ -79,6 +148,14 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
       pic_init_picrin(pic);
     } pic_catch(e) {
       exception_ = exception_from_pic_error(pic, e);
+    }
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"runtime" withExtension:@"scm"];
+    if (url) {
+      NSString *runtime = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
+      [self evalForm:runtime];
+    }
+    if (exception_) {
+      NSLog(@"Scheme exception: %@ (%@)", exception_.name, exception_);
     }
   }
   return self;
@@ -104,12 +181,12 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
       result = pic_eval(pic, program, "yail");
       buflen = 64;
       resultport = pic_fmemopen(pic, NULL, buflen, "w");
-      pic_fprintf(pic, resultport, "~s", result);
+      pic_fprintf(pic, resultport, "~a\0", result);
       pic_fgetbuf(pic, resultport, &buffer, &buflen);
       if (response) {
-        response = [NSString stringWithFormat:@"%@\n%@", response, [NSString stringFromBuffer:buffer withLength:buflen]];
+        response = [NSString stringWithFormat:@"%@\n%@", response, [NSString stringWithUTF8String:buffer]];
       } else {
-        response = [NSString stringFromBuffer:buffer withLength:buflen];
+        response = [NSString stringWithUTF8String:buffer];
       }
       pic_fclose(pic, resultport);
       pic_leave(pic, ai);
@@ -118,6 +195,53 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     exception_ = exception_from_pic_error(pic, e);
   }
   return response != nil ? response : @"";
+}
+
+- (id)invokeMethod:(NSString *)name withPicArgs:(NSArray<NSNumber *> *)arguments {
+  char t;
+  pic_value *nativeargs = (pic_value *)malloc(sizeof(pic_value) * arguments.count);
+  int argcount = 0;
+  for (NSNumber *v in arguments) {
+    nativeargs[argcount++] = (pic_value)v.unsignedLongLongValue;
+  }
+  pic_state *pic = pic_;
+  pic_value result, e;
+  const char *name_cstr = name.UTF8String;
+  picrin_native_stack_start = &t;
+  id objcResult = nil;
+  pic_try {
+    size_t ai = pic_enter(pic);
+    result = pic_apply(pic_, pic_ref(pic, "yail", name_cstr), (int)arguments.count, nativeargs);
+    objcResult = yail_to_native(pic, result);
+    pic_leave(pic, ai);
+  } pic_catch(e) {
+    exception_ = exception_from_pic_error(pic_, e);
+  }
+  return objcResult;
+}
+
+- (id)invokeMethod:(NSString *)name withArgs:(va_list)args {
+  NSMutableArray *pic_args = [NSMutableArray array];
+  for (id<NSObject> arg = va_arg(args, id); arg != nil; arg = va_arg(args, id)) {
+    [pic_args addObject:[NSNumber numberWithUnsignedLongLong:[self picValueForObjCValue:arg]]];
+  }
+  return [self invokeMethod:name withPicArgs:pic_args];
+}
+
+- (id)invokeMethod:(NSString *)name, ... {
+  va_list args;
+  va_start(args, name);
+  id result = [self invokeMethod:name withArgs:args];
+  va_end(args);
+  return result;
+}
+
+- (id)invokeMethod:(NSString *)name withArgArray:(NSArray *)args {
+  NSMutableArray *pic_args = [NSMutableArray arrayWithCapacity:args.count];
+  for (id arg in args) {
+    [pic_args addObject:[NSNumber numberWithUnsignedLongLong:[self picValueForObjCValue:arg]]];
+  }
+  return [self invokeMethod:name withPicArgs:pic_args];
 }
 
 - (void)clearException {
@@ -129,6 +253,7 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
   pic_value e;
   pic_try {
     yail_set_current_form(pic, yail_make_native_instance(pic, form));
+    pic_eval(pic, pic_read_cstr(pic, "(add-to-current-form-environment 'Screen1 *this-form*)"), "yail");
   } pic_catch(e) {
     exception_ = exception_from_pic_error(pic, e);
   }
