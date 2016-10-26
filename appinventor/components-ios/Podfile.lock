@@ -2,18 +2,28 @@ PODS:
   - GCDWebServer (3.3.3):
     - GCDWebServer/Core (= 3.3.3)
   - GCDWebServer/Core (3.3.3)
-  - ZXingObjC (3.1.0):
-    - ZXingObjC/All (= 3.1.0)
-  - ZXingObjC/All (3.1.0)
+  - ZXingObjC (3.2.0):
+    - ZXingObjC/All (= 3.2.0)
+  - ZXingObjC/All (3.2.0)
 
 DEPENDENCIES:
   - GCDWebServer (~> 3.0)
-  - ZXingObjC (~> 3.0)
+  - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `fa2f046`)
+
+EXTERNAL SOURCES:
+  ZXingObjC:
+    :commit: fa2f046
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
+
+CHECKOUT OPTIONS:
+  ZXingObjC:
+    :commit: fa2f046
+    :git: https://github.com/TheLevelUp/ZXingObjC.git
 
 SPEC CHECKSUMS:
   GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
-  ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
+  ZXingObjC: e586c17a941af870aeaf2cdd156ba628c206f54c
 
-PODFILE CHECKSUM: 1692506f26823fddcce71a5f5c56a1a366c5bdd4
+PODFILE CHECKSUM: c164a211d6820f0ee3fe42506038d49ea2c67600
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1

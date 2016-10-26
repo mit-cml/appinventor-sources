@@ -63,7 +63,6 @@
 
     _rotation = 0.0f;
     _running = NO;
-    _sessionPreset = AVCaptureSessionPresetMedium;
     _transform = CGAffineTransformIdentity;
     _scanRect = CGRectZero;
   }
@@ -512,8 +511,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   }
 
   if (self.input) {
-    self.session.sessionPreset = self.sessionPreset;
     [self.session addInput:self.input];
+#if TARGET_OS_IPHONE
+    if ([_session canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+      _sessionPreset = AVCaptureSessionPreset1920x1080;
+    } else {
+      _sessionPreset = AVCaptureSessionPreset1280x720;
+    }
+#else
+    _sessionPreset = AVCaptureSessionPreset1280x720;
+#endif
+    self.session.sessionPreset = self.sessionPreset;
   }
 
   [self.session commitConfiguration];

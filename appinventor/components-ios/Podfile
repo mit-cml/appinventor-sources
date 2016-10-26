@@ -7,7 +7,7 @@ target 'AIComponentKit' do
 
   # Pods for AIComponentKit
   pod "GCDWebServer", "~> 3.0"
-  pod "ZXingObjC", "~> 3.0"
+  pod "ZXingObjC", :git => 'https://github.com/TheLevelUp/ZXingObjC.git', :commit => 'fa2f046'
 
   target 'AIComponentKitTests' do
     inherit! :search_paths
