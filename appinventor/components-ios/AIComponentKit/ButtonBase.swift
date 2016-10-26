@@ -84,7 +84,10 @@ public class ButtonBase: ViewComponent {
         _view.setImage(nil, for: UIControlState.normal)
       } else {
         NSLog("Path: \(path)")
-        let image = UIImage(named: path!);
+        var image = UIImage(named: path!);
+        if (image == nil) {
+          image = UIImage(contentsOfFile: AssetManager.shared.pathForAsset(filename: path!))
+        }
         if (image != nil) {
           NSLog("Image is not nil");
           _imagePath = path
@@ -113,6 +116,7 @@ public class ButtonBase: ViewComponent {
     }
     set(text) {
       _view.setTitle(text, for: UIControlState.normal)
+      _view.frame.size = _view.intrinsicContentSize
     }
   }
 

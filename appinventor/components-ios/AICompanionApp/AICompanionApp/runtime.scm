@@ -229,7 +229,8 @@
 
 (define (coerce-to-instant arg)
   (cond
-   ((instance? arg java.util.Calendar) arg)
+   ;TODO(ewpatton): Represent objects with NSCalendar
+   ;((instance? arg java.util.Calendar) arg)
    (else *non-coercible-value*)))
 
 (define (coerce-to-component arg)
@@ -343,7 +344,8 @@
    ;; "list" here means a Kawa/Scheme list.  We transform it to a yail list, which
    ;; will in general require recursively transforming the components.
    ((list? data) (kawa-list->yail-list data))
-   ((instance? data JavaCollection) (java-collection->yail-list data))
+   ;TODO(ewpatton): Confirm that all collections are translated into Scheme lists
+   ;((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
 
 (define (sanitize-atomic arg)

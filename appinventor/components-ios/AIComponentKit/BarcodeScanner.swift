@@ -93,6 +93,8 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   }
 
   public func captureResult(_ capture: ZXCapture!, result: ZXResult!) {
+    self._capture.stop()
+    _started = false
     NSLog("Captured result: \(result)")
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     self.dismiss(animated: true, completion: {})
@@ -100,6 +102,8 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   }
 
   func cancel() {
+    self._capture.stop()
+    _started = false
     self.dismiss(animated: true, completion: {})
     _barcodeDelegate.canceled()
   }

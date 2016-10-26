@@ -76,8 +76,10 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     if components.count > 0 && components[components.count-1] is ViewComponent {
       let lastComponent = components[components.count-1] as! ViewComponent
       view.addConstraint(NSLayoutConstraint(item: component.view, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lastComponent.view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0))
-      view.setNeedsLayout()
     }
+    view.sizeToFit()
+    view.setNeedsLayout()
+    view.setNeedsUpdateConstraints()
     _components.append(component)
   }
   

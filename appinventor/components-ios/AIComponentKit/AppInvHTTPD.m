@@ -13,6 +13,7 @@
 #import <AIComponentKit/AIComponentKit-Swift.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <SchemeKit/SchemeKit.h>
+#import "RetValManager.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <ifaddrs.h>
@@ -102,6 +103,7 @@ static int _hmacSeq = 1;
   if ([request hasBody]) {
     NSString *yail = request.arguments[@"code"];
     yail = [yail stringByReplacingOccurrencesOfString:@"\\u000a" withString:@"\n"];
+    yail = [NSString stringWithFormat:@"(begin %@)", yail];
     if (!yail) {
       GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
       response.statusCode = 400;
@@ -113,6 +115,7 @@ static int _hmacSeq = 1;
     }
     NSString *result = [_interpreter evalForm:yail];
     if (_interpreter.exception) {
+      NSLog(@"Exception in YAIL: %@ (%@)", _interpreter.exception.name, _interpreter.exception);
       GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]];
       [_interpreter clearException];
       response.statusCode = 500;
@@ -122,9 +125,9 @@ static int _hmacSeq = 1;
       [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
       return response;
     } else {
-      result = [result stringByReplacingOccurrencesOfString:@"\n" withString:@"\\u000a"];
-      NSString *responseText = [NSString stringWithFormat:@"{\"status\":\"OK\",\"values\":[%@]}", [result isEqualToString:@"#undefined"] ? @"" : [NSString stringWithFormat:@"\"%@\"", result] ];
-      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:responseText];
+      result = [result stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+      [[RetValManager sharedManager] appendReturnValue:result forBlock:@"-2" withStatus:@"OK"];
+      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"{\"status\":\"OK\",\"values\":[]}"];
       response.contentType = @"application/json";
       [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
       [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
@@ -145,9 +148,24 @@ static int _hmacSeq = 1;
 
 - (GCDWebServerResponse *)handlePut:(GCDWebServerDataRequest *)request {
   BOOL error = false;
+
   if (!request.hasBody) {
-    
+    error = true;
+  } else {
+    NSString *filename = request.query[@"filename"];
+    if (filename) {
+      if ([filename hasPrefix:@".."] || [filename hasSuffix:@".."] || [filename containsString:@"../"]) {
+        error = true;
+      } else {
+        NSString *targetPath = [[AssetManager shared] pathForAssetWithFilename:filename];
+        NSLog(@"Saving asset to %@", targetPath);
+        [request.data writeToFile:targetPath atomically:YES];
+      }
+    } else {
+      error = true;
+    }
   }
+
   GCDWebServerDataResponse *response = nil;
   if (error) {
     response = [GCDWebServerDataResponse responseWithText:@"NOTOK"];

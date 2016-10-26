@@ -1,6 +1,0 @@
-framework module SchemeKit {
-  umbrella header "SchemeKit.h"
-
-  export *
-  module * { export * }
-}
