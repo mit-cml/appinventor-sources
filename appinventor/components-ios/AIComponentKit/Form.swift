@@ -8,13 +8,14 @@
 
 import Foundation
 import UIKit
+import Toast_Swift
 
 public class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching {
   private let TAG = "Form"
   private let RESULT_NAME = "APP_INVENTOR_RESULT"
   private let ARGUMENT_NAME = "APP_INVENTOR_START"
   public let APPINVENTOR_URL_SCHEME = "appinventor"
-  weak var activeForm: Form?
+  weak static var activeForm: Form?
   private var deviceDensity: Float?
   private var compatScalingFactor: Float?
   private var applicationIsBeingClosed = false
@@ -26,11 +27,15 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   private var _scrollable = false
   private var _title = "Screen1"
   private var _horizontalAlignment = HorizontalGravity.left.rawValue
+  private var _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
+  private var _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
   private var _verticalAlignment = VerticalGravity.top.rawValue
   private var _backgroundImage = ""
   private var _screenInitialized = false
   private var _viewLayout = LinearLayout()
   private var _compatibilityMode = true
+  private var _verticalLayout = CSLinearLayoutView()
+  private var _verticalItem: CSLinearLayoutItem!
   
   public func copy(with zone: NSZone? = nil) -> Any {
     return self
@@ -48,7 +53,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
       NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
     }
     if (canDispatch) {
-      activeForm = self
+      Form.activeForm = self
     }
     return canDispatch
   }
@@ -72,17 +77,36 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
 
   public func add(_ component: ViewComponent) {
     // TODO(ewpatton): Implementation
-    view.addSubview(component.view)
-    if components.count > 0 && components[components.count-1] is ViewComponent {
-      let lastComponent = components[components.count-1] as! ViewComponent
-      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lastComponent.view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0))
+    _components.append(component)
+    if view is CSLinearLayoutView {
+      component.view.sizeToFit()
+      let item = CSLinearLayoutItem(for: component.view)
+      item?.verticalAlignment = _csVerticalAlignment
+      item?.horizontalAlignment = _csHorizontalAlignment
+      _verticalLayout.addItem(item!)
+      _verticalLayout.layoutSubviews()
+      view.layoutSubviews()
+      NSLog("Horizontal frame size: \(view.frame)")
+      NSLog("Vertical frame size: \(_verticalLayout.frame)")
+    } else {
+      view.addSubview(component.view)
     }
-    view.sizeToFit()
+//    if components.count > 0 && components[components.count-1] is ViewComponent {
+//      let lastComponent = components[components.count-1] as! ViewComponent
+//      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: lastComponent.view, attribute: NSLayoutAttribute.bottom, multiplier: 1.0, constant: 0.0))
+//    }
+//    view.sizeToFit()
     view.setNeedsLayout()
     view.setNeedsUpdateConstraints()
-    _components.append(component)
   }
   
+  public func layoutSubviews() {
+    _verticalLayout.layoutSubviews()
+    view.layoutSubviews()
+    NSLog("Vertical frame size: \(_verticalLayout.frame)")
+    NSLog("Horizontal frame size: \(view.frame)")
+  }
+
   public func setChildWidth(of component: ViewComponent, width: Int32) {
     // TODO(ewpatton): Implementation
   }
@@ -91,6 +115,14 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     // TODO(ewpatton): Implementation
   }
   
+  public class func switchForm(_ name: String) {
+    activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
+  }
+  
+  public class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
+    activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
+  }
+
   public func clear() {
     let subviews = view.subviews
     for subview in subviews {
@@ -98,7 +130,17 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
       subview.removeFromSuperview()
     }
     _components = []
-    BackgroundColor = Int32(bitPattern: Color.white.rawValue)
+    let horizontal = CSLinearLayoutView(frame: view.frame)  // vertical alignment
+    horizontal.orientation = CSLinearLayoutViewOrientationHorizontal
+    view = horizontal
+    _verticalLayout = CSLinearLayoutView()
+    _verticalLayout.orientation = CSLinearLayoutViewOrientationVertical
+    _verticalLayout.autoAdjustFrameSize = true
+    _verticalLayout.autoAdjustContentSize = true
+    _verticalLayout.frame.size.width = horizontal.frame.size.width
+    _verticalItem = CSLinearLayoutItem(for: _verticalLayout)
+    horizontal.addItem(_verticalItem)
+    defaultPropertyValues()
   }
   
   public func callInitialize(_ component: Component) {
@@ -118,7 +160,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     TitleVisible = true
   }
   
-  /// Form Properties
+  // MARK: Form Properties
   public var AboutScreen: String? {
     get {
       return _aboutScreen
@@ -128,21 +170,31 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var AppName: String? {
-    get {
-      return _appName
-    }
-    set(aName) {
-      _appName = aName
-    }
-  }
-  
   public var AlignHorizontal: Int32 {
     get {
       return _horizontalAlignment
     }
     set(alignment) {
-      _horizontalAlignment = alignment
+      if view is CSLinearLayoutView, let halign = HorizontalGravity(rawValue: alignment) {
+        _horizontalAlignment = alignment
+        switch(halign) {
+          case .left:
+            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
+            break
+          case .center:
+            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentCenter
+            break
+          case .right:
+            _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentRight
+            break
+        }
+        let items = _verticalLayout.items
+        for item in items! {
+          let viewitem = item as! CSLinearLayoutItem
+          viewitem.horizontalAlignment = _csHorizontalAlignment
+        }
+        view.layoutSubviews()
+      }
     }
   }
   
@@ -151,7 +203,31 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
       return _verticalAlignment
     }
     set(alignment) {
-      _verticalAlignment = alignment
+      if view is CSLinearLayoutView, let valign = VerticalGravity(rawValue: alignment) {
+        _verticalAlignment = alignment
+        switch(valign) {
+        case .top:
+          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
+          break
+        case .center:
+          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentCenter
+          break
+        case .bottom:
+          _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentBottom
+          break
+        }
+        _verticalItem.verticalAlignment = _csVerticalAlignment
+        view.layoutSubviews()
+      }
+    }
+  }
+
+  public var AppName: String? {
+    get {
+      return _appName
+    }
+    set(aName) {
+      _appName = aName
     }
   }
   
@@ -176,6 +252,15 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
+  public var CloseScreenAnimation: String {
+    get {
+      return "slide"
+    }
+    set(animation) {
+      
+    }
+  }
+  
   public var Height: Int32 {
     get {
       // TODO(ewpatton): Implementation
@@ -183,6 +268,33 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
     set {
       // TODO(ewpatton): Implementation
+    }
+  }
+  
+  public var Icon: String {
+    get {
+      return ""
+    }
+    set(icon) {
+      
+    }
+  }
+  
+  public var OpenScreenAnimation: String {
+    get {
+      return "slide"
+    }
+    set(animation) {
+      
+    }
+  }
+  
+  public var ScreenOrientation: String {
+    get {
+      return "portrait"
+    }
+    set(orientation) {
+      
     }
   }
   
@@ -232,7 +344,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
       return (self.navigationController?.isNavigationBarHidden)!
     }
     set(show) {
-      self.navigationController?.setNavigationBarHidden(show, animated: true)
+      self.navigationController?.setNavigationBarHidden(!show, animated: true)
     }
   }
   
@@ -246,7 +358,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
 
-  /// Form Methods
+  // MARK: Form Methods
   public func Initialize() {
     _screenInitialized = true
   }

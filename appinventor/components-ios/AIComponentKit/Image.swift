@@ -31,12 +31,20 @@ public class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       _picturePath = path
-      if let image = UIImage(named: path) {
+      if path == "" {
+        _image = nil
+        _view.image = nil
+        _view.frame.size = CGSize(width: 0, height: 0)
+        _view.setNeedsUpdateConstraints()
+        _view.setNeedsLayout()
+      } else if let image = UIImage(named: path) {
         _image = image
         _view.image = image
+        _view.sizeToFit()
         _view.setNeedsUpdateConstraints()
         _view.setNeedsLayout()
       }
+      NSLog("Image size: \(_view.frame)")
     }
   }
   

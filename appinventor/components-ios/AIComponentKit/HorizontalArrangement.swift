@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+public class HorizontalArrangement: ViewComponent, AbstractMethodsForViewComponent {
+  
+}

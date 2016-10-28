@@ -418,3 +418,61 @@
      (with-exception-handler
       (lambda (e) (if e (begin (display e) (display "\n") handler)))
       (lambda () program ...)))))
+
+(define (call-yail-primitive prim arglist typelist codeblocks-name)
+  ;; (android-log (format #f "applying procedure: ~A to ~A" codeblocks-name arglist))
+  (let ((coerced-args (coerce-args codeblocks-name arglist typelist)))
+    (if (all-coercible? coerced-args)
+        ;; note that we don't need to sanitize because this is coming from a Yail primitive
+        (apply prim coerced-args)
+        (generate-runtime-type-error codeblocks-name arglist))))
+
+(define (open-another-screen screen-name)
+  (yail:invoke AIComponentKit.Form 'switchForm (coerce-to-string screen-name)))
+
+(define (open-another-screen-with-start-value screen-name start-value)
+  (yail:invoke AIComponentKit.Form 'switchFormWithStartValue (coerce-to-string screen-name) start-value))
+
+;;;; def
+
+;;; Def here is putting things (1) in the form environment; (2) in a
+;;; list of vars to put into the environment when the form is created.
+;;; Note that we have to worry about the case where a procedure P
+;;; initially defined from codeblocks get redefined from the
+;;; repl.  If we have another procedure Q that calls P, we have
+;;; to make sure that Q will see the new binding for P. Currentl,
+;;; "call" is set up to always look up the procedure name in the form
+;;; environment, EXCEPT for calling primitives, where it just looks up
+;;; the name.
+
+;;; def
+;;; (def var1 ...) ==> (define var1 ...)
+(define-syntax def
+  (syntax-rules ()
+    ;; There's some Kawa bug that gets exposed if you change the clause ordering here
+    ;; and put the var def rule before the func def rule.
+    ((_ (func-name args ...) body ...)
+     (begin
+       (if *this-is-the-repl*
+           (add-global-var-to-current-form-environment 'func-name
+                                            (lambda (args ...) body ...))
+           (add-to-global-vars 'func-name
+                               (lambda ()
+                                 (lambda (args ...) body ...))))))
+    ((_ var-name value)
+     (begin
+       (if *this-is-the-repl*
+           (add-global-var-to-current-form-environment 'var-name value)
+           (add-to-global-vars 'var-name
+                               (lambda () value)))))))
+(define (make-yail-list . args)
+  args)
+
+(define (add-global-var-to-current-form-environment name object)
+  (begin
+    (if (not (eq? *this-form* #!null))
+	(set! *current-form-environment* (cons (list name object) *current-form-environment*))
+        ;; The following is really for testing.  In normal situations *this-form* should be non-null
+	(set! *test-global-var-environment* (cons (list name object) *current-form-environment*)))
+    ;; return *the-null-value* rather than #!void, which would show as a blank in the repl balloon
+    *the-null-value*))

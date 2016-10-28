@@ -94,15 +94,17 @@ public class ButtonBase: ViewComponent {
           _view.setBackgroundImage(image, for: UIControlState.normal)
           NSLog("Width: \((image?.size.width)!) Height: \((image?.size.height)!)")
           _view.frame.size = (image?.size)!
-          let constraints = [
-            _view.widthAnchor.constraint(equalToConstant: (image?.size.width)!),
-            _view.heightAnchor.constraint(equalToConstant: (image?.size.height)!)
-          ]
-          _view.addConstraints(constraints)
-          NSLayoutConstraint.activate(constraints)
+//          _view.sizeToFit()
+//          let constraints = [
+//            _view.widthAnchor.constraint(equalToConstant: (image?.size.width)!),
+//            _view.heightAnchor.constraint(equalToConstant: (image?.size.height)!)
+//          ]
+//          _view.addConstraints(constraints)
+//          NSLayoutConstraint.activate(constraints)
           _view.invalidateIntrinsicContentSize()
-          _view.sizeToFit()
           _view.setNeedsLayout()
+          NSLog("Button frame size: \(_view.frame)")
+          _container.form?.layoutSubviews()
         } else {
           NSLog("Image is nil");
         }

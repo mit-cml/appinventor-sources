@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+public class TinyDB: NonvisibleComponent {
+  
+}

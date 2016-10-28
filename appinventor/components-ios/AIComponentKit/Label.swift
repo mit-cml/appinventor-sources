@@ -132,6 +132,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     set(text) {
       _view.text = text
       _view.frame.size = _view.intrinsicContentSize
+      _container.form?.layoutSubviews()
     }
   }
   
