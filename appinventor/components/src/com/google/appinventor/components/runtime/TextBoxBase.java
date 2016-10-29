@@ -14,11 +14,13 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 //import com.google.appinventor.components.runtime.parameters.BooleanReferenceParameter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
@@ -69,6 +71,14 @@ public abstract class TextBoxBase extends AndroidViewComponent
   public TextBoxBase(ComponentContainer container, EditText textview) {
     super(container);
     view = textview;
+    // There appears to be an issue where, by default, Android 7+
+    // wants to provide suggestions in text boxes. However, we do not
+    // compile the necessary layouts for this to work correctly, which
+    // results in an application crash. This disables that feature
+    // until we include newer Android layouts.
+    if (Build.VERSION.SDK_INT >= 24 /* Nougat */ ) {
+      EclairUtil.disableSuggestions(textview);
+    }
 
     // Listen to focus changes
     view.setOnFocusChangeListener(this);
