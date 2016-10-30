@@ -23,6 +23,10 @@
 
 (define *this-is-the-repl* #f)
 
+;;; We need to handle a few things differently
+;;; if we are running the tests.
+(define *testing* #t)
+
 (define (android-log message)
   (when *debug* (android.util.Log:i "YAIL" message)))
 
@@ -1192,25 +1196,13 @@
    (else *non-coercible-value*)))
 
 
-
-
-
-
-;;;!!!!!!
-;; (define (coerce-to-string arg)
-;;   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
-;;         ((string? arg) arg)
-;;         ((number? arg) (appinventor-number->string arg))
-;;         ((boolean? arg) (boolean->string arg))
-;;         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
-;;         ((list? arg)
-;;          (let ((pieces (map coerce-to-string arg)))
-;;             (call-with-output-string (lambda (port) (display pieces port)))))
-;;         (else (call-with-output-string (lambda (port) (display arg port))))))
-
 (define (use-json-format)
-  (let ((json? (SimpleForm:getShowListsInJsonFormat)))
-    json?))
+  (if *testing*
+      ;; we cannot access SimpleForm if the companion is not connected
+      ;; so we will always use JSON format when testing
+      #t
+      (let ((json? (SimpleForm:getShowListsInJsonFormat)))
+	json?)))
 	
 
 (define (coerce-to-string arg)
@@ -1226,39 +1218,6 @@
 	     (let ((pieces (map coerce-to-string arg)))
 	       (call-with-output-string (lambda (port) (display pieces port))))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
-
-
-;;; !!!!
-;;; This is very similar to coerce-to-string, but is intended for places where we
-;;; want to make the structure more clear.  For example, the empty string should
-;;; be explicity shown in error messages.
-;;; This procedure is currently almost completely redundant with coerce-to-string
-;;; but it give us flexibility to tailor display for other data types
-;; (define get-display-representation
-;;   ;; there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
-;;   ;; which is why this uses 1.0 and -1.0
-;;   (let ((+inf (/ 1.0 0))
-;;         (-inf (/ -1.0 0)))
-;;     (lambda (arg)
-;;       (cond ((= arg +inf) "+infinity")
-;;             ((= arg -inf) "-infinity")
-;;             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
-;;             ((symbol? arg)
-;;              (symbol->string arg))
-;;             ((string? arg)
-;;              (if (string=? arg "")
-;;                  *the-empty-string-printed-rep*
-;;                  arg))
-;;             ((number? arg) (appinventor-number->string arg))
-;;             ((boolean? arg) (boolean->string arg))
-;;             ((yail-list? arg) (get-display-representation (yail-list->kawa-list arg)))
-;;             ((list? arg)
-;;              (let ((pieces (map get-display-representation arg)))
-;;                (call-with-output-string (lambda (port) (display pieces port)))))
-;;             (else (call-with-output-string (lambda (port) (display arg port))))))))
-
-;;;;!!!! The above should be replaced by this .....
-
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
 ;;; want to make the structure more clear.  For example, the empty string should
@@ -1879,22 +1838,24 @@ list, use the make-yail-list constructor with no arguments.
 
 ;;; converts a yail list to a CSV-formatted table and returns the text.
 ;;; yl should be a YailList, each element of which is a YailList as well.
-;;; inner list elements sanitized
+;;; inner list elements are sanitized
+;;; TODO(hal): do better checking that the input is well-formed
 (define (yail-list-to-csv-table yl)
   (if (not (yail-list? yl))
     (signal-runtime-error "Argument value to \"list to csv table\" must be a list" "Expecting list")
-    (CsvUtil:toCsvTable (apply make-yail-list (map convert-to-strings (yail-list-contents yl))))))
+    (CsvUtil:toCsvTable (apply make-yail-list (map convert-to-strings-for-csv (yail-list-contents yl))))))
 
 ;;; converts a yail list to a CSV-formatted row and returns the text.
 ;;; yl should be a YailList
 ;;; atomic elements sanitized
+;;; TODO(hal): do better checking that the input is well-formed
 (define (yail-list-to-csv-row yl)
   (if (not (yail-list? yl))
     (signal-runtime-error "Argument value to \"list to csv row\" must be a list" "Expecting list")
-    (CsvUtil:toCsvRow (convert-to-strings yl))))
+    (CsvUtil:toCsvRow (convert-to-strings-for-csv yl))))
 
 ;; convert each element of YailList yl to a string and return the resulting YailList
-(define (convert-to-strings yl)
+(define (convert-to-strings-for-csv yl)
   (cond ((yail-list-empty? yl) yl)
     ((not (yail-list? yl)) (make-yail-list yl))
     (else (apply make-yail-list (map coerce-to-string (yail-list-contents yl))))))
