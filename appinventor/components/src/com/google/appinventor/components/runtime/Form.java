@@ -1656,12 +1656,12 @@ public class Form extends Activity
 
 
   /**
-   * Returns whether to print lists in JSON format
+   * Returns whether to print lists in Lisp notation with parens
    *
    */
-  // Temporarily akways return true.  We'll hook in a property setter after the rest is debugged
-  public static boolean getShowListsInJsonFormat() {
-    return true;
+  // Temporarily akways return false.  We'll hook in a property setter after the rest is debugged
+  public static boolean getShowListsAsLisp() {
+    return false;
   }
   
   /**

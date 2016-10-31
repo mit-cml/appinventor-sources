@@ -25,6 +25,7 @@
 
 ;;; We need to handle a few things differently
 ;;; if we are running the tests.
+;;; !!!!! change this to false before submitting pull request !!!!
 (define *testing* #t)
 
 (define (android-log message)
@@ -1198,10 +1199,10 @@
 
 (define (use-json-format)
   (if *testing*
-      ;; we cannot access SimpleForm if the companion is not connected
+      ;; we cannot access SimpleForm unless the companion is connected
       ;; so we will always use JSON format when testing
       #t
-      (let ((json? (SimpleForm:getShowListsInJsonFormat)))
+      (let ((json? (not (SimpleForm:getShowListsAsLisp))))
 	json?)))
 	
 
