@@ -1,13 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import android.os.Handler;
@@ -30,15 +30,10 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * A container for components that arranges them linearly, either
@@ -352,15 +347,33 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
         // Load image from file.
         if (imagePath.length() > 0) {
-            try {
-                backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
-            } catch (IOException ioe) {
-                // Fall through with a value of null for backgroundImageDrawable.
+          MediaUtil.getBitmapDrawableAsync(container.$form(), imagePath, new AsyncCallbackPair<BitmapDrawable>() {
+            @Override
+            public void onFailure(String message) {
+              Log.w(LOG_TAG, "Error loading background for canvas: " + message);
+              container.$form().dispatchErrorOccurredEvent(HVArrangement.this, "Image", ErrorMessages.ERROR_CANNOT_READ_FILE, imagePath);
             }
-        }
 
-        // Update the appearance based on the new value of backgroundImageDrawable.
-        updateAppearance();
+            @Override
+            public void onException(Exception e) {
+              Log.w(LOG_TAG, "Error loading background for canvas", e);
+              container.$form().dispatchErrorOccurredEvent(HVArrangement.this, "Image", ErrorMessages.ERROR_CANNOT_READ_FILE, imagePath);
+            }
+
+            @Override
+            public void onSuccess(BitmapDrawable result) {
+              backgroundImageDrawable = result;
+              container.$form().runOnUiThread(new Runnable() {
+                public void run() {
+                  updateAppearance();
+                }
+              });
+            }
+          });
+        } else {
+          // Update the appearance based on the new value of backgroundImageDrawable.
+          updateAppearance();
+        }
     }
 
 

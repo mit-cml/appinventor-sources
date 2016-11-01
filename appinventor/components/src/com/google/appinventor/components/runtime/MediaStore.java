@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -120,6 +121,14 @@ public final class MediaStore extends AndroidNonvisibleComponent implements Comp
         androidUIHandler.post(new Runnable() {
           public void run() {
             MediaStored(response);
+          }
+        });
+      }
+      public void onException(final Exception e) {
+        androidUIHandler.post(new Runnable() {
+          public void run() {
+            Log.e(LOG_TAG_COMPONENT, "Exception in PostMedia", e);
+            WebServiceError(e.getMessage());
           }
         });
       }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -21,6 +21,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
@@ -548,16 +549,46 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       scaledBackgroundBitmap = null;
 
       if (!TextUtils.isEmpty(backgroundImagePath)) {
-        try {
-          backgroundDrawable = MediaUtil.getBitmapDrawable(container.$form(), backgroundImagePath);
-        } catch (IOException ioe) {
-          Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
-        }
+        MediaUtil.getBitmapDrawableAsync(container.$form(), backgroundImagePath, new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onFailure(String message) {
+            Log.w(LOG_TAG, "Error loading background for canvas: " + message);
+            container.$form().dispatchErrorOccurredEvent(Canvas.this, "BackgroundImage", ErrorMessages.ERROR_CANNOT_READ_FILE, backgroundImagePath);
+            container.$form().runOnUiThread(new Runnable() {
+              public void run() {
+                setBackground();
+                clearDrawingLayer();  // will call invalidate()
+              }
+            });
+          }
+
+          @Override
+          public void onException(Exception e) {
+            Log.w(LOG_TAG, "Error loading background for canvas", e);
+            container.$form().dispatchErrorOccurredEvent(Canvas.this, "BackgroundImage", ErrorMessages.ERROR_CANNOT_READ_FILE, backgroundImagePath);
+            container.$form().runOnUiThread(new Runnable() {
+              public void run() {
+                setBackground();
+                clearDrawingLayer();  // will call invalidate()
+              }
+            });
+          }
+
+          @Override
+          public void onSuccess(BitmapDrawable result) {
+            backgroundDrawable = result;
+            container.$form().runOnUiThread(new Runnable() {
+              public void run() {
+                setBackground();
+                clearDrawingLayer();  // will call invalidate()
+              }
+            });
+          }
+        });
+      } else {
+        setBackground();
+        clearDrawingLayer();  // will call invalidate()
       }
-
-      setBackground();
-
-      clearDrawingLayer();  // will call invalidate()
     }
 
     private void setBackground() {
