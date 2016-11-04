@@ -53,7 +53,7 @@ Blockly.ReplMgr.rsState = {
   RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
   CONNECTED: 2,               // Connected to Repl
   WAITING: 3,                 // Waiting for the Emulator to start
-  CONNECTING: 4               // Connecting to Repl
+  ASSET: 4                    // Transfering Assets to the Repl
 };
 
 Blockly.ReplStateObj = function() {};
@@ -77,10 +77,10 @@ Blockly.ReplMgr.buildYail = function() {
     var blocks;
     var block;
     var needinitialize = false;
-    if (!window.parent.ReplState.phoneState) { // If there is no phone state, make some!
-        window.parent.ReplState.phoneState = {};
+    if (!top.ReplState.phoneState) { // If there is no phone state, make some!
+        top.ReplState.phoneState = {};
     }
-    phoneState = window.parent.ReplState.phoneState;
+    phoneState = top.ReplState.phoneState;
     if (!phoneState.formJson || !phoneState.packageName)
         return;                 // Nothing we can do without these
     if (!phoneState.initialized) {
@@ -180,8 +180,8 @@ Blockly.ReplMgr.buildYail = function() {
 };
 
 Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
-    window.parent.ReplState.phoneState.formJson = formJson;
-    window.parent.ReplState.phoneState.packageName = packageName;
+    top.ReplState.phoneState.formJson = formJson;
+    top.ReplState.phoneState.packageName = packageName;
     var context = this;
     var poller = function() {   // Keep track of "this"
         context.polltimer = null;
@@ -193,34 +193,27 @@ Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
     this.polltimer = setTimeout(poller, 500);
 };
 
-Blockly.ReplMgr.RefreshAssets = null;
-
 Blockly.ReplMgr.pollYail = function() {
+    var RefreshAssets = top.AssetManager_refreshAssets;
     try {
         if (window === undefined)    // If window is gone, then we are a zombie timer firing
             return;                  // in a destroyed frame.
     } catch (err) {                  // We get an error on FireFox when window is gone.
         return;
     }
-    if (window.parent.ReplState.state == this.rsState.CONNECTED) {
+    if (top.ReplState.state == this.rsState.CONNECTED) {
         this.buildYail();
     }
-    if (this.RefreshAssets === null) {
-        try {
-            this.RefreshAssets = window.parent.AssetManager_refreshAssets;
-        } catch (err) {
-        }
-    }
-    if (window.parent.ReplState.state == this.rsState.CONNECTED) {
-        this.RefreshAssets(this.formName);
+    if (top.ReplState.state == this.rsState.CONNECTED) {
+        RefreshAssets(this.formName, function() {});
     }
 };
 
 Blockly.ReplMgr.resetYail = function(partial) {
-    window.parent.ReplState.phoneState.initialized = false; // so running io stops
+    top.ReplState.phoneState.initialized = false; // so running io stops
     this.putYail.reset();
     if (!partial) {
-        window.parent.ReplState.phoneState = { "phoneQueue" : []};
+        top.ReplState.phoneState = { "phoneQueue" : []};
     }
 };
 
@@ -245,7 +238,7 @@ Blockly.ReplMgr.putYail = (function() {
     var engine = {
         // Enqueue form for the phone
         'putYail' : function(code, block, success, failure) {
-            rs = window.parent.ReplState;
+            rs = top.ReplState;
             context = this;
             if (rs === undefined || rs === null) {
                 console.log('putYail: replState not set yet.');
@@ -461,7 +454,7 @@ Blockly.ReplMgr.putYail = (function() {
 //   button.
 //          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
-            window.parent.BlocklyPanel_indicateDisconnect();
+            top.BlocklyPanel_indicateDisconnect();
         },
         "checkversionupgrade" : function(fatal, installer, force) {
             var dialog;
@@ -473,7 +466,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             if (installer === undefined)
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
-            if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
+            if (installer != "com.android.vending" && top.COMPANION_UPDATE_URL) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE, Blockly.Msg.REPL_OK, cancelButton, 0, function(response) {
@@ -485,7 +478,7 @@ Blockly.ReplMgr.putYail = (function() {
                     }
                 });
             } else if (fatal) {
-                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + window.parent.PREFERRED_COMPANION, Blockly.Msg.REPL_OK, null, 0, function() { dialog.hide();});
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + top.PREFERRED_COMPANION, Blockly.Msg.REPL_OK, null, 0, function() { dialog.hide();});
                 engine.resetcompanion();
             } else {
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
@@ -502,7 +495,7 @@ Blockly.ReplMgr.putYail = (function() {
 // we are never called and the user is given a message that their Companion
 // is out of date.
 Blockly.ReplMgr.triggerUpdate = function() {
-    var rs = window.parent.ReplState;
+    var rs = top.ReplState;
     var fetchconn = goog.net.XmlHttp();
     var encoder = new goog.Uri.QueryData();
     var context = this;
@@ -694,14 +687,14 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             }
             break;
         case "pushScreen":
-            var success = window.parent.BlocklyPanel_pushScreen(r.screen);
+            var success = top.BlocklyPanel_pushScreen(r.screen);
             if (!success) {
                 console.log("processRetVals: Invalid Screen: " + r.screen);
                 runtimeerr("Invalid Screen: " + r.screen);
             }
             break;
         case "popScreen":
-            window.parent.BlocklyPanel_popScreen();
+            top.BlocklyPanel_popScreen();
             break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);
@@ -759,8 +752,8 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     progdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTING, message, Blockly.Msg.REPL_CANCEL, null, 0, function() {
         progdialog.hide();
         clearInterval(interval);
-        window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
-        window.parent.BlocklyPanel_indicateDisconnect();
+        top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+        top.BlocklyPanel_indicateDisconnect();
         if (dialog) {
             dialog.hide();
             dialog = null;
@@ -798,6 +791,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     // 3 == Done (nothing to do), interval should be cleared
     var mainloop = function() {
         var xhr;
+        var RefreshAssets = top.AssetManager_refreshAssets;
         switch(pc) {
         case 0:
             xhr = goog.net.XmlHttp();
@@ -836,7 +830,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                         progdialog = null;
                     }
                     if (!dialog) {
-                        window.parent.BlocklyPanel_indicateDisconnect();
+                        top.BlocklyPanel_indicateDisconnect();
                         dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_HELPER_Q, Blockly.Msg.REPL_HELPER_NOT_RUNNING, Blockly.Msg.REPL_OK, null, 0, function() {
                             dialog.hide();
                             dialog = null;
@@ -844,7 +838,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                                 progdialog.hide();
                                 progdialog = null;
                             }
-                            window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                            top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
                         });
                     }
                 }
@@ -915,9 +909,12 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                                 // we are waiting for the version check (noop) to finish
         case 4:
             progdialog.hide();
-            rs.state = context.rsState.CONNECTED; // Indicate that we are good to go!
+            rs.state = context.rsState.ASSET; // Indicate that we are connected, start loading assets
             clearInterval(interval);
-            window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+            RefreshAssets(context.formName, function() {
+                rs.state = context.rsState.CONNECTED;
+                top.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+            });
         }
     };
     interval = setInterval(mainloop, 1000); // Once per second
@@ -944,14 +941,13 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
 };
 
 Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
-    var refreshAssets = window.parent.AssetManager_refreshAssets;
-    var rs = window.parent.ReplState;
+    var rs = top.ReplState;
     rs.didversioncheck = false; // Re-check
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
     if (!already) {
-        if (window.parent.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
+        if (top.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
         if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvou server
             this.startAdbDevice(rs, usb);
@@ -963,11 +959,9 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
             rs.baseurl = 'http://127.0.0.1:8001/';
             rs.seq_count = 1;
             rs.count = 0;
-            this.rendPoll();
-            refreshAssets(this.formName);
-            return;             // All done
+            return;             // startAdbDevice callbacks will continue the connection process
         }
-        rs = window.parent.ReplState;
+        rs = top.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();
         rs.rendezvouscode = this.sha1(rs.replcode);
@@ -977,15 +971,15 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
             rs.dialog.hide();
             rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
             rs.connection = null;
-            window.parent.BlocklyPanel_indicateDisconnect();
+            top.BlocklyPanel_indicateDisconnect();
         });
         this.getFromRendezvous();
     } else {
-        if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
-            window.parent.ReplState.dialog.hide();
+        if (top.ReplState.state == this.rsState.RENDEZVOUS) {
+            top.ReplState.dialog.hide();
         }
         this.resetYail(false);
-        window.parent.ReplState.state = this.rsState.IDLE;
+        top.ReplState.state = this.rsState.IDLE;
         this.hardreset(this.formName);       // Tell aiStarter to kill off adb
     }
 };
@@ -1001,34 +995,37 @@ Blockly.ReplMgr.genCode = function() {
 // Request ipAddress information from the Rendezvous Server
 Blockly.ReplMgr.getFromRendezvous = function() {
     var xmlhttp = goog.net.XmlHttp();
-    if (window.parent.ReplState === undefined || window.parent.ReplState === null) {
+    if (top.ReplState === undefined || top.ReplState === null) {
         console.log('getFromRendezvous: replState not set yet.');
         return;
     }
-    var rs = window.parent.ReplState;
+    var rs = top.ReplState;
     var context = this;
-    var refreshAssets = window.parent.AssetManager_refreshAssets; // This is where GWT puts this
+    var RefreshAssets = top.AssetManager_refreshAssets; // This is where GWT puts this
     var poller = function() {                                     // So "this" is correct when called
         context.rendPoll.call(context);                           // from setTimeout
     };
-    var checkAssetsTransfer = window.parent.AssetManager_checkAssetsTransferred;
     xmlhttp.open('GET', 'http://' + top.rendezvousServer + '/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
             try {
+                if (!xmlhttp.response) { // Likely an empty string
+                    console.log("getFromRendezvous(): No answer yet!");
+                    setTimeout(poller, 2000);
+                    return;
+                }
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
-                rs.state = Blockly.ReplMgr.rsState.CONNECTING;
+                rs.state = Blockly.ReplMgr.rsState.ASSET;
                 rs.dialog.hide();
-                refreshAssets(context.formName);    // Start assets loading
-                if (!checkAssetsTransfer()) {
-                   throw "Assets not Transferred"; // throw error if assets transfer is incomplete
-                }
-                rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                RefreshAssets(context.formName,
+                              function() {
+                                  rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+                                  top.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                              });
                 // Start the connection with the Repl itself
             } catch (err) {
                 console.log("getFromRendezvous(): Error: " + err);
@@ -1043,16 +1040,16 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
     var dialog;
-    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS || window.parent.ReplState.state == this.rsState.CONNECTING) {
-        window.parent.ReplState.count = window.parent.ReplState.count + 1;
-        if (window.parent.ReplState.count > 40) {
-            window.parent.ReplState.state = this.rsState.IDLE;
-            window.parent.ReplState.dialog.hide(); // Punt the dialog
+    if (top.ReplState.state == this.rsState.RENDEZVOUS) {
+        top.ReplState.count = top.ReplState.count + 1;
+        if (top.ReplState.count > 40) {
+            top.ReplState.state = this.rsState.IDLE;
+            top.ReplState.dialog.hide(); // Punt the dialog
             dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONNECTION_FAILURE1, Blockly.Msg.REPL_TRY_AGAIN1, Blockly.Msg.REPL_OK, null, 0, function() {
                 dialog.hide();
             });
-            window.parent.ReplState.url = null;
-            window.parent.BlocklyPanel_indicateDisconnect();
+            top.ReplState.url = null;
+            top.BlocklyPanel_indicateDisconnect();
         }
         this.getFromRendezvous();
     }
@@ -1081,7 +1078,7 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
 };
 
 Blockly.ReplMgr.hmac = function(input) {
-    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(window.parent.ReplState.replcode), 64);
+    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(top.ReplState.replcode), 64);
     return(this.bytes_to_hexstring(googhash.getHmac(this.string_to_bytes(input))));
 };
 
@@ -1106,12 +1103,12 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
 };
 
 Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
-    if (window.parent.ReplState === undefined)
+    if (top.ReplState === undefined)
         return false;
-    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTING && window.parent.ReplState.state != this.rsState.CONNECTED))
+    if (!force && (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
-    var rs = window.parent.ReplState;
+    var rs = top.ReplState;
     var encoder = new goog.Uri.QueryData();
     //var z = filename.split('/'); // Remove any directory components
     //encoder.add('filename', z[z.length-1]); // remove directory structure
@@ -1140,7 +1137,7 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
 };
 
 Blockly.ReplMgr.hardreset = function(formName, callback) {
-    window.parent.AssetManager_reset(formName); // Reset the notion of what assets
+    top.AssetManager_reset(formName); // Reset the notion of what assets
                                                 // are loaded.
     var xhr = goog.net.XmlHttp();
     xhr.open("GET", "http://localhost:8004/reset/", true);
