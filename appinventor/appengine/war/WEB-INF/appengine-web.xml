@@ -11,6 +11,8 @@
     <include path="/fonts/*" expiration="365d">
       <http-header name="Content-Type" value="font/ttf" />
     </include>
+    <include path="/media/*" expiration="365d" />
+    <include path="/images/*" expiration="365d" />
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
     <include path="/blocklyframe.html" expiration="0s" />
