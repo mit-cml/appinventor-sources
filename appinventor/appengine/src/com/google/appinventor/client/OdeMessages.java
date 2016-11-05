@@ -3019,6 +3019,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Sizing")
   @Description("")
   String SizingProperties();
+  
+  @DefaultMessage("ShowListsAsLisp")
+  @Description("")
+  String ShowListsAsLispProperties();
 
   @DefaultMessage("Visible")
   @Description("")

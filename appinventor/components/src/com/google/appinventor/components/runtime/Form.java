@@ -165,6 +165,8 @@ public class Form extends Activity
 
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
+  
+  private boolean showListsAsLisp = false;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -1376,6 +1378,7 @@ public class Form extends Activity
     // We don't actually need to do anything.
   }
 
+
   /**
    * Sizing Property Setter
    *
@@ -1417,7 +1420,29 @@ public class Form extends Activity
   //   }
   // }
 
+  /**
+   * ShowListsAsLisp Property Setter
+   *
+   * @param
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+  // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
+  description = "If set to true, lists will be converted to strings using Lisp convention as symbols separated by spaces, "
+      + "e.g., (a 1 b2 (c d).  If false, lists will appear as in Python, e.g. [\"a\", 1, \"b\", 2, [\"c\", \"d\"]].  "
+      + "This property is provided for compatibility with older projects.   New projects are created with this set to false, "
+      +  "Old projects that are upgraded with have it set to true.")
+  public void ShowListsAsLisp(boolean asLisp) {
+    showListsAsLisp = asLisp;
+  }
 
+  
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE, userVisible = false)
+  public boolean ShowListsAsLisp() {
+    return showListsAsLisp;
+  }
 
    
   /**
@@ -1653,16 +1678,6 @@ public class Form extends Activity
     }
   }
 
-
-
-  /**
-   * Returns whether to print lists in Lisp notation with parens
-   *
-   */
-  // Temporarily akways return false.  We'll hook in a property setter after the rest is debugged
-  public static boolean getShowListsAsLisp() {
-    return false;
-  }
   
   /**
    * Returns the value that was passed to this screen when it was opened

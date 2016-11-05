@@ -1202,7 +1202,7 @@
       ;; we cannot access SimpleForm unless the companion is connected
       ;; so we will always use JSON format when testing
       #t
-      (let ((json? (not (SimpleForm:getShowListsAsLisp))))
+      (let ((json? (not (SimpleForm:ShowListsAsLisp))))
 	json?)))
 	
 
