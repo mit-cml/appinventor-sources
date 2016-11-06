@@ -89,6 +89,7 @@ public final class Compiler {
   public static final String NATIVE_TARGET = "native";
   // Must match ComponentListGenerator.PERMISSIONS_TARGET
   private static final String PERMISSIONS_TARGET = "permissions";
+  private static final String CUSTOMACTIVITIES_TARGET = "customActivities";
   // Must match ComponentListGenerator.BROADCAST_RECEIVER_TARGET
   private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
 
@@ -146,6 +147,8 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> permissionsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> customActivityNeeded =
+          new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
 
   private final ConcurrentMap<String, Set<String>> componentBroadcastReceiver =
@@ -230,6 +233,39 @@ public final class Compiler {
   Map<String,Set<String>> getPermissions() {
     return permissionsNeeded;
   }
+
+
+  /*
+   * Generate the set of Android activities needed by this project.
+   */
+  @VisibleForTesting
+  void generateCustomActivities() {
+    try {
+      loadJsonInfo(customActivityNeeded, CUSTOMACTIVITIES_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "CustomActivities"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "CustomActivities"));
+    }
+
+    int n = 0;
+    for (String type : customActivityNeeded.keySet()) {
+      n += customActivityNeeded.get(type).size();
+    }
+
+    System.out.println("Custom Activities needed, n = " + n);
+  }
+
+  // Just used for testing
+  @VisibleForTesting
+  Map<String,Set<String>> getCustomActivities() {
+    return permissionsNeeded;
+  }
+
 
   /*
    * Generate the set of Android libraries needed by this project.
@@ -504,6 +540,18 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
+
+      // Add custom Activities
+      // make custom activities unique by putting them in one set
+      Set<String> customActivities = Sets.newHashSet();
+      for (Set<String> activity: customActivityNeeded.values()) {
+        customActivities.addAll(activity);
+      }
+
+      for(String act: customActivities){
+        out.write("    <activity android:name=\""+act+"\"></activity>\n");
+      }
+
       // Add WebViewActivity to the manifest only if a Twitter component is used in the app
       if (simpleCompTypes.contains("com.google.appinventor.components.runtime.Twitter")){
         String WEBVIEW_ACTIVITY_CLASS =
@@ -585,6 +633,7 @@ public final class Compiler {
     compiler.generateLibNames();
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
+    compiler.generateCustomActivities();
 
     // Create build directory.
     File buildDir = createDir(project.getBuildDirectory());

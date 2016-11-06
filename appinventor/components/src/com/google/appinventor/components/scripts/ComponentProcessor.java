@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.scripts;
 
+import com.google.appinventor.components.annotations.CustomActivities;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -447,6 +448,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> permissions;
 
     /**
+     * custom Activities required by this component.
+     */
+    protected final Set<String> customActivities;
+
+    /**
      * Libraries required by this component.
      */
     protected final Set<String> libraries;
@@ -523,6 +529,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       type = element.asType().toString();
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
+      customActivities = Sets.newHashSet();
       libraries = Sets.newHashSet();
       nativeLibraries = Sets.newHashSet();
       assets = Sets.newHashSet();
@@ -781,6 +788,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       if (parentComponent != null) {
         // Copy its build info, designer properties, properties, methods, and events.
         componentInfo.permissions.addAll(parentComponent.permissions);
+        componentInfo.customActivities.addAll(parentComponent.customActivities);
         componentInfo.libraries.addAll(parentComponent.libraries);
         componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
         componentInfo.assets.addAll(parentComponent.assets);
@@ -810,6 +818,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesPermissions != null) {
       for (String permission : usesPermissions.permissionNames().split(",")) {
         componentInfo.permissions.add(permission.trim());
+      }
+    }
+
+    // Gather Custom Activities.
+    CustomActivities customActivitiesInfo = element.getAnnotation(CustomActivities.class);
+    if(customActivitiesInfo != null){
+      for (String activity : customActivitiesInfo.activityNames().split(",")) {
+        componentInfo.customActivities.add(activity.trim());
       }
     }
 
