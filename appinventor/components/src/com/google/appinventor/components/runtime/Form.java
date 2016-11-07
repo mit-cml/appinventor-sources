@@ -90,6 +90,13 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  * places and make the appropriate code changes.
  *
  */
+
+/*
+!!!This still does not work:  Screen2 does not see the property that you set in screen 1.  Does
+the value have to be stored in the project variables?
+*/
+
+
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Top-level component containing all other components in the program",
@@ -166,7 +173,7 @@ public class Form extends Activity
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
   
-  private boolean showListsAsLisp = false;
+  private static boolean showListsAsLisp = false;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -344,6 +351,7 @@ public class Form extends Activity
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
+    ShowListsAsLisp(false);  //CHECK THIS
   }
 
   @Override
@@ -1427,7 +1435,7 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(userVisible = false,
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
   description = "If set to true, lists will be converted to strings using Lisp convention as symbols separated by spaces, "
       + "e.g., (a 1 b2 (c d).  If false, lists will appear as in Python, e.g. [\"a\", 1, \"b\", 2, [\"c\", \"d\"]].  "
@@ -1435,15 +1443,22 @@ public class Form extends Activity
       +  "Old projects that are upgraded with have it set to true.")
   public void ShowListsAsLisp(boolean asLisp) {
     showListsAsLisp = asLisp;
+    Log.d(LOG_TAG, "Setting showListAsLisp: result is " +  showListsAsLisp);
   }
 
   
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE, userVisible = false)
+      //make these visible fordebugging
+      category = PropertyCategory.APPEARANCE, userVisible = true)
   public boolean ShowListsAsLisp() {
-    return showListsAsLisp;
+    Log.d(LOG_TAG, "showListsAsLisp = " +  showListsAsLisp);
+    return ShowListsAsLispStatic();
   }
 
+ // This method is static so that it can be called from runtime.scm
+  public static boolean ShowListsAsLispStatic() {
+    return showListsAsLisp;
+  }
    
   /**
    * Specifies the App Name.
@@ -1452,7 +1467,8 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
-  @SimpleProperty(userVisible = false,
+  //make these visible for debugging
+  @SimpleProperty(userVisible = true,
   description = "This is the display name of the installed application in the phone." +
       "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
