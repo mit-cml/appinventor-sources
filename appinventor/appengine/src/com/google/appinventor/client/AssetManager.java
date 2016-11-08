@@ -210,6 +210,10 @@ public final class AssetManager implements ProjectChangeListener {
         }
       }
     }
+    // If no assets are in the project, perform the callback immediately.
+    if (assets.values().size() == 0 && assetsTransferredCallback != null) {
+      doCallBack(assetsTransferredCallback);
+    }
   }
 
   public static void refreshAssets(String formName, JavaScriptObject callback) {
