@@ -65,10 +65,12 @@ import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
@@ -261,6 +263,8 @@ public class Ode implements EntryPoint {
 
   private boolean screensLocked;
 
+  private boolean galleryInitialized = false;
+
   private SplashConfig splashConfig; // Splash Screen Configuration
 
   /**
@@ -343,14 +347,11 @@ public class Ode implements EntryPoint {
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
           projectToolbar.setPublishOrUpdateButtonVisible(true);
           GalleryClient.getInstance().setSystemEnvironment(settings.getEnvironment());
-          GalleryListBox.loadGalleryList();
           topPanel.showGalleryLink(true);
           if(user.isModerator()){
-            ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);
           }
           topPanel.updateAccountMessageButton();
-          PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
@@ -430,6 +431,10 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
+    if (!galleryInitialized) {
+      // Gallery initialization is deferred until now.
+      initializeGallery();
+    }
     currentView = GALLERY;
     deckPanel.showWidget(galleryTabIndex);
   }
@@ -438,6 +443,10 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery App
    */
   public void switchToGalleryAppView(GalleryApp app, int editStatus) {
+    if (!galleryInitialized) {
+      // Gallery initialization is deferred until now.
+      initializeGallery();
+    }
     currentView = GALLERYAPP;
     GalleryAppBox.setApp(app, editStatus);
     deckPanel.showWidget(galleryAppTabIndex);
@@ -482,6 +491,9 @@ public class Ode implements EntryPoint {
    * Switch to the Moderation Page tab
    */
   public void switchToModerationPageView() {
+    if (!galleryInitialized) {
+      initializeGallery();
+    }
     currentView = MODERATIONPAGE;
     deckPanel.showWidget(moderationPageTabIndex);
   }
@@ -950,29 +962,12 @@ public class Ode implements EntryPoint {
 
     // Gallery list tab
     VerticalPanel gVertPanel = new VerticalPanel();
-    gVertPanel.setWidth("100%");
-    gVertPanel.setSpacing(0);
-    galleryListToolbar = new GalleryToolbar();
-    gVertPanel.add(galleryListToolbar);
-    HorizontalPanel appListPanel = new HorizontalPanel();
-    appListPanel.setWidth("100%");
-    appListPanel.add(GalleryListBox.getGalleryListBox());
-
-    gVertPanel.add(appListPanel);
+    gVertPanel.add(createLoadingWidget());
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
 
      // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
-    aVertPanel.setWidth("100%");
-    aVertPanel.setSpacing(0);
-    galleryPageToolbar = new GalleryToolbar();
-    aVertPanel.add(galleryPageToolbar);
-    HorizontalPanel appPanel = new HorizontalPanel();
-    appPanel.setWidth("100%");
-    appPanel.add(GalleryAppBox.getGalleryAppBox());
-
-    aVertPanel.add(appPanel);
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
 
@@ -1014,14 +1009,6 @@ public class Ode implements EntryPoint {
 
     // Moderation Page tab
     VerticalPanel mPVertPanel = new VerticalPanel();
-    mPVertPanel.setWidth("100%");
-    mPVertPanel.setSpacing(0);
-    HorizontalPanel moderationPagePanel = new HorizontalPanel();
-    moderationPagePanel.setWidth("100%");
-
-    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
-
-    mPVertPanel.add(moderationPagePanel);
     moderationPageTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(mPVertPanel);
 
@@ -2212,6 +2199,83 @@ public class Ode implements EntryPoint {
           next.run();
         }
       });
+  }
+
+  private void initializeGallery() {
+    VerticalPanel gVertPanel = (VerticalPanel)deckPanel.getWidget(galleryTabIndex);
+    gVertPanel.setWidth("100%");
+    gVertPanel.setSpacing(0);
+    galleryListToolbar = new GalleryToolbar();
+    gVertPanel.add(galleryListToolbar);
+    HorizontalPanel appListPanel = new HorizontalPanel();
+    appListPanel.setWidth("100%");
+    appListPanel.add(GalleryListBox.getGalleryListBox());
+    gVertPanel.add(appListPanel);
+
+    VerticalPanel aVertPanel = (VerticalPanel)deckPanel.getWidget(galleryAppTabIndex);
+    aVertPanel.setWidth("100%");
+    aVertPanel.setSpacing(0);
+    galleryPageToolbar = new GalleryToolbar();
+    aVertPanel.add(galleryPageToolbar);
+    HorizontalPanel appPanel = new HorizontalPanel();
+    appPanel.setWidth("100%");
+    appPanel.add(GalleryAppBox.getGalleryAppBox());
+    aVertPanel.add(appPanel);
+
+    VerticalPanel mPVertPanel = (VerticalPanel)deckPanel.getWidget(moderationPageTabIndex);
+    mPVertPanel.setWidth("100%");
+    mPVertPanel.setSpacing(0);
+    HorizontalPanel moderationPagePanel = new HorizontalPanel();
+    moderationPagePanel.setWidth("100%");
+    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
+    mPVertPanel.add(moderationPagePanel);
+
+    GalleryListBox.loadGalleryList();
+    if (user.isModerator()) {
+      ModerationPageBox.loadModerationPage();
+    }
+    PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
+
+    galleryInitialized = true;
+  }
+
+  private Widget createLoadingWidget() {
+    final HorizontalPanel container = new HorizontalPanel();
+    container.setWidth("100%");
+    container.setSpacing(0);
+    container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    HorizontalPanel panel = new HorizontalPanel();
+    Image image = new Image();
+    image.setResource(IMAGES.waitingIcon());
+    panel.add(image);
+    Label label = new Label();
+    label.setText(MESSAGES.defaultRpcMessage());
+    panel.add(label);
+    container.add(panel);
+    GalleryClient.getInstance().addListener(new GalleryRequestListener() {
+      private void hideLoadingWidget() {
+        if (container.getParent() != null) {
+          container.clear();
+          container.removeFromParent();
+        }
+      }
+      @Override
+      public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
+        hideLoadingWidget();
+        return true;
+      }
+      @Override
+      public boolean onCommentsRequestCompleted(List<GalleryComment> comments) {
+        hideLoadingWidget();
+        return true;
+      }
+      @Override
+      public boolean onSourceLoadCompleted(UserProject projectInfo) {
+        hideLoadingWidget();
+        return true;
+      }
+    });
+    return container;
   }
 
   // Native code to set the top level rendezvousServer variable

@@ -1446,11 +1446,12 @@ panel
    * gallery page to listen to
    */
   @Override
-  public void onAppListRequestCompleted(GalleryAppListResult appResults, int requestId, boolean refreshable)   {
+  public boolean onAppListRequestCompleted(GalleryAppListResult appResults, int requestId, boolean refreshable)   {
    if (appResults != null && appResults.getApps() != null)
       refreshApps(appResults, requestId, refreshable);
     else
       OdeLog.log("apps was null");
+   return false;
   }
 
   /**
@@ -1458,15 +1459,16 @@ panel
    * gallery page to listen to
    */
   @Override
-  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
+  public boolean onCommentsRequestCompleted(List<GalleryComment> comments) {
       galleryGF.generateAppPageComments(comments, appCommentsList);
       if (comments == null)
         OdeLog.log("comment list was null");
+      return false;
   }
 
   @Override
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-
+  public boolean onSourceLoadCompleted(UserProject projectInfo) {
+    return false;
   }
 
   /**

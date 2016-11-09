@@ -6,9 +6,13 @@
 
 package com.google.appinventor.client.boxes;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 
@@ -50,6 +54,18 @@ public final class GalleryAppBox extends FlowPanel {
    */
   private GalleryAppBox() {
     gContainer = new FlowPanel();
+    final HorizontalPanel container = new HorizontalPanel();
+    container.setWidth("100%");
+    container.setSpacing(0);
+    container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    HorizontalPanel panel = new HorizontalPanel();
+    Image image = new Image();
+    image.setResource(Ode.getImageBundle().waitingIcon());
+    panel.add(image);
+    Label label = new Label();
+    label.setText(Ode.getMessages().defaultRpcMessage());
+    panel.add(label);
+    gContainer.add(panel);
     this.add(gContainer);
   }
 }

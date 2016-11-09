@@ -502,28 +502,29 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * @param refreshable whether or not clear container
    * @see GalleryRequestListener
    */
-  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
+  public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
   {
     List<GalleryApp> apps = appsResult.getApps();
     if (apps != null)
       refreshApps(appsResult, requestId, refreshable);
     else
       OdeLog.log("apps was null");
+    return false;
   }
   /**
    * Process the results after retrieving list of GalleryComment
    * @see GalleryRequestListener
    */
-  public void onCommentsRequestCompleted(List<GalleryComment> comments){
-
+  public boolean onCommentsRequestCompleted(List<GalleryComment> comments){
+    return false;
   }
 
   /**
    * Process the results after retrieving list of UserProject
    * @see GalleryRequestListener
    */
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-
+  public boolean onSourceLoadCompleted(UserProject projectInfo) {
+    return false;
   }
 
 }
