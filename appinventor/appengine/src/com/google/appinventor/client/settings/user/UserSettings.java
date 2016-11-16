@@ -46,6 +46,7 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
             OdeLog.log("Loaded global settings: " + result);
             decodeSettings(result);
 
+            changed = false;
             loaded = true;
             loading = false;
           }
@@ -80,6 +81,9 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
       // settings with this empty version, so we just return.
       return;
 
+    } else if (!changed) {
+      // Do not save UserSettings if they haven't changed.
+      return;
     } else {
       String s = encodeSettings();
       OdeLog.log("Saving global settings: " + s);
@@ -90,6 +94,7 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
               MESSAGES.settingsSaveError()) {
             @Override
             public void onSuccess(Void result) {
+              changed = false;
               if (command != null) {
                 command.execute();
               }

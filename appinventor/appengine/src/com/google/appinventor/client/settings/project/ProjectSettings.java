@@ -56,6 +56,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
           public void onSuccess(String result) {
             OdeLog.log("Loaded project settings: " + result);
             decodeSettings(result);
+            changed = false;
           }
         });
   }
@@ -64,6 +65,9 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
   public void saveSettings(final Command command) {
     if (Ode.getInstance().isReadOnly()) {
       return;                   // No changes when in read only mode
+    } else if (!changed) {
+      // Do not save project settings if they haven't changed.
+      return;
     }
     String s = encodeSettings();
     OdeLog.log("Saving project settings: " + s);
@@ -75,6 +79,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
             MESSAGES.settingsSaveError()) {
           @Override
           public void onSuccess(Void result) {
+            changed = false;
             if (command != null) {
               command.execute();
             }

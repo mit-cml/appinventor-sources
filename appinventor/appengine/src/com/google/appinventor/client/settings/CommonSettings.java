@@ -10,6 +10,7 @@ import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.widgets.properties.PropertyChangeListener;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
@@ -21,9 +22,10 @@ import java.util.Map;
  * Superclass for collections of settings.
  *
  */
-public abstract class CommonSettings {
+public abstract class CommonSettings implements PropertyChangeListener {
   // Mapping from category (class) to actual settings singleton instance
   private final Map<String, Settings> settingsMap;
+  protected transient boolean changed = false;
 
   /**
    * Creates new settings object.
@@ -60,6 +62,8 @@ public abstract class CommonSettings {
    */
   protected void addSettings(String category, Settings settings) {
     settingsMap.put(category, settings);
+    settings.addPropertyChangeListener(this);
+    changed = true;
   }
 
   /**
@@ -120,5 +124,10 @@ public abstract class CommonSettings {
    */
   protected static void reportSaveError() {
     ErrorReporter.reportError(MESSAGES.settingsSaveError());
+  }
+
+  @Override
+  public void onPropertyChange(String name, String newValue) {
+    changed = true;
   }
 }
