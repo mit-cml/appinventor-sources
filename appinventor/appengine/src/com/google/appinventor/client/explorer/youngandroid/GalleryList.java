@@ -41,6 +41,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author wolberd@google.com (Dave Wolber)
  */
 public class GalleryList extends Composite implements GalleryRequestListener {
+  /**
+   * The number of RPCs that will be made when the GalleryList is initialized. This is used in
+   * {@link Ode#initializeUi()} to determine when to hide the Loading message.
+   */
+  public static final int INITIAL_RPCS = 4;
 
   final Ode ode = Ode.getInstance();
   private  List<GalleryApp> apps;

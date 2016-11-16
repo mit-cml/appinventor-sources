@@ -37,9 +37,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.explorer.youngandroid.ReportList;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
@@ -962,7 +964,7 @@ public class Ode implements EntryPoint {
 
     // Gallery list tab
     VerticalPanel gVertPanel = new VerticalPanel();
-    gVertPanel.add(createLoadingWidget());
+    gVertPanel.add(createLoadingWidget(GalleryList.INITIAL_RPCS));
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
 
@@ -1009,6 +1011,7 @@ public class Ode implements EntryPoint {
 
     // Moderation Page tab
     VerticalPanel mPVertPanel = new VerticalPanel();
+    mPVertPanel.add(createLoadingWidget(ReportList.INITIAL_RPCS));
     moderationPageTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(mPVertPanel);
 
@@ -2239,7 +2242,7 @@ public class Ode implements EntryPoint {
     galleryInitialized = true;
   }
 
-  private Widget createLoadingWidget() {
+  private Widget createLoadingWidget(final int pending) {
     final HorizontalPanel container = new HorizontalPanel();
     container.setWidth("100%");
     container.setSpacing(0);
@@ -2253,6 +2256,7 @@ public class Ode implements EntryPoint {
     panel.add(label);
     container.add(panel);
     GalleryClient.getInstance().addListener(new GalleryRequestListener() {
+      volatile int count = pending;
       private void hideLoadingWidget() {
         if (container.getParent() != null) {
           container.clear();
@@ -2261,18 +2265,27 @@ public class Ode implements EntryPoint {
       }
       @Override
       public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
-        hideLoadingWidget();
-        return true;
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
       }
       @Override
       public boolean onCommentsRequestCompleted(List<GalleryComment> comments) {
-        hideLoadingWidget();
-        return true;
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
       }
       @Override
       public boolean onSourceLoadCompleted(UserProject projectInfo) {
-        hideLoadingWidget();
-        return true;
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
       }
     });
     return container;
