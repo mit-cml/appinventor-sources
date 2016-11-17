@@ -64,6 +64,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   private final transient YoungAndroidProjectService youngAndroidProject =
       new YoungAndroidProjectService(storageIo);
 
+  private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
+
   /**
    * Creates a new project.
    * @param projectType  type of new project
@@ -601,7 +603,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       GcsService fileService = GcsServiceFactory.createGcsService();
       GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
       GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
-      LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
+      if (DEBUG) {
+        LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
+      }
       InputStream gcsis = Channels.newInputStream(readChannel);
       // ok, we don't want to send the gcs stream because it can time out as we
       // process the zip. We need to copy to a byte buffer first, then send a bytestream
@@ -615,7 +619,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       }
 
       InputStream bais = new ByteArrayInputStream(bao.toByteArray());
-      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+      if (DEBUG) {
+        LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+      }
 
       // close the gcs
       readChannel.close();
@@ -623,7 +629,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       FileImporter fileImporter = new FileImporterImpl();
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);
-      LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
+      if (DEBUG) {
+        LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
+      }
 
       // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),galleryId);
@@ -655,15 +663,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private void validateSessionId(String sessionId) throws InvalidSessionException {
     String storedSessionId = userInfoProvider.getSessionId();
-    if (storedSessionId == null) {
-      LOG.info("storedSessionId is null");
-    } else {
-      LOG.info("storedSessionId = " + storedSessionId);
-    }
-    if (sessionId == null) {
-      LOG.info("sessionId is null");
-    } else {
-      LOG.info("sessionId = " + sessionId);
+    if (DEBUG) {
+      if (storedSessionId == null) {
+        LOG.info("storedSessionId is null");
+      } else {
+        LOG.info("storedSessionId = " + storedSessionId);
+      }
     }
     if (sessionId.equals("force")) { // If we are forcing our way -- no check
       return;

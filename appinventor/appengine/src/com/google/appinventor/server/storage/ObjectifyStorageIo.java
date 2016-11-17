@@ -129,6 +129,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private final boolean useGcs = Flag.createFlag("use.gcs", true).get();
 
   private final boolean conversionEnabled = false; // We are converting GCS <=> Blobstore
+  private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
   // Use this class to define the work of a job that can be
   // retried. The "datastore" argument to run() is the Objectify
@@ -217,12 +218,14 @@ public class ObjectifyStorageIo implements  StorageIo {
     RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
       .retryMaxAttempts(10)
       .totalRetryPeriodMillis(10000).build();
-    LOG.log(Level.INFO, "RetryParams: getInitialRetryDelayMillis() = " + retryParams.getInitialRetryDelayMillis());
-    LOG.log(Level.INFO, "RetryParams: getRequestTimeoutMillis() = " + retryParams.getRequestTimeoutMillis());
-    LOG.log(Level.INFO, "RetryParams: getRetryDelayBackoffFactor() = " + retryParams.getRetryDelayBackoffFactor());
-    LOG.log(Level.INFO, "RetryParams: getRetryMaxAttempts() = " + retryParams.getRetryMaxAttempts());
-    LOG.log(Level.INFO, "RetryParams: getRetryMinAttempts() = " + retryParams.getRetryMinAttempts());
-    LOG.log(Level.INFO, "RetryParams: getTotalRetryPeriodMillis() = " + retryParams.getTotalRetryPeriodMillis());
+    if (DEBUG) {
+      LOG.log(Level.INFO, "RetryParams: getInitialRetryDelayMillis() = " + retryParams.getInitialRetryDelayMillis());
+      LOG.log(Level.INFO, "RetryParams: getRequestTimeoutMillis() = " + retryParams.getRequestTimeoutMillis());
+      LOG.log(Level.INFO, "RetryParams: getRetryDelayBackoffFactor() = " + retryParams.getRetryDelayBackoffFactor());
+      LOG.log(Level.INFO, "RetryParams: getRetryMaxAttempts() = " + retryParams.getRetryMaxAttempts());
+      LOG.log(Level.INFO, "RetryParams: getRetryMinAttempts() = " + retryParams.getRetryMinAttempts());
+      LOG.log(Level.INFO, "RetryParams: getTotalRetryPeriodMillis() = " + retryParams.getTotalRetryPeriodMillis());
+    }
     gcsService = GcsServiceFactory.createGcsService(retryParams);
     memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     initMotd();
@@ -1541,7 +1544,9 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (fd == null) {
             fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
           } else {
-            LOG.log(Level.INFO, "Fetched " + key.getString() + " from memcache.");
+            if (DEBUG) {
+              LOG.log(Level.INFO, "Fetched " + key.getString() + " from memcache.");
+            }
           }
 
           // <Screen>.yail files are missing when user converts AI1 project to AI2
@@ -1821,7 +1826,9 @@ public class ObjectifyStorageIo implements  StorageIo {
                 while (bytesRead < fileSize) {
                   bytesRead += readChannel.read(resultBuffer);
                   if (bytesRead < fileSize) {
-                    LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                    if (DEBUG) {
+                      LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                    }
                   }
                 }
                 recovered = true;
@@ -2051,7 +2058,9 @@ public class ObjectifyStorageIo implements  StorageIo {
                   while (bytesRead < fileSize) {
                     bytesRead += readChannel.read(resultBuffer);
                     if (bytesRead < fileSize) {
-                      LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                      if (DEBUG) {
+                        LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                      }
                     }
                   }
                   recovered = true;

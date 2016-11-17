@@ -26,6 +26,7 @@ import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -70,7 +71,7 @@ public class GalleryServlet extends OdeServlet {
   private static final String CONTENT_TYPE = "text/html; charset=utf-8";
 
   private final GalleryService galleryService = new GalleryServiceImpl();
-
+  private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -83,8 +84,10 @@ public class GalleryServlet extends OdeServlet {
 
     if (true) {
       String requestType = uriComponents[REQUEST_TYPE_INDEX];
-      LOG.info("######### GOT IN URI");
-      LOG.info(requestType);
+      if (DEBUG) {
+        LOG.info("######### GOT IN URI");
+        LOG.info(requestType);
+      }
 
       long project_Id = -1;
       String user_Id = "-1";

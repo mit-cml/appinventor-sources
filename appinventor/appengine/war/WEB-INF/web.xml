@@ -18,6 +18,7 @@
        explicitly list all the ones we do want, which seems
        error-prone.
     -->
+  <!-- App Stats Disabled
   <filter>
     <filter-name>appstats</filter-name>
     <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>
@@ -30,7 +31,7 @@
     <filter-name>appstats</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
+-->
 
   <!-- Security constraints: require login for these urls -->
   <!-- This is how we implement Google Account login -->
