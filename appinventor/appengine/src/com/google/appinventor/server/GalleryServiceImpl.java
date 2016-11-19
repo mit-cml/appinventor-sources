@@ -35,7 +35,6 @@ import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.Email;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
-import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.GalleryReportListResult;
@@ -59,14 +58,18 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       GalleryStorageIoInstanceHolder.INSTANCE;
   // fileExporter used to get the source code from project being published
   private final FileExporter fileExporter = new FileExporterImpl();
+  private final GallerySettings settings;
 
-  @Override
-  public GallerySettings loadGallerySettings() {
+  public GalleryServiceImpl() {
     String bucket = Flag.createFlag("gallery.bucket", "").get();
     boolean galleryEnabled = Flag.createFlag("use.gallery",false).get();
     String envirnment = SystemProperty.environment.value().toString();
     String adminEmail = Flag.createFlag("gallery.admin.email", "").get();
-    GallerySettings settings = new GallerySettings(galleryEnabled, bucket, envirnment, adminEmail);
+    settings = new GallerySettings(galleryEnabled, bucket, envirnment, adminEmail);
+  }
+
+  @Override
+  public GallerySettings loadGallerySettings() {
     return settings;
   }
 
