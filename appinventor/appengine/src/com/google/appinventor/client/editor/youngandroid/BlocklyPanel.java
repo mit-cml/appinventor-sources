@@ -33,6 +33,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.RadioButton;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -619,6 +622,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doHardReset(formName);
   }
 
+  public void configureEmulator() {
+    doConfigureEmulator(formName);
+  }
+
   public void verifyAllBlocks() {
     doVerifyAllBlocks(formName);
   }
@@ -683,28 +690,86 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML(mess);
-    message.setStyleName("DialogBox-message");
     HorizontalPanel holder = new HorizontalPanel();
-    if (buttonName != null) {           // If buttonName and cancelButtonName are null
-      Button ok = new Button(buttonName); // We won't have any buttons and other
-      ok.addClickListener(new ClickListener() { // code is needed to dismiss us
+    if (title == "Configure Emulator") {
+      HorizontalPanel deviceHolder = new HorizontalPanel();
+      HTML deviceHeader = new HTML("Device");
+      deviceHeader.setStyleName("DialogBox-message");
+      final RadioButton tabletButton = new RadioButton("deviceRadioGrp", "Tablet");
+      final RadioButton phoneButton = new RadioButton("deviceRadioGrp", "Phone");
+      phoneButton.setChecked(true);
+      deviceHolder.add(tabletButton);
+      deviceHolder.add(phoneButton);
+      HorizontalPanel dpiHolder = new HorizontalPanel();
+      HTML dpiHeader = new HTML("DPI");
+      dpiHeader.setStyleName("DialogBox-message");
+      final RadioButton lowDpi = new RadioButton("dpiRadioGrp", "Low Density");
+      final RadioButton medDpi = new RadioButton("dpiRadioGrp", "Medium Density");
+      final RadioButton highDpi = new RadioButton("dpiRadioGrp", "High Density");
+      medDpi.setChecked(true);
+      dpiHolder.add(highDpi);
+      dpiHolder.add(medDpi);
+      dpiHolder.add(lowDpi);
+      HorizontalPanel sdCardHolder = new HorizontalPanel();
+      final CheckBox mkSdCard = new CheckBox("Create an SD Card");
+      sdCardHolder.add(mkSdCard);
+      Button ok = new Button(buttonName);
+      ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          int emulatorHeight = 800;
+          int emulatorWidth = 480;
+          int emulatorDpi = 160;
+          int emulatorSdCard = 0;
+          if (tabletButton.isChecked()) {
+            emulatorWidth = 1280;
+          }
+          if (highDpi.isChecked()) {
+            emulatorDpi = 240;
+          } else if (lowDpi.isChecked()) {
+            emulatorDpi = 120;
+          }
+          if (mkSdCard.getValue()) {
+            emulatorSdCard = 9;
+          }
+          doEmulatorOptionsCallBack(callback, buttonName, emulatorWidth, emulatorHeight, emulatorDpi, emulatorSdCard);
+        }
+      });
+      holder.add(ok);
+      Button cancel = new Button(cancelButtonName);
+      cancel.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          doEmulatorOptionsCallBack(callback, cancelButtonName, 0, 0, 0, 0);
+        }
+      });
+      holder.add(cancel);
+      DialogBoxContents.add(deviceHeader);
+      DialogBoxContents.add(deviceHolder);
+      DialogBoxContents.add(dpiHeader);
+      DialogBoxContents.add(dpiHolder);
+      DialogBoxContents.add(sdCardHolder);
+    } else {
+      HTML message = new HTML(mess);
+      message.setStyleName("DialogBox-message");
+      if (buttonName != null) {           // If buttonName and cancelButtonName are null
+        Button ok = new Button(buttonName); // We won't have any buttons and other
+        ok.addClickListener(new ClickListener() { // code is needed to dismiss us
           public void onClick(Widget sender) {
             doCallBack(callback, buttonName);
           }
         });
-      holder.add(ok);
-    }
-    if (cancelButtonName != null) {
-      Button cancel = new Button(cancelButtonName);
-      cancel.addClickListener(new ClickListener() {
+        holder.add(ok);
+      }
+      if (cancelButtonName != null) {
+        Button cancel = new Button(cancelButtonName);
+        cancel.addClickListener(new ClickListener() {
           public void onClick(Widget sender) {
             doCallBack(callback, cancelButtonName);
           }
         });
-      holder.add(cancel);
+        holder.add(cancel);
+      }
+      DialogBoxContents.add(message);
     }
-    DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
@@ -845,6 +910,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
    */
   private static native void doCallBack(JavaScriptObject callback, String buttonName) /*-{
     callback.call(null, buttonName);
+  }-*/;
+
+  private static native void doEmulatorOptionsCallBack(JavaScriptObject callback, String buttonName, int width, int height, int dpi, int sdcard) /*-{
+      callback.call(null, buttonName, width, height, dpi, sdcard);
   }-*/;
 
   private static native void exportMethodsToJavascript() /*-{
@@ -989,6 +1058,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
 
   public static native void doHardReset(String formName) /*-{
     $wnd.Blocklies[formName].ReplMgr.ehardreset(formName);
+  }-*/;
+
+  public static native void doConfigureEmulator(String formName) /*-{
+      $wnd.Blocklies[formName].ReplMgr.configureemulator(formName);
   }-*/;
 
   public static native void doRenderBlockly(String formName) /*-{

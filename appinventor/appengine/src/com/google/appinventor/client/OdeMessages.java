@@ -618,6 +618,10 @@ public interface OdeMessages extends Messages {
   @Description("Hard Reset the Emulator.")
   String hardResetConnectionsMenuItem();
 
+  @DefaultMessage("Configure Emulator")
+  @Description("Configure the Emulator.")
+  String configureEmulatorMenuItem();
+
   //Build
   @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")

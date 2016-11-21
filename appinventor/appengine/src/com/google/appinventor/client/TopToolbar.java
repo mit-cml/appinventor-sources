@@ -86,6 +86,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
+  private static final String WIDGET_NAME_CONFIGUREEMULATOR_BUTTON = "ConfigureEmulator";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
@@ -194,6 +195,8 @@ public class TopToolbar extends Composite {
         new ResetAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
         new HardResetAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_CONFIGUREEMULATOR_BUTTON, MESSAGES.configureEmulatorMenuItem(),
+            new ConfigureEmulatorAction()));
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
@@ -398,6 +401,15 @@ public class TopToolbar extends Composite {
     public void execute() {
       if (Ode.getInstance().okToConnect()) {
         replHardReset();
+      }
+    }
+  }
+
+  private class ConfigureEmulatorAction implements Command {
+    @Override
+    public void execute() {
+      if (Ode.getInstance().okToConnect()) {
+        replConfigureEmulator();
       }
     }
   }
@@ -908,6 +920,18 @@ public class TopToolbar extends Composite {
     }
     DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).hardReset();
+    updateConnectToDropDownButton(false, false, false);
+  }
+
+  private void replConfigureEmulator() {
+    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    if (currentProject == null) {
+      OdeLog.wlog("DesignToolbar.currentProject is null. "
+              + "Ignoring attempt to configure emulator.");
+      return;
+    }
+    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    ((YaBlocksEditor)screen.blocksEditor).configureEmulator();
     updateConnectToDropDownButton(false, false, false);
   }
 

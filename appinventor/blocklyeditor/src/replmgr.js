@@ -488,7 +488,7 @@ Blockly.ReplMgr.putYail = (function() {
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 + window.parent.PREFERRED_COMPANION, Blockly.Msg.REPL_OK, null, 0, function() { dialog.hide();});
                 engine.resetcompanion();
             } else {
-                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 1, function() { dialog.hide();});
+                dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, null, 0, function() { dialog.hide();});
                 engine.pollphone();
             }
         }
@@ -1169,6 +1169,22 @@ Blockly.ReplMgr.ehardreset = function(formName) {
                 xhr.onreadystatchange = function() {}; // Ignore errors
                 xhr.send();
             });
+        }
+    });
+};
+// configureemulator -- Tells aiStarter to run the reset-emulator script
+// and then creates new AVD files for the emulator based on the configurations
+// the user selects in the dialog.
+
+Blockly.ReplMgr.configureemulator = function(formName) {
+    var context = this;
+    var emulatoroptionsdialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_CONFIGURE_EMULATOR, null, Blockly.Msg.REPL_OK, Blockly.Msg.REPL_CANCEL, 0, function(response, width, height, dpi, sdcard) {
+        emulatoroptionsdialog.hide();
+        if (response == "OK") {
+            var xhr = goog.net.XmlHttp();
+            xhr.open("GET", "http://localhost:8004/emulatorconfigure/"+width+"/"+height+"/"+dpi+"/"+sdcard, true);
+            xhr.onreadystatchange = function() {}; // Ignore errors
+            xhr.send();
         }
     });
 };

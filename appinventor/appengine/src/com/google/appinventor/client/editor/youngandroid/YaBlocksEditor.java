@@ -590,6 +590,13 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.hardReset();
   }
 
+  /*
+   * Configure the Emulator
+   */
+  public void configureEmulator() {
+    blocksArea.configureEmulator();
+  }
+
   // Static Function. Find the associated editor for formName and
   // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
   // method to ignore this blocks file and not save it out.
