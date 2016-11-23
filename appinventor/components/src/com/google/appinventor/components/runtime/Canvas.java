@@ -62,6 +62,7 @@ import java.util.Set;
  * <li> background image
  * <li> the "drawing layer", populated through calls to
  *      {@link #DrawPoint(int,int)}, {@link #DrawCircle(int,int,float)},
+ *      {@link #DrawRing(int, int, float, float)}, 
  *      {@link #DrawText(String,int,int)}, and
  *      {@link #DrawTextAtAngle(String,int,int,float)}, and
  *      {@link #SetBackgroundPixelColor(int,int,int)}
@@ -1243,6 +1244,26 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     Paint p = new Paint(paint);
     p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
     view.canvas.drawCircle(correctedX, correctedY, correctedR, p);
+    view.invalidate();
+  }
+
+  /**
+   * <p>Draws a ring (circle with a hole in the middle) at the given coordinates on the 
+   * canvas, with the given radius and ring width.</p>
+   *
+   * @param x  x coordinate
+   * @param y  y coordinate
+   * @param r  radius
+   * @param ringWidth  width of the ring
+   */
+  @SimpleFunction(description = "Draws a ring (circle with a hole in the middle) at the "
+      + "given coordinates on the canvas, with the given radius and ring width.")
+  public void DrawRing(int x, int y, float r, float ringWidth) {
+    // Create new Paint copy to prevent modifications to global paint.
+    Paint strokePaint = new Paint(paint);
+    strokePaint.setStrokeWidth(ringWidth);
+    strokePaint.setStyle(Paint.Style.STROKE);
+    view.canvas.drawCircle(x, y, r, strokePaint);
     view.invalidate();
   }
 
