@@ -22,8 +22,8 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   }
 
   /**
-   * Invoked after all projects have been loaded by ProjectManager
-   *
+   * Invoked after all projects have been loaded by ProjectManager. If the ProjectManager has
+   * already finished loading projects, this will be called immediately upon adding the listener.
    */
   @Override
   public void onProjectsLoaded() { }

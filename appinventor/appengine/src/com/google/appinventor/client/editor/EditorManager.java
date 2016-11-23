@@ -198,6 +198,15 @@ public final class EditorManager {
   }
 
   /**
+   * Check whether there is an open project editor.
+   *
+   * @return true if at least one project is open (or in the process of opening), otherwise false
+   */
+  public boolean hasOpenEditor() {
+    return openProjectEditors.size() > 0;
+  }
+
+  /**
    * Schedules the auto-save timer.
    */
   private void scheduleAutoSaveTimer() {
