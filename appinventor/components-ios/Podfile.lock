@@ -3,6 +3,9 @@ PODS:
   - GCDWebServer (3.3.3):
     - GCDWebServer/Core (= 3.3.3)
   - GCDWebServer/Core (3.3.3)
+  - SQLite.swift (0.11.0):
+    - SQLite.swift/standard (= 0.11.0)
+  - SQLite.swift/standard (0.11.0)
   - Toast-Swift (2.0.0)
   - ZXingObjC (3.2.0):
     - ZXingObjC/All (= 3.2.0)
@@ -11,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - CSLinearLayoutView (~> 1.0)
   - GCDWebServer (~> 3.0)
+  - SQLite.swift (~> 0.11.0)
   - Toast-Swift (~> 2.0.0)
   - ZXingObjC (from `https://github.com/TheLevelUp/ZXingObjC.git`, commit `fa2f046`)
 
@@ -27,9 +31,10 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   CSLinearLayoutView: ce5a4b49267e0a5820203659045f42c0d1faab64
   GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
+  SQLite.swift: 9a26273607d3077a2e5a8d33486e9989f8404c7d
   Toast-Swift: 5b2f8f720f7e78e48511f693df1f9c9a6e38a25a
   ZXingObjC: e586c17a941af870aeaf2cdd156ba628c206f54c
 
-PODFILE CHECKSUM: e221194e137ddb59e7aab6761441a08523fc5911
+PODFILE CHECKSUM: e6a0a0199dd44f3ac9fc2f53dc0d1ba8357b0502
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.2.0.beta.1

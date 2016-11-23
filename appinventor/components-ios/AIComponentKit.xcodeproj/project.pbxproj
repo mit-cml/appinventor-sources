@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060119DD1DC24126000FC1E2 /* ListPicker.swift */; };
+		0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147B1DE61B530049B7AB /* SQLite.framework */; };
+		0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147C1DE61B530049B7AB /* Toast_Swift.framework */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -76,6 +78,7 @@
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
+		C9C337D803484D426F223304 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		F1822B232186EC6A486D9F46 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +94,8 @@
 
 /* Begin PBXFileReference section */
 		060119DD1DC24126000FC1E2 /* ListPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPicker.swift; sourceTree = "<group>"; };
+		0609147B1DE61B530049B7AB /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = "build/Debug-iphoneos/SQLite.swift/SQLite.framework"; sourceTree = "<group>"; };
+		0609147C1DE61B530049B7AB /* Toast_Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Toast_Swift.framework; path = "build/Debug-iphoneos/Toast-Swift/Toast_Swift.framework"; sourceTree = "<group>"; };
 		0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		0618A26E1D8CE3750013A191 /* Form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Form.swift; sourceTree = "<group>"; };
 		0618A2701D8CE50A0013A191 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
@@ -177,6 +182,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */,
+				0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */,
 				06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */,
 				06B374801DC06F6B003888CB /* Pods_AIComponentKit.framework in Frameworks */,
 				06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */,
@@ -189,6 +196,7 @@
 				06B587001DC0029B0092C9DD /* ImageIO.framework in Frameworks */,
 				06B587011DC0029B0092C9DD /* QuartzCore.framework in Frameworks */,
 				06B586F31DC0029B0092C9DD /* UIKit.framework in Frameworks */,
+				C9C337D803484D426F223304 /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +215,8 @@
 		0618A27A1D8CECAC0013A191 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0609147B1DE61B530049B7AB /* SQLite.framework */,
+				0609147C1DE61B530049B7AB /* Toast_Swift.framework */,
 				06B3747B1DC06F6B003888CB /* GCDWebServer.framework */,
 				06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */,
 				06B3747D1DC06F6B003888CB /* SchemeKit.framework */,
@@ -754,6 +764,8 @@
 					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
 					"$(PROJECT_DIR)/build/Release-iphoneos",
 					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/SQLite.swift",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
 				);
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -788,6 +800,8 @@
 					"$(PROJECT_DIR)/build/Release-iphoneos/GCDWebServer",
 					"$(PROJECT_DIR)/build/Release-iphoneos",
 					"$(PROJECT_DIR)/build/Release-iphoneos/ZXingObjC",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/SQLite.swift",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
 				);
 				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited)";
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
