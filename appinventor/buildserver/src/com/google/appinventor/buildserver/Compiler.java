@@ -1343,7 +1343,10 @@ public final class Compiler {
             file);
         resources.put(resourcePath, file);
       }
-      return file.getAbsolutePath();
+      if (System.getProperty("os.name").startsWith("Windows"))
+        return file.getAbsolutePath().replace(File.separatorChar, '/');
+      else
+        return file.getAbsolutePath();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
