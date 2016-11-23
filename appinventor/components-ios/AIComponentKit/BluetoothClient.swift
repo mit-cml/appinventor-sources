@@ -9,28 +9,29 @@
 import Foundation
 
 public final class BluetoothClient: BluetoothConnectionBase {
+  private let TAG = "BluetoothClient"
  
-  public override init(_ parent: ComponentContainer) {
-    super.init(parent)
+  public init(_ parent: ComponentContainer) {
+    super.init(parent, TAG)
   }
 
   // MARK: BluetoothClient Properties
   public var AddressesAndNames: [String] {
     get {
-      
+      return []
     }
   }
 
   // MARK: BluetoothClient Methods
   public func IsDevicePaired(_ device: String) -> Bool {
-    
+    return false
   }
   
   public func Connect(_ address: String) -> Bool {
-    
+    return false
   }
 
   public func ConnectWithUUID(_ address: String, _ uuid: String) -> Bool {
-    
+    return false
   }
 }
