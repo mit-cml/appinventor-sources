@@ -433,7 +433,7 @@ yail_invoke(pic_state *pic) {
       NSString *symname = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, args[i]))];
       [invocation setArgument:&symname atIndex:j];
     } else {
-      NSLog(@"incompatible yail type received %s in call to %s at index %d",
+      NSLog(@"incompatible yail type received %s in call to %@ at index %d",
             pic_typename(pic, pic_type(pic, args[i])), method.yailName, i);
       pic_error(pic, "incompatible yail type received", 1, pic_cstr_value(pic, pic_typename(pic, pic_type(pic, args[i]))));
     }

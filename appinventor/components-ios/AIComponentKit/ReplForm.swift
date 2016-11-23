@@ -10,7 +10,20 @@ import Foundation
 import SchemeKit
 
 public class ReplForm: Form {
+  internal static weak var topform: ReplForm?
   private var _httpdServer: AppInvHTTPD?
+  private var _assetsLoaded = false
+  
+  public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
+    super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
+    if ReplForm.topform == nil {
+      ReplForm.topform = self
+    }
+  }
+  
+  public required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
   public override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     NSLog("Delegating dispatch to YAIL")
@@ -44,5 +57,27 @@ public class ReplForm: Form {
     get {
       return _httpdServer?.interpreter
     }
+  }
+
+  public var activeForm: ReplForm? {
+    get {
+      if let form = Form.activeForm {
+        if form is ReplForm {
+          return form as? ReplForm
+        }
+      }
+      return self
+    }
+  }
+
+  public var assetsLoaded: Bool {
+    @objc(isAssetsLoaded)
+    get {
+      return _assetsLoaded;
+    }
+  }
+  
+  public func setAssetsLoaded() {
+    _assetsLoaded = true
   }
 }

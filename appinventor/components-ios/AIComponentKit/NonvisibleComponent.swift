@@ -9,10 +9,10 @@
 import Foundation
 
 public class NonvisibleComponent: NSObject, Component {
-  private final var _dispatcher: HandlesEventDispatching
+  final weak var _form: Form?
 
-  public init(_ dispatcher: ComponentContainer) {
-    self._dispatcher = (dispatcher.form?.dispatchDelegate)!
+  public init(_ container: ComponentContainer) {
+    self._form = container.form!
   }
 
   public func copy(with zone: NSZone? = nil) -> Any {
@@ -21,7 +21,7 @@ public class NonvisibleComponent: NSObject, Component {
   
   public var dispatchDelegate: HandlesEventDispatching {
     get {
-      return _dispatcher
+      return (_form?.dispatchDelegate)!
     }
   }
 }

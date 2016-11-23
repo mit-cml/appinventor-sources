@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "picrin.h"
+#include <SchemeKit/picrin.h>
 
 @interface YailList : NSMutableArray
 
-- (pic_value)picrinList;
++ (instancetype)makeList:(pic_value)list :(pic_state *)state;
+- (instancetype)init:(pic_value)list :(pic_state *)state;
+
+@property (readonly) pic_value picrinList;
 
 @end

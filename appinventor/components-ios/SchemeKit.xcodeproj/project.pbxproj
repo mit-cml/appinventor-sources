@@ -13,7 +13,7 @@
 		0616090D1D9604BB00D145C4 /* SCMNameResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0616090B1D9604BB00D145C4 /* SCMNameResolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0616090E1D9604BB00D145C4 /* SCMNameResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0616090C1D9604BB00D145C4 /* SCMNameResolver.m */; };
 		061609111D96112D00D145C4 /* MockComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061609101D96112D00D145C4 /* MockComponent.swift */; };
-		0624F4BC1DB33B0D003B2527 /* YailList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624F4BA1DB33B0D003B2527 /* YailList.h */; };
+		0624F4BC1DB33B0D003B2527 /* YailList.h in Headers */ = {isa = PBXBuildFile; fileRef = 0624F4BA1DB33B0D003B2527 /* YailList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0624F4BD1DB33B0D003B2527 /* YailList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0624F4BB1DB33B0D003B2527 /* YailList.m */; };
 		0650B1E91DAACDB100A7846C /* yail.m in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1E81DAACDB100A7846C /* yail.m */; };
 		0650B1EC1DAAED3A00A7846C /* SCMMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = 0650B1EA1DAAED3A00A7846C /* SCMMethod.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -80,6 +80,8 @@
 		06BEC17A1D961AE100B62630 /* emyg_atod.h in Headers */ = {isa = PBXBuildFile; fileRef = 06BEC1761D961AE100B62630 /* emyg_atod.h */; };
 		06BEC17B1D961AE100B62630 /* emyg_dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 06BEC1771D961AE100B62630 /* emyg_dtoa.c */; };
 		06BEC17C1D961AE100B62630 /* emyg_dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 06BEC1781D961AE100B62630 /* emyg_dtoa.h */; };
+		06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D1518B1DC456C600FC981E /* SCMSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1518C1DC456C600FC981E /* SCMSymbol.m */; };
 		06FCDEEA1D94383000199DD4 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FCDEE01D94383000199DD4 /* SchemeKit.framework */; };
 		06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCDEEE1D94383000199DD4 /* SchemeKitTests.m */; };
 		06FCDEF11D94383000199DD4 /* SchemeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 06FCDEE31D94383000199DD4 /* SchemeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -104,8 +106,8 @@
 		0616090F1D96112D00D145C4 /* SchemeKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SchemeKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		061609101D96112D00D145C4 /* MockComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockComponent.swift; sourceTree = "<group>"; };
 		0624F4B91DB08148003B2527 /* yail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yail.h; sourceTree = "<group>"; };
-		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YailList.h; sourceTree = "<group>"; };
-		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YailList.m; sourceTree = "<group>"; };
+		0624F4BA1DB33B0D003B2527 /* YailList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YailList.h; path = SchemeKit/YailList.h; sourceTree = "<group>"; };
+		0624F4BB1DB33B0D003B2527 /* YailList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YailList.m; path = SchemeKit/YailList.m; sourceTree = "<group>"; };
 		0650B1E81DAACDB100A7846C /* yail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = yail.m; sourceTree = "<group>"; };
 		0650B1EA1DAAED3A00A7846C /* SCMMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMMethod.h; sourceTree = "<group>"; };
 		0650B1EB1DAAED3A00A7846C /* SCMMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMMethod.m; sourceTree = "<group>"; };
@@ -174,6 +176,8 @@
 		06BEC1761D961AE100B62630 /* emyg_atod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_atod.h; path = picrin/contrib/10.roundtrip/emyg_atod.h; sourceTree = "<group>"; };
 		06BEC1771D961AE100B62630 /* emyg_dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_dtoa.c; path = picrin/contrib/10.roundtrip/emyg_dtoa.c; sourceTree = "<group>"; };
 		06BEC1781D961AE100B62630 /* emyg_dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_dtoa.h; path = picrin/contrib/10.roundtrip/emyg_dtoa.h; sourceTree = "<group>"; };
+		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMSymbol.h; sourceTree = "<group>"; };
+		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMSymbol.m; sourceTree = "<group>"; };
 		06FCDEE01D94383000199DD4 /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06FCDEE31D94383000199DD4 /* SchemeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SchemeKit.h; sourceTree = "<group>"; };
 		06FCDEE41D94383000199DD4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -296,6 +300,18 @@
 			name = contrib;
 			sourceTree = "<group>";
 		};
+		06D1518A1DC4569D00FC981E /* picrin-objc */ = {
+			isa = PBXGroup;
+			children = (
+				06D1518B1DC456C600FC981E /* SCMSymbol.h */,
+				06D1518C1DC456C600FC981E /* SCMSymbol.m */,
+				0624F4BA1DB33B0D003B2527 /* YailList.h */,
+				0624F4BB1DB33B0D003B2527 /* YailList.m */,
+			);
+			name = "picrin-objc";
+			path = ..;
+			sourceTree = "<group>";
+		};
 		06FCDED61D94383000199DD4 = {
 			isa = PBXGroup;
 			children = (
@@ -320,6 +336,7 @@
 				0650B1FA1DABC28000A7846C /* init_contrib.c */,
 				0650B1FB1DABC28000A7846C /* load_piclib.c */,
 				065ECF471D949DDD00C749A1 /* picrin */,
+				06D1518A1DC4569D00FC981E /* picrin-objc */,
 				06FCDEE31D94383000199DD4 /* SchemeKit.h */,
 				0650B1F21DAB410B00A7846C /* ASTRecursiveVisitor.h */,
 				0650B1F31DAB410B00A7846C /* ASTRecursiveVisitor.m */,
@@ -328,17 +345,15 @@
 				065ECF431D9459B600C749A1 /* scheme.y */,
 				0650B1F61DABBE6A00A7846C /* SCMASTPrinter.h */,
 				0650B1F71DABBE6A00A7846C /* SCMASTPrinter.m */,
+				06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */,
+				06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */,
 				0650B1EA1DAAED3A00A7846C /* SCMMethod.h */,
 				0650B1EB1DAAED3A00A7846C /* SCMMethod.m */,
 				0616090B1D9604BB00D145C4 /* SCMNameResolver.h */,
 				0616090C1D9604BB00D145C4 /* SCMNameResolver.m */,
-				0650B21C1DABCC6400A7846C /* env.c */,
 				0650B21E1DABCC9700A7846C /* env.h */,
+				0650B21C1DABCC6400A7846C /* env.c */,
 				0624F4B91DB08148003B2527 /* yail.h */,
-				0624F4BA1DB33B0D003B2527 /* YailList.h */,
-				0624F4BB1DB33B0D003B2527 /* YailList.m */,
-				06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */,
-				06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */,
 			);
 			path = SchemeKit;
 			sourceTree = "<group>";
@@ -370,6 +385,7 @@
 				065ECF8A1D94A02000C749A1 /* state.h in Headers */,
 				065ECF891D94A02000C749A1 /* object.h in Headers */,
 				0650B1F81DABBE6A00A7846C /* SCMASTPrinter.h in Headers */,
+				06D1518D1DC456C600FC981E /* SCMSymbol.h in Headers */,
 				065ECF871D94A02000C749A1 /* gc.h in Headers */,
 				065ECF861D94A02000C749A1 /* file.h in Headers */,
 				061609051D9601ED00D145C4 /* picconf.h in Headers */,
@@ -527,6 +543,7 @@
 				065ECF691D949E1200C749A1 /* error.c in Sources */,
 				065ECF531D949E0100C749A1 /* port.c in Sources */,
 				0650B1FD1DABC28000A7846C /* load_piclib.c in Sources */,
+				06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */,
 				0650B1E91DAACDB100A7846C /* yail.m in Sources */,
 				065ECF501D949E0100C749A1 /* load.c in Sources */,
 				065ECF7D1D949E2400C749A1 /* write.c in Sources */,

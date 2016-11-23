@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc public protocol ComponentContainer: HandlesEventDispatching {
+@objc public protocol ComponentContainer {
     var form: Form? { get }
     func add(_ component: ViewComponent)
     func setChildWidth(of component: ViewComponent, width: Int32)

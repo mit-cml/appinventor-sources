@@ -66,8 +66,8 @@ enum DefaultValueColor: String {
 }
 
 let kFontSizeDefault: Float = 14.0
-let kLayoutOrientationHorizontal = ComponentConstants.Layout.horizontal
-let kLayoutOrientationVertical = ComponentConstants.Layout.vertical
+let kLayoutOrientationHorizontal = HVOrientation.horizontal
+let kLayoutOrientationVertical = HVOrientation.vertical
 
 enum Scaling: Int32 {
     case proportionally
@@ -81,10 +81,10 @@ enum Typeface: Int32 {
     case monospace
 }
 
-let kLengthPreferred = -1
-let kLengthFillParent = -2
-let kLengthUnknown = -3
-let kLengthPercentTag = -1000
+let kLengthPreferred: Int32 = -1
+let kLengthFillParent: Int32 = -2
+let kLengthUnknown: Int32 = -3
+let kLengthPercentTag: Int32 = -1000
 
 enum ToastLength: Int32 {
   case short

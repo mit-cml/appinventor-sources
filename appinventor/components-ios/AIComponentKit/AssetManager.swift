@@ -47,4 +47,11 @@ public class AssetManager: NSObject {
       return path!
     }
   }
+
+  public func imageFromPath(path: String) -> UIImage? {
+    if let image = UIImage(named: path) {
+      return image
+    }
+    return nil
+  }
 }

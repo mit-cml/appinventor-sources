@@ -9,10 +9,15 @@
 import Foundation
 import AVKit
 
+private let kMaxPlayDelayRetries: Int32 = 10
+private let kPlayDelayLength = TimeInterval(0.050)
+
 public class Sound: NonvisibleComponent {
-  private var sourcePath: String = ""
-  private var minimumInterval: Int32 = 1
-  private var audioPlayer: AVAudioPlayer?
+  private var _sourcePath: String = ""
+  private var _minimumInterval: Int32 = 500
+  private var _timeLastPlayed: Double = 0.0
+  private var _audioPlayer: AVAudioPlayer?
+  private var _delayRetries: Int32 = 0
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -20,15 +25,15 @@ public class Sound: NonvisibleComponent {
 
   public var Source: String {
     get {
-      return sourcePath
+      return _sourcePath
     }
     set(path) {
-      sourcePath = path
+      _sourcePath = path
       if (path == "") {
-        if (audioPlayer != nil) {
-          audioPlayer?.stop()
+        if (_audioPlayer != nil) {
+          _audioPlayer?.stop()
         }
-        audioPlayer = nil
+        _audioPlayer = nil
       } else {
         let path = Bundle.main.path(forResource: path, ofType: nil)
         if (path == nil) {
@@ -36,8 +41,8 @@ public class Sound: NonvisibleComponent {
         }
         let url = URL(fileURLWithPath: path!)
         do {
-          audioPlayer = try AVAudioPlayer(contentsOf:url)
-          audioPlayer?.prepareToPlay()
+          _audioPlayer = try AVAudioPlayer(contentsOf:url)
+          _audioPlayer?.prepareToPlay()
         } catch {
           NSLog("Error loading audio")
         }
@@ -47,33 +52,44 @@ public class Sound: NonvisibleComponent {
   
   public var MinimumInterval: Int32 {
     get {
-      return minimumInterval
+      return _minimumInterval
     }
-    set {
-      
+    set(interval) {
+      _minimumInterval = interval
     }
   }
   
   public func Play() {
-    if (audioPlayer != nil) {
-      audioPlayer?.play()
+    let currentTime = Date().timeIntervalSince1970
+    if (_timeLastPlayed == 0.0 || currentTime >= _timeLastPlayed + Double(_minimumInterval)/1000.0) {
+      _timeLastPlayed = currentTime
+      _delayRetries = kMaxPlayDelayRetries
+      playWhenLoadComplete()
+    } else {
+      NSLog("Unable to play because MinimumInterval has not elapsed since last play.")
     }
   }
-  
+
+  private func playWhenLoadComplete() {
+    if let player = _audioPlayer {
+      player.play()
+    }
+  }
+
   public func Pause() {
-    if (audioPlayer != nil) {
-      audioPlayer?.pause()
+    if (_audioPlayer != nil) {
+      _audioPlayer?.pause()
     }
   }
   
   public func Stop() {
-    if (audioPlayer != nil) {
-      audioPlayer?.stop()
+    if (_audioPlayer != nil) {
+      _audioPlayer?.stop()
     }
   }
   
   public func Vibrate(duration: Int32) {
-    
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
   }
   
   public func SoundError(message: String) {

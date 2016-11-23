@@ -8,11 +8,9 @@
 
 import Foundation
 
-public class ComponentConstants {
-  enum Layout: Int32 {
-    case horizontal
-    case vertical
-  }
+public enum HVOrientation: Int32 {
+  case horizontal
+  case vertical
 }
 
 public enum HorizontalGravity: Int32 {

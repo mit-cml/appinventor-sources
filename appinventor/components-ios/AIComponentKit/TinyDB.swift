@@ -7,7 +7,33 @@
 //
 
 import Foundation
+import CoreData
 
 public class TinyDB: NonvisibleComponent {
+
+  private var storage: NSPersistentStore!
+
+  public override init(_ parent: ComponentContainer) {
+    super.init(parent)
+  }
+
+  public func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
+    
+  }
   
+  public func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
+    return valueIfTagNotThere
+  }
+  
+  public func GetTags() -> [String] {
+    return [String]()
+  }
+
+  public func ClearAll() {
+    
+  }
+  
+  public func ClearTag(_ tag: String) {
+    
+  }
 }

@@ -47,6 +47,11 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
+  public override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    Form.activeForm = self
+  }
+  
   public func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     let canDispatch = _screenInitialized || (self.isEqual(component) && eventName == "Initialize")
     if (!_screenInitialized) {
@@ -359,8 +364,29 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   }
 
   // MARK: Form Methods
+  
+  // MARK: Form Events
+  public func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
+    // TODO: Implementation
+  }
+  
+  public func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
+    // TODO: Implementation
+  }
+  
+  public func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
+    // TODO: Implementation
+  }
+  
+  public func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
+    // TODO: Implementation
+  }
+  
   public func Initialize() {
     _screenInitialized = true
   }
-  
+
+  public func ScreenOrientationChanged() {
+    EventDispatcher.dispatchEvent(of: self, called: "ScreenOrientationChanged")
+  }
 }

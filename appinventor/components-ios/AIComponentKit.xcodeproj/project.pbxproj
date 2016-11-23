@@ -11,6 +11,8 @@
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A71DCE409D0035E4A4 /* BluetoothClient.swift */; };
+		062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */; };
 		062832961DBE9591009605D5 /* LinearLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832951DBE9591009605D5 /* LinearLayout.swift */; };
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
@@ -48,6 +50,12 @@
 		06B587011DC0029B0092C9DD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B586FA1DC0029B0092C9DD /* QuartzCore.framework */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
 		06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C94A381D99D10400341AAE /* EventDispatcher.swift */; };
+		06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D1518F1DC45E9700FC981E /* ErrorMessages.swift */; };
+		06D1519B1DC4736800FC981E /* NSString_SHA1.h in Headers */ = {isa = PBXBuildFile; fileRef = 06D151991DC4736800FC981E /* NSString_SHA1.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1519A1DC4736800FC981E /* NSString_SHA1.m */; };
+		06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D1519D1DC4F49C00FC981E /* AppManager.swift */; };
+		06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */; };
+		06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D151E91DC6ED5200FC981E /* HVArrangement.swift */; };
 		06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */; };
 		06DA9F501D8CFBA200389B04 /* Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A26E1D8CE3750013A191 /* Form.swift */; };
 		06DA9F511D8CFBA200389B04 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2701D8CE50A0013A191 /* Component.swift */; };
@@ -67,7 +75,7 @@
 		06E59EB11D92D16100C42804 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB01D92D16100C42804 /* Button.swift */; };
 		06E59EB31D92D19600C42804 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB21D92D19600C42804 /* Label.swift */; };
 		06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E59EB41D93345E00C42804 /* ButtonBase.swift */; };
-		0D2ED52EA42A82D451869FE9 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
+		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		F1822B232186EC6A486D9F46 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -98,6 +106,8 @@
 		0618A28C1D8CF4EE0013A191 /* AIComponentKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIComponentKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIComponentKitTests.swift; sourceTree = "<group>"; };
 		0618A2931D8CF4EE0013A191 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		062300A71DCE409D0035E4A4 /* BluetoothClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothClient.swift; sourceTree = "<group>"; };
+		062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionBase.swift; sourceTree = "<group>"; };
 		062832951DBE9591009605D5 /* LinearLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearLayout.swift; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
@@ -134,6 +144,12 @@
 		06B586FA1DC0029B0092C9DD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		06B5872B1DC02B190092C9DD /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetManager.swift; sourceTree = "<group>"; };
 		06C94A381D99D10400341AAE /* EventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
+		06D1518F1DC45E9700FC981E /* ErrorMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorMessages.swift; sourceTree = "<group>"; };
+		06D151991DC4736800FC981E /* NSString_SHA1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSString_SHA1.h; sourceTree = "<group>"; };
+		06D1519A1DC4736800FC981E /* NSString_SHA1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSString_SHA1.m; sourceTree = "<group>"; };
+		06D1519D1DC4F49C00FC981E /* AppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
+		06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ElementsUtil.swift; sourceTree = "<group>"; };
+		06D151E91DC6ED5200FC981E /* HVArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVArrangement.swift; sourceTree = "<group>"; };
 		06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibleComponent.swift; sourceTree = "<group>"; };
 		06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInvHTTPD.h; sourceTree = "<group>"; };
 		06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInvHTTPD.m; sourceTree = "<group>"; };
@@ -146,6 +162,7 @@
 		06E59EB01D92D16100C42804 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		06E59EB21D92D19600C42804 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		06E59EB41D93345E00C42804 /* ButtonBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBase.swift; sourceTree = "<group>"; };
+		06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerometerSensor.swift; sourceTree = "<group>"; };
 		06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeScanner.swift; sourceTree = "<group>"; };
 		32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -172,7 +189,6 @@
 				06B587001DC0029B0092C9DD /* ImageIO.framework in Frameworks */,
 				06B587011DC0029B0092C9DD /* QuartzCore.framework in Frameworks */,
 				06B586F31DC0029B0092C9DD /* UIKit.framework in Frameworks */,
-				0D2ED52EA42A82D451869FE9 /* Pods_AIComponentKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,17 +250,94 @@
 			path = AIComponentKitTests;
 			sourceTree = "<group>";
 		};
+		06D151911DC4646000FC981E /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				06E59EB01D92D16100C42804 /* Button.swift */,
+				06E59EB41D93345E00C42804 /* ButtonBase.swift */,
+				06B216051DB95155000B3366 /* Image.swift */,
+				06E59EB21D92D19600C42804 /* Label.swift */,
+				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
+				068E0E9D1DC243B30086FFDA /* Picker.swift */,
+				068E0EB61DC251BA0086FFDA /* Slider.swift */,
+				06B216011DB95134000B3366 /* TextBox.swift */,
+			);
+			name = ui;
+			sourceTree = "<group>";
+		};
+		06D151921DC464AB00FC981E /* layout */ = {
+			isa = PBXGroup;
+			children = (
+				06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */,
+				06D151E91DC6ED5200FC981E /* HVArrangement.swift */,
+				06B215FB1DB95109000B3366 /* VerticalArrangement.swift */,
+			);
+			name = layout;
+			sourceTree = "<group>";
+		};
+		06D151931DC464BB00FC981E /* core */ = {
+			isa = PBXGroup;
+			children = (
+				0618A26E1D8CE3750013A191 /* Form.swift */,
+				06DA9F601D8D0DFC00389B04 /* ReplForm.swift */,
+				0618A2781D8CEB640013A191 /* ViewComponent.swift */,
+				06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		06D151941DC464D400FC981E /* media */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = media;
+			sourceTree = "<group>";
+		};
+		06D151951DC464F300FC981E /* drawing */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = drawing;
+			sourceTree = "<group>";
+		};
+		06D151961DC4650700FC981E /* sensors */ = {
+			isa = PBXGroup;
+			children = (
+				06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */,
+			);
+			name = sensors;
+			sourceTree = "<group>";
+		};
+		06D151971DC4651300FC981E /* social */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = social;
+			sourceTree = "<group>";
+		};
+		06D151981DC4651D00FC981E /* storage */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = storage;
+			sourceTree = "<group>";
+		};
 		06DA9F571D8D0B4B00389B04 /* util */ = {
 			isa = PBXGroup;
 			children = (
 				06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */,
 				06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */,
+				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
+				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
+				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
 				06E59EA71D92C7E800C42804 /* NetworkUtils.h */,
 				06E59EA81D92C7E800C42804 /* NetworkUtils.m */,
+				06D151991DC4736800FC981E /* NSString_SHA1.h */,
+				06D1519A1DC4736800FC981E /* NSString_SHA1.m */,
 				067D1B151D9B398E00A6190E /* RetValManager.h */,
 				067D1B161D9B398E00A6190E /* RetValManager.m */,
 				0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */,
@@ -265,20 +358,18 @@
 		06E59EAB1D92C91800C42804 /* visible */ = {
 			isa = PBXGroup;
 			children = (
-				06E59EB01D92D16100C42804 /* Button.swift */,
-				06E59EB41D93345E00C42804 /* ButtonBase.swift */,
-				0618A26E1D8CE3750013A191 /* Form.swift */,
-				06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */,
-				06B216051DB95155000B3366 /* Image.swift */,
-				06E59EB21D92D19600C42804 /* Label.swift */,
-				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
-				068E0E9D1DC243B30086FFDA /* Picker.swift */,
-				06DA9F601D8D0DFC00389B04 /* ReplForm.swift */,
-				068E0EB61DC251BA0086FFDA /* Slider.swift */,
-				06B216011DB95134000B3366 /* TextBox.swift */,
-				06B215FB1DB95109000B3366 /* VerticalArrangement.swift */,
-				0618A2781D8CEB640013A191 /* ViewComponent.swift */,
-				06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */,
+				06D151931DC464BB00FC981E /* core */,
+				06D151911DC4646000FC981E /* ui */,
+				06D151921DC464AB00FC981E /* layout */,
+				06D151941DC464D400FC981E /* media */,
+				06D151951DC464F300FC981E /* drawing */,
+				06D151961DC4650700FC981E /* sensors */,
+				06D151971DC4651300FC981E /* social */,
+				06D151981DC4651D00FC981E /* storage */,
+				06EAAC7A1DCE3E6400889C6D /* connectivity */,
+				06EAAC7B1DCE3E9300889C6D /* mindstorms */,
+				06EAAC7C1DCE3E9C00889C6D /* experimental */,
+				06EAAC7D1DCE3EA200889C6D /* internal */,
 			);
 			name = visible;
 			sourceTree = "<group>";
@@ -312,6 +403,36 @@
 				062832971DBE95A7009605D5 /* Layout.swift */,
 			);
 			name = interfaces;
+			sourceTree = "<group>";
+		};
+		06EAAC7A1DCE3E6400889C6D /* connectivity */ = {
+			isa = PBXGroup;
+			children = (
+				062300A71DCE409D0035E4A4 /* BluetoothClient.swift */,
+				062300A91DCE40D40035E4A4 /* BluetoothConnectionBase.swift */,
+			);
+			name = connectivity;
+			sourceTree = "<group>";
+		};
+		06EAAC7B1DCE3E9300889C6D /* mindstorms */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = mindstorms;
+			sourceTree = "<group>";
+		};
+		06EAAC7C1DCE3E9C00889C6D /* experimental */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = experimental;
+			sourceTree = "<group>";
+		};
+		06EAAC7D1DCE3EA200889C6D /* internal */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = internal;
 			sourceTree = "<group>";
 		};
 		06EF8CDF1D8CE2F6009FB227 = {
@@ -353,6 +474,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				06DA9F5E1D8D0CAA00389B04 /* AppInvHTTPD.h in Headers */,
+				06D1519B1DC4736800FC981E /* NSString_SHA1.h in Headers */,
 				0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */,
 				06DA9F561D8CFBAB00389B04 /* AIComponentKit-Bridging-Header.h in Headers */,
 				067D1B171D9B398E00A6190E /* RetValManager.h in Headers */,
@@ -411,7 +533,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "MIT Center for Mobile Learning";
 				TargetAttributes = {
 					0618A2831D8CF4EE0013A191 = {
@@ -545,6 +667,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,
+				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */,
@@ -553,6 +677,7 @@
 				06E59EAF1D92D14F00C42804 /* Sound.swift in Sources */,
 				06DA9F501D8CFBA200389B04 /* Form.swift in Sources */,
 				060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */,
+				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
@@ -565,10 +690,13 @@
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
+				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
+				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,
 				06E59EB31D92D19600C42804 /* Label.swift in Sources */,
 				06B215FE1DB95116000B3366 /* Web.swift in Sources */,
 				062832981DBE95A7009605D5 /* Layout.swift in Sources */,
+				06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */,
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
@@ -581,8 +709,10 @@
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				06E59EAA1D92C7E800C42804 /* NetworkUtils.m in Sources */,
 				06DA9F551D8CFBA200389B04 /* ViewComponent.swift in Sources */,
+				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
 				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
+				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -679,7 +809,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -703,7 +833,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 32349630B8B4D40D05FB295A /* Pods-AIComponentKitTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";

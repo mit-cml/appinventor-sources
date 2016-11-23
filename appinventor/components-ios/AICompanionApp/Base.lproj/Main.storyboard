@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="f8E-Bx-vXj">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,32 +23,39 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Title.png" translatesAutoresizingMaskIntoConstraints="NO" id="c0w-mP-8IX">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="62.5"/>
                                 <constraints>
                                     <constraint firstAttribute="height" secondItem="c0w-mP-8IX" secondAttribute="width" multiplier="75:450" id="YyK-ji-LzM"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Instructions.png" translatesAutoresizingMaskIntoConstraints="NO" id="fs4-4D-vvR">
+                                <rect key="frame" x="24" y="70.5" width="327" height="81.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="fs4-4D-vvR" secondAttribute="height" multiplier="800:200" constant="1" id="gH7-ya-JMI"/>
                                 </constraints>
                             </imageView>
                             <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Six Character Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gxM-wq-OQv">
+                                <rect key="frame" x="32" y="160" width="311" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textField>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vZO-ch-Rin">
+                                <rect key="frame" x="37.5" y="194" width="300" height="49"/>
                                 <state key="normal" image="connectwCode.png"/>
                             </button>
                             <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QmI-n4-yhD">
+                                <rect key="frame" x="37.5" y="251" width="300" height="49"/>
                                 <state key="normal" image="connectwQR.png"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version: Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXu-gl-0yY">
+                                <rect key="frame" x="32" y="320.5" width="311" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your IP Address is: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ste-Nv-ksy">
+                                <rect key="frame" x="32" y="300" width="311" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -87,6 +97,35 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fAb-e3-7Fr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="544.79999999999995" y="689.5052473763119"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="rvG-hZ-fr2">
+            <objects>
+                <viewController id="cAA-BT-EfY" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Xua-qZ-jdg"/>
+                        <viewControllerLayoutGuide type="bottom" id="Vwa-Oa-LcW"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="PyL-gQ-G5J">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pkY-WG-A6j">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Vwa-Oa-LcW" firstAttribute="top" secondItem="pkY-WG-A6j" secondAttribute="bottom" id="0CU-7p-wW5"/>
+                            <constraint firstItem="pkY-WG-A6j" firstAttribute="top" secondItem="Xua-qZ-jdg" secondAttribute="bottom" id="Ejk-rw-tau"/>
+                            <constraint firstItem="pkY-WG-A6j" firstAttribute="leading" secondItem="PyL-gQ-G5J" secondAttribute="leadingMargin" constant="-16" id="Kcy-2Z-onG"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="pkY-WG-A6j" secondAttribute="trailing" constant="-16" id="qQt-mt-zrK"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZAz-Xz-JvY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1394.4000000000001" y="679.61019490254876"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="bCJ-It-hIT">
