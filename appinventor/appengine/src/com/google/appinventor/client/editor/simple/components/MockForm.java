@@ -781,18 +781,23 @@ public final class MockForm extends MockContainer {
 
   @Override
   public EditableProperties getProperties() {
+    // !!!! fix comment if new code works
     // Before we return the Properties object, we make sure that the
     // Sizing property has the value from the project's properties
     // this is because Sizing is per project, not per Screen(Form)
     // We only have to do this on screens other then screen1 because
     // screen1's value is definitive.
-    if(!editor.isScreen1()) {
+    if (!editor.isScreen1()) {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
         editor.getProjectEditor().getProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
+      // new code to test
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP));
     }
-    // TODO(hal) : Do we need to do this also for the ShowListsAsLisp property?
     return properties;
   }
 
