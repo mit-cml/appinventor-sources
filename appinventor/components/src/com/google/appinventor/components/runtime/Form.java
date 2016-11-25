@@ -4,9 +4,6 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-// ***********************************************
-// If we're not going to go this route with onDestroy, then at least get rid of the DEBUG flag.
-
 package com.google.appinventor.components.runtime;
 
 import java.io.IOException;
@@ -151,7 +148,7 @@ public class Form extends Activity
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
 
-  
+
 
   // Layout
   private LinearLayout viewLayout;
@@ -172,7 +169,7 @@ public class Form extends Activity
 
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
-  
+
   private static boolean showListsAsLisp = false;
 
   // Application lifecycle related fields
@@ -351,7 +348,11 @@ public class Form extends Activity
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
-    ShowListsAsLisp(false);  //CHECK THIS
+    ShowListsAsLisp(false);
+    // TODO(hal):  Fix this comment so that it more learly explains whay it's OK to initialize ShowListsAsLisp
+    // on screens other than screen 1.
+    // Basically, any change to this value for Screen 1 will get propagated to the property value for other screens, and that
+    // is the only way the property value gets set.
   }
 
   @Override
@@ -1430,36 +1431,31 @@ public class Form extends Activity
 
   /**
    * ShowListsAsLisp Property Setter
-   *
+   * This only appears in the designer for screen 1
    * @param
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
-  description = "If set to true, lists will be converted to strings using Lisp convention as symbols separated by spaces, "
+  description = "If set to true, lists will be converted to strings using Lisp notatation, i.e., as symbols separated by spaces, "
       + "e.g., (a 1 b2 (c d).  If false, lists will appear as in Python, e.g. [\"a\", 1, \"b\", 2, [\"c\", \"d\"]].  "
-      + "This property is provided for compatibility with older projects.   New projects are created with this set to false, "
-      +  "Old projects that are upgraded with have it set to true.")
+      + "This property appears only in Screen 1, and the value for Screen 1 determines the bahavior for all screens. "
+      + "ThE property is provided for compatibility with older projects.   New projects are created with this set to false, "
+      + "Old projects will be upgraded with have it set to true, so that the upgrading will not cause any change in "
+      + "the behavior of the app.  The app's author can then set it to false if desired, using the designer check box for Screen 1."
+
+)
   public void ShowListsAsLisp(boolean asLisp) {
     showListsAsLisp = asLisp;
-    Log.d(LOG_TAG, "Setting showListAsLisp: result is " +  showListsAsLisp);
   }
 
-  
-  @SimpleProperty(
-      //make these visible fordebugging
-      category = PropertyCategory.APPEARANCE, userVisible = true)
+
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
   public boolean ShowListsAsLisp() {
-    Log.d(LOG_TAG, "showListsAsLisp = " +  showListsAsLisp);
-    return ShowListsAsLispStatic();
-  }
-
- // This method is static so that it can be called from runtime.scm
-  public static boolean ShowListsAsLispStatic() {
     return showListsAsLisp;
   }
-   
+
   /**
    * Specifies the App Name.
    *
@@ -1694,7 +1690,7 @@ public class Form extends Activity
     }
   }
 
-  
+
   /**
    * Returns the value that was passed to this screen when it was opened
    *

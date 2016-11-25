@@ -1200,9 +1200,20 @@
 (define (use-json-format)
   (or *testing*
       ;; If testing, we always use JSON format
-      ;; note tha we cannot access SimpleForm unless the companion is connected
-      (not (SimpleForm:ShowListsAsLispStatic))))
-	
+      ;; note that we cannot access SimpleForm unless the companion is connected
+      (not (*:ShowListsAsLisp (SimpleForm:getActiveForm)))))
+
+;; TODO(hal): I want to chnnge this to a macro so that test for
+;; *testing* happens at compile time.    But the following code
+;; gives a Kawa error at build time:
+
+;; (defmacro use-json-format
+;;   (lambda ()
+;;     (if *testing*
+;; 	#t
+;; 	'(not (*:ShowListsAsLisp (SimpleForm:getActiveForm))))
+;;     ))
+  
 (define (coerce-to-string arg)
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
         ((string? arg) arg)
@@ -1210,11 +1221,11 @@
         ((boolean? arg) (boolean->string arg))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((list? arg)
-	 (if (use-json-format)
-	     (let ((pieces (map get-json-display-representation arg)))
-	       (string-append "[" (join-strings pieces ", ") "]"))
-	     (let ((pieces (map coerce-to-string arg)))
-	       (call-with-output-string (lambda (port) (display pieces port))))))
+         (if (use-json-format)
+             (let ((pieces (map get-json-display-representation arg)))
+               (string-append "[" (join-strings pieces ", ") "]"))
+             (let ((pieces (map coerce-to-string arg)))
+               (call-with-output-string (lambda (port) (display pieces port))))))
         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
@@ -1226,8 +1237,8 @@
 (define get-display-representation
     (lambda (arg)
       (if (use-json-format)
-	  (get-json-display-representation arg)
-	  (get-original-display-representation arg))))
+          (get-json-display-representation arg)
+          (get-original-display-representation arg))))
 
 (define get-original-display-representation
    ;;there seems to be a bug in Kawa that makes (/ -1 0) equal to (/ 1 0)
