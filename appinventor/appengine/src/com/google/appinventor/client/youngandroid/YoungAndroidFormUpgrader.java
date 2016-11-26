@@ -914,6 +914,15 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 19;
     }
 
+    if (srcCompVersion < 20) {
+      // The ShowistsAsLisp Property was added.   The upgrader should
+      // initialize it to true.
+      // !!!!!!!! Implement this
+      componentProperties.put("ShowListsAsLisp", new ClientJsonString("True"));
+      srcCompVersion = 20;
+    }
+
+
     return srcCompVersion;
   }
 
