@@ -344,7 +344,7 @@ public class ProjectServiceTest {
         "useslocation=false\n" +
         "aname=Project1\n" +
         "sizing=Fixed\n" +
-        "showListsAsLisp=false\n");
+        "showListsOldStyle=false\n");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
@@ -492,7 +492,7 @@ public class ProjectServiceTest {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\",\"" +
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP + "\":\"false\"}}",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE + "\":\"false\"}}",
         loadedSettings);
 
     String storedSettings =

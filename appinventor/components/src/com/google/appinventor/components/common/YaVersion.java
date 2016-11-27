@@ -687,7 +687,7 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 19:
   // - Added HideKeyboard method
   // For FORM_COMPONENT_VERSION 20:
-  // - The Screen.ShowListsAsLisp property was added
+  // - The Screen.ShowListsOldStyle property was added
   public static final int FORM_COMPONENT_VERSION = 20;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:

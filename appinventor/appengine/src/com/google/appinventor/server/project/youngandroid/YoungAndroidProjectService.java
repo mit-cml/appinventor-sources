@@ -128,14 +128,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * Returns project settings that can be used when creating a new project.
    */
   public static String getProjectSettings(String icon, String vCode, String vName,
-    String useslocation, String aName, String sizing, String showListsAsLisp) {
+    String useslocation, String aName, String sizing, String showListsOldStyle) {
     icon = Strings.nullToEmpty(icon);
     vCode = Strings.nullToEmpty(vCode);
     vName = Strings.nullToEmpty(vName);
     useslocation = Strings.nullToEmpty(useslocation);
     sizing = Strings.nullToEmpty(sizing);
     aName = Strings.nullToEmpty(aName);
-    showListsAsLisp = Strings.nullToEmpty(showListsAsLisp);
+    showListsOldStyle = Strings.nullToEmpty(showListsOldStyle);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
         "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" + icon +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"" + vCode +
@@ -143,7 +143,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"" + useslocation +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"" + aName +
         "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"" + sizing +
-        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP + "\":\"" + showListsAsLisp +
+        "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE + "\":\"" + showListsOldStyle +
         "\"}}";
   }
 
@@ -158,7 +158,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param vname the version name
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-    String icon, String vcode, String vname, String useslocation, String aname, String sizing, String showListsAsLisp) {
+    String icon, String vcode, String vname, String useslocation, String aname, String sizing, String showListsOldStyle) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -182,8 +182,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     if (sizing != null && !sizing.isEmpty()) {
       contents += "sizing=" + sizing + "\n";
     }
-    if (showListsAsLisp != null && !showListsAsLisp.isEmpty()) {
-      contents += "showListsAsLisp=" + showListsAsLisp + "\n";
+    if (showListsOldStyle != null && !showListsOldStyle.isEmpty()) {
+      contents += "showListsOldStyle=" + showListsOldStyle + "\n";
     }
     return contents;
   }
@@ -251,9 +251,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newSizing = Strings.nullToEmpty(settings.getSetting(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
-    String newShowListsAsLisp = Strings.nullToEmpty(settings.getSetting(
+    String newShowListsOldStyle = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP));
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE));
     String newAName = Strings.nullToEmpty(settings.getSetting(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME));
@@ -283,7 +283,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon,
-        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsAsLisp);
+        newVCode, newVName, newUsesLocation, newAName, newSizing, newShowListsOldStyle);
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -349,9 +349,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String sizing = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
-    String showListsAsLisp = oldSettings.getSetting(
+    String showListsOldStyle = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP);
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -371,7 +371,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
         newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode,
-                                                       vname, useslocation, aname, sizing, showListsAsLisp);
+                                                       vname, useslocation, aname, sizing, showListsOldStyle);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -395,7 +395,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Create the new project and return the new project's id.
     return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname,
-        useslocation, aname, sizing, showListsAsLisp));
+        useslocation, aname, sizing, showListsOldStyle));
   }
 
   @Override

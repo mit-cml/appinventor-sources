@@ -49,7 +49,7 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, "Fixed",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP,"false",
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE,"false",
         EditableProperty.TYPE_INVISIBLE));
 
   }

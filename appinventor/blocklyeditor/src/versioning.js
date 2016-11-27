@@ -2059,7 +2059,7 @@ Blockly.Versioning.AllUpgradeMaps =
     19: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 20:
-    // - The Screen1.ShowListsAsLisp property was added and no block needs to be changed.
+    // - The Screen1.ShowListsOldStyle property was added and no block needs to be changed.
     20: "noUpgrade"
 
 

@@ -171,7 +171,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   // Don't show except on screen1
-  private static final String PROPERTY_NAME_SHOW_LISTS_AS_LISP = "ShowListsAsLisp";
+  private static final String PROPERTY_NAME_SHOW_LISTS_OLD_STYLE = "ShowListsOldStyle";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -419,8 +419,8 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
     
-    if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_LISP)) {
-      // The ShowListsAsLisp property actually applies to the application and is only visible on Screen1.
+    if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_OLD_STYLE)) {
+      // The ShowListsOldStyle property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
@@ -526,14 +526,14 @@ public final class MockForm extends MockContainer {
     }
   }
   
-  private void setShowListsAsLispProperty(String asLisp) {
+  private void setShowListsOldStyleProperty(String oldStyle) {
     // This property actually applies to the application and is only visible on
     // Screen1. When we load a form that is not Screen1, this method will be called with the
     // default value for CompatibilityProperty (false). We need to ignore that.
     if (editor.isScreen1()) {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP, asLisp);
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE, oldStyle);
     }
   }
   
@@ -751,8 +751,8 @@ public final class MockForm extends MockContainer {
       setVNameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ANAME)) {
       setANameProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_LISP)) {
-      setShowListsAsLispProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_OLD_STYLE)) {
+      setShowListsOldStyleProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -793,10 +793,10 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
       // new code to test
-      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP,
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_LISP));
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE));
     }
     return properties;
   }

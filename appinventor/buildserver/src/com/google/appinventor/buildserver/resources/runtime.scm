@@ -1201,17 +1201,17 @@
   (or *testing*
       ;; If testing, we always use JSON format
       ;; note that we cannot access SimpleForm unless the companion is connected
-      (not (*:ShowListsAsLisp (SimpleForm:getActiveForm)))))
+      (not (*:ShowListsOldStyle (SimpleForm:getActiveForm)))))
 
-;; TODO(hal): I want to chnnge this to a macro so that test for
-;; *testing* happens at compile time.    But the following code
-;; gives a Kawa error at build time:
+;; TODO(hal): I want to chnnge this to a macro so that tests for
+;; *testing happens at compile time.    But the following code
+;; gives a Kawa error at build time.  What's the right way to do this?
 
 ;; (defmacro use-json-format
 ;;   (lambda ()
 ;;     (if *testing*
 ;; 	#t
-;; 	'(not (*:ShowListsAsLisp (SimpleForm:getActiveForm))))
+;; 	'(not (*:ShowListsOldStyle (SimpleForm:getActiveForm))))
 ;;     ))
   
 (define (coerce-to-string arg)
