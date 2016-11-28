@@ -25,8 +25,9 @@
 
 ;;; We need to handle a few things differently
 ;;; if we are running the tests.
-;;; !!!!! change this to false before submitting pull request !!!!
-(define *testing* #f)
+;;; Note: By defining this as a constant, when we use it in a macro
+;;; the compiler "does the right thing" vis a vis code optimization
+(define-constant *testing* #f)
 
 (define (android-log message)
   (when *debug* (android.util.Log:i "YAIL" message)))
@@ -1196,24 +1197,14 @@
     (or (padded-string->number arg) *non-coercible-value*))
    (else *non-coercible-value*)))
 
+;; Note: Because *testing* is a constant the compiler will optimize
+;; this so there is no "if" check at runtime
+(define-syntax use-json-format
+  (syntax-rules ()
+    ((_)
+     (if *testing* #t
+         (not (*:ShowListsOldStyle (SimpleForm:getActiveForm)))))))
 
-(define (use-json-format)
-  (or *testing*
-      ;; If testing, we always use JSON format
-      ;; note that we cannot access SimpleForm unless the companion is connected
-      (not (*:ShowListsOldStyle (SimpleForm:getActiveForm)))))
-
-;; TODO(hal): I want to chnnge this to a macro so that tests for
-;; *testing happens at compile time.    But the following code
-;; gives a Kawa error at build time.  What's the right way to do this?
-
-;; (defmacro use-json-format
-;;   (lambda ()
-;;     (if *testing*
-;; 	#t
-;; 	'(not (*:ShowListsOldStyle (SimpleForm:getActiveForm))))
-;;     ))
-  
 (define (coerce-to-string arg)
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
         ((string? arg) arg)
