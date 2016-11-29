@@ -1434,8 +1434,11 @@ public class Form extends Activity
    * This only appears in the designer for screen 1
    * @param
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+
+  //  *** Uncomment the designer property annotation when we are ready to expose this property
+  //  in the UI.   Don't forget to also uncommnet the documentation.
+  //  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  //  defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
   description = "If set to true, lists will be converted to strings using App Inventor's pre-2017 notatation, i.e., as symbols separated by spaces, "
