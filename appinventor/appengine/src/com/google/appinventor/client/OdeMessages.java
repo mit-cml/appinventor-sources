@@ -952,6 +952,10 @@ public interface OdeMessages extends Messages {
       "Yail code")
   String badComponentNameError();
 
+  @DefaultMessage("Delete Component")
+  @Description("Title for the delete component dialog")
+  String deleteTitle();
+
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
   @Description("Confirmation query for deleting a component")
