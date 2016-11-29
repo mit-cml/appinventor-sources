@@ -21,6 +21,8 @@
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
+		068AA8191DE61D8E0011CC74 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA8181DE61D8E0011CC74 /* Application.swift */; };
+		068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */; };
 		068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0E9D1DC243B30086FFDA /* Picker.swift */; };
 		068E0EAF1DC251090086FFDA /* ActivityStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EAE1DC251090086FFDA /* ActivityStarter.swift */; };
 		068E0EB11DC251240086FFDA /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068E0EB01DC251240086FFDA /* Clock.swift */; };
@@ -118,6 +120,8 @@
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
+		068AA8181DE61D8E0011CC74 /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationFactory.swift; sourceTree = "<group>"; };
 		068E0E9D1DC243B30086FFDA /* Picker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picker.swift; sourceTree = "<group>"; };
 		068E0EAE1DC251090086FFDA /* ActivityStarter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityStarter.swift; sourceTree = "<group>"; };
 		068E0EB01DC251240086FFDA /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
@@ -338,6 +342,8 @@
 				06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */,
 				06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */,
 				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
+				068AA8181DE61D8E0011CC74 /* Application.swift */,
+				068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
 				06B216071DB954A5000B3366 /* ColorUtil.swift */,
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
@@ -677,6 +683,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
 				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,
 				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
@@ -722,6 +729,7 @@
 				062300AA1DCE40D40035E4A4 /* BluetoothConnectionBase.swift in Sources */,
 				06E59EA61D92C6C300C42804 /* NonvisibleComponent.swift in Sources */,
 				0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */,
+				068AA81B1DE61FE20011CC74 /* ApplicationFactory.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
 				06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */,
 			);

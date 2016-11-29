@@ -8,12 +8,15 @@
 
 import Foundation
 import CoreData
+import SQLite
 
 public class TinyDB: NonvisibleComponent {
 
-  private var storage: NSPersistentStore!
+  private var database: Connection
 
   public override init(_ parent: ComponentContainer) {
+    AssetManager.
+    database = Connection(<#T##filename: String##String#>)
     super.init(parent)
   }
 

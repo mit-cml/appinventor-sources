@@ -12,6 +12,13 @@ public class AssetManager: NSObject {
   private static var manager: AssetManager?
   public static var isRepl = false
   
+  private override init() {
+  }
+  
+  init(for unpackedApp: Application) {
+    
+  }
+  
   public class var shared: AssetManager {
     get {
       if manager == nil {
