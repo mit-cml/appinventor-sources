@@ -917,7 +917,9 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 20) {
       // The ShowistsOldStyle Property was added.   The upgrader should
       // initialize it to true.
-      componentProperties.put("ShowListsOldStyle", new ClientJsonString("True"));
+      // Uncomment the following line after we push a new companion to avoid a version
+      // skew bug in adding the ShowistsOldStyle property.
+      //      componentProperties.put("ShowListsOldStyle", new ClientJsonString("True"));
       srcCompVersion = 20;
     }
 
