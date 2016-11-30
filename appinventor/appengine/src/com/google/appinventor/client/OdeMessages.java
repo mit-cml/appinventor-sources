@@ -6263,5 +6263,17 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reload")
   @Description("")
   String reloadWindow();
+  
+  @DefaultMessage("AccountName")
+  @Description("")
+  String AccountNameProperties();
+  
+  @DefaultMessage("ProjectID")
+  @Description("")
+  String ProjectIDProperties();
+  
+  @DefaultMessage("RedCloudError")
+  @Description("")
+  String RedCloudErrorEvents();
 
 }

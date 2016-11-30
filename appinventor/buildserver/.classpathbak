@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="lib" path="lib/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/FastInfoset-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/grizzly-servlet-webserver-1.9.18-i.jar"/>
+	<classpathentry kind="lib" path="lib/http-20070405.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl-2.1.10.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc.jar"/>
+	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-bundle-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-multipart-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jettison-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/localizer.jar"/>
+	<classpathentry kind="lib" path="lib/mail-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/rome-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="lib/wadl-cmdline.jar"/>
+	<classpathentry kind="lib" path="lib/wadl-core.jar"/>
+	<classpathentry kind="lib" path="lib/wadl2java.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/junit/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/build/common/CommonTestUtils.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/builder-model-1.3.0.jar" sourcepath="/Volumes/android-aosp/platform/prebuilts/tools/common/offline-m2/com/android/tools/build/builder-model/1.3.0/builder-model-1.3.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/common-24.3.0.jar" sourcepath="/Volumes/android-aosp/platform/prebuilts/tools/common/offline-m2/com/android/tools/common/24.3.0/common-24.3.0-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/components"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/sdklib.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/bouncycastle/bcpkix-jdk15on-149.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/bouncycastle/bcprov-jdk15on-149.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/guava/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/commons-io/commons-io-2.0.1.jar" sourcepath="/Users/ewpatton/Programming/mit/sources/commons-io-2.0.1-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/args4j/args4j-2.0.18.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/json/json.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/build/common/CommonUtils.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/build/common/CommonVersion.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/builder-1.3.0.jar" sourcepath="/Volumes/android-aosp/platform/prebuilts/tools/common/offline-m2/com/android/tools/build/builder/1.3.0/builder-1.3.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/sdk-common-24.3.0.jar" sourcepath="/Volumes/android-aosp/platform/prebuilts/tools/common/offline-m2/com/android/tools/sdk-common/24.3.0/sdk-common-24.3.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/ecj/ecj-4.5.1.jar" sourcepath="/Users/ewpatton/Programming/mit/sources/ecj-4.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/tools/layoutlib-api-24.3.0.jar" sourcepath="/Volumes/android-aosp/platform/prebuilts/tools/common/offline-m2/com/android/tools/layoutlib/layoutlib-api/24.3.0/layoutlib-api-24.3.0-sources.jar"/>
+	<classpathentry kind="output" path="build/classes/BuildServer"/>
+</classpath>
