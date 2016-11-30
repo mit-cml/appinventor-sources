@@ -18,6 +18,7 @@ package com.google.appinventor.server.flags;
 public abstract class Flag<T> {
   private final String name;
   private final T defaultValue;
+  private T cachedValue = null;
 
   protected Flag(String name, T defaultValue) {
     this.name = name;
@@ -30,8 +31,11 @@ public abstract class Flag<T> {
    * @return the current value of this flag.
    */
   public final T get() throws IllegalFlagValueException {
-    String value = System.getProperty(name);
-    return (value == null) ? defaultValue : convert(value);
+    if (cachedValue == null) {
+      String value = System.getProperty(name);
+      cachedValue = (value == null) ? defaultValue : convert(value);
+    }
+    return cachedValue;
   }
 
   /**
@@ -41,6 +45,7 @@ public abstract class Flag<T> {
    */
   public final void setForTest(T value) {
     System.setProperty(name, value.toString());
+    cachedValue = null;
   }
 
   /**

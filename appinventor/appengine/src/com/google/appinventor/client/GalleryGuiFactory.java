@@ -11,10 +11,7 @@ import java.util.List;
 
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
-import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -26,10 +23,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class GalleryGuiFactory implements GalleryRequestListener {
-  GalleryClient gallery = null;
+public class GalleryGuiFactory {
+  GalleryClient gallery = GalleryClient.getInstance();
 
-  public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
+  public static final OdeMessages MESSAGES = Ode.getMessages();
 
   private final String PERSON_URL = "/images/person.png";
   private final String HOLLOW_HEART_ICON_URL = "/images/numLikeHollow.png";
@@ -42,8 +39,6 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * Generates a new GalleryGuiFactory instance.
    */
   public GalleryGuiFactory() {
-    gallery = GalleryClient.getInstance();
-    gallery.addListener(this);
   }
 
   /**
@@ -343,20 +338,5 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       container.add(appCard);
     }
 
-  }
-
-  @Override
-  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-    // TODO Auto-generated method stub
   }
 }

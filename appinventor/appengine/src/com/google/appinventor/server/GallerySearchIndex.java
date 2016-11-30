@@ -20,6 +20,7 @@ import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
@@ -42,6 +43,8 @@ public class GallerySearchIndex {
   private static volatile GallerySearchIndex  instance= null;
   private static final int SEARCH_RETRY_MAX = 3;
   private final int NUMBER_FOUND_ACCURACY = 100;
+  private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
+
   /**
    * The default constructor of GallerySearchIndex
    */
@@ -128,7 +131,9 @@ public class GallerySearchIndex {
     boolean retry = true;
     while (retry){
       try {
-        LOG.info("Sending query " + query);
+        if (DEBUG) {
+          LOG.info("Sending query " + query);
+        }
         results = getIndex().search(query);
         // search successful
         retry = false;
@@ -151,7 +156,9 @@ public class GallerySearchIndex {
     if (results != null){
       // Iterate over the documents in the results
       for (ScoredDocument document : results) {
-        LOG.info("Find:" + document.getId());
+        if (DEBUG) {
+          LOG.info("Find:" + document.getId());
+        }
       }
 
       // Iterate over the documents in the results

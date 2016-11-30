@@ -75,6 +75,12 @@ public interface Images extends Resources {
   ImageResource navigationbar();
 
   /**
+   * Spinning/wait graphic to indicate long-running operations.
+   */
+  @Source("com/google/appinventor/images/spin_16.gif")
+  ImageResource waitingIcon();
+
+  /**
    * Designer palette item: question mark for more component information
    */
   @Source("com/google/appinventor/images/help.png")

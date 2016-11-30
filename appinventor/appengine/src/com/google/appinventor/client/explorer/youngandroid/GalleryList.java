@@ -41,6 +41,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author wolberd@google.com (Dave Wolber)
  */
 public class GalleryList extends Composite implements GalleryRequestListener {
+  /**
+   * The number of RPCs that will be made when the GalleryList is initialized. This is used in
+   * {@link Ode#initializeUi()} to determine when to hide the Loading message.
+   */
+  public static final int INITIAL_RPCS = 4;
 
   final Ode ode = Ode.getInstance();
   private  List<GalleryApp> apps;
@@ -502,28 +507,29 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * @param refreshable whether or not clear container
    * @see GalleryRequestListener
    */
-  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
+  public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId, boolean refreshable)
   {
     List<GalleryApp> apps = appsResult.getApps();
     if (apps != null)
       refreshApps(appsResult, requestId, refreshable);
     else
       OdeLog.log("apps was null");
+    return false;
   }
   /**
    * Process the results after retrieving list of GalleryComment
    * @see GalleryRequestListener
    */
-  public void onCommentsRequestCompleted(List<GalleryComment> comments){
-
+  public boolean onCommentsRequestCompleted(List<GalleryComment> comments){
+    return false;
   }
 
   /**
    * Process the results after retrieving list of UserProject
    * @see GalleryRequestListener
    */
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-
+  public boolean onSourceLoadCompleted(UserProject projectInfo) {
+    return false;
   }
 
 }

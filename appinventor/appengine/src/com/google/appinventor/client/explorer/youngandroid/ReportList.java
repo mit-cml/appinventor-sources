@@ -55,6 +55,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author blu2@dons.usfca.edu (Bin Lu)
  */
 public class ReportList extends Composite  {
+  /**
+   * The number of RPCs that will be made when the ReportList is initialized. This is used in
+   * {@link Ode#initializeUi()} to determine when to hide the Loading message.
+   */
+  public static final int INITIAL_RPCS = 1;
   public static final int MAX_EMAIL_PREVIEW_LENGTH = 40;
   private final CheckBox checkBox;
   private final VerticalPanel panel;

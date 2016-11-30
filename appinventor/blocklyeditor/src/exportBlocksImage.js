@@ -170,13 +170,24 @@ goog.require('goog.Timer');
           var a = document.createElement('a');
           a.download = name;
           a.target = "_blank";
-          var src = canvas.toDataURL('image/png');
-          a.href = src;
-          document.body.appendChild(a);
-          a.addEventListener("click", function(e) {
-              a.parentNode.removeChild(a);
-            });
-          a.click();
+          if (canvas.toBlob === undefined) {
+            var src = canvas.toDataURL('image/png');
+            a.href = src;
+            document.body.appendChild(a);
+            a.addEventListener("click", function(e) {
+                a.parentNode.removeChild(a);
+              });
+            a.click();
+          } else {
+            canvas.toBlob(function(blob) {
+                a.href = URL.createObjectURL(blob);
+                document.body.appendChild(a);
+                a.addEventListener("click", function(e) {
+                    a.parentNode.removeChild(a);
+                  });
+                a.click();
+              });
+          }
         }
         image.onerror = function () {
           console.log("Error")

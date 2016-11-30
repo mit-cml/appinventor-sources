@@ -11,6 +11,18 @@
     <include path="/fonts/*" expiration="365d">
       <http-header name="Content-Type" value="font/ttf" />
     </include>
+    <include path="/media/*" expiration="365d" />
+    <include path="/images/*" expiration="365d" />
+    <include path="/Ya_tos_form.html" expiration="1d" />
+    <include path="/favicon.ico" expiration="365d" />
+    <include path="/gwt.css" expiration="1d" />
+    <include path="/Ya.css" expiration="1d" />
+    <include path="/templates/**" expiration="1d" />
+    <include path="/closure-library/closure/goog/base.js" expiration="1d" />
+    <include path="/closure-library/closure/goog/css/dialog.css" expiration="1d" />
+    <include path="/closure-library/closure/goog/deps.js" expiration="1d" />
+    <include path="/robots.txt" expiration="30d" />
+
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
     <include path="/blocklyframe.html" expiration="0s" />

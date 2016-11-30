@@ -18,6 +18,8 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
 import com.google.appinventor.client.output.OdeLog;
 
+import com.google.gwt.core.client.JavaScriptObject;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.HashMap;
@@ -43,10 +45,13 @@ public final class AssetManager implements ProjectChangeListener {
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
   private YoungAndroidComponentsFolder componentsFolder;
+  private JavaScriptObject assetsTransferredCallback;
+
   private static AssetManager INSTANCE;
   private static boolean DEBUG = false;
   private static final String ASSETS_FOLDER = "assets";
   private static final String EXTERNAL_COMPS_FOLDER = "external_comps";
+
 
   private AssetManager() {
     exportMethodsToJavascript();
@@ -100,6 +105,7 @@ public final class AssetManager implements ProjectChangeListener {
     } else {
       project = null;
       assetsFolder = null;
+      assetsTransferredCallback = null;
       assets = null;
     }
   }
@@ -182,6 +188,11 @@ public final class AssetManager implements ProjectChangeListener {
       });
   }
 
+  private void refreshAssets1(String formName, JavaScriptObject callback) {
+    assetsTransferredCallback = callback;
+    refreshAssets1(formName);
+  }
+
   private void refreshAssets1(String formName) {
     if (DEBUG)
       OdeLog.log("AssetManager: formName = " + formName);
@@ -199,12 +210,16 @@ public final class AssetManager implements ProjectChangeListener {
         }
       }
     }
+    // If no assets are in the project, perform the callback immediately.
+    if (assets.values().size() == 0 && assetsTransferredCallback != null) {
+      doCallBack(assetsTransferredCallback);
+    }
   }
 
-  public static void refreshAssets(String formName) {
+  public static void refreshAssets(String formName, JavaScriptObject callback) {
     if (INSTANCE == null)
       return;
-    INSTANCE.refreshAssets1(formName);
+    INSTANCE.refreshAssets1(formName, callback);
   }
 
   public static void reset(String formName) {
@@ -233,20 +248,17 @@ public final class AssetManager implements ProjectChangeListener {
       return false;
     AssetInfo assetInfo = INSTANCE.assets.get(transferredAsset);
     assetInfo.transferred = true;
-    return  true;
-  }
-
-  public static boolean checkAssetsTransferred() {
-    if (INSTANCE == null)
-      return false;
-    return INSTANCE.checkAssetsTransferred1();
-  }
-
-  public boolean checkAssetsTransferred1() {
+    // Let's see if all assets are transferred. If so, fire the
+    // assetsTransferredCallback
     for (AssetInfo a : assets.values()) {
-      if (!a.transferred)  return false;
+      if (!a.transferred) {     // Something didn't get transferred
+        return true;
+      }
     }
-    return true;
+    // If we get here, then all assets have been transferred to the device
+    // so we fire the assetsTransferredCallback
+    doCallBack(assetsTransferredCallback);
+    return  true;
   }
 
   @Override
@@ -278,17 +290,19 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native void exportMethodsToJavascript() /*-{
     $wnd.AssetManager_refreshAssets =
-      $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;));
+      $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.AssetManager_reset =
       $entry(@com.google.appinventor.client.AssetManager::reset(Ljava/lang/String;));
     $wnd.AssetManager_markAssetTransferred =
       $entry(@com.google.appinventor.client.AssetManager::markAssetTransferred(Ljava/lang/String;));
-    $wnd.AssetManager_checkAssetsTransferred =
-      $entry(@com.google.appinventor.client.AssetManager::checkAssetsTransferred());
   }-*/;
 
   private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{
     return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
+  }-*/;
+
+  private static native void doCallBack(JavaScriptObject callback) /*-{
+    callback.call(null);
   }-*/;
 
 }

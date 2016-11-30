@@ -12,6 +12,10 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
+/**
+ * UI objects will call gallery client to get apps, the methods here are the callback
+ *
+ */
 public interface GalleryRequestListener {
 
   public static final int REQUEST_FEATURED=1;
@@ -22,10 +26,28 @@ public interface GalleryRequestListener {
   public static final int REQUEST_MOSTVIEWED=6;
 
   /**
-   * UI objects will call gallery client to get apps, the methods here are the callback
+   * After a request for an application list is proceed this method will be called.
    *
+   * @param appsResult
+   * @param requestID
+   * @param refreshable
+   * @return true if the listener should be removed, otherwise false.
    */
-   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable);
-   public void onCommentsRequestCompleted(List<GalleryComment> comments);
-   public void onSourceLoadCompleted(UserProject projectInfo);
+  public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable);
+
+  /**
+   * After a request for application comments has been completed, this method will be called.
+   *
+   * @param comments
+   * @return true if the listener should be removed, otherwise false.
+   */
+  public boolean onCommentsRequestCompleted(List<GalleryComment> comments);
+
+  /**
+   * After a request for sources has been completed, this method will be called.
+   *
+   * @param projectInfo
+   * @return true if the listener should be removed, otherwise false.
+   */
+  public boolean onSourceLoadCompleted(UserProject projectInfo);
 }

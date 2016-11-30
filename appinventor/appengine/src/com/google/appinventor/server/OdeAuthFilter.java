@@ -68,6 +68,7 @@ public class OdeAuthFilter implements Filter {
   static final Flag<Integer> renewTime = Flag.createFlag("session.renew", 30);
 
   private final LocalUser localUser = LocalUser.getInstance();
+  private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
   /**
    * Filters using Google Accounts
@@ -100,14 +101,18 @@ public class OdeAuthFilter implements Filter {
     // Use Local Authentication
     UserInfo userInfo = getUserInfo(httpRequest);
     if (userInfo == null) {        // Invalid Login
-      LOG.info("uinfo is null on login.");
+      if (DEBUG) {
+        LOG.info("uinfo is null on login.");
+      }
       // If the URI starts with /ode, then we are being invoked through
       // the App Inventor client. In that case we are in an XMLHttpRequest
       // (aka ajax) so we cannot send a redirect to the login page
       // instead we return SC_PRECONDITION_FAILED which tips off the
       // client that it needs to reload itself to the login page.
       String uri = httpRequest.getRequestURI();
-      LOG.info("Not Logged In: uri = " + uri);
+      if (DEBUG) {
+        LOG.info("Not Logged In: uri = " + uri);
+      }
       if (uri.startsWith("/ode")) {
         httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
       } else {
@@ -164,7 +169,9 @@ public class OdeAuthFilter implements Filter {
       String newCookie = userInfo.buildCookie(true);
       if (newCookie != null) {  // If we get a value here, it is time to renew
                                 // the Cookie
-        LOG.info("Renewing the authentication Cookie");
+        if (DEBUG) {
+          LOG.info("Renewing the authentication Cookie");
+        }
         Cookie cook = new Cookie("AppInventor", newCookie);
         cook.setPath("/");
         response.addCookie(cook);
@@ -330,7 +337,9 @@ public class OdeAuthFilter implements Filter {
         for (Cookie cookie : cookies) {
           if ("AppInventor".equals(cookie.getName())) {
             String rawData = cookie.getValue();
-            LOG.info("getUserInfo: rawCookie = " + rawData);
+            if (DEBUG) {
+              LOG.info("getUserInfo: rawCookie = " + rawData);
+            }
             Crypter crypter = getCrypter();
             CookieAuth.cookie cookieToken = CookieAuth.cookie.parseFrom(
               crypter.decrypt(Base64Coder.decode(rawData)));

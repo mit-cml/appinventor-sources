@@ -9,6 +9,7 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.appinventor.client.explorer.project.Project;
@@ -78,13 +79,20 @@ public class GalleryClient {
   }
 
   /**
+   * Remove a listener from the listeners list
+   * @param listener gallery request listener
+   */
+  public void removeListener(GalleryRequestListener listener) {
+    listeners.remove(listener);
+  }
+
+  /**
    * Returns the gallery settings.
    *
    * @return  gallery settings
    */
   public GallerySettings getGallerySettings() {
-    final Ode ode = Ode.getInstance();
-    return ode.getGallerySettings();
+    return Ode.getGallerySettings();
   }
 
  /**
@@ -103,8 +111,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_SEARCH, refreshable)) {
+            i.remove();
+          }
         }
       }
     };
@@ -127,8 +137,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -150,8 +162,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_FEATURED, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_FEATURED, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -173,8 +187,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_TUTORIAL, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_TUTORIAL, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -195,8 +211,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_RECENT, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -217,8 +235,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -240,8 +260,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
-        for (GalleryRequestListener listener:listeners) {
-          listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, false)) {
+            i.remove();
+          }
         }
       }
     };
@@ -253,8 +275,10 @@ public class GalleryClient {
    * GetRemixedToList gets children list that apps remixed to then tells listeners
    */
   public void GetRemixedToList(GalleryAppListResult appsResult) {
-    for (GalleryRequestListener listener:listeners) {
-      listener.onAppListRequestCompleted(appsResult, REQUEST_REMIXED_TO, true);
+    for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+      if (i.next().onAppListRequestCompleted(appsResult, REQUEST_REMIXED_TO, true)) {
+        i.remove();
+      }
     }
   }
 
@@ -279,8 +303,10 @@ public class GalleryClient {
       @Override
       public void onSuccess(List<GalleryComment> comments) {
         // now relay the result back to UI client
-        for (GalleryRequestListener listener:listeners) {
-          listener.onCommentsRequestCompleted(comments);
+        for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
+          if (i.next().onCommentsRequestCompleted(comments)) {
+            i.remove();
+          }
         }
       }
     };

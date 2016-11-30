@@ -124,6 +124,19 @@ public class TopToolbar extends Composite {
   public DropDownButton adminDropDown;
 
   private boolean isReadOnly;
+  /**
+   * This flag is set to true when a check for the android.keystore file is in progress.
+   */
+  private volatile boolean isKeystoreCheckPending = false;
+  /**
+   * This flag is set to true when a call to {@link #updateKeystoreFileMenuButtons(boolean)} has
+   * returned and the value was cached.
+   */
+  private volatile boolean isKeystoreCached = false;
+  /**
+   * This flag is the cached result of an earlier check for android.keystore.
+   */
+  private volatile boolean isKeystorePresent = false;
 
   public TopToolbar() {
     /*
@@ -675,7 +688,12 @@ public class TopToolbar extends Composite {
                     new OdeAsyncCallback<Void>(errorMessage) {
                       @Override
                       public void onSuccess(Void result) {
-                        updateKeystoreFileMenuButtons();
+                        // The android.keystore shouldn't exist at this point, so reset cached values.
+                        isKeystoreCached = true;
+                        isKeystorePresent = false;
+                        isKeystoreCheckPending = false;
+                        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), false);
+                        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), false);
                       }
                     });
               }
@@ -944,7 +962,7 @@ public class TopToolbar extends Composite {
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
     }
-    updateKeystoreFileMenuButtons();
+    updateKeystoreFileMenuButtons(true);
   }
 
   /**
@@ -955,6 +973,8 @@ public class TopToolbar extends Composite {
         new AsyncCallback<Boolean>() {
           @Override
           public void onSuccess(Boolean keystoreFileExists) {
+            isKeystoreCached = true;
+            isKeystorePresent = keystoreFileExists;
             fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);
             fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);
           }
@@ -968,6 +988,45 @@ public class TopToolbar extends Composite {
         });
   }
 
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file. If the
+   * useCache parameter is true, then the last value returned from the UserInfoService is used.
+   * Otherwise, the behavior is identical to {@link #updateKeystoreFileMenuButtons()}.
+   *
+   * @param useCache true if a cached value of a previous call is acceptable.
+   */
+  public void updateKeystoreFileMenuButtons(boolean useCache) {
+    if (useCache && isKeystoreCheckPending) {
+      return;
+    }
+    AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
+      @Override
+      public void onSuccess(Boolean keystoreFileExists) {
+        isKeystoreCached = true;
+        isKeystorePresent = keystoreFileExists;
+        isKeystoreCheckPending = false;
+        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);
+        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+        // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+        isKeystoreCached = false;
+        isKeystorePresent = true;
+        isKeystoreCheckPending = false;
+        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);
+        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);
+      }
+    };
+    if (useCache && isKeystoreCached) {
+      callback.onSuccess(isKeystorePresent);
+    } else {
+      isKeystoreCheckPending = true;
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          callback);
+    }
+  }
 
   //Admin commands
   private static class DownloadUserSourceAction implements Command {

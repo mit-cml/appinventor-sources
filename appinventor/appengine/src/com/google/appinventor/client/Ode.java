@@ -37,9 +37,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.explorer.youngandroid.ReportList;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
@@ -65,10 +67,12 @@ import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
@@ -261,6 +265,8 @@ public class Ode implements EntryPoint {
 
   private boolean screensLocked;
 
+  private boolean galleryInitialized = false;
+
   private SplashConfig splashConfig; // Splash Screen Configuration
 
   /**
@@ -343,14 +349,11 @@ public class Ode implements EntryPoint {
           ProjectListBox.getProjectListBox().getProjectList().setPublishedHeaderVisible(true);
           projectToolbar.setPublishOrUpdateButtonVisible(true);
           GalleryClient.getInstance().setSystemEnvironment(settings.getEnvironment());
-          GalleryListBox.loadGalleryList();
           topPanel.showGalleryLink(true);
           if(user.isModerator()){
-            ModerationPageBox.loadModerationPage();
             topPanel.showModerationLink(true);
           }
           topPanel.updateAccountMessageButton();
-          PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
         }else{
           topPanel.showModerationLink(false);
           topPanel.showGalleryLink(false);
@@ -430,6 +433,10 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
+    if (!galleryInitialized) {
+      // Gallery initialization is deferred until now.
+      initializeGallery();
+    }
     currentView = GALLERY;
     deckPanel.showWidget(galleryTabIndex);
   }
@@ -438,6 +445,10 @@ public class Ode implements EntryPoint {
    * Switch to the Gallery App
    */
   public void switchToGalleryAppView(GalleryApp app, int editStatus) {
+    if (!galleryInitialized) {
+      // Gallery initialization is deferred until now.
+      initializeGallery();
+    }
     currentView = GALLERYAPP;
     GalleryAppBox.setApp(app, editStatus);
     deckPanel.showWidget(galleryAppTabIndex);
@@ -464,7 +475,7 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
-    } else {
+    } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       OdeLog.wlog("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
@@ -482,6 +493,9 @@ public class Ode implements EntryPoint {
    * Switch to the Moderation Page tab
    */
   public void switchToModerationPageView() {
+    if (!galleryInitialized) {
+      initializeGallery();
+    }
     currentView = MODERATIONPAGE;
     deckPanel.showWidget(moderationPageTabIndex);
   }
@@ -568,6 +582,13 @@ public class Ode implements EntryPoint {
               projectManager.removeProjectManagerEventListener(this);
               openYoungAndroidProjectInDesigner(project);
             }
+          }
+          @Override
+          public void onProjectsLoaded() {
+            // we only get here iff onProjectAdded is never called with the target project id
+            projectManager.removeProjectManagerEventListener(this);
+            switchToProjectsView();  // the user will need to select a project...
+            ErrorReporter.reportInfo(MESSAGES.chooseProject());
           }
         });
       }
@@ -950,29 +971,12 @@ public class Ode implements EntryPoint {
 
     // Gallery list tab
     VerticalPanel gVertPanel = new VerticalPanel();
-    gVertPanel.setWidth("100%");
-    gVertPanel.setSpacing(0);
-    galleryListToolbar = new GalleryToolbar();
-    gVertPanel.add(galleryListToolbar);
-    HorizontalPanel appListPanel = new HorizontalPanel();
-    appListPanel.setWidth("100%");
-    appListPanel.add(GalleryListBox.getGalleryListBox());
-
-    gVertPanel.add(appListPanel);
+    gVertPanel.add(createLoadingWidget(GalleryList.INITIAL_RPCS));
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
 
      // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
-    aVertPanel.setWidth("100%");
-    aVertPanel.setSpacing(0);
-    galleryPageToolbar = new GalleryToolbar();
-    aVertPanel.add(galleryPageToolbar);
-    HorizontalPanel appPanel = new HorizontalPanel();
-    appPanel.setWidth("100%");
-    appPanel.add(GalleryAppBox.getGalleryAppBox());
-
-    aVertPanel.add(appPanel);
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
 
@@ -1014,14 +1018,7 @@ public class Ode implements EntryPoint {
 
     // Moderation Page tab
     VerticalPanel mPVertPanel = new VerticalPanel();
-    mPVertPanel.setWidth("100%");
-    mPVertPanel.setSpacing(0);
-    HorizontalPanel moderationPagePanel = new HorizontalPanel();
-    moderationPagePanel.setWidth("100%");
-
-    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
-
-    mPVertPanel.add(moderationPagePanel);
+    mPVertPanel.add(createLoadingWidget(ReportList.INITIAL_RPCS));
     moderationPageTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(mPVertPanel);
 
@@ -1498,7 +1495,7 @@ public class Ode implements EntryPoint {
    */
   private void createWelcomeDialog(boolean force) {
     if (!shouldShowWelcomeDialog() && !force) {
-      openProjectsTab();
+      maybeShowNoProjectsDialog();
       return;
     }
     // Create the UI elements of the DialogBox
@@ -1525,7 +1522,7 @@ public class Ode implements EntryPoint {
                 "" + splashConfig.version);
             userSettings.saveSettings(null);
           }
-          openProjectsTab();
+          maybeShowNoProjectsDialog();
         }
       });
     holder.add(ok);
@@ -1537,22 +1534,19 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Load and open the projects tab.
+   * Check the number of projects for the user and show the "no projects" dialog if no projects
+   * are present.
    */
-  private void openProjectsTab() {
-    getProjectService().getProjects(new AsyncCallback<long[]>() {
-        @Override
-          public void onSuccess(long [] projectIds) {
-          if (projectIds.length == 0 && !templateLoadingFlag) {
-            createNoProjectsDialog(true);
-          }
+  private void maybeShowNoProjectsDialog() {
+    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
+      @Override
+      public void onProjectsLoaded() {
+        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+          ErrorReporter.hide();  // hide the "Please choose a project" message
+          createNoProjectsDialog(true);
         }
-
-        @Override
-          public void onFailure(Throwable projectIds) {
-          OdeLog.elog("Could not get project list");
-        }
-      });
+      }
+    });
   }
 
   /*
@@ -1652,7 +1646,7 @@ public class Ode implements EntryPoint {
     if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
-      openProjectsTab();
+      maybeShowNoProjectsDialog();
     }
   }
 
@@ -2212,6 +2206,93 @@ public class Ode implements EntryPoint {
           next.run();
         }
       });
+  }
+
+  private void initializeGallery() {
+    VerticalPanel gVertPanel = (VerticalPanel)deckPanel.getWidget(galleryTabIndex);
+    gVertPanel.setWidth("100%");
+    gVertPanel.setSpacing(0);
+    galleryListToolbar = new GalleryToolbar();
+    gVertPanel.add(galleryListToolbar);
+    HorizontalPanel appListPanel = new HorizontalPanel();
+    appListPanel.setWidth("100%");
+    appListPanel.add(GalleryListBox.getGalleryListBox());
+    gVertPanel.add(appListPanel);
+
+    VerticalPanel aVertPanel = (VerticalPanel)deckPanel.getWidget(galleryAppTabIndex);
+    aVertPanel.setWidth("100%");
+    aVertPanel.setSpacing(0);
+    galleryPageToolbar = new GalleryToolbar();
+    aVertPanel.add(galleryPageToolbar);
+    HorizontalPanel appPanel = new HorizontalPanel();
+    appPanel.setWidth("100%");
+    appPanel.add(GalleryAppBox.getGalleryAppBox());
+    aVertPanel.add(appPanel);
+
+    VerticalPanel mPVertPanel = (VerticalPanel)deckPanel.getWidget(moderationPageTabIndex);
+    mPVertPanel.setWidth("100%");
+    mPVertPanel.setSpacing(0);
+    HorizontalPanel moderationPagePanel = new HorizontalPanel();
+    moderationPagePanel.setWidth("100%");
+    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
+    mPVertPanel.add(moderationPagePanel);
+
+    GalleryListBox.loadGalleryList();
+    if (user.isModerator()) {
+      ModerationPageBox.loadModerationPage();
+    }
+    PrivateUserProfileTabPanel.getPrivateUserProfileTabPanel().loadProfileImage();
+
+    galleryInitialized = true;
+  }
+
+  private Widget createLoadingWidget(final int pending) {
+    final HorizontalPanel container = new HorizontalPanel();
+    container.setWidth("100%");
+    container.setSpacing(0);
+    container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    HorizontalPanel panel = new HorizontalPanel();
+    Image image = new Image();
+    image.setResource(IMAGES.waitingIcon());
+    panel.add(image);
+    Label label = new Label();
+    label.setText(MESSAGES.defaultRpcMessage());
+    panel.add(label);
+    container.add(panel);
+    GalleryClient.getInstance().addListener(new GalleryRequestListener() {
+      volatile int count = pending;
+      private void hideLoadingWidget() {
+        if (container.getParent() != null) {
+          container.clear();
+          container.removeFromParent();
+        }
+      }
+      @Override
+      public boolean onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID, boolean refreshable) {
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
+      }
+      @Override
+      public boolean onCommentsRequestCompleted(List<GalleryComment> comments) {
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
+      }
+      @Override
+      public boolean onSourceLoadCompleted(UserProject projectInfo) {
+        if ((--count) <= 0) {
+          hideLoadingWidget();
+          return true;
+        }
+        return false;
+      }
+    });
+    return container;
   }
 
   // Native code to set the top level rendezvousServer variable
