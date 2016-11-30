@@ -43,11 +43,6 @@ public class ViewController: UINavigationController {
   
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    let seed = "lwearr"
-    let code = seed.sha1
-    NSLog("Seed = \(seed)")
-    NSLog("Code = \(code)")
-    assert("cf81fecc42ff40eacc2e65413d5673ead3ec791b" == code)
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm;
       form?.Initialize()
