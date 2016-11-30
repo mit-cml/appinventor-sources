@@ -8,15 +8,26 @@
 
 import Foundation
 
+public protocol AbstractMethodsForPicker: AbstractMethodsForButton {
+  func open()
+}
+
 public class Picker: ButtonBase, AbstractMethodsForButton {
+  private weak var _delegate: AbstractMethodsForPicker?
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     super.setDelegate(self)
   }
 
+  public func setDelegate(_ delegate: AbstractMethodsForPicker) {
+    _delegate = delegate
+    super.setDelegate(delegate as AbstractMethodsForButton)
+  }
+
   public func click() {
-    
+    BeforePicking()
+    _delegate?.open()
   }
   
   public func Open() {

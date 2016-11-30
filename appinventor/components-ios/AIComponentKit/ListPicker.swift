@@ -10,9 +10,30 @@ import Foundation
 
 private let kListViewCellIdentifier = "listview"
 
-public class ListPicker: Picker, UITableViewDataSource, UITableViewDelegate {
+public class ListPickerActivity: UINavigationController {
+  fileprivate var _tableViewController: UITableViewController!
+
+  public required override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+  }
+
+  public init(delegate: UITableViewDelegate, dataSource: UITableViewDataSource, cancelTarget: Any?, cancelAction: Selector?) {
+    _tableViewController = UITableViewController()
+    _tableViewController.tableView.delegate = delegate
+    _tableViewController.tableView.dataSource = dataSource
+    let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: cancelTarget, action: cancelAction)
+    _tableViewController.navigationItem.leftBarButtonItem = cancelButton
+    super.init(rootViewController: _tableViewController)
+  }
+
+  public required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+}
+
+public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, UITableViewDelegate {
   private var _items: [String] = []
-  private var _viewController = UITableViewController()
+  private var _viewController: ListPickerActivity?
   private var _selection: String = ""
   private var _selectionIndex: Int32 = 0
   private var _itemBackgroundColor: UIColor = UIColor.white
@@ -22,11 +43,10 @@ public class ListPicker: Picker, UITableViewDataSource, UITableViewDelegate {
     super.init(parent)
     super.setDelegate(self)
     _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    _viewController = ListPickerActivity(delegate: self, dataSource: self, cancelTarget: self, cancelAction: #selector(cancelPicking(_:)))
     parent.add(self)
-    _viewController.tableView.delegate = self
-    _viewController.tableView.dataSource = self
   }
-  
+
   // MARK: ListPicker Properties
   public var ElementsFromString: String {
     get {
@@ -43,17 +63,17 @@ public class ListPicker: Picker, UITableViewDataSource, UITableViewDelegate {
     }
     set(argb) {
       _itemBackgroundColor = argbToColor(argb)
-      _viewController.tableView.reloadData()
+      _viewController?._tableViewController.tableView.reloadData()
     }
   }
-  
+
   public var ItemTextColor: Int32 {
     get {
       return colorToArgb(_itemTextColor)
     }
     set(argb) {
       _itemTextColor = argbToColor(argb)
-      _viewController.tableView.reloadData()
+      _viewController?._tableViewController.tableView.reloadData()
     }
   }
 
@@ -87,15 +107,28 @@ public class ListPicker: Picker, UITableViewDataSource, UITableViewDelegate {
 
   public var Title: String {
     get {
-      if let title = _viewController.title {
+      if let title = _viewController?._tableViewController.navigationItem.title {
         return title
       } else {
         return ""
       }
     }
     set(title) {
-      _viewController.title = title
+      _viewController?._tableViewController.navigationItem.title = title
     }
+  }
+
+  @objc fileprivate func cancelPicking(_ sender: Any?) {
+    _viewController?.dismiss(animated: true, completion: {
+      self._selection = ""
+      self._selectionIndex = 0
+      self.AfterPicking()
+    })
+  }
+
+  // MARK: AbstractMethodsForPicker
+  public func open() {
+    _container.form?.present(_viewController!, animated: true, completion: {})
   }
 
   // MARK: UITableViewDataSource
@@ -114,6 +147,10 @@ public class ListPicker: Picker, UITableViewDataSource, UITableViewDelegate {
 
   // MARK: UITableViewDelegate
   public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    
+    _viewController?.dismiss(animated: true, completion: {
+      self._selection = self._items[indexPath.row]
+      self._selectionIndex = indexPath.row + 1
+      self.AfterPicking()
+    })
   }
 }
