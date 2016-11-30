@@ -86,6 +86,8 @@
 		06B2161C1DBC7B47000B3366 /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 06B2161B1DBC7B47000B3366 /* runtime.scm */; };
 		06B374871DC06FBC003888CB /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B374861DC06FBC003888CB /* AIComponentKit.framework */; };
 		06B374881DC06FBC003888CB /* AIComponentKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06B374861DC06FBC003888CB /* AIComponentKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		06FFF3F81DEE773F00A80F7A /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06FFF3F71DEE773F00A80F7A /* SQLite.framework */; };
+		06FFF3F91DEE773F00A80F7A /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06FFF3F71DEE773F00A80F7A /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				06FFF3F91DEE773F00A80F7A /* SQLite.framework in Embed Frameworks */,
 				068E0EA11DC247DE0086FFDA /* SchemeKit.framework in Embed Frameworks */,
 				068E0EA71DC247DE0086FFDA /* GCDWebServer.framework in Embed Frameworks */,
 				068E0EA41DC247DE0086FFDA /* CSLinearLayoutView.framework in Embed Frameworks */,
@@ -206,6 +209,7 @@
 		06B2161B1DBC7B47000B3366 /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = runtime.scm; sourceTree = "<group>"; };
 		06B374861DC06FBC003888CB /* AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06E353341D95A7040099BE0F /* AICompanionApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AICompanionApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		06FFF3F71DEE773F00A80F7A /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +217,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06FFF3F81DEE773F00A80F7A /* SQLite.framework in Frameworks */,
 				068E0EA01DC247DE0086FFDA /* SchemeKit.framework in Frameworks */,
 				068E0EA61DC247DE0086FFDA /* GCDWebServer.framework in Frameworks */,
 				068E0EA31DC247DE0086FFDA /* CSLinearLayoutView.framework in Frameworks */,
@@ -376,6 +381,7 @@
 				068E0EA81DC247DE0086FFDA /* Toast_Swift.framework */,
 				068E0EA51DC247DE0086FFDA /* GCDWebServer.framework */,
 				068E0EA21DC247DE0086FFDA /* CSLinearLayoutView.framework */,
+				06FFF3F71DEE773F00A80F7A /* SQLite.framework */,
 				068E0E9F1DC247DE0086FFDA /* SchemeKit.framework */,
 				06B374861DC06FBC003888CB /* AIComponentKit.framework */,
 			);

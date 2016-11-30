@@ -11,8 +11,12 @@ import Foundation
 public class ApplicationFactory {
   private var registry: [String: Application] = [:]
   
-  public func openApplication(from path: String) -> Application {
-    
+  public enum ApplicationFactoryError: Error {
+    case applicationNotFound
+  }
+
+  public func openApplication(from path: String) throws -> Application {
+    throw ApplicationFactoryError.applicationNotFound
   }
 
   public func downloadApplication(from url: URL, callback: (_ application: Application) -> ()) {
@@ -20,6 +24,6 @@ public class ApplicationFactory {
   }
 
   public func deleteApplication(from path: String) -> Bool {
-    
+    return false
   }
 }

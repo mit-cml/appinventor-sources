@@ -12,11 +12,16 @@ import SQLite
 
 public class TinyDB: NonvisibleComponent {
 
-  private var database: Connection
+  private var database: Connection?
 
   public override init(_ parent: ComponentContainer) {
-    AssetManager.
-    database = Connection(<#T##filename: String##String#>)
+    let assetmgr = parent.form?.application?.assetManager
+    let sqlitedb = (assetmgr?.pathForPrivateAsset(filename: "TinyDb1.sqlite"))!
+    do {
+      database = try Connection(sqlitedb)
+    } catch {
+      database = nil
+    }
     super.init(parent)
   }
 

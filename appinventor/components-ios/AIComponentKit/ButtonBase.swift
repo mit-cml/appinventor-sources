@@ -86,7 +86,7 @@ public class ButtonBase: ViewComponent {
         NSLog("Path: \(path)")
         var image = UIImage(named: path!);
         if (image == nil) {
-          image = UIImage(contentsOfFile: AssetManager.shared.pathForAsset(filename: path!))
+          image = UIImage(contentsOfFile: AssetManager.shared.pathForAssetInBundle(filename: path!))
         }
         if (image != nil) {
           NSLog("Image is not nil");

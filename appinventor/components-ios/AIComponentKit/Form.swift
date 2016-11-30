@@ -15,6 +15,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   private let RESULT_NAME = "APP_INVENTOR_RESULT"
   private let ARGUMENT_NAME = "APP_INVENTOR_START"
   public let APPINVENTOR_URL_SCHEME = "appinventor"
+  var application: Application?
   weak static var activeForm: Form?
   private var deviceDensity: Float?
   private var compatScalingFactor: Float?
@@ -46,7 +47,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
       return _components
     }
   }
-  
+
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     Form.activeForm = self

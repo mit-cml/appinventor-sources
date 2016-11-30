@@ -628,10 +628,10 @@
 		012D0D0417CCBFCDE85EBD863905DB91 /* ZXAI013103decoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAI013103decoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI013103decoder.h; sourceTree = "<group>"; };
 		01605FFFBDA8EFB14CD089D7EEF4567E /* GCDWebServerURLEncodedFormRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerURLEncodedFormRequest.h; path = GCDWebServer/Requests/GCDWebServerURLEncodedFormRequest.h; sourceTree = "<group>"; };
 		021B8F3FAB268B7BBCCADFE02D9F8517 /* CSLinearLayoutView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CSLinearLayoutView.h; path = CSLinearLayoutView/CSLinearLayoutView.h; sourceTree = "<group>"; };
-		0281727BAD356654C09E8B1F1FB297AD /* Pods-AIComponentKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-AIComponentKit.modulemap"; sourceTree = "<group>"; };
+		0281727BAD356654C09E8B1F1FB297AD /* Pods-AIComponentKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-AIComponentKit.modulemap"; sourceTree = "<group>"; };
 		02E90E902C5B9466BFF5FAA63D431350 /* ZXUPCEANExtension5Support.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXUPCEANExtension5Support.m; path = ZXingObjC/oned/ZXUPCEANExtension5Support.m; sourceTree = "<group>"; };
 		0301CECDB9211B3E8FA85BF9CC23223D /* ZXAddressBookParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAddressBookParsedResult.h; path = ZXingObjC/client/result/ZXAddressBookParsedResult.h; sourceTree = "<group>"; };
-		035B5BCE03D931D421951110C999D184 /* Pods_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AIComponentKitTests.framework; path = "Pods-AIComponentKitTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		035B5BCE03D931D421951110C999D184 /* Pods_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		035D4D093B93A8E496371347E1607327 /* ZXBitSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXBitSource.m; path = ZXingObjC/common/ZXBitSource.m; sourceTree = "<group>"; };
 		0375A377F251C88F17731C5F08CDE2C0 /* AggregateFunctions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AggregateFunctions.swift; path = SQLite/Typed/AggregateFunctions.swift; sourceTree = "<group>"; };
 		03BF15D6BDA5A0F8064A186C93F03EF2 /* FTS5.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FTS5.swift; path = SQLite/Extensions/FTS5.swift; sourceTree = "<group>"; };
@@ -707,11 +707,11 @@
 		22748DC63432A1AF0FCACA98FA2B84AF /* ZXAI01AndOtherAIs.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAI01AndOtherAIs.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI01AndOtherAIs.h; sourceTree = "<group>"; };
 		239DDDDE1BFED98F7BA3BA898952A697 /* ZXDataMatrixDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixDetector.h; path = ZXingObjC/datamatrix/detector/ZXDataMatrixDetector.h; sourceTree = "<group>"; };
 		23AA4737CB338688CC2A19051697DD7E /* ZXUPCEANExtension2Support.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXUPCEANExtension2Support.h; path = ZXingObjC/oned/ZXUPCEANExtension2Support.h; sourceTree = "<group>"; };
-		23B2E7A52EF48E694B62D8A972EE78C2 /* CSLinearLayoutView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = CSLinearLayoutView.modulemap; sourceTree = "<group>"; };
+		23B2E7A52EF48E694B62D8A972EE78C2 /* CSLinearLayoutView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = CSLinearLayoutView.modulemap; sourceTree = "<group>"; };
 		24E93E21A15DDE23E27CDD6EFBE45A4F /* ZXPDF417DetectorResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417DetectorResult.h; path = ZXingObjC/pdf417/detector/ZXPDF417DetectorResult.h; sourceTree = "<group>"; };
 		261A7A5ACD31BC00F270D72256A2CCC7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		26B16D21879F726725F32EAB593CD7CA /* Pods-AIComponentKitTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AIComponentKitTests-dummy.m"; sourceTree = "<group>"; };
-		271A8D070294E66284706211836643CB /* ZXingObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ZXingObjC.framework; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		271A8D070294E66284706211836643CB /* ZXingObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		274BBA6463913C7AB113D4FCCC7939C2 /* ZXAztecToken.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAztecToken.h; path = ZXingObjC/aztec/encoder/ZXAztecToken.h; sourceTree = "<group>"; };
 		2834A13EF2671A73E5AAE1887F7F0B49 /* ZXQRCodeDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDecoder.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeDecoder.h; sourceTree = "<group>"; };
 		283670877C24EEE4FA60D8FCA1C21255 /* ZXDataMatrixVersion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixVersion.h; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixVersion.h; sourceTree = "<group>"; };
@@ -808,7 +808,7 @@
 		57D766792320F88823B7DFC90CBDBE1B /* ZXVINResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXVINResultParser.m; path = ZXingObjC/client/result/ZXVINResultParser.m; sourceTree = "<group>"; };
 		58B01829DDA01F8CDB5BA0F875B7A094 /* ZXRSSExpandedPair.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedPair.m; path = ZXingObjC/oned/rss/expanded/ZXRSSExpandedPair.m; sourceTree = "<group>"; };
 		58B1E3EB892630829840DE42D52F4AB2 /* ZXAbstractRSSReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAbstractRSSReader.h; path = ZXingObjC/oned/rss/ZXAbstractRSSReader.h; sourceTree = "<group>"; };
-		58D55CEAC8AC4A07A56E7EC96AB7EBB3 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GCDWebServer.framework; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		58D55CEAC8AC4A07A56E7EC96AB7EBB3 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58DE9A2BA74CCFD19DACCE4C26958AF8 /* ZXPDF417Reader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417Reader.h; path = ZXingObjC/pdf417/ZXPDF417Reader.h; sourceTree = "<group>"; };
 		5A36CB79B64927441A24CFD785A4BE96 /* ZXTelResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXTelResultParser.h; path = ZXingObjC/client/result/ZXTelResultParser.h; sourceTree = "<group>"; };
 		5B289A981BA07A75559E197037B59E3D /* ZXAztecSimpleToken.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAztecSimpleToken.h; path = ZXingObjC/aztec/encoder/ZXAztecSimpleToken.h; sourceTree = "<group>"; };
@@ -823,7 +823,7 @@
 		5E5EABACB66758D51E71715B8CEF381C /* ZXIntArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXIntArray.h; path = ZXingObjC/common/ZXIntArray.h; sourceTree = "<group>"; };
 		5EF2E778D48AD5517D20C4EAE87C8EBA /* ZXDataMatrixVersion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixVersion.m; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixVersion.m; sourceTree = "<group>"; };
 		5F43D6A2079B0FB35963BAF765A107A4 /* CustomFunctions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CustomFunctions.swift; path = SQLite/Typed/CustomFunctions.swift; sourceTree = "<group>"; };
-		5F5A510CD3A3C72B5893A8D207B8B97B /* SQLite.swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = SQLite.swift.modulemap; sourceTree = "<group>"; };
+		5F5A510CD3A3C72B5893A8D207B8B97B /* SQLite.swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = SQLite.swift.modulemap; sourceTree = "<group>"; };
 		5FC0DDD5E395C79EDDAE6F97F38F1EA1 /* ZXMaxiCodeDecodedBitStreamParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXMaxiCodeDecodedBitStreamParser.h; path = ZXingObjC/maxicode/decoder/ZXMaxiCodeDecodedBitStreamParser.h; sourceTree = "<group>"; };
 		5FD7960D614835DF9328766FEA58DF81 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
 		602427C9CFE89C9579D310EC0F03DAAB /* ZXAI01decoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAI01decoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI01decoder.m; sourceTree = "<group>"; };
@@ -849,7 +849,7 @@
 		6A2E594FA18B4B79A9E7708B37CE415E /* ZXITFReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXITFReader.h; path = ZXingObjC/oned/ZXITFReader.h; sourceTree = "<group>"; };
 		6A8779289797A7F0F2E3BDBBF99F74A4 /* ZXCode39Writer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCode39Writer.m; path = ZXingObjC/oned/ZXCode39Writer.m; sourceTree = "<group>"; };
 		6BC69A0B3E9AF1199CA50A65B81DB8DC /* SQLite.swift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SQLite.swift-umbrella.h"; sourceTree = "<group>"; };
-		6C2992558452720058B7D2FC642A8A7E /* Toast-Swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Toast-Swift.modulemap"; sourceTree = "<group>"; };
+		6C2992558452720058B7D2FC642A8A7E /* Toast-Swift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Toast-Swift.modulemap"; sourceTree = "<group>"; };
 		6C3AC003837393F04700659DEB8CFA4B /* ZXRSSExpandedGeneralAppIdDecoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedGeneralAppIdDecoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedGeneralAppIdDecoder.m; sourceTree = "<group>"; };
 		6CA932DC37ACB07FE4F3EEF22EF3ECAF /* Connection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Connection.swift; path = SQLite/Core/Connection.swift; sourceTree = "<group>"; };
 		6CDB62DE8B69D1A2CA8B8472FE2F3DD0 /* ZXAI01weightDecoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAI01weightDecoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI01weightDecoder.m; sourceTree = "<group>"; };
@@ -910,7 +910,7 @@
 		8287F1C60837FA7ADA3B30AB94407C8A /* Pods-AIComponentKitTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AIComponentKitTests-umbrella.h"; sourceTree = "<group>"; };
 		82F4AC586D0146848C9572061CE291FF /* GCDWebServerErrorResponse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerErrorResponse.h; path = GCDWebServer/Responses/GCDWebServerErrorResponse.h; sourceTree = "<group>"; };
 		845D61D2FEF1CDF738C8AC2F2A78A797 /* ZXCaptureDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCaptureDelegate.h; path = ZXingObjC/client/ZXCaptureDelegate.h; sourceTree = "<group>"; };
-		84764D902EFA53D98C311193BF6A7B6E /* Toast_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Toast_Swift.framework; path = "Toast-Swift.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		84764D902EFA53D98C311193BF6A7B6E /* Toast_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		848734021354EC5989EA33D625879C27 /* ZXQRCodeMaskUtil.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeMaskUtil.m; path = ZXingObjC/qrcode/encoder/ZXQRCodeMaskUtil.m; sourceTree = "<group>"; };
 		84992F3ECD90173779A6AD373FFB6D38 /* ZXURIParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXURIParsedResult.h; path = ZXingObjC/client/result/ZXURIParsedResult.h; sourceTree = "<group>"; };
 		8517E1A3D2ECDBDCFF178457369C30AE /* ZXQRCodeMatrixUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeMatrixUtil.h; path = ZXingObjC/qrcode/encoder/ZXQRCodeMatrixUtil.h; sourceTree = "<group>"; };
@@ -937,18 +937,18 @@
 		8F37C507463B030519B451F364E7A743 /* ZXDataMatrixBase256Encoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixBase256Encoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixBase256Encoder.m; sourceTree = "<group>"; };
 		8FF633DB2F66434B2228159B2B0ED9E3 /* ZXQRCodeReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeReader.h; path = ZXingObjC/qrcode/ZXQRCodeReader.h; sourceTree = "<group>"; };
 		90128C58BE42FE3AFF337D84B9F63C18 /* ZXHybridBinarizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXHybridBinarizer.m; path = ZXingObjC/common/ZXHybridBinarizer.m; sourceTree = "<group>"; };
-		90FD0F7475B12D35742BAEFC2845B5DF /* GCDWebServer.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = GCDWebServer.modulemap; sourceTree = "<group>"; };
+		90FD0F7475B12D35742BAEFC2845B5DF /* GCDWebServer.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = GCDWebServer.modulemap; sourceTree = "<group>"; };
 		910A1E7D70F417ECAE6213D7E9A20420 /* ZXQRCodeEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeEncoder.m; path = ZXingObjC/qrcode/encoder/ZXQRCodeEncoder.m; sourceTree = "<group>"; };
 		916C4168FCB0E8F96A7D40B4E9F79920 /* ZXQRCodeFormatInformation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeFormatInformation.m; path = ZXingObjC/qrcode/decoder/ZXQRCodeFormatInformation.m; sourceTree = "<group>"; };
 		91FBDB308520FD7E48CF280D116F9B80 /* ZXQRCodeBitMatrixParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeBitMatrixParser.m; path = ZXingObjC/qrcode/decoder/ZXQRCodeBitMatrixParser.m; sourceTree = "<group>"; };
 		9386CADB5BBA4CD055DC3CBBA774CB17 /* ZXEncodeHints.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEncodeHints.h; path = ZXingObjC/core/ZXEncodeHints.h; sourceTree = "<group>"; };
-		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		93ADF870BE0174480292755F5BEBC7E0 /* ZXDataMatrixX12Encoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixX12Encoder.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixX12Encoder.h; sourceTree = "<group>"; };
 		943872E0D74811A17051DBDAD113BBBE /* ZXDimension.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDimension.m; path = ZXingObjC/core/ZXDimension.m; sourceTree = "<group>"; };
 		943C882420BE3D5F7975B632E6ABB17B /* ZXGeoResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXGeoResultParser.h; path = ZXingObjC/client/result/ZXGeoResultParser.h; sourceTree = "<group>"; };
 		951BF26769376A41D4F5031A9BC39129 /* ZXByteArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXByteArray.h; path = ZXingObjC/common/ZXByteArray.h; sourceTree = "<group>"; };
 		965E719CFAEB2A60202AACD0A7965D29 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
-		966B7097BD58E1E87BD7D007D5D031BA /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AIComponentKit.framework; path = "Pods-AIComponentKit.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		966B7097BD58E1E87BD7D007D5D031BA /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		969297414FAA37B3794992DFA1C291BC /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		969907D600C5FCBE46B1B7C1E2A8D1BE /* ZXAI013103decoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAI013103decoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI013103decoder.m; sourceTree = "<group>"; };
 		969E27AD68A359518E51045D290DC934 /* CSLinearLayoutView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "CSLinearLayoutView-umbrella.h"; sourceTree = "<group>"; };
@@ -1015,7 +1015,7 @@
 		AE85A94FDCF16210C191D88DE1285B0E /* ZXLuminanceSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXLuminanceSource.h; path = ZXingObjC/core/ZXLuminanceSource.h; sourceTree = "<group>"; };
 		AEAA93B5663C48F3736A01ECE0CA46CE /* ZXPDF417DetectionResultRowIndicatorColumn.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417DetectionResultRowIndicatorColumn.h; path = ZXingObjC/pdf417/decoder/ZXPDF417DetectionResultRowIndicatorColumn.h; sourceTree = "<group>"; };
 		AEABF4E99F9C3DDB84B71182250F984B /* ZXDataMatrixHighLevelEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixHighLevelEncoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixHighLevelEncoder.m; sourceTree = "<group>"; };
-		AF79C60B8055504EE88F3DE484AF3091 /* CSLinearLayoutView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = CSLinearLayoutView.framework; path = CSLinearLayoutView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF79C60B8055504EE88F3DE484AF3091 /* CSLinearLayoutView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CSLinearLayoutView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF7B44D49E00FA738EF70CF047299CB8 /* ZXDefaultGridSampler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDefaultGridSampler.m; path = ZXingObjC/common/ZXDefaultGridSampler.m; sourceTree = "<group>"; };
 		B019F601516831518F800479B347B6BA /* GCDWebServerMultiPartFormRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerMultiPartFormRequest.m; path = GCDWebServer/Requests/GCDWebServerMultiPartFormRequest.m; sourceTree = "<group>"; };
 		B0653A38FC9EE09598229A7376684451 /* ZXPDF417DetectionResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417DetectionResult.m; path = ZXingObjC/pdf417/decoder/ZXPDF417DetectionResult.m; sourceTree = "<group>"; };
@@ -1097,7 +1097,7 @@
 		D2287DE03036E3B4B82D6352AA154017 /* ZXQRCodeFinderPatternFinder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeFinderPatternFinder.h; path = ZXingObjC/qrcode/detector/ZXQRCodeFinderPatternFinder.h; sourceTree = "<group>"; };
 		D2798AF563863701DF717DA7B0442D61 /* GCDWebServer-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GCDWebServer-umbrella.h"; sourceTree = "<group>"; };
 		D2B84EDBA4BA766A2CCCFEB941D68B69 /* ZXWifiResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXWifiResultParser.m; path = ZXingObjC/client/result/ZXWifiResultParser.m; sourceTree = "<group>"; };
-		D3B23AE7188C9872933D85C9BC3B9C0E /* ZXingObjC.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = ZXingObjC.modulemap; sourceTree = "<group>"; };
+		D3B23AE7188C9872933D85C9BC3B9C0E /* ZXingObjC.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = ZXingObjC.modulemap; sourceTree = "<group>"; };
 		D3BC28B180A8F40A350460A191161894 /* ZXGenericGF.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXGenericGF.m; path = ZXingObjC/common/reedsolomon/ZXGenericGF.m; sourceTree = "<group>"; };
 		D4269B1789D03EE203AE7A9E05916BB8 /* ZXAztecHighLevelEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAztecHighLevelEncoder.h; path = ZXingObjC/aztec/encoder/ZXAztecHighLevelEncoder.h; sourceTree = "<group>"; };
 		D45BF1557E4EA598B8E432596B49C145 /* ZXQRCodeFinderPatternInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeFinderPatternInfo.h; path = ZXingObjC/qrcode/detector/ZXQRCodeFinderPatternInfo.h; sourceTree = "<group>"; };
@@ -1138,7 +1138,7 @@
 		E50F91FB44C9E925DC4EAB26662702F0 /* ZXRSSExpandedFieldParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedFieldParser.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedFieldParser.h; sourceTree = "<group>"; };
 		E66DCF52A99E6E03EB6576273FDD1300 /* ZXQRCodeVersion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeVersion.m; path = ZXingObjC/qrcode/decoder/ZXQRCodeVersion.m; sourceTree = "<group>"; };
 		E6E166DEFF2A20BCC7F41F3B773F5652 /* ZXMultiFormatWriter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXMultiFormatWriter.m; path = ZXingObjC/ZXMultiFormatWriter.m; sourceTree = "<group>"; };
-		E76DC4D50C58F3F5AC9531E09B73F323 /* Pods-AIComponentKitTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-AIComponentKitTests.modulemap"; sourceTree = "<group>"; };
+		E76DC4D50C58F3F5AC9531E09B73F323 /* Pods-AIComponentKitTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-AIComponentKitTests.modulemap"; sourceTree = "<group>"; };
 		E7EAAED4E2B72BCC53F36C959956C7B3 /* Pods-AIComponentKit-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AIComponentKit-resources.sh"; sourceTree = "<group>"; };
 		E8982A3389DE5B13C3D4B78EB270CA38 /* ZXURLTOResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXURLTOResultParser.m; path = ZXingObjC/client/result/ZXURLTOResultParser.m; sourceTree = "<group>"; };
 		E92D6EF9F2968394EE35E733BFA948F7 /* ZXEAN13Reader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEAN13Reader.h; path = ZXingObjC/oned/ZXEAN13Reader.h; sourceTree = "<group>"; };
@@ -1178,7 +1178,7 @@
 		F5BBDAF57DBC2687A6DA5026AA925F6B /* ZXDataMatrixEncoderContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixEncoderContext.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixEncoderContext.m; sourceTree = "<group>"; };
 		F5E4FCC79802D9990AAD66C5835C49F7 /* ZXQRCodeDataBlock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDataBlock.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeDataBlock.h; sourceTree = "<group>"; };
 		F66750F24BD7576A11FAF1F1AFBF7669 /* ZXGeoParsedResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXGeoParsedResult.m; path = ZXingObjC/client/result/ZXGeoParsedResult.m; sourceTree = "<group>"; };
-		F68ECAD0100E67DE1E5BE663B17967C9 /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SQLite.framework; path = SQLite.swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F68ECAD0100E67DE1E5BE663B17967C9 /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F72EBC6952BBA13255C0917791D3443E /* ZXQRCodeMaskUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeMaskUtil.h; path = ZXingObjC/qrcode/encoder/ZXQRCodeMaskUtil.h; sourceTree = "<group>"; };
 		F791B86FA0E2C486C1EB4C7FF655F643 /* ZXEAN8Writer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEAN8Writer.h; path = ZXingObjC/oned/ZXEAN8Writer.h; sourceTree = "<group>"; };
 		F7AD42FC73FEC4664741D5879BB17323 /* ZXPDF417DecodedBitStreamParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417DecodedBitStreamParser.m; path = ZXingObjC/pdf417/decoder/ZXPDF417DecodedBitStreamParser.m; sourceTree = "<group>"; };
@@ -1301,7 +1301,6 @@
 				E69137A30E2D1C50DC2917901F18129A /* All */,
 				9E9F2F6F8DB0AF6C83926305B4D815EB /* Support Files */,
 			);
-			name = ZXingObjC;
 			path = ZXingObjC;
 			sourceTree = "<group>";
 		};
@@ -1333,7 +1332,6 @@
 				73688058D3BEEF58C7AFFAE4CCD0CDEB /* standard */,
 				E575747AD2B2B91E7D6EC58D1BB5036E /* Support Files */,
 			);
-			name = SQLite.swift;
 			path = SQLite.swift;
 			sourceTree = "<group>";
 		};
@@ -1372,7 +1370,6 @@
 				B85149EDA38AD0B63A99C5F0C131D6C2 /* CSLinearLayoutView.m */,
 				6D2A11E18B51EBE24192C619DB2AF76D /* Support Files */,
 			);
-			name = CSLinearLayoutView;
 			path = CSLinearLayoutView;
 			sourceTree = "<group>";
 		};
@@ -1382,7 +1379,6 @@
 				155D625993BA4F45315B7B20640F2AD7 /* Toast.swift */,
 				4A5A09B15401153E8EDBA04E68E7623A /* Support Files */,
 			);
-			name = "Toast-Swift";
 			path = "Toast-Swift";
 			sourceTree = "<group>";
 		};
@@ -2003,7 +1999,6 @@
 				8F08024EEB89BF4F31A2B3674997B12D /* Core */,
 				1B05BEA8E40D037E6139AE529C840F48 /* Support Files */,
 			);
-			name = GCDWebServer;
 			path = GCDWebServer;
 			sourceTree = "<group>";
 		};
@@ -2887,6 +2882,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -2919,6 +2915,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -2987,6 +2984,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -3090,6 +3088,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -3167,6 +3166,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -3199,6 +3199,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -3306,6 +3307,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -3338,6 +3340,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -3370,6 +3373,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -3402,6 +3406,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CONFIGURATION_BUILD_DIR = $PODS_CONFIGURATION_BUILD_DIR;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;

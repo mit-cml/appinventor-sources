@@ -9,29 +9,47 @@
 import Foundation
 
 public class Application {
-  private let assetManager_: AssetManager
+  private var assetManager_: AssetManager?
+  let name: String
 
   /**
    * Create an Application using the currently running application bundle.
    */
   public init() {
-    
+    name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as! String
   }
 
   /**
    *
    */
   public init(from url: URL) {
-    assetManager_ = AssetManager()
+    var temp_name = "UnknownApp"
+    do {
+      let fileregex = try NSRegularExpression(pattern: "/([^./]+).aia$")
+      if let result = fileregex.firstMatch(in: url.absoluteString, range: NSMakeRange(0, url.absoluteString.lengthOfBytes(using: .utf8))) {
+        let range = result.rangeAt(1)
+        temp_name = (url.absoluteString as NSString).substring(with: range)
+      }
+    } catch {
+      // wtf
+    }
+    name = temp_name
   }
 
-  init(from url: URL, isRepl: Bool) {
-    assetManager_ = AssetManager()
+  convenience init(from url: URL, isRepl: Bool) {
+    if isRepl {
+      self.init()
+    } else {
+      self.init(from: url)
+    }
   }
 
   public var assetManager: AssetManager {
     get {
-      
+      if assetManager_ == nil {
+        assetManager_ = AssetManager(for: self)
+      }
+      return assetManager_!
     }
   }
 }
