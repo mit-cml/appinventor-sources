@@ -1172,9 +1172,9 @@ Blockly.ReplMgr.ehardreset = function(formName) {
         }
     });
 };
-// configureemulator -- Tells aiStarter to run the reset-emulator script
-// and then creates new AVD files for the emulator based on the configurations
-// the user selects in the dialog.
+// configureemulator -- Tells aiStarter to run the reset-emulator
+// script and then creates new AVD files for the emulator based
+// on the configurations the user selects in the dialog.
 
 Blockly.ReplMgr.configureemulator = function(formName) {
     var context = this;
@@ -1182,7 +1182,7 @@ Blockly.ReplMgr.configureemulator = function(formName) {
         emulatoroptionsdialog.hide();
         if (response == "OK") {
             var xhr = goog.net.XmlHttp();
-            xhr.open("GET", "http://localhost:8004/emulatorconfigure/"+width+"/"+height+"/"+dpi+"/"+sdcard, true);
+            xhr.open("GET", "http://localhost:8004/emulatorconfigure/" + width + "/" + height + "/" + dpi + "/" + sdcard, true);
             xhr.onreadystatchange = function() {}; // Ignore errors
             xhr.send();
         }

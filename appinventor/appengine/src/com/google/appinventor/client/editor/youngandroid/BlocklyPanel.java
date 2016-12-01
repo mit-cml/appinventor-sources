@@ -692,27 +692,27 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     VerticalPanel DialogBoxContents = new VerticalPanel();
     HorizontalPanel holder = new HorizontalPanel();
     if (title == "Configure Emulator") {
-      HorizontalPanel deviceHolder = new HorizontalPanel();
+      HorizontalPanel deviceButtonHolder = new HorizontalPanel();
       HTML deviceHeader = new HTML("Device");
       deviceHeader.setStyleName("DialogBox-message");
       final RadioButton tabletButton = new RadioButton("deviceRadioGrp", "Tablet");
       final RadioButton phoneButton = new RadioButton("deviceRadioGrp", "Phone");
       phoneButton.setChecked(true);
-      deviceHolder.add(tabletButton);
-      deviceHolder.add(phoneButton);
-      HorizontalPanel dpiHolder = new HorizontalPanel();
+      deviceButtonHolder.add(tabletButton);
+      deviceButtonHolder.add(phoneButton);
+      HorizontalPanel dpiButtonHolder = new HorizontalPanel();
       HTML dpiHeader = new HTML("DPI");
       dpiHeader.setStyleName("DialogBox-message");
       final RadioButton lowDpi = new RadioButton("dpiRadioGrp", "Low Density");
       final RadioButton medDpi = new RadioButton("dpiRadioGrp", "Medium Density");
       final RadioButton highDpi = new RadioButton("dpiRadioGrp", "High Density");
       medDpi.setChecked(true);
-      dpiHolder.add(highDpi);
-      dpiHolder.add(medDpi);
-      dpiHolder.add(lowDpi);
-      HorizontalPanel sdCardHolder = new HorizontalPanel();
+      dpiButtonHolder.add(highDpi);
+      dpiButtonHolder.add(medDpi);
+      dpiButtonHolder.add(lowDpi);
+      HorizontalPanel sdCardButtonHolder = new HorizontalPanel();
       final CheckBox mkSdCard = new CheckBox("Create an SD Card");
-      sdCardHolder.add(mkSdCard);
+      sdCardButtonHolder.add(mkSdCard);
       Button ok = new Button(buttonName);
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
@@ -743,10 +743,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
       });
       holder.add(cancel);
       DialogBoxContents.add(deviceHeader);
-      DialogBoxContents.add(deviceHolder);
+      DialogBoxContents.add(deviceButtonHolder);
       DialogBoxContents.add(dpiHeader);
-      DialogBoxContents.add(dpiHolder);
-      DialogBoxContents.add(sdCardHolder);
+      DialogBoxContents.add(dpiButtonHolder);
+      DialogBoxContents.add(sdCardButtonHolder);
     } else {
       HTML message = new HTML(mess);
       message.setStyleName("DialogBox-message");
