@@ -36,7 +36,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.RadioButton;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
