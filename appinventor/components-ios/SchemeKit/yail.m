@@ -536,6 +536,24 @@ yail_isa(pic_state *pic) {
   
 }
 
+pic_value
+yail_format_inexact(pic_state *pic, pic_value n) {
+  static const int BUFSIZE = 24;
+  double value, absvalue;
+  char buf[BUFSIZE];
+
+  pic_get_args(pic, "d", &value);
+  absvalue = fabs(value);
+
+  if (absvalue > 1e6 || absvalue < 1e-6) {
+    snprintf(&buf[0], BUFSIZE - 1, "%E", value);
+  } else {
+    snprintf(&buf[0], BUFSIZE - 1, "%F", value);
+  }
+
+  return pic_intern_cstr(pic, buf);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -554,6 +572,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:make-instance", yail_make_instance);
   pic_defun(pic, "yail:invoke", yail_invoke);
   pic_defun(pic, "yail:isa", yail_isa);
+  pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }

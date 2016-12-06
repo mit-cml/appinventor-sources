@@ -193,6 +193,27 @@
          "Problem with application")
         component)))
 
+;;; Global variables
+(define-syntax get-var
+  (syntax-rules ()
+    ((_ var-name)
+     (lookup-global-var-in-current-form-environment 'var-name *the-null-value*))))
+
+(define-syntax set-var!
+  (syntax-rules ()
+    ((_ var-name value)
+     (add-global-var-to-current-form-environment 'var-name value))))
+
+(define-syntax lexical-value
+  (syntax-rules ()
+    ((_ var-name)
+     var-name)))
+
+(define-syntax set-lexical!
+  (syntax-rules ()
+    ((_ var value)
+     (set! var value))))
+
 (define (%set-and-coerce-property! comp prop-name property-value property-type)
   ;(android-log (format #f "coercing for setting property ~A -- value ~A to type ~A" prop-name property-value property-type))
   (let ((coerced-arg (coerce-arg property-value property-type))
@@ -476,3 +497,29 @@
 	(set! *test-global-var-environment* (cons (list name object) *current-form-environment*)))
     ;; return *the-null-value* rather than #!void, which would show as a blank in the repl balloon
     *the-null-value*))
+
+(define (lookup-global-var-in-current-form-environment name default)
+  (let* ((env (if (not (eq? *this-form* #!null))
+                  *current-form-environment*
+                  *test-global-var-environment*))
+         (value (assoc name env)))
+    (if value
+        (cadr value)
+        default)))
+
+(define (*format-inexact* n) (yail:format-inexact n))
+
+(define-syntax call-with-output-string
+  (syntax-rules ()
+    ((_ body)
+     (call-with-port
+      (open-output-string)
+      (lambda (p)
+        (body p)
+        (get-output-string p))))))
+
+(define (appinventor-number->string n)
+  (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
+        ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
+        ((exact? n) (appinventor-number->string (exact->inexact n)))
+        (else (*format-inexact* n))))
