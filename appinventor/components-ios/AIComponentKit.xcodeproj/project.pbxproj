@@ -10,6 +10,8 @@
 		060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060119DD1DC24126000FC1E2 /* ListPicker.swift */; };
 		0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147B1DE61B530049B7AB /* SQLite.framework */; };
 		0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147C1DE61B530049B7AB /* Toast_Swift.framework */; };
+		06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */; };
+		06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
 		0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2911D8CF4EE0013A191 /* AIComponentKitTests.swift */; };
 		0618A2941D8CF4EE0013A191 /* AIComponentKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0618A2861D8CF4EE0013A191 /* AIComponentKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -98,6 +100,8 @@
 		060119DD1DC24126000FC1E2 /* ListPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPicker.swift; sourceTree = "<group>"; };
 		0609147B1DE61B530049B7AB /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = "build/Debug-iphoneos/SQLite.swift/SQLite.framework"; sourceTree = "<group>"; };
 		0609147C1DE61B530049B7AB /* Toast_Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Toast_Swift.framework; path = "build/Debug-iphoneos/Toast-Swift/Toast_Swift.framework"; sourceTree = "<group>"; };
+		06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextBoxBase.swift; sourceTree = "<group>"; };
+		06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordTextBox.swift; sourceTree = "<group>"; };
 		0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKit-Bridging-Header.h"; sourceTree = "<group>"; };
 		0618A26E1D8CE3750013A191 /* Form.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Form.swift; sourceTree = "<group>"; };
 		0618A2701D8CE50A0013A191 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
@@ -272,9 +276,11 @@
 				06B216051DB95155000B3366 /* Image.swift */,
 				06E59EB21D92D19600C42804 /* Label.swift */,
 				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
+				06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */,
 				068E0E9D1DC243B30086FFDA /* Picker.swift */,
 				068E0EB61DC251BA0086FFDA /* Slider.swift */,
 				06B216011DB95134000B3366 /* TextBox.swift */,
+				06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */,
 			);
 			name = ui;
 			sourceTree = "<group>";
@@ -686,6 +692,7 @@
 				068AA8191DE61D8E0011CC74 /* Application.swift in Sources */,
 				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,
 				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
+				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				068E0EB51DC251A20086FFDA /* Sharing.swift in Sources */,
@@ -722,6 +729,7 @@
 				068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */,
 				06B215FA1DB950F6000B3366 /* HorizontalArrangement.swift in Sources */,
 				068E0EB31DC251890086FFDA /* PhoneCall.swift in Sources */,
+				06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				06E59EAA1D92C7E800C42804 /* NetworkUtils.m in Sources */,

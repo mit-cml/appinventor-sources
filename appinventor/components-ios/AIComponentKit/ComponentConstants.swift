@@ -25,4 +25,5 @@ public enum VerticalGravity: Int32 {
   case bottom = 3
 }
 
-let kDefaultRowColumn: Int32 = -1;
+let kDefaultRowColumn: Int32 = -1
+let kTextboxPreferredWidth: Int32 = 160
