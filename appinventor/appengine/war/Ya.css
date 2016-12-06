@@ -794,7 +794,7 @@ select {
   background-color: white; /* needed on Firefox */
   height: 15px;
   cursor: pointer;
-  padding-bottom: 10px;
+  padding: 5px;
 }
 
 .ode-SimplePaletteItem-icon {
