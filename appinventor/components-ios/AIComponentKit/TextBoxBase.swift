@@ -50,13 +50,13 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
         let isRTL = UIView.userInterfaceLayoutDirection(for: (_delegate?.view.semanticContentAttribute)!) == UIUserInterfaceLayoutDirection.rightToLeft
         switch alignment {
         case .normal:
-          _delegate?.textAlignment = isRTL ? .right : .left
+          _delegate?.alignment = isRTL ? .right : .left
           break
         case .center:
-          _delegate?.textAlignment = .center
+          _delegate?.alignment = .center
           break
         case .opposite:
-          _delegate?.textAlignment = isRTL ? .left : .right
+          _delegate?.alignment = isRTL ? .left : .right
           break
         }
       }

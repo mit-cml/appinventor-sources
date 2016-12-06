@@ -8,12 +8,79 @@
 
 import Foundation
 
-public class PasswordTextBox: TextBoxBase, AbstractMethodsForTextBox {
-  private let _field = UITextField(frame: CGRect.zero)
+fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
+  fileprivate let _field = UITextField(frame: CGRect.zero)
+
+  fileprivate init() {
+    _field.isSecureTextEntry = true
+  }
+
+  public var view: UIView {
+    get {
+      return _field
+    }
+  }
+
+  public var alignment: NSTextAlignment {
+    get {
+      return _field.textAlignment
+    }
+    set(alignment) {
+      _field.textAlignment = alignment
+    }
+  }
+
+  public var backgroundColor: UIColor? {
+    get {
+      return _field.backgroundColor
+    }
+    set(color) {
+      _field.backgroundColor = color
+    }
+  }
+
+  public var textColor: UIColor? {
+    get {
+      return _field.textColor
+    }
+    set(color) {
+      _field.textColor = color
+    }
+  }
+
+  public var font: UIFont {
+    get {
+      return _field.font!
+    }
+    set(font) {
+      _field.font = font
+    }
+  }
+
+  public var placeholderText: String? {
+    get {
+      return _field.placeholder
+    }
+    set(text) {
+      _field.placeholder = text
+    }
+  }
+
+  public var text: String? {
+    get {
+      return _field.text
+    }
+    set(text) {
+      _field.text = text
+    }
+  }
+}
+
+public class PasswordTextBox: TextBoxBase {
+  private let _adapter = TextBoxAdapter()
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
-    super.setDelegate(self)
-    _field.isSecureTextEntry = true
+    super.setDelegate(_adapter)
   }
 }
