@@ -8,6 +8,8 @@
 
 import Foundation
 
+private let ACTION_VIEW = "android.intent.action.VIEW"
+
 public class ActivityStarter: NonvisibleComponent {
   private var _action: String = ""
   private var _dataUri: String = ""
@@ -98,7 +100,7 @@ public class ActivityStarter: NonvisibleComponent {
 
   // MARK: ActivityStarter Methods
   public func ResolveActivity() -> Bool {
-    if _action == "android.intent.activity.VIEW" {
+    if _action == ACTION_VIEW {
       if let url = URL(string: _dataUri) {
         if UIApplication.shared.canOpenURL(url) {
           return true
