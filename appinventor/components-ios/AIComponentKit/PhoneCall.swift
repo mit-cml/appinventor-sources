@@ -7,7 +7,94 @@
 //
 
 import Foundation
+import CoreTelephony
+
+private enum PhoneCallState {
+  case disconnected
+  case dialing
+  case ringing
+  case connectedIncoming
+  case connectedOutgoing
+  case connectedUnknown
+}
+
+private let kPhoneCallStatusMissed: Int32 = 1
+private let kPhoneCallStatusIncomingEnded: Int32 = 2
+private let kPhoneCallStatusOutgoingEnded: Int32 = 3
 
 public class PhoneCall: NonvisibleComponent {
-  
+  private var _phoneNumber = ""
+  private let _callCenter: CTCallCenter
+  private var _status = PhoneCallState.disconnected
+
+  public override init(_ parent: ComponentContainer) {
+    _callCenter = CTCallCenter()
+    super.init(parent)
+    _callCenter.callEventHandler = {(call: CTCall) in
+      if call.callState == CTCallStateIncoming {
+        self._status = .ringing
+        self.PhoneCallStarted(1, call.callID)
+      } else if call.callState == CTCallStateDialing {
+        self._status = .dialing
+        self.PhoneCallStarted(2, call.callID)
+      } else if call.callState == CTCallStateConnected {
+        if self._status == .dialing {
+          self._status = .connectedOutgoing
+        } else if self._status == .ringing {
+          self._status = .connectedIncoming
+          self.IncomingCallAnswered(call.callID)
+        } else if self._status == .disconnected {
+          self._status = .connectedUnknown
+        }
+      } else if call.callState == CTCallStateDisconnected {
+        var callStatus: Int32 = 0
+        if self._status == .ringing {
+          callStatus = 1
+        } else if self._status == .connectedIncoming {
+          callStatus = 2
+        } else if self._status == .connectedOutgoing {
+          callStatus = 3
+        }
+        self.PhoneCallEnded(callStatus, call.callID)
+      }
+    }
+  }
+
+  // MARK: PhoneCall Properties
+  public var PhoneNumber: String {
+    get {
+      return _phoneNumber
+    }
+    set(number) {
+      _phoneNumber = number
+    }
+  }
+
+  // MARK: PhoneCall Methods
+  public func MakePhoneCall() {
+    let cleanNumber = _phoneNumber.components(separatedBy: CharacterSet(charactersIn: "0123456789+-()").inverted).joined()
+    let telurl = URL(string: "tel:" + cleanNumber)
+    if telurl != nil {
+      if #available(iOS 10.0, *) {
+        UIApplication.shared.open(telurl!, options: [:], completionHandler: { (success: Bool) in
+          self.PhoneCallStarted(1, self._phoneNumber)
+        })
+      } else {
+        UIApplication.shared.openURL(telurl!)
+      }
+    }
+  }
+
+  // MARK: PhoneCall Events
+  public func IncomingCallAnswered(_ phoneNumber: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "IncomingCallAnswered", arguments: phoneNumber as NSString)
+  }
+
+  public func PhoneCallEnded(_ status: Int32, _ phoneNumber: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "PhoneCallEndded", arguments: NSNumber(value: status), phoneNumber as NSString)
+  }
+
+  public func PhoneCallStarted(_ status: Int32, _ phoneNumber: String) {
+    EventDispatcher.dispatchEvent(of: self, called: "PhoneCallStarted", arguments: NSNumber(value: status), phoneNumber as NSString)
+  }
 }
