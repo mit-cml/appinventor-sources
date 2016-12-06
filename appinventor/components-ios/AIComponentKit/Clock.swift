@@ -17,6 +17,7 @@ public class Clock: NonvisibleComponent {
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
+    TimerEnabled = true
   }
 
   // MARK: Clock Properties
@@ -40,6 +41,7 @@ public class Clock: NonvisibleComponent {
           timer.invalidate()
         }
         _timer = Foundation.Timer(timeInterval: TimeInterval(Double(_interval) / 1000.0), target: self, selector: #selector(self.timerFired(_:)), userInfo: nil, repeats: true)
+        RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
       } else if let timer = _timer {
         timer.invalidate()
         _timer = nil
