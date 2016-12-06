@@ -890,7 +890,7 @@ public class Form extends Activity
     });
   }
 
-  // This is like dispatchErrorOccurred, except that it defaults to showing
+  // This is like dispatchErrorOccurredEvent, except that it defaults to showing
   // a message dialog rather than an alert.   The app writer can override either of these behaviors,
   // but using the event dialog version frees the app writer of the need to explicitly override
   // the alert behavior in the case
@@ -911,7 +911,20 @@ public class Form extends Activity
     });
   }
 
-
+// This runtimeFormErrorOccurred can be called from runtime.scm in
+// the case of a runtime error.  The event is always signaled in the
+// active form. It triggers the normal Form error system which fires
+// the ErrorOccurred event. This can be handled by the App Inventor
+// programmer. If it isn't a Notifier (toast) is displayed showing
+// the error.
+public void runtimeFormErrorOccurredEvent(String functionName, int errorNumber, String message) {
+  Log.d("FORM_RUNTIME_ERROR", "functionName is " + functionName);
+  Log.d("FORM_RUNTIME_ERROR", "errorNumber is " + errorNumber);
+  Log.d("FORM_RUNTIME_ERROR", "message is " + message);
+  dispatchErrorOccurredEvent((Component) activeForm, functionName, errorNumber, message);
+ }
+            
+  Write
 
   /**
    * Scrollable property getter method.
