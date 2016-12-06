@@ -20,6 +20,7 @@ goog.require('AI.Blockly.Msg.ru');
 goog.require('AI.Blockly.Msg.ko_kr');
 goog.require('AI.Blockly.Msg.sv');
 goog.require('AI.Blockly.Msg.pt_br');
+goog.require('AI.Blockly.Msg.nl');
 
 Blockly.language_switch = {
   // Switch between languages
@@ -64,6 +65,9 @@ Blockly.language_switch = {
       case 'pt_BR':
         Blockly.Msg.pt.br.switch_blockly_language_to_pt_br.init();
         Blockly.Msg.pt.br.switch_language_to_portuguese_br.init();
+        break;
+      case 'nl':
+        Blockly.Msg.nl.switch_language_to_dutch.init();
         break;
       case 'en_US':
       case 'en':

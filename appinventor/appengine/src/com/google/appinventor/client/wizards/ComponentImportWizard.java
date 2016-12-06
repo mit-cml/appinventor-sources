@@ -111,8 +111,8 @@ public class ComponentImportWizard extends Wizard {
     final FileUpload fileUpload = createFileUpload();
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
-    tabPanel.add(fileUpload, "From my computer");
-    tabPanel.add(urlGrid, "URL");
+    tabPanel.add(fileUpload, MESSAGES.componentImportFromComputer());
+    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());
     tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
     tabPanel.addStyleName("ode-Tabpanel");
 
