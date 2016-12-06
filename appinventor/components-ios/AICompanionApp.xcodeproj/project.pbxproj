@@ -749,7 +749,6 @@
 				PROVISIONING_PROFILE = "8609ef4d-d5c9-49a7-90f3-3f4895c54a46";
 				PROVISIONING_PROFILE_SPECIFIER = "AI2 Companion dev";
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanionApp/AICompanionApp-Bridging-Header.h";
 				SWIFT_VERSION = 3.0.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -773,7 +772,6 @@
 				PROVISIONING_PROFILE = "c4a86093-da70-476a-900d-e205d22333e3";
 				PROVISIONING_PROFILE_SPECIFIER = "AI2 Companion Dist";
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/ewpatton/Programming/mit/app-inventor-private-ios/appinventor/components-ios/AICompanionApp/AICompanionApp-Bridging-Header.h";
 				SWIFT_VERSION = 3.0.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
