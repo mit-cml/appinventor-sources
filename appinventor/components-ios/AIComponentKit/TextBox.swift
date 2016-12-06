@@ -101,9 +101,8 @@ public class TextBox: TextBoxBase {
   private let _adapter = TextBoxAdapter()
   private var _acceptsNumbersOnly = false
 
-  public override init(_ parent: ComponentContainer) {
-    super.init(parent)
-    self.setDelegate(_adapter)
+  public init(_ parent: ComponentContainer) {
+    super.init(parent, _adapter)
   }
 
   // MARK: TextBox Properties

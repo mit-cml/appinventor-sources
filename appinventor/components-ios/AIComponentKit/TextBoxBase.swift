@@ -28,8 +28,9 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
   private var _hint: String = ""
   private var _textColor: Int32 = 0
 
-  public override init(_ parent: ComponentContainer) {
+  public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
+    super.setDelegate(delegate)
     parent.add(self)
     parent.setChildWidth(of: self, width: kTextboxPreferredWidth)
   }

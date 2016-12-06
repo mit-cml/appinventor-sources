@@ -79,8 +79,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
 public class PasswordTextBox: TextBoxBase {
   private let _adapter = TextBoxAdapter()
 
-  public override init(_ parent: ComponentContainer) {
-    super.init(parent)
-    super.setDelegate(_adapter)
+  public init(_ parent: ComponentContainer) {
+    super.init(parent, _adapter)
   }
 }
