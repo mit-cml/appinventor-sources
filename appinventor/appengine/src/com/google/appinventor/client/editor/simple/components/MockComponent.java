@@ -222,7 +222,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       super(false, true);
 
       setStylePrimaryName("ode-DialogBox");
-      setText(MESSAGES.deleteTitle());
+      setText(MESSAGES.deleteComponentButton());
       VerticalPanel contentPanel = new VerticalPanel();
 
       contentPanel.add(new HTML(MESSAGES.reallyDeleteComponent()));
