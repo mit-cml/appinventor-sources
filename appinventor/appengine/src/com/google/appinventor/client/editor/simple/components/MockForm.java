@@ -170,6 +170,8 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_VNAME = "VersionName";
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
+  // Don't show except on screen1
+  private static final String PROPERTY_NAME_SHOW_LISTS_OLD_STYLE = "ShowListsOldStyle";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -411,9 +413,14 @@ public final class MockForm extends MockContainer {
       // The Sizing property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
-
+    
     if (propertyName.equals(PROPERTY_NAME_ANAME)) {
       // The AppName property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
+    
+    if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_OLD_STYLE)) {
+      // The ShowListsOldStyle property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
@@ -518,6 +525,18 @@ public final class MockForm extends MockContainer {
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, sizingProperty);
     }
   }
+  
+  private void setShowListsOldStyleProperty(String oldStyle) {
+    // This property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for CompatibilityProperty (false). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE, oldStyle);
+    }
+  }
+  
 
   private void setANameProperty(String aname) {
     // The AppName property actually applies to the application and is only visible on Screen1.
@@ -732,6 +751,8 @@ public final class MockForm extends MockContainer {
       setVNameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ANAME)) {
       setANameProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_OLD_STYLE)) {
+      setShowListsOldStyleProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -760,16 +781,22 @@ public final class MockForm extends MockContainer {
 
   @Override
   public EditableProperties getProperties() {
+    // !!!! fix comment if new code works
     // Before we return the Properties object, we make sure that the
     // Sizing property has the value from the project's properties
     // this is because Sizing is per project, not per Screen(Form)
     // We only have to do this on screens other then screen1 because
     // screen1's value is definitive.
-    if(!editor.isScreen1()) {
+    if (!editor.isScreen1()) {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
         editor.getProjectEditor().getProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
+      // new code to test
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_OLD_STYLE));
     }
     return properties;
   }
