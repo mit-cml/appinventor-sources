@@ -138,7 +138,7 @@ public class YailEvalTest extends TestCase {
     assertEquals(6, ((IntNum) scheme.eval(schemeString)).intValue());
     schemeString = "(call-yail-primitive string-append (*list-for-runtime* (list 1) \"2\" 3) " +
         "'(text text text) \"join\")";
-    assertEquals("(1)23", scheme.eval(schemeString).toString());
+    assertEquals("[1]23", scheme.eval(schemeString).toString());
   }
 
   public void testDecimalReaderRoundoff() throws Throwable {
@@ -435,6 +435,7 @@ public class YailEvalTest extends TestCase {
  }
 
   /* side-effects */
+  // these tests assume that we are printing lists using json format
   public void testListGroup4() throws Throwable {
     String schemeInputString = "(begin " +
         "(define list1 (make-yail-list \"a\" \"b\" \"c\" \"d\" ))" +
@@ -483,7 +484,7 @@ public class YailEvalTest extends TestCase {
         "(yail-list-add-to-list! list1)" +
         "(coerce-to-string list1)" +
         ")";
-    schemeResultString = "(a b c d)";
+    schemeResultString = "[\"a\", \"b\", \"c\", \"d\"]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
     schemeInputString = "(begin " +
@@ -491,7 +492,7 @@ public class YailEvalTest extends TestCase {
         "(yail-list-add-to-list! list1 1)" +
         "(coerce-to-string list1)" +
         ")";
-    schemeResultString = "(a 1)";
+    schemeResultString = "[\"a\", 1]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
     schemeInputString = "(begin " +
@@ -500,7 +501,7 @@ public class YailEvalTest extends TestCase {
         " (*list-for-runtime* x  \"hi\" ) '(list any)  \"add items to list\") " +
         "(coerce-to-string x)" +
         ")";
-    schemeResultString = "(a hi)";
+    schemeResultString = "[\"a\", \"hi\"]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
     schemeInputString = "(begin " +
@@ -510,7 +511,7 @@ public class YailEvalTest extends TestCase {
         " (*list-for-runtime* x  y ) '(list any)  \"append to list\") " +
         "(coerce-to-string x)" +
         ")";
-    schemeResultString = "(a ho)";
+    schemeResultString = "[\"a\", \"ho\"]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
     schemeInputString = "(begin " +
@@ -523,7 +524,7 @@ public class YailEvalTest extends TestCase {
         " (*list-for-runtime* x  z ) '(list any)  \"append to list\") " +
         "(coerce-to-string x)" +
         ")";
-    schemeResultString = "(a ho hum)";
+    schemeResultString = "[\"a\", \"ho\", \"hum\"]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
     schemeInputString = "(begin " +
@@ -536,7 +537,7 @@ public class YailEvalTest extends TestCase {
         " (*list-for-runtime* x  z ) '(list any)  \"append to list\") " +
         "(coerce-to-string y)" +
         ")";
-    schemeResultString = "(ho)";
+    schemeResultString = "[\"ho\"]";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
 
   }
@@ -1182,10 +1183,9 @@ public class YailEvalTest extends TestCase {
      assertFalse((Boolean) scheme.eval("(exact? (yail-divide 2 3))"));
    }
 
-
    public void testConvertToStrings() throws Throwable {
-     String schemeInputString = "(convert-to-strings (make-yail-list (/ 10 5) 2.0 \"abc\" 123 (list 4 5 6)))";
-     String schemeExpectedResultString = "(2 2 abc 123 (4 5 6))";
+     String schemeInputString = "(convert-to-strings-for-csv (make-yail-list (/ 10 5) 2.0 \"abc\" 123 (list 4 5 6)))";
+     String schemeExpectedResultString = "(2 2 abc 123 [4, 5, 6])";
      String schemeActualResult = scheme.eval(schemeInputString).toString();
      assertEquals(schemeExpectedResultString, schemeActualResult);
    }

@@ -2049,13 +2049,19 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Screen.CompatibilityMode property was added no block needs to be changed.
     17: "noUpgrade",
 
+    // FOR FORM_COMPONENT_VERSION 18:
     // Screen.CompatibililtyMode replaced with Screen.Sizing no blocks need to be
     // changed.
     18: "noUpgrade",
 
     // For FORM_COMPONENT_VERSION 19:
     // - The Screen1.HideKeyboard method was added and no block needs to be changed.
-    19: "noUpgrade"
+    19: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 20:
+    // - The Screen1.ShowListsAsJson property was added and no block needs to be changed.
+    20: "noUpgrade"
+
 
   }, // End Screen
 
