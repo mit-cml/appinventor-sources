@@ -4,9 +4,6 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-// ***********************************************
-// If we're not going to go this route with onDestroy, then at least get rid of the DEBUG flag.
-
 package com.google.appinventor.components.runtime;
 
 import java.io.IOException;
@@ -90,6 +87,13 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  * places and make the appropriate code changes.
  *
  */
+
+/*
+!!!This still does not work:  Screen2 does not see the property that you set in screen 1.  Does
+the value have to be stored in the project variables?
+*/
+
+
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Top-level component containing all other components in the program",
@@ -144,6 +148,8 @@ public class Form extends Activity
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
 
+
+
   // Layout
   private LinearLayout viewLayout;
 
@@ -163,6 +169,8 @@ public class Form extends Activity
 
   private ScaledFrameLayout scaleLayout;
   private static boolean sCompatibilityMode;
+
+  private static boolean showListsOldStyle = false;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -340,6 +348,11 @@ public class Form extends Activity
     Title("");
     ShowStatusBar(true);
     TitleVisible(true);
+    ShowListsOldStyle(false);
+    // TODO(hal):  Fix this comment so that it more learly explains whay it's OK to initialize ShowListsOldStyle
+    // on screens other than screen 1.
+    // Basically, any change to this value for Screen 1 will get propagated to the property value for other screens, and that
+    // is the only way the property value gets set.
   }
 
   @Override
@@ -1374,6 +1387,7 @@ public class Form extends Activity
     // We don't actually need to do anything.
   }
 
+
   /**
    * Sizing Property Setter
    *
@@ -1382,11 +1396,11 @@ public class Form extends Activity
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Fixed")
   @SimpleProperty(userVisible = false,
-    // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
-    description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
-                  "If set to responsive, screen layouts will use the actual resolution of the device.  " +
-                  "See the documentation on responsive design in App Inventor for more information. " +
-                  "This property appears on Screen1 only and controls the sizing for all screens in the app.")
+  // This desc won't apprear as a tooltip, since there's no block, but we'll keep it with the source.
+  description = "If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. " +
+      "If set to responsive, screen layouts will use the actual resolution of the device.  " +
+      "See the documentation on responsive design in App Inventor for more information. " +
+      "This property appears on Screen1 only and controls the sizing for all screens in the app.")
   public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
@@ -1416,15 +1430,43 @@ public class Form extends Activity
   // }
 
   /**
+   * ShowListsOldStyle Property Setter
+   * This only appears in the designer for screen 1
+   * @param
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false,
+  // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
+  description = "If set to true, lists will be converted to strings using App Inventor's pre-2017 notatation, i.e., as symbols separated by spaces, "
+      + "e.g., (a 1 b2 (c d).  If false, lists will appear as in Python, e.g. [\"a\", 1, \"b\", 2, [\"c\", \"d\"]].  "
+      + "This property appears only in Screen 1, and the value for Screen 1 determines the behavior for all screens. "
+      + "The property is provided for compatibility with older projects.   New projects are created with this set to false, "
+      + "Old projects will be upgraded with have it set to true, so that the upgrading will not cause any change in "
+      + "the behavior of the app.  The app's author can then set it to false if desired, using the designer checkbox for Screen 1."
+
+)
+  public void ShowListsOldStyle(boolean oldStyle) {
+    showListsOldStyle = oldStyle;
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public boolean ShowListsOldStyle() {
+    return showListsOldStyle;
+  }
+
+  /**
    * Specifies the App Name.
    *
    * @param aName the display name of the installed application in the phone
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-    defaultValue = "")
-  @SimpleProperty(userVisible = false,
-    description = "This is the display name of the installed application in the phone." +
-        "If the AppName is blank, it will be set to the name of the project when the project is built.")
+      defaultValue = "")
+  //make these visible for debugging
+  @SimpleProperty(userVisible = true,
+  description = "This is the display name of the installed application in the phone." +
+      "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
   }
@@ -1647,6 +1689,7 @@ public class Form extends Activity
       throw new IllegalStateException("activeForm is null");
     }
   }
+
 
   /**
    * Returns the value that was passed to this screen when it was opened
