@@ -109,8 +109,16 @@ class Screen3: Form {
   var PhoneCall1: PhoneCall!
   var ActivityStarter1: ActivityStarter!
 
-  required init?(coder aCoder: NSCoder) {
-    super.init(coder: aCoder)
+  init?(_ coder: NSCoder? = nil) {
+    if let coder = coder {
+      super.init(coder: coder)
+    } else {
+      super.init(nibName: nil, bundle: nil)
+    }
+  }
+
+  required convenience init?(coder aCoder: NSCoder) {
+    self.init(coder: aCoder)
   }
 
   override func viewDidLoad() {
