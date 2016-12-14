@@ -16,18 +16,18 @@ let kRoundedCornersRadius: Float = 10.0
 let kRoundedCornersArray = [kRoundedCornersRadius, kRoundedCornersRadius]
 let kShapedDefaultBackgroundColor = Color.lightGray
 
-public class ButtonBase: ViewComponent {
+open class ButtonBase: ViewComponent {
   final var _view: UIButton
-  private weak var _delegate: AbstractMethodsForButton?
-  private var _textAlignment = Alignment.center
-  private var _backgroundColor = Int32(bitPattern: Color.DEFAULT.rawValue)
-  private var _fontTypeface = Typeface.normal
-  private var _bold = false
-  private var _showFeedback = true
-  private var _italic = false
-  private var _textColor = Color.DEFAULT
-  private var _shape = ButtonShape.normal
-  private var _imagePath: String?
+  fileprivate weak var _delegate: AbstractMethodsForButton?
+  fileprivate var _textAlignment = Alignment.center
+  fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _fontTypeface = Typeface.normal
+  fileprivate var _bold = false
+  fileprivate var _showFeedback = true
+  fileprivate var _italic = false
+  fileprivate var _textColor = Color.default
+  fileprivate var _shape = ButtonShape.normal
+  fileprivate var _imagePath: String?
 
   public override init(_ parent: ComponentContainer) {
     self._view = UIButton(type: UIButtonType.system)
@@ -41,13 +41,13 @@ public class ButtonBase: ViewComponent {
     super.setDelegate(delegate)
   }
 
-  public override var view: UIView {
+  open override var view: UIView {
     get {
       return _view
     }
   }
   
-  public var BackgroundColor: Int32 {
+  open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -57,7 +57,7 @@ public class ButtonBase: ViewComponent {
     }
   }
 
-  public var Enabled: Bool {
+  open var Enabled: Bool {
     get {
       return _view.isEnabled
     }
@@ -66,7 +66,7 @@ public class ButtonBase: ViewComponent {
     }
   }
   
-  public var FontSize: Float32 {
+  open var FontSize: Float32 {
     get {
       return Float32((_view.titleLabel?.font.pointSize)!)
     }
@@ -75,7 +75,7 @@ public class ButtonBase: ViewComponent {
     }
   }
 
-  public var Image: String? {
+  open var Image: String? {
     get {
       return _imagePath
     }
@@ -112,7 +112,7 @@ public class ButtonBase: ViewComponent {
     }
   }
 
-  public var Text: String? {
+  open var Text: String? {
     get {
       return _view.title(for: UIControlState.normal)
     }
@@ -122,7 +122,7 @@ public class ButtonBase: ViewComponent {
     }
   }
 
-  public var TextColor: Int32 {
+  open var TextColor: Int32 {
     get {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
@@ -131,7 +131,7 @@ public class ButtonBase: ViewComponent {
     }
   }
 
-  public func longClick() -> Bool {
+  open func longClick() -> Bool {
     return false;
   }
 }

@@ -8,29 +8,37 @@
 
 import Foundation
 
-public class AssetManager: NSObject {
-  private static var manager: AssetManager?
-  public static var isRepl = false
-  private let appname: String
-  private let privatePath: String
-  private let cachePath: String
-  private let publicPath: String
+open class AssetManager: NSObject {
+  fileprivate static var manager: AssetManager?
+  open static var isRepl = false
+  fileprivate let appname: String
+  fileprivate let privatePath: String
+  fileprivate let cachePath: String
+  fileprivate let publicPath: String
 
   public enum AssetScope {
-    case BUNDLE
-    case PRIVATE
-    case CACHE
-    case PUBLIC
+    case bundle
+    case `private`
+    case cache
+    case `public`
   }
 
-  private override init() {
+  override init() {
     appname = "AppInventor"
-    var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
-    cachePath = "\(path)/AppInventor"
-    path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
-    privatePath = "\(path)/AppInventor"
-    path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-    publicPath = "\(path)/AppInventor"
+    do {
+      let files = FileManager()
+      var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
+      privatePath = "\(path)/AppInventor"
+      path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
+      cachePath = "\(path)/AppInventor"
+      path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+      publicPath = "\(path)/AppInventor"
+      try files.createDirectory(atPath: privatePath, withIntermediateDirectories: true, attributes: nil)
+      try files.createDirectory(atPath: cachePath, withIntermediateDirectories: true, attributes: nil)
+      try files.createDirectory(atPath: publicPath, withIntermediateDirectories: true, attributes: nil)
+    } catch {
+      NSLog("Unable to create directories")  // Should never happen in practice given sandboxing
+    }
   }
   
   init(for unpackedApp: Application) {
@@ -40,7 +48,7 @@ public class AssetManager: NSObject {
     publicPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
   }
   
-  public class var shared: AssetManager {
+  open class var shared: AssetManager {
     get {
       if manager == nil {
         manager = AssetManager()
@@ -49,44 +57,44 @@ public class AssetManager: NSObject {
     }
   }
 
-  public func pathForAsset(filename: String, scope: AssetScope) -> String {
+  open func pathForAsset(_ filename: String, scope: AssetScope) -> String {
     switch scope {
-      case .BUNDLE:
+      case .bundle:
         return pathForAssetInBundle(filename: filename)
-      case .PRIVATE:
-        return pathForPrivateAsset(filename: filename)
-      case .CACHE:
-        return pathForCacheAsset(filename: filename)
-      case .PUBLIC:
-        return pathForPublicAsset(filename: filename)
+      case .private:
+        return pathForPrivateAsset(filename)
+      case .cache:
+        return pathForCacheAsset(filename)
+      case .public:
+        return pathForPublicAsset(filename)
     }
   }
 
-  public func pathForPublicAsset(filename: String) -> String {
+  open func pathForPublicAsset(_ filename: String) -> String {
     let documentDir = publicPath
     return "\(documentDir)/\(filename)"
   }
   
-  public func pathForCacheAsset(filename: String) -> String {
+  open func pathForCacheAsset(_ filename: String) -> String {
     let documentDir = cachePath
     return "\(documentDir)/\(filename)"
   }
   
-  public func pathForPrivateAsset(filename: String) -> String {
+  open func pathForPrivateAsset(_ filename: String) -> String {
     let documentDir = privatePath
     return "\(documentDir)/\(filename)"
   }
 
-  public func pathForExistingFileAsset(filename: String) -> String {
-    var path = pathForPrivateAsset(filename: filename)
+  open func pathForExistingFileAsset(_ filename: String) -> String {
+    var path = pathForPrivateAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
     }
-    path = pathForCacheAsset(filename: filename)
+    path = pathForCacheAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
     }
-    path = pathForPublicAsset(filename: filename)
+    path = pathForPublicAsset(filename)
     if FileManager.default.fileExists(atPath: path) {
       return path
     }
@@ -109,7 +117,7 @@ public class AssetManager: NSObject {
     let lastPart = filename.substring(from: filename.index(after: (lastDot?.upperBound)!))
     let path = Bundle.main.path(forResource: firstPart, ofType: lastPart, inDirectory: documentDir)
     if path == nil {
-      return pathForExistingFileAsset(filename: filename)
+      return pathForExistingFileAsset(filename)
     } else {
       return path!
     }

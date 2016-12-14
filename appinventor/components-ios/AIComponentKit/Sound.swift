@@ -12,18 +12,18 @@ import AVKit
 private let kMaxPlayDelayRetries: Int32 = 10
 private let kPlayDelayLength = TimeInterval(0.050)
 
-public class Sound: NonvisibleComponent {
-  private var _sourcePath: String = ""
-  private var _minimumInterval: Int32 = 500
-  private var _timeLastPlayed: Double = 0.0
-  private var _audioPlayer: AVAudioPlayer?
-  private var _delayRetries: Int32 = 0
+open class Sound: NonvisibleComponent {
+  fileprivate var _sourcePath: String = ""
+  fileprivate var _minimumInterval: Int32 = 500
+  fileprivate var _timeLastPlayed: Double = 0.0
+  fileprivate var _audioPlayer: AVAudioPlayer?
+  fileprivate var _delayRetries: Int32 = 0
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
   }
 
-  public var Source: String {
+  open var Source: String {
     get {
       return _sourcePath
     }
@@ -50,7 +50,7 @@ public class Sound: NonvisibleComponent {
     }
   }
   
-  public var MinimumInterval: Int32 {
+  open var MinimumInterval: Int32 {
     get {
       return _minimumInterval
     }
@@ -59,7 +59,7 @@ public class Sound: NonvisibleComponent {
     }
   }
   
-  public func Play() {
+  open func Play() {
     let currentTime = Date().timeIntervalSince1970
     if (_timeLastPlayed == 0.0 || currentTime >= _timeLastPlayed + Double(_minimumInterval)/1000.0) {
       _timeLastPlayed = currentTime
@@ -70,29 +70,29 @@ public class Sound: NonvisibleComponent {
     }
   }
 
-  private func playWhenLoadComplete() {
+  fileprivate func playWhenLoadComplete() {
     if let player = _audioPlayer {
       player.play()
     }
   }
 
-  public func Pause() {
+  open func Pause() {
     if (_audioPlayer != nil) {
       _audioPlayer?.pause()
     }
   }
   
-  public func Stop() {
+  open func Stop() {
     if (_audioPlayer != nil) {
       _audioPlayer?.stop()
     }
   }
   
-  public func Vibrate(duration: Int32) {
+  open func Vibrate(_ duration: Int32) {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
   }
   
-  public func SoundError(message: String) {
+  open func SoundError(_ message: String) {
     // deprecated
   }
 }

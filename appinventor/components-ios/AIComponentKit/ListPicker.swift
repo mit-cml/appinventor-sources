@@ -10,7 +10,7 @@ import Foundation
 
 private let kListViewCellIdentifier = "listview"
 
-public class ListPickerActivity: UINavigationController {
+open class ListPickerActivity: UINavigationController {
   fileprivate var _tableViewController: UITableViewController!
 
   public required override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -31,13 +31,13 @@ public class ListPickerActivity: UINavigationController {
   }
 }
 
-public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, UITableViewDelegate {
-  private var _items: [String] = []
-  private var _viewController: ListPickerActivity?
-  private var _selection: String = ""
-  private var _selectionIndex: Int32 = 0
-  private var _itemBackgroundColor: UIColor = UIColor.white
-  private var _itemTextColor: UIColor = UIColor.black
+open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, UITableViewDelegate {
+  fileprivate var _items: [String] = []
+  fileprivate var _viewController: ListPickerActivity?
+  fileprivate var _selection: String = ""
+  fileprivate var _selectionIndex: Int32 = 0
+  fileprivate var _itemBackgroundColor: UIColor = UIColor.white
+  fileprivate var _itemTextColor: UIColor = UIColor.black
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
@@ -48,7 +48,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
   }
 
   // MARK: ListPicker Properties
-  public var ElementsFromString: String {
+  open var ElementsFromString: String {
     get {
       return ""
     }
@@ -57,7 +57,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     }
   }
 
-  public var ItemBackgroundColor: Int32 {
+  open var ItemBackgroundColor: Int32 {
     get {
       return colorToArgb(_itemBackgroundColor)
     }
@@ -67,7 +67,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     }
   }
 
-  public var ItemTextColor: Int32 {
+  open var ItemTextColor: Int32 {
     get {
       return colorToArgb(_itemTextColor)
     }
@@ -77,7 +77,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     }
   }
 
-  public var Selection: String {
+  open var Selection: String {
     get {
       return _selection
     }
@@ -91,7 +91,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     }
   }
 
-  public var SelectionIndex: Int32 {
+  open var SelectionIndex: Int32 {
     get {
       return _selectionIndex
     }
@@ -105,7 +105,7 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     }
   }
 
-  public var Title: String {
+  open var Title: String {
     get {
       if let title = _viewController?._tableViewController.navigationItem.title {
         return title
@@ -127,12 +127,12 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
   }
 
   // MARK: AbstractMethodsForPicker
-  public func open() {
+  open func open() {
     _container.form?.present(_viewController!, animated: true, completion: {})
   }
 
   // MARK: UITableViewDataSource
-  public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     var cell = tableView.dequeueReusableCell(withIdentifier: kListViewCellIdentifier)
     if cell == nil {
       cell = UITableViewCell(style: .default, reuseIdentifier: kListViewCellIdentifier)
@@ -141,12 +141,12 @@ public class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource
     return cell!
   }
 
-  public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return _items.count
   }
 
   // MARK: UITableViewDelegate
-  public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+  open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     _viewController?.dismiss(animated: true, completion: {
       self._selection = self._items[indexPath.row]
       self._selectionIndex = indexPath.row + 1

@@ -12,33 +12,33 @@ public protocol AbstractMethodsForPicker: AbstractMethodsForButton {
   func open()
 }
 
-public class Picker: ButtonBase, AbstractMethodsForButton {
-  private weak var _delegate: AbstractMethodsForPicker?
+open class Picker: ButtonBase, AbstractMethodsForButton {
+  fileprivate weak var _delegate: AbstractMethodsForPicker?
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
     super.setDelegate(self)
   }
 
-  public func setDelegate(_ delegate: AbstractMethodsForPicker) {
+  open func setDelegate(_ delegate: AbstractMethodsForPicker) {
     _delegate = delegate
     super.setDelegate(delegate as AbstractMethodsForButton)
   }
 
-  public func click() {
+  open func click() {
     BeforePicking()
     _delegate?.open()
   }
   
-  public func Open() {
+  open func Open() {
     click()
   }
   
-  public func BeforePicking() {
+  open func BeforePicking() {
     EventDispatcher.dispatchEvent(of: self, called: "BeforePicking")
   }
   
-  public func AfterPicking() {
+  open func AfterPicking() {
     EventDispatcher.dispatchEvent(of: self, called: "AfterPicking")
   }
 }

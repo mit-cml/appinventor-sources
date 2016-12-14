@@ -14,13 +14,13 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
   fileprivate var _multiLine = false
 
-  public var view: UIView {
+  open var view: UIView {
     get {
       return _wrapper
     }
   }
 
-  public var alignment: NSTextAlignment {
+  open var alignment: NSTextAlignment {
     get {
       return _field.textAlignment
     }
@@ -30,7 +30,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var backgroundColor: UIColor? {
+  open var backgroundColor: UIColor? {
     get {
       if _multiLine {
         return _view.backgroundColor
@@ -44,7 +44,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var textColor: UIColor? {
+  open var textColor: UIColor? {
     get {
       if _multiLine {
         return _view.textColor
@@ -58,7 +58,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var font: UIFont {
+  open var font: UIFont {
     get {
       if _multiLine {
         return _view.font!
@@ -72,7 +72,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var placeholderText: String? {
+  open var placeholderText: String? {
     get {
       return _field.placeholder
     }
@@ -82,7 +82,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var text: String? {
+  open var text: String? {
     get {
       if _multiLine {
         return _view.text
@@ -97,16 +97,16 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
   }
 }
 
-public class TextBox: TextBoxBase {
-  private let _adapter = TextBoxAdapter()
-  private var _acceptsNumbersOnly = false
+open class TextBox: TextBoxBase {
+  fileprivate let _adapter = TextBoxAdapter()
+  fileprivate var _acceptsNumbersOnly = false
 
   public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
   }
 
   // MARK: TextBox Properties
-  public var NumbersOnly: Bool {
+  open var NumbersOnly: Bool {
     get {
       return _acceptsNumbersOnly
     }

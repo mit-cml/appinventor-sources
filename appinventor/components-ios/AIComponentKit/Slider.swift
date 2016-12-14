@@ -8,6 +8,6 @@
 
 import Foundation
 
-public class Slider: ViewComponent, AbstractMethodsForViewComponent {
+open class Slider: ViewComponent, AbstractMethodsForViewComponent {
   
 }

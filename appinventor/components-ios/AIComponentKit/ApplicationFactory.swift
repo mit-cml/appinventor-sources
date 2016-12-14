@@ -8,22 +8,22 @@
 
 import Foundation
 
-public class ApplicationFactory {
-  private var registry: [String: Application] = [:]
+open class ApplicationFactory {
+  fileprivate var registry: [String: Application] = [:]
   
   public enum ApplicationFactoryError: Error {
     case applicationNotFound
   }
 
-  public func openApplication(from path: String) throws -> Application {
+  open func openApplication(from path: String) throws -> Application {
     throw ApplicationFactoryError.applicationNotFound
   }
 
-  public func downloadApplication(from url: URL, callback: (_ application: Application) -> ()) {
+  open func downloadApplication(from url: URL, callback: (_ application: Application) -> ()) {
     
   }
 
-  public func deleteApplication(from path: String) -> Bool {
+  open func deleteApplication(from path: String) -> Bool {
     return false
   }
 }

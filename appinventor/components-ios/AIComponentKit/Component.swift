@@ -44,7 +44,7 @@ enum Color: UInt32 {
     case red = 0xFFFF0000
     case white = 0xFFFFFFFF
     case yellow = 0xFFFFFF00
-    case DEFAULT = 0x00000000
+    case `default` = 0x00000000
 }
 
 enum DefaultValueColor: String {

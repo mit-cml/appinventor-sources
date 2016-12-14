@@ -10,6 +10,7 @@
 		060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060119DD1DC24126000FC1E2 /* ListPicker.swift */; };
 		0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147B1DE61B530049B7AB /* SQLite.framework */; };
 		0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147C1DE61B530049B7AB /* Toast_Swift.framework */; };
+		060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */; };
 		06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */; };
 		06159D8E1DEFF0C600593D30 /* PasswordTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */; };
 		0618A28D1D8CF4EE0013A191 /* AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0618A2841D8CF4EE0013A191 /* AIComponentKit.framework */; };
@@ -100,6 +101,7 @@
 		060119DD1DC24126000FC1E2 /* ListPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPicker.swift; sourceTree = "<group>"; };
 		0609147B1DE61B530049B7AB /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = "build/Debug-iphoneos/SQLite.swift/SQLite.framework"; sourceTree = "<group>"; };
 		0609147C1DE61B530049B7AB /* Toast_Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Toast_Swift.framework; path = "build/Debug-iphoneos/Toast-Swift/Toast_Swift.framework"; sourceTree = "<group>"; };
+		060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonUtil.swift; sourceTree = "<group>"; };
 		06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextBoxBase.swift; sourceTree = "<group>"; };
 		06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordTextBox.swift; sourceTree = "<group>"; };
 		0618A26D1D8CE3750013A191 /* AIComponentKit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AIComponentKit-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
 				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
+				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
 				06E59EA71D92C7E800C42804 /* NetworkUtils.h */,
 				06E59EA81D92C7E800C42804 /* NetworkUtils.m */,
@@ -560,7 +563,7 @@
 				TargetAttributes = {
 					0618A2831D8CF4EE0013A191 = {
 						CreatedOnToolsVersion = 8.0;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					0618A28B1D8CF4EE0013A191 = {
@@ -714,6 +717,7 @@
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
+				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
 				06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */,
 				06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */,
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,

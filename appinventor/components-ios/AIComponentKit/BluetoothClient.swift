@@ -9,7 +9,7 @@
 import Foundation
 
 public final class BluetoothClient: BluetoothConnectionBase {
-  private let TAG = "BluetoothClient"
+  fileprivate let TAG = "BluetoothClient"
  
   public init(_ parent: ComponentContainer) {
     super.init(parent, TAG)

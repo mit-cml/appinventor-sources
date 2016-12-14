@@ -17,16 +17,16 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var text: String? { get set }
 }
 
-public class TextBoxBase: ViewComponent, UITextViewDelegate {
-  private weak var _delegate: AbstractMethodsForTextBox?
+open class TextBoxBase: ViewComponent, UITextViewDelegate {
+  fileprivate weak var _delegate: AbstractMethodsForTextBox?
   
-  private var _textAlignment: Int32 = 0
-  private var _backgroundColor: Int32 = 0
-  private var _fontTypeface: Int32 = 0
-  private var _bold: Bool = false
-  private var _italic: Bool = false
-  private var _hint: String = ""
-  private var _textColor: Int32 = 0
+  fileprivate var _textAlignment: Int32 = 0
+  fileprivate var _backgroundColor: Int32 = 0
+  fileprivate var _fontTypeface: Int32 = 0
+  fileprivate var _bold: Bool = false
+  fileprivate var _italic: Bool = false
+  fileprivate var _hint: String = ""
+  fileprivate var _textColor: Int32 = 0
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
@@ -41,7 +41,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
   }
 
   // MARK: TextboxBase Properties
-  public var TextAlignment: Int32 {
+  open var TextAlignment: Int32 {
     get {
       return _textAlignment
     }
@@ -64,7 +64,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var BackgroundColor: Int32 {
+  open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
@@ -74,7 +74,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var Enabled: Bool {
+  open var Enabled: Bool {
     get {
       return (_delegate?.view.isUserInteractionEnabled)!
     }
@@ -83,7 +83,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var FontBold: Bool {
+  open var FontBold: Bool {
     get {
       return _bold
     }
@@ -93,7 +93,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var FontItalic: Bool {
+  open var FontItalic: Bool {
     get {
       return _italic
     }
@@ -103,7 +103,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var FontSize: Float32 {
+  open var FontSize: Float32 {
     get {
       if let size = _delegate?.font.pointSize {
         return Float32(size)
@@ -118,7 +118,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var FontTypeface: Int32 {
+  open var FontTypeface: Int32 {
     get {
       return _fontTypeface
     }
@@ -128,7 +128,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var Hint: String {
+  open var Hint: String {
     get {
       return _hint
     }
@@ -138,7 +138,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var Text: String {
+  open var Text: String {
     get {
       if let delegate = _delegate {
         if let text = delegate.text {
@@ -152,7 +152,7 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
     }
   }
   
-  public var TextColor: Int32 {
+  open var TextColor: Int32 {
     get {
       return _textColor
     }
@@ -163,25 +163,25 @@ public class TextBoxBase: ViewComponent, UITextViewDelegate {
   }
   
   // MARK: TextboxBase Methods
-  public func RequestFocus() {
+  open func RequestFocus() {
     _delegate?.view.becomeFirstResponder()
   }
   
   // MARK: TextboxBase Events
-  public func GotFocus() {
+  open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
   
-  public func LostFocus() {
+  open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }
 
   // MARK: UITextViewDelegate implementation
-  public func textViewDidBeginEditing(_ textView: UITextView) {
+  open func textViewDidBeginEditing(_ textView: UITextView) {
     GotFocus()
   }
 
-  public func textViewDidEndEditing(_ textView: UITextView) {
+  open func textViewDidEndEditing(_ textView: UITextView) {
     LostFocus()
   }
 }

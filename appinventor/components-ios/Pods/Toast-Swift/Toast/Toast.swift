@@ -47,7 +47,7 @@ public extension UIView {
     /**
      Keys used for associated objects.
      */
-    private struct ToastKeys {
+    fileprivate struct ToastKeys {
         static var Timer        = "CSToastTimerKey"
         static var Duration     = "CSToastDurationKey"
         static var Position     = "CSToastPositionKey"
@@ -62,7 +62,7 @@ public extension UIView {
      Objective-C runtime, so the (ugly) solution is to wrap them in a
      class that can be used with associated objects.
      */
-    private class ToastCompletionWrapper {
+    fileprivate class ToastCompletionWrapper {
         var completion: ((Bool) -> Void)?
         
         init(_ completion: ((Bool) -> Void)?) {
@@ -70,11 +70,11 @@ public extension UIView {
         }
     }
     
-    private enum ToastError: Error {
+    fileprivate enum ToastError: Error {
         case insufficientData
     }
     
-    private var queue: NSMutableArray {
+    fileprivate var queue: NSMutableArray {
         get {
             if let queue = objc_getAssociatedObject(self, &ToastKeys.Queue) as? NSMutableArray {
                 return queue
@@ -320,7 +320,7 @@ public extension UIView {
     
     // MARK: - Private Activity Methods
     
-    private func makeToastActivity(_ toast: UIView, position: CGPoint) {
+    fileprivate func makeToastActivity(_ toast: UIView, position: CGPoint) {
         toast.alpha = 0.0
         toast.center = position
         
@@ -333,7 +333,7 @@ public extension UIView {
         }, completion: nil)
     }
     
-    private func createToastActivityView() -> UIView {
+    fileprivate func createToastActivityView() -> UIView {
         let style = ToastManager.shared.style
         
         let activityView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: style.activitySize.width, height: style.activitySize.height))
@@ -358,7 +358,7 @@ public extension UIView {
     
     // MARK: - Private Show/Hide Methods
     
-    private func showToast(_ toast: UIView, duration: TimeInterval, position: CGPoint) {
+    fileprivate func showToast(_ toast: UIView, duration: TimeInterval, position: CGPoint) {
         toast.center = position
         toast.alpha = 0.0
         
@@ -382,11 +382,11 @@ public extension UIView {
         }
     }
     
-    private func hideToast(_ toast: UIView) {
+    fileprivate func hideToast(_ toast: UIView) {
         self.hideToast(toast, fromTap: false)
     }
     
-    private func hideToast(_ toast: UIView, fromTap: Bool) {
+    fileprivate func hideToast(_ toast: UIView, fromTap: Bool) {
         
         UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: { () -> Void in
             toast.alpha = 0.0
@@ -556,7 +556,7 @@ public extension UIView {
     
     // MARK: - Helpers
 
-    private func centerPointForPosition(_ position: ToastPosition, toast: UIView) -> CGPoint {
+    fileprivate func centerPointForPosition(_ position: ToastPosition, toast: UIView) -> CGPoint {
         let padding: CGFloat = ToastManager.shared.style.verticalPadding
         
         switch(position) {
@@ -724,23 +724,23 @@ public struct ToastStyle {
  `ToastManager` provides general configuration options for all toast
  notifications. Backed by a singleton instance.
 */
-public class ToastManager {
+open class ToastManager {
     
     /**
      The `ToastManager` singleton instance.
      */
-    public static let shared = ToastManager()
+    open static let shared = ToastManager()
     
     /**
      The shared style. Used whenever toastViewForMessage(message:title:image:style:) is called
      with with a nil style.
      */
-    public var style = ToastStyle()
+    open var style = ToastStyle()
     
     /**
      Enables or disables tap to dismiss on toast views. Default is `true`.
      */
-    public var tapToDismissEnabled = true
+    open var tapToDismissEnabled = true
     
     /**
      Enables or disables queueing behavior for toast views. When `true`,
@@ -749,20 +749,20 @@ public class ToastManager {
      on their positions). This has no effect on the toast activity view,
      which operates independently of normal toast views. Default is `true`.
      */
-    public var queueEnabled = true
+    open var queueEnabled = true
     
     /**
      The default duration. Used for the `makeToast` and
      `showToast` methods that don't require an explicit duration.
      Default is 3.0.
      */
-    public var duration: TimeInterval = 3.0
+    open var duration: TimeInterval = 3.0
     
     /**
      Sets the default position. Used for the `makeToast` and
      `showToast` methods that don't require an explicit position.
      Default is `ToastPosition.Bottom`.
      */
-    public var position = ToastPosition.bottom
+    open var position = ToastPosition.bottom
     
 }

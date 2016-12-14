@@ -8,18 +8,18 @@
 
 import Foundation
 
-public class NonvisibleComponent: NSObject, Component {
+open class NonvisibleComponent: NSObject, Component {
   final weak var _form: Form?
 
   public init(_ container: ComponentContainer) {
     self._form = container.form!
   }
 
-  public func copy(with zone: NSZone? = nil) -> Any {
+  open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  public var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching {
     get {
       return (_form?.dispatchDelegate)!
     }

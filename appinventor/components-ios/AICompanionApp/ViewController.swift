@@ -47,7 +47,7 @@ public class ViewController: UINavigationController {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm;
       form?.Initialize()
       let repl = form! as! ReplForm
-      repl.startHTTPD(secure: false)
+      repl.startHTTPD(false)
       repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
       if ((repl.interpreter?.exception) != nil) {
         NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")

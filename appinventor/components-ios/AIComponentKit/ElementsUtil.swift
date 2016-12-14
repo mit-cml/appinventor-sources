@@ -9,7 +9,7 @@
 import Foundation
 
 extension String {
-  func split(splitter: String) -> [String] {
+  func split(_ splitter: String) -> [String] {
     guard let regEx = try? NSRegularExpression(pattern: splitter, options: [])
     else {
       return []
@@ -26,7 +26,7 @@ extension String {
 public func elementsFromString(_ itemString: String) -> [String] {
   let items = [String]()
   if itemString.characters.count > 0 {
-    return itemString.split(splitter: " *, *")
+    return itemString.split(" *, *")
   }
   return items
 }

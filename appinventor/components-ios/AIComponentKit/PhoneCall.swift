@@ -22,10 +22,10 @@ private let kPhoneCallStatusMissed: Int32 = 1
 private let kPhoneCallStatusIncomingEnded: Int32 = 2
 private let kPhoneCallStatusOutgoingEnded: Int32 = 3
 
-public class PhoneCall: NonvisibleComponent {
-  private var _phoneNumber = ""
-  private let _callCenter: CTCallCenter
-  private var _status = PhoneCallState.disconnected
+open class PhoneCall: NonvisibleComponent {
+  fileprivate var _phoneNumber = ""
+  fileprivate let _callCenter: CTCallCenter
+  fileprivate var _status = PhoneCallState.disconnected
 
   public override init(_ parent: ComponentContainer) {
     _callCenter = CTCallCenter()
@@ -61,7 +61,7 @@ public class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Properties
-  public var PhoneNumber: String {
+  open var PhoneNumber: String {
     get {
       return _phoneNumber
     }
@@ -71,7 +71,7 @@ public class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Methods
-  public func MakePhoneCall() {
+  open func MakePhoneCall() {
     let cleanNumber = _phoneNumber.components(separatedBy: CharacterSet(charactersIn: "0123456789+-()").inverted).joined()
     let telurl = URL(string: "tel:" + cleanNumber)
     if telurl != nil {
@@ -86,15 +86,15 @@ public class PhoneCall: NonvisibleComponent {
   }
 
   // MARK: PhoneCall Events
-  public func IncomingCallAnswered(_ phoneNumber: String) {
+  open func IncomingCallAnswered(_ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "IncomingCallAnswered", arguments: phoneNumber as NSString)
   }
 
-  public func PhoneCallEnded(_ status: Int32, _ phoneNumber: String) {
+  open func PhoneCallEnded(_ status: Int32, _ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "PhoneCallEndded", arguments: NSNumber(value: status), phoneNumber as NSString)
   }
 
-  public func PhoneCallStarted(_ status: Int32, _ phoneNumber: String) {
+  open func PhoneCallStarted(_ status: Int32, _ phoneNumber: String) {
     EventDispatcher.dispatchEvent(of: self, called: "PhoneCallStarted", arguments: NSNumber(value: status), phoneNumber as NSString)
   }
 }

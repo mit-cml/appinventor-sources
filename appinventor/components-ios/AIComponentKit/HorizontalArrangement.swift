@@ -8,6 +8,6 @@
 
 import Foundation
 
-public class HorizontalArrangement: ViewComponent, AbstractMethodsForViewComponent {
+open class HorizontalArrangement: ViewComponent, AbstractMethodsForViewComponent {
   
 }

@@ -14,14 +14,14 @@ private let kVerticalCenterLeadingConstraint = "VCenterLeadingConstraint"
 private let kVerticalCenterTrailingConstraint = "VCenterTrailingConstraint"
 private let kComponentKitConstraint = "AIComponentKitConstraint"
 
-public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForViewComponent {
-  private var _components: [Component] = [Component]()
-  private var _view: UIScrollView
-  private let _orientation: HVOrientation
-  private var _horizontalAlign = HorizontalGravity.left
-  private var _verticalAlign = VerticalGravity.top
-  private var _backgroundColor = UIColor.white
-  private var _imagePath = ""
+open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForViewComponent {
+  fileprivate var _components: [Component] = [Component]()
+  fileprivate var _view: UIScrollView
+  fileprivate let _orientation: HVOrientation
+  fileprivate var _horizontalAlign = HorizontalGravity.left
+  fileprivate var _verticalAlign = VerticalGravity.top
+  fileprivate var _backgroundColor = UIColor.white
+  fileprivate var _imagePath = ""
   
   public init(_ parent: ComponentContainer, orientation: HVOrientation, scrollable: Bool) {
     _orientation = orientation
@@ -44,24 +44,24 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
   }
 
   // MARK: AbstractMethodsForViewComponent protocol implementation
-  public override var view: UIView {
+  open override var view: UIView {
     get {
       return _view
     }
   }
 
   // MARK: ComponentContainer protocol implementation
-  public var form: Form? {
+  open var form: Form? {
     get {
       return _container.form
     }
   }
 
-  public func add(_ component: ViewComponent) {
+  open func add(_ component: ViewComponent) {
     _components.append(component)
   }
 
-  public func setChildWidth(of component: ViewComponent, width: Int32) {
+  open func setChildWidth(of component: ViewComponent, width: Int32) {
     if width > 0 {
       
     } else if width == 0 {
@@ -75,7 +75,7 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
     }
   }
 
-  public func setChildHeight(of component: ViewComponent, height: Int32) {
+  open func setChildHeight(of component: ViewComponent, height: Int32) {
     if height > 0 {
       
     } else if height == 0 {
@@ -90,7 +90,7 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
   }
 
   // MARK: HVArrangement Properties
-  public var AlignHorizontal: Int32 {
+  open var AlignHorizontal: Int32 {
     get {
       return _horizontalAlign.rawValue
     }
@@ -99,7 +99,7 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
     }
   }
 
-  public var AlignVertical: Int32 {
+  open var AlignVertical: Int32 {
     get {
       return _verticalAlign.rawValue
     }
@@ -108,7 +108,7 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
     }
   }
 
-  public var BackgroundColor: Int32 {
+  open var BackgroundColor: Int32 {
     get {
       return colorToArgb(_backgroundColor)
     }
@@ -120,7 +120,7 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
     }
   }
 
-  public var Image: String {
+  open var Image: String {
     get {
       return _imagePath
     }
@@ -141,29 +141,29 @@ public class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsFo
   }
 
   // MARK: Private implementation
-  private func updateConstraints() {
+  fileprivate func updateConstraints() {
     
   }
 
-  private func updateConstraints(for view: UIView) {
+  fileprivate func updateConstraints(for view: UIView) {
   }
   
-  private func updateHorizontalConstraints() {
+  fileprivate func updateHorizontalConstraints() {
     
   }
   
-  private func updateVerticalConstraints() {
+  fileprivate func updateVerticalConstraints() {
     
   }
   
-  private func updateHorizontalConstraints(for view: UIView) {
+  fileprivate func updateHorizontalConstraints(for view: UIView) {
     let constraints = _view.constraintsAffectingLayout(for: UILayoutConstraintAxis.horizontal)
     if _orientation == .horizontal {
       
     }
   }
 
-  private func updateVerticalConstraints(for view: UIView) {
+  fileprivate func updateVerticalConstraints(for view: UIView) {
     let constraints = _view.constraintsAffectingLayout(for: UILayoutConstraintAxis.vertical)
     if _orientation == .vertical {
       

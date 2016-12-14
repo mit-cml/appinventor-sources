@@ -8,15 +8,15 @@
 
 import Foundation
 
-public class Web: NonvisibleComponent {
-  private var _url = ""
-  private var _requestHeaders = YailList()
-  private var _allowCookies = false
-  private var _saveResponse = false
-  private var _responseFileName = ""
-  private var _cookieStorage = HTTPCookieStorage()
+open class Web: NonvisibleComponent {
+  fileprivate var _url = ""
+  fileprivate var _requestHeaders = YailList()
+  fileprivate var _allowCookies = false
+  fileprivate var _saveResponse = false
+  fileprivate var _responseFileName = ""
+  fileprivate var _cookieStorage = HTTPCookieStorage()
 
-  public var Url: String {
+  open var Url: String {
     get {
       return _url
     }
@@ -25,18 +25,18 @@ public class Web: NonvisibleComponent {
     }
   }
   
-  public var RequestHeaders: YailList {
+  open var RequestHeaders: YailList {
     get {
       return _requestHeaders
     }
     set(list) {
-      if validateRequestHeaders(list: list) {
+      if validateRequestHeaders(list) {
         _requestHeaders = list
       }
     }
   }
 
-  public var AllowCookies: Bool {
+  open var AllowCookies: Bool {
     get {
       return _allowCookies
     }
@@ -45,7 +45,7 @@ public class Web: NonvisibleComponent {
     }
   }
 
-  private func validateRequestHeaders(list: YailList) -> Bool {
+  fileprivate func validateRequestHeaders(_ list: YailList) -> Bool {
     _form?.dispatchErrorOccurredEvent(self, "RequestHeaders", ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.code, ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.message)
     return true
   }

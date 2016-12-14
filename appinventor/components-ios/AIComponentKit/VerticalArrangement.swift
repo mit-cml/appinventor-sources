@@ -8,6 +8,6 @@
 
 import Foundation
 
-public class VerticalArrangement: ViewComponent, AbstractMethodsForViewComponent {
+open class VerticalArrangement: ViewComponent, AbstractMethodsForViewComponent {
   
 }

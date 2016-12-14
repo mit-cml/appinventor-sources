@@ -9,7 +9,7 @@
 import Foundation
 
 class LinearLayout: Layout {
-  private var _view = UIStackView()
+  fileprivate var _view = UIStackView()
   
   init() {
     _view.spacing = 0.0

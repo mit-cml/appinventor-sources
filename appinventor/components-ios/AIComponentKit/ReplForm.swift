@@ -9,24 +9,32 @@
 import Foundation
 import SchemeKit
 
-public class ReplForm: Form {
+open class ReplForm: Form {
   internal static weak var topform: ReplForm?
-  private var _httpdServer: AppInvHTTPD?
-  private var _assetsLoaded = false
+  fileprivate var _httpdServer: AppInvHTTPD?
+  fileprivate var _assetsLoaded = false
   
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
     if ReplForm.topform == nil {
       ReplForm.topform = self
     }
+    super.application = Application()
+    NSLog("nib loader")
   }
   
   public required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
+    if ReplForm.topform == nil {
+      ReplForm.topform = self
+    }
+    super.application = Application()
+    NSLog("coder init")
   }
 
-  public override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
+  open override func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     NSLog("Delegating dispatch to YAIL")
+    _componentWithActiveEvent = component
     if let interpreter = _httpdServer?.interpreter {
       let result = interpreter.invokeMethod("dispatchEvent", withArgArray: [component, componentName, eventName, args])
       if (interpreter.exception != nil) {
@@ -47,19 +55,19 @@ public class ReplForm: Form {
     return false
   }
   
-  public func startHTTPD(secure: Bool) {
+  open func startHTTPD(_ secure: Bool) {
     if _httpdServer == nil {
       _httpdServer = AppInvHTTPD(port: 8001, rootDirectory: "", secure: secure, for: self)
     }
   }
   
-  public var interpreter: SCMInterpreter? {
+  open var interpreter: SCMInterpreter? {
     get {
       return _httpdServer?.interpreter
     }
   }
 
-  public var activeForm: ReplForm? {
+  open var activeForm: ReplForm? {
     get {
       if let form = Form.activeForm {
         if form is ReplForm {
@@ -70,14 +78,14 @@ public class ReplForm: Form {
     }
   }
 
-  public var assetsLoaded: Bool {
+  open var assetsLoaded: Bool {
     @objc(isAssetsLoaded)
     get {
       return _assetsLoaded;
     }
   }
   
-  public func setAssetsLoaded() {
+  open func setAssetsLoaded() {
     _assetsLoaded = true
   }
 }

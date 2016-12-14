@@ -9,15 +9,15 @@
 import Foundation
 
 public protocol BarcodeScannerDelegate {
-  func receivedResult(result: String)
+  func receivedResult(_ result: String)
   func canceled()
 }
 
 class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
-  private var _capture: ZXCapture!
-  private var _barcodeDelegate: BarcodeScannerDelegate!
-  private var _captureSizeTransform: CGAffineTransform
-  private var _scanViewRect: UIView
+  fileprivate var _capture: ZXCapture!
+  fileprivate var _barcodeDelegate: BarcodeScannerDelegate!
+  fileprivate var _captureSizeTransform: CGAffineTransform
+  fileprivate var _scanViewRect: UIView
 
   init() {
     self._scanViewRect = UIView(frame: CGRect(x: 30, y: 105, width: 260, height: 260))
@@ -53,7 +53,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     }
   }
 
-  public override func viewDidLoad() {
+  open override func viewDidLoad() {
     super.viewDidLoad()
     _capture = ZXCapture()
     _capture.camera = self._capture.back()
@@ -61,7 +61,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     _capture.delegate = self
   }
 
-  public override func viewWillAppear(_ animated: Bool) {
+  open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     _scanViewRect.frame = CGRect(x: (3.0/32.0)*self.view.frame.width,
                                  y: (11.0/48.0)*self.view.frame.height,
@@ -73,7 +73,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     applyOrientation()
   }
 
-  public override func viewDidAppear(_ animated: Bool) {
+  open override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     if !self._capture.running {
       _capture.delegate = self
@@ -81,7 +81,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     }
   }
 
-  public override func viewWillDisappear(_ animated: Bool) {
+  open override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     if self._capture.running {
       _capture.stop()
@@ -91,14 +91,14 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     }
   }
 
-  public func captureResult(_ capture: ZXCapture!, result: ZXResult!) {
+  open func captureResult(_ capture: ZXCapture!, result: ZXResult!) {
     if self._capture.running {
       _capture.stop()
       _capture.delegate = nil
     }
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     self.dismiss(animated: true, completion: {})
-    _barcodeDelegate.receivedResult(result: result.text)
+    _barcodeDelegate.receivedResult(result.text)
   }
 
   func cancel() {
@@ -110,7 +110,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     _barcodeDelegate.canceled()
   }
   
-  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+  open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
     coordinator.animate(alongsideTransition: { (context: UIViewControllerTransitionCoordinatorContext) in
       return
@@ -120,7 +120,7 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     })
   }
   
-  private func applyOrientation() {
+  fileprivate func applyOrientation() {
     let orientation = UIApplication.shared.statusBarOrientation
     var scanRectRotation: Float32;
     var captureRotation: Float32;
@@ -189,24 +189,24 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   }
 }
 
-public class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
-  private let _container: ComponentContainer
-  private var _result = ""
-  private var _viewController: BarcodeScannerViewController?
-  private var _navController: UINavigationController?
+open class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
+  fileprivate let _container: ComponentContainer
+  fileprivate var _result = ""
+  fileprivate var _viewController: BarcodeScannerViewController?
+  fileprivate var _navController: UINavigationController?
 
   public override init(_ container: ComponentContainer) {
     self._container = container
     super.init(container)
   }
 
-  public var Result: String {
+  open var Result: String {
     get {
       return _result
     }
   }
 
-  public func DoScan() {
+  open func DoScan() {
     _viewController = BarcodeScannerViewController()
     _navController = UINavigationController(rootViewController: _viewController!)
     _navController?.modalPresentationStyle = UIModalPresentationStyle.fullScreen
@@ -215,12 +215,12 @@ public class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     UIApplication.shared.keyWindow?.rootViewController?.present(_navController!, animated: true, completion: {})
   }
 
-  public func AfterScan(result: String) {
+  open func AfterScan(_ result: String) {
     _navController?.dismiss(animated: true, completion: nil)
     EventDispatcher.dispatchEvent(of: self, called: "AfterScan", arguments: result as AnyObject)
   }
 
-  public var UseExternalScanner: Bool {
+  open var UseExternalScanner: Bool {
     get {
       return false
     }
@@ -229,13 +229,13 @@ public class BarcodeScanner: NonvisibleComponent, BarcodeScannerDelegate {
     }
   }
 
-  public func receivedResult(result: String) {
+  open func receivedResult(_ result: String) {
     _result = result
-    self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(result:)), with: _result, waitUntilDone: false)
+    self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(_:)), with: _result, waitUntilDone: false)
   }
 
-  public func canceled() {
+  open func canceled() {
     _result = ""
-    self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(result:)), with: _result, waitUntilDone: false)
+    self.performSelector(onMainThread: #selector(BarcodeScanner.AfterScan(_:)), with: _result, waitUntilDone: false)
   }
 }

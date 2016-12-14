@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class BluetoothConnectionBase: NonvisibleComponent {
+open class BluetoothConnectionBase: NonvisibleComponent {
   public init(_ parent: ComponentContainer, _ logTag: String) {
     super.init(parent)
   }

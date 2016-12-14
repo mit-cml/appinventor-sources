@@ -157,7 +157,7 @@ static int _hmacSeq = 1;
       if ([filename hasPrefix:@".."] || [filename hasSuffix:@".."] || [filename containsString:@"../"]) {
         error = true;
       } else {
-        NSString *targetPath = [[AssetManager shared] pathForExistingFileAssetWithFilename:filename];
+        NSString *targetPath = [[AssetManager shared] pathForExistingFileAsset:filename];
         NSLog(@"Saving asset to %@", targetPath);
         [request.data writeToFile:targetPath atomically:YES];
       }

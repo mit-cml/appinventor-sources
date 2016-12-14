@@ -10,23 +10,23 @@ import Foundation
 
 private let ACTION_VIEW = "android.intent.action.VIEW"
 
-public class ActivityStarter: NonvisibleComponent {
-  private var _action: String = ""
-  private var _dataUri: String = ""
-  private var _dataType: String = ""
-  private var _activityPackage: String = ""
-  private var _activityClass: String = ""
-  private var _extraKey: String = ""
-  private var _extraValue: String = ""
-  private var _resultName: String = ""
-  private var _result: String = ""
+open class ActivityStarter: NonvisibleComponent {
+  fileprivate var _action: String = ""
+  fileprivate var _dataUri: String = ""
+  fileprivate var _dataType: String = ""
+  fileprivate var _activityPackage: String = ""
+  fileprivate var _activityClass: String = ""
+  fileprivate var _extraKey: String = ""
+  fileprivate var _extraValue: String = ""
+  fileprivate var _resultName: String = ""
+  fileprivate var _result: String = ""
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
   }
 
   // MARK: ActivityStarter Properties
-  public var Action: String {
+  open var Action: String {
     get {
       return _action
     }
@@ -35,7 +35,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var ActivityClass: String {
+  open var ActivityClass: String {
     get {
       return _activityClass
     }
@@ -44,7 +44,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var ActivityPackage: String {
+  open var ActivityPackage: String {
     get {
       return _activityPackage
     }
@@ -53,7 +53,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var DataType: String {
+  open var DataType: String {
     get {
       return _dataType
     }
@@ -62,7 +62,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var DataUri: String {
+  open var DataUri: String {
     get {
       return _dataUri
     }
@@ -71,7 +71,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var ExtraKey: String {
+  open var ExtraKey: String {
     get {
       return _extraKey
     }
@@ -80,7 +80,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var ExtraValue: String {
+  open var ExtraValue: String {
     get {
       return _extraValue
     }
@@ -89,7 +89,7 @@ public class ActivityStarter: NonvisibleComponent {
     }
   }
 
-  public var ResultName: String {
+  open var ResultName: String {
     get {
       return _resultName
     }
@@ -99,7 +99,7 @@ public class ActivityStarter: NonvisibleComponent {
   }
 
   // MARK: ActivityStarter Methods
-  public func ResolveActivity() -> Bool {
+  open func ResolveActivity() -> Bool {
     if _action == ACTION_VIEW {
       if let url = URL(string: _dataUri) {
         if UIApplication.shared.canOpenURL(url) {
@@ -110,7 +110,7 @@ public class ActivityStarter: NonvisibleComponent {
     return false
   }
 
-  public func StartActivity() {
+  open func StartActivity() {
     if self._action == "" {
       _form?.dispatchErrorOccurredEvent(self, "StartActivity",
                                         ErrorMessages.ERROR_ACTIVITY_STARTER_NO_ACTION_INFO.code,
@@ -127,15 +127,15 @@ public class ActivityStarter: NonvisibleComponent {
   }
 
   // MARK: ActivityStarter Events
-  public func ActivityCanceled() {
+  open func ActivityCanceled() {
     EventDispatcher.dispatchEvent(of: self, called: "ActivityCanceled")
   }
 
-  public func ActivityError(_ message: String) {
+  open func ActivityError(_ message: String) {
     EventDispatcher.dispatchEvent(of: self, called: "ActivityError", arguments: message as NSString)
   }
 
-  public func AfterActivity(_ result: String) {
+  open func AfterActivity(_ result: String) {
     EventDispatcher.dispatchEvent(of: self, called: "AfterActivity", arguments: result as NSString)
   }
 }

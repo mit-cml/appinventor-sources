@@ -8,8 +8,8 @@
 
 import Foundation
 
-public class Application {
-  private var assetManager_: AssetManager?
+open class Application {
+  fileprivate var assetManager_: AssetManager?
   let name: String
 
   /**
@@ -17,6 +17,7 @@ public class Application {
    */
   public init() {
     name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as! String
+    assetManager_ = AssetManager()
   }
 
   /**
@@ -44,7 +45,7 @@ public class Application {
     }
   }
 
-  public var assetManager: AssetManager {
+  open var assetManager: AssetManager {
     get {
       if assetManager_ == nil {
         assetManager_ = AssetManager(for: self)

@@ -11,20 +11,20 @@ import CoreMotion
 
 private let GRAVITY = 9.8
 
-public class AccelerometerSensor: NonvisibleComponent {
-  private let _manager = CMMotionManager()
-  private var _enabled = false
-  private var _x = 0.0
-  private var _y = 0.0
-  private var _z = 0.0
-  private var _sensitivity: Int32 = 2
+open class AccelerometerSensor: NonvisibleComponent {
+  fileprivate let _manager = CMMotionManager()
+  fileprivate var _enabled = false
+  fileprivate var _x = 0.0
+  fileprivate var _y = 0.0
+  fileprivate var _z = 0.0
+  fileprivate var _sensitivity: Int32 = 2
 
   public override init(_ parent: ComponentContainer) {
     super.init(parent)
   }
 
   // MARK: AccelerometerSensor Properties
-  public var MinimumInterval: Int32 {
+  open var MinimumInterval: Int32 {
     get {
       return Int32(_manager.accelerometerUpdateInterval * 1000)
     }
@@ -33,7 +33,7 @@ public class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  public var Sensitivity: Int32 {
+  open var Sensitivity: Int32 {
     get {
       return _sensitivity
     }
@@ -46,13 +46,13 @@ public class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  public var Available: Bool {
+  open var Available: Bool {
     get {
       return _manager.isAccelerometerAvailable || _manager.isDeviceMotionAvailable
     }
   }
   
-  public var Enabled: Bool {
+  open var Enabled: Bool {
     get {
       return _enabled
     }
@@ -63,7 +63,7 @@ public class AccelerometerSensor: NonvisibleComponent {
           _manager.startDeviceMotionUpdates(to: OperationQueue.main) {
             [weak self] (data: CMDeviceMotion?, error: Error?) in
             if let gravity = data?.gravity {
-              self?.AccelerationChanged(x: gravity.x, y: gravity.y, z: gravity.z)
+              self?.AccelerationChanged(gravity.x, y: gravity.y, z: gravity.z)
             } else if (error != nil) {
               self?.Enabled = false
             }
@@ -74,7 +74,7 @@ public class AccelerometerSensor: NonvisibleComponent {
             if (error != nil) {
               self?.Enabled = false
             } else if let acceleration = data?.acceleration {
-              self?.AccelerationChanged(x: acceleration.x * GRAVITY, y: acceleration.y, z: acceleration.z)
+              self?.AccelerationChanged(acceleration.x * GRAVITY, y: acceleration.y, z: acceleration.z)
             }
           }
         }
@@ -85,33 +85,33 @@ public class AccelerometerSensor: NonvisibleComponent {
     }
   }
   
-  public var XAccel: Double {
+  open var XAccel: Double {
     get {
       return _x
     }
   }
   
-  public var YAccel: Double {
+  open var YAccel: Double {
     get {
       return _y
     }
   }
   
-  public var ZAccel: Double {
+  open var ZAccel: Double {
     get {
       return _z
     }
   }
   
   // MARK: AccelerometerSensor Events
-  public func AccelerationChanged(x: Double, y: Double, z: Double) {
+  open func AccelerationChanged(_ x: Double, y: Double, z: Double) {
     _x = x
     _y = y
     _z = z
     EventDispatcher.dispatchEvent(of: self, called: "AccelerationChanged", arguments: NSNumber(floatLiteral: x), NSNumber(floatLiteral: y), NSNumber(floatLiteral: z))
   }
 
-  public func Shaking() {
+  open func Shaking() {
     EventDispatcher.dispatchEvent(of: self, called: "Events")
   }
 }

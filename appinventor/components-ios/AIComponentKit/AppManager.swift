@@ -8,14 +8,14 @@
 
 import Foundation
 
-public class AppManager {
-  private static var _appManager: AppManager?
+open class AppManager {
+  fileprivate static var _appManager: AppManager?
   
-  private init() {
+  fileprivate init() {
     
   }
 
-  public class var shared: AppManager {
+  open class var shared: AppManager {
     get {
       if AppManager._appManager == nil {
         AppManager._appManager = AppManager()

@@ -9,12 +9,12 @@
 import Foundation
 
 public final class Label: ViewComponent, AbstractMethodsForViewComponent {
-  private var _view: UILabel
-  private var _alignment: Int32 = Alignment.normal.rawValue
-  private var _typeface: Int32 = Typeface.normal.rawValue
-  private var _bold = false
-  private var _italic = false
-  private var _hasMargins = false
+  fileprivate var _view: UILabel
+  fileprivate var _alignment: Int32 = Alignment.normal.rawValue
+  fileprivate var _typeface: Int32 = Typeface.normal.rawValue
+  fileprivate var _bold = false
+  fileprivate var _italic = false
+  fileprivate var _hasMargins = false
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
@@ -67,7 +67,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       if let color = _view.backgroundColor {
         return colorToArgb(color)
       }
-      return Int32(bitPattern: Color.DEFAULT.rawValue)
+      return Int32(bitPattern: Color.default.rawValue)
     }
     set(argb) {
       _view.backgroundColor = argbToColor(argb)

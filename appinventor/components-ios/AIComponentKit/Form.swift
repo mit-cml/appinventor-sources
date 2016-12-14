@@ -10,50 +10,51 @@ import Foundation
 import UIKit
 import Toast_Swift
 
-public class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching {
-  private let TAG = "Form"
-  private let RESULT_NAME = "APP_INVENTOR_RESULT"
-  private let ARGUMENT_NAME = "APP_INVENTOR_START"
-  public let APPINVENTOR_URL_SCHEME = "appinventor"
+open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesEventDispatching {
+  fileprivate let TAG = "Form"
+  fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
+  fileprivate let ARGUMENT_NAME = "APP_INVENTOR_START"
+  open let APPINVENTOR_URL_SCHEME = "appinventor"
   var application: Application?
   weak static var activeForm: Form?
-  private var deviceDensity: Float?
-  private var compatScalingFactor: Float?
-  private var applicationIsBeingClosed = false
+  fileprivate var deviceDensity: Float?
+  fileprivate var compatScalingFactor: Float?
+  fileprivate var applicationIsBeingClosed = false
   var formName: String?
-  private var screenInitialized = false
-  private var _components: [Component] = []
-  private var _aboutScreen: String?
-  private var _appName: String?
-  private var _scrollable = false
-  private var _title = "Screen1"
-  private var _horizontalAlignment = HorizontalGravity.left.rawValue
-  private var _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
-  private var _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
-  private var _verticalAlignment = VerticalGravity.top.rawValue
-  private var _backgroundImage = ""
-  private var _screenInitialized = false
-  private var _viewLayout = LinearLayout()
-  private var _compatibilityMode = true
-  private var _verticalLayout = CSLinearLayoutView()
-  private var _verticalItem: CSLinearLayoutItem!
+  fileprivate var screenInitialized = false
+  fileprivate var _components: [Component] = []
+  fileprivate var _aboutScreen: String?
+  fileprivate var _appName: String?
+  fileprivate var _scrollable = false
+  fileprivate var _title = "Screen1"
+  fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
+  fileprivate var _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
+  fileprivate var _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
+  fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
+  fileprivate var _backgroundImage = ""
+  fileprivate var _screenInitialized = false
+  fileprivate var _viewLayout = LinearLayout()
+  fileprivate var _compatibilityMode = true
+  fileprivate var _verticalLayout = CSLinearLayoutView()
+  fileprivate var _verticalItem: CSLinearLayoutItem!
+  internal var _componentWithActiveEvent: Component?
   
-  public func copy(with zone: NSZone? = nil) -> Any {
+  open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  public var components: [Component] {
+  open var components: [Component] {
     get {
       return _components
     }
   }
 
-  public override func viewWillAppear(_ animated: Bool) {
+  open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     Form.activeForm = self
   }
   
-  public func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
+  open func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     let canDispatch = _screenInitialized || (self.isEqual(component) && eventName == "Initialize")
     if (!_screenInitialized) {
       NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
@@ -64,24 +65,24 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     return canDispatch
   }
   
-  public func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
+  open func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     // TODO(ewpatton): Implementation
     return false
   }
 
-  public var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching {
     get {
       return self
     }
   }
   
-  public var form: Form? {
+  open var form: Form? {
     get {
       return self
     }
   }
 
-  public func add(_ component: ViewComponent) {
+  open func add(_ component: ViewComponent) {
     // TODO(ewpatton): Implementation
     _components.append(component)
     if view is CSLinearLayoutView {
@@ -106,30 +107,30 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     view.setNeedsUpdateConstraints()
   }
   
-  public func layoutSubviews() {
+  open func layoutSubviews() {
     _verticalLayout.layoutSubviews()
     view.layoutSubviews()
     NSLog("Vertical frame size: \(_verticalLayout.frame)")
     NSLog("Horizontal frame size: \(view.frame)")
   }
 
-  public func setChildWidth(of component: ViewComponent, width: Int32) {
+  open func setChildWidth(of component: ViewComponent, width: Int32) {
     // TODO(ewpatton): Implementation
   }
   
-  public func setChildHeight(of component: ViewComponent, height: Int32) {
+  open func setChildHeight(of component: ViewComponent, height: Int32) {
     // TODO(ewpatton): Implementation
   }
   
-  public class func switchForm(_ name: String) {
+  open class func switchForm(_ name: String) {
     activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
   }
   
-  public class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
+  open class func switchFormWithStartValue(_ name: String, _ value: AnyObject?) {
     activeForm?.view.makeToast("Switching screens is not yet supported on iOS")
   }
 
-  public func clear() {
+  open func clear() {
     let subviews = view.subviews
     for subview in subviews {
       NSLog("Removing subview \(subview)")
@@ -149,11 +150,11 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     defaultPropertyValues()
   }
   
-  public func callInitialize(_ component: Component) {
+  open func callInitialize(_ component: Component) {
     //TODO: implementation
   }
   
-  private func defaultPropertyValues() {
+  fileprivate func defaultPropertyValues() {
     Scrollable = false
     Sizing = "Fixed"
     BackgroundImage = ""
@@ -161,13 +162,13 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     BackgroundColor = Int32(bitPattern: Color.white.rawValue)
     AlignHorizontal = HorizontalGravity.left.rawValue
     AlignVertical = VerticalGravity.top.rawValue
-    self.setTitle(title: "")
+    self.title = ""
     ShowStatusBar = true
     TitleVisible = true
   }
   
   // MARK: Form Properties
-  public var AboutScreen: String? {
+  open var AboutScreen: String? {
     get {
       return _aboutScreen
     }
@@ -176,7 +177,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var AlignHorizontal: Int32 {
+  open var AlignHorizontal: Int32 {
     get {
       return _horizontalAlignment
     }
@@ -204,7 +205,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var AlignVertical: Int32 {
+  open var AlignVertical: Int32 {
     get {
       return _verticalAlignment
     }
@@ -228,7 +229,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
 
-  public var AppName: String? {
+  open var AppName: String? {
     get {
       return _appName
     }
@@ -237,7 +238,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var BackgroundColor: Int32 {
+  open var BackgroundColor: Int32 {
     get {
       return colorToArgb(self.view.backgroundColor!)
     }
@@ -246,7 +247,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var BackgroundImage: String {
+  open var BackgroundImage: String {
     get {
       return _backgroundImage
     }
@@ -258,7 +259,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var CloseScreenAnimation: String {
+  open var CloseScreenAnimation: String {
     get {
       return "slide"
     }
@@ -267,7 +268,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var Height: Int32 {
+  open var Height: Int32 {
     get {
       // TODO(ewpatton): Implementation
       return 0
@@ -277,7 +278,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var Icon: String {
+  open var Icon: String {
     get {
       return ""
     }
@@ -286,7 +287,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var OpenScreenAnimation: String {
+  open var OpenScreenAnimation: String {
     get {
       return "slide"
     }
@@ -295,7 +296,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var ScreenOrientation: String {
+  open var ScreenOrientation: String {
     get {
       return "portrait"
     }
@@ -304,7 +305,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var Scrollable: Bool {
+  open var Scrollable: Bool {
     get {
       return _scrollable
     }
@@ -313,7 +314,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var ShowStatusBar: Bool {
+  open var ShowStatusBar: Bool {
     get {
       return UIApplication.shared.isStatusBarHidden
     }
@@ -322,7 +323,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var Sizing: String {
+  open var Sizing: String {
     get {
       return _compatibilityMode ? "Fixed" : "Responsive"
     }
@@ -336,16 +337,22 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   }
   
   // Title has a different approach due to UIViewController having a setTitle method.
-  public func Title() -> String {
+  open override var title: String? {
+    get {
+      return super.title
+    }
+    set(title) {
+      _title = title!
+      super.title = title
+    }
+  }
+
+  // For App Inventor naming compatability
+  open func Title() -> String {
     return super.title!
   }
-  
-  public func setTitle(title: String) {
-    _title = title
-    super.title = title
-  }
-  
-  public var TitleVisible: Bool {
+
+  open var TitleVisible: Bool {
     get {
       return (self.navigationController?.isNavigationBarHidden)!
     }
@@ -354,7 +361,7 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
     }
   }
   
-  public var Width: Int32 {
+  open var Width: Int32 {
     get {
       // TODO(ewpatton): Implementation
       return 0
@@ -367,27 +374,27 @@ public class Form: UIKit.UIViewController, Component, ComponentContainer, Handle
   // MARK: Form Methods
   
   // MARK: Form Events
-  public func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
+  open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     // TODO: Implementation
   }
   
-  public func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
+  open func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     // TODO: Implementation
   }
   
-  public func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
+  open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
     // TODO: Implementation
   }
   
-  public func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
+  open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
     // TODO: Implementation
   }
   
-  public func Initialize() {
+  open func Initialize() {
     _screenInitialized = true
   }
 
-  public func ScreenOrientationChanged() {
+  open func ScreenOrientationChanged() {
     EventDispatcher.dispatchEvent(of: self, called: "ScreenOrientationChanged")
   }
 }

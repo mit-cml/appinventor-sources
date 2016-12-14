@@ -12,24 +12,24 @@ import Foundation
   var view: UIView { get }
 }
 
-public class ViewComponent: NSObject, VisibleComponent {
-  private weak var _delegate: AbstractMethodsForViewComponent?
+open class ViewComponent: NSObject, VisibleComponent {
+  fileprivate weak var _delegate: AbstractMethodsForViewComponent?
   internal let _container: ComponentContainer
 
-  private var _percentWidthHolder = kLengthUnknown
-  private var _percentHeightHolder = kLengthUnknown
-  private var _lastSetWidth = kLengthUnknown
-  private var _lastSetHeight = kLengthUnknown
+  fileprivate var _percentWidthHolder = kLengthUnknown
+  fileprivate var _percentHeightHolder = kLengthUnknown
+  fileprivate var _lastSetWidth = kLengthUnknown
+  fileprivate var _lastSetHeight = kLengthUnknown
 
-  private var _column = kDefaultRowColumn
-  private var _row = kDefaultRowColumn
+  fileprivate var _column = kDefaultRowColumn
+  fileprivate var _row = kDefaultRowColumn
 
   // needs to be public for extensions
   public init(_ parent: ComponentContainer) {
     self._container = parent
   }
 
-  public func copy(with zone: NSZone? = nil) -> Any {
+  open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
@@ -37,13 +37,13 @@ public class ViewComponent: NSObject, VisibleComponent {
     self._delegate = delegate
   }
 
-  public var view: UIView {
+  open var view: UIView {
     get {
       return (_delegate?.view)!
     }
   }
 
-  public var Visible: Bool {
+  open var Visible: Bool {
     get {
       return !(_delegate?.view.isHidden)!
     }
@@ -52,7 +52,7 @@ public class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  public var Width: Int32 {
+  open var Width: Int32 {
     get {
       return Int32((_delegate?.view.frame.width)!)
     }
@@ -63,11 +63,11 @@ public class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  public func WidthPercent(toPercent: Int32) {
+  open func WidthPercent(_ toPercent: Int32) {
     //TODO: implementation
   }
 
-  public var Height: Int32 {
+  open var Height: Int32 {
     get {
       return Int32((_delegate?.view.frame.height)!)
     }
@@ -78,11 +78,11 @@ public class ViewComponent: NSObject, VisibleComponent {
     }
   }
 
-  public func HeightPercent(toPercent: Int32) {
+  open func HeightPercent(_ toPercent: Int32) {
     //TODO: implementation
   }
 
-  public var dispatchDelegate: HandlesEventDispatching {
+  open var dispatchDelegate: HandlesEventDispatching {
     get {
       return (_container.form?.dispatchDelegate)!
     }

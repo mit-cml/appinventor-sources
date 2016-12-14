@@ -15,13 +15,13 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     _field.isSecureTextEntry = true
   }
 
-  public var view: UIView {
+  open var view: UIView {
     get {
       return _field
     }
   }
 
-  public var alignment: NSTextAlignment {
+  open var alignment: NSTextAlignment {
     get {
       return _field.textAlignment
     }
@@ -30,7 +30,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var backgroundColor: UIColor? {
+  open var backgroundColor: UIColor? {
     get {
       return _field.backgroundColor
     }
@@ -39,7 +39,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var textColor: UIColor? {
+  open var textColor: UIColor? {
     get {
       return _field.textColor
     }
@@ -48,7 +48,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var font: UIFont {
+  open var font: UIFont {
     get {
       return _field.font!
     }
@@ -57,7 +57,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var placeholderText: String? {
+  open var placeholderText: String? {
     get {
       return _field.placeholder
     }
@@ -66,7 +66,7 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
     }
   }
 
-  public var text: String? {
+  open var text: String? {
     get {
       return _field.text
     }
@@ -76,8 +76,8 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
   }
 }
 
-public class PasswordTextBox: TextBoxBase {
-  private let _adapter = TextBoxAdapter()
+open class PasswordTextBox: TextBoxBase {
+  fileprivate let _adapter = TextBoxAdapter()
 
   public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)

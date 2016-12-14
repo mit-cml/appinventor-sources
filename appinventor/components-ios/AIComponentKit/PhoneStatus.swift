@@ -9,41 +9,41 @@
 import Foundation
 import CoreFoundation
 
-public class PhoneStatus : NonvisibleComponent {
+open class PhoneStatus : NonvisibleComponent {
   // MARK: PhoneStatus Methods
-  public class func GetWifiIpAddress() -> String {
+  open class func GetWifiIpAddress() -> String {
     return NetworkUtils.getIPAddress()
   }
 
-  public class func isConnected() -> Bool {
+  open class func isConnected() -> Bool {
     return NetworkUtils.getIPAddress() != "error"
   }
 
-  public func setHmacSeedReturnCode(_ seed: String) -> String {
+  open func setHmacSeedReturnCode(_ seed: String) -> String {
     AppInvHTTPD.setHmacKey(seed)
     return seed.sha1
   }
 
-  public func isDirect() -> Bool {
+  open func isDirect() -> Bool {
     // iOS Companion only runs via Wifi
     return false
   }
 
-  public func startHTTPD(_ secure: Bool) {
-    ReplForm.topform?.startHTTPD(secure: secure)
+  open func startHTTPD(_ secure: Bool) {
+    ReplForm.topform?.startHTTPD(secure)
   }
 
-  public func setAssetsLoaded() {
+  open func setAssetsLoaded() {
     if _form is ReplForm {
       (_form as! ReplForm).setAssetsLoaded()
     }
   }
 
-  public class func doFault() throws {
+  open class func doFault() throws {
     throw NSError(domain: "AIComponentKit", code: -1)
   }
 
-  public func getVersionName() -> String {
+  open func getVersionName() -> String {
     let info = Bundle.main.infoDictionary
     if let versionString = info?["CFBundleShortVersionString"] as? String {
       return versionString
@@ -52,17 +52,17 @@ public class PhoneStatus : NonvisibleComponent {
     }
   }
 
-  public func installUrl(_ url: String) {
+  open func installUrl(_ url: String) {
     // not implemented for iOS
     _form?.dispatchErrorOccurredEvent(self, "installUrl", ErrorMessages.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.code, ErrorMessages.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.message)
   }
 
-  public func shutdown() {
+  open func shutdown() {
     exit(0)
   }
 
   // MARK: PhoneStatus Events
-  public func OnSettings() {
+  open func OnSettings() {
     EventDispatcher.dispatchEvent(of: self, called: "OnSettings")
   }
 }

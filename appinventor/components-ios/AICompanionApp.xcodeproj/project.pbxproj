@@ -191,7 +191,7 @@
 		06463F0C1D95956800B23DCD /* AICompanionAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AICompanionAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F101D95956800B23DCD /* AICompanionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionTests.swift; sourceTree = "<group>"; };
 		06463F121D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		06463F171D95956800B23DCD /* AICompanionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = AICompanionUITests.xctest; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AICompanionAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463F1B1D95956800B23DCD /* AICompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionUITests.swift; sourceTree = "<group>"; };
 		06463F1D1D95956800B23DCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		068E0E9F1DC247DE0086FFDA /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -318,7 +318,7 @@
 			children = (
 				06463EF81D95956800B23DCD /* AICompanionApp.app */,
 				06463F0C1D95956800B23DCD /* AICompanionAppTests.xctest */,
-				06463F171D95956800B23DCD /* AICompanionUITests.xctest */,
+				06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -442,7 +442,7 @@
 			);
 			name = AICompanionAppUITests;
 			productName = AICompanionAppUITests;
-			productReference = 06463F171D95956800B23DCD /* AICompanionUITests.xctest */;
+			productReference = 06463F171D95956800B23DCD /* AICompanionAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -452,7 +452,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "MIT Center for Mobile Learning";
 				TargetAttributes = {
 					06463EF71D95956800B23DCD = {
@@ -461,11 +461,13 @@
 					};
 					06463F0B1D95956800B23DCD = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 06463EF71D95956800B23DCD;
 					};
 					06463F161D95956800B23DCD = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 06463EF71D95956800B23DCD;
 					};
@@ -657,6 +659,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -707,6 +710,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -749,7 +753,7 @@
 				PROVISIONING_PROFILE = "8609ef4d-d5c9-49a7-90f3-3f4895c54a46";
 				PROVISIONING_PROFILE_SPECIFIER = "AI2 Companion dev";
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
-				SWIFT_VERSION = 3.0.1;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -772,7 +776,7 @@
 				PROVISIONING_PROFILE = "c4a86093-da70-476a-900d-e205d22333e3";
 				PROVISIONING_PROFILE_SPECIFIER = "AI2 Companion Dist";
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
-				SWIFT_VERSION = 3.0.1;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

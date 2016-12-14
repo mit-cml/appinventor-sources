@@ -16,7 +16,7 @@ func getJsonRepresentation(_ object: AnyObject?) throws -> String {
   }
   let object = [object]
   let repr = try JSONSerialization.data(withJSONObject: object)
-  let trimmed = repr.subdata(in: repr.startIndex.advanced(by: 1)..<repr.endIndex)
+  let trimmed = repr.subdata(in: repr.startIndex.advanced(by: 1)..<repr.endIndex.advanced(by: -1))
   return String(data: trimmed, encoding: .utf8)!
 }
 

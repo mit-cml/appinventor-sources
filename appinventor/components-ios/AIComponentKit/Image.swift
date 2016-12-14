@@ -8,24 +8,24 @@
 
 import Foundation
 
-public class Image: ViewComponent, AbstractMethodsForViewComponent {
-  private let _view = UIImageView()
-  private var _image: UIImage? = nil
-  private var _picturePath = ""
-  private var _rotationAngle = 0.0
+open class Image: ViewComponent, AbstractMethodsForViewComponent {
+  fileprivate let _view = UIImageView()
+  fileprivate var _image: UIImage? = nil
+  fileprivate var _picturePath = ""
+  fileprivate var _rotationAngle = 0.0
   
   public override init(_ parent: ComponentContainer) {
     _view.isUserInteractionEnabled = true
     super.init(parent)
   }
 
-  public override var view: UIView {
+  open override var view: UIView {
     get {
       return _view
     }
   }
   
-  public var Picture: String {
+  open var Picture: String {
     get {
       return _picturePath
     }
@@ -48,7 +48,7 @@ public class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
   }
   
-  public var RotationAngle: Double {
+  open var RotationAngle: Double {
     get {
       return _rotationAngle
     }

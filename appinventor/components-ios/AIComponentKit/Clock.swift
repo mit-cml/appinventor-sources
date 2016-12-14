@@ -8,12 +8,12 @@
 
 import Foundation
 
-public class Clock: NonvisibleComponent {
-  private var _timer: Timer?
-  private var _interval: Int32 = 1000
-  private var _enabled = true
-  private var _alwaysFires = true
-  private var _onScreen = false
+open class Clock: NonvisibleComponent {
+  fileprivate var _timer: Timer?
+  fileprivate var _interval: Int32 = 1000
+  fileprivate var _enabled = true
+  fileprivate var _alwaysFires = true
+  fileprivate var _onScreen = false
 
   public override init(_ container: ComponentContainer) {
     super.init(container)
@@ -21,7 +21,7 @@ public class Clock: NonvisibleComponent {
   }
 
   // MARK: Clock Properties
-  public var TimerInterval: Int32 {
+  open var TimerInterval: Int32 {
     get {
       return _interval
     }
@@ -30,7 +30,7 @@ public class Clock: NonvisibleComponent {
     }
   }
 
-  public var TimerEnabled: Bool {
+  open var TimerEnabled: Bool {
     get {
       return _enabled
     }
@@ -49,7 +49,7 @@ public class Clock: NonvisibleComponent {
     }
   }
 
-  public var TimeAlwaysFires: Bool {
+  open var TimeAlwaysFires: Bool {
     get {
       return _alwaysFires
     }
@@ -59,16 +59,16 @@ public class Clock: NonvisibleComponent {
   }
 
   // MARK: Clock Methods
-  public func SystemTime() -> Int64 {
+  open func SystemTime() -> Int64 {
     return Int64(Date().timeIntervalSince1970 * 1000.0)
   }
 
-  public func Now() -> Date {
+  open func Now() -> Date {
     return Date()
   }
 
   // MARK: Clock Events
-  public func Timer() {
+  open func Timer() {
     if (_alwaysFires || _onScreen) {
       EventDispatcher.dispatchEvent(of: self, called: "Timer")
     }
