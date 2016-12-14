@@ -10,38 +10,79 @@ import Foundation
 import CoreData
 import SQLite
 
-public class TinyDB: NonvisibleComponent {
+open class TinyDB: NonvisibleComponent {
 
-  private var database: Connection?
+  fileprivate var _database: Connection!
+  fileprivate let _table = Table("tinydb")
+  fileprivate let _key = Expression<String>("_key")
+  fileprivate let _value = Expression<String>("_value")
 
   public override init(_ parent: ComponentContainer) {
     let assetmgr = parent.form?.application?.assetManager
-    let sqlitedb = (assetmgr?.pathForPrivateAsset(filename: "TinyDb1.sqlite"))!
+    let sqlitedb = (assetmgr?.pathForPrivateAsset("TinyDb1.sqlite"))!
     do {
-      database = try Connection(sqlitedb)
+      _database = try Connection(sqlitedb)
     } catch {
-      database = nil
+      _database = nil
     }
     super.init(parent)
+    do {
+      try _database.run(_table.create { t in
+        t.column(_key, primaryKey: true)
+        t.column(_value)
+      })
+    } catch {
+      NSLog("Unexpected error creating TinyDB")
+    }
   }
 
-  public func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
-    
+  open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
+    do {
+      let valueAsString = try getJsonRepresentation(valueToStore)
+      try _database.run(_table.insert(or: .replace, _key <- tag, _value <- valueAsString))
+    } catch {
+      NSLog("Unable to write to TinyDB")
+    }
   }
-  
-  public func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
+
+  open func GetValue(_ tag: String, _ valueIfTagNotThere: AnyObject) -> AnyObject {
+    do {
+      if let value = try _database.pluck(_table.select(_value).filter(_key == tag)) {
+        if let result = try getObjectFromJson(value[_value]) {
+          return result
+        }
+      }
+    } catch {
+      NSLog("Unable to read value from TinyDB")
+    }
     return valueIfTagNotThere
   }
-  
-  public func GetTags() -> [String] {
-    return [String]()
+
+  open func GetTags() -> [String] {
+    var result: [String] = []
+    do {
+      for tag in try _database.prepare(_table.select(_key)) {
+        result.append(tag[_key])
+      }
+    } catch {
+      NSLog("Unable to read tags from TinyDB")
+    }
+    return result
   }
 
-  public func ClearAll() {
-    
+  open func ClearAll() {
+    do {
+      try _database.run(_table.delete())
+    } catch {
+      NSLog("Unable to clear all tags")
+    }
   }
-  
-  public func ClearTag(_ tag: String) {
-    
+
+  open func ClearTag(_ tag: String) {
+    do {
+      try _database.run(_table.filter(_key == tag).delete())
+    } catch {
+      NSLog("Unable to clear tag from TinyDB")
+    }
   }
 }
