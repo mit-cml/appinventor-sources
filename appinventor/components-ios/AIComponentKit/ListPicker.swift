@@ -48,6 +48,15 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   }
 
   // MARK: ListPicker Properties
+  open var Elements: [String] {
+    get {
+      return _items
+    }
+    set(items) {
+      _items = items
+    }
+  }
+
   open var ElementsFromString: String {
     get {
       return ""

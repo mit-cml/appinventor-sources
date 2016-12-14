@@ -8,6 +8,8 @@
 
 import Foundation
 
-open class VerticalArrangement: ViewComponent, AbstractMethodsForViewComponent {
-  
+open class VerticalArrangement: HVArrangement {
+  public init(_ parent: ComponentContainer) {
+    super.init(parent, orientation: .vertical, scrollable: false)
+  }
 }

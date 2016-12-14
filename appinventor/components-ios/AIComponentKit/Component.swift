@@ -10,26 +10,26 @@ import Foundation
 
 let kAssetDirectory = "component"
 
-enum Alignment: Int32 {
+public enum Alignment: Int32 {
     case normal
     case center
     case opposite
 }
 
-enum AcccelerometerSensitivity: Int32 {
+public enum AcccelerometerSensitivity: Int32 {
     case weak
     case moderate
     case strong
 }
 
-enum ButtonShape: Int32 {
+public enum ButtonShape: Int32 {
     case normal
     case rounded
     case rect
     case oval
 }
 
-enum Color: UInt32 {
+public enum Color: UInt32 {
     case none = 0x00FFFFFF
     case black = 0xFF000000
     case blue = 0xFF0000FF
@@ -47,7 +47,7 @@ enum Color: UInt32 {
     case `default` = 0x00000000
 }
 
-enum DefaultValueColor: String {
+public enum DefaultValueColor: String {
   case none = "&H00FFFFFF"
   case black = "&HFF000000"
   case blue = "&HFF0000FF"
@@ -65,33 +65,33 @@ enum DefaultValueColor: String {
   case DEFAULT = "&H00000000"
 }
 
-let kFontSizeDefault: Float = 14.0
-let kLayoutOrientationHorizontal = HVOrientation.horizontal
-let kLayoutOrientationVertical = HVOrientation.vertical
+public let kFontSizeDefault: Float = 14.0
+public let kLayoutOrientationHorizontal = HVOrientation.horizontal
+public let kLayoutOrientationVertical = HVOrientation.vertical
 
-enum Scaling: Int32 {
+public enum Scaling: Int32 {
     case proportionally
     case toFit
 }
 
-enum Typeface: Int32 {
+public enum Typeface: Int32 {
     case normal
     case sansSerif
     case serif
     case monospace
 }
 
-let kLengthPreferred: Int32 = -1
-let kLengthFillParent: Int32 = -2
-let kLengthUnknown: Int32 = -3
-let kLengthPercentTag: Int32 = -1000
+public let kLengthPreferred: Int32 = -1
+public let kLengthFillParent: Int32 = -2
+public let kLengthUnknown: Int32 = -3
+public let kLengthPercentTag: Int32 = -1000
 
-enum ToastLength: Int32 {
+public enum ToastLength: Int32 {
   case short
   case long
 }
 
-enum Direction: Int32 {
+public enum Direction: Int32 {
   case north = 1
   case northeast = 2
   case east = 3
@@ -103,12 +103,12 @@ enum Direction: Int32 {
   case none = 0
 }
 
-let kSliderMinValue = 10
-let kSliderMaxValue = 50
-let kSliderThumbValue = (kSliderMinValue + kSliderMaxValue)
+public let kSliderMinValue = 10
+public let kSliderMaxValue = 50
+public let kSliderThumbValue = (kSliderMinValue + kSliderMaxValue)
 
-let kDefaultValueTextToSpeechCountry = ""
-let kDefaultValueTextToSpeechLanguage = ""
+public let kDefaultValueTextToSpeechCountry = ""
+public let kDefaultValueTextToSpeechLanguage = ""
 
 @objc public protocol Component: NSCopying {
   var dispatchDelegate: HandlesEventDispatching { get }

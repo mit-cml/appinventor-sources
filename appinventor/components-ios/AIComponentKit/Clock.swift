@@ -77,4 +77,11 @@ open class Clock: NonvisibleComponent {
   func timerFired(_ timer: Timer) {
     self.performSelector(onMainThread: #selector(self.Timer), with: nil, waitUntilDone: false)
   }
+
+  // MARK: Clock class functions
+  open class func FormatDate(_ date: Date, _ format: String) -> String {
+    let formatter = DateFormatter()
+    formatter.dateFormat = format
+    return formatter.string(from: date)
+  }
 }

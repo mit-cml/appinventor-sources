@@ -122,6 +122,38 @@ open class ButtonBase: ViewComponent {
     }
   }
 
+  open var TextAlignment: Int32 {
+    get {
+      return _textAlignment.rawValue
+    }
+    set(alignment) {
+      if alignment >= 0 && alignment <= 2 {
+        _textAlignment = Alignment(rawValue: alignment)!
+        var rtl = false
+        if #available(iOS 9.0, *) {
+          if UIView.userInterfaceLayoutDirection(for: _view.semanticContentAttribute) == .rightToLeft {
+            rtl = true
+          }
+        } else {
+          if UIApplication.shared.userInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.rightToLeft {
+            rtl = true
+          }
+        }
+        switch _textAlignment {
+          case .normal:
+            _view.contentHorizontalAlignment = rtl ? .right : .left
+            break
+          case .center:
+            _view.contentHorizontalAlignment = .center
+            break
+          case .opposite:
+            _view.contentHorizontalAlignment = rtl ? .left : .right
+            break
+        }
+      }
+    }
+  }
+
   open var TextColor: Int32 {
     get {
       return colorToArgb((_view.titleLabel?.textColor)!)
