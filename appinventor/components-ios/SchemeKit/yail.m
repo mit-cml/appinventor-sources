@@ -353,6 +353,62 @@ yail_make_instance(pic_state *pic) {
   return pic_undef_value(pic);
 }
 
+static pic_value object_to_yail(pic_state *, id);
+
+static pic_value
+nsstring_to_yail(pic_state *pic, NSString *string) {
+  const char *data = [string UTF8String];
+  return pic_cstr_value(pic, data);
+}
+
+static pic_value
+nsnumber_to_yail(pic_state *pic, NSNumber *number) {
+  const char *type = number.objCType;
+  if (0 == strcmp(type, @encode(BOOL))) {
+    return number.boolValue? pic_true_value(pic) : pic_false_value(pic);
+  } else if (0 == strcmp(type, @encode(int))) {
+    return pic_int_value(pic, number.intValue);
+  } else if (0 == strcmp(type, @encode(NSInteger))) {
+    //TODO: handle overflow
+    return pic_int_value(pic, (int) number.integerValue);
+  } else if (0 == strcmp(type, @encode(NSUInteger))) {
+    //TODO: handle overflow
+    return pic_int_value(pic, (int) number.unsignedIntegerValue);
+  } else if (0 == strcmp(type, @encode(float))) {
+    return pic_float_value(pic, number.floatValue);
+  } else if (0 == strcmp(type, @encode(double))) {
+    return pic_float_value(pic, number.doubleValue);
+  } else {
+    NSLog(@"Unknown YAIL type with Objective-C ID: %s", type);
+    return pic_undef_value(pic);  // type not valid for yail
+  }
+}
+
+static pic_value
+nsarray_to_yail(pic_state *pic, NSArray *array) {
+  pic_value *values = (pic_value *)malloc(array.count * sizeof(pic_value));
+  int i = 0;
+  for (id object in array) {
+    values[i++] = object_to_yail(pic, object);
+  }
+  pic_value result = pic_make_list(pic, (int) i, values);
+  free(values);
+  return result;
+}
+
+static pic_value
+object_to_yail(pic_state *pic, id object) {
+  if ([object isKindOfClass:[NSArray class]]) {
+    return nsarray_to_yail(pic, (NSArray *)object);
+  } else if ([object isKindOfClass:[NSString class]]) {
+    return nsstring_to_yail(pic, (NSString *)object);
+  } else if ([object isKindOfClass:[NSNumber class]]) {
+    return nsnumber_to_yail(pic, (NSNumber *)object);
+  } else {
+    return yail_make_native_instance(pic, object);
+  }
+}
+
 pic_value
 yail_invoke(pic_state *pic) {
   pic_value native_object, native_method, *args;
@@ -470,8 +526,9 @@ yail_invoke(pic_state *pic) {
       [invocation getReturnValue:&value];
       return pic_float_value(pic, value);
     } else if (0 == strcmp(retType, @encode(id))) {
-      id value = nil;
-      [invocation getReturnValue:&value];
+      __unsafe_unretained id unretainedValue = nil;
+      [invocation getReturnValue:&unretainedValue];
+      id value = unretainedValue;
       if (!value) {
         return pic_undef_value(pic);
       } else if ([value isKindOfClass:[NSString class]]) {
@@ -479,6 +536,8 @@ yail_invoke(pic_state *pic) {
         return pic_str_value(pic, str, (int)strlen(str));
       } else if ([value isKindOfClass:[YailList class]]) {
         return [(YailList *)value picrinList];
+      } else if ([value isKindOfClass:[NSArray class]]) {
+        return nsarray_to_yail(pic, (NSArray *)value);
       } else {
         return yail_make_native_instance(pic, value);
       }

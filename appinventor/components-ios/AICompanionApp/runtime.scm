@@ -19,6 +19,15 @@
 (define *test-environment* '())
 (define *test-global-var-environment* '())
 
+(define-syntax call-with-output-string
+  (syntax-rules ()
+    ((_ body)
+     (call-with-port
+      (open-output-string)
+      (lambda (p)
+        (body p)
+        (get-output-string p))))))
+
 (define (add-init-thunk component-name thunk)
   (set! *init-thunk-environment* (cons (list component-name thunk) *init-thunk-environment*)))
 
@@ -364,7 +373,8 @@
    ((yail-list? data) data)
    ;; "list" here means a Kawa/Scheme list.  We transform it to a yail list, which
    ;; will in general require recursively transforming the components.
-   ((list? data) (kawa-list->yail-list data))
+   ;((list? data) (kawa-list->yail-list data))
+   ((list? data) data)
    ;TODO(ewpatton): Confirm that all collections are translated into Scheme lists
    ;((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
@@ -508,15 +518,6 @@
         default)))
 
 (define (*format-inexact* n) (yail:format-inexact n))
-
-(define-syntax call-with-output-string
-  (syntax-rules ()
-    ((_ body)
-     (call-with-port
-      (open-output-string)
-      (lambda (p)
-        (body p)
-        (get-output-string p))))))
 
 (define (appinventor-number->string n)
   (cond ((not (real? n)) (call-with-output-string (lambda (port) (display n port))))
