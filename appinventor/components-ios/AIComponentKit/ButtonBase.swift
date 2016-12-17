@@ -112,6 +112,18 @@ open class ButtonBase: ViewComponent {
     }
   }
 
+  open var Shape: Int32 {
+    get {
+      return _shape.rawValue
+    }
+    set(shape) {
+      if let shape = ButtonShape(rawValue: shape) {
+        _shape = shape
+        // TODO(ewpatton): Adjust button shape
+      }
+    }
+  }
+
   open var Text: String? {
     get {
       return _view.title(for: UIControlState.normal)
