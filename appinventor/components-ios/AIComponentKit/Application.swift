@@ -7,17 +7,19 @@
 //
 
 import Foundation
+import UIKit
 
-open class Application {
+@objc open class Application: UIResponder, UIApplicationDelegate {
   fileprivate var assetManager_: AssetManager?
   let name: String
 
   /**
    * Create an Application using the currently running application bundle.
    */
-  public init() {
+  public override init() {
     name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as! String
     assetManager_ = AssetManager()
+    super.init()
   }
 
   /**
@@ -35,6 +37,7 @@ open class Application {
       // wtf
     }
     name = temp_name
+    super.init()
   }
 
   convenience init(from url: URL, isRepl: Bool) {

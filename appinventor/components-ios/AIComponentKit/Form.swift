@@ -15,7 +15,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate let RESULT_NAME = "APP_INVENTOR_RESULT"
   fileprivate let ARGUMENT_NAME = "APP_INVENTOR_START"
   open let APPINVENTOR_URL_SCHEME = "appinventor"
-  var application: Application?
+  open var application: Application?
   weak static var activeForm: Form?
   fileprivate var deviceDensity: Float?
   fileprivate var compatScalingFactor: Float?

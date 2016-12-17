@@ -26,13 +26,13 @@ open class AssetManager: NSObject {
   override init() {
     appname = "AppInventor"
     do {
-      let files = FileManager()
       var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
       privatePath = "\(path)/AppInventor"
       path = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
       cachePath = "\(path)/AppInventor"
       path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
       publicPath = "\(path)/AppInventor"
+      let files = FileManager()
       try files.createDirectory(atPath: privatePath, withIntermediateDirectories: true, attributes: nil)
       try files.createDirectory(atPath: cachePath, withIntermediateDirectories: true, attributes: nil)
       try files.createDirectory(atPath: publicPath, withIntermediateDirectories: true, attributes: nil)
@@ -43,9 +43,17 @@ open class AssetManager: NSObject {
   
   init(for unpackedApp: Application) {
     appname = unpackedApp.name
-    privatePath = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
-    cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
-    publicPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+    do {
+      privatePath = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
+      cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
+      publicPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+      let files = FileManager()
+      try files.createDirectory(atPath: privatePath, withIntermediateDirectories: true, attributes: nil)
+      try files.createDirectory(atPath: cachePath, withIntermediateDirectories: true, attributes: nil)
+      try files.createDirectory(atPath: publicPath, withIntermediateDirectories: true, attributes: nil)
+    } catch {
+      NSLog("Unable to create directories")  // Should never happen in practice given sandboxing
+    }
   }
   
   open class var shared: AssetManager {
