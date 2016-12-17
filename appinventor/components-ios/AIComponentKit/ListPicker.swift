@@ -18,12 +18,13 @@ open class ListPickerActivity: UINavigationController {
   }
 
   public init(delegate: UITableViewDelegate, dataSource: UITableViewDataSource, cancelTarget: Any?, cancelAction: Selector?) {
-    _tableViewController = UITableViewController()
+    let tableVC = UITableViewController()
+    super.init(rootViewController: tableVC)
+    _tableViewController = tableVC
     _tableViewController.tableView.delegate = delegate
     _tableViewController.tableView.dataSource = dataSource
     let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: cancelTarget, action: cancelAction)
     _tableViewController.navigationItem.leftBarButtonItem = cancelButton
-    super.init(rootViewController: _tableViewController)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -72,7 +73,9 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
     set(argb) {
       _itemBackgroundColor = argbToColor(argb)
-      _viewController?._tableViewController.tableView.reloadData()
+      if let tableVC = _viewController?._tableViewController {
+        tableVC.tableView.reloadData()
+      }
     }
   }
 
@@ -82,7 +85,9 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     }
     set(argb) {
       _itemTextColor = argbToColor(argb)
-      _viewController?._tableViewController.tableView.reloadData()
+      if let tableVC = _viewController?._tableViewController {
+        tableVC.tableView.reloadData()
+      }
     }
   }
 
