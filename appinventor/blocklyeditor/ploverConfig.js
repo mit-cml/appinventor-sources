@@ -158,6 +158,7 @@
     "./src/generators/yail/colors.js",
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
+    './src/generators/swift.js',
 
     // Repl
     "./src/replmgr.js"
