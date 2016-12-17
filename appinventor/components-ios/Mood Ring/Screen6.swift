@@ -70,7 +70,7 @@ class Screen6: Form {
   var Notifier2: Notifier!
   var Notifier3: Notifier!
   var TinyDB1: TinyDB!
-  var ActivityStarter1: ActivityStarter
+  var ActivityStarter1: ActivityStarter!
   var Clock1: Clock!
   var Sound1: Sound!
   var Texting1: Texting!
@@ -78,4 +78,17 @@ class Screen6: Form {
   var Notifier_yr: Notifier!
   var PhoneCall1: PhoneCall!
   var Notifier_send: Notifier!
+
+  init?(_ coder: NSCoder? = nil) {
+    if let coder = coder {
+      super.init(coder: coder)
+    } else {
+      super.init(nibName: nil, bundle: nil)
+    }
+  }
+
+  required convenience init?(coder aCoder: NSCoder) {
+    self.init(coder: aCoder)
+  }
+
 }

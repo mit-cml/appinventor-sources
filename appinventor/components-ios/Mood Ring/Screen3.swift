@@ -115,10 +115,11 @@ class Screen3: Form {
     } else {
       super.init(nibName: nil, bundle: nil)
     }
+    application = UIApplication.shared.delegate as? Application
   }
 
   required convenience init?(coder aCoder: NSCoder) {
-    self.init(coder: aCoder)
+    self.init(aCoder)
   }
 
   override func viewDidLoad() {
@@ -178,7 +179,7 @@ class Screen3: Form {
     Button_settings.Height = 35
     Button_settings.Width = 30
     Button_settings.Image = "settings.png"
-    // Button_settings.Shape = 3  // Not supported yet
+    Button_settings.Shape = 3
     EventDispatcher.registerEventForDelegation(self, "Button_settings", "Click")
 
     // ListPicker_Resources

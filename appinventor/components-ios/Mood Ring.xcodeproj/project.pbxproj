@@ -64,6 +64,18 @@
 		0680ED531E01273900732883 /* Screen4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED521E01273900732883 /* Screen4.swift */; };
 		0680ED551E01275400732883 /* Screen5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED541E01275400732883 /* Screen5.swift */; };
 		0680ED571E01277000732883 /* Screen6.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED561E01277000732883 /* Screen6.swift */; };
+		0680ED5B1E01B30400732883 /* CSLinearLayoutView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED5A1E01B30400732883 /* CSLinearLayoutView.framework */; };
+		0680ED5C1E01B30400732883 /* CSLinearLayoutView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED5A1E01B30400732883 /* CSLinearLayoutView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0680ED5E1E01B30400732883 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED5D1E01B30400732883 /* SQLite.framework */; };
+		0680ED5F1E01B30400732883 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED5D1E01B30400732883 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0680ED611E01B30400732883 /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED601E01B30400732883 /* Toast_Swift.framework */; };
+		0680ED621E01B30400732883 /* Toast_Swift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED601E01B30400732883 /* Toast_Swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0680ED641E01B33C00732883 /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED631E01B33C00732883 /* SchemeKit.framework */; };
+		0680ED651E01B33C00732883 /* SchemeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED631E01B33C00732883 /* SchemeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0680ED671E01B33C00732883 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED661E01B33C00732883 /* GCDWebServer.framework */; };
+		0680ED681E01B33C00732883 /* GCDWebServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED661E01B33C00732883 /* GCDWebServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0680ED6A1E01B33C00732883 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED691E01B33C00732883 /* ZXingObjC.framework */; };
+		0680ED6B1E01B33C00732883 /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0680ED691E01B33C00732883 /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		06CF13251E00EA9200497221 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CF13241E00EA9200497221 /* AppDelegate.swift */; };
 		06CF13271E00EA9200497221 /* Screen3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CF13261E00EA9200497221 /* Screen3.swift */; };
 		06CF132A1E00EA9200497221 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06CF13281E00EA9200497221 /* Main.storyboard */; };
@@ -97,7 +109,13 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				0680ED621E01B30400732883 /* Toast_Swift.framework in Embed Frameworks */,
+				0680ED5C1E01B30400732883 /* CSLinearLayoutView.framework in Embed Frameworks */,
+				0680ED6B1E01B33C00732883 /* ZXingObjC.framework in Embed Frameworks */,
+				0680ED651E01B33C00732883 /* SchemeKit.framework in Embed Frameworks */,
+				0680ED681E01B33C00732883 /* GCDWebServer.framework in Embed Frameworks */,
 				062778F01E00ECDA0047B1E1 /* AIComponentKit.framework in Embed Frameworks */,
+				0680ED5F1E01B30400732883 /* SQLite.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +179,12 @@
 		0680ED521E01273900732883 /* Screen4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen4.swift; sourceTree = "<group>"; };
 		0680ED541E01275400732883 /* Screen5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen5.swift; sourceTree = "<group>"; };
 		0680ED561E01277000732883 /* Screen6.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen6.swift; sourceTree = "<group>"; };
+		0680ED5A1E01B30400732883 /* CSLinearLayoutView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CSLinearLayoutView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0680ED5D1E01B30400732883 /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0680ED601E01B30400732883 /* Toast_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0680ED631E01B33C00732883 /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0680ED661E01B33C00732883 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0680ED691E01B33C00732883 /* ZXingObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06CF13211E00EA9200497221 /* Mood Ring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mood Ring.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		06CF13241E00EA9200497221 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		06CF13261E00EA9200497221 /* Screen3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen3.swift; sourceTree = "<group>"; };
@@ -181,7 +205,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0680ED611E01B30400732883 /* Toast_Swift.framework in Frameworks */,
+				0680ED5B1E01B30400732883 /* CSLinearLayoutView.framework in Frameworks */,
+				0680ED6A1E01B33C00732883 /* ZXingObjC.framework in Frameworks */,
+				0680ED641E01B33C00732883 /* SchemeKit.framework in Frameworks */,
+				0680ED671E01B33C00732883 /* GCDWebServer.framework in Frameworks */,
 				062778EF1E00ECDA0047B1E1 /* AIComponentKit.framework in Frameworks */,
+				0680ED5E1E01B30400732883 /* SQLite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +301,12 @@
 		06CF13181E00EA9200497221 = {
 			isa = PBXGroup;
 			children = (
+				0680ED691E01B33C00732883 /* ZXingObjC.framework */,
+				0680ED661E01B33C00732883 /* GCDWebServer.framework */,
+				0680ED631E01B33C00732883 /* SchemeKit.framework */,
+				0680ED601E01B30400732883 /* Toast_Swift.framework */,
+				0680ED5D1E01B30400732883 /* SQLite.framework */,
+				0680ED5A1E01B30400732883 /* CSLinearLayoutView.framework */,
 				06CF13231E00EA9200497221 /* Mood Ring */,
 				06CF13381E00EA9200497221 /* Mood RingTests */,
 				06CF13431E00EA9200497221 /* Mood RingUITests */,
