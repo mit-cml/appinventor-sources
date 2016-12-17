@@ -33,7 +33,15 @@ open class ButtonBase: ViewComponent {
     self._view = UIButton(type: UIButtonType.system)
     super.init(parent)
     self._view.backgroundColor = argbToColor(_backgroundColor)
-//    self._view.translatesAutoresizingMaskIntoConstraints = false
+    self._view.translatesAutoresizingMaskIntoConstraints = false
+    BackgroundColor = Int32(Color.default.rawValue)
+    Enabled = true
+    FontSize = kFontSizeDefault
+    Image = ""
+    Shape = ButtonShape.normal.rawValue
+    Text = ""
+    TextAlignment = Alignment.center.rawValue
+    TextColor = Int32(Color.default.rawValue)
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForButton) {
@@ -171,7 +179,7 @@ open class ButtonBase: ViewComponent {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
     set(color) {
-      _view.titleLabel?.textColor = argbToColor(color)
+      _view.setTitleColor(argbToColor(color), for: .normal)
     }
   }
 
