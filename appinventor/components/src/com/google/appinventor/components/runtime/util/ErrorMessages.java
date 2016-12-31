@@ -100,6 +100,9 @@ public final class ErrorMessages {
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
+  public static final int ERROR_SOUND_RECORDER_ILLEGAL_STOP = 803;
+  public static final int ERROR_SOUND_RECORDER_MAX_DURATION_REACHED = 804;
+  public static final int ERROR_SOUND_RECORDER_MAX_FILESIZE_REACHED = 805;
   // Form errors
   public static final int ERROR_INVALID_SCREEN_ORIENTATION = 901;
   public static final int ERROR_SCREEN_NOT_FOUND = 902;
@@ -385,6 +388,9 @@ public final class ErrorMessages {
      // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
+    errorMessages.put(ERROR_SOUND_RECORDER_ILLEGAL_STOP, "Stop() called when not recording.");
+    errorMessages.put(ERROR_SOUND_RECORDER_MAX_DURATION_REACHED, "Maximum sound recording duration was reached.");
+    errorMessages.put(ERROR_SOUND_RECORDER_MAX_FILESIZE_REACHED, "Maximum sound recording size was reached.");
     // Form errors
     errorMessages.put(ERROR_INVALID_SCREEN_ORIENTATION,
         "The specified screen orientation is not valid: %s");
