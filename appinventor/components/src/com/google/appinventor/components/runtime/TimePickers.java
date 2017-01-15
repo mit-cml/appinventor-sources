@@ -34,14 +34,14 @@ import java.util.Calendar;
  * @author vedharaju@gmail.com
  */
 @DesignerComponent(version = YaVersion.TIMEPICKER_COMPONENT_VERSION,
-    category = ComponentCategory.USERINTERFACE,
-    description = "<p>A button that, when clicked on, launches  a popup" +
-    " dialog to allow the user to select a time.</p>")
-@SimpleObject
-public class TimePicker extends ButtonBase {
+    category = ComponentCategory.EXTENSION,
+    description = "<p>ALTERNATIVE VERSION.</p>")
+@SimpleObject(external = true)
+public class TimePickers extends ButtonBase {
 
   private int hour = 0;
   private int minute = 0;
+  private int second = 0;
   private TimePickerDialog time;
   private boolean customTime = false;
   private Form form;
@@ -53,16 +53,17 @@ public class TimePicker extends ButtonBase {
    *
    * @param container the parent container.
    */
-  public TimePicker(ComponentContainer container) {
+  public TimePickers(ComponentContainer container) {
     super(container);
     form = container.$form();
     final Calendar c = Calendar.getInstance();
     hour = c.get(Calendar.HOUR_OF_DAY);
     minute = c.get(Calendar.MINUTE);
+    second = c.get(calendar.SECOND);
     time = new TimePickerDialog(this.container.$context(),
-        timePickerListener, hour, minute, DateFormat.is24HourFormat(this.container.$context()));
+        timePickerListener, hour, minute, second, DateFormat.is24HourFormat(this.container.$context()));
 
-    instant = Dates.TimeInstant(hour, minute);
+    instant = Dates.TimeInstant(hour, minute, second);
     androidUIHandler = new Handler();
 
   }
@@ -95,7 +96,12 @@ public class TimePicker extends ButtonBase {
   public int Minute() {
     return minute;
   }
-
+  @SimpleProperty(
+      description = "The minute of the last time set using the time picker",
+      category = PropertyCategory.APPEARANCE)
+  public int Second() {
+    return second;
+  }
   /**
    * Returns the instant in time that was last picked using the DatePicker.
    * @return instant of the date
@@ -108,14 +114,16 @@ public class TimePicker extends ButtonBase {
   }
 
   @SimpleFunction(description="Set the time to be shown in the Time Picker popup. Current time is shown by default.")
-  public void SetTimeToDisplay(int hour, int minute) {
+  public void SetTimeToDisplay(int hour, int minute, int second) {
     if ((hour < 0) || (hour > 23)) {
       form.dispatchErrorOccurredEvent(this, "SetTimeToDisplay", ErrorMessages.ERROR_ILLEGAL_HOUR);
     } else if ((minute < 0) || (minute > 59)) {
       form.dispatchErrorOccurredEvent(this, "SetTimeToDisplay", ErrorMessages.ERROR_ILLEGAL_MINUTE);
+    } else if ((second < 0) || (second > 59)) {
+      form.dispatchErrorOccurredEvent(this, "SetTimeToDisplay", ErrorMessages.ERROR_ILLEGAL_SECOND);
     } else {
-      time.updateTime(hour, minute);
-      instant = Dates.TimeInstant(hour, minute);
+      time.updateTime(hour, minute, second);
+      instant = Dates.TimeInstant(hour, minute, second);
       customTime = true;
     }
   }
@@ -125,8 +133,9 @@ public class TimePicker extends ButtonBase {
   public void SetTimeToDisplayFromInstant(Calendar instant) {
     int hour = Dates.Hour(instant);
     int minute = Dates.Minute(instant);
-    time.updateTime(hour, minute);
-    instant = Dates.TimeInstant(hour, minute);
+    int second = Dates.Second(instant);
+    time.updateTime(hour, minute, second);
+    instant = Dates.TimeInstant(hour, minute, second);
     customTime = true;
   }
 
@@ -141,8 +150,9 @@ public class TimePicker extends ButtonBase {
       Calendar c = Calendar.getInstance();
       int h = c.get(Calendar.HOUR_OF_DAY);
       int m = c.get(Calendar.MINUTE);
-      time.updateTime(h, m);
-      instant = Dates.TimeInstant(hour, minute);
+      int s = c.get(Calendar.SECOND);
+      time.updateTime(h, m, s);
+      instant = Dates.TimeInstant(hour, minute, second);
     } else {
       customTime = false;
     }
@@ -152,11 +162,12 @@ public class TimePicker extends ButtonBase {
   private TimePickerDialog.OnTimeSetListener timePickerListener =
       new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(android.widget.TimePicker view, int selectedHour,
-            int selectedMinute) {
+            int selectedMinute, int selectedSecond) {
           if (view.isShown()) {
             hour = selectedHour;
             minute = selectedMinute;
-            instant = Dates.TimeInstant(hour, minute);
+            second = selectedSecond;
+            instant = Dates.TimeInstant(hour, minute, second);
             // We post an event to the Android handler to do the App Inventor
             // event dispatch. This way it gets called outside of the context
             // of the timepicker's event. This permits the App Inventor dispatch
