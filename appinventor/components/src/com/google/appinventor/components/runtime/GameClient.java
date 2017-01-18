@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -600,15 +600,7 @@ public class GameClient extends AndroidNonvisibleComponent
   @SimpleEvent(description = "Indicates that an error occurred " +
                 "while communicating with the web server.")
   public void WebServiceError(final String functionName, final String message) {
-    WebServiceError(functionName, message, null);
-  }
-
-  public void WebServiceError(final String functionName, final String message, Exception e) {
-    if (e != null) {
-      Log.e(LOG_TAG, "WebServiceError: " + message, e);
-    } else {
-      Log.e(LOG_TAG, "WebServiceError: " + message);
-    }
+    Log.e(LOG_TAG, "WebServiceError: " + message);
     androidUIHandler.post(new Runnable() {
       public void run() {
         EventDispatcher.dispatchEvent(GameClient.this, "WebServiceError", functionName, message);
@@ -637,9 +629,6 @@ public class GameClient extends AndroidNonvisibleComponent
       public void onSuccess(final JSONObject response) {
         processInstanceLists(response);
         FunctionCompleted("GetInstanceLists");
-      }
-      public void onException(final Exception e) {
-        WebServiceError("GetInstanceLists", "Failed to get up to date instance lists.", e);
       }
       public void onFailure(final String message) {
         WebServiceError("GetInstanceLists", "Failed to get up to date instance lists.");
@@ -746,9 +735,7 @@ public class GameClient extends AndroidNonvisibleComponent
         }
         FunctionCompleted("GetMessages");
       }
-      public void onException(Exception e) {
-        WebServiceError("GetMessages", e.getMessage(), e);
-      }
+
       public void onFailure(String message) {
         WebServiceError("GetMessages", message);
       }
@@ -807,9 +794,6 @@ public class GameClient extends AndroidNonvisibleComponent
         }
         FunctionCompleted("Invite");
       }
-      public void onException(final Exception e) {
-        WebServiceError("Invite", e.getMessage(), e);
-      }
       public void onFailure(final String message) {
         WebServiceError("Invite", message);
       }
@@ -859,9 +843,6 @@ public class GameClient extends AndroidNonvisibleComponent
         processInstanceLists(response);
         FunctionCompleted("LeaveInstance");
       }
-      public void onException(final Exception e) {
-        WebServiceError("LeaveInstance", e.getMessage(), e);
-      }
       public void onFailure(final String message) {
         WebServiceError("LeaveInstance", message);
       }
@@ -910,9 +891,6 @@ public class GameClient extends AndroidNonvisibleComponent
         NewInstanceMade(InstanceId());
         FunctionCompleted("MakeNewInstance");
       }
-      public void onException(final Exception e) {
-        WebServiceError("MakeNewInstance", e.getMessage(), e);
-      }
       public void onFailure(final String message) {
         WebServiceError("MakeNewInstance", message);
       }
@@ -957,9 +935,6 @@ public class GameClient extends AndroidNonvisibleComponent
     AsyncCallbackPair<JSONObject> myCallback = new AsyncCallbackPair<JSONObject>(){
       public void onSuccess(final JSONObject response) {
         FunctionCompleted("SendMessage");
-      }
-      public void onException(final Exception e) {
-        WebServiceError("SendMessage", e.getMessage(), e);
       }
       public void onFailure(final String message) {
         WebServiceError("SendMessage", message);
@@ -1016,10 +991,7 @@ public class GameClient extends AndroidNonvisibleComponent
         }
         FunctionCompleted("ServerCommand");
       }
-      public void onException(Exception e) {
-        ServerCommandFailure(command, arguments);
-        WebServiceError("ServerCommand", e.getMessage(), e);
-      }
+
       public void onFailure(String message) {
         ServerCommandFailure(command, arguments);
         WebServiceError("ServerCommand", message);
@@ -1068,9 +1040,6 @@ public class GameClient extends AndroidNonvisibleComponent
         processInstanceLists(response);
         FunctionCompleted("SetInstance");
       }
-      public void onException(final Exception e) {
-        WebServiceError("SetInstance", e.getMessage(), e);
-      }
       public void onFailure(final String message) {
         WebServiceError("SetInstance", message);
       }
@@ -1110,9 +1079,6 @@ public class GameClient extends AndroidNonvisibleComponent
     AsyncCallbackPair<JSONObject> setLeaderCallback = new AsyncCallbackPair<JSONObject>(){
       public void onSuccess(final JSONObject response) {
         FunctionCompleted("SetLeader");
-      }
-      public void onException(final Exception e) {
-        WebServiceError("SetLeader", e.getMessage(), e);
       }
       public void onFailure(final String message) {
         WebServiceError("SetLeader", message);
@@ -1203,9 +1169,6 @@ public class GameClient extends AndroidNonvisibleComponent
           Log.w(LOG_TAG, e);
           callback.onFailure("Failed to parse JSON response to command " + commandName);
         }
-      }
-      public void onException(Exception e) {
-        callback.onException(e);
       }
       public void onFailure(String failureMessage) {
         Log.d(LOG_TAG, "Posting to server failed for " + commandName + " with arguments " +

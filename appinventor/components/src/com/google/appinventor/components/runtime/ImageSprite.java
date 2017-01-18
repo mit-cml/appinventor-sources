@@ -1,11 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
+
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
@@ -18,8 +21,6 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 /**
@@ -50,7 +51,6 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {
-  private static final String LOG_TAG = ImageSprite.class.getSimpleName();
   private final Form form;
   private BitmapDrawable drawable;
   private int widthHint = LENGTH_PREFERRED;
@@ -125,41 +125,14 @@ public class ImageSprite extends Sprite {
   @SimpleProperty
   public void Picture(String path) {
     picturePath = (path == null) ? "" : path;
-    MediaUtil.getBitmapDrawableAsync(form, picturePath, new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        Log.w(LOG_TAG, "Error loading background for canvas: " + message);
-        drawable = null;
-        form.dispatchErrorOccurredEvent(ImageSprite.this, "Picture", ErrorMessages.ERROR_CANNOT_READ_FILE, picturePath);
-        form.runOnUiThread(new Runnable() {
-          public void run() {
-            registerChange();
-          }
-        });
-      }
-
-      @Override
-      public void onException(Exception e) {
-        Log.w("ImageSprite", "Unable to load " + picturePath, e);
-        drawable = null;
-        form.dispatchErrorOccurredEvent(ImageSprite.this, "Picture", ErrorMessages.ERROR_CANNOT_READ_FILE, picturePath);
-        form.runOnUiThread(new Runnable() {
-          public void run() {
-            registerChange();
-          }
-        });
-      }
-
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        drawable = result;
-        form.runOnUiThread(new Runnable() {
-          public void run() {
-            registerChange();
-          }
-        });
-      }
-    });
+    try {
+      drawable = MediaUtil.getBitmapDrawable(form, picturePath);
+    } catch (IOException ioe) {
+      Log.e("ImageSprite", "Unable to load " + picturePath);
+      drawable = null;
+    }
+    // note: drawable can be null!
+    registerChange();
   }
 
   // The actual width/height of an ImageSprite whose Width/Height property is set to Automatic or

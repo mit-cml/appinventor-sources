@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -98,9 +98,6 @@ public class WebServiceUtil {
           callback.onFailure(e.getMessage());
         }
       }
-      public void onException(Exception e) {
-        callback.onException(e);
-      }
       public void onFailure(String failureMessage) {
         callback.onFailure(failureMessage);
       }
@@ -120,17 +117,14 @@ public class WebServiceUtil {
    * on success.
    */
   public void postCommandReturningObject(final String serviceURL,final String commandName,
-    List<NameValuePair> params, final AsyncCallbackPair<JSONObject> callback) {
+      List<NameValuePair> params, final AsyncCallbackPair<JSONObject> callback) {
     AsyncCallbackPair<String> thisCallback = new AsyncCallbackPair<String>() {
-      public void onSuccess(String httpResponseString) {
+    public void onSuccess(String httpResponseString) {
         try {
           callback.onSuccess(new JSONObject(httpResponseString));
         } catch (JSONException e) {
           callback.onFailure(e.getMessage());
         }
-      }
-      public void onException(Exception e) {
-        callback.onException(e);
       }
       public void onFailure(String failureMessage) {
         callback.onFailure(failureMessage);

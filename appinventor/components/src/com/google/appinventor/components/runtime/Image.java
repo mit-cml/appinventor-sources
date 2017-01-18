@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -17,18 +18,18 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
-import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 /**
  * Component for displaying images and animations.
@@ -42,7 +43,6 @@ import android.widget.ImageView;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Image extends AndroidViewComponent {
-  private static final String LOG_TAG = Image.class.getSimpleName();
 
   private final ImageView view;
 
@@ -104,38 +104,15 @@ public final class Image extends AndroidViewComponent {
   public void Picture(String path) {
     picturePath = (path == null) ? "" : path;
 
-    MediaUtil.getBitmapDrawableAsync(container.$form(), picturePath, new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        Log.w(LOG_TAG, "Error loading background for image: " + message);
-        container.$form().dispatchErrorOccurredEvent(Image.this, "Picture", ErrorMessages.ERROR_CANNOT_READ_FILE, picturePath);
-        container.$form().runOnUiThread(new Runnable() {
-          public void run() {
-            ViewUtil.setImage(view, null);
-          }
-        });
-      }
+    Drawable drawable;
+    try {
+      drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+    } catch (IOException ioe) {
+      Log.e("Image", "Unable to load " + picturePath);
+      drawable = null;
+    }
 
-      @Override
-      public void onException(Exception e) {
-        Log.w(LOG_TAG, "Error loading background for image", e);
-        container.$form().dispatchErrorOccurredEvent(Image.this, "Picture", ErrorMessages.ERROR_CANNOT_READ_FILE, picturePath);
-        container.$form().runOnUiThread(new Runnable() {
-          public void run() {
-            ViewUtil.setImage(view, null);
-          }
-        });
-      }
-
-      @Override
-      public void onSuccess(final BitmapDrawable result) {
-        container.$form().runOnUiThread(new Runnable() {
-          public void run() {
-            ViewUtil.setImage(view, result);
-          }
-        });
-      }
-    });
+    ViewUtil.setImage(view, drawable);
   }
 
   /**

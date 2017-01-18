@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -61,9 +61,9 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
+import com.google.appinventor.components.runtime.multidex.MultiDexApplication;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
-import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
@@ -971,41 +971,13 @@ public class Form extends Activity
   public void BackgroundImage(String path) {
     backgroundImagePath = (path == null) ? "" : path;
 
-    MediaUtil.getBitmapDrawableAsync(this, backgroundImagePath, new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        Log.w(LOG_TAG, "Error loading background for form: " + message);
-        Form.this.dispatchErrorOccurredEvent(Form.this, "BackgroundImage", ErrorMessages.ERROR_CANNOT_READ_FILE, backgroundImagePath);
-        backgroundDrawable = null;
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            setBackground(frameLayout);
-          }
-        });
-      }
-
-      @Override
-      public void onException(Exception e) {
-        Log.w(LOG_TAG, "Error loading background for form", e);
-        Form.this.dispatchErrorOccurredEvent(Form.this, "BackgroundImage", ErrorMessages.ERROR_CANNOT_READ_FILE, backgroundImagePath);
-        backgroundDrawable = null;
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            setBackground(frameLayout);
-          }
-        });
-      }
-
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        backgroundDrawable = result;
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            setBackground(frameLayout);
-          }
-        });
-      }
-    });
+    try {
+      backgroundDrawable = MediaUtil.getBitmapDrawable(this, backgroundImagePath);
+    } catch (IOException ioe) {
+      Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
+      backgroundDrawable = null;
+    }
+    setBackground(frameLayout);
   }
 
   /**

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,7 +25,6 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.WebServiceUtil;
 
 import android.os.Handler;
-import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -197,14 +196,6 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
             }
           });
       }
-      public void onException(final Exception e) {
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            Log.e(LOG_TAG, "Exception in WebService", e);
-            WebServiceError(e.getMessage());
-          }
-        });
-      }
       public void onFailure(final String message) {
         // Pass any failure message from the Web service command back
         // to the error handler.
@@ -315,14 +306,6 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
             return;
           }
         }
-      }
-      public void onException(final Exception e) {
-        androidUIHandler.post(new Runnable() {
-          public void run() {
-            Log.e(LOG_TAG, "Exception in TinyWebDB", e);
-            WebServiceError(e.getMessage());
-          }
-        });
       }
       public void onFailure(final String message) {
         // Signal a Web error event to indicate that there was no response

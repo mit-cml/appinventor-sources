@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,15 +13,12 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.view.MotionEvent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -32,6 +29,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
+
+import java.io.IOException;
 
 /**
  * Underlying base class for click-based components, not directly accessible to Simple programmers.
@@ -315,41 +314,17 @@ public abstract class ButtonBase extends AndroidViewComponent
 
     // Load image from file.
     if (imagePath.length() > 0) {
-      MediaUtil.getBitmapDrawableAsync(container.$form(), imagePath, new AsyncCallbackPair<BitmapDrawable>() {
-        @Override
-        public void onFailure(String message) {
-          Log.w(LOG_TAG, "Error loading bitmap for button: " + message);
-          container.$form().dispatchErrorOccurredEvent(ButtonBase.this, "Image", ErrorMessages.ERROR_CANNOT_READ_FILE, imagePath);
-          container.$form().runOnUiThread(new Runnable() {
-            public void run() {
-              updateAppearance();
-            }
-          });
-        }
-
-        @Override
-        public void onException(Exception e) {
-          Log.w(LOG_TAG, "Error loading bitmap for button", e);
-          container.$form().dispatchErrorOccurredEvent(ButtonBase.this, "Image", ErrorMessages.ERROR_CANNOT_READ_FILE, imagePath);
-          container.$form().runOnUiThread(new Runnable() {
-            public void run() {
-              updateAppearance();
-            }
-          });
-        }
-
-        @Override
-        public void onSuccess(BitmapDrawable result) {
-          backgroundImageDrawable = result;
-          // Update the appearance based on the new value of backgroundImageDrawable.
-          container.$form().runOnUiThread(new Runnable() {
-            public void run() {
-              updateAppearance();
-            }
-          });
-        }
-      });
+      try {
+        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+      } catch (IOException ioe) {
+        // TODO(user): Maybe raise Form.ErrorOccurred.
+        Log.e(LOG_TAG, "Unable to load " + imagePath);
+        // Fall through with a value of null for backgroundImageDrawable.
+      }
     }
+
+    // Update the appearance based on the new value of backgroundImageDrawable.
+    updateAppearance();
   }
 
   /**

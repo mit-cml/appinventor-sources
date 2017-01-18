@@ -59,7 +59,7 @@ public class MediaUtil {
   private static class Synchronizer<T> {
     private volatile boolean finished = false;
     private T result;
-    private Throwable error;
+    private String error;
 
     public synchronized void waitfor() {
       while (!finished) {
@@ -76,8 +76,9 @@ public class MediaUtil {
       notifyAll();
     }
 
-    public synchronized void error(Throwable e) {
-      this.error = e;
+    public synchronized void error(String error) {
+      finished = true;
+      this.error = error;
       notifyAll();
     }
 
@@ -85,7 +86,7 @@ public class MediaUtil {
       return result;
     }
 
-    public Throwable getError() {
+    public String getError() {
       return error;
     }
 
@@ -328,15 +329,12 @@ public class MediaUtil {
    * @param mediaPath the path to the media
    * @return a Drawable or null
    *
-   * This function is provided for backward compatibility for
-   * extensions that may use this synchronous version. We used to do
-   * all of the work manipulating the image on the UI Thread. Now we
-   * call the Async method (below) and block until our callback is
-   * called.  Note: This means we are blocking on the UI Thread, which
-   * is *not* a good idea. Extension writers should upgrade their code
-   * to use the asynchronous version. Apps that use this method may
-   * not work on newer Android devices which are strict about how the
-   * UI Thread my block.
+   * This version of getBitmapDrawable can be used synchronously.  It
+   * uses the Asynchronous version.  Note: This means we are blocking
+   * on the UI Thread, which is *not* a good idea. However testing has
+   * revealed that blocking the UI thread may be better then having
+   * loaded images "appear" fractions of seconds after they were
+   * requested.
    *
    */
   public static BitmapDrawable getBitmapDrawable(Form form, String mediaPath)
@@ -348,12 +346,7 @@ public class MediaUtil {
     final AsyncCallbackPair<BitmapDrawable> continuation = new AsyncCallbackPair<BitmapDrawable>() {
         @Override
         public void onFailure(String message) {
-          // This is never called by the code below, so we do nothing
-          syncer.wakeup(null);
-        }
-        @Override
-        public void onException(Exception e) {
-          syncer.error(e);
+          syncer.error(message);
         }
         @Override
         public void onSuccess(BitmapDrawable result) {
@@ -364,18 +357,11 @@ public class MediaUtil {
     syncer.waitfor();
     BitmapDrawable result = (BitmapDrawable) syncer.getResult();
     if (result == null) {
-      Throwable error = syncer.getError();
-      if (error != null) {
-        if (error instanceof IOException) {
-          throw (IOException)error;
-        } else {
-          throw new RuntimeException(error);
-        }
-      }
+      String error = syncer.getError();
+      throw new IOException(error);
     } else {
       return result;
     }
-    return null;                // Make the compiler happy
   }
 
   /**
@@ -451,9 +437,9 @@ public class MediaUtil {
                 android.R.drawable.picture_frame, null));
             continuation.onSuccess(drawable);
           }
-          continuation.onException(e);
+          continuation.onFailure(e.getMessage());
         } catch(Exception e) {
-          continuation.onException(e);
+          continuation.onFailure(e.getMessage());
         } finally {
           if (is != null) {
             try {
@@ -466,12 +452,7 @@ public class MediaUtil {
         }
       }
     };
-
-//    if (mediaSource == MediaSource.URL) {
-      AsynchUtil.runAsynchronously(loadImage);
-//    } else {
-//      loadImage.run();
-//    }
+    AsynchUtil.runAsynchronously(loadImage);
   }
 
   private static Bitmap decodeStream(InputStream is, Rect outPadding, BitmapFactory.Options opts) {
