@@ -12,6 +12,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
 import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
@@ -137,8 +138,9 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
   public void onCreateFromPalette() {
     if (!warningGiven) {
       warningGiven = true;
-      Ode.getInstance().warningDialog(MESSAGES.warningDialogTitle(),
-        MESSAGES.firebaseExperimentalWarning(), MESSAGES.okButton());
+      MessageDialog.messageDialog(MESSAGES.warningDialogTitle(),
+        MESSAGES.firebaseExperimentalWarning(),
+        MESSAGES.okButton(), null, null);
     }
   }
 
