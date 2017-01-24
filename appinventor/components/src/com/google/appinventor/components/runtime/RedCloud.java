@@ -335,9 +335,9 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     
     Jedis jedis = getJedis();
     
-    Set<String> value = jedis.keys("*");
-    
+    Set<String> value = jedis.keys(accountName+projectID+"*");    
     final List<String> listValue = new ArrayList<String>(value);
+    
     for(int i = 0; i < listValue.size(); i++){
       listValue.set(i, listValue.get(i).substring((accountName+projectID).length()));
     }
