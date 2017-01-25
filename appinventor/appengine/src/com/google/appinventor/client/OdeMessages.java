@@ -5195,6 +5195,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RemoveFirstMethods();
 
+  @DefaultMessage("AppendValueToList")
+  @Description("")
+  String AppendValueToListMethods();
+
+  @DefaultMessage("RemoveFirstFromList")
+  @Description("")
+  String RemoveFirstFromListMethods();
+
   @DefaultMessage("FirstRemoved")
   @Description("")
   String FirstRemovedEvents();
