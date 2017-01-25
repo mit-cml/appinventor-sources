@@ -285,7 +285,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     t.start();
   }
 
-  @SimpleEvent(description = "Event triggered by the \"RemoveFirst\" function. The " +
+  @SimpleEvent(description = "Event triggered by the \"RemoveFirstFromList\" function. The " +
     "argument \"value\" is the object that was the first in the list, and which is now " +
     "removed.")
   public void FirstRemoved(Object value) {
