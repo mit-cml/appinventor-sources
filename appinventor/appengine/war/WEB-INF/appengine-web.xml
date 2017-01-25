@@ -24,6 +24,10 @@
     <include path="/closure-library/closure/goog/deps.js" expiration="1d" />
     <include path="/robots.txt" expiration="30d" />
 
+    <!-- toolboxController.js for converting from tree to gameblox-like format 
+        added 1/20/2017-->
+    <include path="/toolboxController.js" expiration="1d" />
+
     <!-- These are not cached on purpose -->
     <include path="/ode/**.nocache.*" expiration="0s" />
     <include path="/blocklyframe.html" expiration="0s" />
