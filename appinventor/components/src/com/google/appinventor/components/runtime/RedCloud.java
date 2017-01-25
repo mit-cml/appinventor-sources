@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -279,6 +280,99 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
         });
         
         jedis.close();
+      }
+    };
+    t.start();
+  }
+
+  @SimpleEvent(description = "Event triggered by the \"RemoveFirstFromList\" function. The " +
+    "argument \"value\" is the object that was the first in the list, and which is now " +
+    "removed.")
+  public void FirstRemoved(Object value) {
+    EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
+  }
+
+  private static final String POP_FIRST_SCRIPT =
+      "local key = KEYS[1];" +
+      "local currentValue = redis.call('get', key);" +
+      "local decodedValue = cjson.decode(currentValue);" +
+      "if (type(decodedValue) == 'table') then " +
+      "  local removedValue = table.remove(decodedValue, 1);" +
+      "  local newValue = cjson.encode(decodedValue);" +
+      "  redis.call('set', key, newValue);" +
+      "  return removedValue;" +
+      "else " +
+      "  return error('You can only remove elements from a list');" +
+      "end";
+
+  @SimpleFunction(description = "Return the first element of a list and atomically remove it. " +
+    "If two devices use this function simultaneously, one will get the first element and the " +
+    "the other will get the second element, or an error if there is no available element. " +
+    "When the element is available, the \"FirstRemoved\" event will be triggered.")
+  public void RemoveFirstFromList(final String tag) {
+
+    final String key = accountName + projectID + tag;
+
+    Thread t = new Thread() {
+      public void run() {
+      Jedis jedis = getJedis();
+        try {
+          FirstRemoved(jedis.eval(POP_FIRST_SCRIPT, 1, key));
+        } catch(JedisException e) {
+
+        } finally {
+          jedis.close();
+        }
+      }
+    };
+    t.start();
+  }
+
+  private static final String APPEND_SCRIPT =
+      "local key = KEYS[1];" +
+      "local toAppend = ARGV[1];" +
+      "local currentValue = redis.call('get', key);" +
+      "local newTable;" +
+      "if (currentValue == false) then " +
+      "  newTable = {};" +
+      "else " +
+      "  newTable = cjson.decode(currentValue);" +
+      "  if not (type(newTable) == 'table') then " +
+      "    return error('You can only append to a list');" +
+      "  end " +
+      "end " +
+      "table.insert(newTable, toAppend);" +
+      "local newValue = cjson.encode(newTable);" +
+      "redis.call('set', key, newValue);" +
+      "return redis.call('get', key);";
+
+  @SimpleFunction(description = "Append a value to the end of a list atomically. " +
+    "If two devices use this function simultaneously, both will be appended and no " +
+    "data lost.")
+  public void AppendValueToList(final String tag, final Object itemToAdd) {
+
+    Object itemObject = new Object();
+    try {
+      if(itemToAdd != null) {
+        itemObject = JsonUtil.getJsonRepresentation(itemToAdd);
+      }
+    } catch(JSONException e) {
+      throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
+    }
+    
+    final String item = (String) itemObject;
+    final String key = accountName + projectID + tag;
+
+    Thread t = new Thread() {
+      public void run() {
+        Jedis jedis = getJedis();
+        try {
+          jedis.eval(APPEND_SCRIPT, 1, key, item);
+        } catch(JedisException e) {
+
+        } finally {
+          jedis.close();
+        }
       }
     };
     t.start();
