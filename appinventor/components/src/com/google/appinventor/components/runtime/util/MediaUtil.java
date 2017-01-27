@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,6 +25,7 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -52,6 +53,44 @@ public class MediaUtil {
 
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
+
+  // this class is used by getBitmapDrawable so it can call the asynchronous version
+  // (getBitMapDrawableAsync) and await the result (blocking the UI Thread :-()
+  private static class Synchronizer<T> {
+    private volatile boolean finished = false;
+    private T result;
+    private String error;
+
+    public synchronized void waitfor() {
+      while (!finished) {
+        try {
+          wait();
+        } catch (InterruptedException e) {
+        }
+      }
+    }
+
+    public synchronized void wakeup(T result) {
+      finished = true;
+      this.result = result;
+      notifyAll();
+    }
+
+    public synchronized void error(String error) {
+      finished = true;
+      this.error = error;
+      notifyAll();
+    }
+
+    public T getResult() {
+      return result;
+    }
+
+    public String getError() {
+      return error;
+    }
+
+  }
 
   private MediaUtil() {
   }
@@ -289,77 +328,131 @@ public class MediaUtil {
    * @param form the Form
    * @param mediaPath the path to the media
    * @return a Drawable or null
+   *
+   * This version of getBitmapDrawable can be used synchronously.  It
+   * uses the Asynchronous version.  Note: This means we are blocking
+   * on the UI Thread, which is *not* a good idea. However testing has
+   * revealed that blocking the UI thread may be better then having
+   * loaded images "appear" fractions of seconds after they were
+   * requested.
+   *
    */
-  public static BitmapDrawable getBitmapDrawable(Form form, String mediaPath) throws IOException {
+  public static BitmapDrawable getBitmapDrawable(Form form, String mediaPath)
+    throws IOException {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
+    final Synchronizer syncer = new Synchronizer<BitmapDrawable>();
+    final AsyncCallbackPair<BitmapDrawable> continuation = new AsyncCallbackPair<BitmapDrawable>() {
+        @Override
+        public void onFailure(String message) {
+          syncer.error(message);
+        }
+        @Override
+        public void onSuccess(BitmapDrawable result) {
+          syncer.wakeup(result);
+        }
+      };
+    getBitmapDrawableAsync(form, mediaPath, continuation);
+    syncer.waitfor();
+    BitmapDrawable result = (BitmapDrawable) syncer.getResult();
+    if (result == null) {
+      String error = syncer.getError();
+      throw new IOException(error);
+    } else {
+      return result;
+    }
+  }
 
-    MediaSource mediaSource = determineMediaSource(form, mediaPath);
-
-    // Unlike other types of media, we don't cache image files from the internet to temp files.
-    // The image at a particular URL, such as an image from a web cam, may change over time.
-    // When the app says to fetch the image, we need to get the latest image, not one that we
-    // cached previously.
-
-    InputStream is1;
-    try {
-      is1 = openMedia(form, mediaPath, mediaSource);
-    } catch (IOException e) {
-      if (mediaSource == MediaSource.CONTACT_URI) {
-        // There's no photo for this contact, return a placeholder image.
-        return new BitmapDrawable(BitmapFactory.decodeResource(form.getResources(),
-            android.R.drawable.picture_frame, null));
-      }
-      throw e;
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable.
+   *
+   * <p/>If mediaPath is null or empty, null is returned.
+   *
+   * @param form the Form
+   * @param mediaPath the path to the media
+   * @param continuation An AsyncCallbackPair that will receive a
+   * BitmapDrawable on success. On exception or failure the appropriate
+   * handler will be triggered.
+   */
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath, final AsyncCallbackPair<BitmapDrawable> continuation) {
+    if (mediaPath == null || mediaPath.length() == 0) {
+      continuation.onSuccess(null);
+      return;
     }
 
-    BitmapFactory.Options options;
-    try {
-      options = getBitmapOptions(form, is1, mediaPath);
-    } finally {
-      is1.close();
-    }
+    final MediaSource mediaSource = determineMediaSource(form, mediaPath);
 
-    InputStream is2 = openMedia(form, mediaPath, mediaSource);
-    try {
-      Log.d(LOG_TAG, "mediaPath = " + mediaPath);
-      BitmapDrawable originalBitmapDrawable = new BitmapDrawable(decodeStream(is2, null, options));
-      // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
-      // the actual size the user intended for the image. However we still have to scale it by
-      // the device density.
-      // However if we *did* sample the image to make it smaller, then that means that the image
-      // was not sized specifically for the application. In that case it makes no sense to
-      // scale it, so we don't.
-      // When we scale the image we do the following steps:
-      //   1. set the density in the returned bitmap drawable.
-      //   2. calculate scaled width and height
-      //   3. create a scaled bitmap with the scaled measures
-      //   4. create a new bitmap drawable with the scaled bitmap
-      //   5. set the density in the scaled bitmap.
+    Runnable loadImage = new Runnable() {
+      @Override
+      public void run() {
+        // Unlike other types of media, we don't cache image files from the internet to temp files.
+        // The image at a particular URL, such as an image from a web cam, may change over time.
+        // When the app says to fetch the image, we need to get the latest image, not one that we
+        // cached previously.
 
-      originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-      if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
-        return originalBitmapDrawable;
+        BufferedInputStream is = null;
+        try {
+          is = new BufferedInputStream(openMedia(form, mediaPath, mediaSource));
+          is.mark(8*1024*1024);
+          BitmapFactory.Options options = getBitmapOptions(form, is, mediaPath);
+          is.reset();
+          Log.d(LOG_TAG, "mediaPath = " + mediaPath);
+          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(), decodeStream(is, null, options));
+          // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
+          // the actual size the user intended for the image. However we still have to scale it by
+          // the device density.
+          // However if we *did* sample the image to make it smaller, then that means that the image
+          // was not sized specifically for the application. In that case it makes no sense to
+          // scale it, so we don't.
+          // When we scale the image we do the following steps:
+          //   1. set the density in the returned bitmap drawable.
+          //   2. calculate scaled width and height
+          //   3. create a scaled bitmap with the scaled measures
+          //   4. create a new bitmap drawable with the scaled bitmap
+          //   5. set the density in the scaled bitmap.
+
+          originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
+          if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
+            continuation.onSuccess(originalBitmapDrawable);
+            return;
+          }
+          int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
+          int scaledHeight = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicHeight());
+          Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
+          Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(),
+              scaledWidth, scaledHeight, false);
+          BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(form.getResources(), scaledBitmap);
+          scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
+          originalBitmapDrawable = null; // So it will get GC'd on the next line
+          System.gc();                   // We likely used a lot of memory, so gc now.
+          continuation.onSuccess(scaledBitmapDrawable);
+        } catch (IOException e) {
+          if (mediaSource == MediaSource.CONTACT_URI) {
+            // There's no photo for this contact, return a placeholder image.
+            BitmapDrawable drawable = new BitmapDrawable(form.getResources(),
+                BitmapFactory.decodeResource(form.getResources(),
+                android.R.drawable.picture_frame, null));
+            continuation.onSuccess(drawable);
+          }
+          continuation.onFailure(e.getMessage());
+        } catch(Exception e) {
+          continuation.onFailure(e.getMessage());
+        } finally {
+          if (is != null) {
+            try {
+              is.close();
+            } catch(IOException e) {
+              // suppress error on close
+              Log.w(LOG_TAG, "Unexpected error on close", e);
+            }
+          }
+        }
       }
-      int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
-      int scaledHeight = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicHeight());
-      Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
-      Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
-      Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
-      Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(),
-          scaledWidth, scaledHeight, false);
-      BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(scaledBitmap);
-      scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-      originalBitmapDrawable = null; // So it will get GC'd on the next line
-      System.gc();                   // We likely used a lot of memory, so gc now.
-      return scaledBitmapDrawable;
-
-    } finally {
-      if (is2 != null) {
-        is2.close();
-      }
-    }
+    };
+    AsynchUtil.runAsynchronously(loadImage);
   }
 
   private static Bitmap decodeStream(InputStream is, Rect outPadding, BitmapFactory.Options opts) {

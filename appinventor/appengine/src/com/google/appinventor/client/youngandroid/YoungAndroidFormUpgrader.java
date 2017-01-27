@@ -914,6 +914,11 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 19;
     }
 
+    if (srcCompVersion < 20) {
+      // The ShowistsAsJson Property was added.
+      srcCompVersion = 20;
+    }
+
     return srcCompVersion;
   }
 

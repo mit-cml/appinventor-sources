@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
@@ -19,6 +20,7 @@ import android.webkit.GeolocationPermissions.Callback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
+import android.widget.EditText;
 
 /**
  * Helper methods for calling methods added in Eclair (2.0, API level 5)
@@ -102,6 +104,18 @@ public class EclairUtil {
 
   public static String getInstallerPackageName(String pname, Activity form) {
     return form.getPackageManager().getInstallerPackageName(pname);
+  }
+
+  /**
+   * Disable suggestions on EditText widgets. This was added to
+   * support SDK levels where suggestions crashed apps without the
+   * appropriate Android Support library compiled into the app.
+   *
+   * @param textview EditText widget to have its suggestion feature
+   * disabled.
+   */
+  public static void disableSuggestions(EditText textview) {
+    textview.setInputType(textview.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
   }
 
 }

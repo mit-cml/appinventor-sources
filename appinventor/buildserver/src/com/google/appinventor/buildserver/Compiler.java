@@ -52,6 +52,10 @@ import javax.imageio.ImageIO;
  *
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
+ *
+ * [Will 2016/9/20, Refactored {@link #writeAndroidManifest(File)} to
+ *   accomodate the new annotations for adding <activity> and <receiver>
+ *   elements.]
  */
 public final class Compiler {
   /**
@@ -76,19 +80,29 @@ public final class Compiler {
 
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
-  // Build info constants.  Used for permissions, libraries and assets.
+  // Build info constants. Used for permissions, libraries, assets and activities.
   // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
   private static final String ARMEABI_V7A_SUFFIX = "-v7a";
   // Must match Component.ASSET_DIRECTORY
   private static final String ASSET_DIRECTORY = "component";
   // Must match ComponentListGenerator.ASSETS_TARGET
   private static final String ASSETS_TARGET = "assets";
+  // Must match ComponentListGenerator.ACTIVITIES_TARGET
+  private static final String ACTIVITIES_TARGET = "activities";
   // Must match ComponentListGenerator.LIBRARIES_TARGET
   public static final String LIBRARIES_TARGET = "libraries";
   // Must match ComponentListGenerator.NATIVE_TARGET
   public static final String NATIVE_TARGET = "native";
   // Must match ComponentListGenerator.PERMISSIONS_TARGET
   private static final String PERMISSIONS_TARGET = "permissions";
+  // Must match ComponentListGenerator.BROADCAST_RECEIVERS_TARGET
+  private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
+  
+  // TODO(Will): Remove the following target once the deprecated
+  //             @SimpleBroadcastReceiver annotation is removed. It should
+  //             should remain for the time being because otherwise we'll break
+  //             extensions currently using @SimpleBroadcastReceiver.
+  //
   // Must match ComponentListGenerator.BROADCAST_RECEIVER_TARGET
   private static final String BROADCAST_RECEIVER_TARGET = "broadcastReceiver";
 
@@ -140,6 +154,10 @@ public final class Compiler {
 
   private final ConcurrentMap<String, Set<String>> assetsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> activitiesNeeded =
+      new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> broadcastReceiversNeeded =
+      new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> libsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> nativeLibsNeeded =
@@ -147,7 +165,11 @@ public final class Compiler {
   private final ConcurrentMap<String, Set<String>> permissionsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
-
+  
+  // TODO(Will): Remove the following Set once the deprecated
+  //             @SimpleBroadcastReceiver annotation is removed. It should
+  //             should remain for the time being because otherwise we'll break
+  //             extensions currently using @SimpleBroadcastReceiver.
   private final ConcurrentMap<String, Set<String>> componentBroadcastReceiver =
       new ConcurrentHashMap<String, Set<String>>();
 
@@ -230,6 +252,18 @@ public final class Compiler {
   Map<String,Set<String>> getPermissions() {
     return permissionsNeeded;
   }
+  
+  // Just used for testing
+  @VisibleForTesting
+  Map<String, Set<String>> getBroadcastReceivers() {
+    return broadcastReceiversNeeded;
+  }
+  
+  // Just used for testing
+  @VisibleForTesting
+  Map<String, Set<String>> getActivities() {
+    return activitiesNeeded;
+  }
 
   /*
    * Generate the set of Android libraries needed by this project.
@@ -306,13 +340,58 @@ public final class Compiler {
     System.out.println("Component assets needed, n = " + n);
   }
 
-  /**
-   * For each component that declares a Broadcast Receiver, a String will be generated, containing the class
-   * name of the broadcast receiver and followed by any actions it needs (all as one String separated by commas).
-   * @return Set of Strings, one for each Broadcast Receiver
+  /*
+   * Generate the set of conditionally included activities needed by this project.
    */
   @VisibleForTesting
-  Set<String> generateBroadcastReceiver() {
+  void generateActivities() {
+    try {
+      loadJsonInfo(activitiesNeeded, ACTIVITIES_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Activities"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Activities"));
+    }
+
+    int n = 0;
+    for (String type : activitiesNeeded.keySet()) {
+      n += activitiesNeeded.get(type).size();
+    }
+
+    System.out.println("Component activities needed, n = " + n);
+  }
+
+  /*
+   * Generate a set of conditionally included broadcast receivers needed by this project.
+   */
+  @VisibleForTesting
+  void generateBroadcastReceivers() {
+    try {
+      loadJsonInfo(broadcastReceiversNeeded, BROADCAST_RECEIVERS_TARGET);
+    }
+    catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceivers"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceivers"));
+    }
+  }
+  
+  /*
+   * TODO(Will): Remove this method once the deprecated @SimpleBroadcastReceiver
+   *             annotation is removed. This should remain for the time being so
+   *             that we don't break extensions currently using the
+   *             @SimpleBroadcastReceiver annotation.
+   */
+  @VisibleForTesting
+  void generateBroadcastReceiver() {
     try {
       loadJsonInfo(componentBroadcastReceiver, BROADCAST_RECEIVER_TARGET);
     }
@@ -320,19 +399,11 @@ public final class Compiler {
       // This is fatal.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceiver"));
-      return null;
     } catch (JSONException e) {
       // This is fatal, but shouldn't actually ever happen.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "BroadcastReceiver"));
-      return null;
     }
-
-    Set<String> broadcastReceivers = Sets.newHashSet();
-    for (String componentType : componentBroadcastReceiver.keySet()) {
-      broadcastReceivers.addAll(componentBroadcastReceiver.get(componentType));
-    }
-    return broadcastReceivers;
   }
 
 
@@ -345,7 +416,7 @@ public final class Compiler {
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
-  private boolean writeAndroidManifest(File manifestFile, Set<String> broadcastReceiversNeeded) {
+  private boolean writeAndroidManifest(File manifestFile) {
     // Create AndroidManifest.xml
     String mainClass = project.getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
@@ -491,46 +562,39 @@ public final class Compiler {
         }
         out.write("    </activity>\n");
       }
-
-      // Add ListPickerActivity to the manifest only if a ListPicker component is used in the app
-      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.ListPicker")){
-        // TODO(sharon): temporary until we add support for new activities
-        String LIST_ACTIVITY_CLASS =
-            "com.google.appinventor.components.runtime.ListPickerActivity";
-
-        out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +
-            "android:configChanges=\"orientation|keyboardHidden\" " +
-            "android:screenOrientation=\"behind\">\n");
-        out.write("    </activity>\n");
+      
+      // Collect any additional <application> subelements into a single set.
+      Set<Map.Entry<String, Set<String>>> subelements = Sets.newHashSet();
+      subelements.addAll(activitiesNeeded.entrySet());
+      subelements.addAll(broadcastReceiversNeeded.entrySet());
+      
+      
+      // If any component needs to register additional activities or
+      // broadcast receivers, insert them into the manifest here.
+      if (!subelements.isEmpty()) {
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : subelements) {
+          Set<String> subelementSet = componentSubElSetPair.getValue();
+          for (String subelement : subelementSet) {
+            out.write(subelement);
+          }
+        }
       }
-
-      // Add WebViewActivity to the manifest only if a Twitter component is used in the app
-      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.Twitter")){
-        String WEBVIEW_ACTIVITY_CLASS =
-            "com.google.appinventor.components.runtime.WebViewActivity";
-
-        out.write("    <activity android:name=\"" + WEBVIEW_ACTIVITY_CLASS + "\" " +
-            "android:configChanges=\"orientation|keyboardHidden\" " +
-            "android:screenOrientation=\"behind\">\n");
-        out.write("      <intent-filter>\n");
-        out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
-        out.write("      </intent-filter>\n");
-        out.write("    </activity>\n");
+  
+      // TODO(Will): Remove the following legacy code once the deprecated
+      //             @SimpleBroadcastReceiver annotation is removed. It should
+      //             should remain for the time being because otherwise we'll break
+      //             extensions currently using @SimpleBroadcastReceiver.
+      
+      // Collect any legacy simple broadcast receivers
+      Set<String> simpleBroadcastReceivers = Sets.newHashSet();
+      for (String componentType : componentBroadcastReceiver.keySet()) {
+        simpleBroadcastReceivers.addAll(componentBroadcastReceiver.get(componentType));
       }
-
-      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.BarcodeScanner")) {
-        // Barcode Activity
-        out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
-        out.write("              android:screenOrientation=\"landscape\"\n");
-        out.write("              android:stateNotNeeded=\"true\"\n");
-        out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
-        out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
-        out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
-      }
-
-      // The format for each Broadcast Receiver in broadcastReceiversNeeded is "className,Action1,Action2,..." where
-      // the class name is mandatory, and actions are optional (and as many as needed).
-      for (String broadcastReceiver : broadcastReceiversNeeded) {
+      
+      // The format for each legacy Broadcast Receiver in simpleBroadcastReceivers is
+      // "className,Action1,Action2,..." where the class name is mandatory, and
+      // actions are optional (and as many as needed).
+      for (String broadcastReceiver : simpleBroadcastReceivers) {
         String[] brNameAndActions = broadcastReceiver.split(",");
         if (brNameAndActions.length == 0) continue;
         out.write(
@@ -582,9 +646,17 @@ public final class Compiler {
                                      childProcessRam, dexCacheDir);
 
     compiler.generateAssets();
+    compiler.generateActivities();
+    compiler.generateBroadcastReceivers();
     compiler.generateLibNames();
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
+  
+    // TODO(Will): Remove the following call once the deprecated
+    //             @SimpleBroadcastReceiver annotation is removed. It should
+    //             should remain for the time being because otherwise we'll break
+    //             extensions currently using @SimpleBroadcastReceiver.
+    compiler.generateBroadcastReceiver();
 
     // Create build directory.
     File buildDir = createDir(project.getBuildDirectory());
@@ -596,7 +668,7 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
-    setProgress(10);
+    setProgress(15);
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");
@@ -605,18 +677,10 @@ public final class Compiler {
       return false;
     }
 
-    // Determine broadcast receiver names and actions.
-    out.println("________Determining BR names and actions");
-    Set<String> broadcastReceiversNeeded = compiler.generateBroadcastReceiver();
-    if (broadcastReceiversNeeded == null) {
-      return false;
-    }
-    setProgress(15);
-
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
     File manifestFile = new File(buildDir, "AndroidManifest.xml");
-    if (!compiler.writeAndroidManifest(manifestFile, broadcastReceiversNeeded)) {
+    if (!compiler.writeAndroidManifest(manifestFile)) {
       return false;
     }
     setProgress(20);
@@ -1370,7 +1434,7 @@ public final class Compiler {
         try {
           infoArray = compJson.getJSONArray(targetInfo);
         } catch (JSONException e) {
-          // Older compiled extensions will not have a broadcastReiver
+          // Older compiled extensions will not have a broadcastReceiver
           // defined. Rather then require them all to be recompiled, we
           // treat the missing attribute as empty.
           if (e.getMessage().contains("broadcastReceiver")) {

@@ -277,6 +277,7 @@
     <ai.javac5 destdir="${ComponentProcessingLib-class.dir}">
       <include name="${components.pkg}/scripts/ComponentProcessor.java" />
       <include name="${components.pkg}/annotations/*.java" />
+      <include name="${components.pkg}/annotations/androidmanifest/*.java" />
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
