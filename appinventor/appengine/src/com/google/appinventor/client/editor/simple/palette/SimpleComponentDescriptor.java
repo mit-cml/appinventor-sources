@@ -30,6 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockNonVisibleComp
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
 import com.google.appinventor.client.editor.simple.components.MockRadioButton;
+import com.google.appinventor.client.editor.simple.components.MockRedCloud;
 import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
@@ -284,6 +285,10 @@ public final class SimpleComponentDescriptor {
     if (SimpleComponentDatabase.getInstance(editor.getProjectId()).getNonVisible(name)) {
       if(name.equals(MockFirebaseDB.TYPE)) {
         return new MockFirebaseDB(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name)));
+      } 
+      else if(name.equals(MockRedCloud.TYPE)) {
+        return new MockRedCloud(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name)));
       } else {
         return new MockNonVisibleComponent(editor, name,

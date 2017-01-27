@@ -120,7 +120,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     // to androidUIHandler.
     androidUIHandler = new Handler();
     this.activity = container.$context();
-
+    //Defaults set in MockRedCloud.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
     
@@ -137,16 +137,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * Initialize: Do runtime intialization of RedCloud
-   * We cannot make a connection to the server in the component
-   * Constructor because we do not yet know the value of the
-   * Persist property. The Persist property is used to set the
-   * persistance flag in the Redisson static config. It must
-   * be set prior to any connection happening and cannot be
-   * changed after a connection (or reference) is made.
-   * So we defer making a connection until we initialize. Initialize
-   * is called from runtime.scm (via Form.java) after all components
-   * and properties have been setup.
+   * Initialize: Do runtime initialization of RedCloud
    */
   public void Initialize() {
     Log.i(LOG_TAG, "Initalize called!");
@@ -161,6 +152,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Gets the AccountName for this RedCloud project.")
   public String AccountName() {
+    checkAccountNameProjectIDNotBlank();
     return accountName;
   }
 
@@ -171,10 +163,12 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
-  @SimpleProperty(description = "Sets the AccountName for this RedCloud project.")
-  public void AccountName(String usrname) {
+  public void AccountName(String usrname) {    
     if (!accountName.equals(usrname)) {
       accountName = usrname;
+    }
+    if (accountName.equals("")){
+      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
     }
   }
   
@@ -186,6 +180,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Gets the ProjectID for this RedCloud project.")
   public String ProjectID() {
+    checkAccountNameProjectIDNotBlank();
     return projectID;
   }
   
@@ -196,10 +191,12 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
-  @SimpleProperty(description = "Sets the ProjectID for this RedCloud project.")
   public void ProjectID(String id) {
     if (!projectID.equals(id)) {
       projectID = id;
+    }
+    if (projectID.equals("")){
+      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
     }
   }
 
@@ -213,7 +210,9 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction
   public void StoreValue(final String tag, Object valueToStore) {
     Log.i("RedCloud","StoreValue");
-
+    checkAccountNameProjectIDNotBlank();
+    Log.i("RedCloud","PASSSSS");
+    
     try {
       if(valueToStore != null) {
         valueToStore = JsonUtil.getJsonRepresentation(valueToStore);
@@ -252,6 +251,8 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void GetValue(final String tag, final Object valueIfTagNotThere) {
+    checkAccountNameProjectIDNotBlank();
+    
     final AtomicReference<Object> value = new AtomicReference<Object>();
 
     // Set value to either the JSON from the RedCloud
@@ -289,6 +290,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     "argument \"value\" is the object that was the first in the list, and which is now " +
     "removed.")
   public void FirstRemoved(Object value) {
+    checkAccountNameProjectIDNotBlank();
     EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
   }
 
@@ -310,7 +312,8 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     "the other will get the second element, or an error if there is no available element. " +
     "When the element is available, the \"FirstRemoved\" event will be triggered.")
   public void RemoveFirstFromList(final String tag) {
-
+    checkAccountNameProjectIDNotBlank();
+    
     final String key = accountName + projectID + tag;
 
     Thread t = new Thread() {
@@ -350,7 +353,8 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     "If two devices use this function simultaneously, both will be appended and no " +
     "data lost.")
   public void AppendValueToList(final String tag, final Object itemToAdd) {
-
+    checkAccountNameProjectIDNotBlank();
+    
     Object itemObject = new Object();
     try {
       if(itemToAdd != null) {
@@ -386,6 +390,8 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleEvent
   public void GotValue(String tag, Object value) {
+    checkAccountNameProjectIDNotBlank();
+    
     try {
       if(value != null && value instanceof String) {
         value = JsonUtil.getObjectFromJson((String) value);
@@ -405,7 +411,9 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction(description = "Remove the tag from Firebase")
   public void ClearTag(final String tag) {
-    //Natalie: Should ClearTag become ClearTags? Jedis can delete a list of tags easily
+    //Natalie: Should we also add ClearTagsList? Jedis can delete a list of tags easily
+    checkAccountNameProjectIDNotBlank();
+    
     Thread t = new Thread() {
       public void run() {
         Jedis jedis = getJedis();
@@ -426,6 +434,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
       "known tags.")
   public void GetTagList() {
     //Natalie: Need Listener here too!
+    checkAccountNameProjectIDNotBlank();
     
     Jedis jedis = getJedis();
     
@@ -456,6 +465,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   public void TagList(List<String> value) {
     //Natalie: Why is this not called "GotTagList"? Also need to only show tag without 
     //accountName or projectID
+    checkAccountNameProjectIDNotBlank();
     EventDispatcher.dispatchEvent(this, "TagList", value);
   }
   
@@ -467,7 +477,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    * @param value the new value of the tag.
    */
   @SimpleEvent
-  public void DataChanged(final String tag, final Object value) {
+  public void DataChanged(final String tag, final Object value) {    
     androidUIHandler.post(new Runnable() {
       public void run() {
         Object tagValue = "";
@@ -502,6 +512,15 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     if (!dispatched) {
       // If the handler doesn't exist, then put up our own alert
       Notifier.oneButtonAlert(form, message, "RedCloudError", "Continue");
+    }
+  }
+  
+  private void checkAccountNameProjectIDNotBlank(){
+    if (accountName.equals("")){
+      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
+    }
+    if (projectID.equals("")){
+      throw new RuntimeException("RedCloud ProjectID property cannot be blank.");
     }
   }
   
