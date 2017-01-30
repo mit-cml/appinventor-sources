@@ -86,8 +86,13 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent) 
         preUpgradeVersion + ","  + systemVersion + "," + rep + ")");
     if (preUpgradeVersion > systemVersion) {
       // What to do in this case? Currently, throw an exception, but might want to do something else:
-      throw "Unexpected situation in Blockly.Versioning.upgrade: preUpgradeVersion of " + componentType +
-          " = " + preUpgradeVersion + " > systemVersion = " + systemVersion;
+      // JIS: We simply ignore this situation. It happens when someone imports a project that was
+      // touched by a newer version of App Inventor. By the time we are run here the user has already
+      // been shown a warning that the project may not work as expected. However if we throw the
+      // exception below we *guarantee* that the project will fail to load. Let's give them a
+      // chance instead (so the lines below are commented out).
+      // throw "Unexpected situation in Blockly.Versioning.upgrade: preUpgradeVersion of " + componentType +
+      //     " = " + preUpgradeVersion + " > systemVersion = " + systemVersion;
     } else if (preUpgradeVersion < systemVersion) {
       // Need to upgrade this component
       Blockly.Versioning.log("upgrading component type " + componentType + " from version " +
