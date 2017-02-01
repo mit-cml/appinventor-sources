@@ -56,7 +56,7 @@ import org.json.JSONException;
         " and retrieve information.",
     designerHelpDescription = "Non-visible component that communicates with CloudDB " +
         "server to store and retrieve information.",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.EXTENSION,
     nonVisible = true,
     iconName = "images/cloudDB.png")
 @SimpleObject
