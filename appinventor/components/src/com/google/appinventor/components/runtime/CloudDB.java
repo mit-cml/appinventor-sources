@@ -43,7 +43,7 @@ import org.json.JSONException;
 
 
 /**
- * The RedCloud component stores and retrieves information in the Cloud using Redis, an
+ * The CloudDB component stores and retrieves information in the Cloud using Redis, an
  * open source library. The component has methods to store a value under a tag and to
  * retrieve the value associated with the tag. It also possesses a listener to fire events
  * when stored values are changed.
@@ -52,24 +52,24 @@ import org.json.JSONException;
  */
 
 @DesignerComponent(version = 0,
-    description = "Non-visible component that communicates with RedCloud server to store" +
+    description = "Non-visible component that communicates with CloudDB server to store" +
         " and retrieve information.",
-    designerHelpDescription = "Non-visible component that communicates with RedCloud " +
+    designerHelpDescription = "Non-visible component that communicates with CloudDB " +
         "server to store and retrieve information.",
     category = ComponentCategory.EXPERIMENTAL,
     nonVisible = true,
-    iconName = "images/redCloud.png")
+    iconName = "images/cloudDB.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "jedis.jar")
-public class RedCloud extends AndroidNonvisibleComponent implements Component {
-  private static final String LOG_TAG = "RedCloud";
+public class CloudDB extends AndroidNonvisibleComponent implements Component {
+  private static final String LOG_TAG = "CloudDB";
   private boolean importProject = false;
   private String accountName = "";
   private String projectID = "";
   private boolean isPublic = false;
   // Note: The two variables below are static because the systems they
-  // interact with within RedCloud are also static Note: Natalie check true
+  // interact with within CloudDB are also static Note: Natalie check true
   private static boolean isInitialized = false;  // Whether we have made our first
                                                  // connection to Firebase
   private static boolean persist = false;        // Whether or not we are in persistant mode
@@ -77,7 +77,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
                                                  // when off-line
   private Handler androidUIHandler;
   private final Activity activity;
-  private RedCloudJedisListener childListener;
+  private CloudDBJedisListener childListener;
 
   // ReturnVal -- Holder which can be used as a final value but whose content
   //              remains mutable.
@@ -109,10 +109,10 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Creates a new RedCloud component.
+   * Creates a new CloudDB component.
    * @param container the Form that this component is contained in.
    */
-  public RedCloud(ComponentContainer container) {
+  public CloudDB(ComponentContainer container) {
     super(container.$form());
     // We use androidUIHandler when we set up operations that run asynchronously
     // in a separate thread, but which themselves want to cause actions
@@ -120,15 +120,15 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     // to androidUIHandler.
     androidUIHandler = new Handler();
     this.activity = container.$context();
-    //Defaults set in MockRedCloud.java in appengine/src/com/google/appinventor/client/editor/simple/components
+    //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
     
-    // Retrieve new posts as they are added to the RedCloud.
+    // Retrieve new posts as they are added to the CloudDB.
     Thread t = new Thread() {
       public void run() {
         Jedis jedis = getJedis();
-        jedis.psubscribe(new RedCloudJedisListener(RedCloud.this), "__key*__:*");
+        jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
       }
     };
     t.start();
@@ -137,7 +137,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * Initialize: Do runtime initialization of RedCloud
+   * Initialize: Do runtime initialization of CloudDB
    */
   public void Initialize() {
     Log.i(LOG_TAG, "Initalize called!");
@@ -147,17 +147,17 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   /**
    * Getter for the AccountName.
    *
-   * @return the AccountName for this RedCloud project
+   * @return the AccountName for this CloudDB project
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Gets the AccountName for this RedCloud project.")
+      description = "Gets the AccountName for this CloudDB project.")
   public String AccountName() {
     checkAccountNameProjectIDNotBlank();
     return accountName;
   }
 
   /**
-   * Specifies the account name of this RedCloud project.
+   * Specifies the account name of this CloudDB project.
    *
    * @param usrname the user's account name
    */
@@ -168,24 +168,24 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
       accountName = usrname;
     }
     if (accountName.equals("")){
-      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
+      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
   }
   
   /**
    * Getter for the ProjectID.
    *
-   * @return the ProjectID for this RedCloud project
+   * @return the ProjectID for this CloudDB project
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Gets the ProjectID for this RedCloud project.")
+      description = "Gets the ProjectID for this CloudDB project.")
   public String ProjectID() {
     checkAccountNameProjectIDNotBlank();
     return projectID;
   }
   
   /**
-   * Specifies the ID of this RedCloud project.
+   * Specifies the ID of this CloudDB project.
    *
    * @param id the project ID
    */
@@ -196,12 +196,12 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
       projectID = id;
     }
     if (projectID.equals("")){
-      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
+      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
   }
 
   /**
-   * Asks RedCloud to store the given value under the given tag.
+   * Asks CloudDB to store the given value under the given tag.
    *
    * @param tag The tag to use
    * @param valueToStore The value to store. Can be any type of value (e.g.
@@ -209,9 +209,9 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void StoreValue(final String tag, Object valueToStore) {
-    Log.i("RedCloud","StoreValue");
+    Log.i("CloudDB","StoreValue");
     checkAccountNameProjectIDNotBlank();
-    Log.i("RedCloud","PASSSSS");
+    Log.i("CloudDB","PASSSSS");
     
     try {
       if(valueToStore != null) {
@@ -241,7 +241,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * GetValue asks RedCloud to get the value stored under the given tag.
+   * GetValue asks CloudDB to get the value stored under the given tag.
    * It will pass valueIfTagNotThere to GotValue if there is no value stored
    * under the tag.
    *
@@ -255,7 +255,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
     
     final AtomicReference<Object> value = new AtomicReference<Object>();
 
-    // Set value to either the JSON from the RedCloud
+    // Set value to either the JSON from the CloudDB
     // or the JSON representation of valueIfTagNotThere
     Thread t = new Thread() {
       public void run() {
@@ -405,7 +405,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * Asks RedCloud to forget (delete or set to "null") a given tag.
+   * Asks CloudDB to forget (delete or set to "null") a given tag.
    *
    * @param tag The tag to remove
    */
@@ -425,7 +425,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * GetTagList asks RedCloud to retrieve all the tags belonging to this project.
+   * GetTagList asks CloudDB to retrieve all the tags belonging to this project.
    *
    * The resulting list is returned in GotTagList
    */
@@ -470,7 +470,7 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * Indicates that the data in the RedCloud project has changed.
+   * Indicates that the data in the CloudDB project has changed.
    * Launches an event with the tag and value that have been updated.
    *
    * @param tag the tag that has changed.
@@ -492,35 +492,35 @@ public class RedCloud extends AndroidNonvisibleComponent implements Component {
         String parsedTag = tag.substring(accountName.length()+projectID.length());
         
         // Invoke the application's "DataChanged" event handler
-        EventDispatcher.dispatchEvent(RedCloud.this, "DataChanged", parsedTag, tagValue);
+        EventDispatcher.dispatchEvent(CloudDB.this, "DataChanged", parsedTag, tagValue);
       }
     });
   }
   
   /**
-   * Indicates that the communication with the RedCloud signaled an error.
+   * Indicates that the communication with the CloudDB signaled an error.
    *
    * @param message the error message
    */
   @SimpleEvent
-  public void RedCloudError(String message) {
+  public void CloudDBError(String message) {
     // Log the error message for advanced developers
     Log.e(LOG_TAG, message);
 
-    // Invoke the application's "RedCloudError" event handler
-    boolean dispatched = EventDispatcher.dispatchEvent(this, "RedCloudError", message);
+    // Invoke the application's "CloudDBError" event handler
+    boolean dispatched = EventDispatcher.dispatchEvent(this, "CloudDBError", message);
     if (!dispatched) {
       // If the handler doesn't exist, then put up our own alert
-      Notifier.oneButtonAlert(form, message, "RedCloudError", "Continue");
+      Notifier.oneButtonAlert(form, message, "CloudDBError", "Continue");
     }
   }
   
   private void checkAccountNameProjectIDNotBlank(){
     if (accountName.equals("")){
-      throw new RuntimeException("RedCloud AccountName property cannot be blank.");
+      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
     if (projectID.equals("")){
-      throw new RuntimeException("RedCloud ProjectID property cannot be blank.");
+      throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
   }
   

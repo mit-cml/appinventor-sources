@@ -30,7 +30,7 @@ import com.google.appinventor.client.editor.simple.components.MockNonVisibleComp
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
 import com.google.appinventor.client.editor.simple.components.MockRadioButton;
-import com.google.appinventor.client.editor.simple.components.MockRedCloud;
+import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
@@ -136,7 +136,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/extension.png", images.extension());
-    bundledImages.put("images/redCloud.png", images.redCloud());
+    bundledImages.put("images/cloudDB.png", images.cloudDB());
 
     imagesInitialized = true;
   }
@@ -287,8 +287,8 @@ public final class SimpleComponentDescriptor {
         return new MockFirebaseDB(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name)));
       } 
-      else if(name.equals(MockRedCloud.TYPE)) {
-        return new MockRedCloud(editor, name,
+      else if(name.equals(MockCloudDB.TYPE)) {
+        return new MockCloudDB(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name)));
       } else {
         return new MockNonVisibleComponent(editor, name,

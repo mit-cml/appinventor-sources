@@ -24,15 +24,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Mock for the non-visible RedCloud component. This needs a separate mock
+ * Mock for the non-visible CloudDB component. This needs a separate mock
  * from other non-visible components so that some of its properties can be
  * given dynamic default values.
  *
  * @author natalie@csail.mit.edu (Natalie Lao)
  */
-public class MockRedCloud extends MockNonVisibleComponent {
+public class MockCloudDB extends MockNonVisibleComponent {
 
-  public static final String TYPE = "RedCloud";
+  public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
   private static final String PROPERTY_NAME_ACCOUNT_NAME = "AccountName";
 
@@ -47,14 +47,14 @@ public class MockRedCloud extends MockNonVisibleComponent {
    * @param type
    * @param iconImage
    */
-  public MockRedCloud(SimpleEditor editor, String type, Image iconImage) {
+  public MockCloudDB(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
   }
 
   /**
    * Initializes the "ProjectID", "AccountName" properties dynamically.
    *
-   * @param widget the iconImage for the MockRedCloud
+   * @param widget the iconImage for the MockCloudDB
    */
   @Override
   public final void initComponent(Widget widget) {

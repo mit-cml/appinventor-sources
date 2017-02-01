@@ -6280,8 +6280,8 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ProjectIDProperties();
   
-  @DefaultMessage("RedCloudError")
+  @DefaultMessage("CloudDBError")
   @Description("")
-  String RedCloudErrorEvents();
+  String CloudDBErrorEvents();
 
 }

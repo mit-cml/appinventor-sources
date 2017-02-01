@@ -539,9 +539,9 @@ public interface Images extends Resources {
   ImageResource proximitysensor();
 
   /**
-   * Designer palette item: redCloud component
+   * Designer palette item: cloudDB component
    */
-  @Source("com/google/appinventor/images/redCloud.png")
-  ImageResource redCloud();
+  @Source("com/google/appinventor/images/cloudDB.png")
+  ImageResource cloudDB();
 
 }
