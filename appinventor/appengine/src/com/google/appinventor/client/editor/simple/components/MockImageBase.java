@@ -45,13 +45,13 @@ abstract class MockImageBase extends MockVisibleComponent {
         if (picturePropValue != null && !picturePropValue.isEmpty()) {
           OdeLog.elog("Error occurred while loading image " + picturePropValue);
         }
-        refreshForm();
+        refreshForm(true);
       }
     });
     image.addLoadHandler(new LoadHandler() {
       @Override
       public void onLoad(LoadEvent event) {
-        refreshForm();
+        refreshForm(true);
         resizeImage();  // resize after the new image occupies the form
       }
     });

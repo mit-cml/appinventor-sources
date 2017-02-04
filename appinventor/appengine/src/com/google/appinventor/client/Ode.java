@@ -2284,4 +2284,24 @@ public class Ode implements EntryPoint {
     }
   }-*/;
 
+  private static native boolean finish(String userId) /*-{
+    var delete_cookie = function(name) {
+       document.cookie = name + '=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    };
+    var retval = {
+       "type": "closeApp",
+       "uuid" : userId }
+    if (top.opener) {
+      delete_cookie("AppInventor"); // This ends our authentication
+      top.opener.postMessage(retval, "*");
+      return true;
+    } else {
+      return false;
+    }
+  }-*/;
+
+  public static native void CLog(String message) /*-{
+    console.log(message);
+  }-*/;
+
 }

@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
@@ -20,10 +21,14 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+
+import com.google.gwt.user.client.Timer;
+
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -549,8 +554,71 @@ public final class MockForm extends MockContainer {
 
   /**
    * Forces a re-layout of the child components of the container.
+   *
+   * Each components onPropertyChange listener calls us. This is
+   * reasonable during interactive editing because we have to make
+   * sure the screen reflects what the user is doing.  However during
+   * project load we will be called many times, when really we should
+   * only be called after the project's UI is really finished loading.
+   *
+   * We could add a bunch of complicated code to inhibit refreshes
+   * until we know the project's UI is loaded and stable. However that
+   * is a change that will be spread over several modules, making it
+   * hard to understand what is going on.
+   *
+   * Instead, I am opting to keep this change self contained within
+   * this module. The idea is to see how quickly we are being
+   * called. If we receive a call which is close in time (within
+   * seconds) of a previous call, we set a timer to fire in the
+   * reasonable future (say 2 seconds). While this timer is counting
+   * down, we ignore any other calls to refresh. Whatever refreshing
+   * they would do will be handled by the call done when the timer
+   * fires. This approach does not reduce the number of calls to
+   * refresh during project loading to 1. But it significantly reduces
+   * the number of calls and gets us out of the exponential explosion
+   * in time and memory that we see with projects with hundreds of
+   * design elements (yes, people do that, and I have seen at least
+   * one project that was this big and reasonable!).  -Jeff Schiller
+   * (jis@mit.edu).
+   *
    */
+
+  private Duration lastRefresh = new Duration();
+  private boolean refreshPending = false;
   public final void refresh() {
+    Ode.CLog("MockForm: refresh() called.");
+    /* We refresh less then two seconds ago! */
+    if (lastRefresh.elapsedMillis() < 2000) {
+      if (!refreshPending) {
+        Ode.CLog("MockForm: refresh() called < 2 seconds ago, setting up timer.");
+        refreshPending = true;
+        Timer t = new Timer() {
+            @Override
+            public void run() {
+              refreshPending = false;
+              doRefresh();
+            }
+          };
+        t.schedule(2000);        // Two Seconds
+      } else {
+        Ode.CLog("MockForm: refresh() while timer running, IGNORING!");
+      }
+    } else {
+      lastRefresh = new Duration();
+      doRefresh();
+    }
+  }
+
+  /*
+   * Do the actual refresh.
+   *
+   * This method is public because it is called directly from MockComponent for refreshes
+   * which bypass throttling.
+   *
+   */
+
+  public final void doRefresh() {
+    Ode.CLog("MockForm: doRefresh() called");
     Map<MockComponent, LayoutInfo> layoutInfoMap = new HashMap<MockComponent, LayoutInfo>();
 
     collectLayoutInfos(layoutInfoMap, this);
@@ -564,6 +632,7 @@ public final class MockForm extends MockContainer {
       layoutInfo.cleanUp();
     }
     layoutInfoMap.clear();
+    Ode.CLog("MockForm: doRefresh() done.");
   }
 
   /*
