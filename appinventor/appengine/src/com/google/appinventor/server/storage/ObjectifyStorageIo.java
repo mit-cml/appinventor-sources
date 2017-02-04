@@ -23,6 +23,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
@@ -683,7 +684,15 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void onNonFatalError() {
         }
 
-      }, true);
+      }, Server.isProductionServer()); // Only use a transaction on the production server
+                                       // The App Engine dev server simulates the Google Cloud
+                                       // Store using the datastore. If we use a transaction
+                                       // here we wind up covering more then one entity group
+                                       // (Our access to FileData and Fake-GCS access to its own
+                                       // datastore kind to simulate GCS) which is an error.
+                                       // We can use a transaction in production between the
+                                       // production implementation of GCS does not touch the
+                                       // datastore
 
       // second job is on the user entity
       runJobWithRetries(new JobRetryHelper() {
