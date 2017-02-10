@@ -10,6 +10,10 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 
+import android.os.Environment;
+
+import android.util.Base64;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
 
@@ -33,8 +37,16 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +76,7 @@ import org.json.JSONException;
 @UsesLibraries(libraries = "jedis.jar")
 public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "CloudDB";
+  private static final String BINFILE_DIR = "/AppInventorBinaries";
   private boolean importProject = false;
   private String accountName = "";
   private String projectID = "";
@@ -221,7 +234,17 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
     }
     
-    final String value = (String) valueToStore;
+    String convValue = (String) valueToStore;
+
+    if (convValue.startsWith("file://")) {
+      try {
+        convValue = JsonUtil.getJsonRepresentation((Object) readFile(convValue));
+      } catch (JSONException e) {
+        throw new YailRuntimeError("File Read failed!", "JSON Read Error");
+      }
+    }
+
+    final String value = (String) convValue;
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
@@ -523,11 +546,88 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
   }
+
+  private String getFileExtension(String fullName) {
+    String fileName = new File(fullName).getName();
+    int dotIndex = fileName.lastIndexOf(".");
+    return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
+  }
   
   private Jedis getJedis(){
     Jedis jedis = new Jedis("128.52.179.76", 6379);
     jedis.auth("test6789");
     return jedis;
+  }
+
+  private YailList readFile(String fileName) {
+    try {
+      String originalFileName = fileName;
+      if (fileName.startsWith("file://")) {
+        fileName = fileName.substring(7);
+      }
+      if (!fileName.startsWith("/")) {
+        throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
+      }
+      File inputFile = new File(fileName);
+      if (!inputFile.isFile()) {
+        throw new YailRuntimeError("Cannot find file", "ReadFrom");
+      }
+      String extension = getFileExtension(fileName);
+      FileInputStream inputStream = new FileInputStream(inputFile);
+      byte [] content = new byte[(int)inputFile.length()];
+      int bytesRead = inputStream.read(content);
+      if (bytesRead != inputFile.length()) {
+        throw new YailRuntimeError("Did not read complete file!", "Read");
+      }
+      inputStream.close();
+      String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
+      Object [] results = new Object[2];
+      results[0] = extension;
+      results[1] = encodedContent;
+      return YailList.makeList(results);
+    } catch (FileNotFoundException e) {
+      throw new YailRuntimeError(e.getMessage(), "Read");
+    } catch (IOException e) {
+      throw new YailRuntimeError(e.getMessage(), "Read");
+    }
+  }
+
+  private void trimDirectory(int maxSavedFiles, File directory) {
+
+    File [] files = directory.listFiles();
+
+    Arrays.sort(files, new Comparator<File>(){
+      public int compare(File f1, File f2)
+      {
+        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+      } });
+
+    int excess = files.length - maxSavedFiles;
+    for (int i = 0; i < excess; i++) {
+      files[i].delete();
+    }
+
+  }
+
+  private String writeFile(String input, String fileExtension) {
+    try {
+      if (fileExtension.length() != 3) {
+        throw new YailRuntimeError("File Extension must be three characters", "Write Error");
+      }
+      byte [] content = Base64.decode(input, Base64.DEFAULT);
+      String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
+      File destDirectory = new File(fullDirName);
+      destDirectory.mkdirs();
+      File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
+      FileOutputStream outStream = new FileOutputStream(dest);
+      outStream.write(content);
+      outStream.close();
+      String retval = dest.toURI().toASCIIString();
+      trimDirectory(20, destDirectory);
+      return retval;
+    } catch (Exception e) {
+      throw new YailRuntimeError(e.getMessage(), "Write");
+    }
   }
   
 }
