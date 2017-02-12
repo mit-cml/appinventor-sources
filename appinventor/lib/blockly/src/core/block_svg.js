@@ -1252,3 +1252,23 @@ Blockly.BlockSvg.prototype.renderDrawLeft_ = function(steps, highlightSteps,
   }
   steps.push('z');
 };
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
+Blockly.BlockSvg.prototype.addSearchHighlight = function() {
+    Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+        'blocklySearchedHighlight');
+    // Move the selected block to the top of the stack.
+    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
+/**
+ * Remove search highlighting.
+ */
+Blockly.BlockSvg.prototype.removeSearchHighlight = function() {
+    Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
+        'blocklySearchedHighlight');
+};
+
+//****************************CURRENTLY ADDED (CECE & ABHIJIT) 7/30/15****************************//
+
