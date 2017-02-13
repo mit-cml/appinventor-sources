@@ -37,11 +37,17 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,8 +56,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
-import org.json.JSONException;
 
 
 /**
@@ -228,23 +232,18 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     
     try {
       if(valueToStore != null) {
-        valueToStore = JsonUtil.getJsonRepresentation(valueToStore);
+        Path file = new File(String.valueOf(valueToStore)).toPath();
+        if (Files.exists(file) && !Files.isDirectory(file)) {
+          valueToStore = JsonUtil.getJsonRepresentation(readFile(file));
+        } else {
+          valueToStore = JsonUtil.getJsonRepresentation(valueToStore);
+        }
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
     }
-    
-    String convValue = (String) valueToStore;
 
-    if (convValue.startsWith("file://")) {
-      try {
-        convValue = JsonUtil.getJsonRepresentation((Object) readFile(convValue));
-      } catch (JSONException e) {
-        throw new YailRuntimeError("File Read failed!", "JSON Read Error");
-      }
-    }
-
-    final String value = (String) convValue;
+    final String value = (String) valueToStore;
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
@@ -286,7 +285,18 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         try {
           String returnValue = jedis.get(accountName+projectID+tag);
           if (returnValue != null) {
-            value.set(returnValue);
+            try {
+              JSONArray valueJsonList = new JSONArray(returnValue);
+              List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
+              if (valueList.size() == 2) {
+                String filename = writeFile(valueList.get(1), valueList.get(0));
+                value.set(filename);
+              } else {
+                value.set(returnValue);
+              }
+            } catch(JSONException e) {
+              value.set(returnValue);
+            }
           } else {
             value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
           }
@@ -559,20 +569,13 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     return jedis;
   }
 
-  private YailList readFile(String fileName) {
+  private YailList readFile(Path fileName) {
     try {
-      String originalFileName = fileName;
-      if (fileName.startsWith("file://")) {
-        fileName = fileName.substring(7);
-      }
-      if (!fileName.startsWith("/")) {
-        throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
-      }
-      File inputFile = new File(fileName);
+      File inputFile = fileName.toFile();
       if (!inputFile.isFile()) {
         throw new YailRuntimeError("Cannot find file", "ReadFrom");
       }
-      String extension = getFileExtension(fileName);
+      String extension = getFileExtension(fileName.toString());
       FileInputStream inputStream = new FileInputStream(inputFile);
       byte [] content = new byte[(int)inputFile.length()];
       int bytesRead = inputStream.read(content);
