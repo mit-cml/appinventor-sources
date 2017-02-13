@@ -83,6 +83,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -1225,12 +1226,35 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   /*
-   * We expect the UserFileData object for the given userId and fileName to
-   * already exist in the datastore. Find the object and update its contents.
+   * We look for the UserFileData object for the given userId and fileName.
+   * If it doesn't exit, we create it.
+   *
+   * SPECIAL CASE: If fileName == StorageUtil.USER_BACKBACK_FILENAME and the
+   * content is "[]", we *delete* the file because the default value returned
+   * if the file doesn't exist is "[]" (the JSON empty list). This is to reduce
+   * the clutter of files for the case where someone doesn't have anything in
+   * the backpack. We pay $$ for storage.
+   *
    */
   private void addUserFileContents(Objectify datastore, String userId, String fileName, byte[] content) {
     UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));
-    Preconditions.checkState(ufd != null);
+    byte [] empty = new byte[] { (byte)0x5b, (byte)0x5d }; // "[]" in bytes
+    if (ufd == null) {          // File doesn't exist
+      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+        Arrays.equals(empty, content)) {
+        return;                 // Nothing to do
+      }
+      ufd = new UserFileData();
+      ufd.fileName = fileName;
+      ufd.userKey = userKey(userId);
+    } else {
+      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+        Arrays.equals(empty, content)) {
+        // Storing an empty backback, just delete the file
+        datastore.delete(userFileKey(userKey(userId), fileName));
+        return;
+      }
+    }
     ufd.content = content;
     datastore.put(ufd);
   }

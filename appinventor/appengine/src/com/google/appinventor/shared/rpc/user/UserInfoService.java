@@ -26,6 +26,13 @@ public interface UserInfoService extends RemoteService {
   Config getSystemConfig(String sessionId);
 
   /**
+   * Retrieve's the stored Backpack
+   *
+   * @return the backpack as an xml string
+   */
+  String getUserBackpack();
+
+  /**
    * Retrieves information about the current user
    *
    * (Obsoleted by getSystemConfig())
@@ -47,6 +54,12 @@ public interface UserInfoService extends RemoteService {
    * @return  user's settings
    */
   String loadUserSettings();
+
+  /**
+   * Store the user's backpack
+   * @param backpack string containing the backpack xml
+   */
+  void storeUserBackpack(String backpack);
 
   /**
    * Stores the user's settings.

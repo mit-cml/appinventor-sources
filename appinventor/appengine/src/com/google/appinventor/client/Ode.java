@@ -842,6 +842,20 @@ public class Ode implements EntryPoint {
 
     userInfoService.getSystemConfig(sessionId, callback);
 
+    // We fetch the user's backpack here. This runs asynchronously with the rest
+    // of the system initialization.
+
+    userInfoService.getUserBackpack(new AsyncCallback<String>() {
+        @Override
+        public void onSuccess(String backpack) {
+          BlocklyPanel.setBackpack(backpack, false);
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.log("Fetching backpack failed");
+        }
+      });
+
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
       public void onValueChange(ValueChangeEvent<String> event) {

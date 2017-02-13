@@ -290,18 +290,21 @@ Blockly.Backpack.prototype.addAllToBackpack = function() {
   var allBlocks = Blockly.mainWorkspace.getAllBlocks();
   var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
   for (var x = 0; x < topBlocks.length; x++) {
-      block = allBlocks[x];
-      this.addToBackpack(block);
+    block = allBlocks[x];
+    this.addToBackpack(block, false);
   }
+  // We have to read back the backpack (getBackpack) and store it again
+  // this time stating that it should be pushed up to the server
+  this.setBackpack(this.getBackpack(), true); // A little klunky but gets the job done
 }
 
 /**
  *  The backpack is an array containing 0 or more
  *   blocks
  */
-Blockly.Backpack.prototype.addToBackpack = function(block) {
+Blockly.Backpack.prototype.addToBackpack = function(block, store) {
   if (this.getBackpack() == undefined) {
-    this.setBackpack(JSON.stringify([]));
+    this.setBackpack(JSON.stringify([]), false);
   }
 
   // Copy is made of the expanded block.
@@ -321,7 +324,7 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
   var len = bp_contents.length;
   var newBlock = "<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>";
   bp_contents[len] = newBlock;
-  this.setBackpack(JSON.stringify(bp_contents));
+  this.setBackpack(JSON.stringify(bp_contents), store);
   this.grow();
   Blockly.playAudio('backpack');
 
@@ -555,7 +558,7 @@ Blockly.Backpack.prototype.shrink = function() {
  */
 Blockly.Backpack.prototype.clear = function() {
   if (Blockly.mainWorkspace.backpack.confirmClear()) {
-    this.setBackpack(JSON.stringify([]));
+    this.setBackpack(JSON.stringify([]), true);
     this.shrink();
   }
 }
@@ -578,7 +581,7 @@ Blockly.Backpack.prototype.getBackpack = function() {
   return window.parent.BlocklyPanel_getBackpack();
 }
 
-Blockly.Backpack.prototype.setBackpack = function(backpack) {
-  window.parent.BlocklyPanel_setBackpack(backpack);
+Blockly.Backpack.prototype.setBackpack = function(backpack, store) {
+  window.parent.BlocklyPanel_setBackpack(backpack, store);
 }
 
