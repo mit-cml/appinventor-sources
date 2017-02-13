@@ -556,7 +556,7 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     byte[] command = new byte[5];
     command[0] = (byte) 0x00;  // Direct command telegram, response required
     command[1] = (byte) 0x13;  // MESSAGEREAD command
-    copyUBYTEValueToBytes(0, command, 2);  // no remote mailbox
+    copyUBYTEValueToBytes(10 + mailbox, command, 2);
     copyUBYTEValueToBytes(mailbox, command, 3);
     copyBooleanValueToBytes(true, command, 4);  // remove message from mailbox
     byte[] returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
@@ -726,27 +726,34 @@ public class NxtDirectCommands extends LegoMindstormsNxtBase {
     }
 
     List<String> fileNames = new ArrayList<String>();
+    List<Integer> handlesToClose = new ArrayList<Integer>();
+    try {
+      if (wildcard.length() == 0) {
+        wildcard = "*.*";
+      }
 
-    if (wildcard.length() == 0) {
-      wildcard = "*.*";
-    }
-
-    byte[] command = new byte[22];
-    command[0] = (byte) 0x01;  // System command telegram, response required
-    command[1] = (byte) 0x86;  // FIND FIRST command
-    copyStringValueToBytes(wildcard, command, 2, 19);
-    byte[] returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
-    int status = getStatus(functionName, returnPackage, command[1]);
-    while (status == 0) {
-      int handle = getUBYTEValueFromBytes(returnPackage, 3);
-      String fileName = getStringValueFromBytes(returnPackage, 4);
-      fileNames.add(fileName);
-      command = new byte[3];
+      byte[] command = new byte[22];
       command[0] = (byte) 0x01;  // System command telegram, response required
-      command[1] = (byte) 0x87;  // FIND NEXT command
-      copyUBYTEValueToBytes(handle, command, 2);
-      returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
-      status = getStatus(functionName, returnPackage, command[1]);
+      command[1] = (byte) 0x86;  // FIND FIRST command
+      copyStringValueToBytes(wildcard, command, 2, 19);
+      byte[] returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
+      int status = getStatus(functionName, returnPackage, command[1]);
+      while (status == 0) {
+        int handle = getUBYTEValueFromBytes(returnPackage, 3);
+        handlesToClose.add(handle);
+        String fileName = getStringValueFromBytes(returnPackage, 4);
+        fileNames.add(fileName);
+        command = new byte[3];
+        command[0] = (byte) 0x01;  // System command telegram, response required
+        command[1] = (byte) 0x87;  // FIND NEXT command
+        copyUBYTEValueToBytes(handle, command, 2);
+        returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
+        status = getStatus(functionName, returnPackage, command[1]);
+      }
+    } finally {
+      for (int handle : handlesToClose) {
+        closeHandle(functionName, handle);
+      }
     }
     return fileNames;
   }
