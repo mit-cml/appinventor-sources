@@ -32,6 +32,16 @@ Blockly.WarningHandler.updateWarningErrorCount = function() {
   Blockly.mainWorkspace.warningIndicator.updateWarningAndErrorCount();
 }
 
+Blockly.WarningHandler.getWarningCount = function() {
+  //return current warning count
+  return Blockly.WarningHandler.warningCount;
+}
+
+Blockly.WarningHandler.getErrorCount = function() {
+  //return current warning count
+  return Blockly.WarningHandler.errorCount;
+}
+
 //Call to toggle the visibility of the warnings on the blocks
 Blockly.WarningHandler.warningToggle = function() {
   if(Blockly.WarningHandler.showWarningsToggle) {

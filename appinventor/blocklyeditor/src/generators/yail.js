@@ -103,6 +103,13 @@ Blockly.Yail.FLONUM_REGEXP = "^[\\s]*[-+]?([0-9]*)((\\.[0-9]+)|[0-9]\\.)[\\s]*$"
  * @returns {String} the generated code if there were no errors.
  */
 Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
+  //check for errors and warnings
+  if (Blockly.WarningHandler.getErrorCount() > 0) {
+    throw "Cannot build with errors";
+  }
+  if (Blockly.WarningHandler.getWarningCount() > 0) {
+    throw "Cannot build with warnings";
+  }
   var jsonObject = JSON.parse(formJson); 
   // TODO: check for JSON parse error
   var componentNames = [];
