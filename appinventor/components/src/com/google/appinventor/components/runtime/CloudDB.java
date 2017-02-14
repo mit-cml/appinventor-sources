@@ -3,8 +3,8 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
+//Natalie: Package should be different for an extension
 package com.google.appinventor.components.runtime;
-
 
 import android.app.Activity;
 import android.os.Handler;
@@ -75,7 +75,8 @@ import java.util.Set;
     category = ComponentCategory.EXTENSION,
     nonVisible = true,
     iconName = "images/cloudDB.png")
-@SimpleObject
+//Natalie: Delete the (external=true) when not extension
+@SimpleObject(external=true)
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "jedis.jar")
 public class CloudDB extends AndroidNonvisibleComponent implements Component {
