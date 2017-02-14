@@ -225,16 +225,15 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    * number, text, boolean or list).
    */
   @SimpleFunction
-  public void StoreValue(final String tag, Object valueToStore) {
+  public void StoreValue(final String tag, String valueToStore) {
     Log.i("CloudDB","StoreValue");
     checkAccountNameProjectIDNotBlank();
     Log.i("CloudDB","PASSSSS");
     
     try {
-      if(valueToStore != null) {
-        Path file = new File(String.valueOf(valueToStore)).toPath();
-        if (Files.exists(file) && !Files.isDirectory(file)) {
-          valueToStore = JsonUtil.getJsonRepresentation(readFile(file));
+      if (valueToStore != null) {
+        if (valueToStore.startsWith("file://")) {
+          valueToStore = JsonUtil.getJsonRepresentation(readFile(valueToStore));
         } else {
           valueToStore = JsonUtil.getJsonRepresentation(valueToStore);
         }
@@ -243,7 +242,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
     }
 
-    final String value = (String) valueToStore;
+    final String value = valueToStore;
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
@@ -290,7 +289,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
               List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
               if (valueList.size() == 2) {
                 String filename = writeFile(valueList.get(1), valueList.get(0));
-                value.set(filename);
+                filename = filename.replace("file:/", "file:///");
+                value.set(JsonUtil.getJsonRepresentation(filename));
               } else {
                 value.set(returnValue);
               }
@@ -569,13 +569,21 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     return jedis;
   }
 
-  private YailList readFile(Path fileName) {
+  private YailList readFile(String fileName) {
     try {
-      File inputFile = fileName.toFile();
+      String originalFileName = fileName;
+      // Trim off file:// part if present
+      if (fileName.startsWith("file://")) {
+        fileName = fileName.substring(7);
+      }
+      if (!fileName.startsWith("/")) {
+        throw new YailRuntimeError("Invalid fileName, was " + originalFileName, "ReadFrom");
+      }
+      File inputFile = new File(fileName);
       if (!inputFile.isFile()) {
         throw new YailRuntimeError("Cannot find file", "ReadFrom");
       }
-      String extension = getFileExtension(fileName.toString());
+      String extension = getFileExtension(fileName);
       FileInputStream inputStream = new FileInputStream(inputFile);
       byte [] content = new byte[(int)inputFile.length()];
       int bytesRead = inputStream.read(content);
