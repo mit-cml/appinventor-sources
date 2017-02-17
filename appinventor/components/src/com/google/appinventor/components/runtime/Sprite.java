@@ -48,6 +48,7 @@ public abstract class Sprite extends VisibleComponent
   protected final Canvas canvas;              // enclosing Canvas
   private final TimerInternal timerInternal;  // timer to control movement
   private final Handler androidUIHandler;     // for posting actions
+  private final Form form;
 
   // Keeps track of which other sprites are currently colliding with this one.
   // That way, we don't raise CollidedWith() more than once for each collision.
@@ -100,6 +101,7 @@ public abstract class Sprite extends VisibleComponent
    */
   protected Sprite(ComponentContainer container, Handler handler) {
     super();
+    form = container.$form();
     androidUIHandler = handler;
 
     // Add to containing Canvas.
@@ -304,7 +306,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void X(double x) {
-    xLeft = x;
+    xLeft = ((form.getResources().getDisplayMetrics().density * x) + 0.5f);
     registerChange();
   }
 
@@ -313,7 +315,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void Y(double y) {
-    yTop = y;
+    yTop = ((form.getResources().getDisplayMetrics().density * y) + 0.5f);
     registerChange();
   }
 
