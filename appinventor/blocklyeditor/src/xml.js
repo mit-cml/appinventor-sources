@@ -51,15 +51,21 @@ Blockly.Xml.domToWorkspaceHeadless = function(xml, workspace) {
       var xmlChild = xml.childNodes[i];
       var name = xmlChild.nodeName.toLowerCase();
       if (name == 'block' ||
-	  (name == 'shadow' && !Blockly.Events.recordUndo)) {
-	// Allow top-level shadow blocks if recordUndo is disabled since
-	// that means an undo is in progress.  Such a block is expected
-	// to be moved to a nested destination in the next operation.
-	var block = Blockly.Xml.domToBlockHeadless_(xmlChild, workspace);
-	block.x = parseInt(xmlChild.getAttribute('x'), 10);
-	block.y = parseInt(xmlChild.getAttribute('y'), 10);
+        (name == 'shadow' && !Blockly.Events.recordUndo)) {
+        // Allow top-level shadow blocks if recordUndo is disabled since
+        // that means an undo is in progress.  Such a block is expected
+        // to be moved to a nested destination in the next operation.
+        var block = Blockly.Xml.domToBlockHeadless_(xmlChild, workspace);
+        block.x = parseInt(xmlChild.getAttribute('x'), 10);
+        block.y = parseInt(xmlChild.getAttribute('y'), 10);
       } else if (name == 'shadow') {
-	goog.asserts.fail('Shadow block cannot be a top-level block.');
+        goog.asserts.fail('Shadow block cannot be a top-level block.');
+      }
+    }
+    var block, blocks = workspace.getAllBlocks();
+    for (i = 0; block = blocks[i]; i++) {
+      if (block.eventparam) {
+        block.setFieldValue(workspace.getComponentDatabase().getInternationalizedParameterName(block.eventparam), 'VAR');
       }
     }
     if (!existingGroup) {

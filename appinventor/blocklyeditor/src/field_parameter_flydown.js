@@ -16,16 +16,18 @@ goog.require('AI.Blockly.FieldFlydown');
 
 /**
  * Class for a parameter declaration field with flyout menu of getter/setter blocks on mouse over
- * @param {string} text The initial parameter name in the field.
+ * @param {string} name The initial parameter name in the field.
  * @param {boolean} isEditable Indicates whether the the name in the flydown is editable.
- * @param {opt_additionalChangeHandler} function A one-arg function indicating what to do in addition to
+ * @param {?string=} displayLocation Location to display the flydown relative to the parameter.
+ * @param {?function=} opt_additionalChangeHandler A one-arg function indicating what to do in addition to
  *   renaming lexical variables. May be null/undefined to indicate nothing extra to be done.
+ * @param {string=} opt_codeName Syntactic identifier of the field in the source code.
  * @extends {Blockly.FieldFlydown}
  * @constructor
  */
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of renaming
 //    of proc decl params
-Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_additionalChangeHandler) {
+Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_additionalChangeHandler, opt_codeName) {
   // [lyn, 07/02/14] Modified change handler so can be turned off with Blockly.FieldParameterFlydown.changeHandlerEnabled flag
   var changeHandler = function (text) {
      if (Blockly.FieldParameterFlydown.changeHandlerEnabled) {
@@ -39,6 +41,10 @@ Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_
      } else {
        return text;
      }
+  };
+  if (opt_codeName) {
+    // Used to create eventparam mutation on lexical_get_variable and lexical_set_variable
+    this.eventparam = opt_codeName;
   }
   Blockly.FieldParameterFlydown.superClass_.constructor.call(this, name, isEditable, displayLocation, changeHandler);
 };
@@ -82,14 +88,15 @@ Blockly.FieldParameterFlydown.prototype.setText = function(text) {
   */
 Blockly.FieldParameterFlydown.prototype.flydownBlocksXML_ = function() {
   var name = this.getText(); // name in this parameter field.
+  var mutation = this.eventparam ? '<mutation><eventparam name="' + this.eventparam + '" /></mutation>' : '';
   var getterSetterXML =
        '<xml>' +
-         '<block type="lexical_variable_get">' +
+         '<block type="lexical_variable_get">' + mutation +
            '<title name="VAR">' +
              name +
            '</title>' +
          '</block>' +
-         '<block type="lexical_variable_set">' +
+         '<block type="lexical_variable_set">' + mutation +
            '<title name="VAR">' +
              name +
            '</title>' +

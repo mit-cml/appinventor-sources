@@ -252,6 +252,9 @@ Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(b
     var dropDownList = dropDown.menuGenerator_();
     var text = dropDown.text_;
     var textInDropDown = false;
+    if (dropDown.updateMutation) {
+      dropDown.updateMutation();
+    }
     for(var k=0;k<dropDownList.length;k++) {
       if(dropDownList[k][0] == text && text != " "){
         textInDropDown = true;

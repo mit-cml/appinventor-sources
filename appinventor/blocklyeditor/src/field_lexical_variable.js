@@ -79,21 +79,44 @@ goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
-  this.value_ = text;
-  this.setText(text);
-  // The code below is almost certainly in the wrong place
-  // but it seems to fix the problem by making sure that any
-  // eventparam value in a variable block is removed. The next
-  // time it is needed, it will be re-computed. There *has*
-  // to be a better place for this code, but I couldn't find it in the
-  // short time I had to work on this. So consider this a patch
-  // until we figure out where this code really belongs!
-  if (this.block_) {
-    if (this.block_.eventparam) {
-      this.block_.eventparam = undefined; // unset it
+  Blockly.FieldLexicalVariable.superClass_.setValue.call(this, text);
+  this.updateMutation();
+};
+
+/**
+ * Update the eventparam mutation associated with the field's source block.
+ */
+Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
+  var text = this.getValue();
+  if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
+    this.sourceBlock_.eventparam = undefined;
+    if (text.indexOf(Blockly.globalNamePrefix + ' ') === 0) {
+      this.sourceBlock_.eventparam = null;
+      return;
+    }
+    var i, parent = this.sourceBlock_.getParent();
+    while (parent) {
+      var variables = parent.getVars();
+      if (parent.type != 'component_event') {
+        for (i = 0; i < variables.length; i++) {
+          if (variables[i] == text) {
+            // Innermost scope is not an event block, so eventparam can be nulled.
+            this.sourceBlock_.eventparam = null;
+            return;
+          }
+        }
+      } else {
+        for (i = 0; i < variables.length; i++) {
+          if (variables[i] == text) {
+            // text is an event parameter so compute the eventparam value
+            this.sourceBlock_.eventparam = parent.getParameters()[i].name;
+            return;
+          }
+        }
+      }
+      parent = parent.getParent();
     }
   }
-
 };
 
 /**
@@ -106,7 +129,7 @@ Blockly.FieldLexicalVariable.prototype.getBlock = function() {
 
 /**
  * Set the block holding this drop-down variable chooser. Also initializes the cachedParent.
- * @param {string} block Block holding this drop-down variable chooser
+ * @param {?Blockly.Block} block Block holding this drop-down variable chooser
  */
 Blockly.FieldLexicalVariable.prototype.setBlock = function(block) {
   this.block_ = block;
@@ -320,7 +343,7 @@ Blockly.FieldLexicalVariable.dropdownCreate = function() {
  */
 Blockly.FieldLexicalVariable.dropdownChange = function(text) {
   if (text) {
-    this.setText(text);
+    this.setValue(text);
     this.sourceBlock_.getTopWorkspace().getWarningHandler().checkErrors(this.sourceBlock_);
   }
   // window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);

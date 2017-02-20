@@ -148,7 +148,7 @@ Blockly.Blocks.component_event = {
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (i = 0; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false), // false means not editable
+            paramInput.appendField(new Blockly.FieldParameterFlydown(componentDb.getInternationalizedParameterName(param.name), false, null, null, param.name), // false means not editable
                                    'VAR' + i)
                       .appendField(" ");
           }
