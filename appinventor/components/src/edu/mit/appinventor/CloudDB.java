@@ -4,22 +4,14 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 //Natalie: Package should be different for an extension
-package com.google.appinventor.components.runtime;
+package edu.mit.appinventor;
 
 import android.app.Activity;
+import android.os.Environment;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 
-import android.os.Environment;
-
-import android.util.Base64;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.exceptions.JedisException;
-
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -32,13 +24,15 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
+import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.ComponentContainer;
+import com.google.appinventor.components.runtime.EventDispatcher;
+import com.google.appinventor.components.runtime.Notifier;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +51,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
+
 
 /**
  * The CloudDB component stores and retrieves information in the Cloud using Redis, an
@@ -74,7 +74,7 @@ import java.util.Set;
         "server to store and retrieve information.",
     category = ComponentCategory.EXTENSION,
     nonVisible = true,
-    iconName = "images/cloudDB.png")
+    iconName = "http://web.mit.edu/graeme/www/appinventor/cloudDB.png")
 //Natalie: Delete the (external=true) when not extension
 @SimpleObject(external=true)
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
@@ -226,24 +226,28 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    * number, text, boolean or list).
    */
   @SimpleFunction
-  public void StoreValue(final String tag, String valueToStore) {
+  public void StoreValue(final String tag, Object valueToStore) {
     Log.i("CloudDB","StoreValue");
     checkAccountNameProjectIDNotBlank();
     Log.i("CloudDB","PASSSSS");
+
+    final String value;
     
     try {
       if (valueToStore != null) {
-        if (valueToStore.startsWith("file://")) {
-          valueToStore = JsonUtil.getJsonRepresentation(readFile(valueToStore));
+        String strval = valueToStore.toString();
+        System.out.println("File Name: " + strval);
+        if (strval.startsWith("file:///")) {
+          value = JsonUtil.getJsonRepresentation(readFile(strval));
         } else {
-          valueToStore = JsonUtil.getJsonRepresentation(valueToStore);
+          value = JsonUtil.getJsonRepresentation(valueToStore);
         }
+      } else {
+        value = "";
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
     }
-
-    final String value = valueToStore;
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
@@ -251,7 +255,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       public void run() {
         Jedis jedis = getJedis();
         try {
-          String statusCodeReply = jedis.set(accountName+projectID+tag, value.toString());
+          String statusCodeReply = jedis.set(accountName+projectID+tag, value);
         } finally {
           if (jedis != null) {
             jedis.close();
@@ -289,9 +293,14 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
               JSONArray valueJsonList = new JSONArray(returnValue);
               List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
               if (valueList.size() == 2) {
-                String filename = writeFile(valueList.get(1), valueList.get(0));
-                filename = filename.replace("file:/", "file:///");
-                value.set(JsonUtil.getJsonRepresentation(filename));
+                if (valueList.get(0).startsWith(".")) {
+                  String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+                  System.out.println("Filename Written: " + filename);
+                  filename = filename.replace("file:/", "file:///");
+                  value.set(JsonUtil.getJsonRepresentation(filename));
+                } else {
+                  value.set(returnValue);
+                }
               } else {
                 value.set(returnValue);
               }
@@ -427,6 +436,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     checkAccountNameProjectIDNotBlank();
     
     try {
+      System.out.println(value.getClass().getName());
       if(value != null && value instanceof String) {
         value = JsonUtil.getObjectFromJson((String) value);
       }
@@ -518,6 +528,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         try {
           if(value != null && value instanceof String) {
             tagValue = JsonUtil.getObjectFromJson((String) value);
+            System.out.println(tagValue);
           }
         } catch(JSONException e) {
           throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -557,12 +568,6 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
   }
-
-  private String getFileExtension(String fullName) {
-    String fileName = new File(fullName).getName();
-    int dotIndex = fileName.lastIndexOf(".");
-    return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
-  }
   
   private Jedis getJedis(){
     Jedis jedis = new Jedis("128.52.179.76", 6379);
@@ -570,6 +575,20 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     return jedis;
   }
 
+ /**
+   * Accepts a file name and returns a Yail List with two
+   * elements. the first element is the file's extension (example:
+   * jpg, gif, etc.). The second element is the base64 encoded
+   * contents of the file. This function is suitable for reading
+   * binary files such as sounds and images. The base64 contents can
+   * then be stored with mechanisms oriented around text, such as
+   * tinyDB, Fusion tables and Firebase.
+   *
+   * Written by Jeff Schiller (jis) for the BinFile Extension
+   *
+   * @param filename the filename to read
+   * @returns YailList the list of the file extension and contents
+   */
   private YailList readFile(String fileName) {
     try {
       String originalFileName = fileName;
@@ -594,7 +613,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       inputStream.close();
       String encodedContent = Base64.encodeToString(content, Base64.DEFAULT);
       Object [] results = new Object[2];
-      results[0] = extension;
+      results[0] = "." + extension;
       results[1] = encodedContent;
       return YailList.makeList(results);
     } catch (FileNotFoundException e) {
@@ -604,23 +623,17 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private void trimDirectory(int maxSavedFiles, File directory) {
-
-    File [] files = directory.listFiles();
-
-    Arrays.sort(files, new Comparator<File>(){
-      public int compare(File f1, File f2)
-      {
-        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-      } });
-
-    int excess = files.length - maxSavedFiles;
-    for (int i = 0; i < excess; i++) {
-      files[i].delete();
-    }
-
-  }
-
+  /**
+   * Accepts a base64 encoded string and a file extension (which must be three characters).
+   * Decodes the string into a binary and saves it to a file on external storage and returns
+   * the filename assigned.
+   *
+   * Written by Jeff Schiller (jis) for the BinFile Extension
+   *
+   * @param input Base64 input string
+   * @param fileExtension three character file extension
+   * @return the name of the created file
+   */
   private String writeFile(String input, String fileExtension) {
     try {
       if (fileExtension.length() != 3) {
@@ -640,6 +653,33 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     } catch (Exception e) {
       throw new YailRuntimeError(e.getMessage(), "Write");
     }
+  }
+
+  // keep only the last N files, where N = maxSavedFiles
+  // Written by Jeff Schiller (jis) for the BinFile Extension
+  private void trimDirectory(int maxSavedFiles, File directory) {
+
+    File [] files = directory.listFiles();
+
+    Arrays.sort(files, new Comparator<File>(){
+      public int compare(File f1, File f2)
+      {
+        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+      } });
+
+    int excess = files.length - maxSavedFiles;
+    for (int i = 0; i < excess; i++) {
+      files[i].delete();
+    }
+
+  }
+
+  // Utility to get the file extension from a filename
+  // Written by Jeff Schiller (jis) for the BinFile Extension
+  private String getFileExtension(String fullName) {
+    String fileName = new File(fullName).getName();
+    int dotIndex = fileName.lastIndexOf(".");
+    return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
   }
   
 }
