@@ -211,25 +211,6 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testUploadUserFileBeforeAdd() {
-    final String USER_ID = "900";
-    final String USER_EMAIL = "newuser900@test.com";
-    storage.getUser(USER_ID, USER_EMAIL);
-    try {
-      storage.uploadUserFile(USER_ID, FILE_NAME1, "does not matter",
-          StorageUtil.DEFAULT_CHARSET);
-      fail("Allowed upload before add");
-    } catch (IllegalStateException ignored) {
-      // File upload should be preceded by add
-    }
-    try {
-      storage.uploadRawUserFile(USER_ID, FILE_NAME2, "does not matter".getBytes());
-      fail("Allowed upload before add");
-    } catch (IllegalStateException ignored) {
-      // File upload should be preceded by add
-    }
-  }
-
   public void testMuliRoleFile() {
     final String USER_ID = "1000";
     final String USER_EMAIL = "newuser1000@test.com";

@@ -202,8 +202,35 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
       Log.w(TAG, "onInfo called with wrong recorder. Ignoring.");
       return;
     }
-    Log.i(TAG, "Recoverable condition while recording. Will attempt to stop normally.");
-    controller.recorder.stop();
+    switch (what) {
+    case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
+      form.dispatchErrorOccurredEvent(this, "recording",
+          ErrorMessages.ERROR_SOUND_RECORDER_MAX_DURATION_REACHED);
+      break;
+    case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
+      form.dispatchErrorOccurredEvent(this, "recording",
+          ErrorMessages.ERROR_SOUND_RECORDER_MAX_FILESIZE_REACHED);
+      break;
+    case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
+      form.dispatchErrorOccurredEvent(this, "recording", ErrorMessages.ERROR_SOUND_RECORDER);
+      break;
+    default:
+      // value of `what` is not valid, probably device-specific debugging. escape early to prevent
+      // stoppage until we see an Android-defined error. See also:
+      // http://stackoverflow.com/questions/25785420/mediarecorder-oninfolistener-giving-an-895
+      return;
+    }
+    try {
+      Log.i(TAG, "Recoverable condition while recording. Will attempt to stop normally.");
+      controller.recorder.stop();
+    } catch(IllegalStateException e) {
+      Log.i(TAG, "SoundRecorder was not in a recording state.", e);
+      form.dispatchErrorOccurredEventDialog(this, "Stop",
+          ErrorMessages.ERROR_SOUND_RECORDER_ILLEGAL_STOP);
+    } finally {
+      controller = null;
+      StoppedRecording();
+    }
   }
 
   /**

@@ -16,6 +16,7 @@ import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.common.collect.Maps;
@@ -239,8 +240,21 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   public static String getBackpack() {
     return backpack;
   }
-  public static void setBackpack(String bp_contents) {
+  public static void setBackpack(String bp_contents, boolean doStore) {
     backpack = bp_contents;
+    if (doStore) {
+      Ode.getInstance().getUserInfoService().storeUserBackpack(backpack,
+        new AsyncCallback<Void>() {
+          @Override
+          public void onSuccess(Void nothing) {
+            // Nothing to do...
+          }
+          @Override
+          public void onFailure(Throwable caught) {
+            OdeLog.elog("Failed setting the backpack");
+          }
+        });
+    }
   }
 
   /**
@@ -901,7 +915,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     $wnd.BlocklyPanel_getBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBackpack());
     $wnd.BlocklyPanel_setBackpack =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;));
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;Z));
   }-*/;
 
   private native void initJS() /*-{

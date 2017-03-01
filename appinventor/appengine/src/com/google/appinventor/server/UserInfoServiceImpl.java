@@ -12,6 +12,7 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
+import com.google.appinventor.shared.storage.StorageUtil;
 
 /**
  * Implementation of the user information service.
@@ -68,6 +69,20 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
+   * Returns the user's backpack as an XML string.
+   *
+   * @return backpack
+   */
+  @Override
+  public String getUserBackpack() {
+    if (!hasUserFile(StorageUtil.USER_BACKPACK_FILENAME)) {
+      return "[]";
+    } else {
+      return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
+    }
+  }
+
+  /**
    * Returns user information.
    *
    * (obsoleted by getSystemConfig())
@@ -106,6 +121,16 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public String loadUserSettings() {
     return storageIo.loadSettings(userInfoProvider.getUserId());
+  }
+
+  /**
+   * Stores the user's backpack as an xml string
+   * @param backpack the xml string representing the backpack
+   */
+
+  @Override
+  public void storeUserBackpack(String backpack) {
+    storageIo.uploadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, backpack, "UTF-8");
   }
 
   /**

@@ -702,7 +702,7 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
       var backpack = this_.workspace.backpack
 	//      var xy = this.getRelativeToSurfaceXY();
       goog.Timer.callOnce(backpack.close, 100, backpack);
-      backpack.addToBackpack(Blockly.selected);
+      backpack.addToBackpack(Blockly.selected, true);
       Blockly.mainWorkspace.backpack.onMouseUp(e, Blockly.selected.startDragMouseX, Blockly.selected.startDragMouseY);
     }
     if (Blockly.highlightedConnection_) {
@@ -858,7 +858,7 @@ Blockly.Block.prototype.showContextMenu_ = function(e) {
       callback: function() {
         if (Blockly.selected && Blockly.selected.isDeletable() &&
             Blockly.selected.workspace == Blockly.mainWorkspace) {
-          Blockly.mainWorkspace.backpack.addToBackpack(Blockly.selected);
+          Blockly.mainWorkspace.backpack.addToBackpack(Blockly.selected, true);
         }
       }
     };

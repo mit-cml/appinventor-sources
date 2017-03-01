@@ -23,6 +23,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
@@ -82,6 +83,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -683,7 +685,15 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void onNonFatalError() {
         }
 
-      }, true);
+      }, Server.isProductionServer()); // Only use a transaction on the production server
+                                       // The App Engine dev server simulates the Google Cloud
+                                       // Store using the datastore. If we use a transaction
+                                       // here we wind up covering more then one entity group
+                                       // (Our access to FileData and Fake-GCS access to its own
+                                       // datastore kind to simulate GCS) which is an error.
+                                       // We can use a transaction in production between the
+                                       // production implementation of GCS does not touch the
+                                       // datastore
 
       // second job is on the user entity
       runJobWithRetries(new JobRetryHelper() {
@@ -1216,12 +1226,35 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   /*
-   * We expect the UserFileData object for the given userId and fileName to
-   * already exist in the datastore. Find the object and update its contents.
+   * We look for the UserFileData object for the given userId and fileName.
+   * If it doesn't exit, we create it.
+   *
+   * SPECIAL CASE: If fileName == StorageUtil.USER_BACKBACK_FILENAME and the
+   * content is "[]", we *delete* the file because the default value returned
+   * if the file doesn't exist is "[]" (the JSON empty list). This is to reduce
+   * the clutter of files for the case where someone doesn't have anything in
+   * the backpack. We pay $$ for storage.
+   *
    */
   private void addUserFileContents(Objectify datastore, String userId, String fileName, byte[] content) {
     UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));
-    Preconditions.checkState(ufd != null);
+    byte [] empty = new byte[] { (byte)0x5b, (byte)0x5d }; // "[]" in bytes
+    if (ufd == null) {          // File doesn't exist
+      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+        Arrays.equals(empty, content)) {
+        return;                 // Nothing to do
+      }
+      ufd = new UserFileData();
+      ufd.fileName = fileName;
+      ufd.userKey = userKey(userId);
+    } else {
+      if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+        Arrays.equals(empty, content)) {
+        // Storing an empty backback, just delete the file
+        datastore.delete(userFileKey(userKey(userId), fileName));
+        return;
+      }
+    }
     ufd.content = content;
     datastore.put(ufd);
   }

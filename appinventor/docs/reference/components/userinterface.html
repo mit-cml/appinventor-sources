@@ -966,6 +966,20 @@ none
   <dd>The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
   <dt><code>Scrollable</code></dt>
   <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.</dd>
+  <dt><code>ShowListsAsJson</code> (designer only)</dt>
+  <dd>
+    If false, lists will be converted to strings using Lisp notation,
+    i.e., as symbols separated by spaces, e.g., (a 1 b2 (c d). If true,
+    lists will appear as in Json or Python, e.g.  ["a", 1, "b", 2, ["c",
+    "d"]].  This property appears only in Screen 1, and the value for
+    Screen 1 determines the behavior for all screens. The property
+    defaults to "false" meaning that the App Inventor programmer must
+    explicitly set it to “true” if JSON/Python syntax is desired. At some
+    point in the future we will alter the system so that new projects are
+    created with this property set to "true" by default. Existing projects
+    will not be impacted. The App Inventor programmer can also set it back
+    to "false" in newer projects if desired.
+  </dd>
   <dt><code><em>ShowStatusBar</em></code></dt>
   <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.</dd>
   <dt><code>Sizing</code> (designer only)</dt>

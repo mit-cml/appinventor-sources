@@ -37,6 +37,10 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesActivities;
+import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -78,6 +82,16 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "twitter4j.jar," + "twitter4jmedia.jar")
+@UsesActivities(activities = {
+    @ActivityElement(name = "com.google.appinventor.components.runtime.WebViewActivity",
+                     configChanges = "orientation|keyboardHidden",
+                     screenOrientation = "behind",
+                     intentFilters = {
+                         @IntentFilterElement(actionElements = {
+                             @ActionElement(name = "android.intent.action.MAIN")
+                         })
+    })
+})
 public final class Twitter extends AndroidNonvisibleComponent implements
     ActivityResultListener, Component {
   private static final String ACCESS_TOKEN_TAG = "TwitterOauthAccessToken";

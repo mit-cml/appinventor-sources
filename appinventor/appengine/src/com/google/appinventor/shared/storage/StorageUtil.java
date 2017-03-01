@@ -27,6 +27,7 @@ public class StorageUtil {
   public static final long INITIAL_MOTD_ID = 1;
 
   public static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
+  public static final String USER_BACKPACK_FILENAME = "backpack.xml";
 
   /**
    * Gets the final component from a path.  This assumes that path components

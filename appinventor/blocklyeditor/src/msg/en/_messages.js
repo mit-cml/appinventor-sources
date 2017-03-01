@@ -73,9 +73,8 @@ Blockly.Msg.en.switch_language_to_english = {
    " and paste them into another project or screen. " +
    " To copy, you can drag-and-drop blocks into the Backpack. To paste, click on the Backpack icon and " +
    " drag-and-drop blocks into the workspace." +
-   "</p><p>The contents of the Backpack will persist throughout " +
-   " an App Inventor session. When you quit App Inventor or refresh its web page in the browser, " +
-   " the Backpack will be re-initialized -- i.e., emptied." +
+   "</p><p>If you leave MIT App Inventor with blocks left in your backpack, " +
+   " they will be there the next time you login." +
    "</p><p>For further documentation and a 'how to' video, see:" +
    '</p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
 
