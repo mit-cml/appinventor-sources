@@ -12,6 +12,7 @@
       <http-header name="Content-Type" value="font/ttf" />
     </include>
     <include path="/media/*" expiration="365d" />
+    <include path="/companions/*" />
     <include path="/images/*" expiration="365d" />
     <include path="/Ya_tos_form.html" expiration="1d" />
     <include path="/favicon.ico" expiration="365d" />
