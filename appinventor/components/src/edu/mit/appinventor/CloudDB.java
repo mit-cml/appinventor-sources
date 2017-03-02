@@ -237,7 +237,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       if (valueToStore != null) {
         String strval = valueToStore.toString();
         System.out.println("File Name: " + strval);
-        if (strval.startsWith("file:///")) {
+        if (strval.startsWith("file:///") || strval.startsWith("/storage")) {
           value = JsonUtil.getJsonRepresentation(readFile(strval));
         } else {
           value = JsonUtil.getJsonRepresentation(valueToStore);
