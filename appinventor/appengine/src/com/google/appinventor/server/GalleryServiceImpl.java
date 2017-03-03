@@ -211,8 +211,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param galleryId gallery id
    * @return true if successful
    */
-  public boolean markAppAsFeatured(long galleryId){
-    return galleryStorageIo.markAppAsFeatured(galleryId);
+  public boolean markAppAsFeatured(long galleryId, String description){
+    return galleryStorageIo.markAppAsFeatured(galleryId, description);
   }
 
   /**

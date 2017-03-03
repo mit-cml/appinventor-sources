@@ -92,7 +92,7 @@ public interface GalleryServiceAsync {
   /**
    * @see @link{@link GalleryService#markReportAsResolved(long, long)
    */
-  void markAppAsFeatured(long galleryId, AsyncCallback<Boolean> callback);
+  void markAppAsFeatured(long galleryId, String description, AsyncCallback<Boolean> callback);
 
   /**
    * @see @link{@link GalleryService#markReportAsResolved(long, long)

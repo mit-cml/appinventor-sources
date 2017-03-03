@@ -387,7 +387,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appFeaturedExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(appsResult.getApps(), appFeaturedContent, refreshable);
+        galleryGF.generateFeaturedAppList(appsResult.getApps(), appFeaturedContent, refreshable);
         if(appsResult.getTotalCount() < NUMAPPSTOSHOW || appFeaturedCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appFeaturedTab.getButtonNext().setVisible(false);
         }else{
