@@ -10,6 +10,8 @@
  */
 package com.google.appinventor.components.runtime.util;
 
+import java.util.List;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.Texting;
 import com.google.appinventor.components.runtime.ReplForm;
@@ -22,7 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.gsm.SmsMessage;
+import android.telephony.SmsMessage;
 import android.util.Log;
 
 /**
@@ -114,21 +116,39 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
   private String getPhoneNumber(Intent intent) {
     String phone = "";
 
-    // For Google Voice, phone and msg are stored in String extras. Pretty them up
+    try {
+      if (intent.getAction().equals("com.google.android.apps.googlevoice.SMS_RECEIVED")) {
+        // For Google Voice, phone and msg are stored in String extras. Pretty them up
 
-    if (intent.getAction().equals("com.google.android.apps.googlevoice.SMS_RECEIVED")) {
-      phone = intent.getExtras().getString(Texting.PHONE_NUMBER_TAG);
-      phone = PhoneNumberUtils.formatNumber(phone);
-
-      // For Telephony, phone and msg are stored in PDUs.
-
-    } else {
-      Object[] pdus = (Object[]) intent.getExtras().get("pdus");
-      for (Object pdu : pdus) {
-        SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
-        phone = smsMsg.getOriginatingAddress();
+        phone = intent.getExtras().getString(Texting.PHONE_NUMBER_TAG);
         phone = PhoneNumberUtils.formatNumber(phone);
+
+      } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_KITKAT) {
+        // On KitKat or higher, use the convience getMessageFromIntent method.
+        List<SmsMessage> messages = KitkatUtil.getMessagesFromIntent(intent);
+        for (SmsMessage smsMsg : messages) {
+          if (smsMsg != null) {
+            // getOriginatingAddress() can throw a NPE if its wrapped message is null, but there
+            // isn't an API to check whether this is the case.
+            phone = smsMsg.getOriginatingAddress();
+            if (SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP) {
+              phone = LollipopUtil.formatNumber(phone);
+            } else {
+              phone = PhoneNumberUtils.formatNumber(phone);
+            }
+          }
+        }
+      } else {
+        // On SDK older than KitKat, we have to manually process the PDUs.
+        Object[] pdus = (Object[]) intent.getExtras().get("pdus");
+        for (Object pdu : pdus) {
+          SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
+          phone = smsMsg.getOriginatingAddress();
+          phone = PhoneNumberUtils.formatNumber(phone);
+        }
       }
+    } catch(NullPointerException e) {
+      Log.w(TAG, "Unable to retrieve originating address from SmsMessage", e);
     }
     return phone;
   }
@@ -141,19 +161,32 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
   private String getMessage(Intent intent) {
     String msg = "";
 
-    // For Google Voice, msg is stored in String extras.
+    try {
+      if (intent.getAction().equals("com.google.android.apps.googlevoice.SMS_RECEIVED")) {
+        // For Google Voice, msg is stored in String extras.
 
-    if (intent.getAction().equals("com.google.android.apps.googlevoice.SMS_RECEIVED")) {
-      msg = intent.getExtras().getString(Texting.MESSAGE_TAG);
+        msg = intent.getExtras().getString(Texting.MESSAGE_TAG);
 
-      // For Telephony, phone and msg are stored in PDUs.
-
-    } else {
-      Object[] pdus = (Object[]) intent.getExtras().get("pdus");
-      for (Object pdu : pdus) {
-        SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
-        msg = smsMsg.getMessageBody();
+      } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_KITKAT) {
+        // On KitKat or higher, use the convience getMessageFromIntent method.
+        List<SmsMessage> messages = KitkatUtil.getMessagesFromIntent(intent);
+        for (SmsMessage smsMsg : messages) {
+          if (smsMsg != null) {
+            msg = smsMsg.getMessageBody();
+          }
+        }
+      } else {
+        // On SDK older than KitKat, we have to manually process the PDUs.
+        Object[] pdus = (Object[]) intent.getExtras().get("pdus");
+        for (Object pdu : pdus) {
+          SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
+          msg = smsMsg.getMessageBody();
+        }
       }
+    } catch(NullPointerException e) {
+      // getMessageBody() can throw a NPE if its wrapped message is null, but there isn't an
+      // API to check whether this is the case.
+      Log.w(TAG, "Unable to retrieve message body from SmsMessage", e);
     }
     return msg;
   }
