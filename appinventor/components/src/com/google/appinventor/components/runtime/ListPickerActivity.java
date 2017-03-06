@@ -95,7 +95,13 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
       txtSearchBox.setSingleLine(true);
       txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
       txtSearchBox.setPadding(10, 10, 10, 10);
-      txtSearchBox.setHint("Search list...");
+      if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_SEARCH_HINT)) {
+    	  String searchHint = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_SEARCH_HINT); 
+    	  txtSearchBox.setHint(searchHint);  
+      }
+      else{
+    	  txtSearchBox.setHint("default");  
+      }
 
       if (showFilterBar == null || !showFilterBar.equalsIgnoreCase("true")) {
         txtSearchBox.setVisibility(View.GONE);

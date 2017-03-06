@@ -102,7 +102,7 @@ public final class MockListView extends MockVisibleComponent {
 
   private void createFilterBox() {
     textBoxWidget = new TextBox();
-    textBoxWidget.setText("Search list...");
+    textBoxWidget.setText("Search List...");
     textBoxWidget.setSize(ComponentConstants.LISTVIEW_PREFERRED_WIDTH + "px",
         ComponentConstants.LISTVIEW_FILTER_PREFERRED_HEIGHT + "px");
     textBoxWidget.setVisible(false);
