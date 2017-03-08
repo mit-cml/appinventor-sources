@@ -492,4 +492,13 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   public void LogInfo(String message) {
     Log.i(LOG_TAG, message);
   }
+
+  @SimpleFunction(description="Show a toast message with duration")
+  public void Toast(String text, int duration) {
+    if(duration != 0 || duration != 1) {
+      Toast.makeText(getApplicationContext(), text, 0).show();
+    } else {
+      Toast.makeText(getApplicationContext(), text, duration).show();
+    }
+  }
 }
