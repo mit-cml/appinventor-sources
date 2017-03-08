@@ -235,8 +235,15 @@ public abstract class ProjectEditor extends Composite {
     Settings settings = projectSettings.getSettings(category);
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
+      OdeLog.log("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
+                 " => " + newValue);
       settings.changePropertyValue(name, newValue);
-      Ode.getInstance().getEditorManager().scheduleAutoSave(projectSettings);
+      // Deal with the Tutorial Panel
+      Ode ode = Ode.getInstance();
+      if (name.equals("TutorialURL")) {
+        ode.setTutorialURL(newValue);
+      }
+      ode.getEditorManager().scheduleAutoSave(projectSettings);
     }
   }
 
@@ -308,6 +315,12 @@ public abstract class ProjectEditor extends Composite {
     // project just after the editor is created.
     OdeLog.log("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
+    String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+                                                    SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+    if (!tutorialURL.isEmpty()) {
+      Ode ode = Ode.getInstance();
+      ode.setTutorialURL(tutorialURL);
+    }
 
     onShow();
   }
@@ -315,6 +328,9 @@ public abstract class ProjectEditor extends Composite {
   @Override
   protected void onUnload() {
     // onUnload is called immediately before a widget becomes detached from the browser's document.
+    Ode ode = Ode.getInstance();
+    ode.setTutorialVisible(false);
+    ode.getDesignToolbar().setTutorialToggleVisible(false);
     OdeLog.log("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();
     onHide();

@@ -177,6 +177,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
+  private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -429,6 +430,11 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
+    if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
+      // The TutorialURL property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
+
     return super.isPropertyVisible(propertyName);
   }
 
@@ -534,11 +540,22 @@ public final class MockForm extends MockContainer {
   private void setShowListsAsJsonProperty(String asJson) {
     // This property actually applies to the application and is only visible on
     // Screen1. When we load a form that is not Screen1, this method will be called with the
-    // default value for CompatibilityProperty (false). We need to ignore that.
+    // default value for ShowListsAsJsonProperty (false). We need to ignore that.
     if (editor.isScreen1()) {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, asJson);
+    }
+  }
+
+  private void setTutorialURLProperty(String asJson) {
+    // This property actually applies to the application and is only visible on
+    // Screen1. When we load a form that is not Screen1, this method will be called with the
+    // default value for TutorialURL (""). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, asJson);
     }
   }
 
@@ -821,6 +838,8 @@ public final class MockForm extends MockContainer {
       setANameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
       setShowListsAsJsonProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
+      setTutorialURLProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -850,20 +869,24 @@ public final class MockForm extends MockContainer {
   @Override
   public EditableProperties getProperties() {
     // Before we return the Properties object, we make sure that the
-    // Sizing and ShowListsAsJson properties have the value from the
-    // project's properties this is because these are per project, not
-    // per Screen(Form) We only have to do this on screens other then
-    // screen1 because screen1's value is definitive.
+    // Sizing, ShowListsAsJson and TutorialURL properties have the
+    // value from the project's properties this is because these are
+    // per project, not per Screen(Form) We only have to do this on
+    // screens other then screen1 because screen1's value is
+    // definitive.
     if (!editor.isScreen1()) {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
         editor.getProjectEditor().getProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
-      // new code to test
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
     }
     return properties;
   }

@@ -1488,6 +1488,16 @@ public class Form extends Activity
     return formHeight;
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "A URL to use to populate the Tutorial Sidebar while "
+    + "editing a project. Used as a teaching aid.")
+  public void TutorialURL(String url) {
+    // We don't actually do anything This property is stored in the
+    // project properties file
+  }
+
   /**
    * Display a new form.
    *

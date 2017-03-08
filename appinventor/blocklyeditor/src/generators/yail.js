@@ -371,11 +371,17 @@ Blockly.Yail.getFormPropertiesLines = function(formName, componentJson, includeC
  * @param {Blockly.ComponentDatabase} componentDb The workspace's database of components and types.
  * @returns {Array} code strings
  * @private
+ *
+ * Hack Note (JIS): We do not output a property setter line for the TutorialURL
+ * property. This property is only for use within the designer and has no meaning
+ * within an Android app. It is harmless to output it, once we have deployed a new
+ * companion (version > 2.41). Once such a Companion is deployed, the exception
+ * for TutorialURL below (and this comment) can be removed.
  */
 Blockly.Yail.getPropertySettersLines = function(componentJson, componentName, componentDb) {
   var code = [];
   for (var prop in componentJson) {
-    if (prop.charAt(0) != "$" && prop != "Uuid") {
+    if (prop.charAt(0) != "$" && prop != "Uuid" && prop != "TutorialURL") {
       code.push(Blockly.Yail.getPropertySetterString(componentName, componentJson.$Type, prop, 
         componentJson[prop], componentDb));
     }

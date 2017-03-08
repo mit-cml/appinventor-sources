@@ -102,6 +102,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for checkpoint")
   String checkpointButton();
 
+  @DefaultMessage("Toggle Tutorial")
+  @Description("Label for the Toggle Tutorial Button")
+  String toggleTutorialButton();
+
   @DefaultMessage("Add Screen ...")
   @Description("Label of the button for adding a new screen")
   String addFormButton();
@@ -3035,6 +3039,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("VersionName")
   @Description("")
   String VersionNameProperties();
+
+  @DefaultMessage("TutorialURL")
+  @Description("")
+  String TutorialURLProperties();
 
   @DefaultMessage("Sizing")
   @Description("")
