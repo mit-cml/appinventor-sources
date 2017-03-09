@@ -641,10 +641,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param onSuccessCommand command to open the project
    */
   public static void openProjectFromTemplate(String url, final NewProjectCommand onSuccessCommand) {
+    if(!url.startsWith("http")) {
+      url = "http://" + url;
+    }
     if (url.endsWith(".asc")) {
-      openTemplateProject("http://" + url, onSuccessCommand);
+      openTemplateProject(url, onSuccessCommand);
     } else  {
-      retrieveExternalTemplateData("http://" + url);
+      retrieveExternalTemplateData(url);
     }
   }
 
