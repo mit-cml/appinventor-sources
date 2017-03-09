@@ -117,17 +117,17 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
   if (block.getParameters) {
     numParams = block.getParameters().length;
   }
-  if (Blockly.collapse && ! this.collapsed && numParams > 0) {
+  if (block.workspace.getTopWorkspace().options.collapse && ! this.collapsed && numParams > 0) {
     var horizVertOption =
         { enabled: true,
-             text: block.horizontalParameters ? Blockly.MSG_VERTICAL_PARAMETERS : Blockly.MSG_HORIZONTAL_PARAMETERS,
+             text: block.horizontalParameters ? Blockly.Msg.VERTICAL_PARAMETERS : Blockly.Msg.HORIZONTAL_PARAMETERS,
          callback: function () { block.setParameterOrientation(!block.horizontalParameters); }
         };
 
     // Find the index of "Collapse Block" option and inset horizonta/vertical option before it
     var insertionIndex = 0;
     for (var option = null; option = options[insertionIndex]; insertionIndex++) {
-      if (option.text === Blockly.MSG_COLLAPSE_BLOCK) {
+      if (option.text === Blockly.Msg.COLLAPSE_BLOCK) {
         break; // Stop loop when insertion point found
       }
     }
@@ -138,7 +138,7 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
     // Remove an "Inline Inputs" option (if there is one)
     var removalIndex = -1;
     for (var i = 0, option = null; option = options[i]; i++) {
-      if (option.text === Blockly.MSG_INLINE_INPUTS) {
+      if (option.text === Blockly.Msg.INLINE_INPUTS) {
         removalIndex = i;
         break; // Stop loop when insertion point found
       }
@@ -147,7 +147,7 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
       options.splice(removalIndex, 1);
     }
   }
-}
+};
 
 
 

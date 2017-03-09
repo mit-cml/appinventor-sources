@@ -183,6 +183,11 @@ Blockly.Blocks.component_event = {
           newDoInput.connection.connect(bodyConnection);
         }
       }
+      if (Blockly.Events.isEnabled()) {
+        // Trigger a Blockly UI change event
+        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
+          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()))
+      }
     }
   },
   // Return a list of parameter names
