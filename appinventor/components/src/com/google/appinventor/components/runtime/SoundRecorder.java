@@ -43,6 +43,9 @@ import java.io.IOException;
   "android.permission.READ_EXTERNAL_STORAGE")
 public final class SoundRecorder extends AndroidNonvisibleComponent
     implements Component, OnErrorListener, OnInfoListener {
+    
+    
+ 
 
   private static final String TAG = "SoundRecorder";
 
@@ -148,7 +151,9 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
+  
     if (controller != null) {
+      controller.release();
       Log.i(TAG, "Start() called, but already recording to " + controller.file);
       return;
     }
