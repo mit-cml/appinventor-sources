@@ -110,6 +110,8 @@ public class GalleryApp implements IsSerializable {
   private long creationDate;
   private long updateDate;
 
+  private String featureDescription;
+
   private String projectName;
   private String imageURL;
   private int downloads;
@@ -128,6 +130,21 @@ public class GalleryApp implements IsSerializable {
   private boolean active;
   private String moreInfo;
   private String credit;
+
+  /**
+   * @return the featured description of the app
+   * */
+  public String getFeatureDescription(){
+    return featureDescription;
+  }
+
+  /**
+   * set apps' featured Description as the given description
+   * @param featureDescription featured description
+   */
+  public void setFeatureDescription(String featureDescription){
+    this.featureDescription = featureDescription;
+  }
 
   /**
    * @return attributionId attribution id

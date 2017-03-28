@@ -20,5 +20,6 @@ import com.googlecode.objectify.annotation.Parent;
 
 public class GalleryAppFeatureData {
   @Id Long id;
+  String description;
   @Parent Key<GalleryAppData> galleryKey;
 }

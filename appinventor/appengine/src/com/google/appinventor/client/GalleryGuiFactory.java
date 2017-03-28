@@ -35,6 +35,8 @@ public class GalleryGuiFactory {
   private final String NUM_VIEW_ICON_URL = "/images/numView.png";
   private final String NUM_COMMENT_ICON_URL = "/images/numComment.png";
 
+
+
   /**
    * Generates a new GalleryGuiFactory instance.
    */
@@ -172,6 +174,88 @@ public class GalleryGuiFactory {
     }
     container.addStyleName("gallery-app-collection");
     container.addStyleName("clearfix"); /* For redesigned navigation buttons */
+
+  }
+
+  /**
+   * Loads the proper tab GUI with gallery's app data.
+   * @param apps: list of returned gallery apps from callback.
+   * @param container: the GUI panel where apps will reside.
+   * @param refreshable: if true then the GUI can be reloaded later.
+   */
+  public void generateFeaturedAppList(List<GalleryApp> apps,
+                                        FlowPanel container, Boolean refreshable) {
+    if (refreshable) {
+      container.clear();
+    }
+    for (final GalleryApp app : apps) {
+      GalleryAppWidget gaw = new GalleryAppWidget(app);
+
+      FlowPanel appCard = new FlowPanel();
+      FlowPanel appCardContent = new FlowPanel();
+
+      String featuredDescription = app.getFeatureDescription();
+      //in case there is a featured app with no description
+      if (featuredDescription == null){
+        featuredDescription = "";
+      }
+
+      HTML appTitle = new HTML("" +
+              "<div class='gallery-featured-title'>" + gaw.nameLabel.getText() + "</div>");
+
+      HTML appAuthor = new HTML("" +
+              "<div class='gallery-subtitle'>by " + gaw.authorLabel.getText() + "</div>");
+
+      HTML featDescriptionLabel = new HTML("" +
+              "<div class='gallery-featured-description'>" + featuredDescription + "</div>");
+
+      gaw.image.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+        }
+      });
+
+      appTitle.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+        }
+      });
+
+      featDescriptionLabel.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+        }
+      });
+
+      appCardContent.add(featDescriptionLabel);
+
+      // Add everything to the top-level
+      appCard.add(gaw.image);
+      appCard.add(appTitle);
+      appCard.add(appAuthor);
+      appCard.add(appCardContent);
+
+      // Set helper icons
+      Image numViews = new Image();
+      numViews.setUrl("/images/numView.png");
+      Image numDownloads = new Image();
+      numDownloads.setUrl("/images/numDownload.png");
+      Image numLikes = new Image();
+      numLikes.setUrl("/images/numLikeHollow.png");
+
+      // Add associated styling
+      appCard.addStyleName("gallery-card-featured");
+      appCard.setHeight("337px");
+      gaw.image.addStyleName("gallery-card-cover");
+
+      gaw.numViewsLabel.addStyleName("gallery-meta");
+      gaw.numDownloadsLabel.addStyleName("gallery-meta");
+      gaw.numLikesLabel.addStyleName("gallery-meta");
+
+      container.add(appCard);
+    }
+    container.addStyleName("gallery-app-collection");
+    container.addStyleName("clearfix");
 
   }
 
