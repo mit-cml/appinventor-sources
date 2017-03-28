@@ -10,7 +10,9 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 
 /**
  * Abstract superclass for all of the "Picker" components.
@@ -40,9 +42,14 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
     if (requestCode == 0) { // only need to register once
       requestCode = container.$form().registerForActivityResult(this);
     }
-    container.$context().startActivityForResult(getIntent(), requestCode);
-    String openAnim = container.$form().getOpenAnimType();
-    AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
+    try {
+      container.$context().startActivityForResult(getIntent(), requestCode);
+      String openAnim = container.$form().getOpenAnimType();
+      AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
+    } catch (ActivityNotFoundException e) {
+      container.$form().dispatchErrorOccurredEvent(this, "getIntent",
+          ErrorMessages.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY);
+    }
   }
 
   // Functions
