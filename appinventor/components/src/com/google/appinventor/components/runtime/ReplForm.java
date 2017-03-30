@@ -18,6 +18,7 @@ import com.google.appinventor.components.runtime.util.RetValManager;
 import dalvik.system.DexClassLoader;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +36,10 @@ public class ReplForm extends Form {
 
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
-  private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
-  private static final String REPL_COMP_DIR = "/sdcard/AppInventor/assets/external_comps/";
+  private static final String REPL_ASSET_DIR =
+    Environment.getExternalStorageDirectory().getAbsolutePath() +
+    "/AppInventor/assets/";
+  private static final String REPL_COMP_DIR = REPL_ASSET_DIR + "external_comps/";
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
