@@ -32,6 +32,7 @@
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd" />
+  <inherits name="org.moxieapps.gwt.uploader.Uploader" />
 
   <!-- servlets -->
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
@@ -129,5 +130,10 @@
   <extend-property name="locale" values="pt_BR"/>
 
   <set-property-fallback name="locale" value="en"/>
+
+  <!-- for moxie uploader -->
+  <add-linker name="xsiframe"/>
+  <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+  <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 
 </module>

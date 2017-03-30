@@ -13,6 +13,7 @@ import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
+import com.google.appinventor.client.wizards.DNDFileUploadWizard;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
@@ -63,7 +64,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onClick(ClickEvent event) {
         if (assetsFolder != null) {
-          FileUploadWizard uploader = new FileUploadWizard(assetsFolder);
+          DNDFileUploadWizard uploader = new DNDFileUploadWizard(assetsFolder);
           uploader.show();
         }
       }
