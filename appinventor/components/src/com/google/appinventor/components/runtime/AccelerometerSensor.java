@@ -60,7 +60,7 @@ import java.util.Queue;
     "<li> <strong>zAccel</strong>: Equal to -9.8 (earth's gravity in meters per " +
     "     second per second when the device is at rest parallel to the ground " +
     "     with the display facing up, " +
-    "     0 when perpindicular to the ground, and +9.8 when facing down.  " +
+    "     0 when perpendicular to the ground, and +9.8 when facing down.  " +
     "     The value can also be affected by accelerating it with or against " +
     "     gravity. </li></ul>",
     category = ComponentCategory.SENSORS,
