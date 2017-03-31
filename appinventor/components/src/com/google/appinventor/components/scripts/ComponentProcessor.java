@@ -792,7 +792,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     // If we already processed this component, return early.
-    String longComponentName = element.asType().toString();
+    String longComponentName = ((TypeElement) element).getQualifiedName().toString();
     if (components.containsKey(longComponentName)) {
       return;
     }
@@ -806,6 +806,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       // Only look at the first one.  Later ones would be interfaces,
       // which we don't care about.
       String parentName = directSupertypes.get(0).toString();
+      Element e = ((DeclaredType) directSupertypes.get(0)).asElement();
+      parentName = ((TypeElement) e).getQualifiedName().toString();
       ComponentInfo parentComponent = components.get(parentName);
       if (parentComponent == null) {
         // Try to process the parent component now.
