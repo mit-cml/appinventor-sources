@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,7 +23,9 @@ import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -44,8 +46,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Project editor for Young Android projects. Each instance corresponds to
@@ -73,6 +77,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   
   // List of External Components
   private final List<String> externalComponents = new ArrayList<String>();
+
+  // Mapping of package names to extensions defined by the package (n > 1)
+  private final Map<String, Set<String>> externalCollections = new HashMap<>();
+
+  // Number of external component descriptors loaded since there is no longer a 1-1 correspondence
+  private volatile int numExternalComponentsLoaded = 0;
 
   // List of ComponentDatabaseChangeListeners
   private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
@@ -471,12 +481,34 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           this.onFailure(e);
           return;
         }
-        JSONObject componentJSONObject = new ClientJsonParser().parse(jsonFileContent).asObject();
+        JSONValue value = new ClientJsonParser().parse(jsonFileContent);
         COMPONENT_DATABASE.addComponentDatabaseListener(YaProjectEditor.this);
-        COMPONENT_DATABASE.addComponent(componentJSONObject);
-        if (!externalComponents.contains(componentJSONObject.get("name").toString())) { // In case of upgrade, we do not need to add entry
-          externalComponents.add(componentJSONObject.get("name").toString());
+        if (value instanceof JSONArray) {
+          JSONArray componentList = value.asArray();
+          COMPONENT_DATABASE.addComponents(componentList);
+          for (JSONValue component : componentList.getElements()) {
+            String name = component.asObject().get("type").asString().getString();
+            if (componentList.size() > 1) {  // this is a extension collection
+              String packageName = name.substring(0, name.lastIndexOf('.'));
+              if (!externalCollections.containsKey(packageName)) {
+                externalCollections.put(packageName, new HashSet<String>());
+              }
+              externalCollections.get(packageName).add(name);
+              name = packageName;
+            }
+            if (!externalComponents.contains(name)) {
+              externalComponents.add(name);
+            }
+          }
+        } else {
+          JSONObject componentJSONObject = value.asObject();
+          COMPONENT_DATABASE.addComponent(componentJSONObject);
+          // In case of upgrade, we do not need to add entry
+          if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
+            externalComponents.add(componentJSONObject.get("type").toString());
+          }
         }
+        numExternalComponentsLoaded++;
         if (afterComponentAdded != null) {
           afterComponentAdded.execute();
         }
@@ -499,8 +531,17 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   public  void removeComponent(Map<String, String> componentTypes) {
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    Set<String> removedPackages = new HashSet<String>();
     for (String componentType : componentTypes.keySet()) {
-      final String directory = componentsFolder.getFileId() + "/" + componentTypes.get(componentType) + "/";
+      String typeName = componentTypes.get(componentType);
+      if (!externalComponents.contains(typeName)) {
+        typeName = typeName.substring(0, typeName.lastIndexOf('.'));
+        if (removedPackages.contains(typeName)) {
+          continue;
+        }
+        removedPackages.add(typeName);
+      }
+      final String directory = componentsFolder.getFileId() + "/" + typeName + "/";
       ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
           new AsyncCallback<Long>() {
             @Override
@@ -552,7 +593,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       addComponent(componentNode, new Command() {
         @Override
         public void execute() {
-          if (componentCount == externalComponents.size()) { // This will be true for the last component added
+          if (componentCount == numExternalComponentsLoaded) { // true for the last component added
             externalComponentsLoaded = true;
           }
         }
@@ -567,6 +608,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     COMPONENT_DATABASE.addComponentDatabaseListener(this);
     COMPONENT_DATABASE.resetDatabase();
     externalComponents.clear();
+    numExternalComponentsLoaded = 0;
   }
 
   private static boolean isScreen1(String formName) {
@@ -601,6 +643,17 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   @Override
   public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
     boolean result = true;
+    Set<String> removedTypes = new HashSet<>(componentTypes);
+    // aggregate types in the same package
+    for (String type : removedTypes) {
+      String packageName = COMPONENT_DATABASE.getComponentType(type);
+      packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+      if (externalCollections.containsKey(packageName)) {
+        for (String siblingType : externalCollections.get(packageName)) {
+          componentTypes.add(siblingType.substring(siblingType.lastIndexOf('.') + 1));
+        }
+      }
+    }
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       result = result & cdbChangeListener.beforeComponentTypeRemoved(componentTypes);
     }

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -685,10 +685,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // Note: We create a ClippedImagePrototype because we need something that can be
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
-    String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
-        iconImage.getOriginTop(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT).getHTML();
     TreeItem itemNode = new TreeItem(
-        new HTML("<span>" + imageHTML + getName() + "</span>"));
+        new HTML("<span>" + iconImage.getElement().getString() + getName() + "</span>"));
     itemNode.setUserObject(sourceStructureExplorerItem);
     return itemNode;
   }

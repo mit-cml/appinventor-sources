@@ -314,10 +314,23 @@ public final class ProjectBuilder {
       }
 
       File extCompJsonFile = new File (extCompDir, "component.json");
-      JSONObject extCompJson = new JSONObject(Resources.toString(
-          extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
-      nameTypeMap.put(extCompJson.getString("name"),
-          extCompJson.getString("type"));
+      if (extCompJsonFile.exists()) {
+        JSONObject extCompJson = new JSONObject(Resources.toString(
+            extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
+        nameTypeMap.put(extCompJson.getString("name"),
+            extCompJson.getString("type"));
+      } else {  // multi-extension package
+        extCompJsonFile = new File(extCompDir, "components.json");
+        if (extCompJsonFile.exists()) {
+          JSONArray extCompJson = new JSONArray(Resources.toString(
+              extCompJsonFile.toURI().toURL(), Charsets.UTF_8));
+          for (int i = 0; i < extCompJson.length(); i++) {
+            JSONObject extCompDescriptor = extCompJson.getJSONObject(i);
+            nameTypeMap.put(extCompDescriptor.getString("name"),
+                extCompDescriptor.getString("type"));
+          }
+        }
+      }
     }
 
     return nameTypeMap;

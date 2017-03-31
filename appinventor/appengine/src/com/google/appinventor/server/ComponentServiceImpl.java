@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015 MIT, All rights reserved
+// Copyright 2015-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,7 +11,6 @@ import com.google.appinventor.shared.rpc.component.ComponentImportResponse;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -25,12 +24,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ComponentServiceImpl extends OdeRemoteServiceServlet
@@ -131,28 +132,102 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     return contents;
   }
 
+  /**
+   * Updates the name of any components in newComponents with the name specified in oldComponents.
+   * This destructively modifies newComponents.
+   * @param oldComponents an array of component descriptions from the old component[s].json
+   * @param newComponents an array of component descriptions from the new component[s].json
+   * @return A mapping of component fully-qualified class names to presentation (UI) names
+   */
+  private Map<String, String> applyRenames(JSONArray oldComponents, JSONArray newComponents) {
+    Map<String, String> types = new HashMap<>();
+    for (int i = 0; i < oldComponents.length(); i++) {
+      JSONObject component = oldComponents.getJSONObject(i);
+      types.put(component.getString("type"), component.getString("name"));
+    }
+    for (int i = 0; i < newComponents.length(); i++) {
+      JSONObject component = newComponents.getJSONObject(i);
+      String type = component.getString("type");
+      if (!types.containsKey(type)) {
+        types.put(type, component.getString("name"));
+      } else {
+        component.put("name", types.get(type));
+      }
+    }
+    return types;
+  }
+
+  /**
+   * Extract a mapping of component fully-quallyified class names to presentation (UI) names
+   * @param components an array of component descriptions
+   * @return A mapping of component fully-qualified class names to presentation (UI) names
+   */
+  private Map<String, String> extractTypes(JSONArray components) {
+    Map<String, String> types = new HashMap<>();
+    for (int i = 0; i < components.length(); i++) {
+      JSONObject component = components.getJSONObject(i);
+      types.put(component.getString("type"), component.getString("name"));
+    }
+    return types;
+  }
+
   private void importToProject(Map<String, byte[]> contents, long projectId,
       String folderPath, ComponentImportResponse response) throws FileImporterException, IOException {
+    response.setStatus(ComponentImportResponse.Status.IMPORTED);
     List<ProjectNode> compNodes = new ArrayList<ProjectNode>();
     response.setProjectId(projectId);
     List<String> sourceFiles = storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId);
-    boolean extensionUpgrade = false;
-    String oldCompName; // name with which extension is already imported, we have to grab from the old component files
+    Map<String, String> types = new TreeMap<>();
     for (String name : contents.keySet()) {
       String destination = folderPath + "/external_comps/" + name;
       if (sourceFiles.contains(destination)) {  // Check if source File already contains component files
         // This is an upgrade, if it replaces old component files
-        extensionUpgrade = true;
+        response.setStatus(ComponentImportResponse.Status.UPGRADED);
+        JSONArray oldComponents, newComponents;
         if (StorageUtil.basename(name).equals("component.json")) { // TODO : we need a more secure check
-          // We modify the name property of the new component.json to match that of the already imported component.json
-          JSONObject oldCompJson = new JSONObject(storageIo.downloadFile(
-              userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET));
-          oldCompName = oldCompJson.getString("name");
-          String componentJSONString = new String(contents.get(name), StorageUtil.DEFAULT_CHARSET);
-          JSONObject newCompJSon = new JSONObject(componentJSONString);
-          newCompJSon.put("name", oldCompName); //change the name to the same as that of already imported component
-          componentJSONString = newCompJSon.toString(1); // 1 is the indent factor, let it look beautiful
-          contents.put(name, componentJSONString.getBytes(StorageUtil.DEFAULT_CHARSET));
+          oldComponents = new JSONArray("[" + storageIo.downloadFile(userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET));
+          newComponents = new JSONArray("[" + new String(contents.get(name), StorageUtil.DEFAULT_CHARSET) + "]");
+          types = applyRenames(oldComponents, newComponents);
+          // upgrade component.json to components.json
+          contents.remove(name);
+          name = name.substring(0, name.length() - "component.json".length()) + "components.json";
+          contents.put(name, newComponents.toString().getBytes(StorageUtil.DEFAULT_CHARSET));
+        } else if (StorageUtil.basename(name).equals("components.json")) {
+          oldComponents = new JSONArray(storageIo.downloadFile(userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET));
+          newComponents = new JSONArray(new String(contents.get(name), StorageUtil.DEFAULT_CHARSET));
+          types = applyRenames(oldComponents, newComponents);
+          contents.put(name, newComponents.toString().getBytes(StorageUtil.DEFAULT_CHARSET));
+        }
+      } else if(StorageUtil.basename(name).equals("components.json")) {
+        String oldDestination = destination.substring(0, destination.length() - "components.json".length()) + "component.json";
+        if (sourceFiles.contains(oldDestination)) {
+          // old extension used component.json but new extension is components.json
+          JSONArray oldComponents, newComponents;
+          oldComponents = new JSONArray("[" + storageIo.downloadFile(userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET) + "]");
+          newComponents = new JSONArray(new String(contents.get(name), StorageUtil.DEFAULT_CHARSET));
+          types = applyRenames(oldComponents, newComponents);
+          storageIo.deleteFile(userInfoProvider.getUserId(), projectId, oldDestination);
+        } else {
+          // new file
+          types = extractTypes(new JSONArray(new String(contents.get(name), StorageUtil.DEFAULT_CHARSET)));
+        }
+      } else if(StorageUtil.basename(name).equals("component.json")) {
+        String altDestination = destination.substring(0, destination.length() - "component.json".length()) + "components.json";
+        String arrayContent = "[" + new String(contents.get(name), StorageUtil.DEFAULT_CHARSET) + "]";
+        if (sourceFiles.contains(altDestination)) {
+          // potential downgrade? new extensions have components.json
+          types = applyRenames(new JSONArray(storageIo.downloadFile(userInfoProvider.getUserId(), projectId, destination, StorageUtil.DEFAULT_CHARSET)), new JSONArray(arrayContent));
+          // upgrade component.json to components.json
+          contents.remove(name);
+          contents.put(altDestination, arrayContent.getBytes(StorageUtil.DEFAULT_CHARSET));
+          name = altDestination;
+        } else {
+          // new file; force upgrade to components.json
+          types = extractTypes(new JSONArray(arrayContent));
+          // upgrade component.json to components.json
+          contents.remove(name);
+          contents.put(altDestination, arrayContent.getBytes(StorageUtil.DEFAULT_CHARSET));
+          name = altDestination;
         }
       }
       FileNode fileNode = new YoungAndroidComponentNode(StorageUtil.basename(name), destination);
@@ -161,16 +236,8 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
       compNodes.add(fileNode);
     }
 
-    if (extensionUpgrade) {
-      response.setStatus(ComponentImportResponse.Status.UPGRADED);
-    } else {
-      response.setStatus(ComponentImportResponse.Status.IMPORTED);
-    }
-    String type = contents.keySet().iterator().next(); // get an element
-    type = type.substring(0, type.indexOf('/')); // get the type
-    response.setComponentType(type);
+    response.setComponentTypes(types);
     response.setNodes(compNodes);
-    return;
   }
 
 

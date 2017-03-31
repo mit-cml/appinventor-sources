@@ -35,6 +35,7 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -745,17 +746,33 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     messager = processingEnv.getMessager();
 
+    List<Element> elements = new ArrayList<>();
+    List<Element> excludedElements = new ArrayList<>();
     for (TypeElement te : annotations) {
-      if (te.getSimpleName().toString().equals("DesignerComponent")
-          || te.getSimpleName().toString().equals("SimpleObject")) {
+      if (te.getSimpleName().toString().equals("DesignerComponent")) {
+        elements.addAll(roundEnv.getElementsAnnotatedWith(te));
+      } else if (te.getSimpleName().toString().equals("SimpleObject")) {
         for (Element element : roundEnv.getElementsAnnotatedWith(te)) {
-          processComponent(element);
+          SimpleObject annotation = element.getAnnotation(SimpleObject.class);
+          if (!annotation.external()) {
+            elements.add(element);
+          } else {
+            excludedElements.add(element);
+          }
         }
       }
+    }
+    elements.removeAll(excludedElements);
+    System.out.println("Number of elements = " + elements.size());
+    for (Element element : elements) {
+      processComponent(element);
     }
 
     // Put the component class names (including abstract classes)
     componentTypes.addAll(components.keySet());
+    for (Element element : excludedElements) {
+      componentTypes.add(element.asType().toString());  // allow extensions to reference one another
+    }
 
     // Remove non-components before calling outputResults.
     List<String> removeList = Lists.newArrayList();
@@ -1402,7 +1419,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
     // {float, double, int, short, long} -> number
     if (type.equals("float") || type.equals("double") || type.equals("int") ||
-        type.equals("short") || type.equals("long")) {
+        type.equals("short") || type.equals("long") || type.equals("byte") ||
+        type.equals("short")) {
       return "number";
     }
     // YailList -> list
