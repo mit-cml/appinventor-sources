@@ -55,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 
 
@@ -145,8 +146,14 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     // Retrieve new posts as they are added to the CloudDB.
     Thread t = new Thread() {
       public void run() {
-        Jedis jedis = getJedis();
-        jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
+        while (true) {
+          Jedis jedis = getJedis();
+          try {
+            jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
+          } catch (Exception e) {
+            continue;
+          }
+        }
       }
     };
     t.start();
@@ -570,8 +577,16 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   }
   
   private Jedis getJedis(){
-    Jedis jedis = new Jedis("128.52.179.76", 6379);
-    jedis.auth("test6789");
+    Jedis jedis;
+    while (true) {
+      try {
+        jedis = new Jedis("128.52.179.76", 6379);
+        jedis.auth("test6789");
+        break;
+      } catch (JedisConnectionException e) {
+        continue;
+      }
+    }
     return jedis;
   }
 
