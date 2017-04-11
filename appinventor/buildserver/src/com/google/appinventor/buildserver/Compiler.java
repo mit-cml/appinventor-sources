@@ -610,6 +610,13 @@ public final class Compiler {
       }
 
       out.write("  </application>\n");
+
+      // This might be necessary to get Google Play to show the app to tablets, on some devices.
+      // It does not, however, get rid of the "designed for phones" comment in Play.  That requires
+      // API (11?) and adding additionaal resource folders for large screens.
+      out.write ("<supports-screens android:largeScreens=\"true\" android:xlargeScreens=\"true\" android:anyDensity=\"true\" /> \n");
+
+
       out.write("</manifest>\n");
       out.close();
     } catch (IOException e) {
