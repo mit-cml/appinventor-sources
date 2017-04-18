@@ -1407,7 +1407,7 @@ public final class Compiler {
             file);
         resources.put(resourcePath, file);
       }
-      return file.getAbsolutePath();
+      return file.getAbsolutePath().replace(File.separatorChar, '/');
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
