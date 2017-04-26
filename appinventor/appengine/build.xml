@@ -148,7 +148,7 @@
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/findbugs/jsr305.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-18.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-20.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/firebase/firebase-token-generator-2.0.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-codec/commons-codec-1.7.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/json/json.jar" />
@@ -274,7 +274,9 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
@@ -344,7 +346,9 @@
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
@@ -414,7 +418,9 @@
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
@@ -464,8 +470,10 @@
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
@@ -496,7 +504,9 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
