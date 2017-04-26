@@ -469,31 +469,9 @@ Blockly.Blocks['procedures_defreturn'] = {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var name = Blockly.Procedures.findLegalName(
         Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE, this);
-    /** @type {Blockly.ProcedureDatabase} */
-    var procDb = this.getTopWorkspace().getProcedureDatabase();
-    /**
-     * @type {function(this: Blockly.FieldTextInput, newName: !string)}
-     * @param newName
-     */
-    var validateThenCreateOrRename = function(newName) {
-      if (!procDb) {  // the block's workspace is a flyout/flydown without a procedure database
-        return true;
-      }
-      var oldName = this.text_;
-      newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
-      if (procDb.getProcedure(newName)) {
-        return false;  // name conflict
-      }
-      if (!procDb.getProcedure(oldName)) {
-        // register procedure
-        procDb.addProcedure(newName, this.sourceBlock_);
-      } else {
-        procDb.renameProcedure(oldName, newName);
-      }
-    };
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE)
-        .appendField(new Blockly.FieldTextInput(name, validateThenCreateOrRename), 'NAME');
+        .appendField(new AI.Blockly.FieldProcedureName(name), 'NAME');
     this.horizontalParameters = true; // horizontal by default
     this.appendIndentedValueInput('RETURN')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
