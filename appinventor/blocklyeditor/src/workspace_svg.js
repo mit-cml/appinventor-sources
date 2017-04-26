@@ -673,7 +673,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
     Blockly.getMainWorkspace().getBackpack().count() + ")";
   backpackRetrieve.callback = function() {
     if (Blockly.getMainWorkspace().hasBackpack()) {
-      Blockly.getMainWorkspace().getBackpack().pasteBackpack(this.backpack_);
+      Blockly.getMainWorkspace().getBackpack().pasteBackpack();
     }
   };
   menuOptions.push(backpackRetrieve);
@@ -682,7 +682,7 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var backpackCopyAll = {enabled: true};
   backpackCopyAll.text = Blockly.Msg.COPY_ALLBLOCKS;
   backpackCopyAll.callback = function() {
-    if (this.backpack_) {
+    if (Blockly.getMainWorkspace().hasBackpack()) {
       Blockly.getMainWorkspace().getBackpack().addAllToBackpack();
     }
   };
@@ -692,7 +692,9 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   var backpackClear = {enabled: true};
   backpackClear.text = Blockly.Msg.BACKPACK_EMPTY;
   backpackClear.callback = function() {
-    Blockly.getMainWorkspace().getBackpack().clear();
+    if (Blockly.getMainWorkspace().hasBackpack()) {
+      Blockly.getMainWorkspace().getBackpack().clear();
+    }
     backpackRetrieve.text = Blockly.Msg.BACKPACK_GET;
   };
   menuOptions.push(backpackClear);

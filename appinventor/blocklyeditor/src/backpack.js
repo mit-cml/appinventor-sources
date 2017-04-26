@@ -246,7 +246,7 @@ Blockly.Backpack.prototype.pasteBackpack = function() {
     var ok = true;
     for (var j = 0; j < arr.length; j++) {
       var type = arr[j];
-      if (! this.workspace_.getComponentDatabase().hasType(type)) {
+      if (!Blockly.Blocks[type] && ! this.workspace_.getComponentDatabase().hasType(type)) {
         ok = false;
         break;
       }
