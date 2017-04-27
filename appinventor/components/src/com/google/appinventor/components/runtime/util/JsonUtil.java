@@ -177,6 +177,9 @@ public class JsonUtil {
     if (value instanceof Boolean) {
       return value.toString();
     }
+    if (value instanceof List) {
+      value = ((List)value).toArray();
+    }
     if (value.getClass().isArray()) {
       StringBuilder sb = new StringBuilder();
       sb.append("[");
