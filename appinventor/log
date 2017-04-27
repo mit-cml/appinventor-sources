@@ -1,0 +1,1304 @@
+--------- beginning of main
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-45
+D/WifiWatchdogStateMachine(  627): Exit DebounceWeakRssiState
+D/WifiWatchdogStateMachine(  627): enter DebounceWeakRssiState
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -45, 4
+E/WifiStateMachine(  627): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.01 rxSuccessRate=1.32 targetRoamBSSID=8a:15:04:ee:ea:61 RSSI=-45
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-45
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -44, 4
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-44
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -43, 4
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+--------- beginning of system
+I/ActivityManager(  627): START u0 {act=com.google.zxing.client.android.SCAN cmp=edu.mit.appinventor.aicompanion3/com.google.zxing.client.android.AppInvCaptureActivity} from uid 10143 on display 0
+I/Form    (23696): Form Screen1 got onPause
+I/ActivityManager(  627): Launched start pid= [ -1]
+V/ActivityManager(  627): Display changed displayId=0
+D/WindowManager(  627): adjustConfigurationLw, config:{0 0.0 ?mcc?mnc ?locale ?layoutDir sw600dp w1024dp h527dp 160dpi lrg land ?uimode ?night finger -keyb/v/h -nav/v} mLidState:-1 mHasDockFeature:false mHasKeyboardFeature:false mHasHallSensorFeature:false config.hardKeyboardHidden:2
+I/ActivityManager(  627): Config changes=480 {0 1.0 ?mcc?mnc en_US ?layoutDir sw600dp w1024dp h527dp 160dpi lrg land finger -keyb/v/h -nav/h s.24}
+I/InputReader(  627): Reconfiguring input devices.  changes=0x00000004
+I/InputReader(  627): Device reconfigured: id=3, name='focal-touchscreen', size 600x1024, orientation 1, mode 1, display id 0
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+D/AudioWizardService( 1015): AudioWizadService :onConfigurationChanged()
+D/Launcher.Utilities( 7515): isPhone= false
+D/FontUtils( 7515): getSavedDisplaySettingsFontScale: 1.0
+D/FontUtils( 7515): getSavedDisplaySettingsFontScale: 1.0
+D/FontUtils( 7515): checkAndGetSavedFontScale, Latest saved displaySettings fontscale: 1.0, current displaySettings fontscale: 1.0, AsusEzmodeStatus(0 is disabled): 0
+D/FontUtils( 7515): current Launcher saved fontscale: 1.0
+I/LauncherApplication( 7515): isSystemFontChanged: false
+D/FontUtils( 7515): current Launcher saved fontscale: 1.0
+D/Launcher.Utilities( 7515): Screen density does not change, it's not display size change.
+D/LauncherLog( 7515): LauncherModel changeWorkThread - set sWorker : sPADWorkerThread
+D/Launcher.Utilities( 7515): Screen density does not change, it's not display size change.
+D/LauncherLog( 7515): LauncherProvier - getDatabase: launcher.db
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+D/XT9IME  (  876): onStartInput isInputViewShown() = false isShowInputRequested() = false
+I/ActivityManager(  627): Launched start pid= [ 23696]
+I/WeatherTimeService( 1571): Action is: android.intent.action.CONFIGURATION_CHANGED
+D/Telecom ( 1045): AsusTelecomReceiver: AsusTelecomReceiver: onReceive()...action = android.intent.action.CONFIGURATION_CHANGED
+D/Launcher.Model( 7515): onReceive intent=Intent { act=android.intent.action.CONFIGURATION_CHANGED flg=0x70000010 }
+V/Monotype(23696): SetAppTypeFace- try to flip, app = edu.mit.appinventor.aicompanion3
+V/Monotype(23696):     Typeface getFontPathFlipFont - systemFont = default#default
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+I/XT9IME  (  876): sIsHighend = false
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+V/KeyguardUpdateMonitor(  747): *** unregister callback for com.android.keyguard.KeyguardStatusView$1@1f5f4d1e
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/KeyguardStatusView(  747): onFinishInflate...
+D/KeyguardStatusView(  747): get whatsnext from setting:-1;weather:-1
+D/KeyguardStatusView(  747): updateShortCutCountTask
+D/KeyguardUpdateMonitor(  747): updateShortcutItem, force = true
+D/KeyguardUpdateMonitor(  747): isSupportPhone = false
+V/KeyguardStatusView(  747): Enable transport text marquee
+V/KeyguardUpdateMonitor(  747): *** register callback for com.android.keyguard.KeyguardStatusView$1@1aa74e63
+V/KeyguardUpdateMonitor(  747): *** unregister callback for null
+W/AppInvCaptureActivity(23696): initCamera() was called
+I/PlatformSupportManager(23696): Using implementation class com.google.zxing.client.android.camera.open.GingerbreadOpenCameraInterface of interface com.google.zxing.client.android.camera.open.OpenCameraInterface for SDK 9
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  747): Failure retrieving resources for com.asus.camera: Resource ID #0x0
+D/KeyguardStatusView(  747): StatusView, onConfigurationChanged
+D/StatusBar.NetworkController(  747): onReceive action=android.intent.action.CONFIGURATION_CHANGED
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  747): Failure retrieving resources for com.asus.email: Resource ID #0x0
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+I/GingerbreadOpenCamera(23696): Opening camera #0
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+W/AudioFlinger(  210): acquireAudioSessionId() unknown client 23696 for session 43
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+I/AwesomePlayer(  210): setDataSource_l(<no-scheme URI suppressed>)
+W/PackageManager(  747): Failure retrieving resources for com.asus.browser: Resource ID #0x0
+W/linker  (  210): libstagefright_soft_vorbisdec_mdp.so has text relocations. This is wasting memory and prevents security hardening. Please fix.
+I/MDP_OMX_CORE(  210): Created OMXPlugin : OMX.Intel.vorbis.decoder
+W/AudioFlinger(  210): acquireAudioSessionId() unknown client 23696 for session 44
+I/AwesomePlayer(  210): setDataSource_l(<no-scheme URI suppressed>)
+V/PhoneStatusBar(  747): setLightsOn(true)
+D/KeyguardStatusView(  747): updateShortCutCountTask postEx:true
+D/KeyguardStatusView(  747): resId = 0
+D/KeyguardStatusView(  747): resId = 0
+D/KeyguardStatusView(  747): resId = 0
+I/MDP_OMX_CORE(  210): Created OMXPlugin : OMX.Intel.vorbis.decoder
+W/AudioFlinger(  210): acquireAudioSessionId() unknown client 23696 for session 45
+I/AwesomePlayer(  210): setDataSource_l(<no-scheme URI suppressed>)
+I/MDP_OMX_CORE(  210): Created OMXPlugin : OMX.Intel.vorbis.decoder
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+I/Camera2ClientBase(  210): Camera 0: Opened. Client: edu.mit.appinventor.aicompanion3 (PID 23696, UID 10143)
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+D/DIT_ARC (  210): ArcSoftMOD version: 6749
+D/DIT_ARC (  210): ArcSoftVD version: 6749
+D/DIT_ARC (  210): ArcSoftVD version: 6749
+D/DIT_ARC (  210): ArcSoftVD version: 6749
+D/IA_IMAGING(  210): IA ISP CIF 2.0  VERSION v2.0_007.001
+D/IA_IMAGING(  210): IA AIQ VERSION v2.0_007.006
+E/Camera_Intel3aPlus(  210): Mismatch in number of scene overrides in XML configuration
+E/Camera_Intel3aPlus(  210): There are more scene modes supported than overrides
+W/Binder_4( 2562): type=1400 audit(0.0:246): avc: denied { getattr } for path="/factory/hm2051_response.txt" dev="mmcblk0p13" ino=18 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+W/Binder_4( 2562): type=1400 audit(0.0:247): avc: denied { getattr } for path="/factory/hm2051_golden.txt" dev="mmcblk0p13" ino=16 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+W/Binder_4( 2562): type=1400 audit(0.0:248): avc: denied { getattr } for path="/factory/gc0310_response.txt" dev="mmcblk0p13" ino=21 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+W/Binder_4( 2562): type=1400 audit(0.0:249): avc: denied { getattr } for path="/factory/gc0310_golden.txt" dev="mmcblk0p13" ino=19 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+W/Binder_4( 2562): type=1400 audit(0.0:250): avc: denied { getattr } for path="/factory/hm2051_shading.txt" dev="mmcblk0p13" ino=17 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+W/Binder_4( 2562): type=1400 audit(0.0:251): avc: denied { getattr } for path="/factory/gc0310_shading.txt" dev="mmcblk0p13" ino=20 scontext=u:r:mediaserver:s0 tcontext=u:object_r:factory_file:s0 tclass=file
+E/dit_DS  (  210): dit enableSaveImg
+D/ImgEncoder(  210): Can't create JpegHwEncoder!
+D/PlatformData(  210): @getCameraInfo, current HAL version:CAMERA_DEVICE_API_VERSION_3_2
+I/Camera2-Parameters(  210): Camera 0: Disabling ZSL mode
+I/CameraConfiguration(23696): Screen resolution: Point(1024, 552)
+I/CameraConfiguration(23696): Supported preview sizes: 1280x720 720x480 640x480 352x288 320x240 176x144 
+I/CameraConfiguration(23696): Using largest suitable preview size: Point(1280, 720)
+I/CameraConfiguration(23696): Camera resolution: Point(1280, 720)
+I/CameraConfiguration(23696): Initial camera parameters: preview-size=1280x720;video-size=1280x720;preferred-preview-size-for-video=1280x720;preview-size-values=1280x720,720x480,640x480,352x288,320x240,176x144;video-size-values=1280x720,720x480,640x480,352x288,320x240,176x144;preview-format=yuv420sp;preview-format-values=yuv420p,yuv420sp;preview-frame-rate=30;preview-fps-range=10000,30000;preview-fps-range-values=(10000,30000),(30000,30000);preview-frame-rate-values=30;picture-size=1600x1200;picture-size-values=1600x1200,1600x900,1280x960,1280x720,640x480,352x288,320x240,176x144;picture-format=jpeg;picture-format-values=jpeg;jpeg-thumbnail-width=320;jpeg-thumbnail-height=240;jpeg-thumbnail-size-values=0x0,160x120,320x180,320x240;jpeg-thumbnail-quality=90;jpeg-quality=90;rotation=0;whitebalance=auto;whitebalance-values=auto,incandescent,fluorescent,warm-fluorescent,daylight,cloudy-daylight,shade,twilight;effect=none;effect-values=none,mono,negative,sepia;antibanding=auto;antibanding-values=off,50hz,60hz,auto;focus-mode=fixed;focus-mode-values=fixed;max-num-focus-areas=0;focus-areas=(0,0,0,0,0);focal-length=2.15;horizontal-view-angle=66.1413;vertical-view-angle=52.0592;exposure-compensation=0;max-exposure-compensation=6;min-exposure-compensation=-6;exposure-compensation-step=0.333333;auto-exposure-lock=false;auto-exposure-lock-supported=true;auto-whitebalance-lock=false;auto-whitebalance-lock-supported=true;max-num-metering-areas=1;metering-areas=(0,0,0,0,0);zoom=0;max-zoom=39;zoom-ratios=100,107,115,123,130,138,146,153,161,169,176,184,192,200,207,215,223,230,238,246,253,261,269,276,284,292,300,307,315,323,330,338,346,353,361,369,376,384,392,400;zoom-supported=true;smooth-zoom-supported=false;focus-distances=Infinity,Infinity,Infinity;max-num-detected-faces-hw=10;max-num-detected-faces-sw=0;video-frame-format=android-opaque;recording-hint=false;video-snapshot-supported=true;video-stabilization=false;video-stabilization-supported=false;asus_beauty=0;image_optimize=off;hdr=disable;mode=NOR;EIS=off;video_optimize=off;asus_video_stabilization=off;low_light_video=off;burst-num=0;burst-num-per-sec=0;metering_mode=center;detect_light=off;detect_mode=0
+I/CameraConfiguration(23696): Supported values: null
+I/CameraConfiguration(23696): Settable value: null
+I/CameraConfiguration(23696): Supported values: [fixed]
+I/CameraConfiguration(23696): Settable value: null
+I/CameraConfiguration(23696): Supported values: [fixed]
+I/CameraConfiguration(23696): Settable value: null
+I/CameraConfiguration(23696): Setting Camera Preview Size to: Point(1280, 720)
+E/Camera2-Parameters(  210): mAsusMode NOR
+E/ion     (  210): ioctl c0144900 failed with code -1: Not a typewriter
+E/[Gralloc-ERROR](  210): int gralloc_alloc_buffer(alloc_device_t*, size_t, int, const native_handle_t**, int):283 Failed to ion_alloc from ion_client:17, size: 115200
+W/GraphicBufferAllocator(  210): alloc(320, 240, 17, 00020330, ...) failed -1 (Operation not permitted)
+E/[Gralloc-ERROR](  210): int gralloc_lock(const gralloc_module_t*, buffer_handle_t, int, int, int, int, int, void**):309 Locking invalid buffer 0x0, returning error
+W/GraphicBufferMapper(  210): lock(...) failed -22 (Invalid argument)
+E/Camera_StreamBuffer(  210): @allocateGraphicBuffer: Failed to lock GraphicBuffer! -22
+E/Camera_CaptureUnit(  210): Failed to allocate internal thumbnail buffers
+D/Camera_CIFReqHandler(  210): [DEBUG]: releaseItem Status = OK
+E/Camera_Stream(  210): configure error, not match
+E/Camera_Stream(  210): configure error, not match
+D/Camera3-Stream(  210): registerBuffersLocked: Skipping NULL check for deprecated register_stream_buffers
+D/Camera3-Stream(  210): registerBuffersLocked: Skipping NULL check for deprecated register_stream_buffers
+I/PlatformSupportManager(23696): Using implementation class com.google.zxing.client.android.common.executor.HoneycombAsyncTaskExecInterface of interface com.google.zxing.client.android.common.executor.AsyncTaskExecInterface for SDK 11
+I/AutoFocusManager(23696): Current focus mode 'fixed'; use auto focus? false
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 0, frame ID: 1
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 0, frame ID: 1
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 1 got for 0
+W/Camera_CaptureSettingsHistory(  210): negative diff: -2, from history: 0, frame ID: 2
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 2 got for 0
+W/Camera_CaptureSettingsHistory(  210): negative diff: -3, from history: 0, frame ID: 3
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -3, from history: 0, frame ID: 3
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 3 got for 0
+W/Camera_IspStatSrc(  210): No active devices, dropping the event
+E/ion     (  210): ioctl c0144900 failed with code -1: Not a typewriter
+E/[Gralloc-ERROR](  210): int gralloc_alloc_buffer(alloc_device_t*, size_t, int, const native_handle_t**, int):283 Failed to ion_alloc from ion_client:17, size: 115200
+W/GraphicBufferAllocator(  210): alloc(320, 240, 17, 00020330, ...) failed -1 (Operation not permitted)
+E/[Gralloc-ERROR](  210): int gralloc_lock(const gralloc_module_t*, buffer_handle_t, int, int, int, int, int, void**):309 Locking invalid buffer 0x0, returning error
+W/GraphicBufferMapper(  210): lock(...) failed -22 (Invalid argument)
+E/Camera_StreamBuffer(  210): @allocateGraphicBuffer: Failed to lock GraphicBuffer! -22
+E/Camera_CaptureUnit(  210): Failed to allocate internal thumbnail buffers
+D/Camera_CIFReqHandler(  210): [DEBUG]: releaseItem Status = OK
+E/Camera_Stream(  210): configure error, not match
+E/Camera_Stream(  210): configure error, not match
+E/Camera_Stream(  210): configure error, not match
+D/Camera3-Stream(  210): registerBuffersLocked: Skipping NULL check for deprecated register_stream_buffers
+I/Choreographer(23696): Skipped 58 frames!  The application may be doing too much work on its main thread.
+D/CameraManager(23696): Calculated framing rect: Rect(128, 69 - 896, 483)
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/XT9IME  (  876): onStartInput isInputViewShown() = false isShowInputRequested() = false
+I/ActivityManager(  627): Displayed edu.mit.appinventor.aicompanion3/com.google.zxing.client.android.AppInvCaptureActivity: +1s238ms
+I/ActivityManager(  627): Launched end pid= [ 23696]
+I/WindowManager(  627): Screen frozen for +1s243ms due to Window{2705544f u0 edu.mit.appinventor.aicompanion3/com.google.zxing.client.android.AppInvCaptureActivity}
+I/Form    (23696): Form Screen1 got onStop
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/Camera_CaptureSettingsHistory(  210): diff > prev. No change
+D/Camera_CaptureSettingsHistory(  210): diff > prev. No change
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 3, frame ID: 4
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 3, frame ID: 4
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 4 got for 5
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-43
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+I/art     (23696): Background partial concurrent mark sweep GC freed 1450(167KB) AllocSpace objects, 9(5MB) LOS objects, 39% free, 7MB/12MB, paused 8.296ms total 57.542ms
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -38, 4
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+W/art     (23696): Suspending all threads took: 7.382ms
+I/art     (23696): Background partial concurrent mark sweep GC freed 1484(131KB) AllocSpace objects, 8(5MB) LOS objects, 39% free, 7MB/12MB, paused 11.301ms total 60.480ms
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/DecodeHandler(23696): Found barcode in 99 ms
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+D/CaptureActivityHandler(23696): Got decode succeeded message
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+I/art     (23696): Background partial concurrent mark sweep GC freed 77(5KB) AllocSpace objects, 2(1413KB) LOS objects, 39% free, 11MB/18MB, paused 5.168ms total 42.934ms
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+I/art     (  627): Explicit concurrent mark sweep GC freed 49979(2MB) AllocSpace objects, 8(1372KB) LOS objects, 33% free, 19MB/29MB, paused 2.609ms total 209.479ms
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 78, frame ID: 79
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 78, frame ID: 79
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 79 got for 80
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 83, frame ID: 84
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 83, frame ID: 84
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 84 got for 85
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureUnit(  210): TODO: handle the stream-off with multiple buffers in device
+D/CaptureActivityHandler(23696): Got return scan result message
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 86, frame ID: 87
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -1, from history: 86, frame ID: 87
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 87 got for 86
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+W/Camera_CaptureSettingsHistory(  210): negative diff: -2, from history: 86, frame ID: 88
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 88 got for 86
+W/Camera_CaptureSettingsHistory(  210): negative diff: -2, from history: 86, frame ID: 88
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+E/ion     (  210): ioctl c0084907 failed with code -1: Not a typewriter
+E/gralloc (  210): int gralloc_unlock(const gralloc_module_t*, buffer_handle_t): ion_sync_fd failed!
+W/Camera_CaptureSettingsHistory(  210): negative diff: -3, from history: 86, frame ID: 89
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 89 got for 86
+W/Camera_CaptureSettingsHistory(  210): negative diff: -4, from history: 86, frame ID: 90
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 90 got for 86
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-38
+W/Camera_CaptureSettingsHistory(  210): negative diff: -5, from history: 86, frame ID: 91
+W/Camera_RawReqHandler(  210): prepareAaStats could not find the settings in effect for frameId 91 got for 86
+W/Camera_IspStatSrc(  210): No active devices, dropping the event
+I/Camera2Client(  210): Camera 0: Closed
+I/Camera2ClientBase(  210): Closed Camera 0. Client was: edu.mit.appinventor.aicompanion3 (PID 23696, UID 10143)
+E/SimpleSoftOMXComponent(  210): 1
+E/SimpleSoftOMXComponent(  210): 2
+E/SimpleSoftOMXComponent(  210): 3
+E/SimpleSoftOMXComponent(  210): 1
+E/SimpleSoftOMXComponent(  210): 2
+E/SimpleSoftOMXComponent(  210): 3
+E/SimpleSoftOMXComponent(  210): 1
+E/SimpleSoftOMXComponent(  210): 2
+E/SimpleSoftOMXComponent(  210): 3
+V/ActivityManager(  627): Display changed displayId=0
+D/WindowManager(  627): adjustConfigurationLw, config:{0 0.0 ?mcc?mnc ?locale ?layoutDir sw600dp w600dp h951dp 160dpi lrg port ?uimode ?night finger -keyb/v/h -nav/v} mLidState:-1 mHasDockFeature:false mHasKeyboardFeature:false mHasHallSensorFeature:false config.hardKeyboardHidden:2
+I/ActivityManager(  627): Config changes=480 {0 1.0 ?mcc?mnc en_US ?layoutDir sw600dp w600dp h951dp 160dpi lrg port finger -keyb/v/h -nav/h s.25}
+I/InputReader(  627): Reconfiguring input devices.  changes=0x00000004
+I/InputReader(  627): Device reconfigured: id=3, name='focal-touchscreen', size 600x1024, orientation 0, mode 1, display id 0
+D/AudioWizardService( 1015): AudioWizadService :onConfigurationChanged()
+D/Launcher.Utilities( 7515): isPhone= false
+D/FontUtils( 7515): getSavedDisplaySettingsFontScale: 1.0
+D/FontUtils( 7515): getSavedDisplaySettingsFontScale: 1.0
+D/FontUtils( 7515): checkAndGetSavedFontScale, Latest saved displaySettings fontscale: 1.0, current displaySettings fontscale: 1.0, AsusEzmodeStatus(0 is disabled): 0
+D/FontUtils( 7515): current Launcher saved fontscale: 1.0
+I/LauncherApplication( 7515): isSystemFontChanged: false
+D/FontUtils( 7515): current Launcher saved fontscale: 1.0
+D/Launcher.Utilities( 7515): Screen density does not change, it's not display size change.
+D/LauncherLog( 7515): LauncherModel changeWorkThread - set sWorker : sPADWorkerThread
+D/Launcher.Utilities( 7515): Screen density does not change, it's not display size change.
+D/LauncherLog( 7515): LauncherProvier - getDatabase: launcher.db
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+D/XT9IME  (  876): onStartInput isInputViewShown() = false isShowInputRequested() = false
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+D/Telecom ( 1045): AsusTelecomReceiver: AsusTelecomReceiver: onReceive()...action = android.intent.action.CONFIGURATION_CHANGED
+I/WeatherTimeService( 1571): Action is: android.intent.action.CONFIGURATION_CHANGED
+D/Launcher.Model( 7515): onReceive intent=Intent { act=android.intent.action.CONFIGURATION_CHANGED flg=0x70000010 }
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+V/ReflectionMethods(  747): ========ReflectionMethods.isFlipfontSupport = true ===============
+I/Form    (23696): Form Screen1 got onActivityResult, requestCode = 2, resultCode = -1
+V/KeyguardUpdateMonitor(  747): *** unregister callback for com.android.keyguard.KeyguardStatusView$1@1aa74e63
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/KeyguardStatusView(  747): onFinishInflate...
+D/KeyguardStatusView(  747): get whatsnext from setting:-1;weather:-1
+D/KeyguardStatusView(  747): updateShortCutCountTask
+D/KeyguardUpdateMonitor(  747): updateShortcutItem, force = true
+D/KeyguardUpdateMonitor(  747): isSupportPhone = false
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+D/XT9IME  (  876): [Unbundle] Android 4.4 always add Emoji subtypes
+I/XT9IME  (  876): sIsHighend = false
+V/KeyguardStatusView(  747): Enable transport text marquee
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  747): Failure retrieving resources for com.asus.camera: Resource ID #0x0
+V/KeyguardUpdateMonitor(  747): *** register callback for com.android.keyguard.KeyguardStatusView$1@3a177b90
+V/KeyguardUpdateMonitor(  747): *** unregister callback for null
+D/PhoneStatus(23696): Seed = joiltb
+D/PhoneStatus(23696): Code = 1e2c39c627d46148f7455adbae0b2deca745b339
+D/KeyguardStatusView(  747): StatusView, onConfigurationChanged
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  747): Failure retrieving resources for com.asus.email: Resource ID #0x0
+W/ResourceType(  747): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  747): Failure retrieving resources for com.asus.browser: Resource ID #0x0
+I/ReplForm(23696): started AppInvHTTPD
+I/Form    (23696): Form Screen1 got onResume
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/StatusBar.NetworkController(  747): onReceive action=android.intent.action.CONFIGURATION_CHANGED
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+W/SurfaceFlinger(  188): couldn't log to binary event log: overflow.
+D/KeyguardStatusView(  747): updateShortCutCountTask postEx:true
+D/KeyguardStatusView(  747): resId = 0
+D/KeyguardStatusView(  747): resId = 0
+D/KeyguardStatusView(  747): resId = 0
+V/PhoneStatusBar(  747): setLightsOn(true)
+D/XT9IME  (  876): onStartInput isInputViewShown() = false isShowInputRequested() = false
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+I/WindowManager(  627): Screen frozen for +400ms due to Window{2f5f6ef1 u0 edu.mit.appinventor.aicompanion3/edu.mit.appinventor.aicompanion3.Screen1}
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -43, 4
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838307
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+I/art     (  627): Explicit concurrent mark sweep GC freed 5444(267KB) AllocSpace objects, 0(0B) LOS objects, 33% free, 19MB/29MB, paused 3.007ms total 195.226ms
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-43
+D/WifiWatchdogStateMachine(  627): Exit DebounceWeakRssiState
+D/WifiWatchdogStateMachine(  627): enter DebounceWeakRssiState
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -43, 4
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-43
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/AppInvHTTPD(23696): NanoHTTPD: getPoolSize() = 0
+D/AppInvHTTPD(23696): GET '/_getversion' 
+D/AppInvHTTPD(23696): NanoHTTPD: getPoolSize() = 1
+D/AppInvHTTPD(23696): NanoHTTPD: getPoolSize() = 2
+D/AppInvHTTPD(23696): POST '/_values' 
+D/AppInvHTTPD(23696): POST '/_newblocks' 
+D/AppInvHTTPD(23696): Incoming Mac = 09da0b17d9702e1083427c4611a83ad45187b123
+D/AppInvHTTPD(23696): Computed Mac = 09da0b17d9702e1083427c4611a83ad45187b123
+D/AppInvHTTPD(23696): Incoming seq = 1
+D/AppInvHTTPD(23696): Computed seq = 1
+D/AppInvHTTPD(23696): blockid = -2
+D/AppInvHTTPD(23696): To Eval: (begin (require <com.google.youngandroid.runtime>) (process-repl-input -2 (begin (clear-current-form)(try-catch (let ((attempt (delay (set-form-name "Screen1")))) (force attempt)) (exception java.lang.Throwable (exception:printStackTrace) 'notfound))(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "RedCloudTest1" 'text)\u000a (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)\u000a)\u000a\u000a(add-component Screen1 com.google.appinventor.components.runtime.Button Button1 \u000a(set-and-coerce-property! 'Button1 'Width -2 'number)\u000a\u000a(set-and-coerce-property! 'Button1 'Text "Hello" 'text)\u000a\u000a)\u000a\u000a(add-component Screen1 com.google.appinventor.components.runtime.RedCloud RedCloud1 \u000a(set-and-coerce-property! 'RedCloud1 'AccountName "acname" 'text)\u000a\u000a(set-and-coerce-property! 'RedCloud1 'ProjectID "projid" 'text)\u000a\u000a)\u000a(init-runtime)(define-event Button1 Click()(set-this-form)\u000a    (set-and-coerce-property! 'Button1 'BackgroundColor -65536 'number))(call-Initialize-of-components 'Screen1 'Button1 'RedCloud1) )))
+D/AppInvHTTPD(23696): NanoHTTPD: getPoolSize() = 2
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -44, 4
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838308
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/Form    (23696): recomputeLayout called
+D/Form    (23696): About to create a new ScaledFrameLayout
+D/Form    (23696): Sizing(Fixed)
+D/Form    (23696): formWidth = 320 formHeight = 520
+W/System.err(23696): Form.clear() About to do moby GC!
+I/art     (23696): Explicit concurrent mark sweep GC freed 57325(2MB) AllocSpace objects, 8(3MB) LOS objects, 39% free, 8MB/14MB, paused 1.797ms total 79.275ms
+D/ReplForm(23696): formName is now Screen1
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/Form    (23696): Sizing(Fixed)
+D/Form    (23696): formWidth = 320 formHeight = 520
+D/Form    (23696): ReplayFormOrientation()
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/Form    (23696): onGlobalLayout(): heightdiff = 50 contentViewTop = 50
+D/Form    (23696): keyboard hidden!
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/RPC     (  236): RPCClientIFReadTask: recieved_bytes = 46
+D/RPC     (  236): sys_rpc_mbox_post:Queue is Empty 659 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:queue has only one last element 722 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): sys_rpc_mbox_fetch:when queue has only one last element 727 hardware/imc/rpc/multi-client/rpc-daemon/../utils/osa/android/sys_arch.c
+D/RPC     (  236): IPCIFWriteData-- write 50
+D/RPC     (  236): Header length: 4
+D/RPC     (  236): IPCIFReadIOChannel:Data length from header parsing: 22
+D/RPC     (  236):  IPCIFReadIOChannel:DataBufLen = 26:
+D/RPC     (  236): RPCSendMsgToClient context_id : 536871424
+D/RPC     (  236): RPCSendMsgToClient: remote_app_id = 2, context_id = 536871424
+D/RPC     (  236): RPCSendDataToClient:Message Sent to APP id 2
+E/RPC     (  216): AppRecvFromRPCIFTask: recieved_bytes = 22
+E/RPC     (  216): IPC ReadCB:  RET IND idx(1249) 
+D/StatusBar.NetworkController(  747): refreshViews connected={ wifi } level=???? combinedSignalIconId=0x0/(null) mobileLabel= wifiLabel=StataCenter emergencyOnly[0]=false emergencyOnly[1]=false combinedLabel=StataCenter mAirplaneMode=false mDataActivity[0]=0 mDataActivity[1]=0 mPhoneSignalIconId[0]=0x7f020326 mPhoneSignalIconId[1]=0x0 mQSPhoneSignalIconId[0]=0x7f02023c mQSPhoneSignalIconId[1]=0x0 mDataSignalIconId[0]=0x7f020326 mDataSignalIconId[1]=0x0 mDataTypeIconId[0]=0x0 mDataTypeIconId[1]=0x0 mQSDataTypeIconId[0]=0x0 mQSDataTypeIconId[1]=0x0 mRoaming[0]=false mRoaming[1]=false mIsNoSim[0]=false mIsNoSim[1]=false mWifiIconId=0x7f020331 mQSWifiIconId=0x7f02024c mBluetoothTetherIconId=0x7f020329
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/SignalClusterView(  747): vpn: GONE
+D/SignalClusterView(  747): wifi: VISIBLE sig=2130838321 act=2130838309
+D/SignalClusterView(  747): mobile[0]: GONE sig=2130838310 typ=0
+D/WifiWatchdogStateMachine(  627): CurrentRSSI:-44
+D/WifiWatchdogStateMachine(  627): RSSI current: 4 new: -44, 4

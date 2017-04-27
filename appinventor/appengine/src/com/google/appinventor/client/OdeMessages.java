@@ -4350,6 +4350,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String FirebaseErrorEvents();
 
+  @DefaultMessage("FusionTablesError")
+  @Description("")
+  String FusionTablesErrorEvents();
+
   @DefaultMessage("LocationChanged")
   @Description("")
   String LocationChangedEvents();
@@ -5194,6 +5198,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("RemoveFirst")
   @Description("")
   String RemoveFirstMethods();
+
+  @DefaultMessage("AppendValueToList")
+  @Description("")
+  String AppendValueToListMethods();
+
+  @DefaultMessage("RemoveFirstFromList")
+  @Description("")
+  String RemoveFirstFromListMethods();
 
   @DefaultMessage("FirstRemoved")
   @Description("")
@@ -6263,5 +6275,17 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reload")
   @Description("")
   String reloadWindow();
+  
+  @DefaultMessage("AccountName")
+  @Description("")
+  String AccountNameProperties();
+  
+  @DefaultMessage("ProjectID")
+  @Description("")
+  String ProjectIDProperties();
+  
+  @DefaultMessage("CloudDBError")
+  @Description("")
+  String CloudDBErrorEvents();
 
 }
