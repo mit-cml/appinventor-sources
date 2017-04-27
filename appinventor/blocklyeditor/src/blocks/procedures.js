@@ -136,25 +136,23 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         function() {thisBlock.removeInput('HEADER');}
     );
 
-    // [lyn, 07/02/14 fixed logic] remove all old argument inputs (if they were vertical)
-    if (! this.horizontalParameters) {
-      var oldArgCount = this.inputList.length - 1; // Only args and body are left
-      if (oldArgCount > 0) {
-        var paramInput0 = this.getInput('VAR0');
-        if (paramInput0) { // Yes, they were vertical
-          for (var i = 0; i < oldArgCount; i++)
+    // Remove all existing vertical inputs (we will create new ones if necessary)
+    var oldArgCount = this.inputList.length - 1; // Only args and body are left
+    if (oldArgCount > 0) {
+      var paramInput0 = this.getInput('VAR0');
+      if (paramInput0) { // Yes, they were vertical
+        for (var i = 0; i < oldArgCount; i++)
+        {
+          try
           {
-            try
-            {
-              Blockly.FieldParameterFlydown.withChangeHanderDisabled(
-                  // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for vertical arg fields!
-                  function() {thisBlock.removeInput('VAR' + i);}
-              );
-            }
-            catch(err)
-            {
-              console.log(err);
-            }
+            Blockly.FieldParameterFlydown.withChangeHanderDisabled(
+                // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for vertical arg fields!
+                function() {thisBlock.removeInput('VAR' + i);}
+            );
+          }
+          catch(err)
+          {
+            console.log(err);
           }
         }
       }
@@ -171,16 +169,17 @@ Blockly.Blocks['procedures_defnoreturn'] = {
 
     //add an input title for each argument
     //name each input after the block and where it appears in the block to reference it later
-    for (var i = 0; i < this.arguments_.length; i++) {
-      if (this.horizontalParameters) { // horizontal case
+    if (this.horizontalParameters) { // horizontal case
+      for (var i = 0; i < this.arguments_.length; i++) {
         headerInput.appendField(' ')
                    .appendField(this.parameterFlydown(i), // [lyn, 10/10/13] Changed to param flydown
                                 'VAR' + i); // Tag with param tag to make it easy to find later.
-      } else { // vertical case
+      }
+    } else { // vertical case
+      for (var i = 0; i < this.arguments_.length; i++) {
         this.appendDummyInput('VAR' + i)
-             // .appendField(this.arguments_[i])
-             .appendField(this.parameterFlydown(i), 'VAR' + i)
-             .setAlign(Blockly.ALIGN_RIGHT);
+          .appendField(this.parameterFlydown(i), 'VAR' + i)
+          .setAlign(Blockly.ALIGN_RIGHT);
       }
     }
 
@@ -192,7 +191,15 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // Without it, get bug noticed by Andrew in which toggling horizontal -> vertical params
     // in procedure decl doesn't handle body tag appropriately!
     if (this.rendered) {
-       this.render();
+      for (var i = 0; i < this.inputList.length; i++) {
+        this.inputList[i].init();
+      }
+      this.render();
+    }
+    if (Blockly.Events.isEnabled()) {
+      // Trigger a Blockly UI change event
+      Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
+        (!this.horizontalParameters).toString(), this.horizontalParameters.toString()))
     }
     // console.log("exit procedures_defnoreturn updateParams_()");
   },
