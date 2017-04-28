@@ -72,4 +72,9 @@ public @interface DesignerComponent {
   // com.google.appinventor.components.common.YaVersion, and specified when the DesignerComponent
   // annotation is used.
   int version(); // There is no default value.
+
+  /**
+   * Custom help URL for the component (used for extensions).
+   */
+  String helpUrl() default "";
 }

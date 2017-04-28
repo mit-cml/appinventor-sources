@@ -547,6 +547,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected boolean external;
 
     private String helpDescription;  // Shorter popup description
+    private String helpUrl;  // Custom help URL for extensions
     private String category;
     private String categoryString;
     private boolean simpleObject;
@@ -601,6 +602,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           if (helpDescription.isEmpty()) {
             helpDescription = description;
           }
+          helpUrl = designerComponentAnnotation.helpUrl();
+          if (!helpUrl.startsWith("http:") && !helpUrl.startsWith("https:")) {
+            helpUrl = "";  // only accept http: or https: URLs (e.g., no javascript:)
+          }
 
           category = designerComponentAnnotation.category().getName();
           categoryString = designerComponentAnnotation.category().toString();
@@ -624,6 +629,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected String getHelpDescription() {
       return helpDescription;
+    }
+
+    /**
+     * Custom help URL to documentation for a component (typically an extension)
+     *
+     * @return  the custom help URL, if any, for the component
+     */
+    protected String getHelpUrl() {
+      return helpUrl;
     }
 
     /**

@@ -31,6 +31,7 @@ public interface ComponentDatabaseInterface {
     private final boolean external;
     private final String categoryString;
     private final String helpString;
+    private final String helpUrl;
     private final boolean showOnPalette;
     private final String categoryDocUrlString;
     private final List<PropertyDefinition> properties;
@@ -42,7 +43,8 @@ public interface ComponentDatabaseInterface {
     private final String iconName;
     private final String typeDescription;
 
-    public ComponentDefinition(String name, int version, String type, boolean external, String categoryString, String helpString,
+    public ComponentDefinition(String name, int version, String type, boolean external,
+              String categoryString, String helpString, String helpUrl,
               boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
       this.name = name;
       this.version = version;
@@ -50,6 +52,7 @@ public interface ComponentDatabaseInterface {
       this.external = external;
       this.categoryString = categoryString;
       this.helpString = helpString;
+      this.helpUrl = helpUrl;
       this.showOnPalette = showOnPalette;
       this.categoryDocUrlString = ComponentCategory.valueOf(categoryString).getDocName();
       this.properties = new ArrayList<PropertyDefinition>();
@@ -102,6 +105,8 @@ public interface ComponentDatabaseInterface {
     public String getHelpString() {
       return helpString;
     }
+
+    public String getHelpUrl() { return helpUrl; }
 
     public boolean isShowOnPalette() {
       return showOnPalette;
@@ -386,6 +391,14 @@ public interface ComponentDatabaseInterface {
    * @return helpful message about the component
    */
   String getHelpString(String componentName);
+
+  /**
+   * Returns a URL to documentation for extensions.
+   *
+   * @param componentName  name of component to query
+   * @return optional URL to external documentation for a component
+   */
+  String getHelpUrl(String componentName);
 
   /**
    * Returns whether the component with this name should be shown on the

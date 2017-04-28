@@ -66,15 +66,30 @@ public final class ComponentHelpWidget extends Image {
 
       // Create link to more information.  This would be cleaner if
       // GWT supported String.format.
-      String referenceComponentsUrl = Ode.getInstance().getSystemConfig().getReferenceComponentsUrl();
-      if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
+      String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();
+      String url = null;
+      if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2
+        url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();
+        if (url != null) {
+          if (!url.startsWith("http:") && !url.startsWith("https:")) {
+            url = null;
+          } else {
+            // prevent embedded HTML tags, e.g. <script> in the URL
+            url = url.replaceAll("<", "%3C")
+                .replaceAll(">", "%3E")
+                .replaceAll("\"", "%22");
+          }
+        }
+      } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
         if (!referenceComponentsUrl.endsWith("/")) {
           referenceComponentsUrl += "/";
         }
         String categoryDocUrlString = scd.getCategoryDocUrlString();
-        String url = (categoryDocUrlString == null)
+        url = (categoryDocUrlString == null)
             ? referenceComponentsUrl + "index.html"
             : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+      }
+      if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +
             MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");

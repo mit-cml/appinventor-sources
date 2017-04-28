@@ -72,6 +72,9 @@ public final class SimpleComponentDescriptor {
   // Goto documentation category URL piece
   private final String categoryDocUrlString;
 
+  // Link to external documentation
+  private final String helpUrl;
+
   // Whether to show the component on the palette
   private final boolean showOnPalette;
 
@@ -148,6 +151,7 @@ public final class SimpleComponentDescriptor {
   public SimpleComponentDescriptor(String name,
                                    SimpleEditor editor,
                                    String helpString,
+                                   String helpUrl,
                                    String categoryDocUrlString,
                                    boolean showOnPalette,
                                    boolean nonVisible,
@@ -155,6 +159,7 @@ public final class SimpleComponentDescriptor {
     this.name = name;
     this.editor = editor;
     this.helpString = helpString;
+    this.helpUrl = helpUrl;
     this.categoryDocUrlString = categoryDocUrlString;
     this.showOnPalette = showOnPalette;
     this.nonVisible = nonVisible;
@@ -180,6 +185,16 @@ public final class SimpleComponentDescriptor {
    */
   public String getHelpString() {
     return helpString;
+  }
+
+  /**
+   * Returns the help URL for the component.  For more detail, see javadoc for
+   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getHelpUrl(String)}.
+   *
+   * @return URL to external documentation provided for an extension
+   */
+  public String getHelpUrl() {
+    return helpUrl;
   }
 
   /**
