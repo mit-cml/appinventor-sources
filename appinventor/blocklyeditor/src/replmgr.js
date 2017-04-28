@@ -13,6 +13,7 @@
 goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
+goog.require('goog.dom.DomHelper');
 goog.require('goog.ui.Dialog');
 goog.require('goog.net.XmlHttp');
 goog.require('goog.json');
@@ -630,7 +631,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     var context = this;
     var runtimeerr = function(message) {
         if (!context.runtimeError) {
-            context.runtimeError = new goog.ui.Dialog(null, true);
+            context.runtimeError = new goog.ui.Dialog(null, true, new goog.dom.DomHelper(top.document));
             var dialogElement = context.runtimeError.getDialogElement();
             var dialogClass = dialogElement.getAttribute("class");
             // [lyn, 09/10/14] Add blocklyRuntimeErrorDialog to CSS class.
