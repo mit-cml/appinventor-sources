@@ -83,9 +83,14 @@ Blockly.FieldFlydown.prototype.flyoutCSSClassName = 'blocklyFieldFlydownFlydown'
 // Override FieldTextInput's showEditor_ so it's only called for EDITABLE field.
 Blockly.FieldFlydown.prototype.showEditor_ = function() {
   if (this.EDITABLE) {
+    if (Blockly.FieldFlydown.showPid_) {  // cancel a pending flydown for editing
+      clearTimeout(Blockly.FieldFlydown.showPid_);
+      Blockly.FieldFlydown.showPid_ = 0;
+      Blockly.hideChaff();
+    }
     Blockly.FieldFlydown.superClass_.showEditor_.call(this);
   }
-}
+};
 
 Blockly.FieldFlydown.prototype.init = function(block) {
   Blockly.FieldFlydown.superClass_.init.call(this, block);
@@ -184,6 +189,36 @@ Blockly.FieldFlydown.hide = function() {
     flydown.hide();
   }
 };
+
+
+// override Blockly's behavior; they call the validator after setting the text, which is
+// incompatible with how our validators work (we expect to be called before the change since in
+// order to find the old references to be renamed).
+Blockly.FieldFlydown.prototype.onHtmlInputChange_ = function(e) {
+  goog.asserts.assertObject(Blockly.FieldTextInput.htmlInput_);
+  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  var text = htmlInput.value;
+  if (text !== htmlInput.oldValue_) {
+    htmlInput.oldValue_ = text;
+    var valid = true;
+    if (this.sourceBlock_) {
+      valid = this.callValidator(htmlInput.value);
+    }
+    if (valid === null) {
+      Blockly.utils.addClass(htmlInput, 'blocklyInvalidInput');
+    } else {
+      Blockly.utils.removeClass(htmlInput, 'blocklyInvalidInput');
+      this.setText(valid);
+    }
+  } else if (goog.userAgent.WEBKIT) {
+    // Cursor key.  Render the source block to show the caret moving.
+    // Chrome only (version 26, OS X).
+    this.sourceBlock_.render();
+  }
+  this.resizeEditor_();
+  Blockly.svgResize(this.sourceBlock_.workspace);
+};
+
 
 /**
  * Close the flydown and dispose of all UI.
