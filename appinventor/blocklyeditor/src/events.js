@@ -59,6 +59,18 @@ AI.Events.COMPONENT_MOVE = 'component.move';
 AI.Events.COMPONENT_PROPERTY_CHANGE = 'property.change';
 
 /**
+ * Type identifier used for serializing StartArrangeBlocks events.
+ * @type {string}
+ */
+AI.Events.BLOCKS_ARRANGE_START = 'blocks.arrange.start';
+
+/**
+ * Type identifier used for serializing EndArrangeBlocks events.
+ * @type {string}
+ */
+AI.Events.BLOCKS_ARRANGE_END = 'blocks.arrange.end';
+
+/**
  * Abstract class for all App Inventor events.
  * @constructor
  */
@@ -164,6 +176,7 @@ AI.Events.ScreenEvent.prototype.isTransient = true;
  */
 AI.Events.ScreenSwitch = function(projectId, screenName) {
   AI.Events.ScreenSwitch.superClass_.constructor.call(this, projectId, screenName);
+  this.recordUndo = false;
 };
 goog.inherits(AI.Events.ScreenSwitch, AI.Events.ScreenEvent);
 
@@ -288,4 +301,92 @@ AI.Events.PropertyChange = function(projectId, component, property, oldValue, ne
   this.property = property;
   this.oldValue = oldValue;
   this.newValue = newValue;
+};
+
+/**
+ * StartArrangeBlocks is an event placed at the start of an event group created during an
+ * arrangement operation. Its purpose is to reset the Blockly.workspace_arranged* flags during an
+ * undo operation so that they reflect the state immediately preceding the arrangement.
+ * @param workspaceId The identifier of the workspace the event occurred on
+ * @constructor
+ */
+AI.Events.StartArrangeBlocks = function(workspaceId) {
+  AI.Events.StartArrangeBlocks.superClass_.constructor.call(this);
+  this.old_arranged_type = Blockly.workspace_arranged_type;
+  this.old_arranged_position = Blockly.workspace_arranged_position;
+  this.old_arranged_latest_position = Blockly.workspace_arranged_latest_position;
+  this.recordUndo = Blockly.Events.recordUndo;
+  this.workspaceId = workspaceId;
+};
+goog.inherits(AI.Events.StartArrangeBlocks, Blockly.Events.Ui);
+
+AI.Events.StartArrangeBlocks.prototype.type = AI.Events.BLOCKS_ARRANGE_START;
+
+AI.Events.StartArrangeBlocks.prototype.toJson = function() {
+  var json = AI.Events.StartArrangeBlocks.superClass_.toJson.call(this);
+  json['old_arranged_type'] = this.old_arranged_type;
+  json['old_arranged_position'] = this.old_arranged_position;
+  json['old_arranged_latest_position'] = this.old_arranged_latest_position;
+  return json;
+};
+
+AI.Events.StartArrangeBlocks.prototype.fromJson = function(json) {
+  AI.Events.StartArrangeBlocks.superClass_.fromJson.call(this, json);
+  this.old_arranged_type = json['old_arranged_type'];
+  this.old_arranged_position = json['old_arranged_position'];
+  this.old_arranged_latest_position = json['old_arranged_latest_position'];
+};
+
+AI.Events.StartArrangeBlocks.prototype.run = function(forward) {
+  if (!forward) {
+    Blockly.Events.FIRE_QUEUE_.length = 0;
+    setTimeout(function() {
+      Blockly.workspace_arranged_type = this.old_arranged_type;
+      Blockly.workspace_arranged_position = this.old_arranged_position;
+      Blockly.workspace_arranged_latest_position = this.old_arranged_latest_position;
+    }.bind(this));
+  }
+};
+
+/**
+ * EndArrangeBlocks is an event placed at the end of an event group created during an
+ * arrangement operation. Its purpose is to set the Blockly.workspace_arranged* flags to the
+ * appropriate values since they are reset by {@Blockly.WorkspaceSvg#fireChangeListener}.
+ * @param type The type of arrangement (either null or Blockly.BLKS_CATEGORY)
+ * @param layout The layout to be applied (either Blockly.BLKS_VERTICAL or Blockly.BLKS_HORIZONTAL)
+ * @constructor
+ */
+AI.Events.EndArrangeBlocks = function(workspaceId, type, layout) {
+  AI.Events.EndArrangeBlocks.superClass_.constructor.call(this);
+  this.new_type = type;
+  this.new_layout = layout;
+  this.recordUndo = Blockly.Events.recordUndo;
+  this.workspaceId = workspaceId;
+};
+goog.inherits(AI.Events.EndArrangeBlocks, Blockly.Events.Ui);
+
+AI.Events.EndArrangeBlocks.prototype.type = AI.Events.BLOCKS_ARRANGE_END;
+
+AI.Events.EndArrangeBlocks.prototype.toJson = function() {
+  var json = AI.Events.EndArrangeBlocks.superClass_.toJson.call(this);
+  json['new_type'] = this.new_type;
+  json['new_layout'] = this.new_layout;
+  return json;
+};
+
+AI.Events.EndArrangeBlocks.prototype.fromJson = function(json) {
+  AI.Events.EndArrangeBlocks.superClass_.fromJson.call(this, json);
+  this.new_type = json['new_type'];
+  this.new_layout = json['new_layout'];
+};
+
+AI.Events.EndArrangeBlocks.prototype.run = function(forward) {
+  if (forward) {
+    Blockly.Events.FIRE_QUEUE_.length = 0;
+    setTimeout(function() {
+      Blockly.workspace_arranged_type = this.new_type;
+      Blockly.workspace_arranged_position = this.new_layout;
+      Blockly.workspace_arranged_latest_position = this.new_layout;
+    }.bind(this));
+  }
 };

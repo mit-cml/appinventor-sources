@@ -540,20 +540,18 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   // Arrange blocks in row order.
   var arrangeOptionH = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_HORIZONTAL)};
   arrangeOptionH.text = Blockly.Msg.ARRANGE_H;
-  arrangeOptionH.callback = function() {
-    Blockly.workspace_arranged_position = Blockly.BLKS_HORIZONTAL;
-    Blockly.workspace_arranged_latest_position= Blockly.BLKS_HORIZONTAL;
-    arrangeBlocks(Blockly.BLKS_HORIZONTAL);
+  arrangeOptionH.callback = function(opt_type) {
+    opt_type = opt_type instanceof goog.events.Event ? null : opt_type;
+    arrangeBlocks(opt_type? opt_type : Blockly.workspace_arranged_type, Blockly.BLKS_HORIZONTAL);
   };
   menuOptions.push(arrangeOptionH);
 
   // Arrange blocks in column order.
   var arrangeOptionV = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_VERTICAL)};
   arrangeOptionV.text = Blockly.Msg.ARRANGE_V;
-  arrangeOptionV.callback = function() {
-    Blockly.workspace_arranged_position = Blockly.BLKS_VERTICAL;
-    Blockly.workspace_arranged_latest_position = Blockly.BLKS_VERTICAL;
-    arrangeBlocks(Blockly.BLKS_VERTICAL);
+  arrangeOptionV.callback = function(opt_type) {
+    opt_type = opt_type instanceof goog.events.Event ? null : opt_type;
+    arrangeBlocks(opt_type? opt_type : Blockly.workspace_arranged_type, Blockly.BLKS_VERTICAL);
   };
   menuOptions.push(arrangeOptionV);
 
@@ -590,7 +588,15 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
   }
 
   // Arranges block in layout (Horizontal or Vertical).
-  function arrangeBlocks(layout) {
+  function arrangeBlocks(type, layout) {
+    Blockly.Events.setGroup(true);  // group these movements together
+    // start arrangement
+    var workspaceId = Blockly.mainWorkspace.id;
+    Blockly.Events.fire(new AI.Events.StartArrangeBlocks(workspaceId));
+    Blockly.workspace_arranged_type = type;
+    Blockly.workspace_arranged_position = layout;
+    Blockly.workspace_arranged_latest_position = layout;
+    var event = new AI.Events.EndArrangeBlocks(workspaceId, type, layout);
     var SPACER = 25;
     var topblocks = Blockly.mainWorkspace.getTopBlocks(/* ordered */ false);
     // If the blocks are arranged by Category, sort the array
@@ -647,24 +653,30 @@ Blockly.WorkspaceSvg.prototype.customContextMenu = function(menuOptions) {
         break;
       }
     }
+    Blockly.Events.fire(event);  // end arrangement
+    Blockly.Events.setGroup(false);
+    setTimeout(function() {
+      Blockly.workspace_arranged_type = type;
+      Blockly.workspace_arranged_position = layout;
+      Blockly.workspace_arranged_latest_position = layout;
+    });  // need to run after all events have run
   }
 
   // Sort by Category.
   var sortOptionCat = {enabled: (Blockly.workspace_arranged_type !== Blockly.BLKS_CATEGORY)};
   sortOptionCat.text = Blockly.Msg.SORT_C;
   sortOptionCat.callback = function() {
-    Blockly.workspace_arranged_type = Blockly.BLKS_CATEGORY;
-    rearrangeWorkspace();
+    rearrangeWorkspace(Blockly.BLKS_CATEGORY);
   };
   menuOptions.push(sortOptionCat);
 
   // Called after a sort or collapse/expand to redisplay blocks.
-  function rearrangeWorkspace() {
+  function rearrangeWorkspace(opt_type) {
     //default arrangement position set to Horizontal if it hasn't been set yet (is null)
     if (Blockly.workspace_arranged_latest_position === null || Blockly.workspace_arranged_latest_position === Blockly.BLKS_HORIZONTAL)
-      arrangeOptionH.callback();
+      arrangeOptionH.callback(opt_type);
     else if (Blockly.workspace_arranged_latest_position === Blockly.BLKS_VERTICAL)
-      arrangeOptionV.callback();
+      arrangeOptionV.callback(opt_type);
   }
 
   // Retrieve from backpack option.
@@ -864,4 +876,14 @@ Blockly.WorkspaceSvg.prototype.getTopWorkspace = function() {
     parent = parent.targetWorkspace;
   }
   return parent;
+};
+
+Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
+  Blockly.WorkspaceSvg.superClass_.fireChangeListener.call(this, event);
+  if (event instanceof Blockly.Events.Move) {
+    // Reset arrangement parameters
+    Blockly.workspace_arranged_latest_position = null;
+    Blockly.workspace_arranged_position = null;
+    Blockly.workspace_arranged_type = null;
+  }
 };
