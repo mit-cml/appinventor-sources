@@ -776,8 +776,6 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
       }
     }
-    elements.removeAll(excludedElements);
-    System.out.println("Number of elements = " + elements.size());
     for (Element element : elements) {
       processComponent(element);
     }

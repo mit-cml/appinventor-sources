@@ -488,14 +488,13 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           COMPONENT_DATABASE.addComponents(componentList);
           for (JSONValue component : componentList.getElements()) {
             String name = component.asObject().get("type").asString().getString();
-            if (componentList.size() > 1) {  // this is a extension collection
-              String packageName = name.substring(0, name.lastIndexOf('.'));
-              if (!externalCollections.containsKey(packageName)) {
-                externalCollections.put(packageName, new HashSet<String>());
-              }
-              externalCollections.get(packageName).add(name);
-              name = packageName;
-            }
+            // group new extensions by package name
+            String packageName = name.substring(0, name.lastIndexOf('.'));
+            if (!externalCollections.containsKey(packageName)) {
+              externalCollections.put(packageName, new HashSet<String>());
+             }
+            externalCollections.get(packageName).add(name);
+            name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
             }

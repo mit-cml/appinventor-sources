@@ -139,6 +139,17 @@ public class ExternalComponentGenerator {
         jsonWriter.close();
       }
     }
+    // Write legacy format to transition developers
+    try {
+      jsonWriter = new FileWriter(extensionDirPath + File.separator + "component.json");
+      jsonWriter.write(infos.get(0).descriptor.toString(1));
+    } catch(IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (jsonWriter != null) {
+        jsonWriter.close();
+      }
+    }
   }
 
 
@@ -170,22 +181,36 @@ public class ExternalComponentGenerator {
     if (!new File(extensionFileDirPath).mkdirs()) {
       throw new IOException("Unable to create path for component_build_info.json");
     }
-    FileWriter extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
+    FileWriter extensionBuildInfoFile = null;
     try {
+      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_infos.json");
       extensionBuildInfoFile.write(buildInfos.toString());
       System.out.println("Extensions : Successfully created " + packageName + " build info file");
 
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
-      extensionBuildInfoFile.flush();
-      extensionBuildInfoFile.close();
+      if (extensionBuildInfoFile != null) {
+        extensionBuildInfoFile.flush();
+        extensionBuildInfoFile.close();
+      }
+    }
+    // Write out legacy component_build_info.json to transition developers
+    try {
+      extensionBuildInfoFile = new FileWriter(extensionFileDirPath + File.separator + "component_build_info.json");
+      extensionBuildInfoFile.write(buildInfos.get(0).toString());
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (extensionBuildInfoFile != null) {
+        extensionBuildInfoFile.close();
+      }
     }
   }
 
   private static void copyIcon(String packageName, String type, JSONObject componentDescriptor) throws IOException, JSONException {
     String icon = componentDescriptor.getString("iconName");
-    if (icon.startsWith("http:") || icon.startsWith("https:")) {
+    if (icon.equals("") || icon.startsWith("http:") || icon.startsWith("https:")) {
       // Icon will be loaded from the web
       return;
     }

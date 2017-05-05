@@ -23,13 +23,25 @@ public class ComponentImportResponse implements IsSerializable{
     UPGRADED, //when the old component files were replaced with newer ones
     NOT_GCS,
     UNKNOWN_URL,
-    FAILED
+    FAILED,
+
+    /**
+     * BUNDLE_DOWNGRADE is a special failure case when the user attempts to upload an extension
+     * that would be an upgrade but the set of extensions in the new bundle is not a superset of
+     * the set of extensions in the old bundle.
+     *
+     * For example, the currently loaded bundle has classes A, B, C and the newly uploaded bundle
+     * contains B, C, D. This is an error state because we don't want to trigger a delete of all
+     * of the user's blocks associated with class A.
+     */
+    BUNDLE_DOWNGRADE
   }
 
   private Status status;
   private long projectId; // necessary to ensure right project
   private List<ProjectNode> nodes; // Added Nodes
   private Map<String, String> types;
+  private String message;
 
   public ComponentImportResponse(Status status, long projectId, Map<String, String> types, List<ProjectNode> nodes) {
     this.status = status;
@@ -88,4 +100,13 @@ public class ComponentImportResponse implements IsSerializable{
   public void setNodes(List<ProjectNode> nodes) {
     this.nodes = nodes;
   }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
 }
