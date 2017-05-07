@@ -114,7 +114,10 @@ public class FileUploadWizard extends Wizard {
             createErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
               Error.AIAMEDIAASSET, folderNode, fileUploadedCallback);
             return;
-          }
+          }else if (filename.substring(filename.lastIndexOf('.')+1, filename.length()) == "aia"){
+              Window.alert(MESSAGES.wrongFileTypeSelected());
+              return;
+            }
           String fn = conflictingExistingFile(folderNode, filename);
           if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
             return;
