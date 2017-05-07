@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="AI2 Merger2.js"></script>
+		<script src="Stuk-jszip-3a39a71/dist/jszip.js"></script>
+		<script src="FileSaver.js"></script>
+		<script src="jquery-1.8.3.min.js"></script>
+	</head>
+	<body bgcolor="E0F5FF" style="margin-left: 2em;margin-right: 2em">
+		<h1 align="center">
+			App Inventor 2 Project Merger Tool
+			<img src="newlogoclear.png" style="float:right;width:150px;height:117px;" hspace="5" vspace="0">
+			<img src="newlogoclear.png" style="float:left;width:150px;height:117px;" hspace="5" vspace="0">		
+		</h1>
+		<hr>
+		<h5 align="right">Implemented by Arezu Esmaili</h5>
+		
+		<p>This tool combines two or more App Inventor 2 project source files to create
+		 one final project. <b>Warning: This browser-based tool currently only works in 
+		 Chrome and Firefox. In particular, it does not work in Safari or 
+		 Internet Explorer.</b></p>
+		 
+		<h3>Instructions:</h3>
+		 
+		<p> Click the "Choose Files" button to select all project source files (.aia) 
+		you wish to merge. Keep in mind that <b> a project can only have one "Screen1", 
+		so you will be asked to rename any additional "Screen1"s. </b> Your projects 
+		will automatically merge once the files are chosen, and the final project
+		will automatically be saved to your machine once you enter a name. The contents 
+		that are included in the final project from each file will be displayed on this
+		page under "Contents:". You must refresh the page if you wish to merge again.
+		</p><br>
+		 	
+		<div align="center"> 	
+		<input type="file" id="file" name="file" multiple="" onclick="merge()"><br>
+		</div>
+
+		<div id="result_block" class="hidden">
+			<h3>Content:</h3>
+			<div id="result"></div>
+		</div>
+	</body>
+</html>
