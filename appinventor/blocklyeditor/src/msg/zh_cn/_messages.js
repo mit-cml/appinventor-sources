@@ -657,7 +657,7 @@ Blockly.Msg.zh.switch_language_to_chinese_cn = {
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_TEXT = '原始文本';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL = '全部替换';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT = '替换为';
-    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = '将文本%2中所有%1全部替换为%3';
+    Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT = '将文本%1中所有%2全部替换为%3';
     Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP = '返回一个新文本字符串，其中所包含的替换项内容\n'
     + '均被替换为指定的字串。';
 
