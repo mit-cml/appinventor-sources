@@ -56,7 +56,8 @@ Blockly.ReplMgr.rsState = {
   RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
   CONNECTED: 2,               // Connected to Repl
   WAITING: 3,                 // Waiting for the Emulator to start
-  ASSET: 4                    // Transfering Assets to the Repl
+  ASSET: 4,                   // Transfering Assets to the Repl
+  EXTENSIONS: 5               // Load extensions on phone
 };
 
 Blockly.ReplStateObj = function() {};
@@ -926,8 +927,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             rs.state = context.rsState.ASSET; // Indicate that we are connected, start loading assets
             clearInterval(interval);
             RefreshAssets(function() {
-                rs.state = context.rsState.CONNECTED;
-                Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+                Blockly.ReplMgr.loadExtensions();
             });
         }
     };
@@ -971,6 +971,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
             rs.rurl = 'http://127.0.0.1:8001/_values';
             rs.versionurl = 'http://127.0.0.1:8001/_getversion';
             rs.baseurl = 'http://127.0.0.1:8001/';
+            rs.extensionurl = rs.baseurl + '_extensions';
             rs.seq_count = 1;
             rs.count = 0;
             return;             // startAdbDevice callbacks will continue the connection process
@@ -1033,11 +1034,11 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
+                rs.extensionurl = rs.baseurl + '_extensions';
                 rs.state = Blockly.ReplMgr.rsState.ASSET;
                 rs.dialog.hide();
                 RefreshAssets(function() {
-                                  rs.state = Blockly.ReplMgr.rsState.CONNECTED;
-                                  Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+                                  Blockly.ReplMgr.loadExtensions();
                               });
                 // Start the connection with the Repl itself
             } catch (err) {
@@ -1047,6 +1048,37 @@ Blockly.ReplMgr.getFromRendezvous = function() {
         }
     };
     xmlhttp.send();
+};
+
+Blockly.ReplMgr.resendAssetsAndExtensions = function() {
+    var rs = top.ReplState;
+    var RefreshAssets = top.AssetManager_refreshAssets;
+    rs.state = Blockly.ReplMgr.rsState.ASSET;
+    RefreshAssets(function() {
+        Blockly.ReplMgr.loadExtensions();
+    });
+};
+
+Blockly.ReplMgr.loadExtensions = function() {
+    var rs = top.ReplState;
+    rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
+    var xmlhttp = goog.net.XmlHttp();
+    var encoder = new goog.Uri.QueryData();
+    encoder.add('extensions', JSON.stringify(top.AssetManager_getExtensions()));
+    xmlhttp.open('POST', rs.extensionurl, true);
+    xmlhttp.onreadystatechange = function() {
+        /* Older companions do not support ReplMgr providing an extension list. This check below
+         * handles older companions as well as new companions so that we don't break old clients.
+         */
+        if (xmlhttp.readyState === 4 && (this.status === 200 || this.status === 404 || !this.status)) {
+            rs.state = Blockly.ReplMgr.rsState.CONNECTED;
+            Blockly.mainWorkspace.fireChangeListener(new AI.Events.CompanionConnect());
+        } else if (xmlhttp.readyState === 4) {
+            rs.state = Blockly.ReplMgr.rsState.IDLE;
+            top.BlocklyPanel_indicateDisconnect();
+        }
+    };
+    xmlhttp.send(encoder.toString());
 };
 
 // Called by the main poller function. Manages the state transitions for polling
@@ -1121,12 +1153,15 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     if (!force && (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
+    var arraybuf = new ArrayBuffer(blob.length);
     var rs = top.ReplState;
     var encoder = new goog.Uri.QueryData();
     //var z = filename.split('/'); // Remove any directory components
     //encoder.add('filename', z[z.length-1]); // remove directory structure
     var z = filename.slice(filename.indexOf('/') + 1, filename.length); // remove the asset directory
     encoder.add('filename', z); // keep directory structure
+
+    conn.retries = 3;
     conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
     conn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -1134,13 +1169,17 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
                 success();
             }
         } else if (this.readyState == 4) {
+            if (this.retries > 0) {
+                this.retries--;
+                this.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
+                this.send(arraybuf);
+            }
             if (fail) {
                 fail();
             }
         }
     };
 
-    var arraybuf = new ArrayBuffer(blob.length);
     var arrayview = new Uint8Array(arraybuf);
     for (var i = 0; i < blob.length; i++) {
         arrayview[i] = blob[i];
