@@ -225,6 +225,7 @@
         </fileset>
       </delete>
       <javac destdir="@{apt-classdir}"
+             encoding="utf-8"
              sourcepath=""
              srcdir="${src.dir}"
              includeantruntime="false">
