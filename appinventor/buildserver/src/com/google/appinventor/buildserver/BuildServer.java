@@ -155,7 +155,17 @@ public class BuildServer {
 
   private static String shutdownToken = null;
 
-  private enum ShutdownState { UP, SHUTTING, DOWN };
+  // ShutdownState: UP:         We are up and running
+  //                SHUTTING:   We have been told to shutdown, with a time delay
+  //                            In this state we return bad health, but accept jobs
+  //                DOWN:       We return bad health and reject jobs
+  //                DRAINING:   We have reached > 2/3 of max permitted jobs
+  //                            We return bad health (but accept jobs) until
+  //                            the number of active jobs is < 1/3 of max
+  private enum ShutdownState { UP, SHUTTING, DOWN, DRAINING };
+
+  private static volatile boolean draining = false; // We have exceeded 2/3 max load, waiting for
+                                                    // the load to become < 1/3 max load
 
   @GET
   @Path("health")
@@ -168,6 +178,9 @@ public class BuildServer {
     } else if (shut == ShutdownState.DOWN) {
       LOG.info("Healthcheck: DOWN");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutdown").build();
+    } else if (shut == ShutdownState.DRAINING) {
+      LOG.info("Healthcheck: DRAINING");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is draining").build();
     } else {
       LOG.info("Healthcheck: SHUTTING");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
@@ -648,7 +661,26 @@ public class BuildServer {
 
   private ShutdownState getShutdownState() {
     if (shuttingTime == 0) {
-      return ShutdownState.UP;
+      int max = buildExecutor.getMaxActiveTasks();
+      if (max < 10) {           // Only do this scheme if we are not unlimited
+                                // (unlimited == 0) and allow more then 10 max builds
+        return ShutdownState.UP;
+      }
+      int active = buildExecutor.getActiveTaskCount();
+      if (draining) {
+        if (active < max/3) {
+          draining = false;
+        }
+      } else {
+        if (active > max*2/3) {
+          draining = true;
+        }
+      }
+      if (draining) {
+        return ShutdownState.DRAINING;
+      } else {
+        return ShutdownState.UP;
+      }
     } else if (System.currentTimeMillis() > shuttingTime) {
       return ShutdownState.DOWN;
     } else {
