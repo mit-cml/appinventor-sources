@@ -196,10 +196,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       }
       this.render();
     }
-    if (Blockly.Events.isEnabled()) {
-      // Trigger a Blockly UI change event
-      Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
-        (!this.horizontalParameters).toString(), this.horizontalParameters.toString()))
+    if (this.workspace.loadCompleted) {  // set in BlocklyPanel.java on successful load
+      Blockly.Procedures.mutateCallers(this);
     }
     // console.log("exit procedures_defnoreturn updateParams_()");
   },
@@ -297,6 +295,11 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     if (params.length != 0 && isHorizontal !== this.horizontalParameters) {
       this.horizontalParameters = isHorizontal;
       this.updateParams_();
+      if (Blockly.Events.isEnabled()) {
+        // Trigger a Blockly UI change event
+        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
+          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()));
+      }
     }
   },
   mutationToDom: function() {
@@ -375,17 +378,20 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     var editable = this.editable_;
     var workspace = this.workspace;
 
-    // Call parent's destructor.
-    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
-
+    // This needs to happen first so that the Blockly events will be replayed in the correct
+    // order on undo
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
       Blockly.AIProcedure.removeProcedureValues(name, workspace);
-      var procDb = workspace.getProcedureDatabase();
-      if (procDb) {  // only true for the top-level workspaces, not flyouts/flydowns
-        procDb.removeProcedure(this.id);
-      }
+    }
+
+    // Call parent's destructor.
+    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
+
+    var procDb = workspace.getProcedureDatabase();
+    if (editable && procDb) {  // only true for the top-level workspaces, not flyouts/flydowns
+      procDb.removeProcedure(this.id);
     }
 
   },
@@ -557,9 +563,21 @@ Blockly.Blocks['procedures_mutatorarg'] = {
 //      return Blockly.LexicalVariable.renameParam.call(this,newName);
 //    }
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var editor = new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam);
+    // 2017 Blockly's text input change breaks our renaming behavior.
+    // The following is a version we've defined.
+    editor.onHtmlInputChange_ = function(e) {
+      var oldValue = this.getValue();
+      Blockly.FieldFlydown.prototype.onHtmlInputChange_.call(this, e);
+      var newValue = this.getValue();
+      if (newValue && oldValue !== newValue && Blockly.Events.isEnabled()) {
+        Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name,
+          oldValue, newValue));
+      }
+    };
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE)
-        .appendField(new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam), 'NAME');
+        .appendField(editor, 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP);
@@ -830,10 +848,11 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     options.push(option);
   },
   removeProcedureValue: function() {
-    this.setFieldValue("none", 'PROCNAME');
+    // Detach inputs before resetting name so that undo/redo operations happen in the right order
     for(var i=0;this.getInput('ARG' + i) !== null;i++) {
       this.removeInput('ARG' + i);
     }
+    this.setFieldValue("none", 'PROCNAME');
   },
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the

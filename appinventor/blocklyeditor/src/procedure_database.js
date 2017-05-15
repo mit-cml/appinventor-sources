@@ -207,7 +207,17 @@ Blockly.ProcedureDatabase.prototype.renameProcedure = function(procId, oldName, 
  * @returns {?Blockly.BlockSvg} The procedure block defining the procedure identified by {@link #id}
  */
 Blockly.ProcedureDatabase.prototype.getProcedure = function(id) {
-  return this.procedures_[id];
+  var proc = this.procedures_[id];
+  return proc ? proc : this.getProcedureByName(id);
+};
+
+Blockly.ProcedureDatabase.prototype.getProcedureByName = function(name) {
+  for (var id in this.procedures_) {
+    if (this.procedures_[id].getFieldValue('NAME') === name) {
+      return this.procedures_[id];
+    }
+  }
+  return undefined;
 };
 
 Blockly.ProcedureDatabase.prototype.clear = function() {

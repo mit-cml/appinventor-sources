@@ -97,6 +97,7 @@
     "./src/trashcan.js",
     "./src/scrollbar.js",
     "./src/block_svg.js",
+    "./src/connection_db.js",
     "./src/component_database.js",
     "./src/procedure_database.js",
     "./src/variable_database.js",

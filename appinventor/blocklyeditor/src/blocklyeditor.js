@@ -20,6 +20,11 @@ goog.require('AI.Blockly.Drawer');
 // App Inventor extensions to Blockly
 goog.require('Blockly.TypeBlock');
 
+goog.require('Blockly.Flyout');
+
+// Make dragging a block from flyout work in any direction (default: 70)
+Blockly.Flyout.prototype.dragAngleRange_ = 360;
+
 if (Blockly.BlocklyEditor === undefined) {
   Blockly.BlocklyEditor = {};
 }
@@ -351,6 +356,10 @@ Blockly.ai_inject = function(container, workspace) {
   workspace.markFocused();
   Blockly.bindEvent_(svg, 'focus', workspace, workspace.markFocused);
   workspace.resize();
+  // Hide scrollbars by default (otherwise ghost rectangles intercept mouse events)
+  workspace.flyout_.scrollbar_ && workspace.flyout_.scrollbar_.setContainerVisible(false);
+  workspace.backpack_.flyout_.scrollbar_ && workspace.backpack_.flyout_.scrollbar_.setContainerVisible(false);
+  workspace.flydown_.scrollbar_ && workspace.flydown_.scrollbar_.setContainerVisible(false);
   // Render blocks created prior to the workspace being rendered.
   workspace.rendered = true;
   var blocks = workspace.getAllBlocks();

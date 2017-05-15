@@ -390,3 +390,63 @@ AI.Events.EndArrangeBlocks.prototype.run = function(forward) {
     }.bind(this));
   }
 };
+
+
+/**
+ * Filter the queued events and merge duplicates. This version is O(n) versus the implementation
+ * provided by Blockly that is O(n^2). This improves performance when people perform or undo
+ * operations that create, move, or delete a large number of blocks all at once.
+ * @param {!Array.<!Blockly.Events.Abstract>} queueIn Array of events.
+ * @param {boolean} forward True if forward (redo), false if backward (undo).
+ * @return {!Array.<!Blockly.Events.Abstract>} Array of filtered events.
+ */
+Blockly.Events.filter = function(queueIn, forward) {
+  var queue = goog.array.clone(queueIn);
+  if (!forward) {
+    // Undo is merged in reverse order.
+    queue.reverse();
+  }
+  var queue2 = [];
+  var hash = {};
+  // Merge duplicates.
+  for (var i = 0, event; event = queue[i]; i++) {
+    if (!event.isNull()) {
+      var key = [event.type, event.blockId, event.workspaceId].join(' ');
+      if (hash[key] === undefined) {
+        hash[key] = event;
+        queue2.push(event);
+      } else if (event.type == Blockly.Events.MOVE) {
+        // Merge move events.
+        hash[key].newParentId = event.newParentId;
+        hash[key].newInputName = event.newInputName;
+        hash[key].newCoordinate = event.newCoordinate;
+      } else if (event.type == Blockly.Events.CHANGE &&
+        event.element == hash[key].element &&
+        event.name == hash[key].name) {
+        // Merge change events.
+        hash[key].newValue = event.newValue;
+      } else if (event.type == Blockly.Events.UI &&
+        hash[key].element == 'click' &&
+        (event.element == 'commentOpen' ||
+        event.element == 'mutatorOpen' ||
+        event.element == 'warningOpen')) {
+        // Merge change events.
+        hash[key].newValue = event.newValue;
+      }
+    }
+  }
+  queue = queue2;
+  if (!forward) {
+    // Restore undo order.
+    queue.reverse();
+  }
+  // Move mutation events to the top of the queue.
+  // Intentionally skip first event.
+  for (var i = 1, event; event = queue[i]; i++) {
+    if (event.type == Blockly.Events.CHANGE &&
+      event.element == 'mutation') {
+      queue.unshift(queue.splice(i, 1)[0]);
+    }
+  }
+  return queue;
+};

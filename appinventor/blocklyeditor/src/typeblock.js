@@ -156,6 +156,7 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     if (e.keyCode === 27){ //Dismiss the panel with esc
       this.hide();
       Blockly.mainWorkspace.getParentSvg().parentNode.focus();  // refocus workspace div
+      Blockly.mainWorkspace.hideChaff();
       return;
     }
     if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) {
@@ -506,7 +507,6 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
       } else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
-      self.workspace_.getWarningHandler().checkAllBlocksForWarningsAndErrors();
       block.render();
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;
@@ -529,6 +529,7 @@ Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
         block.moveBy(left, top);
         block.select();
       }
+      self.workspace_.requestErrorChecking(block);
       self.hide();
       self.workspace_.getParentSvg().parentNode.focus();  // refocus workspace div
     }

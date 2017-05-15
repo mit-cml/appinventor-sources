@@ -237,25 +237,38 @@ Blockly.Backpack.prototype.pasteBackpack = function() {
   var bp_contents = this.getContents();
   if (!bp_contents || bp_contents.length == 0)
     return;
+  var lastPastedBlock = null;
 
-  for (var i = 0; i < bp_contents.length; i++) {
-    var xml = Blockly.Xml.textToDom(bp_contents[i]);
-    var blk = xml.childNodes[0];
-    var arr = [];
-    this.checkValidBlockTypes(blk,arr);
-    var ok = true;
-    for (var j = 0; j < arr.length; j++) {
-      var type = arr[j];
-      if (!Blockly.Blocks[type] && ! this.workspace_.getComponentDatabase().hasType(type)) {
-        ok = false;
-        break;
+  try {
+    Blockly.Events.setGroup(true);
+    for (var i = 0; i < bp_contents.length; i++) {
+      var xml = Blockly.Xml.textToDom(bp_contents[i]);
+      var blk = xml.childNodes[0];
+      var arr = [];
+      this.checkValidBlockTypes(blk, arr);
+      var ok = true;
+      for (var j = 0; j < arr.length; j++) {
+        var type = arr[j];
+        if (!Blockly.Blocks[type] && !this.workspace_.getComponentDatabase().hasType(type)) {
+          ok = false;
+          break;
+        }
       }
+      if (ok) {
+        var newBlock = this.workspace_.paste(blk);
+        if (newBlock) {
+          lastPastedBlock = newBlock;
+        }
+      }
+      else
+        window.alert('Sorry. You cannot paste a block of type "' + type +
+          '" because it doesn\'t exist in this workspace.');
     }
-    if (ok)
-      this.workspace_.paste(blk);
-    else
-      window.alert('Sorry. You cannot paste a block of type "' + type +
-        '" because it doesn\'t exist in this workspace.');
+  } finally {
+    Blockly.Events.setGroup(false);
+  }
+  if (lastPastedBlock) {
+    lastPastedBlock.select();
   }
 };
 

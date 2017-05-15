@@ -293,7 +293,6 @@ public final class YaBlocksEditor extends FileEditor
 
   @Override
   public void onWorkspaceChange(BlocklyPanel panel, JavaScriptObject event) {
-    OdeLog.log("Got blocks area changed for " + fullFormName);
     if (!EventHelper.isTransient(event)) {
       Ode.getInstance().getEditorManager().scheduleAutoSave(this);
     }
