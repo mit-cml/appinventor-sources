@@ -53,6 +53,18 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
     $ cp sample-.gitignore .gitignore
 
+###Checkout dependencies
+App Inventor uses Blockly, the web-based visual programming editor from Google, as a core part of its editor. Blockly core is made available to App Inventor as a git submodule. The first time after forking or cloning the repository, you will need to perform the following commands:
+
+    $ git submodule update --init
+
+For developers who will be working on Blocky within the context of App Inventor, the preferred checkout procedure is to perform a `git submodule init`, edit the `.git/config` file to use the read/write SSH URL for [MIT CML's Blockly fork](https://github.com/mit-cml/blockly) instead of the public read-only HTTPS URL assumed by default (to support pushing changes). After changing `.git/config`, a `git submodule update` will pull the repository.
+
+If you need to switch back to a branch that does contains the Blockly and Closure Library sources in the tree, you will need to run the command:
+
+    $ git submodule deinit .
+
+to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
 
 ###Compiling
 Compiling is very easy if you have all the dependencies you need; just open a terminal and type:

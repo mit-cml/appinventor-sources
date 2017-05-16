@@ -9,7 +9,9 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Component Import Response to Send Failure Reasons
@@ -26,18 +28,18 @@ public class ComponentImportResponse implements IsSerializable{
 
   private Status status;
   private long projectId; // necessary to ensure right project
-  private String componentType;  // Type of Component
   private List<ProjectNode> nodes; // Added Nodes
+  private Map<String, String> types;
 
-  public ComponentImportResponse(Status status, long projectId, String componentType, List<ProjectNode> nodes) {
+  public ComponentImportResponse(Status status, long projectId, Map<String, String> types, List<ProjectNode> nodes) {
     this.status = status;
     this.projectId = projectId;
-    this.componentType = componentType;
     this.nodes = nodes;
+    this.types = types;
   }
 
   public ComponentImportResponse(Status status) {
-    this(status, 0, "", null);
+    this(status, 0, new HashMap<String, String>(), null);
   }
 
   private ComponentImportResponse() {
@@ -59,12 +61,21 @@ public class ComponentImportResponse implements IsSerializable{
     this.projectId = projectId;
   }
 
+  /**
+   * Use {@link #getComponentTypes()} instead.
+   * @return
+   */
+  @Deprecated
   public String getComponentType() {
-    return componentType;
+    return types.keySet().iterator().next();
   }
 
-  public void setComponentType(String componentType) {
-    this.componentType = componentType;
+  public Map<String, String> getComponentTypes() {
+    return types;
+  }
+
+  public void setComponentTypes(Map<String, String> types) {
+    this.types = types;
   }
 
   public List<ProjectNode> getNodes() {

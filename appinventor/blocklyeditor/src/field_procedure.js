@@ -16,15 +16,18 @@ goog.provide('Blockly.FieldProcedure');
 goog.provide('Blockly.AIProcedure');
 
 
-Blockly.FieldProcedure.defaultValue = ["","none"]
+Blockly.FieldProcedure.defaultValue = ["",""];
 
-Blockly.FieldProcedure.onChange = function(text) {
-  var workspace = this.block.workspace;
+Blockly.FieldProcedure.onChange = function(procedureId) {
+  var workspace = this.block.getTopWorkspace();
   if(!this.block.editable_){ // [lyn, 10/14/13] .editable is undefined on blocks. Changed to .editable_
     workspace = Blockly.Drawer.flyout_.workspace_;
     return;
   }
 
+  var def = workspace.getProcedureDatabase().getProcedure(procedureId);
+  if (!def) return;  // loading but the definition block hasn't been processed yet.
+  var text = def.getFieldValue('NAME');
   if(text == "" || text != this.getValue()) {
     for(var i=0;this.block.getInput('ARG' + i) != null;i++){
       this.block.removeInput('ARG' + i);
@@ -32,7 +35,6 @@ Blockly.FieldProcedure.onChange = function(text) {
     //return;
   }
   this.setValue(text);
-  var def = Blockly.Procedures.getDefinition(text, workspace);
   if(def) {
     // [lyn, 10/27/13] Lyn sez: this causes complications (e.g., might open up mutator on collapsed procedure
     //   declaration block) and is no longer necessary with changes to setProedureParameters.
@@ -44,8 +46,9 @@ Blockly.FieldProcedure.onChange = function(text) {
   }
 };
 
-Blockly.AIProcedure.getProcedureNames = function(returnValue) {
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) {
+  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var topBlocks = workspace.getTopBlocks();
   var procNameArray = [Blockly.FieldProcedure.defaultValue];
   for(var i=0;i<topBlocks.length;i++){
     var procName = topBlocks[i].getFieldValue('NAME')
@@ -64,8 +67,9 @@ Blockly.AIProcedure.getProcedureNames = function(returnValue) {
 // [lyn, 10/22/13] Return a list of all procedure declaration blocks
 // If returnValue is false, lists all fruitless procedure declarations (defnoreturn)
 // If returnValue is true, lists all fruitful procedure declaraations (defreturn)
-Blockly.AIProcedure.getProcedureDeclarationBlocks = function(returnValue) {
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+Blockly.AIProcedure.getProcedureDeclarationBlocks = function(returnValue, opt_workspace) {
+  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var topBlocks = workspace.getTopBlocks(false);
   var blockArray = [];
   for(var i=0;i<topBlocks.length;i++){
     if(topBlocks[i].type == "procedures_defnoreturn" && !returnValue) {
@@ -78,7 +82,7 @@ Blockly.AIProcedure.getProcedureDeclarationBlocks = function(returnValue) {
 };
 
 Blockly.AIProcedure.getAllProcedureDeclarationBlocksExcept = function (block) {
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+  var topBlocks = block.workspace.getTopBlocks(false);
   var blockArray = [];
   for (var i=0;i<topBlocks.length;i++){
     if(topBlocks[i].type === "procedures_defnoreturn" || topBlocks[i].type === "procedures_defreturn") {
@@ -111,9 +115,16 @@ Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
 };
 
 // [lyn, 10/27/13] Defined as a replacement for Blockly.Procedures.rename
+/**
+ * Rename a procedure definition to a new name.
+ *
+ * @this AI.Blockly.FieldProcedureName
+ * @param {!string} newName New name for the procedure represented by the field's source block
+ * @returns {string} The new, validated name of the block
+ */
 Blockly.AIProcedure.renameProcedure = function (newName) {
   // this is bound to field_textinput object
-  var oldName = this.text_;
+  var oldName = this.oldName_ || this.text_;
 
   // [lyn, 10/27/13] now check legality of identifiers
   newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
@@ -130,5 +141,6 @@ Blockly.AIProcedure.renameProcedure = function (newName) {
       func.call(blocks[x], oldName, newName);
     }
   }
+  this.oldName_ = newName;
   return newName;
 };

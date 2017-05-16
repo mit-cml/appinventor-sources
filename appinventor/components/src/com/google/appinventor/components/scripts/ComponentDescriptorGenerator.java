@@ -82,6 +82,8 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getCategoryString());
     sb.append("\",\n  \"helpString\": ");
     sb.append(formatDescription(component.getHelpDescription()));
+    sb.append(",\n  \"helpUrl\": ");
+    sb.append(formatDescription(component.getHelpUrl()));
     sb.append(",\n  \"showOnPalette\": \"");
     sb.append(component.getShowOnPalette());
     sb.append("\",\n  \"nonVisible\": \"");

@@ -59,7 +59,7 @@ Blockly.Yail.component_event = function() {
 Blockly.Yail.component_method = function() {
   var methodHelperYailString = Blockly.Yail.methodHelper(this, (this.isGeneric ? this.typeName : this.instanceName), this.methodName, this.isGeneric);
   //if the method returns a value
-  if(this.getMethodTypeObject().returnType) {
+  if(this.getMethodTypeObject() && this.getMethodTypeObject().returnType) {
     return [methodHelperYailString, Blockly.Yail.ORDER_ATOMIC];
   } else {
     return methodHelperYailString;
@@ -128,20 +128,21 @@ Blockly.Yail.genericMethodNoReturn = function(typeName, methodName) {
 /**
  * Generate and return the code for a method call. The generated code is the same regardless of
  * whether the method returns a value or not.
- * @param {!Blockly.Block} methodBlock  block for which we're generating code
+ * @param {!Blockly.Blocks.component_method} methodBlock  block for which we're generating code
  * @param {String} name instance or type name
  * @param {String} methodName
  * @param {String} generic true if this is for a generic method block, false if for an instance
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
 Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
+  var componentDb = methodBlock.workspace.getComponentDatabase();
 
 // TODO: the following line  may be a bit of a hack because it hard-codes "component" as the
 // first argument type when we're generating yail for a generic block, instead of using
 // type information associated with the socket. The component parameter is treated differently
 // here than the other method parameters. This may be fine, but consider whether
 // to get the type for the first socket in a more general way in this case.
-  var paramObjects = methodBlock.getMethodTypeObject().params;
+  var paramObjects = methodBlock.getMethodTypeObject().parameters;
   var numOfParams = paramObjects.length;
   var yailTypes = [];
   if(generic) {
@@ -153,7 +154,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   //var yailTypes = (generic ? [Blockly.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
-    name = Blockly.ComponentTypes[name].type;
+    name = componentDb.getType(name).type;
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD
         // TODO(hal, andrew): check for empty socket and generate error if necessary
         + Blockly.Yail.valueToCode(methodBlock, 'COMPONENT', Blockly.Yail.ORDER_NONE)
@@ -162,7 +163,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD;
     name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
     // special case for handling Clock.Add
-    timeUnit = methodBlock.getFieldValue("TIME_UNIT");
+    var timeUnit = methodBlock.getFieldValue("TIME_UNIT");
     if (timeUnit) {
       if (Blockly.ComponentBlock.isClockMethodName(methodName)) {
         methodName = "Add"+timeUnit; // For example, AddDays
@@ -194,7 +195,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
     + yailTypes.join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-}
+};
 
 Blockly.Yail.component_set_get = function() {
   if(this.setOrGet == "set") {
@@ -210,7 +211,7 @@ Blockly.Yail.component_set_get = function() {
       return Blockly.Yail.getproperty.call(this);
     }
   }
-}
+};
 
 /**
  * Returns a function that takes no arguments, generates Yail code for setting a component property
@@ -221,7 +222,7 @@ Blockly.Yail.component_set_get = function() {
  */
 Blockly.Yail.setproperty = function() {
   var propertyName = this.getFieldValue("PROP");
-  var propType = this.getPropertyObject(propertyName).type
+  var propType = this.getPropertyObject(propertyName).type;
   var assignLabel = Blockly.Yail.YAIL_QUOTE + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE + propertyName;
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + Blockly.Yail.YAIL_SPACER;
@@ -230,7 +231,7 @@ Blockly.Yail.setproperty = function() {
   code = code.concat(Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
     + propType + Blockly.Yail.YAIL_CLOSE_COMBINATION);
   return code;
-}
+};
 
 
 /**
@@ -238,12 +239,13 @@ Blockly.Yail.setproperty = function() {
  * property and returns the code string.
  *
  * @param {String} instanceName
- * @returns {Function} property setter code generation function with instanceName bound in
+ * @returns {string} property setter code generation function with instanceName bound in
  */
 Blockly.Yail.genericSetproperty = function() {
   var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
-  var assignLabel = Blockly.Yail.YAIL_QUOTE + Blockly.ComponentTypes[this.typeName].type + Blockly.Yail.YAIL_SPACER
+  var assignLabel = Blockly.Yail.YAIL_QUOTE
+    + this.workspace.getComponentDatabase().getType(this.typeName).type + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE + propertyName;
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_COMPONENT_TYPE_PROPERTY
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -256,7 +258,7 @@ Blockly.Yail.genericSetproperty = function() {
   code = code.concat(Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
     + propType + Blockly.Yail.YAIL_CLOSE_COMBINATION);
   return code;
-}
+};
 
 
 /**
@@ -278,7 +280,7 @@ Blockly.Yail.getproperty = function(instanceName) {
     + propertyName
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [code, Blockly.Yail.ORDER_ATOMIC];
-}
+};
 
 
 /**
@@ -297,13 +299,13 @@ Blockly.Yail.genericGetproperty = function(typeName) {
     + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
-    + Blockly.ComponentTypes[this.typeName].type
+    + this.workspace.getComponentDatabase().getType(this.typeName).type
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
     + propertyName
     + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [code, Blockly.Yail.ORDER_ATOMIC];
-}
+};
 
 
 
@@ -318,4 +320,4 @@ Blockly.Yail.genericGetproperty = function(typeName) {
 Blockly.Yail.component_component_block = function() {
   return [Blockly.Yail.YAIL_GET_COMPONENT + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_CLOSE_COMBINATION,
           Blockly.Yail.ORDER_ATOMIC];
-}
+};

@@ -1,0 +1,6 @@
+[submodule "appinventor/lib/blockly"]
+	path = appinventor/lib/blockly
+	url = https://github.com/mit-cml/blockly.git
+[submodule "appinventor/lib/closure-library"]
+	path = appinventor/lib/closure-library
+	url = https://github.com/google/closure-library.git

@@ -79,7 +79,8 @@ public class ComponentImportWizard extends Wizard {
       if (project == null) {
         return; // Project does not exist!
       }
-      if (response.getStatus() == ComponentImportResponse.Status.UPGRADED) {
+      if (response.getStatus() == ComponentImportResponse.Status.UPGRADED ||
+          response.getStatus() == ComponentImportResponse.Status.IMPORTED) {
         YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
         YaProjectEditor projectEditor = (YaProjectEditor) ode.getEditorManager().getOpenProjectEditor(destinationProjectId);
         if (projectEditor == null) {
@@ -87,26 +88,12 @@ public class ComponentImportWizard extends Wizard {
         }
         for (ProjectNode node : compNodes) {
           project.addNode(componentsFolder, node);
-          if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
+          if ((node.getName().equals("component.json") || node.getName().equals("components.json"))
+              && StringUtils.countMatches(node.getFileId(), "/") == 3) {
             projectEditor.addComponent(node, null);
           }
         }
-
-      } else if (response.getStatus() == ComponentImportResponse.Status.IMPORTED) {
-        for (ProjectNode node : compNodes) {
-          if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-            String fileId = node.getFileId();
-            int start = fileId.indexOf(external_components) + external_components.length();
-            int end = fileId.indexOf('/', start);
-            String typeName = fileId.substring(start, end);
-            new ComponentRenameWizard(typeName, destinationProjectId, compNodes).center();
-
-          }
-        }
       }
-
-
-
     }
   }
 

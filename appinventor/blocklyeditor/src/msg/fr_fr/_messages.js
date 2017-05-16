@@ -7,14 +7,16 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.fr_fr');
+goog.provide('AI.Blockly.Msg.fr_fr');
+
+goog.require('Blockly.Msg.fr');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.fr_fr.switch_language_to_french = {
+Blockly.Msg.fr.switch_language_to_french = {
   // Switch language to French.
   category: '',
   helpUrl: '',
@@ -564,4 +566,5 @@ Blockly.Msg.fr_fr.switch_language_to_french = {
 };
 
 // Initalize language definition to French
-Blockly.Msg.fr_fr.switch_language_to_french.init();
+Blockly.Msg.fr.switch_blockly_language_to_fr.init();
+Blockly.Msg.fr.switch_language_to_french.init();

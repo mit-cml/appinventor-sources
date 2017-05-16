@@ -7,7 +7,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.sv');
+goog.require('Blockly.Msg.sv');
+
+goog.provide('AI.Blockly.Msg.sv');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
@@ -588,4 +590,5 @@ Blockly.Msg.sv.switch_language_to_swedish = {
 };
 
 // Initalize language definition to Swedish
+Blockly.Msg.sv.switch_blockly_language_to_sv.init();
 Blockly.Msg.sv.switch_language_to_swedish.init();

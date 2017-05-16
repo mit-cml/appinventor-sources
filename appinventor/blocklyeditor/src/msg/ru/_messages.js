@@ -7,7 +7,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.ru');
+goog.provide('AI.Blockly.Msg.ru');
+
+goog.require('Blockly.Msg.ru');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
@@ -928,4 +930,5 @@ Blockly.Msg.ru.switch_language_to_russian = {
 };
 
 // Initalize language definition to Russian
+Blockly.Msg.ru.switch_blockly_language_to_ru.init();
 Blockly.Msg.ru.switch_language_to_russian.init();

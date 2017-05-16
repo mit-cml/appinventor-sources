@@ -35,7 +35,7 @@ exports.execute =  function (){
 
           var generatedYail = "";
           var yailForBlock;
-          var testBlock = new Blockly.Block.obtain(Blockly.mainWorkspace, blockName);
+          var testBlock = Blockly.mainWorkspace.newBlock(blockName);
           if (dropdownOp) {testBlock.setFieldValue(dropdownOp, 'OP');}
           yailForBlock = generator.call(testBlock);
           if (doesReturn) {

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -10,22 +10,24 @@
 
 'use strict';
 
-goog.provide('Blockly.FieldParameterFlydown');
+goog.provide('AI.Blockly.FieldParameterFlydown');
 
-goog.require('Blockly.FieldFlydown');
+goog.require('AI.Blockly.FieldFlydown');
 
 /**
  * Class for a parameter declaration field with flyout menu of getter/setter blocks on mouse over
- * @param {string} text The initial parameter name in the field.
+ * @param {string} name The initial parameter name in the field.
  * @param {boolean} isEditable Indicates whether the the name in the flydown is editable.
- * @param {opt_additionalChangeHandler} function A one-arg function indicating what to do in addition to
+ * @param {?string=} displayLocation Location to display the flydown relative to the parameter.
+ * @param {?function=} opt_additionalChangeHandler A one-arg function indicating what to do in addition to
  *   renaming lexical variables. May be null/undefined to indicate nothing extra to be done.
+ * @param {string=} opt_codeName Syntactic identifier of the field in the source code.
  * @extends {Blockly.FieldFlydown}
  * @constructor
  */
 // [lyn, 10/26/13] Added opt_additionalChangeHandler to handle propagation of renaming
 //    of proc decl params
-Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_additionalChangeHandler) {
+Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_additionalChangeHandler, opt_codeName) {
   // [lyn, 07/02/14] Modified change handler so can be turned off with Blockly.FieldParameterFlydown.changeHandlerEnabled flag
   var changeHandler = function (text) {
      if (Blockly.FieldParameterFlydown.changeHandlerEnabled) {
@@ -39,6 +41,10 @@ Blockly.FieldParameterFlydown = function(name, isEditable, displayLocation, opt_
      } else {
        return text;
      }
+  };
+  if (opt_codeName) {
+    // Used to create eventparam mutation on lexical_get_variable and lexical_set_variable
+    this.eventparam = opt_codeName;
   }
   Blockly.FieldParameterFlydown.superClass_.constructor.call(this, name, isEditable, displayLocation, changeHandler);
 };
@@ -82,14 +88,15 @@ Blockly.FieldParameterFlydown.prototype.setText = function(text) {
   */
 Blockly.FieldParameterFlydown.prototype.flydownBlocksXML_ = function() {
   var name = this.getText(); // name in this parameter field.
+  var mutation = this.eventparam ? '<mutation><eventparam name="' + this.eventparam + '" /></mutation>' : '';
   var getterSetterXML =
        '<xml>' +
-         '<block type="lexical_variable_get">' +
+         '<block type="lexical_variable_get">' + mutation +
            '<title name="VAR">' +
              name +
            '</title>' +
          '</block>' +
-         '<block type="lexical_variable_set">' +
+         '<block type="lexical_variable_set">' + mutation +
            '<title name="VAR">' +
              name +
            '</title>' +
@@ -110,17 +117,17 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
   if (block.getParameters) {
     numParams = block.getParameters().length;
   }
-  if (Blockly.collapse && ! this.collapsed && numParams > 0) {
+  if (block.workspace.getTopWorkspace().options.collapse && ! this.collapsed && numParams > 0) {
     var horizVertOption =
         { enabled: true,
-             text: block.horizontalParameters ? Blockly.MSG_VERTICAL_PARAMETERS : Blockly.MSG_HORIZONTAL_PARAMETERS,
+             text: block.horizontalParameters ? Blockly.Msg.VERTICAL_PARAMETERS : Blockly.Msg.HORIZONTAL_PARAMETERS,
          callback: function () { block.setParameterOrientation(!block.horizontalParameters); }
         };
 
     // Find the index of "Collapse Block" option and inset horizonta/vertical option before it
     var insertionIndex = 0;
     for (var option = null; option = options[insertionIndex]; insertionIndex++) {
-      if (option.text === Blockly.MSG_COLLAPSE_BLOCK) {
+      if (option.text === Blockly.Msg.COLLAPSE_BLOCK) {
         break; // Stop loop when insertion point found
       }
     }
@@ -131,7 +138,7 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
     // Remove an "Inline Inputs" option (if there is one)
     var removalIndex = -1;
     for (var i = 0, option = null; option = options[i]; i++) {
-      if (option.text === Blockly.MSG_INLINE_INPUTS) {
+      if (option.text === Blockly.Msg.INLINE_INPUTS) {
         removalIndex = i;
         break; // Stop loop when insertion point found
       }
@@ -140,7 +147,7 @@ Blockly.FieldParameterFlydown.addHorizontalVerticalOption = function (block, opt
       options.splice(removalIndex, 1);
     }
   }
-}
+};
 
 
 

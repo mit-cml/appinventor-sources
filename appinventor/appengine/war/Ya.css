@@ -615,6 +615,11 @@ select {
   font-size: 12px;
   color: #555;
   cursor: default;
+  display: block !important;
+}
+
+.gwt-Tree .gwt-TreeItem-selected {
+  background: none;
 }
 
 .gwt-Tree .gwt-TreeItem span {
@@ -2378,4 +2383,37 @@ textarea::-webkit-input-placeholder {
   display: block;
   height: 0;
   clear: both;
+}
+
+/* Blocks editor */
+.svg {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ac-renderer {
+  font: normal 13px Arial, sans-serif;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #666;
+  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+  width: 300px;
+  height: 294px;
+  overflow: auto;
+}
+.ac-row {
+  cursor: pointer;
+  padding: .4em;
+}
+.ac-highlighted {
+  font-weight: bold;
+}
+.ac-active {
+  background-color: #b2b4bf;
+}
+.ai_type_block {
+  position: absolute;
+  z-index: 2000;
 }

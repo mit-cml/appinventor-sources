@@ -19,6 +19,7 @@ import com.android.sdklib.build.ApkBuilder;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONTokener;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -1556,11 +1557,26 @@ public final class Compiler {
       for (String type : extCompTypes) {
         // .../assets/external_comps/com.package.MyExtComp/files/component_build_info.json
         File extCompRuntimeFileDir = new File(getExtCompDirPath(type) + RUNTIME_FILES_DIR);
+        if (!extCompRuntimeFileDir.exists()) {
+          // try extension package name for multi-extension files
+          String path = getExtCompDirPath(type);
+          path = path.substring(0, path.lastIndexOf('.'));
+          extCompRuntimeFileDir = new File(path + RUNTIME_FILES_DIR);
+        }
         String jsonFileName = "component_build_info.json";
         File jsonFile = new File(extCompRuntimeFileDir, jsonFileName);
 
-        extCompsBuildInfo.put(new JSONObject(Resources.toString(
-            jsonFile.toURI().toURL(), Charsets.UTF_8)));
+        String buildInfo = Resources.toString(jsonFile.toURI().toURL(), Charsets.UTF_8);
+        JSONTokener tokener = new JSONTokener(buildInfo);
+        Object value = tokener.nextValue();
+        if (value instanceof JSONObject) {
+          extCompsBuildInfo.put((JSONObject) value);
+        } else if (value instanceof JSONArray) {
+          JSONArray infos = (JSONArray) value;
+          for (int i = 0; i < infos.length(); i++) {
+            extCompsBuildInfo.put(infos.getJSONObject(i));
+          }
+        }
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -1592,6 +1608,6 @@ public final class Compiler {
   private String getExtCompDirPath(String type) {
     createDir(project.getAssetsDirectory());
     return project.getAssetsDirectory().getAbsolutePath() + SLASH +
-        EXT_COMPS_DIR_NAME + SLASH + type;
+        EXT_COMPS_DIR_NAME + SLASH + type.substring(0, type.lastIndexOf('.'));
   }
 }

@@ -1,5 +1,5 @@
-// -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright 2015 MIT, All rights reserved
+// -*- mode: Javascript; js-indent-level: 2; -*-
+// Copyright © 2015-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,7 +13,9 @@
 
 'use strict';
 
-goog.provide('Blockly.Util');
+goog.provide('AI.Blockly.Util');
+
+Blockly.Util = {};
 
 // Blockly.Util.Dialog -- A way to get GWT Dialogs to appear from the top window.
 // There is some hair here because we need this code to work both when the GWT code is
@@ -51,4 +53,81 @@ Blockly.Util.Dialog.prototype = {
             top.BlocklyPanel_setDialogContent(this._dialog, message);
         }
     }
+};
+
+/**
+ * Convert between HTML coordinates and SVG coordinates.
+ * @param {number} x X input coordinate.
+ * @param {number} y Y input coordinate.
+ * @param {boolean} toSvg True to convert to SVG coordinates.
+ *     False to convert to mouse/HTML coordinates.
+ * @return {!Object} Object with x and y properties in output coordinates.
+ */
+Blockly.convertCoordinates = function(workspace, x, y, toSvg) {
+  if (toSvg) {
+    x -= window.scrollX || window.pageXOffset;
+    y -= window.scrollY || window.pageYOffset;
+  }
+  var svg = workspace.getParentSvg();
+  var svgPoint = svg.createSVGPoint();
+  svgPoint.x = x;
+  svgPoint.y = y;
+  var matrix = svg.getScreenCTM();
+  if (toSvg) {
+    matrix = matrix.inverse();
+  }
+  var xy = svgPoint.matrixTransform(matrix);
+  if (!toSvg) {
+    xy.x += window.scrollX || window.pageXOffset;
+    xy.y += window.scrollY || window.pageYOffset;
+  }
+  return xy;
+};
+
+/**
+ * Return the absolute coordinates of the top-left corner of this element.
+ * The origin (0,0) is the top-left corner of the page body.
+ * @param {!Element} element Element to find the coordinates of.
+ * @param {!Blockly.Workspace} workspace Source workspace to use as a reference frame.
+ * @return {!Object} Object with .x and .y properties.
+ * @private
+ */
+Blockly.getAbsoluteXY_ = function(element, workspace) {
+  var xy = workspace.getSvgXY(element);
+  return Blockly.convertCoordinates(workspace, xy.x, xy.y, false);
+};
+
+/**
+ * Return the coordinates of the top-left corner of this element relative to
+ * its parent.
+ * @param {!Element} element Element to find the coordinates of.
+ * @return {!Object} Object with .x and .y properties.
+ * @private
+ */
+Blockly.getRelativeXY_ = function(element) {
+  var xy = {x: 0, y: 0};
+  // First, check for x and y attributes.
+  var x = element.getAttribute('x');
+  if (x) {
+    xy.x = parseInt(x, 10);
+  }
+  var y = element.getAttribute('y');
+  if (y) {
+    xy.y = parseInt(y, 10);
+  }
+  // Second, check for transform="translate(...)" attribute.
+  var transform = element.getAttribute('transform');
+  // Note that Firefox and IE (9,10) return 'translate(12)' instead of
+  // 'translate(12, 0)'.
+  // Note that IE (9,10) returns 'translate(16 8)' instead of
+  // 'translate(16, 8)'.
+  var r = transform &&
+          transform.match(/translate\(\s*([-\d.]+)([ ,]\s*([-\d.]+)\s*\))?/);
+  if (r) {
+    xy.x += parseInt(r[1], 10);
+    if (r[3]) {
+      xy.y += parseInt(r[3], 10);
+    }
+  }
+  return xy;
 };

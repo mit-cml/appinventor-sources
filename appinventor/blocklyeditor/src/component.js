@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2012-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -8,19 +8,26 @@
  *
  * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  */
 
 'use strict';
 
-goog.provide('Blockly.Component');
-goog.provide('Blockly.ComponentTypes');
-goog.provide('Blockly.ComponentInstances');
+goog.provide('AI.Blockly.Component');
+goog.provide('AI.Blockly.ComponentTypes');
+goog.provide('AI.Blockly.ComponentInstances');
 
-goog.require('Blockly.TypeBlock');
 goog.require('Blockly.TranslationProperties');
 goog.require('Blockly.TranslationEvents');
 goog.require('Blockly.TranslationMethods');
 goog.require('Blockly.TranslationParams');
+
+// App Inventor extensions to Blockly
+goog.require('Blockly.TypeBlock');
+
+if (Blockly.Component === undefined) Blockly.Component = {};
+if (Blockly.ComponentTypes === undefined) Blockly.ComponentTypes = {};
+if (Blockly.ComponentInstances === undefined) Blockly.ComponentInstances = {};
 
 Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
@@ -165,12 +172,15 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  * Verify all blocks after a Component upgrade
  */
 Blockly.Component.verifyAllBlocks = function () {
-  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
-  for (var x = 0, block; block = allBlocks[x]; ++x) {
-    if (block.category != 'Component') {
-      continue;
+  // We can only verify blocks once the workspace has been injected...
+  if (Blockly.mainWorkspace != null) {
+    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+    for (var x = 0, block; block = allBlocks[x]; ++x) {
+      if (block.category != 'Component') {
+        continue;
+      }
+      block.verify();
     }
-    block.verify();
   }
 }
 

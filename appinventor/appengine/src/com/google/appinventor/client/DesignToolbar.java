@@ -323,6 +323,7 @@ public class DesignToolbar extends Toolbar {
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
+    screen.blocksEditor.makeActiveWorkspace();
   }
 
   private class SwitchToBlocksEditorAction implements Command {

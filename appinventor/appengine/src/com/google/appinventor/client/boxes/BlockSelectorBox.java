@@ -2,9 +2,9 @@
 
 package com.google.appinventor.client.boxes;
 
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
@@ -198,7 +198,7 @@ public final class BlockSelectorBox extends Box {
     for (final String typeName : typeList) {
       TreeItem itemNode = new TreeItem(new HTML("<span>" + typesAndIcons.get(typeName)
           + MESSAGES.textAnyComponentLabel()
-          + TranslationDesignerPallete.getCorrespondingString(typeName) + "</span>"));
+          + ComponentsTranslation.getComponentName(typeName) + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected() {

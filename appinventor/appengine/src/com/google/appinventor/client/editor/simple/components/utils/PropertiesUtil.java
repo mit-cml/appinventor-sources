@@ -241,6 +241,10 @@ public class PropertiesUtil {
       return new ScalingChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FIREBASE_URL)) {
       return new YoungAndroidDefaultURLPropertyEditor("DEFAULT");
+    } else if (editorType.startsWith(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT + ":")) {
+      String type = editorType.substring(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT.length() + 2);
+      type = type.substring(type.lastIndexOf('.') + 1);
+      return new YoungAndroidComponentSelectorPropertyEditor(editor, Collections.singleton(type));
     } else {
       return new TextPropertyEditor();
     }

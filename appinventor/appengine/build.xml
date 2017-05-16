@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
 
 <!-- ======================================================================
-     Copyright 2011 Google Inc.  All Rights Reserved.
+     Copyright 2011-2012 Google Inc.  All Rights Reserved.
      Author: kerr@google.com (Debby Wallach)
      Author: lizlooney@google.com (Liz Looney)
+     Copyright © 2012-2017 Massachusetts Institute of Technology. All Rights Reserved.
+     Author: jis@mit.edu (Jeffrey I. Schiller)
+     Author: hal@mit.edu (Hal Abelson)
+     Author: ram8647@gmail.com (Ralph Morelli)
+     Author: andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+     Author: paulmedwal@gmail.com (Paul Medlock-Walton)
+     Author: josmasflores@gmail.com (José Dominguez)
+     Author: ewpatton@mit.edu (Evan W. Patton)
 
      App Inventor appengine app
      ====================================================================== -->
@@ -52,29 +60,17 @@
        ===================================================================== -->
   <import file="../build-common.xml" />
 
-  <property name="gwt.sdk" location="${lib.dir}/gwt/2.7" />
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.8-patched" />
   <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.46" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
-
-  <!-- =====================================================================
-       Generate a Unique ID for this build. This is used to name blockly-all.js
-       in a unique way (blockly-${guid1}.js) so blockly is cacheable but
-       different builds get their own copy instead of a potentially out of date
-       version. This is particularly important when we do releases.
-       ===================================================================== -->
-  <target name="GenerateGuid1"
-          description="Generate a Unique ID for this build">
-    <generateguid property="guid1" />
-    <echo message="${guid1}" />
-  </target>
 
   <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
+          depends="init,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war">
@@ -85,21 +81,19 @@
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${docs.dir}"/>
-      <fileset dir="${lib.dir}/blockly/src">
+    </copy>
+    <mkdir dir="${build.war.dir}/assets/" />
+    <copy todir="${build.war.dir}/assets/" flatten="true">
+      <fileset dir="${lib.dir}/blockly">
         <include name="media/*"/>
         <include name="**/*.css"/>
-        <include name="1x1.gif"/>
+        <exclude name="demo/**"/>
+      </fileset>
+      <fileset dir="${appinventor.dir}/blocklyeditor">
+        <include name="media/*"/>
       </fileset>
     </copy>
-    <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
-      <filterset>
-        <filter token="GUID" value="${guid1}"/>
-      </filterset>
-    </copy>
-    <delete>
-      <fileset dir="${build.war.dir}" includes="blockly-*.js"/>
-    </delete>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
     <copy todir="${build.war.dir}/">
       <fileset dir="${lib.dir}">
         <include name="closure-library/**/*"/>
@@ -107,19 +101,6 @@
     </copy>
   </target>
 
-  <target name="CopyBlocklyToBuildWar"
-          description="Create blockly-all.js and add to war with unique name"
-          depends="init,GenerateGuid1,blocklyeditor_BlocklyCompile">
-    <delete>
-      <fileset dir="${build.war.dir}" includes="blockly-*.js"/>
-    </delete>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/blockly-${guid1}.js" />
-    <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">
-      <filterset>
-        <filter token="GUID" value="${guid1}"/>
-      </filterset>
-    </copy>
-  </target>
   <!-- =====================================================================
        Create the keystore that is used by AiServerLib to encrypt user and
        project IDs.
@@ -167,7 +148,7 @@
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/findbugs/jsr305.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-18.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-20.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/firebase/firebase-token-generator-2.0.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-codec/commons-codec-1.7.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/json/json.jar" />
@@ -217,7 +198,8 @@
     <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
       <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
     </copy>
-    <ai.javac destdir="${AiServerLib-class.dir}" >
+    <ai.javac destdir="${AiServerLib-class.dir}"
+              source="1.7" target="1.7">
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -292,7 +274,9 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
@@ -338,7 +322,8 @@
     <property name="AiSharedLib-class.dir" location="${class.dir}/AiSharedLib" />
     <mkdir dir="${AiSharedLib-class.dir}" />
 
-    <ai.javac destdir="${AiSharedLib-class.dir}" >
+    <ai.javac destdir="${AiSharedLib-class.dir}"
+              source="1.7" target="1.7">
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -361,7 +346,9 @@
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
@@ -391,7 +378,8 @@
     <property name="AiRebindLib-class.dir" location="${class.dir}/AiRebindLib" />
     <mkdir dir="${AiRebindLib-class.dir}" />
 
-    <ai.javac destdir="${AiRebindLib-class.dir}" >
+    <ai.javac destdir="${AiRebindLib-class.dir}"
+              source="1.7" target="1.7">
       <include name="${appinventor.pkg}/rebind/**/*.java" />
       <classpath>
         <!-- gwt libs -->
@@ -419,7 +407,7 @@
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
               srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
-              source="1.5" target="1.5" nowarn="true"
+              source="1.7" target="1.7" nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
       <include name="${appinventor.pkg}/shared/**/*.java" />
@@ -430,9 +418,12 @@
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>
@@ -465,7 +456,7 @@
 
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp,CopyToBuildWar"
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
           unless="YaClientApp.uptodate">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
@@ -479,10 +470,13 @@
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-18.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
@@ -510,7 +504,9 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-18.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>

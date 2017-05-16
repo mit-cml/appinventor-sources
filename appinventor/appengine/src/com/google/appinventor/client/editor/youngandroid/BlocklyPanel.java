@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright © 2009-2011 Google, All Rights reserved
+// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,35 +11,32 @@ import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
-import com.google.appinventor.client.TranslationComponentParams;
-import com.google.appinventor.client.TranslationDesignerPallete;
-import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.components.common.YaVersion;
-
-import com.google.common.collect.Maps;
-
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.LocaleInfo;
+
+import com.google.gwt.query.client.builders.JsniBundle;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -52,412 +49,142 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  * @author sharon@google.com (Sharon Perl)
  */
-public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeListener{
-  public static enum OpType {ADD, REMOVE, RENAME}
+public class BlocklyPanel extends HTMLPanel {
 
-  // The currently displayed form (project/screen)
-  private static String currentForm;
-  private static String languageSetting;
-
-  private static class ComponentOp {
-    public OpType op;
-    public String instanceName;     // for ADD, REMOVE, RENAME
-    public String uid;              // for ADD, REMOVE, RENAME
-    public String typeDescription;  // for ADD
-    public String typeName;         // for REMOVE, RENAME
-    public String oldName;          // for RENAME
+  public static interface BlocklySource extends JsniBundle {
+    @LibrarySource(value="blockly.js",
+                   prepend="(function(window, document, console){\nthis.goog = goog = top.goog;\n",
+                   postpend="\n}.apply(window, [$wnd, $doc, $wnd.console]));\n" +
+                   "for(var ns in window.goog.implicitNamespaces_) {\n" +
+                   "  if(ns.indexOf('.') !== false) ns = ns.split('.')[0];\n" +
+                   "  top[ns] = window.goog.global[ns];\n" +
+                   "}\nwindow['Blockly'] = top['Blockly'];\nwindow['AI'] = top['AI'];")
+    public void initBlockly();
   }
 
-  private static class LoadStatus {
-    public boolean complete = false; // true if loading blocks completed
-    public boolean error = false;     // true if got an error loading blocks
-  }
+  private static final String EDITOR_HTML = "<div id=\"FORM_NAME\" class=\"svg\" tabindex=\"-1\"></div>";
+  private static final NativeTranslationMap SIMPLE_COMPONENT_TRANSLATIONS;
 
-  private final SimpleComponentDatabase COMPONENT_DATABASE;
-
-  private static final String EDITOR_HTML =
-    "<style>\n" +
-    ".svg {\n" +
-    "  height: 100%;\n" +
-    "  width: 100%;\n" +
-    "  border: solid black 1px;\n" +
-    "}\n" +
-    "</style>\n" +
-    "<iframe src=\"blocklyframe.html#FORM_NAME\" class=\"svg\">";
-
-  // Keep track of component additions/removals/renames that happen before
-  // blocks editor is inited for the first time, or before reinitialization
-  // after the blocks editor's project has been detached from the document.
-  // Replay them in order after initialized. Keys are form names. If there is
-  // an entry for a given form name in the map, its blocks have not yet been
-  // (re)inited.
-  // Note: Javascript is single-threaded. Since this code is compiled by GWT
-  // into Javascript, we don't need to worry about concurrent access to
-  // this map.
-  private static Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
-
-  // When a user switches projects, the ProjectEditor widget gets detached
-  // from the main document in the browser. If the user switches back to a
-  // previously open project (in the same session), when the ProjectEditor
-  // widget gets reattached, all of its FileEditors in its deckPanel get
-  // reloaded, causing the Blockly objects for the blocks editors
-  // to be created anew. Since the FileEditor Java objects themselves are
-  // not recreated, we need to reconstruct the set of components in the Blockly
-  // object when the object gets recreated. For each form, we keep track of the
-  // components currently in that form, stored as "add" operations that can be
-  // replayed to restore those components when the underlying Blockly state
-  // is re-inited. This component state is updated as components are added,
-  // removed, and renamed. The outer map is keyed by form name, and the
-  // inner map is keyed by component uid.
-  private static final Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
-
-  // Pending blocks file content, indexed by form name. Waiting to be loaded when the corresponding
-  // blocks area is initialized.
-  private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
-
-  // [lyn, 2014/10/27] added formJson for upgrading
-  // Pending form JSON content, indexed by form name. Waiting to be loaded when the corresponding
-  // blocks area is initialized.
-  private static final Map<String, String> pendingFormJsonMap = Maps.newHashMap();
-
-  // Status of blocks loading, indexed by form name.
-  private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
-
-  // Blockly backpack
-  private static String backpack = "[]";
-
-  // My form name
-  private String formName;
-
-  // My blocks editor
-  private YaBlocksEditor myBlocksEditor;  // [lyn, 2014/10/28] Added to access current form json
-
-  public static boolean isWarningVisible = false;
-
-  public BlocklyPanel(YaBlocksEditor blocksEditor, String formName) {
-    super(EDITOR_HTML.replace("FORM_NAME", formName));
-    this.formName = formName;
-    this.myBlocksEditor = blocksEditor;
-    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(blocksEditor.getProjectId());
-    componentOps.put(formName, new ArrayList<ComponentOp>());
-    // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
-    currentComponents.put(formName, new HashMap<String, ComponentOp>());
-    initJS();
-    OdeLog.log("Created BlocklyPanel for " + formName);
-  }
-
-  /*
-   * Do whatever is needed for App Inventor UI initialization. In this case
-   * we just need to export the init components method so that we can
-   * get called back from the Blockly Javascript when it finishes loading.
-   */
-  public static void initUi() {
+  static {
+    ((BlocklySource) GWT.create(BlocklySource.class)).initBlockly();
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
+    setLanguageVersion(YaVersion.YOUNG_ANDROID_VERSION, YaVersion.BLOCKS_LANGUAGE_VERSION);
     setPreferredCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.COMPANION_UPDATE_URL);
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
     addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
+    SIMPLE_COMPONENT_TRANSLATIONS = NativeTranslationMap.transform(ComponentsTranslation.myMap);
   }
 
-  /*
-   * Initialize the blocks area so that it can be updated as components are
-   * added, removed, or changed. Replay any previous component operations that
-   * we weren't able to run before the blocks editor was initialized. This
-   * method is static so that it can be called by the native Javascript code
-   * after it finishes loading. We export this method to Javascript in
-   * exportInitComponentsMethod().
+  /**
+   * BlocklyWorkspaceChangeListener allows other parts of the App Inventor system to subscribe to
+   * events in the Blockly panel.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.events.EventHelper
+   *
+   * @author ewpatton
+   *
    */
-  private static void initBlocksArea(String formName) {
-
-    OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
-
-    // if there are any components added, add them first before we load
-    // block content that might reference them
-
-    Map<String, ComponentOp> savedComponents = currentComponents.get(formName);
-    if (savedComponents != null) { // shouldn't be!
-      OdeLog.log("Restoring " + savedComponents.size() +
-          " previous blockly components for form " + formName);
-      for (ComponentOp op : savedComponents.values()) {
-        doAddComponent(formName, op.typeDescription, op.instanceName, op.uid);
-      }
-    }
-
-    if (componentOps.containsKey(formName)) {
-      OdeLog.log("Replaying " + componentOps.get(formName).size() + " ops waiting in queue");
-      for (ComponentOp op : componentOps.get(formName)) {
-        switch (op.op) {
-          case ADD:
-            doAddComponent(formName, op.typeDescription, op.instanceName, op.uid);
-            addSavedComponent(formName, op.typeDescription, op.instanceName, op.uid);
-            break;
-          case REMOVE:
-            doRemoveComponent(formName, op.typeName, op.instanceName, op.uid);
-            removeSavedComponent(formName, op.typeName, op.instanceName, op.uid);
-            break;
-          case RENAME:
-            doRenameComponent(formName, op.typeName, op.oldName, op.instanceName, op.uid);
-            renameSavedComponent(formName, op.typeName, op.oldName, op.instanceName, op.uid);
-            break;
-        }
-      }
-      componentOps.remove(formName);
-    }
-
-    // If we've gotten any block content to load, load it now
-    // Note: Map.remove() returns the value (null if not present), as well as removing the mapping
-    String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
-    // [lyn, 2014/10/27] added formJson for upgrading
-    String pendingFormJson = pendingFormJsonMap.remove(formName);
-    if (pendingBlocksContent != null) {
-      OdeLog.log("Loading blocks area content for " + formName);
-      loadBlocksContentNow(formName, pendingFormJson, pendingBlocksContent);
-    }
+  public interface BlocklyWorkspaceChangeListener {
+    /**
+     * Event callback when a workspace change occurs.
+     *
+     * @param panel Source BlocklyPanel where the event occurred.
+     * @param event Native object representing the event.
+     */
+    public void onWorkspaceChange(BlocklyPanel panel, JavaScriptObject event);
   }
 
-  private static void blocklyWorkspaceChanged(String formName) {
-    LoadStatus loadStat = loadStatusMap.get(formName);
-    // ignore workspaceChanged events until after the load finishes.
-    if (loadStat == null || !loadStat.complete) {
+  // The currently displayed form (project/screen)
+  private static String currentForm;
+
+  // Warning indicator visibility status
+  private static boolean isWarningVisible = false;
+
+  // My form name
+  private final String formName;
+
+  /**
+   * Objects registered to listen for workspace changes.
+   */
+  private final Set<BlocklyWorkspaceChangeListener> listeners = Sets.newHashSet();
+
+  /**
+   * Reference to the native Blockly.WorkspaceSvg.
+   */
+  private JavaScriptObject workspace;
+
+  /**
+   * If true, the loading of the blocks editor has not completed.
+   */
+  private boolean loadComplete = false;
+
+  /**
+   * If true, the loading of the blocks editor resulted in an error.
+   */
+  private boolean loadError = false;
+
+  public BlocklyPanel(YaBlocksEditor blocksEditor, String formName) {
+    this(blocksEditor, formName, false);
+  }
+
+  public BlocklyPanel(YaBlocksEditor blocksEditor, String formName, boolean readOnly) {
+    super("");
+    getElement().addClassName("svg");
+    getElement().setId(formName);
+    this.formName = formName;
+    /* Blockly initialization now occurs in three stages. This is due to the fact that certain
+     * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
+     * initialized and/or null prior to the svg element being attached to the DOM. The first
+     * stage of initialization happens here.
+     *
+     * Stages 2 and 3 can occur in different orders depending on network latency. On a fast
+     * connection, the second stage will be loading of the .bky content into the workspace.
+     * The third stage will then be rendering of the workspace when the user switches to the
+     * Blocks editor. On slow connections, the workspace may render blank until the blocks file
+     * has been downloaded from the server.
+     */
+    initWorkspace(Long.toString(blocksEditor.getProjectId()), readOnly, LocaleInfo.getCurrentLocale().isRTL());
+    OdeLog.log("Created BlocklyPanel for " + formName);
+  }
+
+  /**
+   * Register an object to listen for changes in the Blockly workspace.
+   *
+   * @param listener
+   */
+  public void addChangeListener(BlocklyWorkspaceChangeListener listener) {
+    listeners.add(listener);
+  }
+
+  /**
+   * Unregister an object from listening to changes in the Blockly workspace.
+   *
+   * @param listener
+   */
+  public void removeChangeListener(BlocklyWorkspaceChangeListener listener) {
+    listeners.remove(listener);
+  }
+
+  /**
+   * Notify listeners that an event has occurred in the Blockly workspace.
+   *
+   * @param event Native JavaScript event object with additional details.
+   */
+  private void workspaceChanged(JavaScriptObject event) {
+    // ignore workspaceChanged events until after the load finishes
+    if (!loadComplete) {
       return;
     }
-    if (loadStat.error) {
+    if (loadError) {
       YaBlocksEditor.setBlocksDamaged(formName);
       ErrorReporter.reportError(MESSAGES.blocksNotSaved(formName));
     } else {
-      YaBlocksEditor.onBlocksAreaChanged(formName);
-    }
-  }
-
-  // Returns true if the blocks for formName have been initialized (i.e.,
-  // no componentOps entry exists for formName).
-  public static boolean blocksInited(String formName) {
-    return !componentOps.containsKey(formName);
-  }
-
-  public static String getBackpack() {
-    return backpack;
-  }
-  public static void setBackpack(String bp_contents, boolean doStore) {
-    backpack = bp_contents;
-    if (doStore) {
-      Ode.getInstance().getUserInfoService().storeUserBackpack(backpack,
-        new AsyncCallback<Void>() {
-          @Override
-          public void onSuccess(Void nothing) {
-            // Nothing to do...
-          }
-          @Override
-          public void onFailure(Throwable caught) {
-            OdeLog.elog("Failed setting the backpack");
-          }
-        });
-    }
-  }
-
-  /**
-   * Add a component to the blocks workspace
-   *
-   * @param typeDescription JSON string describing the component type,
-   *                        formatted as described in
-   *                        {@link com.google.appinventor.components.scripts.ComponentDescriptorGenerator}
-   * @param instanceName    the name of the component instance
-   * @param uid             the unique id of the component instance
-   */
-  public void addComponent(String typeDescription, String instanceName, String uid) {
-    if (!blocksInited(formName)) {
-      ComponentOp cop = new ComponentOp();
-      cop.op = OpType.ADD;
-      cop.instanceName = instanceName;
-      cop.typeDescription = typeDescription;
-      cop.uid = uid;
-      if (!componentOps.containsKey(formName)) {
-        componentOps.put(formName, new ArrayList<ComponentOp>());
+      for (BlocklyWorkspaceChangeListener listener : listeners) {
+        listener.onWorkspaceChange(this, event);
       }
-      componentOps.get(formName).add(cop);
-    } else {
-      doAddComponent(formName, typeDescription, instanceName, uid);
-      addSavedComponent(formName, typeDescription, instanceName, uid);
-    }
-  }
-
-  private static void addSavedComponent(String formName, String typeDescription,
-                                        String instanceName, String uid) {
-    Map<String, ComponentOp> myComponents = currentComponents.get(formName);
-    if (!myComponents.containsKey(uid)) {
-      // we expect there to be no saved component with this uid yet!
-      ComponentOp savedComponent = new ComponentOp();
-      savedComponent.op = OpType.ADD;
-      savedComponent.instanceName = instanceName;
-      savedComponent.typeDescription = typeDescription;
-      savedComponent.uid = uid;
-      myComponents.put(uid, savedComponent);
-    } else {
-      OdeLog.wlog("BlocklyPanel: already have component with uid " + uid
-          + ", instanceName is " + myComponents.get(uid).instanceName);
-    }
-
-  }
-
-  /**
-   * Remove the component instance instanceName, with the given typeName
-   * and uid from the workspace.
-   *
-   * @param typeName     component type name (e.g., "Canvas" or "Button")
-   * @param instanceName instance name
-   * @param uid          unique id
-   */
-  public void removeComponent(String typeName, String instanceName, String uid) {
-    if (!blocksInited(formName)) {
-      ComponentOp cop = new ComponentOp();
-      cop.op = OpType.REMOVE;
-      cop.instanceName = instanceName;
-      cop.typeName = typeName;
-      cop.uid = uid;
-      if (!componentOps.containsKey(formName)) {
-        componentOps.put(formName, new ArrayList<ComponentOp>());
-      }
-      componentOps.get(formName).add(cop);
-    } else {
-      doRemoveComponent(formName, typeName, instanceName, uid);
-      removeSavedComponent(formName, typeName, instanceName, uid);
-    }
-  }
-
-  private static void removeSavedComponent(String formName, String typeName,
-    String instanceName, String uid) {
-    Map<String, ComponentOp> myComponents = currentComponents.get(formName);
-    if (myComponents.containsKey(uid)
-        && myComponents.get(uid).instanceName.equals(instanceName)) {
-      // we expect it to be there
-      myComponents.remove(uid);
-    } else {
-      OdeLog.wlog("BlocklyPanel: can't find saved component with uid " + uid
-          + " and name " + instanceName);
-    }
-  }
-
-  /**
-   * Rename the component whose old name is oldName (and whose
-   * unique id is uid and type name is typeName) to newName.
-   *
-   * @param typeName component type name (e.g., "Canvas" or "Button")
-   * @param oldName  old instance name
-   * @param newName  new instance name
-   * @param uid      unique id
-   */
-  public void renameComponent(String typeName, String oldName,
-    String newName, String uid) {
-    if (!blocksInited(formName)) {
-      ComponentOp cop = new ComponentOp();
-      cop.op = OpType.RENAME;
-      cop.instanceName = newName;
-      cop.oldName = oldName;
-      cop.typeName = typeName;
-      cop.uid = uid;
-      if (!componentOps.containsKey(formName)) {
-        componentOps.put(formName, new ArrayList<ComponentOp>());
-      }
-      componentOps.get(formName).add(cop);
-    } else {
-      doRenameComponent(formName, typeName, oldName, newName, uid);
-      renameSavedComponent(formName, typeName, oldName, newName, uid);
-    }
-  }
-
-  private static void renameSavedComponent(String formName, String typeName,
-    String oldName, String newName, String uid) {
-    Map<String, ComponentOp> myComponents = currentComponents.get(formName);
-    if (myComponents.containsKey(uid)) {
-      // we expect it to be there
-      ComponentOp savedComponent = myComponents.get(uid);
-      if (savedComponent.instanceName.equals(oldName)) {  // it should!
-        savedComponent.instanceName = newName;  // rename saved component
-      } else {
-        OdeLog.wlog("BlocklyPanel: saved component with uid " + uid +
-            " has name " + savedComponent.instanceName + ", expected " + oldName);
-      }
-    } else {
-      OdeLog.wlog("BlocklyPanel: can't find saved component with uid " + uid +
-          " and name " + oldName);
-    }
-  }
-
-  /**
-   * Show the drawer for component with the specified instance name
-   *
-   * @param name
-   */
-  public void showComponentBlocks(String name) {
-    if (blocksInited(formName)) {
-      doShowComponentBlocks(formName, name);
-    }
-  }
-
-  /**
-   * Hide the component blocks drawer
-   */
-  public void hideComponentBlocks() {
-    if (blocksInited(formName)) {
-      doHideComponentBlocks(formName);
-    }
-  }
-
-  /**
-   * Show the built-in blocks drawer with the specified name
-   *
-   * @param drawerName
-   */
-  public void showBuiltinBlocks(String drawerName) {
-    try {
-      if (blocksInited(formName)) {
-        doShowBuiltinBlocks(formName, drawerName);
-      }
-    } catch (JavaScriptException e) {
-      ErrorReporter.reportInfo("Not yet implemented: " + drawerName);
-    }
-  }
-
-  /**
-   * Hide the built-in blocks drawer
-   */
-  public void hideBuiltinBlocks() {
-    if (blocksInited(formName)) {
-      doHideBlocks(formName);
-    }
-  }
-
-  /**
-   * Show the generic blocks drawer with the specified name
-   *
-   * @param drawerName
-   */
-  public void showGenericBlocks(String drawerName) {
-    if (blocksInited(formName)) {
-      doShowGenericBlocks(formName, drawerName);
-    }
-  }
-
-  /**
-   * Hide the generic blocks drawer
-   */
-  public void hideGenericBlocks() {
-    if (blocksInited(formName)) {
-      doHideBlocks(formName);
-    }
-  }
-
-  public void renderBlockly() {
-    if (blocksInited(formName)) {
-      doRenderBlockly(formName);
-    }
-  }
-
-  public static void toggleWarning(String formName) {
-    if (blocksInited(formName)) {
-      doToggleWarning(formName);
     }
   }
 
@@ -467,13 +194,6 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     } else {
       BlocklyPanel.isWarningVisible = true;
     }
-  }
-
-  public static void checkWarningState(String formName) {
-    if (BlocklyPanel.isWarningVisible) {
-      toggleWarning(formName);
-    }
-    doCheckWarnings(formName);
   }
 
   public static void callToggleWarning() {
@@ -486,98 +206,39 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
    * our parent object and then our blocks editor gets loaded
    * again later). Also, remember the current state of the blocks
    * area in case we get reloaded.
+   *
+   * This method originally stashed a bunch of iframe related state
+   * that is no longer necessary due to the removal of blocklyframe.html.
+   * To maintain the correct logic with the ReplMgr, it remains for now.
    */
   public void saveComponentsAndBlocks() {
-    // Actually, we already have the components saved, but take this as an
-    // indication that we are going to reinit the blocks editor the next
-    // time it is shown.
-    OdeLog.log("BlocklyEditor: prepared for reinit for form " + formName);
     // Call doResetYail which will stop the timer that is polling the phone. It is important
     // that it be stopped to avoid a race condition where the last timer on this form fires
     // while the new form is loading.
-    doResetYail(formName);
-    // Get blocks content before putting anything in the componentOps map since an entry in
-    // the componentOps map is taken as an indication that the blocks area has not initialized yet.
-    pendingBlocksContentMap.put(formName, getBlocksContent());
-    // [lyn, 2014/10/28] added formJson for upgrading
-    pendingFormJsonMap.put(formName, getFormJson());
-    componentOps.put(formName, new ArrayList<ComponentOp>());
-  }
-
-  /**
-   * @returns true if the blocks drawer is showing, false otherwise.
-   */
-  public boolean drawerShowing() {
-    if (blocksInited(formName)) {
-      return doDrawerShowing(formName);
-    } else {
-      return false;
-    }
+    doResetYail();
   }
 
   /**
    * Load the blocks described by blocksContent into the blocks workspace.
    *
+   * @param formJson JSON description of Form's structure for upgrading
    * @param blocksContent XML description of a blocks workspace in format expected by Blockly
+   * @throws LoadBlocksException if Blockly throws an uncaught exception
    */
   // [lyn, 2014/10/27] added formJson for upgrading
-  public void loadBlocksContent(String formJson, String blocksContent) {
-    LoadStatus loadStat = new LoadStatus();
-    loadStatusMap.put(formName, loadStat);
-    if (blocksInited(formName)) {
-      OdeLog.log("Loading blocks content for " + formName);
-      loadBlocksContentNow(formName, formJson, blocksContent);
-    } else {
-      // save it to load when the blocks area is initialized
-      OdeLog.log("Caching blocks content for " + formName + " for loading when blocks area inited");
-      pendingBlocksContentMap.put(formName, blocksContent);
-      // [lyn, 2014/10/27] added formJson for upgrading
-      pendingFormJsonMap.put(formName, formJson);
-    }
-  }
-
-  // [lyn, 2014/10/27] added formJson for upgrading
-  public static void loadBlocksContentNow(String formName, String formJson, String blocksContent) {
-    LoadStatus loadStat = loadStatusMap.get(formName);  // should not be null!
+  public void loadBlocksContent(String formJson, String blocksContent) throws LoadBlocksException {
     try {
-      doLoadBlocksContent(formName, formJson, blocksContent);
+      doLoadBlocksContent(formJson, blocksContent);
     } catch (JavaScriptException e) {
+      loadError = true;
       ErrorReporter.reportError(MESSAGES.blocksLoadFailure(formName));
       OdeLog.elog("Error loading blocks for screen " + formName + ": "
           + e.getDescription());
-      loadStat.error = true;
-    }
-    loadStat.complete = true;
-  }
-
-  /**
-   * Return the XML string describing the current state of the blocks workspace
-   */
-  public String getBlocksContent() {
-    if (blocksInited(formName)) {
-      return doGetBlocksContent(formName);
-    } else {
-      // in case someone clicks Save before the blocks area is inited
-      String blocksContent = pendingBlocksContentMap.get(formName);
-      return (blocksContent != null) ? blocksContent : "";
+      throw new LoadBlocksException(e, formName);
+    } finally {
+      loadComplete = true;
     }
   }
-
-  /**
-   * Return the JSON string describing the current state of the associated form
-   */
-  // [lyn, 2014/10/28] Handle these cases
-  public String getFormJson() {
-    if (blocksInited(formName)) {
-      return myBlocksEditor.encodeFormAsJsonString(true);
-    } else {
-      // in case someone clicks Save before the blocks area is inited
-      String formJson = pendingFormJsonMap.get(formName);
-      return (formJson != null) ? formJson : "";
-    }
-  }
-
-
 
   /**
    * Get Yail code for current blocks workspace
@@ -586,11 +247,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
    * @throws YailGenerationException if there was a problem generating the Yail
    */
   public String getYail(String formJson, String packageName) throws YailGenerationException {
-    if (!blocksInited(formName)) {
-      throw new YailGenerationException("Blocks area is not initialized yet", formName);
-    }
     try {
-      return doGetYail(formName, formJson, packageName);
+      return doGetYail(formJson, packageName);
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
@@ -607,35 +265,24 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
       OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
       return;
     }
-    if (!blocksInited(formName)) {
-      throw new YailGenerationException("Blocks area is not initialized yet", formName);
-    }
     try {
-      doSendJson(formName, formJson, packageName);
+      doSendJson(formJson, packageName);
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
   }
 
-  public void showDifferentForm(String newFormName) {
-    OdeLog.log("showDifferentForm changing from " + formName + " to " + newFormName);
-    // Nuke Yail for form we are leaving so it will reload when we return
-    if (!formName.equals(newFormName))
-      doResetYail(formName);
-    formName = newFormName;
-    blocklyWorkspaceChanged(formName);
-  }
-
   public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) { // Start the Repl
-    doStartRepl(formName, alreadyRunning, forEmulator, forUsb);
+    makeActive();
+    doStartRepl(alreadyRunning, forEmulator, forUsb);
   }
 
   public void hardReset() {
-    doHardReset(formName);
+    doHardReset();
   }
 
   public void verifyAllBlocks() {
-    doVerifyAllBlocks(formName);
+    doVerifyAllBlocks();
   }
 
   public static boolean checkIsAdmin() {
@@ -647,8 +294,6 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   // a connected device.
   public static void setCurrentForm(String formName) {
     currentForm = formName;
-    if (blocksInited(formName))
-      blocklyWorkspaceChanged(formName); // Update the device now if the blocks are ready.
   }
 
   public static void indicateDisconnect() {
@@ -664,8 +309,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     DesignToolbar.popScreen();
   }
 
-  public void getBlocksImage(Callback callback) {
-    doFetchBlocksImage(formName, callback);
+  public void getBlocksImage(Callback<String, String> callback) {
+    doFetchBlocksImage(callback);
   }
 
   // The code below (4 methods worth) is for creating a GWT dialog box
@@ -707,25 +352,28 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     HorizontalPanel holder = new HorizontalPanel();
     if (buttonName != null) {           // If buttonName and cancelButtonName are null
       Button ok = new Button(buttonName); // We won't have any buttons and other
-      ok.addClickListener(new ClickListener() { // code is needed to dismiss us
-          public void onClick(Widget sender) {
-            doCallBack(callback, buttonName);
-          }
-        });
+      ok.addClickHandler(new ClickHandler() { // code is needed to dismiss us
+        @Override
+        public void onClick(ClickEvent event) {
+          doCallBack(callback, buttonName);
+        }
+      });
       holder.add(ok);
     }
     if (cancelButtonName != null) {
       Button cancel = new Button(cancelButtonName);
-      cancel.addClickListener(new ClickListener() {
-          public void onClick(Widget sender) {
-            doCallBack(callback, cancelButtonName);
-          }
-        });
+      cancel.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          doCallBack(callback, cancelButtonName);
+        }
+      });
       holder.add(cancel);
     }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
+    terminateDrag();  // cancel a drag before showing the modal dialog
     dialogBox.show();
     return dialogBox;
   }
@@ -768,33 +416,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }
 
   public static String getQRCode(String inString) {
-    if (currentForm == null) {  // Cannot build a QR code without a current form
-      return "";                // This only happens when you have no projects
-    }
-    return doQRCode(currentForm, inString);
-  }
-
-  /**
-   * Update the language setting within BlocklyPanel.java and switch to the
-   * desired language.
-   *
-   * @param newLanguage The desired new language setting
-   */
-  public void switchLanguage(String newLanguage) {
-    languageSetting = newLanguage;
-    doSwitchLanguage(formName, languageSetting);
-  }
-
-  /**
-   * Update the language setting within BlocklyPanel.java and switch to the
-   * desired language.
-   *
-   * @param newLanguage The desired new language setting
-   * @param formName
-   */
-  public static void switchLanguage(String formName, String newLanguage) {
-    languageSetting = newLanguage;
-    doSwitchLanguage(formName, languageSetting);
+    return doQRCode(inString);
   }
 
   /**
@@ -813,47 +435,75 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doUpdateCompanion(formName);
   }
 
-  public static String getLocalizedPropertyName(String key) {
-    return ComponentsTranslation.getPropertyName(key);
+  /**
+   * Access UI translations for generating a deletion warning dialog.
+   * @param message Identifier of message
+   * @return Translated message
+   * @throws IllegalArgumentException if the identifier is not understood
+   */
+  public static String getOdeMessage(String message) {
+    // TODO(ewpatton): Investigate using a generator to work around
+    // lack of reflection
+    if ("deleteButton".equals(message)) {
+      return Ode.getMessages().deleteButton();
+    } else if ("cancelButton".equals(message)) {
+      return Ode.getMessages().cancelButton();
+    } else {
+      throw new IllegalArgumentException("Unexpected argument in getOdeMessage: " + message);
+    }
   }
 
-  public static String getLocalizedParameterName(String key) {
-    return TranslationComponentParams.getName(key);
+  /**
+   * Update the user's grid setting.
+   * This method is called via JSNI.
+   * @param enable true if the grid should be enabled, otherwise false.
+   */
+  private static void setGridEnabled(boolean enable) {
+    BlocksSettings settings = (BlocksSettings) Ode.getUserSettings().getSettings(SettingsConstants.BLOCKS_SETTINGS);
+    settings.changePropertyValue(SettingsConstants.GRID_ENABLED, Boolean.toString(enable));
   }
 
-  public static String getLocalizedMethodName(String key) {
-    return ComponentsTranslation.getMethodName(key);
+  /**
+   * Update the user's snap-to-grid setting.
+   * This method is called via JSNI.
+   * @param enable true if snapping should be enabled, otherwise false.
+   */
+  private static void setSnapEnabled(boolean enable) {
+    BlocksSettings settings = (BlocksSettings) Ode.getUserSettings().getSettings(SettingsConstants.BLOCKS_SETTINGS);
+    settings.changePropertyValue(SettingsConstants.SNAP_ENABLED, Boolean.toString(enable));
   }
 
-  public static String getLocalizedEventName(String key) {
-    return ComponentsTranslation.getEventName(key);
+  /**
+   * Get the current state of the user's grid setting.
+   * This method is called via JSNI.
+   * @return true if the setting is present and set to true, otherwise false.
+   */
+  private static boolean getGridEnabled() {
+    BlocksSettings settings = (BlocksSettings) Ode.getUserSettings().getSettings(SettingsConstants.BLOCKS_SETTINGS);
+    String snap = settings.getPropertyValue(SettingsConstants.GRID_ENABLED);
+    return Boolean.parseBoolean(snap);
   }
 
-  public static String getLocalizedComponentType(String key) {
-    return TranslationDesignerPallete.getCorrespondingString(key);
+  /**
+   * Get the current state of the user's snap setting.
+   * This method is called via JSNI.
+   * @return true if the setting is present and set to true, otherwise false.
+   */
+  private static boolean getSnapEnabled() {
+    BlocksSettings settings = (BlocksSettings) Ode.getUserSettings().getSettings(SettingsConstants.BLOCKS_SETTINGS);
+    String snap = settings.getPropertyValue(SettingsConstants.SNAP_ENABLED);
+    return Boolean.parseBoolean(snap);
   }
 
-  @Override
-  public void onComponentTypeAdded(List<String> componentTypes) {
-    populateComponentTypes(formName);
-    verifyAllBlocks();
-
+  /**
+   * Trigger a save of the user's settings. This is used to prevent two updates being sent to the
+   * server in the event a Blockly operation sets both grid and snap back-to-back.
+   * This method is called via JSNI.
+   */
+  private static void saveUserSettings() {
+    Ode.getUserSettings().saveSettings(null);
   }
 
-  @Override
-  public boolean beforeComponentTypeRemoved(List<String> componentTypes) {
-    return true;
-  }
-
-  @Override
-  public void onComponentTypeRemoved(Map<String, String> componentTypes) {
-    populateComponentTypes(formName);
-  }
-
-  @Override
-  public void onResetDatabase() {
-    populateComponentTypes(formName);
-  }
   // ------------ Native methods ------------
 
   /**
@@ -867,14 +517,6 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }-*/;
 
   private static native void exportMethodsToJavascript() /*-{
-    $wnd.BlocklyPanel_initBlocksArea =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
-    $wnd.BlocklyPanel_blocklyWorkspaceChanged =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
-    $wnd.BlocklyPanel_switchLanguage =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchLanguage(Ljava/lang/String;Ljava/lang/String;));
-    $wnd.BlocklyPanel_checkWarningState =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkWarningState(Ljava/lang/String;));
     $wnd.BlocklyPanel_callToggleWarning =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::callToggleWarning());
     $wnd.BlocklyPanel_checkIsAdmin =
@@ -898,128 +540,233 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInfo(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentsJSONString =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentsJSONString(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getYaVersion =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getYaVersion());
-    $wnd.BlocklyPanel_getBlocksLanguageVersion =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBlocksLanguageVersion());
-    $wnd.BlocklyPanel_getLocalizedPropertyName =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedPropertyName(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getLocalizedParameterName =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedParameterName(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getLocalizedMethodName =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedMethodName(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getLocalizedEventName =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedEventName(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getLocalizedComponentType =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedComponentType(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getBackpack =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBackpack());
-    $wnd.BlocklyPanel_setBackpack =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;Z));
+    $wnd.BlocklyPanel_storeBackpack =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::storeBackpack(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getOdeMessage =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getOdeMessage(Ljava/lang/String;));
+    $wnd.BlocklyPanel_setGridEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setGridEnabled(Z));
+    $wnd.BlocklyPanel_setSnapEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setSnapEnabled(Z));
+    $wnd.BlocklyPanel_getGridEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getGridEnabled());
+    $wnd.BlocklyPanel_getSnapEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getSnapEnabled());
+    $wnd.BlocklyPanel_saveUserSettings =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::saveUserSettings());
   }-*/;
 
-  private native void initJS() /*-{
-    $wnd.myBlocklyPanel = this;
-    $wnd.Blockly = null;  // will be set to our iframe's Blockly object when
-                          // the iframe finishes loading
+  private native void initWorkspace(String projectId, boolean readOnly, boolean rtl)/*-{
+    var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
+    var workspace = Blockly.BlocklyEditor.create(el,
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::formName,
+      readOnly, rtl);
+    workspace.projectId = projectId;
+    var cb = $entry(this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspaceChanged(Lcom/google/gwt/core/client/JavaScriptObject;));
+    cb = cb.bind(this);
+    workspace.addChangeListener(function(e) {
+      var block = this.getBlockById(e.blockId);
+      if ( block && e.name == Blockly.ComponentBlock.COMPONENT_SELECTOR ) {
+        block.rename(e.oldValue, e.newValue);
+      }
+      cb(e);
+      // [lyn 12/31/2013] Check for duplicate component event handlers before
+      // running any error handlers to avoid quadratic time behavior.
+      var handler = this.getWarningHandler();
+      if (handler) {
+        handler.determineDuplicateComponentEventHandlers();
+      }
+    }.bind(workspace));
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
   }-*/;
 
-  private static native void doAddComponent(String formName, String typeDescription,
-                                            String instanceName, String uid) /*-{
-    $wnd.Blocklies[formName].Component.add(instanceName, uid);
+  /**
+   * Inject the workspace into the &lt;div&gt; element.
+   */
+  native void injectWorkspace()/*-{
+    var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
+    Blockly.ai_inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
   }-*/;
 
-  private static native void doRemoveComponent(String formName, String typeName,
-                                               String instanceName, String uid) /*-{
-    $wnd.Blocklies[formName].Component.remove(typeName, instanceName, uid);
-  }-*/;
-
-  private static native void doRenameComponent(String formName, String typeName, String oldName,
-                                               String newName, String uid) /*-{
-    $wnd.Blocklies[formName].Component.rename(oldName, newName, uid)
-  }-*/;
-
-  private static native void doShowComponentBlocks(String formName, String name) /*-{
-    $wnd.Blocklies[formName].Drawer.showComponent(name);
-  }-*/;
-
-  public static native void doHideComponentBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].Drawer.hide();
-  }-*/;
-
-  private static native void doShowBuiltinBlocks(String formName, String drawerName) /*-{
-    var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.Drawer.hide();
-    myBlockly.Drawer.showBuiltin(drawerName);
-  }-*/;
-
-  public static native void doHideBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].Drawer.hide();
-  }-*/;
-
-  private static native void doShowGenericBlocks(String formName, String drawerName) /*-{
-    var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.Drawer.hide();
-    myBlockly.Drawer.showGeneric(drawerName);
-  }-*/;
-
-  public static native boolean doDrawerShowing(String formName) /*-{
-    return $wnd.Blocklies[formName].Drawer.isShowing();
+  /**
+   * Make the workspace associated with the BlocklyPanel the main workspace.
+   */
+  native void makeActive()/*-{
+    Blockly.mainWorkspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    // Trigger a screen switch to send new YAIL.
+    var parts = Blockly.mainWorkspace.formName.split(/_/);
+    Blockly.mainWorkspace.fireChangeListener(new AI.Events.ScreenSwitch(parts[0], parts[1]));
   }-*/;
 
   // [lyn, 2014/10/27] added formJson for upgrading
-  public static native void doLoadBlocksContent(String formName, String formJson, String blocksContent) /*-{
-    $wnd.Blocklies[formName].SaveFile.load(formJson, blocksContent);
-    $wnd.Blocklies[formName].Component.verifyAllBlocks();
-  }-*/;
-
-  public static native String doGetBlocksContent(String formName) /*-{
-    return $wnd.Blocklies[formName].SaveFile.get();
-  }-*/;
-
-  public static native String doGetYailRepl(String formName, String formJson, String packageName) /*-{
-    return $wnd.Blocklies[formName].Yail.getFormYail(formJson, packageName, true);
-  }-*/;
-
-  public static native String doGetYail(String formName, String formJson, String packageName) /*-{
-    return $wnd.Blocklies[formName].Yail.getFormYail(formJson, packageName);
-  }-*/;
-
-  public static native void doSendJson(String formName, String formJson, String packageName) /*-{
-    $wnd.Blocklies[formName].ReplMgr.sendFormData(formJson, packageName);
-  }-*/;
-
-  public static native void doResetYail(String formName) /*-{
-    $wnd.Blocklies[formName].ReplMgr.resetYail();
-  }-*/;
-
-  public static native void doPollYail(String formName) /*-{
+  public native void doLoadBlocksContent(String formJson, String blocksContent) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace;
+    var previousMainWorkspace = Blockly.mainWorkspace;
     try {
-      $wnd.Blocklies[formName].ReplMgr.pollYail();
+      Blockly.mainWorkspace = workspace;
+      workspace.loadBlocksFile(formJson, blocksContent).verifyAllBlocks();
+    } catch(e) {
+      workspace.loadError = true;
+      throw e;
+    } finally {
+      workspace.loadComplete = true;
+      Blockly.mainWorkspace = previousMainWorkspace;
+    }
+  }-*/;
+
+  /**
+   * Return the XML string describing the current state of the blocks workspace
+   */
+  public native String getBlocksContent() /*-{
+    return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .saveBlocksFile();
+  }-*/;
+
+  /**
+   * Add a component to the blocks workspace
+   *
+   * @param uid             the unique id of the component instance
+   * @param instanceName    the name of the component instance
+   * @param typeName        the type of the component instance
+   */
+  public native void addComponent(String uid, String instanceName, String typeName)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .addComponent(uid, instanceName, typeName);
+  }-*/;
+
+  /**
+   * Remove the component instance instanceName, with the given typeName
+   * and uid from the workspace.
+   *
+   * @param uid          unique id
+   */
+  public native void removeComponent(String uid)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .removeComponent(uid);
+  }-*/;
+
+  /**
+   * Rename the component whose old name is oldName (and whose
+   * unique id is uid and type name is typeName) to newName.
+   *
+   * @param uid      unique id
+   * @param oldName  old instance name
+   * @param newName  new instance name
+   */
+  public native void renameComponent(String uid, String oldName, String newName)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .renameComponent(uid, oldName, newName);
+  }-*/;
+
+  /**
+   * Show the drawer for component with the specified instance name
+   *
+   * @param name
+   */
+  public native void showComponentBlocks(String name)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .hideDrawer()
+      .showComponent(name);
+  }-*/;
+
+  /**
+   * Show the built-in blocks drawer with the specified name
+   *
+   * @param drawerName
+   */
+  public native void showBuiltinBlocks(String drawerName)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .hideDrawer()
+      .showBuiltin(drawerName);
+  }-*/;
+
+  /**
+   * Show the generic blocks drawer with the specified name
+   *
+   * @param drawerName
+   */
+  public native void showGenericBlocks(String drawerName)/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .hideDrawer()
+      .showGeneric(drawerName);
+  }-*/;
+
+  /**
+   * Hide the blocks drawer
+   */
+  public native void hideDrawer()/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .hideDrawer();
+  }-*/;
+
+  /**
+   * @returns true if the blocks drawer is showing, false otherwise.
+   */
+  public native boolean drawerShowing()/*-{
+    return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .isDrawerShowing();
+  }-*/;
+
+  public native void render()/*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .resize()
+      .render();
+  }-*/;
+
+  public native void hideChaff()/*-{
+    Blockly.hideChaff();
+  }-*/;
+
+  public native void toggleWarning()/*-{
+    var handler =
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .getWarningHandler();
+    if (handler) {  // handler won't exist if the workspace hasn't rendered yet.
+      handler.toggleWarning();
+    }
+  }-*/;
+
+  public native String doGetYail(String formJson, String packageName) /*-{
+    return this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .getFormYail(formJson, packageName);
+  }-*/;
+
+  public native void doSendJson(String formJson, String packageName) /*-{
+    Blockly.ReplMgr.sendFormData(formJson, packageName,
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
+  }-*/;
+
+  public native void doResetYail() /*-{
+    Blockly.ReplMgr.resetYail();
+  }-*/;
+
+  public native void doPollYail() /*-{
+    try {
+      Blockly.ReplMgr.pollYail();
     } catch (e) {
       $wnd.console.log("doPollYail() Failed");
       $wnd.console.log(e);
     }
   }-*/;
 
-  public static native void doStartRepl(String formName, boolean alreadyRunning, boolean forEmulator, boolean forUsb) /*-{
-    $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator, forUsb);
+  public native void doStartRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) /*-{
+    Blockly.ReplMgr.startRepl(alreadyRunning, forEmulator, forUsb);
   }-*/;
 
-  public static native void doHardReset(String formName) /*-{
-    $wnd.Blocklies[formName].ReplMgr.ehardreset(formName);
+  public native void doHardReset() /*-{
+    Blockly.ReplMgr.ehardreset(
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::formName
+    );
   }-*/;
 
-  public static native void doRenderBlockly(String formName) /*-{
-    $wnd.Blocklies[formName].BlocklyEditor.render();
+  public native void doCheckWarnings() /*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .checkAllBlocksForWarningsAndErrors();
   }-*/;
 
-  public static native void doToggleWarning(String formName) /*-{
-    $wnd.Blocklies[formName].WarningHandler.warningToggle();
-  }-*/;
-
-  public static native void doCheckWarnings(String formName) /*-{
-    $wnd.Blocklies[formName].WarningHandler.checkAllBlocksForWarningsAndErrors();
+  static native void setLanguageVersion(int yaVersion, int blocksVersion)/*-{
+    $wnd.YA_VERSION = yaVersion;
+    $wnd.BLOCKS_VERSION = blocksVersion;
   }-*/;
 
   public static native String getCompVersion() /*-{
@@ -1043,49 +790,123 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     $wnd.ACCEPTABLE_COMPANIONS.push(comp);
   }-*/;
 
-  static native String doQRCode(String formName, String inString) /*-{
-    return $wnd.Blocklies[formName].ReplMgr.makeqrcode(inString);
-  }-*/;
-
-  /*
-   * Switch the Blockly's language setting to "language" as specified in the
-   * parameter argument.
-   */
-  public static native void doSwitchLanguage(String formName, String language) /*-{
-    $wnd.Blocklies[formName].language_switch.switchLanguage(language);
+  static native String doQRCode(String inString) /*-{
+    return Blockly.ReplMgr.makeqrcode(inString);
   }-*/;
 
   public static native void doUpdateCompanion(String formName) /*-{
-    $wnd.Blocklies[formName].ReplMgr.triggerUpdate();
+    Blockly.ReplMgr.triggerUpdate();
   }-*/;
 
-  public static native String getURL() /*-{
-    return $wnd.location.href;
-  }-*/;
-
-  /*
+  /**
    * Update Component Types in Blockly ComponentTypes
    */
-  public static native void populateComponentTypes(String formName) /*-{
-      $wnd.Blocklies[formName].ComponentTypes.populateTypes(top.location.hash.substr(1));
+  public native void populateComponentTypes(String jsonComponentsStr) /*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .populateComponentTypes(jsonComponentsStr, @com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SIMPLE_COMPONENT_TRANSLATIONS);
   }-*/;
 
-  /*
+  /**
    * Update Component Types in Blockly ComponentTypes
    */
-  public static native void doVerifyAllBlocks(String formName) /*-{
-      $wnd.Blocklies[formName].Component.verifyAllBlocks();
+  public native void doVerifyAllBlocks() /*-{
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .verifyAllBlocks();
   }-*/;
 
-  public static native void doFetchBlocksImage(String formName, Callback<String,String> callback) /*-{
-      var callb = $entry(function(result, error) {
-          if (error) {
-             callback.@com.google.gwt.core.client.Callback::onFailure(Ljava/lang/Object;)(error);
-          } else {
-             callback.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(result);
-          }
+  public native void doFetchBlocksImage(Callback<String,String> callback) /*-{
+    var callb = $entry(function(result, error) {
+      if (error) {
+        callback.@com.google.gwt.core.client.Callback::onFailure(Ljava/lang/Object;)(error);
+      } else {
+        callback.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(result);
+      }
+    });
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .exportBlocksImageToUri(callb);
+  }-*/;
+
+  /**
+   * Set the initial backpack contents from the server.
+   *
+   * This is an optimization that reduces the number of serializations to and from JSON. The
+   * backpack in earlier versions needed to be marshalled between iframes, but now lives in
+   * the same environment so can remain as JavaScript content.
+   *
+   * @param backpack JSON-serialized backpack contents.
+   */
+  public static native void setInitialBackpack(String backpack)/*-{
+    Blockly.Backpack.shared_contents = JSON.parse(backpack);
+  }-*/;
+
+  /**
+   * Cancel an ongoing drag operation.
+   */
+  public static native void terminateDrag()/*-{
+    if (Blockly) Blockly.terminateDrag_();
+  }-*/;
+
+  /**
+   * Store the backpack's contents to the App Inventor service.
+   *
+   * @param backpack JSON-serialized backpack contents.
+   */
+  private static void storeBackpack(String backpack) {
+    Ode.getInstance().getUserInfoService().storeUserBackpack(backpack,
+      new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void nothing) {
+          // Nothing to do...
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.elog("Failed setting the backpack");
+        }
       });
-      $wnd.Blocklies[formName].ExportBlocksImage.getUri(callb);
-  }-*/;
+  }
+
+  /**
+   * NativeTranslationMap is a plain JavaScriptObject that provides key-value mappings for
+   * user interface translations in Blockly. This reduces the overhead of crossing GWT's
+   * JSNI barrier by replacing a more expensive function call with a dictionary lookup.
+   *
+   * @author ewpatton
+   *
+   */
+  private static class NativeTranslationMap extends JavaScriptObject {
+    // GWT requires JSO constructors to be non-visible.
+    protected NativeTranslationMap() {}
+
+    /**
+     * Instantiate a new NativeTranslationMap.
+     * @return An empty NativeTranslationMap
+     */
+    private static native NativeTranslationMap make()/*-{
+      return {};
+    }-*/;
+
+    /**
+     * Add a key-value pair to the translation map.
+     * @param key Untranslated term
+     * @param value Translated term for the user's current locale
+     */
+    private native void put(String key, String value)/*-{
+      this[key] = value;
+    }-*/;
+
+    /**
+     * Transforms a Java Collections Map into a NativeTranslationMap.
+     * @param map The source mapping of key-value pairs
+     * @return A new NativeTranslationMap with the same contents as <i>map</i> but as a
+     * JavaScript Object usable in native code.
+     */
+    public static NativeTranslationMap transform(Map<String, String> map) {
+      NativeTranslationMap result = make();
+      for(Entry<String, String> entry : map.entrySet()) {
+        result.put(entry.getKey(), entry.getValue());
+      }
+      return result;
+    }
+  }
 
 }
