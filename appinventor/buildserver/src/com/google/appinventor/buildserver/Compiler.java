@@ -888,14 +888,10 @@ public final class Compiler {
       for (Project.SourceDescriptor source : sources) {
         String sourceFileName = source.getFile().getAbsolutePath();
         LOG.log(Level.INFO, "source file: " + sourceFileName);
-        int srcIndex = sourceFileName.indexOf("/../src/");
+        int srcIndex = sourceFileName.indexOf(File.separator + ".." + File.separator + "src" + File.separator);
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
-        .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
-        if (System.getProperty("os.name").startsWith("Windows")) {
-          classFileName = classesDir.getAbsolutePath()
-            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
-        }
+          .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
         // a line in the file
