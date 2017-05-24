@@ -3,6 +3,11 @@
 <!-- ======================================================================
      Copyright 2012 Google Inc.  All Rights Reserved.
      Author: sharon@google.com (Sharon Perl)
+     Copyright © 2012-2016 Massachusetts Institute of Technology. All Rights Reserved.
+     Author: andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+     Author: jis@mit.edu (Jeffrey I. Schiller)
+     Author: lizlooney@google.com (Liz Looney)
+     Author: ewpatton@mit.edu (Evan W. Patton)
 
      Blockly-based blocks editor
      ====================================================================== -->
@@ -35,15 +40,26 @@
 	<property name="run.dir" location="${local.build.dir}/run" />
 	<property name="run.lib.dir" location="${run.dir}/lib" />
 
-	<property name="blockly.src.dir" location="${lib.dir}/blockly/src" />
+	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
 
 	<!-- =====================================================================
        Targets
        ===================================================================== -->
 
-	<target name="BlocklyCompile" 
+        <target name="CheckBlocklyCompile">
+          <uptodate property="BlocklyCompile.uptodate" targetfile="${public.build.dir}/blockly-all.js">
+            <srcfiles dir="src/" includes="**/*.js" />
+            <srcfiles dir="${blockly.src.dir}/" includes="core/**/*.js" />
+            <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
+            <srcfiles dir="${basedir}" includes="ploverConfig.js" />
+            <!-- <mapper type="merge" to="${public.build.dir}/blockly-all.js" /> -->
+          </uptodate>
+        </target>
+
+	<target name="BlocklyCompile"
 		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
-		      depends="init">
+		      depends="init,CheckBlocklyCompile"
+                      unless="BlocklyCompile.uptodate">
 		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
 			<arg line="build ploverConfig.js" />
 		</java>

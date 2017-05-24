@@ -6,7 +6,7 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
@@ -59,7 +59,7 @@ public class SimplePaletteItem extends DragSourcePanel {
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
     panel.setCellWidth(image, "30px");
 
-    Label label = new Label(TranslationDesignerPallete.getCorrespondingString(scd.getName()));
+    Label label = new Label(ComponentsTranslation.getComponentName(scd.getName()));
     label.setHorizontalAlignment(Label.ALIGN_LEFT);
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);

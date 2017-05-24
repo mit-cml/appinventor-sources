@@ -1,5 +1,5 @@
-// -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
+// -*- mode: Javascript; js-indent-level: 2; -*-
+// Copyright © 2013-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -7,11 +7,12 @@
  * Methods to handle warnings in the block editor.
  *
  * @author mckinney@mit.edu (Andrew F. McKinney)
+ * @author ewpatton@mit.edu (Evan W. Patton);
  */
 
 'use strict';
 
-goog.provide('Blockly.WarningIndicator');
+goog.provide('AI.Blockly.WarningIndicator');
 
 goog.require('goog.Timer');
 
@@ -73,50 +74,51 @@ Blockly.WarningIndicator.prototype.top_ = 0;
  */
 Blockly.WarningIndicator.prototype.createDom = function() {
 
-  this.svgGroup_ = Blockly.createSvgElement('g',
+  this.svgGroup_ = Blockly.utils.createSvgElement('g',
       {'id': "indicatorWarning"}, null);
-  this.warningCount_ = Blockly.createSvgElement('text',
+  this.warningCount_ = Blockly.utils.createSvgElement('text',
       {'fill': "black", 'transform':"translate(20,14)"},
       this.svgGroup_);
   this.warningCount_.textContent = "0";
 
 
-  this.iconGroup_ = Blockly.createSvgElement('g',
+  this.iconGroup_ = Blockly.utils.createSvgElement('g',
       {'class': 'blocklyIconGroup', 'translate':"transform(0,0)"}, this.svgGroup_);
-  var iconShield = Blockly.createSvgElement('path',
+  var iconShield = Blockly.utils.createSvgElement('path',
       {'class': 'blocklyWarningIconShield',
        'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
        'Q 17,15 14,15 z'},
       this.iconGroup_);
-  this.iconMark_ = Blockly.createSvgElement('text',
+  this.iconMark_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
-       'x': Blockly.ErrorIcon.ICON_RADIUS,
-       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconGroup_);
+       'x': Blockly.Error.ICON_RADIUS,
+       'y': 2 * Blockly.Error.ICON_RADIUS - 3}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
-  this.errorCount_ = Blockly.createSvgElement('text',
+  this.errorCount_ = Blockly.utils.createSvgElement('text',
       {'fill': "black", 'transform':"translate(75,14)"},
       this.svgGroup_);
   this.errorCount_.textContent = "0";
 
-  this.iconErrorGroup_ = Blockly.createSvgElement('g',
+  this.iconErrorGroup_ = Blockly.utils.createSvgElement('g',
       {'class': 'blocklyIconGroup', 'transform':"translate(55,0)"}, this.svgGroup_);
-  var iconErrorShield = Blockly.createSvgElement('path',
-      {'class': 'blocklyErrorIconShield',
-       'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
-       'Q 17,15 14,15 z','x':20},
+  Blockly.utils.createSvgElement('circle',
+      {'class': 'blocklyErrorIconOutline',
+       'r': Blockly.Error.ICON_RADIUS,
+       'cx': Blockly.Error.ICON_RADIUS,
+       'cy': Blockly.Error.ICON_RADIUS}, this.iconErrorGroup_);
+  Blockly.utils.createSvgElement('path',
+      {'class': 'blocklyErrorIconX',
+       'd': 'M 4,4 12,12 8,8 4,12 12,4'},
+                           // X fills circle vvv
+       //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.iconErrorGroup_);
-  this.iconErrorMark_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyIconMark',
-       'x': Blockly.ErrorIcon.ICON_RADIUS,
-       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconErrorGroup_);
-  this.iconErrorMark_.appendChild(document.createTextNode('!'));
 
-  this.warningToggle_ = Blockly.createSvgElement('rect',
+  this.warningToggle_ = Blockly.utils.createSvgElement('rect',
       {'fill': "#eeeeee",'width':"120", 'height':"20", 'x':"-15",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
-  this.warningToggleText_ = Blockly.createSvgElement('text',
+  this.warningToggleText_ = Blockly.utils.createSvgElement('text',
       {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
@@ -187,8 +189,8 @@ Blockly.WarningIndicator.prototype.position_ = function() {
  *
  */
 Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
-  this.errorCount_.textContent = Blockly.WarningHandler.errorCount;
-  this.warningCount_.textContent = Blockly.WarningHandler.warningCount;
+  this.errorCount_.textContent = this.workspace_.getWarningHandler().errorCount;
+  this.warningCount_.textContent = this.workspace_.getWarningHandler().warningCount;
 }
 
 /**
@@ -196,7 +198,7 @@ Blockly.WarningIndicator.prototype.updateWarningAndErrorCount = function() {
  *
  */
 Blockly.WarningIndicator.prototype.updateWarningToggleText = function() {
-  if(Blockly.WarningHandler.showWarningsToggle) {
+  if(this.workspace_.getWarningHandler().showWarningsToggle) {
     this.warningToggleText_.textContent = Blockly.Msg.HIDE_WARNINGS;
   } else {
     this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;

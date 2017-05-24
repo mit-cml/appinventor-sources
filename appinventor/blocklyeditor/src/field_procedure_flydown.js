@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -10,9 +10,9 @@
 
 'use strict';
 
-goog.provide('Blockly.FieldProcedureFlydown');
+goog.provide('AI.Blockly.FieldProcedureFlydown');
 
-goog.require('Blockly.FieldFlydown');
+goog.require('AI.Blockly.FieldFlydown');
 
 /**
  * Class for a clickable parameter field.
@@ -36,10 +36,10 @@ Blockly.FieldProcedureFlydown.prototype.flyoutCSSClassName = 'blocklyFieldProced
  **/
 Blockly.FieldProcedureFlydown.prototype.createBlocks_ = function() {
   var name = this.getText(); // name in this parameter field.
-  var getterBlock = new Blockly.Block.obtain(Blockly.mainWorkspace, 'variables_get');
+  var getterBlock = Blockly.mainWorkspace.newBlock('variables_get');
   getterBlock.setFieldValue(name, 'VAR');
-  var setterBlock = new Blockly.Block.obtain(Blockly.mainWorkspace, 'variables_set');
+  var setterBlock = Blockly.mainWorkspace.newBlock('variables_set');
   setterBlock.setFieldValue(name, 'VAR');
   return [getterBlock, setterBlock];
-}
+};
 

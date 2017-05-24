@@ -8,14 +8,16 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.es_es');
+goog.provide('AI.Blockly.Msg.es_es');
+
+goog.require('Blockly.Msg.es');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.es_es.switch_language_to_spanish_es = {
+Blockly.Msg.es.switch_language_to_spanish_es = {
   // Switch language to Spanish.
   category: '',
   helpUrl: '',
@@ -1302,4 +1304,5 @@ Blockly.Msg.es_es.switch_language_to_spanish_es = {
 };
 
 // Initalize language definition to Spanish
-Blockly.Msg.es_es.switch_language_to_spanish_es.init();
+Blockly.Msg.es.switch_blockly_language_to_es.init();
+Blockly.Msg.es.switch_language_to_spanish_es.init();

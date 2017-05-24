@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,10 +9,9 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
@@ -83,9 +82,8 @@ import java.util.Map;
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
     SourcesMouseEvents, DragSource {
   // Common property names (not all components support all properties).
-  protected static final String PROPERTY_NAME_NAME = "Name";
-  protected static final String PROPERTY_NAME_UUID = "Uuid";
-  protected static final String PROPERTY_NAME_SOURCE = "Source";
+  public static final String PROPERTY_NAME_NAME = "Name";
+  public static final String PROPERTY_NAME_UUID = "Uuid";
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
     "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
     "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
@@ -394,7 +392,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns a unique default component name.
    */
   private String componentName() {
-    String compType = TranslationDesignerPallete.getCorrespondingString(getType());
+    String compType = ComponentsTranslation.getComponentName(getType());
     compType = compType.replace(" ", "_").replace("'", "_"); // Make sure it doesn't have any spaces in it
     return compType + getNextComponentIndex();
   }
@@ -417,7 +415,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = TranslationDesignerPallete.getCorrespondingString(getType())
+      final String typeName = ComponentsTranslation.getComponentName(getType())
         .toLowerCase()
         .replace(" ", "_")
         .replace("'", "_");
@@ -687,10 +685,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // Note: We create a ClippedImagePrototype because we need something that can be
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
-    String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
-        iconImage.getOriginTop(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT).getHTML();
     TreeItem itemNode = new TreeItem(
-        new HTML("<span>" + imageHTML + getName() + "</span>"));
+        new HTML("<span>" + iconImage.getElement().getString() + getName() + "</span>"));
     itemNode.setUserObject(sourceStructureExplorerItem);
     return itemNode;
   }

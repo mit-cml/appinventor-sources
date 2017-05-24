@@ -9,7 +9,7 @@
 <title> Yail Comparison Test </title>
 
 <script type="text/javascript" src="../../../../lib/closure-library/closure/goog/base.js"></script>
-<script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js"></script>
+<script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js" charset="utf-8"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/component-types.js"></script>
 
 <script type ="text/javascript">
@@ -41,7 +41,7 @@ function start() {
 
   // --- Begin Blockly Initialization
 
-  Blockly.inject(document.body);
+  Blockly.mainWorkspace = Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false);
 
   // [lyn, 2015/01/02] Logging interferes with equality tests.
   Blockly.Versioning.setLogging(false);
@@ -49,11 +49,6 @@ function start() {
   // [lyn, 2015/01/02] All BlocklyEvalTests fail in Blockly.TypeBlock.hide
   // so I've redefined it to avoid errors.
   Blockly.TypeBlock.hide = function () {};
-
-  Blockly.Drawer.createDom();
-  Blockly.Drawer.init();
-
-  Blockly.BlocklyEditor.formName_ = formName;
 
   Blockly.showPrefixToUser = true;
   Blockly.usePrefixInYail = false;
@@ -179,7 +174,7 @@ function start() {
     document.getElementById('formFile').addEventListener('change', handleLoadForm, false);
     document.getElementById('blocksFile').addEventListener('change', handleLoadBlocks, false);
     initComponentTypes();
-    Blockly.ComponentTypes.populateTypes();
+    Blockly.mainWorkspace.getComponentDatabase().populateTypes(componentTypeJson);
 }
 
 function initComponentTypes() {
@@ -240,7 +235,7 @@ function getFormComponents(formJson) {
 }
 
 function defineComponents(componentJsonObj) {
-    Blockly.Component.add(componentJsonObj.$Name, componentJsonObj.Uuid);
+    Blockly.mainWorkspace.addComponent(componentJsonObj.Uuid, componentJsonObj.$Name, componentJsonObj.$Type);
 //    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
 //            componentJsonObj.$Name, componentJsonObj.Uuid);
     if (componentJsonObj.$Components) {
@@ -264,13 +259,13 @@ function toXml() {
 }
 
 function toAppYail() {
-    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", false);
+    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", false, Blockly.mainWorkspace);
     setOutput(code);
     return code;
 }
 
 function toReplYail() {
-    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", true);
+    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", true, Blockly.mainWorkspace);
     setOutput(code);
     return code;
 }

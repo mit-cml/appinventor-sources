@@ -10,7 +10,7 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.TranslationDesignerPallete;
+import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.common.base.Strings;
 import com.google.gwt.resources.client.ImageResource;
@@ -49,13 +49,13 @@ public final class ComponentHelpWidget extends Image {
       setTitle(scd.getName());
 
       // Create title from component name.
-      Label titleBar = new Label(TranslationDesignerPallete.getCorrespondingString(scd.getName()));
+      Label titleBar = new Label(ComponentsTranslation.getComponentName(scd.getName()));
       setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
-      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName() + "-helpString";
-      HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(helpTextKey));
+      String helpTextKey = scd.getExternal() ? scd.getHelpString() : scd.getName();
+      HTML helpText = new HTML(ComponentsTranslation.getComponentHelpString(helpTextKey));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create panel to hold the above three widgets and act as the
@@ -66,15 +66,30 @@ public final class ComponentHelpWidget extends Image {
 
       // Create link to more information.  This would be cleaner if
       // GWT supported String.format.
-      String referenceComponentsUrl = Ode.getInstance().getSystemConfig().getReferenceComponentsUrl();
-      if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
+      String referenceComponentsUrl = Ode.getSystemConfig().getReferenceComponentsUrl();
+      String url = null;
+      if (scd.getExternal()) {  // extensions will not have documentation hosted in ai2
+        url = scd.getHelpUrl().isEmpty() ? null : scd.getHelpUrl();
+        if (url != null) {
+          if (!url.startsWith("http:") && !url.startsWith("https:")) {
+            url = null;
+          } else {
+            // prevent embedded HTML tags, e.g. <script> in the URL
+            url = url.replaceAll("<", "%3C")
+                .replaceAll(">", "%3E")
+                .replaceAll("\"", "%22");
+          }
+        }
+      } else if (!Strings.isNullOrEmpty(referenceComponentsUrl)) {
         if (!referenceComponentsUrl.endsWith("/")) {
           referenceComponentsUrl += "/";
         }
         String categoryDocUrlString = scd.getCategoryDocUrlString();
-        String url = (categoryDocUrlString == null)
+        url = (categoryDocUrlString == null)
             ? referenceComponentsUrl + "index.html"
             : referenceComponentsUrl + categoryDocUrlString + ".html#" + scd.getName();
+      }
+      if (url != null) {  // only show if there is a relevant URL
         HTML link = new HTML("<a href=\"" + url + "\" target=\"_blank\">" +
             MESSAGES.moreInformation() + "</a>");
         link.setStyleName("ode-ComponentHelpPopup-Link");

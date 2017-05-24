@@ -7,7 +7,6 @@
 package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.ComponentsTranslation;
-import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
@@ -80,7 +79,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         categoryPanel.setWidth("100%");
         categoryPanels.put(category, categoryPanel);
         stackPalette.add(categoryPanel,
-            TranslationDesignerPallete.getCorrespondingString(category.getName()));
+            ComponentsTranslation.getCategoryName(category.getName()));
       }
     }
 
@@ -143,6 +142,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       removeComponent(componentTypeName);
     }
     String helpString = COMPONENT_DATABASE.getHelpString(componentTypeName);
+    String helpUrl = COMPONENT_DATABASE.getHelpUrl(componentTypeName);
     String categoryDocUrlString = COMPONENT_DATABASE.getCategoryDocUrlString(componentTypeName);
     String categoryString = COMPONENT_DATABASE.getCategoryString(componentTypeName);
     Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(componentTypeName);
@@ -151,7 +151,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     ComponentCategory category = ComponentCategory.valueOf(categoryString);
     if (showOnPalette && showCategory(category)) {
       SimplePaletteItem item = new SimplePaletteItem(
-          new SimpleComponentDescriptor(componentTypeName, editor, helpString,
+          new SimpleComponentDescriptor(componentTypeName, editor, helpString, helpUrl,
               categoryDocUrlString, showOnPalette, nonVisible, external),
             dropTargetProvider);
       simplePaletteItems.put(componentTypeName, item);

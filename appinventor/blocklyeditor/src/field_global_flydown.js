@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -10,9 +10,9 @@
 
 'use strict';
 
-goog.provide('Blockly.FieldGlobalFlydown');
+goog.provide('AI.Blockly.FieldGlobalFlydown');
 
-goog.require('Blockly.FieldFlydown');
+goog.require('AI.Blockly.FieldFlydown');
 
 /**
  * Class for a clickable global variable declaration field.
@@ -36,15 +36,6 @@ Blockly.FieldGlobalFlydown.prototype.flyoutCSSClassName = 'blocklyFieldParameter
  * Returns a list of two XML elements: a getter block for name and a setter block for this parameter field.
  *  @return {!Array.<string>} List of two XML elements.
  **/
-/* Blockly.FieldGlobalFlydown.prototype.createBlocks_ = function() {
-  var name = Blockly.globalNamePrefix + " " + this.getText(); // global name for this parameter field.
-  var getterBlock = new Blockly.Block.obtain(Blockly.mainWorkspace, 'lexical_variable_get');
-  getterBlock.setFieldValue(name, 'VAR');
-  var setterBlock = new Blockly.Block.obtain(Blockly.mainWorkspace, 'lexical_variable_set');
-  setterBlock.setFieldValue(name, 'VAR');
-  return [getterBlock, setterBlock];
-}
-*/
 Blockly.FieldGlobalFlydown.prototype.flydownBlocksXML_ = function() {
   var name = Blockly.globalNamePrefix + " " + this.getText(); // global name for this parameter field.
   var getterSetterXML =

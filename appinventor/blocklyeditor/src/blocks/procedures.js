@@ -19,7 +19,7 @@
  *     of procedure declarations.
  *   + Replaced inlined string list equality tests by new Blockly.LexicalVariable.stringListsEqual
  * [lyn, 10/28/13]
- *   + Fixed a missing change of Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
+ *   + Fixed a missing change of Blockly.Procedures.rename by zdure
  *   + I was wrong about re-rendering not being needed in updatedParams_!
  *     Without it, changing horizontal -> vertical params doesn't handle body slot correctly.
  *     So added it back.
@@ -63,6 +63,7 @@ goog.provide('Blockly.Blocks.procedures');
 
 goog.require('Blockly.Blocks.Utilities');
 goog.require('goog.dom');
+goog.require('AI.Blockly.FieldProcedureName');
 
 Blockly.Blocks['procedures_defnoreturn'] = {
   // Define a procedure with no return value.
@@ -75,8 +76,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_PROCEDURE, this);
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DEFINE)
-        // [lyn, 10/27/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
-        .appendField(new Blockly.FieldTextInput(name, Blockly.AIProcedure.renameProcedure), 'NAME');
+        .appendField(new AI.Blockly.FieldProcedureName(name), 'NAME');
     this.horizontalParameters = true; // horizontal by default
     this.appendStatementInput('STACK')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
@@ -136,25 +136,23 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         function() {thisBlock.removeInput('HEADER');}
     );
 
-    // [lyn, 07/02/14 fixed logic] remove all old argument inputs (if they were vertical)
-    if (! this.horizontalParameters) {
-      var oldArgCount = this.inputList.length - 1; // Only args and body are left
-      if (oldArgCount > 0) {
-        var paramInput0 = this.getInput('VAR0');
-        if (paramInput0) { // Yes, they were vertical
-          for (var i = 0; i < oldArgCount; i++)
+    // Remove all existing vertical inputs (we will create new ones if necessary)
+    var oldArgCount = this.inputList.length - 1; // Only args and body are left
+    if (oldArgCount > 0) {
+      var paramInput0 = this.getInput('VAR0');
+      if (paramInput0) { // Yes, they were vertical
+        for (var i = 0; i < oldArgCount; i++)
+        {
+          try
           {
-            try
-            {
-              Blockly.FieldParameterFlydown.withChangeHanderDisabled(
-                  // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for vertical arg fields!
-                  function() {thisBlock.removeInput('VAR' + i);}
-              );
-            }
-            catch(err)
-            {
-              console.log(err);
-            }
+            Blockly.FieldParameterFlydown.withChangeHanderDisabled(
+                // [lyn, 07/02/14] Need to disable change handler, else this will try to rename params for vertical arg fields!
+                function() {thisBlock.removeInput('VAR' + i);}
+            );
+          }
+          catch(err)
+          {
+            console.log(err);
           }
         }
       }
@@ -167,21 +165,21 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     var headerInput =
         this.appendDummyInput('HEADER')
             .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DEFINE)
-            // [lyn, 10/28/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
-            .appendField(new Blockly.FieldTextInput(procName, Blockly.AIProcedure.renameProcedure), 'NAME');
+            .appendField(new AI.Blockly.FieldProcedureName(procName), 'NAME');
 
     //add an input title for each argument
     //name each input after the block and where it appears in the block to reference it later
-    for (var i = 0; i < this.arguments_.length; i++) {
-      if (this.horizontalParameters) { // horizontal case
+    if (this.horizontalParameters) { // horizontal case
+      for (var i = 0; i < this.arguments_.length; i++) {
         headerInput.appendField(' ')
                    .appendField(this.parameterFlydown(i), // [lyn, 10/10/13] Changed to param flydown
                                 'VAR' + i); // Tag with param tag to make it easy to find later.
-      } else { // vertical case
+      }
+    } else { // vertical case
+      for (var i = 0; i < this.arguments_.length; i++) {
         this.appendDummyInput('VAR' + i)
-             // .appendField(this.arguments_[i])
-             .appendField(this.parameterFlydown(i), 'VAR' + i)
-             .setAlign(Blockly.ALIGN_RIGHT);
+          .appendField(this.parameterFlydown(i), 'VAR' + i)
+          .setAlign(Blockly.ALIGN_RIGHT);
       }
     }
 
@@ -193,7 +191,13 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // Without it, get bug noticed by Andrew in which toggling horizontal -> vertical params
     // in procedure decl doesn't handle body tag appropriately!
     if (this.rendered) {
-       this.render();
+      for (var i = 0; i < this.inputList.length; i++) {
+        this.inputList[i].init();
+      }
+      this.render();
+    }
+    if (this.workspace.loadCompleted) {  // set in BlocklyPanel.java on successful load
+      Blockly.Procedures.mutateCallers(this);
     }
     // console.log("exit procedures_defnoreturn updateParams_()");
   },
@@ -248,7 +252,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       var procName = procDecl.getFieldValue('NAME');
 
       // 1. Change all callers so label reflects new name
-      Blockly.Procedures.mutateCallers(procName, procWorkspace, newArguments, procDecl.paramIds_);
+      Blockly.Procedures.mutateCallers(procDecl);
 
       var callers = Blockly.Procedures.getCallers(procName, procWorkspace);
       for (var x = 0; x < callers.length; x++) {
@@ -274,11 +278,11 @@ Blockly.Blocks['procedures_defnoreturn'] = {
           // superclass directly. I.e., can't do this:
           //   mutatorarg.getTitle_("NAME").setValue(newParamName);
           // so instead do this:
-            Blockly.Field.prototype.setText.call(mutatorarg.getField_("NAME"), newParamName);
+            Blockly.Field.prototype.setText.call(mutatorarg.getField("NAME"), newParamName);
         }
       }
       // console.log("exit procedureParameterChangeHandler");
-    }
+    };
     return new Blockly.FieldParameterFlydown(initialParamName,
                                              true, // name is editable
                                              // [lyn, 10/27/13] flydown location depends on parameter orientation
@@ -291,6 +295,11 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     if (params.length != 0 && isHorizontal !== this.horizontalParameters) {
       this.horizontalParameters = isHorizontal;
       this.updateParams_();
+      if (Blockly.Events.isEnabled()) {
+        // Trigger a Blockly UI change event
+        Blockly.Events.fire(new Blockly.Events.Ui(this, 'parameter_orientation',
+          (!this.horizontalParameters).toString(), this.horizontalParameters.toString()));
+      }
     }
   },
   mutationToDom: function() {
@@ -318,15 +327,15 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     this.updateParams_(params);
   },
   decompose: function(workspace) {
-    var containerBlock = new Blockly.Block.obtain(workspace, 'procedures_mutatorcontainer');
+    var containerBlock = workspace.newBlock('procedures_mutatorcontainer');
     containerBlock.initSvg();
     // [lyn, 11/24/12] Remember the associated procedure, so can
     // appropriately change body when update name in param block.
     containerBlock.setProcBlock(this);
-    this.paramIds_ = [] // [lyn, 10/26/13] Added
+    this.paramIds_ = []; // [lyn, 10/26/13] Added
     var connection = containerBlock.getInput('STACK').connection;
     for (var x = 0; x < this.arguments_.length; x++) {
-      var paramBlock = new Blockly.Block.obtain(workspace, 'procedures_mutatorarg');
+      var paramBlock = workspace.newBlock('procedures_mutatorarg');
       this.paramIds_.push(paramBlock.id); // [lyn, 10/26/13] Added
       paramBlock.initSvg();
       paramBlock.setFieldValue(this.arguments_[x], 'NAME');
@@ -337,8 +346,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     }
     // [lyn, 10/26/13] Rather than passing null for paramIds, pass actual paramIds
     // and use true flag to initialize tracking.
-    Blockly.Procedures.mutateCallers(this.getFieldValue('NAME'),
-                                     this.workspace, this.arguments_, this.paramIds_, true);
+    Blockly.Procedures.mutateCallers(this);
     return containerBlock;
   },
   compose: function(containerBlock) {
@@ -361,8 +369,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // but renameParam updates procedure body appropriately.
     if (!Blockly.LexicalVariable.stringListsEqual(params, this.arguments_)) { // Only need updates if param list has changed
       this.updateParams_(params);
-      Blockly.Procedures.mutateCallers(this.getFieldValue('NAME'),
-        this.workspace, this.arguments_, this.paramIds_);
+      Blockly.Procedures.mutateCallers(this);
     }
     // console.log("exit procedures_defnoreturn compose()");
   },
@@ -371,13 +378,20 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     var editable = this.editable_;
     var workspace = this.workspace;
 
-    // Call parent's destructor.
-    Blockly.Block.prototype.dispose.apply(this, arguments);
-
+    // This needs to happen first so that the Blockly events will be replayed in the correct
+    // order on undo
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
       Blockly.AIProcedure.removeProcedureValues(name, workspace);
+    }
+
+    // Call parent's destructor.
+    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
+
+    var procDb = workspace.getProcedureDatabase();
+    if (editable && procDb) {  // only true for the top-level workspaces, not flyouts/flydowns
+      procDb.removeProcedure(this.id);
     }
 
   },
@@ -390,7 +404,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
            this.bodyInputName === 'RETURN']; // true for procedures that return values.
   },
   getVars: function() {
-    var names = []
+    var names = [];
     for (var i = 0, param; param = this.getFieldValue('VAR' + i); i++) {
       names.push(param);
     }
@@ -470,8 +484,7 @@ Blockly.Blocks['procedures_defreturn'] = {
         Blockly.Msg.LANG_PROCEDURES_DEFRETURN_PROCEDURE, this);
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE)
-      // [lyn, 10/27/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
-        .appendField(new Blockly.FieldTextInput(name, Blockly.AIProcedure.renameProcedure), 'NAME');
+        .appendField(new AI.Blockly.FieldProcedureName(name), 'NAME');
     this.horizontalParameters = true; // horizontal by default
     this.appendIndentedValueInput('RETURN')
         .appendField(Blockly.Msg.LANG_PROCEDURES_DEFRETURN_RETURN);
@@ -550,9 +563,21 @@ Blockly.Blocks['procedures_mutatorarg'] = {
 //      return Blockly.LexicalVariable.renameParam.call(this,newName);
 //    }
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var editor = new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam);
+    // 2017 Blockly's text input change breaks our renaming behavior.
+    // The following is a version we've defined.
+    editor.onHtmlInputChange_ = function(e) {
+      var oldValue = this.getValue();
+      Blockly.FieldFlydown.prototype.onHtmlInputChange_.call(this, e);
+      var newValue = this.getValue();
+      if (newValue && oldValue !== newValue && Blockly.Events.isEnabled()) {
+        Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name,
+          oldValue, newValue));
+      }
+    };
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE)
-        .appendField(new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam), 'NAME');
+        .appendField(editor, 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP);
@@ -619,27 +644,7 @@ Blockly.Blocks['procedures_mutatorarg'] = {
             this.setFieldValue(newName, 'NAME');
           }
         }
-      } /* else if (cachedContainer && (! container)) {
-        // Event: removed mutator arg from container stack
-        // [lyn, 11/24/12] Mutator arg has been removed from stack. Change all references to its name to ???
-        // console.log("Mutatorarg onchange REMOVED: " + paramName);
-        var proc = cachedContainer.getProcBlock();
-        var inScopeBlocks = (proc && proc.blocksInScope()) || [];
-        var referenceResults = inScopeBlocks.map( function(blk) { return Blockly.LexicalVariable.referenceResult(blk, paramName, []); } );
-        var blocksToRename = [];
-        for (var r = 0; r < referenceResults.length; r++) {
-          blocksToRename = blocksToRename.concat(referenceResults[r][0]);
-          // ignore capturables, which are not relevant here.
-        }
-        // Rename getters and setters
-        for (var i = 0; i < blocksToRename.length; i++) {
-          var block = blocksToRename[i];
-          var renamingFunction = block.renameLexicalVar;
-          if (renamingFunction) {
-            renamingFunction.call(block, "param " + paramName, "???");
-          }
-        }
-      }*/
+      }
     }
   }
 };
@@ -651,90 +656,17 @@ Blockly.Blocks.procedures_mutatorarg.validator = function(newVar) {
   return newVar || null;
 };
 
-/* [lyn 10/10/13] With parameter flydown changes,
- * I don't think a special GET block in the Procedure drawer is necesssary
-Blockly.Blocks.procedure_lexical_variable_get = {
-  // Variable getter.
-  category: 'Procedures',
-  helpUrl: Blockly.Msg.LANG_PROCEDURES_GET_HELPURL, // *** [lyn, 11/10/12] Fix this
-  init: function() {
-    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
-    this.fieldVar_.setBlock(this);
-    this.appendDummyInput()
-        .appendField("get")
-        .appendField(this.fieldVar_, 'VAR');
-    this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
-  },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  onchange: function() {
-     // [lyn, 11/10/12] Checks if parent has changed. If so, checks if curent variable name
-     //    is still in scope. If so, keeps it as is; if not, changes to ???
-     //    *** NEED TO MAKE THIS BEHAVIOR BETTER!
-    if (this.fieldVar_) {
-       var currentName = this.fieldVar_.getText();
-       var nameList = this.fieldVar_.getNamesInScope();
-       var cachedParent = this.fieldVar_.getCachedParent();
-       var currentParent = this.fieldVar_.getBlock().getParent();
-       // [lyn, 11/10/12] Allow current name to stay if block moved to workspace in "untethered" way.
-       //   Only changed to ??? if tether an untethered block.
-       if (currentParent != cachedParent) {
-         this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent !== null) {
-           for (var i = 0; i < nameList.length; i++ ) {
-             if (nameList[i] === currentName) {
-               return; // no change
-             }
-           }
-           // Only get here if name not in list
-           this.fieldVar_.setText(" ");
-         }
-       }
-    }
-    Blockly.WarningHandler.checkErrors.call(this);
-  },
-  renameLexicalVar: function(oldName, newName) {
-    // console.log("Renaming lexical variable from " + oldName + " to " + newName);
-    if (oldName === this.getFieldValue('VAR')) {
-        this.setFieldValue(newName, 'VAR');
-    }
-  }
-};
-*/
-
-/* // [lyn, 10/14/13] This will become unnecessary with Michael Phox's
- * mutator on procedure_defreturn that allows adding a DO statement.
- */
-/*
-Blockly.Blocks.procedures_do_then_return = {
-  // String length.
-  category: 'Procedures',
-  helpUrl: Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
-  init: function() {
-    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.appendStatementInput('STM')
-        .appendField(Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO);
-    this.appendValueInput('VALUE')
-        .appendField(Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP);
-  },
-  onchange: Blockly.WarningHandler.checkErrors
-};
-*/
-
 Blockly.Blocks['procedures_callnoreturn'] = {
   // Call a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(false);};
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    this.procNamesFxn = function() {
+      var items = procDb.getMenuItems(false);
+      return items.length > 0 ? items : ['',''];
+    };
 
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
@@ -748,8 +680,8 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn(false)[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
+    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn(false)[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
   },
   getProcedureCall: function() {
     return this.getFieldValue('PROCNAME');
@@ -856,6 +788,13 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     }
     // Restore rendering and show the changes.
     this.rendered = savedRendered;
+    if (!this.workspace.rendered) {
+      return;  // workspace hasn't been rendered yet, so other connections may not yet exist.
+    }
+    // Initialize the new inputs.
+    for (x = 0; x < this.arguments_.length; x++) {
+      this.getInput('ARG' + x).init();
+    }
     if (this.rendered) {
       this.render();
     }
@@ -909,10 +848,11 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     options.push(option);
   },
   removeProcedureValue: function() {
-    this.setFieldValue("none", 'PROCNAME');
+    // Detach inputs before resetting name so that undo/redo operations happen in the right order
     for(var i=0;this.getInput('ARG' + i) !== null;i++) {
       this.removeInput('ARG' + i);
     }
+    this.setFieldValue("none", 'PROCNAME');
   },
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
@@ -927,7 +867,11 @@ Blockly.Blocks['procedures_callreturn'] = {
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(true);};
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    this.procNamesFxn = function() {
+      var items = procDb.getMenuItems(true);
+      return items.length > 0 ? items : ['',''];
+    };
 
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
@@ -940,8 +884,8 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn()[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
+    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn()[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
   },
   getProcedureCall: Blockly.Blocks.procedures_callnoreturn.getProcedureCall,
   renameProcedure: Blockly.Blocks.procedures_callnoreturn.renameProcedure,

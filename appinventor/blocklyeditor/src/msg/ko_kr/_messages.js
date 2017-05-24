@@ -25,16 +25,18 @@
  * @author pillarlee16@gmail.com (Byeongju Lee)
  */
 
-'use strict'
+'use strict';
 
-goog.provide('Blockly.Msg.ko_kr');
+goog.provide('AI.Blockly.Msg.ko_kr');
+
+goog.require('Blockly.Msg.ko');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.ko_kr.switch_language_to_korean = {
+Blockly.Msg.ko.switch_language_to_korean = {
   // Switch language to Korean.
   category: '',
   helpUrl: '',
@@ -941,4 +943,5 @@ Blockly.Msg.ko_kr.switch_language_to_korean = {
   }
 };
 
-Blockly.Msg.ko_kr.switch_language_to_korean.init();
+Blockly.Msg.ko.switch_blockly_language_to_ko.init();
+Blockly.Msg.ko.switch_language_to_korean.init();

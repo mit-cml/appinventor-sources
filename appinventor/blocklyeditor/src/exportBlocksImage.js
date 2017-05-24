@@ -87,26 +87,32 @@ goog.require('goog.Timer');
         parseInt(clone.getAttribute('height') ||
           clone.style.height ||
           out$.getComputedStyle(el).getPropertyValue('height'));
+      var left = (parseFloat(optmetrics.contentLeft) - parseFloat(optmetrics.viewLeft)).toString();
+      var top = (parseFloat(optmetrics.contentTop) - parseFloat(optmetrics.viewTop)).toString();
+      var right = (parseFloat(optmetrics.contentWidth)).toString();
+      var bottom = (parseFloat(optmetrics.contentHeight)).toString();
+      clone.setAttribute("viewBox", left + " " + top + " " + right + " " + bottom);
     } else {
+      var matrix = el.getScreenCTM();
+      clone.setAttribute('transform', clone.getAttribute('transform').replace(/translate\(.*?\)/, '')
+                         .replace(/scale\(.*?\)/, '').trim());
       var box = el.getBBox();
-      width = box.x + box.width;
-      height = box.y + box.height;
-      clone.setAttribute('transform', clone.getAttribute('transform').replace(/translate\(.*?\)/, ''));
+      //width = (box.x + box.width)/matrix.a;
+      //height = (box.y + box.height)/matrix.a;
+      width = box.width;
+      height = box.height;
 
       var svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
       svg.appendChild(clone)
       clone = svg;
+      clone.setAttribute('viewBox', box.x + " " + box.y + " " + width + " " + height);
     }
 
     clone.setAttribute("version", "1.1");
-    var left = (parseFloat(optmetrics.contentLeft) - parseFloat(optmetrics.viewLeft)).toString();
-    var top = (parseFloat(optmetrics.contentTop) - parseFloat(optmetrics.viewTop)).toString();
-    var right = (parseFloat(optmetrics.contentWidth)).toString();
-    var bottom = (parseFloat(optmetrics.contentHeight)).toString();
-    clone.setAttribute("viewBox", left + " " + top + " " + right + " " + bottom);
 
-    clone.setAttribute("width", optmetrics.contentWidth);
-    clone.setAttribute("height", optmetrics.contentHeight);
+    clone.setAttribute("width", width);
+    clone.setAttribute("height", height);
     clone.setAttribute("style", 'background-color: #FFFFFF');
     outer.appendChild(clone);
 
@@ -118,7 +124,7 @@ goog.require('goog.Timer');
     defs.appendChild(s);
     clone.insertBefore(defs, clone.firstChild);
 
-    var toHide = clone.getElementsByClassName("blocklyScrollbarKnob");
+    var toHide = clone.getElementsByClassName("blocklyScrollbarHandle");
 
     for (var i = 0; i < toHide.length; i++) {
       toHide[i].setAttribute("visibility", "hidden");
@@ -134,6 +140,12 @@ goog.require('goog.Timer');
 
     for (var i = 0; i < toHide.length; i++) {
       toHide[i].setAttribute("visibility", "hidden");
+    }
+
+    toHide = clone.querySelectorAll('.blocklyMainBackground');
+
+    for (var i = 0; i < toHide.length; i++) {
+      toHide[i].parentElement.removeChild(toHide[i]);
     }
 
     var zelement = clone.getElementById("rectCorner");
@@ -189,8 +201,8 @@ goog.require('goog.Timer');
               });
           }
         }
-        image.onerror = function () {
-          console.log("Error")
+        image.onerror = function (e) {
+          console.log("Error", e);
         }
       });
   }
@@ -200,9 +212,8 @@ goog.require('goog.Timer');
  * Call to initiate blockly SVG conversion to PNG
  *
  */
-Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics) {
-  context : this;
-  saveSvgAsPng(document.getElementById("blockly_Svg"), "blocks.png", metrics);
+Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
+  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
 }
 
 
@@ -210,14 +221,14 @@ Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics) {
  * Get the workspace as an image URI
  *
  */
-  Blockly.ExportBlocksImage.getUri = function(callback) {
-    context: this;
+  Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
     var theUri;
-    var metrics = Blockly.mainWorkspace.getMetrics();
+    var workspace = opt_workspace || Blockly.mainWorkspace;
+    var metrics = workspace.getMetrics();
     if (metrics == null || metrics.viewHeight == 0) {
       return null;
     }
-    svgAsDataUri(document.getElementById("blockly_Svg"), metrics, {},
+    svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
       function(uri) {
         var image = new Image();
         image.onload = function() {

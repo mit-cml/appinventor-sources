@@ -225,6 +225,7 @@
         </fileset>
       </delete>
       <javac destdir="@{apt-classdir}"
+             encoding="utf-8"
              sourcepath=""
              srcdir="${src.dir}"
              includeantruntime="false">
@@ -274,7 +275,8 @@
               location="${class.dir}/ComponentProcessingLib" />
     <mkdir dir="${ComponentProcessingLib-class.dir}" />
 
-    <ai.javac5 destdir="${ComponentProcessingLib-class.dir}">
+    <ai.javac destdir="${ComponentProcessingLib-class.dir}"
+              source="1.7" target="1.7">
       <include name="${components.pkg}/scripts/ComponentProcessor.java" />
       <include name="${components.pkg}/annotations/*.java" />
       <include name="${components.pkg}/annotations/androidmanifest/*.java" />
@@ -282,7 +284,7 @@
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
-    </ai.javac5>
+    </ai.javac>
 
     <jar basedir="${ComponentProcessingLib-class.dir}"
          destfile="${local.build.dir}/ComponentProcessingLib.jar" />
@@ -302,7 +304,8 @@
               location="${class.dir}/AnnotationProcessors" />
     <mkdir dir="${AnnotationProcessors-class.dir}" />
 
-    <ai.javac5 destdir="${AnnotationProcessors-class.dir}">
+    <ai.javac destdir="${AnnotationProcessors-class.dir}"
+              source="1.7" target="1.7">
       <include name="${components.pkg}/scripts/*.java" />
       <exclude name="${components.pkg}/scripts/ExternalComponentGenerator.java" />
       <classpath>
@@ -312,7 +315,7 @@
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
-    </ai.javac5>
+    </ai.javac>
 
     <copy todir="${AnnotationProcessors-class.dir}">
       <fileset dir="${src.dir}">

@@ -27,14 +27,16 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.it_it');
+goog.provide('AI.Blockly.Msg.it_it');
+
+goog.require('Blockly.Msg.it');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.it_it.switch_language_to_italian = {
+Blockly.Msg.it.switch_language_to_italian = {
   // Switch language to Italian.
   category: '',
   helpUrl: '',
@@ -729,4 +731,5 @@ Blockly.Msg.LANG_LISTS_IS_IN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/s
 };
 
 // Initalize language definition to Italian
-Blockly.Msg.it_it.switch_language_to_italian.init();
+Blockly.Msg.it.switch_blockly_language_to_it.init();
+Blockly.Msg.it.switch_language_to_italian.init();

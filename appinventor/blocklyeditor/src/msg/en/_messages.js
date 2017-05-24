@@ -1,11 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2012-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * Visual Blocks Language
  *
- * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * Copyright © 2012 Google Inc.
+ * Copyright © 2012-2016 Massachusetts Institute of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.en');
+goog.provide('AI.Blockly.Msg.en');
+
+goog.require('Blockly.Msg.en');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
@@ -39,6 +41,9 @@ Blockly.Msg.en.switch_language_to_english = {
   helpUrl: '',
   init: function() {
 // Context menus.
+    Blockly.Msg.UNDO = 'Undo';
+    Blockly.Msg.REDO = 'Redo';
+    Blockly.Msg.CLEAN_UP = 'Clean up Blocks';
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
@@ -46,6 +51,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.INLINE_INPUTS = 'Inline Inputs';
     Blockly.Msg.HORIZONTAL_PARAMETERS = 'Arrange Parameters Horizontally';
     Blockly.Msg.VERTICAL_PARAMETERS = 'Arrange Parameters Vertically';
+    Blockly.Msg.CONFIRM_DELETE = 'Confirm deletion';
+    Blockly.Msg.DELETE_ALL_BLOCKS = "Delete all %1 blocks?";
     Blockly.Msg.DELETE_BLOCK = 'Delete Block';
     Blockly.Msg.DELETE_X_BLOCKS = 'Delete %1 Blocks';
     Blockly.Msg.COLLAPSE_BLOCK = 'Collapse Block';
@@ -77,6 +84,10 @@ Blockly.Msg.en.switch_language_to_english = {
    " they will be there the next time you login." +
    "</p><p>For further documentation and a 'how to' video, see:" +
    '</p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
+    Blockly.Msg.ENABLE_GRID = 'Enable Workspace Grid';
+    Blockly.Msg.DISABLE_GRID = 'Disable Workspace Grid';
+    Blockly.Msg.ENABLE_SNAPPING = 'Enable Snap to Grid';
+    Blockly.Msg.DISABLE_SNAPPING = 'Disable Snap to Grid';
 
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
@@ -1369,4 +1380,5 @@ Blockly.Msg.en.switch_language_to_english = {
 };
 
 // Initalize language definition to English
+Blockly.Msg.en.switch_blockly_language_to_en.init();
 Blockly.Msg.en.switch_language_to_english.init();

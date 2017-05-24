@@ -35,6 +35,7 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -546,6 +547,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected boolean external;
 
     private String helpDescription;  // Shorter popup description
+    private String helpUrl;  // Custom help URL for extensions
     private String category;
     private String categoryString;
     private boolean simpleObject;
@@ -600,6 +602,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           if (helpDescription.isEmpty()) {
             helpDescription = description;
           }
+          helpUrl = designerComponentAnnotation.helpUrl();
+          if (!helpUrl.startsWith("http:") && !helpUrl.startsWith("https:")) {
+            helpUrl = "";  // only accept http: or https: URLs (e.g., no javascript:)
+          }
 
           category = designerComponentAnnotation.category().getName();
           categoryString = designerComponentAnnotation.category().toString();
@@ -623,6 +629,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected String getHelpDescription() {
       return helpDescription;
+    }
+
+    /**
+     * Custom help URL to documentation for a component (typically an extension)
+     *
+     * @return  the custom help URL, if any, for the component
+     */
+    protected String getHelpUrl() {
+      return helpUrl;
     }
 
     /**
@@ -745,17 +760,31 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     messager = processingEnv.getMessager();
 
+    List<Element> elements = new ArrayList<>();
+    List<Element> excludedElements = new ArrayList<>();
     for (TypeElement te : annotations) {
-      if (te.getSimpleName().toString().equals("DesignerComponent")
-          || te.getSimpleName().toString().equals("SimpleObject")) {
+      if (te.getSimpleName().toString().equals("DesignerComponent")) {
+        elements.addAll(roundEnv.getElementsAnnotatedWith(te));
+      } else if (te.getSimpleName().toString().equals("SimpleObject")) {
         for (Element element : roundEnv.getElementsAnnotatedWith(te)) {
-          processComponent(element);
+          SimpleObject annotation = element.getAnnotation(SimpleObject.class);
+          if (!annotation.external()) {
+            elements.add(element);
+          } else {
+            excludedElements.add(element);
+          }
         }
       }
+    }
+    for (Element element : elements) {
+      processComponent(element);
     }
 
     // Put the component class names (including abstract classes)
     componentTypes.addAll(components.keySet());
+    for (Element element : excludedElements) {
+      componentTypes.add(element.asType().toString());  // allow extensions to reference one another
+    }
 
     // Remove non-components before calling outputResults.
     List<String> removeList = Lists.newArrayList();
@@ -792,7 +821,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     // If we already processed this component, return early.
-    String longComponentName = element.asType().toString();
+    String longComponentName = ((TypeElement) element).getQualifiedName().toString();
     if (components.containsKey(longComponentName)) {
       return;
     }
@@ -806,6 +835,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       // Only look at the first one.  Later ones would be interfaces,
       // which we don't care about.
       String parentName = directSupertypes.get(0).toString();
+      Element e = ((DeclaredType) directSupertypes.get(0)).asElement();
+      parentName = ((TypeElement) e).getQualifiedName().toString();
       ComponentInfo parentComponent = components.get(parentName);
       if (parentComponent == null) {
         // Try to process the parent component now.
@@ -1400,7 +1431,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
     // {float, double, int, short, long} -> number
     if (type.equals("float") || type.equals("double") || type.equals("int") ||
-        type.equals("short") || type.equals("long")) {
+        type.equals("short") || type.equals("long") || type.equals("byte") ||
+        type.equals("short")) {
       return "number";
     }
     // YailList -> list

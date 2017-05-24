@@ -193,6 +193,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   }
 
   @Override
+  public String getHelpUrl(String componentName) {
+    ComponentDefinition component = components.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.getHelpUrl();
+  }
+
+  @Override
   public boolean getShowOnPalette(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
@@ -301,6 +311,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         Boolean.valueOf(properties.get("external").asString().getString()),
         properties.get("categoryString").asString().getString(),
         properties.get("helpString").asString().getString(),
+        properties.containsKey("helpUrl") ? properties.get("helpUrl").asString().getString() : "",
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
         properties.get("iconName").asString().getString(), componentNode.toJson());

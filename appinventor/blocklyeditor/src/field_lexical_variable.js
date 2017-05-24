@@ -65,9 +65,9 @@ Blockly.FieldLexicalVariable = function(varname) {
   Blockly.FieldDropdown.call(this, Blockly.FieldLexicalVariable.dropdownCreate,
                                    Blockly.FieldLexicalVariable.dropdownChange);
   if (varname) {
-    this.setText(varname);
+    this.setValue(varname);
   } else {
-    this.setText(Blockly.Variables.generateUniqueName());
+    this.setValue(Blockly.Variables.generateUniqueName());
   }
 };
 
@@ -75,34 +75,48 @@ Blockly.FieldLexicalVariable = function(varname) {
 goog.inherits(Blockly.FieldLexicalVariable, Blockly.FieldDropdown);
 
 /**
- * Get the variable's name (use a variableDB to convert into a real name).
- * Unline a regular dropdown, variables are literal and have no neutral value.
- * @return {string} Current text.
- */
-Blockly.FieldLexicalVariable.prototype.getValue = function() {
-  return this.getText();
-};
-
-/**
  * Set the variable name.
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
-  this.value_ = text;
-  this.setText(text);
-  // The code below is almost certainly in the wrong place
-  // but it seems to fix the problem by making sure that any
-  // eventparam value in a variable block is removed. The next
-  // time it is needed, it will be re-computed. There *has*
-  // to be a better place for this code, but I couldn't find it in the
-  // short time I had to work on this. So consider this a patch
-  // until we figure out where this code really belongs!
-  if (this.block_) {
-    if (this.block_.eventparam) {
-      this.block_.eventparam = undefined; // unset it
+  Blockly.FieldLexicalVariable.superClass_.setValue.call(this, text);
+  this.updateMutation();
+};
+
+/**
+ * Update the eventparam mutation associated with the field's source block.
+ */
+Blockly.FieldLexicalVariable.prototype.updateMutation = function() {
+  var text = this.getValue();
+  if (this.sourceBlock_ && this.sourceBlock_.getParent()) {
+    this.sourceBlock_.eventparam = undefined;
+    if (text.indexOf(Blockly.globalNamePrefix + ' ') === 0) {
+      this.sourceBlock_.eventparam = null;
+      return;
+    }
+    var i, parent = this.sourceBlock_.getParent();
+    while (parent) {
+      var variables = parent.getVars();
+      if (parent.type != 'component_event') {
+        for (i = 0; i < variables.length; i++) {
+          if (variables[i] == text) {
+            // Innermost scope is not an event block, so eventparam can be nulled.
+            this.sourceBlock_.eventparam = null;
+            return;
+          }
+        }
+      } else {
+        for (i = 0; i < variables.length; i++) {
+          if (variables[i] == text) {
+            // text is an event parameter so compute the eventparam value
+            this.sourceBlock_.eventparam = parent.getParameters()[i].name;
+            return;
+          }
+        }
+      }
+      parent = parent.getParent();
     }
   }
-
 };
 
 /**
@@ -115,7 +129,7 @@ Blockly.FieldLexicalVariable.prototype.getBlock = function() {
 
 /**
  * Set the block holding this drop-down variable chooser. Also initializes the cachedParent.
- * @param {string} block Block holding this drop-down variable chooser
+ * @param {?Blockly.Block} block Block holding this drop-down variable chooser
  */
 Blockly.FieldLexicalVariable.prototype.setBlock = function(block) {
   this.block_ = block;
@@ -144,8 +158,9 @@ Blockly.FieldLexicalVariable.prototype.setCachedParent = function(parent) {
 // * Removed from prototype and stripped off "global" prefix (add it elsewhere)
 // * Add optional excluded block argument as in Neil's code to avoid global declaration being created
 Blockly.FieldLexicalVariable.getGlobalNames = function (optExcludedBlock) {
-  if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.WarningHandler.cacheGlobalNames) {
-    return Blockly.WarningHandler.cachedGlobalNames;
+  if (Blockly.Instrument.useLynCacheGlobalNames && Blockly.getMainWorkspace() &&
+      Blockly.getMainWorkspace().getWarningHandler().cacheGlobalNames) {
+    return Blockly.getMainWorkspace().getWarningHandler().cachedGlobalNames;
   }
   var globals = [];
   if (Blockly.mainWorkspace) {
@@ -328,8 +343,8 @@ Blockly.FieldLexicalVariable.dropdownCreate = function() {
  */
 Blockly.FieldLexicalVariable.dropdownChange = function(text) {
   if (text) {
-    this.setText(text);
-    Blockly.WarningHandler.checkErrors.call(this.sourceBlock_);
+    this.setValue(text);
+    this.sourceBlock_.getTopWorkspace().getWarningHandler().checkErrors(this.sourceBlock_);
   }
   // window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);
 };
@@ -1011,9 +1026,10 @@ Blockly.LexicalVariable.getEventParam = function (block) {
     while (parent) {
        // Walk up ancestor tree to determine if name is an event parameter name.
        if (parent.type === "component_event") {
+         var componentDb = block.getTopWorkspace().getComponentDatabase();
          var untranslatedEventParams = parent.getParameters().map( function(param) {return param.name;});
          var translatedEventParams =  untranslatedEventParams.map(
-             function (name) {return window.parent.BlocklyPanel_getLocalizedParameterName(name); }
+             function (name) {return componentDb.getInternationalizedParameterName(name); }
          );
          var index = translatedEventParams.indexOf(name);
          if (index != -1) {

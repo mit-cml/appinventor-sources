@@ -104,17 +104,17 @@ Blockly.Blocks['controls_if'] = {
     }
   },
   decompose: function (workspace) {
-    var containerBlock = new Blockly.Block.obtain(workspace, 'controls_if_if');
+    var containerBlock = workspace.newBlock('controls_if_if');
     containerBlock.initSvg();
     var connection = containerBlock.getInput('STACK').connection;
     for (var x = 1; x <= this.elseifCount_; x++) {
-      var elseifBlock = new Blockly.Block.obtain(workspace, 'controls_if_elseif');
+      var elseifBlock = workspace.newBlock('controls_if_elseif');
       elseifBlock.initSvg();
       connection.connect(elseifBlock.previousConnection);
       connection = elseifBlock.nextConnection;
     }
     if (this.elseCount_) {
-      var elseBlock = new Blockly.Block.obtain(workspace, 'controls_if_else');
+      var elseBlock = workspace.newBlock('controls_if_else');
       elseBlock.initSvg();
       connection.connect(elseBlock.previousConnection);
     }
@@ -422,61 +422,6 @@ Blockly.Blocks['controls_forEach'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM}]
 };
 
-/* [lyn 10/10/13] With parameter flydown changes,
-* I don't think a special GET block in the Control drawer is necesssary
-Blockly.Blocks.for_lexical_variable_get = {
-  // Variable getter.
-  category: 'Control',
-  helpUrl: Blockly.Msg.LANG_CONTROLS_GET_HELPURL,
-  init: function() {
-    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
-    this.fieldVar_.setBlock(this);
-    this.appendDummyInput()
-        .appendField("get")
-        .appendField(this.fieldVar_, 'VAR');
-    this.setOutput(true, null);
-    this.setTooltip(Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
-  },
-  getVars: function() {
-    return [this.getFieldValue('VAR')];
-  },
-  onchange: function() {
-     // [lyn, 11/10/12] Checks if parent has changed. If so, checks if curent variable name
-     //    is still in scope. If so, keeps it as is; if not, changes to ???
-     //    *** NEED TO MAKE THIS BEHAVIOR BETTER!
-    if (this.fieldVar_) {
-       var currentName = this.fieldVar_.getText();
-       var nameList = this.fieldVar_.getNamesInScope();
-       var cachedParent = this.fieldVar_.getCachedParent();
-       var currentParent = this.fieldVar_.getBlock().getParent();
-       // [lyn, 11/10/12] Allow current name to stay if block moved to workspace in "untethered" way.
-       //   Only changed to ??? if tether an untethered block.
-       if (currentParent != cachedParent) {
-         this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent !== null) {
-           for (var i = 0; i < nameList.length; i++ ) {
-             if (nameList[i] === currentName) {
-               return; // no change
-             }
-           }
-           // Only get here if name not in list
-           this.fieldVar_.setText(" ");
-         }
-       }
-    }
-    Blockly.WarningHandler.checkErrors.call(this);
-  },
-  renameLexicalVar: function(oldName, newName) {
-    // console.log("Renaming lexical variable from " + oldName + " to " + newName);
-    if (oldName === this.getFieldValue('VAR')) {
-        this.setFieldValue(newName, 'VAR');
-    }
-  }
-};
-*/
-
 Blockly.Blocks['controls_while'] = {
   // While condition.
   category: 'Control',
@@ -567,24 +512,6 @@ Blockly.Blocks['controls_eval_but_ignore'] = {
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE}]
 };
-
-/* [lyn 10/10/13] Hal doesn't like NOTHING. Must rethink
- // [lyn, 01/15/2013] Added
- Blockly.Blocks.controls_nothing = {
- // Expression for the nothing value
- category: 'Control',
- helpUrl: Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL,
- init: function() {
- this.setColour(Blockly.CONTROL_CATEGORY_HUE);
- this.appendDummyInput()
- .appendField("nothing");
- this.setOutput(true, null);
- this.setTooltip(Blockly.Msg.LANG_CONTROLS_NOTHING_TOOLTIP);
- },
- onchange: Blockly.WarningHandler.checkErrors,
- typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_NOTHING_TITLE }]
- };
- */
 
 Blockly.Blocks['controls_openAnotherScreen'] = {
   // Open another screen

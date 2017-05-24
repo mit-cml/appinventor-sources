@@ -171,7 +171,7 @@ public final class AssetManager implements ProjectChangeListener {
     return allow | allowAll;
   }
 
-  private void readIn(final AssetInfo assetInfo, final String formName) {
+  private void readIn(final AssetInfo assetInfo) {
     Ode.getInstance().getProjectService().loadraw2(projectId, assetInfo.fileId,
       new AsyncCallback<String>() {
         @Override
@@ -179,7 +179,7 @@ public final class AssetManager implements ProjectChangeListener {
             assetInfo.fileContent = Base64Util.decodeLines(data);
             assetInfo.loaded = false; // Set to true when it is loaded to the repl
             assetInfo.transferred = false; // Set to true when file is received on phone
-            refreshAssets1(formName);
+            refreshAssets1();
           }
         @Override
           public void onFailure(Throwable ex) {
@@ -188,21 +188,19 @@ public final class AssetManager implements ProjectChangeListener {
       });
   }
 
-  private void refreshAssets1(String formName, JavaScriptObject callback) {
+  private void refreshAssets1(JavaScriptObject callback) {
     assetsTransferredCallback = callback;
-    refreshAssets1(formName);
+    refreshAssets1();
   }
 
-  private void refreshAssets1(String formName) {
-    if (DEBUG)
-      OdeLog.log("AssetManager: formName = " + formName);
+  private void refreshAssets1() {
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
         if (a.fileContent == null) { // Need to fetch it from the server
-          readIn(a, formName);       // Read it in asynchronously
+          readIn(a);       // Read it in asynchronously
           break;                     // we'll resume when we have it
         } else {
-          boolean didit = doPutAsset(formName, a.fileId, a.fileContent);
+          boolean didit = doPutAsset(a.fileId, a.fileContent);
           if (didit) {
             a.loaded = true;
             a.fileContent = null; // Save memory
@@ -216,10 +214,10 @@ public final class AssetManager implements ProjectChangeListener {
     }
   }
 
-  public static void refreshAssets(String formName, JavaScriptObject callback) {
+  public static void refreshAssets(JavaScriptObject callback) {
     if (INSTANCE == null)
       return;
-    INSTANCE.refreshAssets1(formName, callback);
+    INSTANCE.refreshAssets1(callback);
   }
 
   public static void reset(String formName) {
@@ -290,19 +288,19 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native void exportMethodsToJavascript() /*-{
     $wnd.AssetManager_refreshAssets =
-      $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+      $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Lcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.AssetManager_reset =
       $entry(@com.google.appinventor.client.AssetManager::reset(Ljava/lang/String;));
     $wnd.AssetManager_markAssetTransferred =
       $entry(@com.google.appinventor.client.AssetManager::markAssetTransferred(Ljava/lang/String;));
   }-*/;
 
-  private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{
-    return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
+  private static native boolean doPutAsset(String filename, byte[] content) /*-{
+    return Blockly.ReplMgr.putAsset(filename, content, function() { window.parent.AssetManager_markAssetTransferred(filename) });
   }-*/;
 
   private static native void doCallBack(JavaScriptObject callback) /*-{
-    callback.call(null);
+    if (typeof callback === 'function') callback.call(null);
   }-*/;
 
 }
