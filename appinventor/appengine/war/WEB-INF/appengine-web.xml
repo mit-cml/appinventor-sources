@@ -14,7 +14,7 @@
     <include path="/Ya_tos_form.html" expiration="1d" />
     <include path="/favicon.ico" expiration="365d" />
     <include path="/gwt.css" expiration="1d" />
-    <include path="/Ya.css" expiration="1d" />
+    <include path="/Ya.css" />
     <include path="/templates/**" expiration="1d" />
     <include path="/reference/**" expiration="1d" />
     <include path="/closure-library/closure/goog/base.js" expiration="1d" />

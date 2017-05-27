@@ -1184,6 +1184,7 @@ select.ode-PropertyEditor[disabled] {
   border-left: 4px solid #8fc202;
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
+  z-index: 100;
 }
 
 .ode-DialogBox .gwt-CheckBox {
