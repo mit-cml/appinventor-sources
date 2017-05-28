@@ -530,10 +530,19 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   public  void removeComponent(Map<String, String> componentTypes) {
     final Ode ode = Ode.getInstance();
     final YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+    Set<String> externalCompFolders = new HashSet<String>();
+    // Old projects with old extensions will use FQCN for the directory name rather than the package
+    // Prefer deleting com.foo.Bar over com.foo if com.foo.Bar exists.
+    for (ProjectNode child : componentsFolder.getChildren()) {
+      String[] parts = child.getFileId().split("/");
+      if (parts.length >= 3) {
+        externalCompFolders.add(parts[2]);
+      }
+    }
     Set<String> removedPackages = new HashSet<String>();
     for (String componentType : componentTypes.keySet()) {
       String typeName = componentTypes.get(componentType);
-      if (!externalComponents.contains(typeName)) {
+      if (!externalCompFolders.contains(typeName) && !externalComponents.contains(typeName)) {
         typeName = typeName.substring(0, typeName.lastIndexOf('.'));
         if (removedPackages.contains(typeName)) {
           continue;

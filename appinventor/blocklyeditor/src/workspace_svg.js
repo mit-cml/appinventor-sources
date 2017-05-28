@@ -961,19 +961,31 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
  * @param {Blockly.BlockSvg=} block
  */
 Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
+  if (!this.warningHandler_) {
+    return;  // no error checking before warning handler exists
+  }
+  if (this.checkAllBlocks) {
+    return;  // already planning to check all blocks
+  }
   if (!this.pendingErrorCheck) {
     this.needsErrorCheck = [];
     this.pendingErrorBlockIds = {};
+    this.checkAllBlocks = !!block;
     this.pendingErrorCheck = setTimeout(function() {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.needsErrorCheck, function(block) {
-            handler.checkErrors(block);
-          });
+          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
+            function(block) {
+              handler.checkErrors(block);
+            });
         }
       } finally {
         this.pendingErrorCheck = null;
+        this.checkAllBlocks = false;
+        // Let any disposed blocks be GCed...
+        this.needsErrorCheck = null;
+        this.pendingErrorBlockIds = null;
       }
     }.bind(this));
   }
@@ -990,6 +1002,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       }
       Array.prototype.push.apply(pendingBlocks, block.getChildren());
     }
+  } else if (!block) {
+    // schedule all blocks
+    this.checkAllBlocks = true;
   }
 };
 

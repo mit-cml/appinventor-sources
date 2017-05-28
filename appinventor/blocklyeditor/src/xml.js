@@ -79,6 +79,8 @@ Blockly.Xml.domToWorkspaceHeadless = function(xml, workspace) {
   workspace.updateVariableList(false);
 };
 
+if (Blockly.Instrument.isOn) {
+
 Blockly.Xml.domToWorkspace = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -120,3 +122,5 @@ Blockly.Xml.domToBlock = (function(func) {
     return f;
   }
 })(Blockly.Xml.domToBlock);
+
+}

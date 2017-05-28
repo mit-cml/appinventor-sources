@@ -575,6 +575,7 @@ public class BlocklyPanel extends HTMLPanel {
       var handler = this.getWarningHandler();
       if (handler) {
         handler.determineDuplicateComponentEventHandlers();
+        this.requestErrorChecking(block);
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
