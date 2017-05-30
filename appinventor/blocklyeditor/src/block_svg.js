@@ -61,7 +61,8 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
   } else {
     var wrappedFunc = function(e){
       var workspace = this.getTopWorkspace();
-      if (workspace && workspace.getParentSvg() && workspace.getParentSvg().parentNode) {
+      if (workspace && workspace.getParentSvg() && workspace.getParentSvg().parentNode &&
+          typeof workspace.getParentSvg().parentNode.focus === 'function') {  // Firefox 49 doesn't have focus function on SVG elements
         workspace.getParentSvg().parentNode.focus();
       }
       if (Blockly.FieldFlydown.openFieldFlydown_) {
@@ -74,7 +75,10 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
       var xy = goog.style.getPageOffset(this.svgGroup_);
       this.startX = xy.x;
       this.startY = xy.y;
-      this.getTopWorkspace().getParentSvg().parentNode.focus();
+      if (workspace && workspace.getParentSvg() && workspace.getParentSvg().parentNode &&
+        typeof workspace.getParentSvg().parentNode.focus === 'function') {  // Firefox 49 doesn't have focus function on SVG elements
+        workspace.getParentSvg().parentNode.focus();
+      }
       return retval;
     };
     wrappedFunc.isWrapped = true;

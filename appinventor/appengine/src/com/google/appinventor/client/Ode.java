@@ -265,6 +265,23 @@ public class Ode implements EntryPoint {
 
   private boolean galleryInitialized = false;
 
+  /**
+   * Flag set if we may need to show the splash screen based on
+   * current user settings.
+   */
+  private boolean mayNeedSplash = false;
+
+  /**
+   * Flag to inidcate that we have already transitioned away from the
+   * project list to a project (auto-open feature).
+   */
+  private boolean didTransitionFromProjectList = false;
+
+  /**
+   * Flag indicating that we have shown the splash screens.
+   */
+  private boolean didShowSplash = false;
+
   private SplashConfig splashConfig; // Splash Screen Configuration
 
   /**
@@ -908,7 +925,27 @@ public class Ode implements EntryPoint {
     deckPanel.setStyleName("ode-DeckPanel");
 
     // Projects tab
-    VerticalPanel pVertPanel = new VerticalPanel();
+    VerticalPanel pVertPanel = new VerticalPanel() {
+        /**
+         * Flag to indicate the project list has been rendered at least once.
+         */
+        private boolean rendered = false;
+
+        // Override to add splash screen behavior after leaving the project list
+        @Override
+        public void setVisible(boolean visible) {
+          super.setVisible(visible);
+          if (visible && !rendered) {
+            // setVisible(false) will be called during UI initialization.
+            // this flag indicates we are now being shown (possibly again...)
+            rendered = true;
+            maybeShowSplash2();  // in case of new user; they have no projects!
+          } else if (rendered && !visible && (mayNeedSplash || shouldShowWelcomeDialog())
+                     && !didShowSplash) {
+            showSplashScreens();
+          }
+        }
+      };
     pVertPanel.setWidth("100%");
     pVertPanel.setSpacing(0);
     HorizontalPanel projectListPanel = new HorizontalPanel();
@@ -1660,10 +1697,29 @@ public class Ode implements EntryPoint {
     }
   }
 
+  private void maybeShowSplash2() {
+    projectManager.addProjectManagerEventListener(new ProjectManagerEventAdapter() {
+      @Override
+      public void onProjectsLoaded() {
+        if (projectManager.projectCount() == 0 && !templateLoadingFlag) {
+          ErrorReporter.hide();  // hide the "Please choose a project" message
+          showSplashScreens();
+        }
+      }
+    });
+  }
+
+  public void requestShowSplashScreens() {
+    mayNeedSplash = true;
+    if (didTransitionFromProjectList) {  // do immediately
+      showSplashScreens();
+    }
+  }
+
   // Display the Survey and/or Normal Splash Screens
   // (if enabled). This function is called out of SplashSettings.java
   // after the userSettings object is loaded (above) and parsed.
-  public void showSplashScreens() {
+  private void showSplashScreens() {
     boolean showSplash = false;
     if (AppInventorFeatures.showSurveySplashScreen()) {
       int nvalue = 0;
@@ -1683,6 +1739,7 @@ public class Ode implements EntryPoint {
     if (showSplash) {
       maybeShowSplash();
     }
+    didShowSplash = true;
   }
 
   /**

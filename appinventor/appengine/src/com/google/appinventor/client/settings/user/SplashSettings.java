@@ -35,6 +35,6 @@ public final class SplashSettings extends Settings {
 
   @Override
   protected void updateAfterDecoding() {
-    Ode.getInstance().showSplashScreens();
+    Ode.getInstance().requestShowSplashScreens();
   }
 }
