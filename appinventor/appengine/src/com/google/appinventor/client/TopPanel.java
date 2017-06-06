@@ -128,6 +128,7 @@ public class TopPanel extends Composite {
     });
     links.add(gallery);
 
+    // Guide Link
     Config config = ode.getSystemConfig();
     String guideUrl = config.getGuideUrl();
     if (!Strings.isNullOrEmpty(guideUrl)) {
@@ -147,22 +148,14 @@ public class TopPanel extends Composite {
       links.add(feedbackLink);
     }
 
-  /*
-  // Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton(MESSAGES.galleryTabName());
-      gallery.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
-        }
-      });
-
-      gallery.setStyleName("ode-TopPanelButton");
-      links.add(gallery);
+    // Teach Link
+    String teachUrl = config.getTeachUrl();
+    if (!Strings.isNullOrEmpty(teachUrl)) {
+      TextButton teachLink = new TextButton(MESSAGES.teachTabName());
+      teachLink.addClickHandler(new WindowOpenClickHandler(teachUrl));
+      teachLink.setStyleName("ode-TopPanelButton");
+      links.add(teachLink);
     }
-    */
 
     moderation = new TextButton(MESSAGES.tabNameModeration());
     moderation.setStyleName("ode-TopPanelButton");

@@ -159,6 +159,7 @@
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
+    <property name="teach.url" value="http://teach.appinventor.mit.edu" />
 
   </system-properties>
 
