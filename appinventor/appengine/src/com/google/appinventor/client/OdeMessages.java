@@ -561,6 +561,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when no component is selected to import.")
   String noComponentSelectedError();
 
+  @DefaultMessage("Unable to find component \"{0}\" while loading project \"{1}\".")
+  @Description("Error message shown when a project references an unknown component.")
+  String noComponentFound(String componentName, String projectName);
+
   @DefaultMessage("Please enter a url")
   @Description("Error message reported when no url is entered.")
   String noUrlError();

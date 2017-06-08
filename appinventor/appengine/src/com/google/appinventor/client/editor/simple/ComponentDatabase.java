@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Database holding information of Simple components and their properties.
  *
@@ -115,7 +117,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public ComponentDefinition getComponentDefinition(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component;
@@ -125,7 +127,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public int getComponentVersion(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getVersion();
@@ -135,7 +137,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getComponentType(String componentName){
     ComponentDefinition component = components.get(componentName);
     if(component == null){
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getType();
@@ -156,7 +158,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public boolean getComponentExternal(String componentName){
     ComponentDefinition component = components.get(componentName);
     if(component == null){
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.isExternal();
@@ -166,7 +168,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getCategoryString(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getCategoryString();
@@ -176,7 +178,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getCategoryDocUrlString(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getCategoryDocUrlString();
@@ -186,7 +188,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getHelpString(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getHelpString();
@@ -196,7 +198,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getHelpUrl(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getHelpUrl();
@@ -206,7 +208,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public boolean getShowOnPalette(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.isShowOnPalette();
@@ -216,7 +218,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public boolean getNonVisible(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
     return component.isNonVisible();
   }
@@ -225,7 +227,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getIconName(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
     return component.getIconName();
   }
@@ -234,7 +236,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public List<PropertyDefinition> getPropertyDefinitions(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getProperties();
@@ -244,7 +246,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public List<BlockPropertyDefinition> getBlockPropertyDefinitions(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getBlockProperties();
@@ -254,7 +256,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public List<EventDefinition> getEventDefinitions(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getEvents();
@@ -264,7 +266,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public List<MethodDefinition> getMethodDefinitions(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getMethods();
@@ -274,7 +276,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public Map<String, String> getPropertyTypesByName(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getPropertiesTypesByName();
@@ -284,7 +286,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   public String getTypeDescription(String componentName) {
     ComponentDefinition component = components.get(componentName);
     if (component == null) {
-      throw new IllegalArgumentException();
+      throw new ComponentNotFoundException(componentName);
     }
 
     return component.getTypeDescription();

@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
@@ -15,6 +16,7 @@ import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
@@ -201,7 +203,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         upgradeFile(fileContentHolder, new Command() {
           @Override
           public void execute() {
-            onFileLoaded(fileContentHolder.getFileContent());
+            try {
+              onFileLoaded(fileContentHolder.getFileContent());
+            } catch(IllegalArgumentException e) {
+              return;
+            }
             if (afterFileLoaded != null) {
               afterFileLoaded.execute();
             }
@@ -492,7 +498,15 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private void onFileLoaded(String content) {
     JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(
         content, JSON_PARSER);
-    form = createMockForm(propertiesObject.getProperties().get("Properties").asObject());
+    try {
+      form = createMockForm(propertiesObject.getProperties().get("Properties").asObject());
+    } catch(ComponentNotFoundException e) {
+      Ode.getInstance().recordCorruptProject(getProjectId(), getProjectRootNode().getName(),
+          e.getMessage());
+      ErrorReporter.reportError(MESSAGES.noComponentFound(e.getComponentName(),
+          getProjectRootNode().getName()));
+      throw e;
+    }
 
     // Initialize the nonVisibleComponentsPanel and visibleComponentsPanel.
     nonVisibleComponentsPanel.setForm(form);
