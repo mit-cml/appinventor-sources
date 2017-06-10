@@ -1333,7 +1333,17 @@
 ;;; to a Java string; that's what the :toString somehow accomplishes.
 ;;; This returns #f if the string cannot be converted to a number
 (define (padded-string->number s)
-  (string->number (*:trim (s:toString))))
+  ;; This patches around a bug in Kawa that allows exponent notation
+  ;; with "L" or "l" as the exponent type, but overflows if the value of the
+  ;; explonent is more than 307.   The result is that App Inventor would indicate
+  ;; "Nan" when convering such a string to a number, rather than signaling a
+  ;; conversion error.   To patch this, we simply disallow numbers that contain "L" or "l".
+  ;; The test is done with the pattern matcher because our version of Kawa doesn't include
+  ;; string-conatins?.
+  (define (patched-kawa-string->number s)
+    (and (not (Pattern:matches ".*[Ll].*" s))
+         (string->number s)))
+  (patched-kawa-string->number (*:trim (s:toString))))
 
 ;;; converting numbers to strings
 
