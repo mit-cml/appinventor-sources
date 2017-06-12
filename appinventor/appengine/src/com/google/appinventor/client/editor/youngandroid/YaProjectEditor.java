@@ -658,7 +658,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       packageName = packageName.substring(0, packageName.lastIndexOf('.'));
       if (externalCollections.containsKey(packageName)) {
         for (String siblingType : externalCollections.get(packageName)) {
-          componentTypes.add(siblingType.substring(siblingType.lastIndexOf('.') + 1));
+          String siblingName = siblingType.substring(siblingType.lastIndexOf('.') + 1);
+          if (!removedTypes.contains(siblingName)) {
+            componentTypes.add(siblingName);
+          }
         }
       }
     }
