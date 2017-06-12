@@ -516,6 +516,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Import component menuitem")
   String importComponentMenuItem();
 
+  @DefaultMessage("Import extension")
+  @Description("String shown in the palette to import an extension")
+  String importExtensionMenuItem();
+
   @DefaultMessage("Build component")
   @Description("Name of Build component menuitem")
   String buildComponentMenuItem();
@@ -2241,9 +2245,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String legoMindstormsComponentPallette();
 
-  @DefaultMessage("External")
+  @DefaultMessage("Extension")
   @Description("")
-  String externalComponentPallette();
+  String extensionComponentPallette();
 
   @DefaultMessage("External Components")
   @Description("")
