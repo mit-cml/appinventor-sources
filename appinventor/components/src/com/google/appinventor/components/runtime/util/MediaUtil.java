@@ -50,7 +50,7 @@ public class MediaUtil {
   private enum MediaSource { ASSET, REPL_ASSET, SDCARD, FILE_URL, URL, CONTENT_URI, CONTACT_URI }
 
   private static final String LOG_TAG = "MediaUtil";
-  private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
+  private static String REPL_ASSET_DIR = null;
 
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
@@ -97,6 +97,15 @@ public class MediaUtil {
   }
 
   private static String replAssetPath(String assetName) {
+    // We have to initialize this here. We used to set REPL_ASSET_DIR
+    // in the initializer, but now that we fetch it from the Android
+    // SDK we have to do this here otherwise we get a "Stub!" error
+    // under the unit tests (which do not run on a device or emulator,
+    // so only has access to the android "stub" libraries.)
+    if (REPL_ASSET_DIR == null) { // Fetch it the first time
+      REPL_ASSET_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() +
+        "/AppInventor/assets/";
+    }
     return REPL_ASSET_DIR + assetName;
   }
 

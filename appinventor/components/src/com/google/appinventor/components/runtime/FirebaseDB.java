@@ -764,7 +764,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
           if (value instanceof List) {
             ((List)value).add(valueToAdd);
             try {
-              value = JsonUtil.getJsonRepresentation(YailList.makeList((List)value));
+              value = JsonUtil.getJsonRepresentation((List)value);
             } catch (JSONException e) {
               result.err = "Could not convert value to JSON.";
               return Transaction.abort();

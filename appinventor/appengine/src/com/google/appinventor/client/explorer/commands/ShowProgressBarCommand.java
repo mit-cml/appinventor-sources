@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.explorer.commands;
@@ -11,19 +11,12 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.explorer.dialogs.ProgressBarDialogBox;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.appinventor.client.output.MessagesOutput;
-import com.google.appinventor.client.explorer.commands.MiniProgressBar;
 
 /**
  * Command for displaying a barcode for the target of a project.
@@ -33,6 +26,8 @@ import com.google.appinventor.client.explorer.commands.MiniProgressBar;
  * @author markf@google.com (Mark Friedman)
  */
 public class ShowProgressBarCommand extends ChainableCommand {
+  private static final String DOWNLOAD_ACTION = "DownloadAction";
+  private static final String DOWNLOAD_TO_PHONE_ACTION = "DownloadToPhoneAction";
 
   // The build target
   private int counter = 0;
@@ -75,7 +70,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
     final Ode ode = Ode.getInstance();
     if (counter<1) {
       projectNode = node;
-      minPB = new ProgressBarDialogBox();
+      minPB = new ProgressBarDialogBox(serviceName, node);
       minPB.center();
       executeNextCommand(node);
     }
@@ -85,7 +80,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
       {
       @Override
       public void onSuccess(RpcResult result) {
-        minPB.addMessages(node.getName(),result);
+        addMessages(node.getName(),result);
         if (result.succeeded()) {
             minPB.hide();
         } else if (progressBarShow != 2 ) {
@@ -107,108 +102,56 @@ public class ShowProgressBarCommand extends ChainableCommand {
     ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
   }
 
-  class ProgressBarDialogBox extends DialogBox{
-    public ClickHandler buttonHandler;
-    public Button dismissButton = new Button(MESSAGES.dismissButton());
-    public HTML warningLabel;
-    public VerticalPanel contentPanel;
-    public HorizontalPanel buttonPanel = new HorizontalPanel();
-    public HorizontalPanel warningPanel = new HorizontalPanel();
-    public MiniProgressBar mpb = new MiniProgressBar(0,100,0);
-
-    //constructor
-    ProgressBarDialogBox() {
-      super(false, true);
-      setStylePrimaryName("ode-DialogBox");
-      setText(projectNode.getName() + " " + MESSAGES.ProgressBarFor());
-
-      //click handler for the mini html buttons
-      buttonHandler = new ClickHandler() {
-          @Override
-            public void onClick(ClickEvent event) {
-               hide();
-               progressBarShow++;
-          }
-       };
-
-      //declare the ok button
-      dismissButton.addClickHandler(buttonHandler);
-      buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-      dismissButton.setVisible(false); // we don't need the button unless we get an error
-
-      //warning label
-      warningLabel = new HTML("");
-      warningLabel.setWordWrap(true);
-      warningLabel.setWidth("60em");  // set width to get the text to wrap
-
-      //warning panel
-      warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-      warningPanel.add(warningLabel);
-
-      // button panel
-      buttonPanel.add(dismissButton);
-      buttonPanel.setSize("100%", "24px");
-
-      //content panel
-      contentPanel = new VerticalPanel();
-      contentPanel.add(mpb);
-      contentPanel.add(warningPanel);
-      contentPanel.add(buttonPanel);
-      setWidget(contentPanel);
-    }
-
-    public void clear() {
-      warningLabel.setHTML("");
-    }
-
-    public void addMessages(String projectName, RpcResult result) {
-      if (result.succeeded()) {
-        show();
-        mpb.setProgress(100);
-        if(serviceName == "DownloadAction") {
-          warningLabel.setHTML("<br />The APK file will be saved in the download folder.");
-        } else if (serviceName == "DownloadToPhoneAction"){
-          warningLabel.setHTML("<br />The APK file will be installed in the phone.");
-        } else {
-          warningLabel.setHTML("<br />Waiting for the barcode.");
-        }
+  public void addMessages(String projectName, RpcResult result) {
+    String labelContent;
+    int currentProgress = 0;
+    if (result.succeeded()) {
+      minPB.show();
+      currentProgress = 100;
+      if (DOWNLOAD_ACTION.equals(serviceName)) {
+        labelContent = "<br />" + MESSAGES.apkSavedToComputer();
+      } else if (DOWNLOAD_TO_PHONE_ACTION.equals(serviceName)) {
+        labelContent = "<br />" + MESSAGES.apkInstalledToPhone();
       } else {
-        try {
-          currentProgress = Math.max(currentProgress,
-                                     Integer.parseInt(result.getOutput()));
-          mpb.setProgress(currentProgress);
-          if (currentProgress <= 10) {
-            warningLabel.setHTML("<br />Preparing application icon");
-          } else if (currentProgress < 15) {
-            warningLabel.setHTML("<br />Determining permissions");
-          } else if (currentProgress < 20) {
-            warningLabel.setHTML("<br />Generating application information");
-          } else if (currentProgress < 35) {
-            warningLabel.setHTML("<br />Compiling part 1");
-          } else if (currentProgress < 85) {
-            warningLabel.setHTML("<br />Compiling part 2 (please wait)");
-          } else if (currentProgress < 90) {
-            warningLabel.setHTML("<br />Preparing final package");
-          } else if (currentProgress <= 95) {
-            warningLabel.setHTML("<br />Building APK");
+        labelContent = "<br />" + MESSAGES.waitingForBarcode();
+      }
+    } else {
+      try {
+        currentProgress = Math.max(currentProgress,
+            Integer.parseInt(result.getOutput()));
+        if (currentProgress <= 10) {
+          labelContent = "<br />" + MESSAGES.preparingApplicationIcon();
+        } else if (currentProgress < 15) {
+          labelContent = "<br />" + MESSAGES.determiningPermissions();
+        } else if (currentProgress < 20) {
+          labelContent = "<br />" + MESSAGES.generatingApplicationInformation();
+        } else if (currentProgress < 35) {
+          labelContent = "<br />" + MESSAGES.compilingPart1();
+        } else if (currentProgress < 85) {
+          labelContent = "<br />" + MESSAGES.compilingPart2();
+        } else if (currentProgress < 90) {
+          labelContent = "<br />" + MESSAGES.preparingFinalPackage();
+        } else if (currentProgress <= 95) {
+          labelContent = "<br />" + MESSAGES.buildingApk();
+        } else {
+          if (DOWNLOAD_ACTION.equals(serviceName)) {
+            labelContent = "<br />" + MESSAGES.apkSavedToComputer();
+          } else if (DOWNLOAD_TO_PHONE_ACTION.equals(serviceName)) {
+            labelContent = "<br />" + MESSAGES.apkInstalledToPhone();
           } else {
-            if(serviceName == "DownloadAction") {
-              warningLabel.setHTML("<br />The APK file will be saved in your downloads folder.");
-            } else if (serviceName == "DownloadToPhoneAction") {
-              warningLabel.setHTML("<br />The APK file will be installed in the phone.");
-            } else {
-              warningLabel.setHTML("<br />Waiting for the barcode.");
-            }
+            labelContent = "<br />" + MESSAGES.waitingForBarcode();
           }
-        } catch (NumberFormatException e) {
-          // If the result is an error message, then the number parse will fail,
-          // so we pick up the case of a compilation failure here.
-          mpb.setProgress(0);
-          // show the dismiss button to dismiss error
-          dismissButton.setVisible(true);
-          warningLabel.setHTML(MESSAGES.unableToCompile(result.getOutput()));
         }
+      } catch (NumberFormatException e) {
+        // If the result is an error message, then the number parse will fail,
+        // so we pick up the case of a compilation failure here.
+        currentProgress = 0;
+        // show the dismiss button to dismiss error
+        minPB.showDismissButton();
+        labelContent = MESSAGES.unableToCompile(result.getOutput());
       }
     }
+    minPB.setProgress(currentProgress, labelContent);
   }
+
 }
