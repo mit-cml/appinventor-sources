@@ -18,7 +18,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
 }
 
 open class TextBoxBase: ViewComponent, UITextViewDelegate {
-  fileprivate weak var _delegate: AbstractMethodsForTextBox?
+  fileprivate weak var _delegate: AbstractMethodsForTextBox!
   
   fileprivate var _textAlignment: Int32 = 0
   fileprivate var _backgroundColor: Int32 = 0
@@ -30,6 +30,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
 
   public init(_ parent: ComponentContainer, _ delegate: AbstractMethodsForTextBox) {
     super.init(parent)
+    _delegate = delegate
     super.setDelegate(delegate)
     parent.add(self)
     parent.setChildWidth(of: self, width: kTextboxPreferredWidth)
@@ -48,16 +49,16 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     set(alignment) {
       if let alignment = Alignment(rawValue: alignment) {
         _textAlignment = alignment.rawValue
-        let isRTL = UIView.userInterfaceLayoutDirection(for: (_delegate?.view.semanticContentAttribute)!) == UIUserInterfaceLayoutDirection.rightToLeft
+        let isRTL = UIView.userInterfaceLayoutDirection(for: (_delegate.view.semanticContentAttribute)) == UIUserInterfaceLayoutDirection.rightToLeft
         switch alignment {
         case .normal:
-          _delegate?.alignment = isRTL ? .right : .left
+          _delegate.alignment = isRTL ? .right : .left
           break
         case .center:
-          _delegate?.alignment = .center
+          _delegate.alignment = .center
           break
         case .opposite:
-          _delegate?.alignment = isRTL ? .left : .right
+          _delegate.alignment = isRTL ? .left : .right
           break
         }
       }

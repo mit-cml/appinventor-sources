@@ -18,8 +18,8 @@ open class ViewComponent: NSObject, VisibleComponent {
 
   fileprivate var _percentWidthHolder = kLengthUnknown
   fileprivate var _percentHeightHolder = kLengthUnknown
-  fileprivate var _lastSetWidth = kLengthUnknown
-  fileprivate var _lastSetHeight = kLengthUnknown
+  fileprivate var _lastSetWidth = kLengthPreferred
+  fileprivate var _lastSetHeight = kLengthPreferred
 
   fileprivate var _column = kDefaultRowColumn
   fileprivate var _row = kDefaultRowColumn
@@ -54,12 +54,11 @@ open class ViewComponent: NSObject, VisibleComponent {
 
   open var Width: Int32 {
     get {
-      return Int32((_delegate?.view.frame.width)!)
+      return _lastSetWidth
     }
-    set(to) {
-      var rect = (_delegate?.view.frame)!
-      rect.size.width = CGFloat(to)
-      _delegate?.view.frame = rect
+    set(width) {
+      _lastSetWidth = width
+      _container.setChildWidth(of: self, width: width)
     }
   }
 
@@ -69,17 +68,34 @@ open class ViewComponent: NSObject, VisibleComponent {
 
   open var Height: Int32 {
     get {
-      return Int32((_delegate?.view.frame.height)!)
+      return _lastSetHeight
     }
-    set(to) {
-      var rect = (_delegate?.view.frame)!
-      rect.size.height = CGFloat(to)
-      _delegate?.view.frame = rect
+    set(height) {
+      _lastSetHeight = height
+      _container.setChildHeight(of: self, height: height)
     }
   }
 
   open func HeightPercent(_ toPercent: Int32) {
     //TODO: implementation
+  }
+
+  open var Column: Int32 {
+    get {
+      return _column
+    }
+    set(column) {
+      _column = column
+    }
+  }
+
+  open var Row: Int32 {
+    get {
+      return _row
+    }
+    set(row) {
+      _row = row
+    }
   }
 
   open var dispatchDelegate: HandlesEventDispatching {

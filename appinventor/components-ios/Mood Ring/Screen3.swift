@@ -330,21 +330,24 @@ class Screen3: Form {
     // ActivityStarter1
     ActivityStarter1 = ActivityStarter(self)
     ActivityStarter1.Action = "android.intent.action.VIEW"
+  }
 
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     Initialize()
   }
 
   override func Initialize() {
     super.Initialize()
-    ListPicker_Resources.ItemBackgroundColor = g$teal
-    Label_quote.Text = g$quoteList[Int(arc4random_uniform(UInt32(g$quoteList.count)))]
-    HorizontalArrangement1.BackgroundColor = g$teal
-    ListPicker1.ItemBackgroundColor = g$HRPurple
-    if TinyDB1.GetValue("username", "" as AnyObject) as! String == "" {
-      Notifier_username.ShowTextDialog("Welcome to Mood Ring: a youth-made app that helps you track your emotions and reach out when you need to.\n\nLet's start with your name. (Only you will see your info!)", "Welcome to Mood Ring!", false)
-    } else {
-      Label_Hello.Text = "Hello " + (TinyDB1.GetValue("username", "" as AnyObject) as! String)
-    }
+//    ListPicker_Resources.ItemBackgroundColor = g$teal
+//    Label_quote.Text = g$quoteList[Int(arc4random_uniform(UInt32(g$quoteList.count)))]
+//    HorizontalArrangement1.BackgroundColor = g$teal
+//    ListPicker1.ItemBackgroundColor = g$HRPurple
+//    if TinyDB1.GetValue("username", "" as AnyObject) as! String == "" {
+//      Notifier_username.ShowTextDialog("Welcome to Mood Ring: a youth-made app that helps you track your emotions and reach out when you need to.\n\nLet's start with your name. (Only you will see your info!)", "Welcome to Mood Ring!", false)
+//    } else {
+//      Label_Hello.Text = "Hello " + (TinyDB1.GetValue("username", "" as AnyObject) as! String)
+//    }
   }
 
   override func didReceiveMemoryWarning() {

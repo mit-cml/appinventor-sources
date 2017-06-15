@@ -27,7 +27,7 @@ open class TinyDB: NonvisibleComponent {
     }
     super.init(parent)
     do {
-      try _database.run(_table.create { t in
+      try _database.run(_table.create(ifNotExists: true) { t in
         t.column(_key, primaryKey: true)
         t.column(_value)
       })

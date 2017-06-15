@@ -18,6 +18,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
   
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
+    _view.translatesAutoresizingMaskIntoConstraints = false
     _view.text = ""
     super.init(parent)
     super.setDelegate(self)

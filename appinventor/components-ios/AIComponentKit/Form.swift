@@ -82,6 +82,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
   }
 
+  open override func viewDidLoad() {
+    super.viewDidLoad()
+    view.accessibilityIdentifier = String(describing: type(of: self))
+  }
+
   open func add(_ component: ViewComponent) {
     // TODO(ewpatton): Implementation
     _components.append(component)
@@ -97,6 +102,12 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       NSLog("Vertical frame size: \(_verticalLayout.frame)")
     } else {
       view.addSubview(component.view)
+      if _components.count > 1, let priorComponent = _components[_components.count - 2] as? ViewComponent {
+        view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .top, relatedBy: .equal, toItem: priorComponent.view, attribute: .bottom, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
+      }
+      if AlignHorizontal == HorizontalGravity.center.rawValue {
+        view.addConstraint(component.view.centerXAnchor.constraint(equalTo: view.centerXAnchor))
+      }
     }
 //    if components.count > 0 && components[components.count-1] is ViewComponent {
 //      let lastComponent = components[components.count-1] as! ViewComponent
@@ -115,11 +126,37 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   open func setChildWidth(of component: ViewComponent, width: Int32) {
-    // TODO(ewpatton): Implementation
+    if width >= 0 {
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(width)))
+    } else if width == kLengthPreferred {
+      view.addConstraint(NSLayoutConstraint(item: view, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
+    } else if width == kLengthFillParent {
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
+    } else if width <= kLengthPercentTag {
+      let width = -(width + 1000)
+      let pWidth = CGFloat(width) / CGFloat(100.0)
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: pWidth, constant: CGFloat(0.0)))
+    } else {
+      NSLog("Unable to process width value \(width)")
+    }
   }
   
   open func setChildHeight(of component: ViewComponent, height: Int32) {
-    // TODO(ewpatton): Implementation
+    if height >= 0 {
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height)))
+    } else if height == kLengthPreferred {
+      let contentSize = component.view.sizeThatFits(view.frame.size)
+      component.view.addConstraint(component.view.heightAnchor.constraint(greaterThanOrEqualToConstant: contentSize.height))
+      view.addConstraint(NSLayoutConstraint(item: view, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: component.view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
+    } else if height == kLengthFillParent {
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: view, attribute: .height, multiplier: CGFloat(1.0), constant: CGFloat(0.0)))
+    } else if height <= kLengthPercentTag {
+      let height = -(height + 1000)
+      let pHeight = CGFloat(height) / CGFloat(100.0)
+      view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: view, attribute: .height, multiplier: pHeight, constant: CGFloat(0.0)))
+    } else {
+      NSLog("Unable to process width value \(height)")
+    }
   }
   
   open class func switchForm(_ name: String) {
@@ -182,7 +219,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       return _horizontalAlignment
     }
     set(alignment) {
-      if view is CSLinearLayoutView, let halign = HorizontalGravity(rawValue: alignment) {
+      if let halign = HorizontalGravity(rawValue: alignment) {
         _horizontalAlignment = alignment
         switch(halign) {
           case .left:
@@ -195,10 +232,14 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
             _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentRight
             break
         }
-        let items = _verticalLayout.items
-        for item in items! {
-          let viewitem = item as! CSLinearLayoutItem
-          viewitem.horizontalAlignment = _csHorizontalAlignment
+        if view is CSLinearLayoutView {
+          let items = _verticalLayout.items
+          for item in items! {
+            let viewitem = item as! CSLinearLayoutItem
+            viewitem.horizontalAlignment = _csHorizontalAlignment
+          }
+        } else {
+          // TODO(ewpatton): Update existing constraints
         }
         view.layoutSubviews()
       }
@@ -210,7 +251,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       return _verticalAlignment
     }
     set(alignment) {
-      if view is CSLinearLayoutView, let valign = VerticalGravity(rawValue: alignment) {
+      if let valign = VerticalGravity(rawValue: alignment) {
         _verticalAlignment = alignment
         switch(valign) {
         case .top:
@@ -223,7 +264,9 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
           _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentBottom
           break
         }
-        _verticalItem.verticalAlignment = _csVerticalAlignment
+        if view is CSLinearLayoutView {
+          _verticalItem.verticalAlignment = _csVerticalAlignment
+        }
         view.layoutSubviews()
       }
     }
@@ -270,11 +313,14 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   
   open var Height: Int32 {
     get {
-      // TODO(ewpatton): Implementation
-      return 0
+      if let height = view.window?.frame.size.height {
+        return Int32(height)
+      } else {
+        return 0
+      }
     }
     set {
-      // TODO(ewpatton): Implementation
+      NSLog("Cannot set Height of Form")
     }
   }
   
@@ -363,11 +409,14 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   
   open var Width: Int32 {
     get {
-      // TODO(ewpatton): Implementation
-      return 0
+      if let width =  view.window?.frame.size.width {
+        return Int32(width)
+      } else {
+        return 0
+      }
     }
     set {
-      // TODO(ewpatton): Implementation
+      NSLog("Cannot set Width of Form")
     }
   }
 
