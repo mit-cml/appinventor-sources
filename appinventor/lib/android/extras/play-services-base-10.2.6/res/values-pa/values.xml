@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-pa/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"ਯੋਗ ਬਣਾਓ"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"<xliff:g id="APP_NAME">%1$s</xliff:g> ਕੰਮ ਨਹੀਂ ਕਰੇਗਾ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਯੋਗ ਨਹੀਂ ਬਣਾਉਂਦੇ ਹੋ।"</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਯੋਗ ਬਣਾਓ"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"ਸਥਾਪਤ ਕਰੋ"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"<xliff:g id="APP_NAME">%1$s</xliff:g> Google Play ਸੇਵਾਵਾਂ ਤੋਂ ਬਿਨਾਂ ਨਹੀਂ ਚੱਲੇਗੀ, ਜੋ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਤੋਂ ਗੁੰਮ ਹਨ।"</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"Google Play ਸੇਵਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"Google Play ਸੇਵਾਵਾਂ ਅਸ਼ੁੱਧੀ"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"<xliff:g id="APP_NAME">%1$s</xliff:g> Google Play ਸੇਵਾਵਾਂ ਤੋਂ ਬਿਨਾਂ ਨਹੀਂ ਚੱਲ ਸਕੇਗੀ, ਜੋ ਤੁਹਾਡੀ ਡੀਵਾਈਸ \'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ।"</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"ਅੱਪਡੇਟ ਕਰੋ"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"<xliff:g id="APP_NAME">%1$s</xliff:g> ਨਹੀਂ ਚੱਲੇਗਾ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅਪਡੇਟ ਨਹੀਂ ਕਰਦੇ।"</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"<xliff:g id="APP_NAME">%1$s</xliff:g> Google Play ਸੇਵਾਵਾਂ ਤੋਂ ਬਿਨਾਂ ਨਹੀਂ ਚੱਲੇਗਾ, ਜੋ ਵਰਤਮਾਨ ਵਿੱਚ ਅਪਡੇਟ ਹੋ ਰਹੀਆਂ ਹਨ।"</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"Google Play ਸੇਵਾਵਾਂ ਦੇ ਨਵਾਂ ਸੰਸਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਇਹ ਛੇਤੀ ਹੀ ਆਪਣੇ ਆਪ ਅਪਡੇਟ ਕਰੇਗਾ।"</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"ਫ਼ੋਨ \'ਤੇ ਖੋਲ੍ਹੋ"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"ਸਾਈਨ ਇਨ ਕਰੇ"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"Google ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ"</string>
+</resources>

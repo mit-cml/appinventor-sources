@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-th/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"เปิดใช้"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"<xliff:g id="APP_NAME">%1$s</xliff:g> จะไม่ทำงานจนกว่าคุณจะเปิดใช้บริการ Google Play"</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"เปิดใช้บริการ Google Play"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"ติดตั้ง"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"<xliff:g id="APP_NAME">%1$s</xliff:g> จะไม่ทำงานหากไม่มีบริการ Google Play ซี่งไม่มีในอุปกรณ์ของคุณ"</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"ติดตั้งบริการ Google Play"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"ข้อผิดพลาดของบริการ Google Play"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"<xliff:g id="APP_NAME">%1$s</xliff:g> จะไม่ทำงานหากไม่มีบริการ Google Play ซึ่งอุปกรณ์ของคุณไม่สนับสนุน"</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"อัปเดต"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"<xliff:g id="APP_NAME">%1$s</xliff:g> จะไม่ทำงานจนกว่าคุณจะอัปเดตบริการ Google Play"</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"อัปเดตบริการ Google Play"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"<xliff:g id="APP_NAME">%1$s</xliff:g> จะไม่ทำงานหากไม่มีบริการ Google Play ซึ่งกำลังอัปเดตอยู่ในขณะนี้"</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"จำเป็นต้องใช้บริการ Google Play เวอร์ชันใหม่ ซึ่งจะอัปเดตอัตโนมัติในอีกไม่ช้า"</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"เปิดบนโทรศัพท์"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"ลงชื่อเข้าใช้"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"ลงชื่อเข้าใช้ด้วย Google"</string>
+</resources>

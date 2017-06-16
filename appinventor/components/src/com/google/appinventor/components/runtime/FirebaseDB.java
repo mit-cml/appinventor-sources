@@ -44,7 +44,7 @@ import java.util.List;
 
 import org.json.JSONException;
 
-
+import com.evernote.android.job.Job;
 /**
  * The Firebase component communicates with a Web service to store
  * and retrieve information.  The component has methods to

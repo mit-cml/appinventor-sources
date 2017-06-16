@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-kn/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"ಸಕ್ರಿಯಗೊಳಿಸು"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"Google Play ಸೇವೆಗಳನ್ನು ನೀವು ಸಕ್ರಿಯಗೊಳಿಸದ ಹೊರತು <xliff:g id="APP_NAME">%1$s</xliff:g> ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ."</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"Google Play ಸೇವೆಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"ಸ್ಥಾಪಿಸು"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"ನಿಮ್ಮ ಸಾಧನದಿಂದ ಕಾಣೆಯಾಗಿರುವ <xliff:g id="APP_NAME">%1$s</xliff:g>, Google Play ಸೇವೆಗಳಿಲ್ಲದೆ ರನ್ ಆಗುವುದಿಲ್ಲ."</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"Google Play ಸೇವೆಗಳನ್ನು ಪಡೆಯಿರಿ"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"Google Play ಸೇವೆಗಳ ದೋಷ"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"ನಿಮ್ಮ ಸಾಧನದ ಮೂಲಕ ಬೆಂಬಲಿಸದಿರುವ Google Play ಸೇವೆಗಳಿಲ್ಲದೆ <xliff:g id="APP_NAME">%1$s</xliff:g> ರನ್‌ ಆಗುವುದಿಲ್ಲ."</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"ಅಪ್‌ಡೇಟ್‌ ಮಾಡು"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"ನೀವು Google Play ಸೇವೆಗಳನ್ನು ನವೀಕರಿಸದ ಹೊರತು <xliff:g id="APP_NAME">%1$s</xliff:g> ರನ್ ಆಗುವುದಿಲ್ಲ."</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"Google Play ಸೇವೆಗಳಿಲ್ಲದೆ ಪ್ರಸ್ತುತ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ <xliff:g id="APP_NAME">%1$s</xliff:g> ರನ್ ಆಗುವುದಿಲ್ಲ."</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"Google Play ಸೇವೆಗಳ ಹೊಸ ಆವೃತ್ತಿ ಅಗತ್ಯವಿದೆ. ಸದ್ಯದಲ್ಲೇ ಅದು ತಾನಾಗಿಯೇ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತದೆ."</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"ಫೋನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"ಸೈನ್ ಇನ್"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"Google ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ"</string>
+</resources>

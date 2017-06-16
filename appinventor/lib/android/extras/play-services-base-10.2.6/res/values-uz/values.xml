@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-uz/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"Yoqish"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"Google Play xizmatlari yoqilmaguncha, <xliff:g id="APP_NAME">%1$s</xliff:g> ishlamaydi."</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"Google Play xizmatlarini yoqish"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"O‘rnatish"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"<xliff:g id="APP_NAME">%1$s</xliff:g> ishlashi uchun qurilmangizda Google Play xizmatlarini o‘rnatish lozim."</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"Google Play xizmatlarini o‘rnatish"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"Google Play xizmatlari xatosi"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasi Google Play xizmatlarisiz ishlamaydi, biroq qurilmangiz ularni qo‘llab-quvvatlamaydi."</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"Yangilash"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"Google Play xizmatlari yangilanmaguncha, <xliff:g id="APP_NAME">%1$s</xliff:g> ishga tushmaydi."</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"Google Play xizmatlarini yangilash"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasining ishlashi uchun zarur Google Play xizmatlari hozirda yangilanmoqda."</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"Google Play xizmatlarining yangi versiyasi zarur. U o‘zini qisqa vaqt ichida yangilaydi."</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"Telefonda ochish"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"Kirish"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"Google orqali kirish"</string>
+</resources>

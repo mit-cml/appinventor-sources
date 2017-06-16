@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-zu/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"Nika amandla"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"I-<xliff:g id="APP_NAME">%1$s</xliff:g> ngeke isebenze ngaphandle kokuthi unike amandla amasevisi we-Google Play."</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"Nika amandla amasevisi we-Google Play"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"Faka"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"I-<xliff:g id="APP_NAME">%1$s</xliff:g> ngeke ize iqalise ngaphandle kwamasevisi we-Google Play, angekho kusukela kudivayisi yakho."</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"Thola amasevisi we-Google Play"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"Iphutha lamasevisi we-Google Play"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"<xliff:g id="APP_NAME">%1$s</xliff:g> ngeke isebenze ngaphandle kwamasevisi e-Google Play, angasekelwa idivayisi yakho."</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"Isibuyekezo"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"I-<xliff:g id="APP_NAME">%1$s</xliff:g> ngeke ize iqalise ngaphandle kokuthi ubuyekeze i-Google Play."</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"Buyekeza amasevisi we-Google Play"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"I-<xliff:g id="APP_NAME">%1$s</xliff:g> ngeke ize iqalise ngaphandle kwamasevisi we-Google Play, okwamanje abuyekezwayo."</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"Kudingeka inguqulo entsha yamasevisi we-Google Play. Izozibuyekeza ngokwayo maduze."</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"Vula kufoni"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"Ngena ngemvume"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"Ngena ngemvume nge-Google"</string>
+</resources>

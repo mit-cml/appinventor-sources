@@ -136,8 +136,8 @@
        editor and all of its dependencies.
        ===================================================================== -->
   <presetdef name="ai.javac5">
-    <ai.javac source="5"
-              target="5"/>
+    <ai.javac source="7"
+              target="7"/>
   </presetdef>
 
   <!-- =====================================================================

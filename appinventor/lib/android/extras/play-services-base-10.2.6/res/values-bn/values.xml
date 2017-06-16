@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!-- blaze-out/gcc-4.X.Y-crosstool-v18-hybrid-grtev4-k8-opt/genfiles/java/com/google/android/gmscore/integ/client/base/res/values-bn/strings.xml -->
+<eat-comment/>
+<string name="common_google_play_services_enable_button" msgid="8585111718777012708">"সক্ষম করুন"</string>
+<string name="common_google_play_services_enable_text" msgid="7045129128108380659">"আপনি Google Play পরিষেবা সক্ষম না করা পর্যন্ত <xliff:g id="APP_NAME">%1$s</xliff:g> কাজ করবে না।"</string>
+<string name="common_google_play_services_enable_title" msgid="3147157405986503375">"Google Play পরিষেবা সক্ষম করুন"</string>
+<string name="common_google_play_services_install_button" msgid="9115728400623041681">"ইনস্টল করুন"</string>
+<string name="common_google_play_services_install_text" msgid="8179894293032530091">"Google Play পরিষেবা ছাড়া <xliff:g id="APP_NAME">%1$s</xliff:g> চলবে না, যা আপনার ডিভাইসে অনুপস্থিত।"</string>
+<string name="common_google_play_services_install_title" msgid="7442193194585196676">"Google Play পরিষেবা পান"</string>
+<string name="common_google_play_services_notification_ticker" msgid="180394615667698242">"Google Play পরিষেবার ত্রুটি"</string>
+<string name="common_google_play_services_unsupported_text" msgid="5501187292256987189">"Google Play পরিষেবা ছাড়া <xliff:g id="APP_NAME">%1$s</xliff:g> চলবে না, যেটি আপনার ডিভাইসে সমর্থিত নয়৷"</string>
+<string name="common_google_play_services_update_button" msgid="8172070149091615356">"আপডেট করুন"</string>
+<string name="common_google_play_services_update_text" msgid="7773943415006962566">"আপনি Google Play পরিষেবা আপডেট না করা পর্যন্ত <xliff:g id="APP_NAME">%1$s</xliff:g> চলবে না।"</string>
+<string name="common_google_play_services_update_title" msgid="8706675115216073244">"Google Play পরিষেবা আপডেট করুন"</string>
+<string name="common_google_play_services_updating_text" msgid="7894275749778928941">"Google Play পরিষেবা ছাড়া <xliff:g id="APP_NAME">%1$s</xliff:g> চলবে না যা বর্তমানে আপডেট হচ্ছে।"</string>
+<string name="common_google_play_services_wear_update_text" msgid="2804989272736383918">"Google Play পরিষেবার নতুন সংস্করণ প্রয়োজন৷ খুব শীঘ্রই এটা নিজেই আপডেট হবে৷"</string>
+<string name="common_open_on_phone" msgid="5201977337835724196">"ফোনে খুলুন"</string>
+<string name="common_signin_button_text" msgid="3441753203274453993">"প্রবেশ করুন"</string>
+<string name="common_signin_button_text_long" msgid="669893613918351210">"Google এর মাধ্যমে প্রবেশ করুন"</string>
+</resources>

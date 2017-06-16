@@ -1,0 +1,614 @@
+Joydeeps-MacBook-Pro:appinventor Joy$ ant comps
+Buildfile: /Users/Joy/appinventor-sources/appinventor/build.xml
+
+comps:
+
+init:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/build/components
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/build
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/build/classes
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/reports
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/reports/raw
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/reports/html
+
+CommonConstants:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/build/classes/CommonConstants
+    [javac] Compiling 6 source files to /Users/Joy/appinventor-sources/appinventor/components/build/classes/CommonConstants
+    [javac] Creating empty /Users/Joy/appinventor-sources/appinventor/components/build/classes/CommonConstants/com/google/appinventor/components/common/package-info.class
+      [jar] Building jar: /Users/Joy/appinventor-sources/appinventor/build/components/CommonConstants.jar
+      [jar] Building jar: /Users/Joy/appinventor-sources/appinventor/build/components/CommonConstants-gwt.jar
+
+HtmlEntities:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/build/classes/HtmlEntities
+    [javac] Compiling 1 source file to /Users/Joy/appinventor-sources/appinventor/components/build/classes/HtmlEntities
+      [jar] Building jar: /Users/Joy/appinventor-sources/appinventor/components/build/HtmlEntities.jar
+
+common_CommonVersion:
+
+init:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/build/common
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/build
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/build/classes
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/reports
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/reports/raw
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/reports/html
+
+CommonVersion:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/build/classes/CommonVersion
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/common/build/src/com/google/appinventor/common/version
+     [copy] Copying 1 file to /Users/Joy/appinventor-sources/appinventor/common/build/src/com/google/appinventor/common/version
+    [javac] Compiling 3 source files to /Users/Joy/appinventor-sources/appinventor/common/build/classes/CommonVersion
+    [javac] Creating empty /Users/Joy/appinventor-sources/appinventor/common/build/classes/CommonVersion/com/google/appinventor/common/version/package-info.class
+      [jar] Building jar: /Users/Joy/appinventor-sources/appinventor/build/common/CommonVersion.jar
+      [jar] Building jar: /Users/Joy/appinventor-sources/appinventor/build/common/CommonVersion-gwt.jar
+
+AndroidRuntime:
+    [mkdir] Created dir: /Users/Joy/appinventor-sources/appinventor/components/build/classes/AndroidRuntime
+    [javac] Compiling 220 source files to /Users/Joy/appinventor-sources/appinventor/components/build/classes/AndroidRuntime
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/Context.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/hardware/Sensor.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/hardware/SensorEvent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/hardware/SensorEventListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/hardware/SensorManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/app/Activity.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(org/json/JSONException.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/app/Dialog.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/app/ProgressDialog.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ActivityNotFoundException.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/Intent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/pm/ActivityInfo.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/res/Configuration.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/PorterDuff.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/ColorDrawable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/Drawable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/os/AsyncTask.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/os/Bundle.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/os/Handler.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/util/Log.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/KeyEvent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/Menu.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/MenuItem.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/MenuItem$OnMenuItemClickListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewGroup.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewTreeObserver.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewTreeObserver$OnGlobalLayoutListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/Window.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/WindowManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/inputmethod/InputMethodManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/FrameLayout.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/ScrollView.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/LayoutInflater.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/LayoutInflater$Factory2.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/LayoutInflater$Factory.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/Window$Callback.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/KeyEvent$Callback.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/os/Parcelable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/InputEvent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View$OnCreateContextMenuListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/Drawable$Callback.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/accessibility/AccessibilityEventSource.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ComponentCallbacks2.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ComponentCallbacks.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ContextThemeWrapper.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ContextWrapper.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/Gravity.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Canvas.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Rect.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/util/AttributeSet.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/MotionEvent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewParent.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/R.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/media/MediaPlayer.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/media/MediaPlayer$OnCompletionListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/media/MediaPlayer$OnPreparedListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View$OnTouchListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/ViewGroup$LayoutParams.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/VideoView.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/media/AudioManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/media/MediaPlayer$OnErrorListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/MediaController.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/LinearLayout.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/FrameLayout$LayoutParams.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/MediaController$MediaPlayerControl.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/SurfaceView.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ComponentName.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/pm/PackageManager.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/pm/ResolveInfo.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/net/Uri.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/text/TextUtils.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Paint.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Bitmap.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Color.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/RectF.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/BitmapDrawable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/GestureDetector.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/Bitmap$CompressFormat.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/res/ColorStateList.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/ShapeDrawable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/shapes/OvalShape.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/shapes/RectShape.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/graphics/drawable/shapes/RoundRectShape.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View$OnClickListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View$OnFocusChangeListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/View$OnLongClickListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/Button.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/content/ContentValues.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/os/Environment.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/provider/MediaStore.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/GestureDetector$SimpleOnGestureListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/GestureDetector$OnGestureListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/GestureDetector$OnDoubleTapListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/view/GestureDetector$OnContextClickListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/CompoundButton.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/CompoundButton$OnCheckedChangeListener.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/Checkable.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] warning: /Users/Joy/appinventor-sources/appinventor/lib/android/7.1/android.jar(android/widget/TextView.class): major version 52 is newer than 51, the highest major version supported by this compiler.
+    [javac]   It is recommended that the compiler be upgraded.
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:44: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.ClientProtocolException;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:45: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.HttpClient;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:46: error: package org.apache.http.client.entity does not exist
+    [javac] import org.apache.http.client.entity.UrlEncodedFormEntity;
+    [javac]                                     ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:47: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpPost;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:48: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpUriRequest;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:50: error: package org.apache.http.impl.client does not exist
+    [javac] import org.apache.http.impl.client.DefaultHttpClient;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/IClientLoginHelper.java:10: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.ClientProtocolException;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/IClientLoginHelper.java:11: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpUriRequest;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:451: error: cannot find symbol
+    [javac]   private HttpUriRequest genFusiontablesQuery(String query) throws IOException {
+    [javac]           ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/IClientLoginHelper.java:29: error: cannot find symbol
+    [javac]   public HttpResponse execute(HttpUriRequest request) throws ClientProtocolException, IOException;
+    [javac]                               ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: interface IClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/IClientLoginHelper.java:29: error: cannot find symbol
+    [javac]   public HttpResponse execute(HttpUriRequest request) throws ClientProtocolException, IOException;
+    [javac]                                                              ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: interface IClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/IClientLoginHelper.java:47: error: cannot find symbol
+    [javac]   public String getAuthToken() throws ClientProtocolException; 
+    [javac]                                       ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: interface IClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:26: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.HttpClient;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:27: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpPost;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:31: error: package org.apache.http.impl.client does not exist
+    [javac] import org.apache.http.impl.client.DefaultHttpClient;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:21: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.ClientProtocolException;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:22: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.HttpClient;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:23: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpUriRequest;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:24: error: package org.apache.http.impl.client does not exist
+    [javac] import org.apache.http.impl.client.DefaultHttpClient;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:44: error: cannot find symbol
+    [javac]   private HttpClient client;
+    [javac]           ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:59: error: cannot find symbol
+    [javac]   public ClientLoginHelper(Activity activity, String service, String prompt, HttpClient client) {
+    [javac]                                                                              ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:71: error: cannot find symbol
+    [javac]   private void initialize() throws ClientProtocolException {
+    [javac]                                    ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:92: error: cannot find symbol
+    [javac]   public HttpResponse execute(HttpUriRequest request)
+    [javac]                               ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:93: error: cannot find symbol
+    [javac]       throws ClientProtocolException, IOException {
+    [javac]              ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:121: error: cannot find symbol
+    [javac]   private static void addGoogleAuthHeader(HttpUriRequest request, String token) {
+    [javac]                                           ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:128: error: cannot find symbol
+    [javac]   private static void removeGoogleAuthHeaders(HttpUriRequest request) {
+    [javac]                                               ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:142: error: cannot find symbol
+    [javac]   public String getAuthToken() throws ClientProtocolException {
+    [javac]                                       ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:12: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.ClientProtocolException;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:13: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.HttpClient;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:14: error: package org.apache.http.client does not exist
+    [javac] import org.apache.http.client.ResponseHandler;
+    [javac]                              ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:15: error: package org.apache.http.client.entity does not exist
+    [javac] import org.apache.http.client.entity.UrlEncodedFormEntity;
+    [javac]                                     ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:16: error: package org.apache.http.client.methods does not exist
+    [javac] import org.apache.http.client.methods.HttpPost;
+    [javac]                                      ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:17: error: package org.apache.http.conn.params does not exist
+    [javac] import org.apache.http.conn.params.ConnManagerParams;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:18: error: cannot find symbol
+    [javac] import org.apache.http.conn.scheme.PlainSocketFactory;
+    [javac]                                   ^
+    [javac]   symbol:   class PlainSocketFactory
+    [javac]   location: package org.apache.http.conn.scheme
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:19: error: cannot find symbol
+    [javac] import org.apache.http.conn.scheme.Scheme;
+    [javac]                                   ^
+    [javac]   symbol:   class Scheme
+    [javac]   location: package org.apache.http.conn.scheme
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:20: error: cannot find symbol
+    [javac] import org.apache.http.conn.scheme.SchemeRegistry;
+    [javac]                                   ^
+    [javac]   symbol:   class SchemeRegistry
+    [javac]   location: package org.apache.http.conn.scheme
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:22: error: package org.apache.http.impl.client does not exist
+    [javac] import org.apache.http.impl.client.BasicResponseHandler;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:23: error: package org.apache.http.impl.client does not exist
+    [javac] import org.apache.http.impl.client.DefaultHttpClient;
+    [javac]                                   ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:24: error: package org.apache.http.impl.conn.tsccm does not exist
+    [javac] import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+    [javac]                                       ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:49: error: cannot find symbol
+    [javac]   private static HttpClient httpClient = null;
+    [javac]                  ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/Job.java):35: error: cannot find symbol
+    [javac] import android.support.v4.content.WakefulBroadcastReceiver;
+    [javac]                                  ^
+    [javac]   symbol:   class WakefulBroadcastReceiver
+    [javac]   location: package android.support.v4.content
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/v14/PlatformAlarmReceiver.java):30: error: cannot find symbol
+    [javac] import android.support.v4.content.WakefulBroadcastReceiver;
+    [javac]                                  ^
+    [javac]   symbol:   class WakefulBroadcastReceiver
+    [javac]   location: package android.support.v4.content
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/v14/PlatformAlarmReceiver.java):40: error: cannot find symbol
+    [javac] public class PlatformAlarmReceiver extends WakefulBroadcastReceiver {
+    [javac]                                            ^
+    [javac]   symbol: class WakefulBroadcastReceiver
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:439: error: cannot find symbol
+    [javac]       HttpClient httpClient = new DefaultHttpClient();
+    [javac]       ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:439: error: cannot find symbol
+    [javac]       HttpClient httpClient = new DefaultHttpClient();
+    [javac]                                   ^
+    [javac]   symbol:   class DefaultHttpClient
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:452: error: cannot find symbol
+    [javac]     HttpPost request = new HttpPost(FUSION_QUERY_URL);
+    [javac]     ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:452: error: cannot find symbol
+    [javac]     HttpPost request = new HttpPost(FUSION_QUERY_URL);
+    [javac]                            ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:455: error: cannot find symbol
+    [javac]     UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pair, "UTF-8");
+    [javac]     ^
+    [javac]   symbol:   class UrlEncodedFormEntity
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:455: error: cannot find symbol
+    [javac]     UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pair, "UTF-8");
+    [javac]                                       ^
+    [javac]   symbol:   class UrlEncodedFormEntity
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:481: error: cannot find symbol
+    [javac]         HttpUriRequest request = genFusiontablesQuery(params[0]);
+    [javac]         ^
+    [javac]   symbol:   class HttpUriRequest
+    [javac]   location: class FusiontablesControl.QueryProcessor
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:704: error: cannot find symbol
+    [javac]     HttpPost request = new HttpPost(FUSIONTABLES_POST + "?key=" + ApiKey()); // Fusiontables Uri
+    [javac]     ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:704: error: cannot find symbol
+    [javac]     HttpPost request = new HttpPost(FUSIONTABLES_POST + "?key=" + ApiKey()); // Fusiontables Uri
+    [javac]                            ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:717: error: cannot find symbol
+    [javac]     HttpClient client = new DefaultHttpClient();
+    [javac]     ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:717: error: cannot find symbol
+    [javac]     HttpClient client = new DefaultHttpClient();
+    [javac]                             ^
+    [javac]   symbol:   class DefaultHttpClient
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/FusiontablesControl.java:720: error: cannot find symbol
+    [javac]     } catch (ClientProtocolException e) {
+    [javac]              ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class FusiontablesControl
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:136: error: cannot find symbol
+    [javac]       HttpClient client = new DefaultHttpClient();
+    [javac]       ^
+    [javac]   symbol:   class HttpClient
+    [javac]   location: class MediaStore
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:136: error: cannot find symbol
+    [javac]       HttpClient client = new DefaultHttpClient();
+    [javac]                               ^
+    [javac]   symbol:   class DefaultHttpClient
+    [javac]   location: class MediaStore
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:156: error: cannot find symbol
+    [javac]       HttpPost post = new HttpPost(uploadURL);
+    [javac]       ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class MediaStore
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/MediaStore.java:156: error: cannot find symbol
+    [javac]       HttpPost post = new HttpPost(uploadURL);
+    [javac]                           ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class MediaStore
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:61: error: cannot find symbol
+    [javac]     this.client = (client == null) ? new DefaultHttpClient() : client;
+    [javac]                                          ^
+    [javac]   symbol:   class DefaultHttpClient
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/ClientLoginHelper.java:160: error: cannot find symbol
+    [javac]     throw new ClientProtocolException("Can't get valid authentication token");
+    [javac]               ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class ClientLoginHelper
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/SmsBroadcastReceiver.java:228: error: cannot find symbol
+    [javac]       note.setLatestEventInfo(context, "Sms from " + phone, msg, activity);
+    [javac]           ^
+    [javac]   symbol:   method setLatestEventInfo(Context,String,String,PendingIntent)
+    [javac]   location: variable note of type Notification
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:65: error: cannot find symbol
+    [javac]         SchemeRegistry schemeRegistry = new SchemeRegistry();
+    [javac]         ^
+    [javac]   symbol:   class SchemeRegistry
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:65: error: cannot find symbol
+    [javac]         SchemeRegistry schemeRegistry = new SchemeRegistry();
+    [javac]                                             ^
+    [javac]   symbol:   class SchemeRegistry
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:66: error: cannot find symbol
+    [javac]         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+    [javac]                                     ^
+    [javac]   symbol:   class Scheme
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:66: error: cannot find symbol
+    [javac]         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+    [javac]                                                    ^
+    [javac]   symbol:   variable PlainSocketFactory
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:67: error: cannot find symbol
+    [javac]         schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+    [javac]                                     ^
+    [javac]   symbol:   class Scheme
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:71: error: cannot find symbol
+    [javac]         ConnManagerParams.setMaxTotalConnections(params, 20);
+    [javac]         ^
+    [javac]   symbol:   variable ConnManagerParams
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:72: error: cannot find symbol
+    [javac]         ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params,
+    [javac]         ^
+    [javac]   symbol:   class ThreadSafeClientConnManager
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:72: error: cannot find symbol
+    [javac]         ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params,
+    [javac]                                                   ^
+    [javac]   symbol:   class ThreadSafeClientConnManager
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:74: error: cannot find symbol
+    [javac]         WebServiceUtil.httpClient = new DefaultHttpClient(manager, params);
+    [javac]                                         ^
+    [javac]   symbol:   class DefaultHttpClient
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:154: error: cannot find symbol
+    [javac]     final HttpPost httpPost = new HttpPost(serviceURL + "/" + commandName);
+    [javac]           ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:154: error: cannot find symbol
+    [javac]     final HttpPost httpPost = new HttpPost(serviceURL + "/" + commandName);
+    [javac]                                   ^
+    [javac]   symbol:   class HttpPost
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:161: error: cannot find symbol
+    [javac]       ResponseHandler<String> responseHandler = new BasicResponseHandler();
+    [javac]       ^
+    [javac]   symbol:   class ResponseHandler
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:161: error: cannot find symbol
+    [javac]       ResponseHandler<String> responseHandler = new BasicResponseHandler();
+    [javac]                                                     ^
+    [javac]   symbol:   class BasicResponseHandler
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:162: error: cannot find symbol
+    [javac]       httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+    [javac]                              ^
+    [javac]   symbol:   class UrlEncodedFormEntity
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/components/src/com/google/appinventor/components/runtime/util/WebServiceUtil.java:169: error: cannot find symbol
+    [javac]     } catch (ClientProtocolException e) {
+    [javac]              ^
+    [javac]   symbol:   class ClientProtocolException
+    [javac]   location: class WebServiceUtil
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/util/JobApi.java):141: error: method isBroadcastEnabled in enum JobApi cannot be applied to given types;
+    [javac]                         && isBroadcastEnabled(context, PlatformAlarmReceiver.class);
+    [javac]                            ^
+    [javac]   required: Context,Class<? extends BroadcastReceiver>
+    [javac]   found: Context,Class<PlatformAlarmReceiver>
+    [javac]   reason: actual argument Class<PlatformAlarmReceiver> cannot be converted to Class<? extends BroadcastReceiver> by method invocation conversion
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/util/JobApi.java):144: error: method isBroadcastEnabled in enum JobApi cannot be applied to given types;
+    [javac]                         || (isServiceEnabled(context, PlatformAlarmService.class) && isBroadcastEnabled(context, PlatformAlarmReceiver.class));
+    [javac]                                                                                      ^
+    [javac]   required: Context,Class<? extends BroadcastReceiver>
+    [javac]   found: Context,Class<PlatformAlarmReceiver>
+    [javac]   reason: actual argument Class<PlatformAlarmReceiver> cannot be converted to Class<? extends BroadcastReceiver> by method invocation conversion
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/util/Device.java):101: error: non-static method isActiveNetworkMetered(ConnectivityManager) cannot be referenced from a static context
+    [javac]         boolean metered = ConnectivityManagerCompat.isActiveNetworkMetered(connectivityManager);
+    [javac]                                                    ^
+    [javac] /Users/Joy/appinventor-sources/appinventor/lib/evernote/android-job-1.1.11-sources.jar(com/evernote/android/job/v14/PlatformAlarmReceiver.java):50: error: method does not override or implement a method from a supertype
+    [javac]     @Override
+    [javac]     ^
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 81 errors
+    [javac] 100 warnings
+
+BUILD FAILED
+/Users/Joy/appinventor-sources/appinventor/build.xml:29: The following error occurred while executing this line:
+/Users/Joy/appinventor-sources/appinventor/components/build.xml:122: The following error occurred while executing this line:
+/Users/Joy/appinventor-sources/appinventor/build-common.xml:118: Compile failed; see the compiler error output for details.
+
+Total time: 3 seconds
