@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 /**
  * Panel showing Simple components which can be dropped onto the Young Android
  * visual designer panel.
@@ -78,8 +80,13 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         VerticalPanel categoryPanel = new VerticalPanel();
         categoryPanel.setWidth("100%");
         categoryPanels.put(category, categoryPanel);
-        stackPalette.add(categoryPanel,
-            ComponentsTranslation.getCategoryName(category.getName()));
+        // The production version will not include a mapping for Extension because
+        // only compile-time categories are included. This allows us to i18n the
+        // Extension title for the palette.
+        String title = ComponentCategory.EXTENSION.equals(category) ?
+          MESSAGES.extensionComponentPallette() :
+          ComponentsTranslation.getCategoryName(category.getName());
+        stackPalette.add(categoryPanel, title);
       }
     }
 
@@ -186,7 +193,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   }
 
   private void initExtensionPanel() {
-    Anchor addComponentAnchor = new Anchor("Import extension");
+    Anchor addComponentAnchor = new Anchor(MESSAGES.importExtensionMenuItem());
     addComponentAnchor.setStylePrimaryName("ode-ExtensionAnchor");
     addComponentAnchor.addClickHandler(new ClickHandler() {
       @Override

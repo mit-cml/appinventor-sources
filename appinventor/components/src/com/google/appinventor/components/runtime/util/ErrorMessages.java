@@ -206,7 +206,10 @@ public final class ErrorMessages {
   // Form errors that are signalled in runtime.scm
   public static final int ERROR_DIVISION_BY_ZERO = 3200;
 
-  // Start the next group of errors at 3300
+  // Extension errors are signalled from extensions
+  public static final int ERROR_EXTENSION_ERROR = 3300;
+
+  // Start the next group of errors at 3400
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -509,6 +512,9 @@ public final class ErrorMessages {
     // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
         "Trying to divide %s by 0.  The result might not be valid.");
+    // Extension errors
+    errorMessages.put(ERROR_EXTENSION_ERROR,
+        "Error %d in extension %s: %s");
 
   }
 

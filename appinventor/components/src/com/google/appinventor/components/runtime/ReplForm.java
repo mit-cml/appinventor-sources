@@ -6,18 +6,24 @@
 package com.google.appinventor.components.runtime;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
+import android.content.Context;
+import android.os.Looper;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.RetValManager;
 
 import dalvik.system.DexClassLoader;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +41,10 @@ public class ReplForm extends Form {
 
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
-  private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
-  private static final String REPL_COMP_DIR = "/sdcard/AppInventor/assets/external_comps/";
+  private static final String REPL_ASSET_DIR =
+    Environment.getExternalStorageDirectory().getAbsolutePath() +
+    "/AppInventor/assets/";
+  private static final String REPL_COMP_DIR = REPL_ASSET_DIR + "external_comps/";
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
@@ -226,10 +234,11 @@ public class ReplForm extends Form {
         f.mkdirs();             // Create the directory and all parents
   }
 
-  private void checkComponentDir() {
+  private boolean checkComponentDir() {
     File f = new File(REPL_COMP_DIR);
     if (!f.exists())
-      f.mkdirs();
+      return f.mkdirs();
+    return true;
   }
 
   // We return true if the assets for the Companion have been loaded and
@@ -250,49 +259,41 @@ public class ReplForm extends Form {
    * kawa to load it, when required. This assumes classloader checks class via delegation through the parent
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
-  public void loadComponents() {
+  public void loadComponents(List<String> extensionNames) {
+    Set<String> extensions = new HashSet<String>(extensionNames);
     // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir("componentDexs", activeForm.$context().MODE_PRIVATE);
+    File dexOutput = activeForm.$context().getDir("componentDexs", Context.MODE_PRIVATE);
     File componentFolder = new File(REPL_COMP_DIR );
-    checkComponentDir();
+    if (!checkComponentDir()) {
+      Log.d("ReplForm", "Unable to create components directory");
+      dispatchErrorOccurredEventDialog(this, "loadComponents", ErrorMessages.ERROR_EXTENSION_ERROR,
+          1, "App Inventor", "Unable to create component directory.");
+      return;
+    }
     // Current Thread Class Loader
-    ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+    ClassLoader parentClassLoader = ReplForm.class.getClassLoader();
+    StringBuilder sb = new StringBuilder();
+    loadedExternalDexs.clear();
     for (File compFolder : componentFolder.listFiles()) {
       if (compFolder.isDirectory()) {
+        if (!extensions.contains(compFolder.getName())) continue;  // Skip extensions on the phone but not required by the project
         File component = new File(compFolder.getPath() + File.separator + "classes.jar");
         File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".jar");
         component.renameTo(loadComponent);
         if (loadComponent.exists() && !loadedExternalDexs.contains(loadComponent.getName())) {
+          Log.d("ReplForm", "Loading component dex " + loadComponent.getAbsolutePath());
           loadedExternalDexs.add(loadComponent.getName());
-          DexClassLoader dexCloader = new DexClassLoader(loadComponent.getAbsolutePath(), dexOutput.getAbsolutePath(),
-                  null, parentClassLoader);
-          parentClassLoader = dexCloader;
-          Thread.currentThread().setContextClassLoader(parentClassLoader);
+          sb.append(File.pathSeparatorChar);
+          sb.append(loadComponent.getAbsolutePath());
         }
       }
     }
-  }
-
-  /**
-   * This is the single specific dex file version of the loadComponents()
-   * @param dexFile
-   */
-  public boolean loadComponent(String dexFile) {
-    File component = new File(dexFile);
-    if (!component.exists()) {
-      return false;
-    }
-    if (!component.getName().endsWith(".jar")) {
-      return  false;
-    }
-    // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir(component.getParentFile().getName(), activeForm.$context().MODE_PRIVATE);
-    // Current Thread Class Loader
-    ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
-    DexClassLoader dexCloader = new DexClassLoader(component.getAbsolutePath(), dexOutput.getAbsolutePath(),
-            null, parentClassLoader);
+    DexClassLoader dexCloader = new DexClassLoader(sb.substring(1), dexOutput.getAbsolutePath(),
+        null, parentClassLoader);
     Thread.currentThread().setContextClassLoader(dexCloader);
-    return true;
+    Log.d("ReplForm", Thread.currentThread().toString());
+    Log.d("ReplForm", Looper.getMainLooper().getThread().toString());
+    Looper.getMainLooper().getThread().setContextClassLoader(dexCloader);
   }
 
   private String genReportId() {

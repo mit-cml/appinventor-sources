@@ -166,7 +166,7 @@ public final class DragSourceSupport implements MouseListener {
             sel.removeAllRanges();
           }
           if (sel.collapse) {
-            sel.collapse();
+            sel.collapse(null, 0);
           }
         }
       }

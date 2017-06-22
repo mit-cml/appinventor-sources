@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -29,7 +30,9 @@ import com.google.appinventor.components.runtime.Form;
 public class PackageInstaller {
 
   private static final String LOG_TAG = "PackageInstaller(AppInventor)";
-  private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
+  private static final String REPL_ASSET_DIR =
+    Environment.getExternalStorageDirectory().getAbsolutePath() +
+    "/AppInventor/assets/";
 
   // We don't instantiate this, we just have static methods
   private PackageInstaller() {

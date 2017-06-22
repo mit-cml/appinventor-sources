@@ -492,7 +492,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             String packageName = name.substring(0, name.lastIndexOf('.'));
             if (!externalCollections.containsKey(packageName)) {
               externalCollections.put(packageName, new HashSet<String>());
-             }
+            }
             externalCollections.get(packageName).add(name);
             name = packageName;
             if (!externalComponents.contains(name)) {
@@ -565,6 +565,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
                   ode.updateModificationDate(node.getProjectId(), date);
                 }
               }
+              // Change in extensions requires companion refresh
+              YaBlocksEditor.resendExtensionsList();
             }
           });
     }
@@ -646,6 +648,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editors.formEditor.onComponentTypeAdded(componentTypes);
       editors.blocksEditor.onComponentTypeAdded(componentTypes);
     }
+    // Change of extensions...
+    YaBlocksEditor.resendAssetsAndExtensions();
   }
 
   @Override
@@ -658,7 +662,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       packageName = packageName.substring(0, packageName.lastIndexOf('.'));
       if (externalCollections.containsKey(packageName)) {
         for (String siblingType : externalCollections.get(packageName)) {
-          componentTypes.add(siblingType.substring(siblingType.lastIndexOf('.') + 1));
+          String siblingName = siblingType.substring(siblingType.lastIndexOf('.') + 1);
+          if (!removedTypes.contains(siblingName)) {
+            componentTypes.add(siblingName);
+          }
         }
       }
     }
