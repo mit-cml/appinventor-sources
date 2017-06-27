@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_appengine" default="compile.module.appengine">
+  <dirname property="module.appengine.basedir" file="${ant.file.module_appengine}"/>
+  
+  <property name="module.jdk.home.appengine" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.appengine" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.appengine" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.appengine" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="appengine.output.dir" value="${module.appengine.basedir}/../out/production/appengine"/>
+  <property name="appengine.testoutput.dir" value="${module.appengine.basedir}/../out/test/appengine"/>
+  
+  <path id="appengine.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="appengine.module.production.classpath">
+    <path refid="${module.jdk.classpath.appengine}"/>
+    <path refid="library.user.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.jsp.classpath"/>
+    <path refid="library.jsr305.classpath"/>
+    <path refid="library.objectify-3.1.classpath"/>
+    <path refid="library.keyczar.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.v21.classpath"/>
+    <path refid="library.junit-addons-1.4.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.commons-fileupload-1.2.2.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.v11.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.lib4.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.appengine-testing.classpath"/>
+    <path refid="library.impl.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.build1.classpath"/>
+    <path refid="library.ext.classpath"/>
+    <path refid="library.owasp-java-html-sanitizer-20160628.1.classpath"/>
+    <path refid="library.gwt-dnd-3.2.3.classpath"/>
+    <path refid="library.orm1.classpath"/>
+    <path refid="library.gwt-incubator-20101117-r1766.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.shared.classpath"/>
+    <path refid="library.gwtquery-1.5-beta1.classpath"/>
+    <path refid="library.v13.classpath"/>
+    <path refid="library.lib1.classpath"/>
+    <path refid="library.responderiq-test.classpath"/>
+    <path refid="library.v1.classpath"/>
+    <path refid="library.v2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.orm.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="appengine.runtime.production.module.classpath">
+    <pathelement location="${appengine.output.dir}"/>
+    <path refid="library.user.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.jsp.classpath"/>
+    <path refid="library.jsr305.classpath"/>
+    <path refid="library.objectify-3.1.classpath"/>
+    <path refid="library.keyczar.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.v21.classpath"/>
+    <path refid="library.junit-addons-1.4.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.commons-fileupload-1.2.2.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.v11.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.lib4.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.appengine-testing.classpath"/>
+    <path refid="library.impl.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.build1.classpath"/>
+    <path refid="library.ext.classpath"/>
+    <path refid="library.owasp-java-html-sanitizer-20160628.1.classpath"/>
+    <path refid="library.gwt-dnd-3.2.3.classpath"/>
+    <path refid="library.orm1.classpath"/>
+    <path refid="library.gwt-incubator-20101117-r1766.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.shared.classpath"/>
+    <path refid="library.gwtquery-1.5-beta1.classpath"/>
+    <path refid="library.v13.classpath"/>
+    <path refid="library.lib1.classpath"/>
+    <path refid="library.responderiq-test.classpath"/>
+    <path refid="library.v1.classpath"/>
+    <path refid="library.v2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.orm.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="common.runtime.production.module.classpath"/>
+    <path refid="build.runtime.production.module.classpath"/>
+    <path refid="components.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="appengine.module.classpath">
+    <path refid="${module.jdk.classpath.appengine}"/>
+    <pathelement location="${appengine.output.dir}"/>
+    <path refid="library.user.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.jsp.classpath"/>
+    <path refid="library.jsr305.classpath"/>
+    <path refid="library.objectify-3.1.classpath"/>
+    <path refid="library.keyczar.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.v21.classpath"/>
+    <path refid="library.junit-addons-1.4.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.commons-fileupload-1.2.2.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.v11.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.lib4.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.appengine-testing.classpath"/>
+    <path refid="library.impl.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.build1.classpath"/>
+    <path refid="library.ext.classpath"/>
+    <path refid="library.owasp-java-html-sanitizer-20160628.1.classpath"/>
+    <path refid="library.gwt-dnd-3.2.3.classpath"/>
+    <path refid="library.orm1.classpath"/>
+    <path refid="library.gwt-incubator-20101117-r1766.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.shared.classpath"/>
+    <path refid="library.gwtquery-1.5-beta1.classpath"/>
+    <path refid="library.v13.classpath"/>
+    <path refid="library.lib1.classpath"/>
+    <path refid="library.responderiq-test.classpath"/>
+    <path refid="library.v1.classpath"/>
+    <path refid="library.v2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.orm.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.testoutput.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+    <pathelement location="${components.testoutput.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="appengine.runtime.module.classpath">
+    <pathelement location="${appengine.testoutput.dir}"/>
+    <pathelement location="${appengine.output.dir}"/>
+    <path refid="library.user.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.jsp.classpath"/>
+    <path refid="library.jsr305.classpath"/>
+    <path refid="library.objectify-3.1.classpath"/>
+    <path refid="library.keyczar.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.v21.classpath"/>
+    <path refid="library.junit-addons-1.4.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.commons-fileupload-1.2.2.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.v11.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.lib4.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.appengine-testing.classpath"/>
+    <path refid="library.impl.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.build1.classpath"/>
+    <path refid="library.ext.classpath"/>
+    <path refid="library.owasp-java-html-sanitizer-20160628.1.classpath"/>
+    <path refid="library.gwt-dnd-3.2.3.classpath"/>
+    <path refid="library.orm1.classpath"/>
+    <path refid="library.gwt-incubator-20101117-r1766.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.shared.classpath"/>
+    <path refid="library.gwtquery-1.5-beta1.classpath"/>
+    <path refid="library.v13.classpath"/>
+    <path refid="library.lib1.classpath"/>
+    <path refid="library.responderiq-test.classpath"/>
+    <path refid="library.v1.classpath"/>
+    <path refid="library.v2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.orm.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="common.runtime.module.classpath"/>
+    <path refid="build.runtime.module.classpath"/>
+    <path refid="components.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.appengine">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.appengine">
+    <patternset refid="excluded.from.module.appengine"/>
+  </patternset>
+  
+  <path id="appengine.module.sourcepath">
+    <dirset dir="${module.appengine.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="appengine.module.test.sourcepath">
+    <dirset dir="${module.appengine.basedir}">
+      <include name="tests"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.appengine" depends="compile.module.appengine.production,compile.module.appengine.tests" description="Compile module appengine"/>
+  
+  <target name="compile.module.appengine.production" depends="register.custom.compilers,compile.module.common,compile.module.build,compile.module.components" description="Compile module appengine; production classes">
+    <mkdir dir="${appengine.output.dir}"/>
+    <javac2 destdir="${appengine.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.appengine}/javac">
+      <compilerarg line="${compiler.args.appengine}"/>
+      <bootclasspath refid="appengine.module.bootclasspath"/>
+      <classpath refid="appengine.module.production.classpath"/>
+      <src refid="appengine.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.appengine"/>
+    </javac2>
+    
+    <copy todir="${appengine.output.dir}">
+      <fileset dir="${module.appengine.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.appengine.tests" depends="register.custom.compilers,compile.module.appengine.production" description="compile module appengine; test classes" unless="skip.tests">
+    <mkdir dir="${appengine.testoutput.dir}"/>
+    <javac2 destdir="${appengine.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.appengine}/javac">
+      <compilerarg line="${compiler.args.appengine}"/>
+      <bootclasspath refid="appengine.module.bootclasspath"/>
+      <classpath refid="appengine.module.classpath"/>
+      <src refid="appengine.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.appengine"/>
+    </javac2>
+    
+    <copy todir="${appengine.testoutput.dir}">
+      <fileset dir="${module.appengine.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.appengine" description="cleanup module">
+    <delete dir="${appengine.output.dir}"/>
+    <delete dir="${appengine.testoutput.dir}"/>
+  </target>
+</project>

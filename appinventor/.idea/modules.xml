@@ -2,7 +2,16 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/appinventor.iml" filepath="$PROJECT_DIR$/.idea/appinventor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/build/components/ComponentTranslation/ComponentTranslation.iml" filepath="$PROJECT_DIR$/build/components/ComponentTranslation/ComponentTranslation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aimerger/aimerger.iml" filepath="$PROJECT_DIR$/aimerger/aimerger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aimerger_for_appinv_classic/aimerger_for_appinv_classic.iml" filepath="$PROJECT_DIR$/aimerger_for_appinv_classic/aimerger_for_appinv_classic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appengine/appengine.iml" filepath="$PROJECT_DIR$/appengine/appengine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/blocklyeditor/blocklyeditor.iml" filepath="$PROJECT_DIR$/blocklyeditor/blocklyeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/build/build.iml" filepath="$PROJECT_DIR$/common/build/build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/buildserver/buildserver.iml" filepath="$PROJECT_DIR$/buildserver/buildserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/components/build/classes/classes.iml" filepath="$PROJECT_DIR$/components/build/classes/classes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/components/components.iml" filepath="$PROJECT_DIR$/components/components.iml" />
     </modules>
   </component>
 </project>

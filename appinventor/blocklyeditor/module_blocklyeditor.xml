@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_blocklyeditor" default="compile.module.blocklyeditor">
+  <dirname property="module.blocklyeditor.basedir" file="${ant.file.module_blocklyeditor}"/>
+  
+  <property name="module.jdk.home.blocklyeditor" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.blocklyeditor" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.blocklyeditor" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.blocklyeditor" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="blocklyeditor.output.dir" value="${module.blocklyeditor.basedir}/../out/production/blocklyeditor"/>
+  <property name="blocklyeditor.testoutput.dir" value="${module.blocklyeditor.basedir}/../out/test/blocklyeditor"/>
+  
+  <path id="blocklyeditor.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="blocklyeditor.module.production.classpath">
+    <path refid="${module.jdk.classpath.blocklyeditor}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="blocklyeditor.runtime.production.module.classpath">
+    <pathelement location="${blocklyeditor.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="common.runtime.production.module.classpath"/>
+    <path refid="components.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="blocklyeditor.module.classpath">
+    <path refid="${module.jdk.classpath.blocklyeditor}"/>
+    <pathelement location="${blocklyeditor.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${components.testoutput.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="blocklyeditor.runtime.module.classpath">
+    <pathelement location="${blocklyeditor.testoutput.dir}"/>
+    <pathelement location="${blocklyeditor.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="common.runtime.module.classpath"/>
+    <path refid="components.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.blocklyeditor">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.blocklyeditor">
+    <patternset refid="excluded.from.module.blocklyeditor"/>
+  </patternset>
+  
+  <path id="blocklyeditor.module.test.sourcepath">
+    <dirset dir="${module.blocklyeditor.basedir}">
+      <include name="tests"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.blocklyeditor" depends="compile.module.blocklyeditor.production,compile.module.blocklyeditor.tests" description="Compile module blocklyeditor"/>
+  
+  <target name="compile.module.blocklyeditor.production" depends="register.custom.compilers,compile.module.common,compile.module.components" description="Compile module blocklyeditor; production classes"/>
+  
+  <target name="compile.module.blocklyeditor.tests" depends="register.custom.compilers,compile.module.blocklyeditor.production" description="compile module blocklyeditor; test classes" unless="skip.tests">
+    <mkdir dir="${blocklyeditor.testoutput.dir}"/>
+    <javac2 destdir="${blocklyeditor.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.blocklyeditor}/javac">
+      <compilerarg line="${compiler.args.blocklyeditor}"/>
+      <bootclasspath refid="blocklyeditor.module.bootclasspath"/>
+      <classpath refid="blocklyeditor.module.classpath"/>
+      <src refid="blocklyeditor.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.blocklyeditor"/>
+    </javac2>
+    
+    <copy todir="${blocklyeditor.testoutput.dir}">
+      <fileset dir="${module.blocklyeditor.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.blocklyeditor" description="cleanup module">
+    <delete dir="${blocklyeditor.output.dir}"/>
+    <delete dir="${blocklyeditor.testoutput.dir}"/>
+  </target>
+</project>

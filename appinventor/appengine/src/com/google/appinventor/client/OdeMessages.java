@@ -6364,4 +6364,16 @@ public interface OdeMessages extends Messages {
   @Description("")
   String reloadWindow();
 
+  @DefaultMessage("Sync Scheduler Component")
+  @Description("")
+  String syncSchedulerComponentPallette();
+
+  @DefaultMessage("Sync Scheduler Component")
+  @Description("")
+  String SyncSchedulerHelpStringComponentPallette();
+
+  @DefaultMessage("Sync Scheduler Component")
+  @Description("")
+  String scheduleSyncMethods();
+
 }

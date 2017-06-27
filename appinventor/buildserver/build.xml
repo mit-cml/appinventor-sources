@@ -86,6 +86,10 @@
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
+    <copy toFile="${classes.files.dir}/android-job.jar" file="${lib.dir}/evernote/android-job-1.1.11.jar" />
+    <copy toFile="${classes.files.dir}/catLog.jar" file="${lib.dir}/catLog/cat-1.0.5.jar" />
+    <copy toFile="${classes.files.dir}/android-support-v4.jar" file="${lib.dir}/android/extras/android-support-v4-22.0.0.jar" />
+    <copy toFile="${classes.files.dir}/android-support-annotations.jar" file="${lib.dir}/android/extras/support-annotations-25.2.0.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />

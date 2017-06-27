@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_components" default="compile.module.components">
+  <dirname property="module.components.basedir" file="${ant.file.module_components}"/>
+  
+  <property name="module.jdk.home.components" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.components" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.components" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.components" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="components.output.dir" value="${module.components.basedir}/../out/production/components"/>
+  <property name="components.testoutput.dir" value="${module.components.basedir}/../out/test/components"/>
+  
+  <path id="components.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="components.module.production.classpath">
+    <path refid="${module.jdk.classpath.components}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.twitter.classpath"/>
+    <path refid="library.tl4j-junit4-1.1.3.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.apache-http.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.evernote.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.oauth.classpath"/>
+    <path refid="library.acra-4.4.0.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.classes.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.qrgenerator.classpath"/>
+    <path refid="library.fusiontables.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+  </path>
+  
+  <path id="components.runtime.production.module.classpath">
+    <pathelement location="${components.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.twitter.classpath"/>
+    <path refid="library.tl4j-junit4-1.1.3.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.apache-http.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.evernote.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.oauth.classpath"/>
+    <path refid="library.acra-4.4.0.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.classes.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.qrgenerator.classpath"/>
+    <path refid="library.fusiontables.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="common.runtime.production.module.classpath"/>
+    <path refid="build.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="components.module.classpath">
+    <path refid="${module.jdk.classpath.components}"/>
+    <pathelement location="${components.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.twitter.classpath"/>
+    <path refid="library.tl4j-junit4-1.1.3.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.apache-http.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.evernote.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.oauth.classpath"/>
+    <path refid="library.acra-4.4.0.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.classes.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.qrgenerator.classpath"/>
+    <path refid="library.fusiontables.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.testoutput.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+  </path>
+  
+  <path id="components.runtime.module.classpath">
+    <pathelement location="${components.testoutput.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.twitter.classpath"/>
+    <path refid="library.tl4j-junit4-1.1.3.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.json.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.apache-http.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.firebase.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.powermock.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.evernote.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.oauth.classpath"/>
+    <path refid="library.acra-4.4.0.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.classes.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.gcs.classpath"/>
+    <path refid="library.qrgenerator.classpath"/>
+    <path refid="library.fusiontables.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="common.runtime.module.classpath"/>
+    <path refid="build.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.components">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.components">
+    <patternset refid="excluded.from.module.components"/>
+  </patternset>
+  
+  <path id="components.module.sourcepath">
+    <dirset dir="${module.components.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="components.module.test.sourcepath">
+    <dirset dir="${module.components.basedir}">
+      <include name="tests"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.components" depends="compile.module.components.production,compile.module.components.tests" description="Compile module components"/>
+  
+  <target name="compile.module.components.production" depends="register.custom.compilers,compile.module.common,compile.module.build" description="Compile module components; production classes">
+    <mkdir dir="${components.output.dir}"/>
+    <javac2 destdir="${components.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.components}/javac">
+      <compilerarg line="${compiler.args.components}"/>
+      <bootclasspath refid="components.module.bootclasspath"/>
+      <classpath refid="components.module.production.classpath"/>
+      <src refid="components.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.components"/>
+    </javac2>
+    
+    <copy todir="${components.output.dir}">
+      <fileset dir="${module.components.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.components.tests" depends="register.custom.compilers,compile.module.components.production" description="compile module components; test classes" unless="skip.tests">
+    <mkdir dir="${components.testoutput.dir}"/>
+    <javac2 destdir="${components.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.components}/javac">
+      <compilerarg line="${compiler.args.components}"/>
+      <bootclasspath refid="components.module.bootclasspath"/>
+      <classpath refid="components.module.classpath"/>
+      <src refid="components.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.components"/>
+    </javac2>
+    
+    <copy todir="${components.testoutput.dir}">
+      <fileset dir="${module.components.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.components" description="cleanup module">
+    <delete dir="${components.output.dir}"/>
+    <delete dir="${components.testoutput.dir}"/>
+  </target>
+</project>

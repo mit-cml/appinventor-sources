@@ -132,7 +132,7 @@
         <!-- firebase libs -->
         <pathelement location="lib/firebase/firebase-client-android-2.2.4.jar" />
         <!-- evernote libs -->
-        <pathelement location="lib/evernote/android-job-1.1.11.jar" />
+        <pathelement location="lib//evernote/android-job-1.1.11.jar" />
         <!-- acra -->
         <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->

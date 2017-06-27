@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_buildserver" default="compile.module.buildserver">
+  <dirname property="module.buildserver.basedir" file="${ant.file.module_buildserver}"/>
+  
+  <property name="module.jdk.home.buildserver" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.buildserver" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.buildserver" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.buildserver" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="buildserver.output.dir" value="${module.buildserver.basedir}/../out/production/buildserver"/>
+  <property name="buildserver.testoutput.dir" value="${module.buildserver.basedir}/../out/test/buildserver"/>
+  
+  <path id="buildserver.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="buildserver.module.production.classpath">
+    <path refid="${module.jdk.classpath.buildserver}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.tools.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.commons-io-2.0.1.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.args4j-2.0.18.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="buildserver.runtime.production.module.classpath">
+    <pathelement location="${buildserver.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.tools.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.commons-io-2.0.1.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.args4j-2.0.18.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="common.runtime.production.module.classpath"/>
+    <path refid="build.runtime.production.module.classpath"/>
+    <path refid="components.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="buildserver.module.classpath">
+    <path refid="${module.jdk.classpath.buildserver}"/>
+    <pathelement location="${buildserver.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.tools.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.commons-io-2.0.1.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.args4j-2.0.18.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <pathelement location="${build.testoutput.dir}"/>
+    <pathelement location="${build.output.dir}"/>
+    <pathelement location="${components.testoutput.dir}"/>
+    <pathelement location="${components.output.dir}"/>
+  </path>
+  
+  <path id="buildserver.runtime.module.classpath">
+    <pathelement location="${buildserver.testoutput.dir}"/>
+    <pathelement location="${buildserver.output.dir}"/>
+    <path refid="library.kawa-1.11-modified.classpath"/>
+    <path refid="library.components.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.tools.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.commons-io-2.0.1.classpath"/>
+    <path refid="library.guava.classpath"/>
+    <path refid="library.2.8-patched.classpath"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.common.classpath"/>
+    <path refid="library.args4j-2.0.18.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="common.runtime.module.classpath"/>
+    <path refid="build.runtime.module.classpath"/>
+    <path refid="components.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.buildserver">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.buildserver">
+    <patternset refid="excluded.from.module.buildserver"/>
+  </patternset>
+  
+  <path id="buildserver.module.sourcepath">
+    <dirset dir="${module.buildserver.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="buildserver.module.test.sourcepath">
+    <dirset dir="${module.buildserver.basedir}">
+      <include name="tests"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.buildserver" depends="compile.module.buildserver.production,compile.module.buildserver.tests" description="Compile module buildserver"/>
+  
+  <target name="compile.module.buildserver.production" depends="register.custom.compilers,compile.module.common,compile.module.build,compile.module.components" description="Compile module buildserver; production classes">
+    <mkdir dir="${buildserver.output.dir}"/>
+    <javac2 destdir="${buildserver.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.buildserver}/javac">
+      <compilerarg line="${compiler.args.buildserver}"/>
+      <bootclasspath refid="buildserver.module.bootclasspath"/>
+      <classpath refid="buildserver.module.production.classpath"/>
+      <src refid="buildserver.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.buildserver"/>
+    </javac2>
+    
+    <copy todir="${buildserver.output.dir}">
+      <fileset dir="${module.buildserver.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.buildserver.tests" depends="register.custom.compilers,compile.module.buildserver.production" description="compile module buildserver; test classes" unless="skip.tests">
+    <mkdir dir="${buildserver.testoutput.dir}"/>
+    <javac2 destdir="${buildserver.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.buildserver}/javac">
+      <compilerarg line="${compiler.args.buildserver}"/>
+      <bootclasspath refid="buildserver.module.bootclasspath"/>
+      <classpath refid="buildserver.module.classpath"/>
+      <src refid="buildserver.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.buildserver"/>
+    </javac2>
+    
+    <copy todir="${buildserver.testoutput.dir}">
+      <fileset dir="${module.buildserver.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.buildserver" description="cleanup module">
+    <delete dir="${buildserver.output.dir}"/>
+    <delete dir="${buildserver.testoutput.dir}"/>
+  </target>
+</project>
