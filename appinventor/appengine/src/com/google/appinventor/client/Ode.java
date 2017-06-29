@@ -29,6 +29,7 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -923,7 +924,7 @@ public class Ode implements EntryPoint {
     mainPanel.add(topPanel, DockPanel.NORTH);
 
     // Create the Tutorial Panel
-    tutorialPanel = new Frame("");
+    tutorialPanel = new TutorialPanel();
     tutorialPanel.setWidth("100%");
     tutorialPanel.setHeight("100%");
     // Initially we do not display it. If the project we load has
