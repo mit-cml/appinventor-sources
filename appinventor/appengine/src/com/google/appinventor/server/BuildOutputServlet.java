@@ -20,6 +20,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -82,8 +83,11 @@ public class BuildOutputServlet extends OdeServlet {
       }
       downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), null);
 
-    } catch (IllegalArgumentException e) {
-      throw CrashReport.createAndLogError(LOG, req, "nonceValue=" + nonceValue, e);
+    } catch (FileNotFoundException e) {
+      // This can happen if a new build is running while an attempt is made to download
+      // a previous built version of the project
+      resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
     }
 
     String fileName = downloadableFile.getFileName();

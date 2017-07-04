@@ -15,6 +15,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public final class FileExporterImpl implements FileExporter {
       }
     }
 
-    throw new IllegalArgumentException("No files to download");
+    throw new FileNotFoundException("No files to download");
   }
 
   @Override
