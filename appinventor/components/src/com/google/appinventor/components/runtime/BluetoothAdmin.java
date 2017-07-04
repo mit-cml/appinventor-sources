@@ -56,7 +56,7 @@ public class BluetoothAdmin extends AndroidNonvisibleComponent implements Compon
         return this.useCodes;
     }
 
-    @DesignerProperty(defaultValue = "false", editorType = "boolean")
+    @DesignerProperty(defaultValue = "False", editorType = "boolean")
     @SimpleProperty
     public void UseCodes(boolean useCodes) {
         this.useCodes = useCodes;
