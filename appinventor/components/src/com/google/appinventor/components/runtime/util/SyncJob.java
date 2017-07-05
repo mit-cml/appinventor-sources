@@ -5,7 +5,9 @@ import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
 
 /**
- * Created by Joy on 6/21/17.
+ * The class manages the job that needs to be scheduled
+ *
+ * @author joymitro1989@gmail.com (Joydeep Mitra)
  */
 public class SyncJob extends Job {
 

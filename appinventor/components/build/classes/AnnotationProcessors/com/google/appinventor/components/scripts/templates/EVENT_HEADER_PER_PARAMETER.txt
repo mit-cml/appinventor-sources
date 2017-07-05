@@ -1,3 +1,0 @@
-    <BlockConnector label="%1$s" connector-kind="socket" connector-type="poly">
-      <DefaultArg genus-name="argument" label="%1$s"/>
-    </BlockConnector>
