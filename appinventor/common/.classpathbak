@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/guava/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/junit/junit-4.8.2.jar"/>
+	<classpathentry kind="output" path="build/classes/BlocksEditorHttpConstants"/>
+</classpath>

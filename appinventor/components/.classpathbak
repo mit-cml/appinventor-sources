@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="lib" path="build/AnnotationProcessors.jar"/>
+	<classpathentry kind="lib" path="build/ComponentProcessingLib.jar"/>
+	<classpathentry kind="lib" path="build/HtmlEntities.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/firebase/firebase-client-android-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/apache-http/httpcore-4.3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/apache-http/httpmime-4.3.4.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/acra/acra-4.4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/json/json.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/kawa/kawa-1.11-modified.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/QRGenerator/core.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-api-client-1.10.3-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-api-client-android2-1.10.3-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-http-client-1.10.3-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-http-client-android2-1.10.3-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-http-client-android3-1.10.3-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/oauth/google-oauth-client-1.10.1-beta.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/build/common/CommonVersion.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/fusiontables/fusiontables.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/junit/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/powermock/powermock-easymock-1.4.10-full.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/powermock/easymock-3.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/junit4/tl4j-junit4-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/osmdroid/osmdroid-5.3.jar" sourcepath="/Users/ewpatton/Programming/mit/osmdroid/osmdroid-android/src/main/java"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/androidsvg/androidsvg-d4ec6d8.jar" sourcepath="/Users/ewpatton/Programming/mit/androidsvg/androidsvg/src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/twitter/twitter4j-core-3.0.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ewpatton/Programming/mit/app-inventor-private/appinventor/lib/android/5.1.1/android.jar" sourcepath="/Android/sources/android-22"/>
+	<classpathentry kind="output" path="build/classes/AndroidRuntime"/>
+</classpath>

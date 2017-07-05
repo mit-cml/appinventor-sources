@@ -153,9 +153,16 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+        <pathelement location="${lib.dir}/jedis/target/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+        <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
-        <!-- <pathelement location="${lib.dir}/catLog/cat-1.0.5-sources.jar"/> -->
+        <!-- <<<<<<< HEAD
+                 <pathelement location="${lib.dir}/catLog/cat-1.0.5-sources.jar"/>
+=======
+	<pathelement location="${lib.dir}/redisson/redisson/deps/*.jar" />
+	<pathelement location="${lib.dir}/redisson/redisson/target/redisson-2.5.2-SNAPSHOT.jar" />
+>>>>>>> 5e647f111a0e20ab7576c33b7929d60553ac639d -->
       </classpath>
     </ai.javac5>
 
@@ -264,6 +271,8 @@
           <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+          <pathelement location="${lib.dir}/jedis/target/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+          <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
