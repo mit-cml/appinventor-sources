@@ -37,7 +37,7 @@ public class TutorialPanel extends Frame {
     	dialogBox.setAnimationEnabled(true);
     	VerticalPanel DialogBoxContents = new VerticalPanel();
     	// Adds Youtube Video
-    	HTML message = new HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" + tutorialId + "?rel=0\" frameborder=\"0\" allowfullscreen></iframe>");
+    	HTML message = new HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" + tutorialId + "?rel=0&autoplay=1\" frameborder=\"0\" allowfullscreen></iframe>");
     	message.setStyleName("DialogBox-message");
     	FlowPanel holder = new FlowPanel();
     	Button ok = new Button("Close");
