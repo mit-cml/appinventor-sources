@@ -333,8 +333,10 @@ public class GalleryClient {
     final long galleryId = gApp.getGalleryAppId();
 
     // first check name to see if valid and unique...
-    if (!TextValidators.checkNewProjectName(projectName))
+    if (!TextValidators.checkNewProjectName(projectName)){
+      popup.hide();
       return false;  // the above function takes care of error messages
+    }
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
 
