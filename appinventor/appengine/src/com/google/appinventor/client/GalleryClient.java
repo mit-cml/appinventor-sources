@@ -138,7 +138,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER, true)) {
             i.remove();
           }
         }
@@ -163,7 +163,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_FEATURED, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_FEATURED, refreshable)) {
             i.remove();
           }
         }
@@ -188,7 +188,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_TUTORIAL, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_TUTORIAL, refreshable)) {
             i.remove();
           }
         }
@@ -212,7 +212,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_RECENT, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_RECENT, refreshable)) {
             i.remove();
           }
         }
@@ -236,7 +236,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTLIKED, refreshable)) {
             i.remove();
           }
         }
@@ -261,7 +261,7 @@ public class GalleryClient {
       public void onSuccess(GalleryAppListResult appsResult) {
         // the server has returned us something
         for (Iterator<GalleryRequestListener> i = listeners.iterator(); i.hasNext();) {
-          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, false)) {
+          if (i.next().onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED, refreshable)) {
             i.remove();
           }
         }
