@@ -6088,10 +6088,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createWelcomeDialogText();
 
-  @DefaultMessage("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>")
-  @Description("")
-  String createWelcomeDialogMessage();
-
   @DefaultMessage("Continue")
   @Description("")
   String createWelcomeDialogButton();
