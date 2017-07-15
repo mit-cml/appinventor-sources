@@ -60,7 +60,7 @@ public class SyncScheduler extends AndroidNonvisibleComponent implements Compone
     public SyncScheduler(Form form){
         super(form);
         context = form.$context();
-        JobManager.create(context).addJobCreator(new MyJobCreator());
+        JobManager.create(context).addJobCreator(new MyJobCreator(context));
         /*Intent i = new Intent(context, MyJobCreator.AddJobCreatorReceiver.class);
         i.setAction("com.evernote.android.job.ADD_JOB_CREATOR");
         context.sendBroadcast(i);*/

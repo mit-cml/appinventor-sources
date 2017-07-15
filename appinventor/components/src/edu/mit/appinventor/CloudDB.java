@@ -7,11 +7,20 @@
 package edu.mit.appinventor;
 
 import android.app.Activity;
+import android.app.job.JobScheduler;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.util.Base64;
 import android.util.Log;
 
+import com.evernote.android.job.Job;
+import com.evernote.android.job.JobManager;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -30,9 +39,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.Notifier;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
-import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,29 +50,28 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Tuple;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
+
 
 
 /**
  * The CloudDB component stores and retrieves information in the Cloud using Redis, an
  * open source library. The component has methods to store a value under a tag and to
  * retrieve the value associated with the tag. It also possesses a listener to fire events
- * when stored values are changed.
+ * when stored values are changed. It also posseses a sync capability which helps CloudDB
+ * to sync with data collected offline.
  *
  * @author manting@mit.edu (Natalie Lao)
+ * @author joymitro1989@gmail.com (Joydeep Mitra)
  */
 
 @DesignerComponent(version = 0,
@@ -78,7 +84,7 @@ import redis.clients.jedis.exceptions.JedisException;
     iconName = "http://web.mit.edu/graeme/www/appinventor/cloudDB.png")
 //Natalie: Delete the (external=true) when not extension
 @SimpleObject(external=true)
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.ACCESS_NETWORK_STATE")
 @UsesLibraries(libraries = "jedis.jar")
 public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "CloudDB";
@@ -94,9 +100,15 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private static boolean persist = false;        // Whether or not we are in persistant mode
                                                  // where variables are kept when an app exits
                                                  // when off-line
+
   private Handler androidUIHandler;
   private final Activity activity;
   private CloudDBJedisListener childListener;
+
+  //added by Joydeep Mitra
+  private boolean sync = false;
+  private ConnectivityManager cm;
+  //-------------------------
 
   // ReturnVal -- Holder which can be used as a final value but whose content
   //              remains mutable.
@@ -142,6 +154,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
+    JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context()));
+    Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
     
     // Retrieve new posts as they are added to the CloudDB.
     Thread t = new Thread() {
@@ -159,6 +173,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     t.start();
     
     //Natalie: Need to add auth
+    cm = (ConnectivityManager) form.$context().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
   }
   
   /**
@@ -195,6 +210,20 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     if (accountName.equals("")){
       throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
+  }
+
+  /**
+   * Indicates whether CloudDB needs to be synced.
+   * @param sync
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "false")
+  @SimpleProperty(description = "Specifies if data stored in CloudDB needs to be synced", userVisible = false)
+  public void setSync(boolean sync){
+    Log.d(CloudDB.LOG_TAG,"setSync called with sync = " + sync);
+    this.sync = sync;
+    SyncJob.scheduleSync();
+
   }
   
   /**
@@ -239,6 +268,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     Log.i("CloudDB","PASSSSS");
 
     final String value;
+    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    boolean isConnected = networkInfo != null && networkInfo.isConnected();
     
     try {
       if (valueToStore != null) {
@@ -258,19 +289,31 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
-    Thread t = new Thread() {
-      public void run() {
-        Jedis jedis = getJedis();
-        try {
-          String statusCodeReply = jedis.set(accountName+projectID+tag, value);
-        } finally {
-          if (jedis != null) {
-            jedis.close();
+    if(isConnected){
+      Log.i("CloudDB","Device is online...");
+      Thread t = new Thread() {
+        public void run() {
+          Jedis jedis = getJedis();
+          try {
+            Log.i("CloudDB", "Before set is called...");
+            String statusCodeReply = jedis.set(accountName+projectID+tag, value);
+            Log.i("CloudDB", "Jedis Set Status = " + statusCodeReply);
+          } finally {
+            if (jedis != null) {
+              jedis.close();
+            }
           }
         }
-      }
-    };
-    t.start();
+      };
+      t.start();
+
+    }
+    else if(sync){
+      Log.i("CloudDB","Device is offline...");
+      Log.i("CloudDB","Proceed to cache data locally...");
+      sendValueTocache(tag,value);
+    }
+    Log.i("CloudDB", "End of StoreValue...");
   }
   
   /**
@@ -601,7 +644,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    *
    * Written by Jeff Schiller (jis) for the BinFile Extension
    *
-   * @param filename the filename to read
+   * @param fileName
    * @returns YailList the list of the file extension and contents
    */
   private YailList readFile(String fileName) {
@@ -696,5 +739,42 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     int dotIndex = fileName.lastIndexOf(".");
     return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
   }
-  
+
+  /*
+  Written by joymitro@gmail.com (Joydeep Mitra)
+  saves data to a local SQLiteDb when device is offline
+   */
+  public void sendValueTocache(final String tag, String value) {
+      try {
+          CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
+          SQLiteDatabase db = cloudDBCacheHelper.getWritableDatabase();
+
+          String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
+          String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
+          String[] selectionArgs = {tag};
+          Cursor cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+          if (cursor != null && cursor.getCount() > 0) {
+              //update existing key
+              ContentValues values = new ContentValues();
+              values.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
+              values.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG, 0);
+              String updtSelection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
+              String[] updtSelectionArgs = {tag};
+              db.update(CloudDBCache.Table1.TABLE_NAME, values, updtSelection, updtSelectionArgs);
+          } else {
+              //insert new key
+              ContentValues contentValues = new ContentValues();
+              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, tag);
+              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, 0);
+              db.insert(CloudDBCache.Table1.TABLE_NAME, null, contentValues);
+          }
+      } catch (Exception e) {
+          Log.d("CloudDB", "Error occurred while caching data locally...");
+          e.printStackTrace();
+      }
+
+  }
+
+
+
 }

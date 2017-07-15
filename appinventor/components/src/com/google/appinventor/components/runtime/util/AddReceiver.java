@@ -14,7 +14,7 @@ public final class AddReceiver extends JobCreator.AddJobCreatorReceiver {
     @Override
     protected void addJobCreator(Context context, JobManager manager) {
         android.util.Log.d(SyncJob.TAG,"AddReceiver called...");
-        manager.addJobCreator(new MyJobCreator());
+        manager.addJobCreator(new MyJobCreator(context));
         android.util.Log.d(SyncJob.TAG,"MyJobCreator added...");
     }
 }
