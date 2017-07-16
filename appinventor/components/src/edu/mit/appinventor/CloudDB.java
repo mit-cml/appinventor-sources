@@ -330,40 +330,33 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     checkAccountNameProjectIDNotBlank();
     
     final AtomicReference<Object> value = new AtomicReference<Object>();
+    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    boolean isConnected = networkInfo != null && networkInfo.isConnected();
 
-    // Set value to either the JSON from the CloudDB
-    // or the JSON representation of valueIfTagNotThere
-    Thread t = new Thread() {
-      public void run() {
-        Jedis jedis = getJedis();
-        try {
-          String returnValue = jedis.get(accountName+projectID+tag);
-          if (returnValue != null) {
-            try {
-              JSONArray valueJsonList = new JSONArray(returnValue);
-              List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
-              if (valueList.size() == 2) {
-                if (valueList.get(0).startsWith(".")) {
-                  String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
-                  System.out.println("Filename Written: " + filename);
-                  filename = filename.replace("file:/", "file:///");
-                  value.set(JsonUtil.getJsonRepresentation(filename));
-                } else {
-                  value.set(returnValue);
-                }
-              } else {
-                value.set(returnValue);
-              }
-            } catch(JSONException e) {
-              value.set(returnValue);
-            }
-          } else {
-            value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
-          }
-        } catch(JSONException e) {
-          throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
+    if(!isConnected){
+      /*
+      read from cache
+       */
+      try {
+        CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
+        SQLiteDatabase db = cloudDBCacheHelper.getWritableDatabase();
+
+        String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
+        String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
+        String[] selectionArgs = {tag};
+        Cursor cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        String val;
+        if (cursor != null && cursor.moveToNext()) {
+          Log.d(CloudDB.LOG_TAG,"cursor has values");
+          val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE)) + " from cache";
+          Log.d(CloudDB.LOG_TAG,"value retrieved = " + val);
+          value.set(val);
         }
-        
+        else {
+          Log.d(CloudDB.LOG_TAG,"cursor has no values");
+          value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+        }
+        Log.d(CloudDB.LOG_TAG,"value set successfully");
         androidUIHandler.post(new Runnable() {
           public void run() {
             // Signal an event to indicate that the value was
@@ -372,11 +365,59 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
             GotValue(tag, value.get());
           }
         });
-        
-        jedis.close();
+      } catch (Exception e) {
+        Log.d(CloudDB.LOG_TAG, "Error occurred while reading from cache...");
+        e.printStackTrace();
       }
-    };
-    t.start();
+    }
+    else{
+      // Set value to either the JSON from the CloudDB
+      // or the JSON representation of valueIfTagNotThere
+      Thread t = new Thread() {
+        public void run() {
+          Jedis jedis = getJedis();
+          try {
+            String returnValue = jedis.get(accountName+projectID+tag);
+            if (returnValue != null) {
+              try {
+                JSONArray valueJsonList = new JSONArray(returnValue);
+                List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
+                if (valueList.size() == 2) {
+                  if (valueList.get(0).startsWith(".")) {
+                    String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+                    System.out.println("Filename Written: " + filename);
+                    filename = filename.replace("file:/", "file:///");
+                    value.set(JsonUtil.getJsonRepresentation(filename));
+                  } else {
+                    value.set(returnValue);
+                  }
+                } else {
+                  value.set(returnValue);
+                }
+              } catch(JSONException e) {
+                value.set(returnValue);
+              }
+            } else {
+              value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+            }
+          } catch(JSONException e) {
+            throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
+          }
+
+          androidUIHandler.post(new Runnable() {
+            public void run() {
+              // Signal an event to indicate that the value was
+              // received.  We post this to run in the Application's main
+              // UI thread.
+              GotValue(tag, value.get());
+            }
+          });
+
+          jedis.close();
+        }
+      };
+      t.start();
+    }
   }
 
   @SimpleEvent(description = "Event triggered by the \"RemoveFirstFromList\" function. The " +
@@ -765,7 +806,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
               //insert new key
               ContentValues contentValues = new ContentValues();
               contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, tag);
-              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, 0);
+              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
+              contentValues.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,0);
               db.insert(CloudDBCache.Table1.TABLE_NAME, null, contentValues);
           }
       } catch (Exception e) {

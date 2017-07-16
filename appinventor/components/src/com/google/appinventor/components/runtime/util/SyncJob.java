@@ -46,8 +46,8 @@ public class SyncJob extends Job {
                 Jedis jedis = new Jedis("128.52.179.76", 6379);
                 jedis.auth("test6789");
                 while(cursor.moveToNext()){
-                    String key = cursor.getString(1);
-                    String value = cursor.getString(2);
+                    String key = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_KEY));
+                    String value = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE));
                     jedis.set(key,value);
                 }
                 /*
@@ -78,8 +78,8 @@ public class SyncJob extends Job {
     public static int scheduleSync(){
         Log.d(TAG,"SyncJob scheduleSync called ...");
         int jobId = new JobRequest.Builder(TAG).setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                //.setPeriodic(7_200_000L)
-                //.setExecutionWindow(30_000L, 40_000L)
+                //.setPeriodic(9_00_000L)
+                .setExecutionWindow(30_000L, 40_000L)
                 .setRequirementsEnforced(true)
                 .build()
                 .schedule();
