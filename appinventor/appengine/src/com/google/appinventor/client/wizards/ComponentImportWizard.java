@@ -112,7 +112,7 @@ public class ComponentImportWizard extends Wizard {
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
     tabPanel.add(fileUpload, MESSAGES.componentImportFromComputer());
-    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());
+    tabPanel.add(urlGrid, MESSAGES.componentImportFromUrl());
     tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
     tabPanel.addStyleName("ode-Tabpanel");
 
@@ -121,7 +121,7 @@ public class ComponentImportWizard extends Wizard {
 
     addPage(panel);
 
-    getConfirmButton().setText("Import");
+    getConfirmButton().setText(MESSAGES.componentImportConfirmButton());
 
     setPagePanelHeight(150);
     setPixelSize(200, 150);
@@ -218,7 +218,7 @@ public class ComponentImportWizard extends Wizard {
     TextBox urlTextBox = new TextBox();
     urlTextBox.setWidth("100%");
     Grid grid = new Grid(2, 1);
-    grid.setWidget(0, 0, new Label("Url:"));
+    grid.setWidget(0, 0, new Label(MESSAGES.componentImportUrlLabel()));
     grid.setWidget(1, 0, urlTextBox);
     return grid;
   }

@@ -608,12 +608,20 @@ public interface OdeMessages extends Messages {
   String confirmDeleteComponents(String componentNames);
 
   @DefaultMessage("From my computer")
-  @Description("")
+  @Description("For importing from local")
   String componentImportFromComputer();
 
-  @DefaultMessage("URL")
+  @DefaultMessage("From URL")
   @Description("For importing from a URL")
-  String componentImportFromURL();
+  String componentImportFromUrl();
+
+  @DefaultMessage("URL:")
+  @Description("URL label in component import wizard")
+  String componentImportUrlLabel();
+
+  @DefaultMessage("Import")
+  @Description("For the confirm button in component import wizard")
+  String componentImportConfirmButton();
 
   //Connect
   @DefaultMessage("Connect")
