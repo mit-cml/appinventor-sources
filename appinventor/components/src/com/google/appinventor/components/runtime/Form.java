@@ -1429,7 +1429,7 @@ public class Form extends Activity
   // This description won't appear as a tooltip, since there's no block, but we'll keep it with the source.
     description = "If false, lists will be converted to strings using Lisp "
       + "notation, i.e., as symbols separated by spaces, e.g., (a 1 b2 (c "
-      + "d). If true, lists will appear as in Json or Python, e.g.  [\"a\", 1, "
+      + "d)). If true, lists will appear as in Json or Python, e.g.  [\"a\", 1, "
       + "\"b\", 2, [\"c\", \"d\"]].  This property appears only in Screen 1, "
       + "and the value for Screen 1 determines the behavior for all "
       + "screens. The property defaults to \"false\" meaning that the App "
