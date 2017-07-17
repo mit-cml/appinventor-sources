@@ -1327,7 +1327,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     Blockly.Msg.REPL_VERIFYING_COMPANION = "檢查AI伴侶啟動狀態....";
     Blockly.Msg.REPL_CONNECT_TO_COMPANION = "連接到AI伴侶";
     Blockly.Msg.REPL_TRY_AGAIN1 = "無法連接AI伴侶，請重試。";
-    Blockly.Msg.REPL_YOUR_CODE_IS = "編碼為";
+    Blockly.Msg.REPL_YOUR_CODE_IS = "編碼為：";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "你真的要這麼做嗎？";
     Blockly.Msg.REPL_FACTORY_RESET = "這將使模擬器恢復出廠模式，如果此前升級過AI伴侶，則需要重新升級。";
 

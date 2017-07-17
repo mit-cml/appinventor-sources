@@ -1287,7 +1287,7 @@ Blockly.Msg.es.switch_language_to_spanish_es = {
     Blockly.Msg.REPL_VERIFYING_COMPANION = "Verificando que Companion se ha iniciado...";
     Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Conectado a Companion";
     Blockly.Msg.REPL_TRY_AGAIN1 = "La conexión con MIT AI2 Companion ha fallado, inténtalo de nuevo.";
-    Blockly.Msg.REPL_YOUR_CODE_IS = "Tu código es";
+    Blockly.Msg.REPL_YOUR_CODE_IS = "Tu código es:";
     Blockly.Msg.REPL_DO_YOU_REALLY_Q = "¿Estás totalmente seguro?";
     Blockly.Msg.REPL_FACTORY_RESET = 'Esto intentará devolver tu emulador a su estado “de fábrica”. Si habías actualizado Companion en el emulador, seguramente tendrás que hacerlo de nuevo.';
 
