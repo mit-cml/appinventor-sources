@@ -301,7 +301,7 @@ public class TopToolbar extends Composite {
       adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
           MESSAGES.switchToDebugMenuItem(), new SwitchToDebugAction()));
       adminItems.add(new DropDownItem(WIDGET_NAME_USER_ADMIN,
-          "User Admin", new SwitchToUserAdminAction()));
+          MESSAGES.userAdminMenuItem(), new SwitchToUserAdminAction()));
       adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminTabName(), adminItems,
           false);
       adminDropDown.setStyleName("ode-TopPanelButton");
@@ -731,7 +731,7 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       final DialogBox db = new DialogBox(false, true);
-      db.setText("About MIT App Inventor");
+      db.setText(MESSAGES.aboutWindowCaption());
       db.setStyleName("ode-DialogBox");
       db.setHeight("200px");
       db.setWidth("400px");
@@ -740,23 +740,28 @@ public class TopToolbar extends Composite {
       db.center();
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
-      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-          "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
-      Config config = Ode.getInstance().getSystemConfig();
+
+      Config config = Ode.getSystemConfig();
+
+      String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion());
+      html += "<br/>";
+      html += MESSAGES.companionVersion(BlocklyPanel.getCompVersion());
+
       String releaseNotesUrl = config.getReleaseNotesUrl();
       if (!Strings.isNullOrEmpty(releaseNotesUrl)) {
-        html += "<BR/><BR/>Please see <a href=\"" + releaseNotesUrl +
-            "\" target=\"_blank\">release notes</a>";
+        html += "<br/><br/>"
+             +  MESSAGES.aboutWindowSeeReleaseNotes(releaseNotesUrl);
       }
+
       String tosUrl = config.getTosUrl();
       if (!Strings.isNullOrEmpty(tosUrl)) {
-        html += "<BR/><BR/><a href=\"" + tosUrl +
-            "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
+        html += "<br/><br/>"
+             +  "<a href=\"" + tosUrl + "\" target=\"_blank\">" + MESSAGES.privacyTermsLink() + "</a>";
       }
       HTML message = new HTML(html);
 
       SimplePanel holder = new SimplePanel();
-      Button ok = new Button("Close");
+      Button ok = new Button(MESSAGES.hdrClose());
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           db.hide();
@@ -774,7 +779,7 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       final DialogBox db = new DialogBox(false, true);
-      db.setText("About The Companion");
+      db.setText(MESSAGES.aboutCompanionWindowCaption());
       db.setStyleName("ode-DialogBox");
       db.setHeight("200px");
       db.setWidth("400px");
@@ -782,20 +787,24 @@ public class TopToolbar extends Composite {
       db.setAnimationEnabled(true);
       db.center();
 
-      String downloadinfo = "";
+      String downloadInfo = "";
+
       if (!YaVersion.COMPANION_UPDATE_URL1.equals("")) {
         String url = "http://" + Window.Location.getHost() + YaVersion.COMPANION_UPDATE_URL1;
-        downloadinfo = "<br/>\n<a href=" + url + ">Download URL: " + url + "</a><br/>\n";
-        downloadinfo += BlocklyPanel.getQRCode(url);
+        downloadInfo = "<br/>";
+        downloadInfo += MESSAGES.companionDownloadInfo(url);
+        downloadInfo += "<br/>";
+        downloadInfo += BlocklyPanel.getQRCode(url);
       }
 
       VerticalPanel DialogBoxContents = new VerticalPanel();
       HTML message = new HTML(
-          "Companion Version " + BlocklyPanel.getCompVersion() + downloadinfo
+              MESSAGES.companionVersion(BlocklyPanel.getCompVersion())
+              + downloadInfo
       );
 
       SimplePanel holder = new SimplePanel();
-      Button ok = new Button("Close");
+      Button ok = new Button(MESSAGES.hdrClose());
       ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           db.hide();

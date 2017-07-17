@@ -424,10 +424,6 @@ public interface OdeMessages extends Messages {
 
   // Used in StatusPanel.java
 
-  @DefaultMessage("Built: {0}  Version: {1}")
-  @Description("Label showing the ant build date and the git version")
-  String gitBuildId(String date, String version);
-
   @DefaultMessage("Privacy")
   @Description("Label of the link for Privacy")
   String privacyLink();
@@ -439,6 +435,32 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Privacy Policy and Terms of Use")
   @Description("Label of the link for Privacy and Terms of Use")
   String privacyTermsLink();
+
+  // Used in TopToolbar.java
+
+  @DefaultMessage("About The Companion")
+  @Description("")
+  String aboutCompanionWindowCaption();
+
+  @DefaultMessage("Companion Version: {0}")
+  @Description("")
+  String companionVersion(String version);
+
+  @DefaultMessage("<a href=\"{0}\">Download URL: {0}</a>")
+  @Description("")
+  String companionDownloadInfo(String downloadLink);
+
+  @DefaultMessage("About MIT App Inventor")
+  @Description("")
+  String aboutWindowCaption();
+
+  @DefaultMessage("Built: {0}  Version: {1}")
+  @Description("Label showing the ant build date and the git version")
+  String gitBuildId(String date, String version);
+
+  @DefaultMessage("Please see <a href=\"{0}\" target=\"_blank\">release notes</a>")
+  @Description("")
+  String aboutWindowSeeReleaseNotes(String link);
 
   // Used in TopPanel.java
 
@@ -720,6 +742,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Switch To Debug Panel")
   @Description("Label of the button for admins to switch to the debug panel without an explicit error")
   String switchToDebugMenuItem();
+
+  @DefaultMessage("User Admin")
+  @Description("Label of the button for admins to add user or edit existing user's info")
+  String userAdminMenuItem();
 
   //Tabs
   @DefaultMessage("My Projects")
