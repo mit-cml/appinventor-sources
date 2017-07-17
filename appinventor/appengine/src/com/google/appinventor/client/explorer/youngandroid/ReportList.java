@@ -7,8 +7,6 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -290,7 +288,7 @@ public class ReportList extends Composite  {
 
       deactiveAppButton = new Button(MESSAGES.labelDeactivateApp());
 
-      markAsResolvedButton = new Button(MESSAGES.labelmarkAsResolved());
+      markAsResolvedButton = new Button(MESSAGES.labelMarkAsResolved());
 
       seeAllActions = new Button(MESSAGES.labelSeeAllActions());
     }
@@ -436,10 +434,10 @@ public class ReportList extends Composite  {
     });
 
     if(r.getResolved()){                                                //report was unresolved, now resolved
-      rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsUnresolved());//revert button
+      rw.markAsResolvedButton.setText(MESSAGES.labelMarkAsUnresolved());//revert button
       rw.appResolved = true;
     }else{                                                              //report was resolved, now unresolved
-      rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsResolved());  //revert button
+      rw.markAsResolvedButton.setText(MESSAGES.labelMarkAsResolved());  //revert button
       rw.appResolved = false;
     }
     rw.markAsResolvedButton.addClickHandler(new ClickHandler() {
@@ -453,13 +451,13 @@ public class ReportList extends Composite  {
               if(success){
                 if(r.getResolved()){//current status was resolved
                   r.setResolved(false);
-                  rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsResolved());//revert button
+                  rw.markAsResolvedButton.setText(MESSAGES.labelMarkAsResolved());//revert button
                   rw.appResolved = false;
                   storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
                       GalleryModerationAction.MARKASUNRESOLVED, null);
                 }else{//current status was unResolved
                   r.setResolved(true);
-                  rw.markAsResolvedButton.setText(MESSAGES.labelmarkAsUnresolved());//revert button
+                  rw.markAsResolvedButton.setText(MESSAGES.labelMarkAsUnresolved());//revert button
                   rw.appResolved = true;
                   storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
                       GalleryModerationAction.MARKASRESOLVED, null);

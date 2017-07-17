@@ -252,11 +252,11 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Mark As Resolved")
   @Description("Label of the Mark As Resolved of reportlist")
-  String labelmarkAsResolved();
+  String labelMarkAsResolved();
 
   @DefaultMessage("Mark As Unresolved")
   @Description("Label of the Mark As Unresolved of reportlist")
-  String labelmarkAsUnresolved();
+  String labelMarkAsUnresolved();
 
   @DefaultMessage("Previous Actions")
   @Description("Label of the See All Actions of reportlist")
