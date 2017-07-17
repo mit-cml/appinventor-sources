@@ -2086,17 +2086,13 @@ public interface OdeMessages extends Messages {
   @Description("More Apps Text")
   String galleryMoreApps();
 
-  @DefaultMessage("search for \"")
-  @Description("Search Results Prefix")
-  String gallerySearchResultsPrefix();
+  @DefaultMessage("search for \"{0}\" returned {1} results")
+  @Description("Search results")
+  String gallerySearchResults(String keyword, int num);
 
-  @DefaultMessage("\" returned ")
-  @Description("Search Results Infix")
-  String gallerySearchResultsInfix();
-
-  @DefaultMessage(" results")
-  @Description("Search Results Suffix")
-  String gallerySearchResultsSuffix();
+  @DefaultMessage("{0} results")
+  @Description("General search results")
+  String gallerySearchGeneralResults(int num);
 
   @DefaultMessage("Server error: gallery cannot be accessed")
   @Description("Error message reported when the gallery cannot be accessed.")

@@ -585,7 +585,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
      * @param num number of results
      */
     public void setKeywordTotalResultsLabel(String keyword, int num){
-       keywordTotalResultsLabel.setText(MESSAGES.gallerySearchResultsPrefix() + keyword + MESSAGES.gallerySearchResultsInfix() + num + MESSAGES.gallerySearchResultsSuffix());
+       keywordTotalResultsLabel.setText(MESSAGES.gallerySearchResults(keyword, num));
     }
 
     /**
@@ -600,7 +600,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
      * @param num number of results
      */
     public void setGeneralTotalResultsLabel(int num){
-      generalTotalResultsLabel.setText(num + MESSAGES.gallerySearchResultsSuffix());
+      generalTotalResultsLabel.setText(MESSAGES.gallerySearchGeneralResults(num));
     }
 
     /**
