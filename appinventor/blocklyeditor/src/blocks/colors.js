@@ -35,7 +35,7 @@ Blockly.Blocks['color_white'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ffffff'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_WHITE }]
 };
@@ -48,7 +48,7 @@ Blockly.Blocks['color_red'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ff0000'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_RED }]
 };
@@ -61,7 +61,7 @@ Blockly.Blocks['color_pink'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ffafaf'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_PINK }]
 };
@@ -74,7 +74,7 @@ Blockly.Blocks['color_orange'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ffc800'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_ORANGE }]
 };
@@ -87,7 +87,7 @@ Blockly.Blocks['color_yellow'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ffff00'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_YELLOW }]
 };
@@ -100,7 +100,7 @@ Blockly.Blocks['color_green'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#00ff00'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_GREEN }]
 };
@@ -113,7 +113,7 @@ Blockly.Blocks['color_cyan'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#00ffff'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_CYAN }]
 };
@@ -126,7 +126,7 @@ Blockly.Blocks['color_blue'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#0000ff'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_BLUE }]
 };
@@ -139,7 +139,7 @@ Blockly.Blocks['color_magenta'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#ff00ff'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_MAGENTA }]
 };
@@ -152,7 +152,7 @@ Blockly.Blocks['color_light_gray'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#cccccc'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_LIGHT_GRAY }]
 };
@@ -165,7 +165,7 @@ Blockly.Blocks['color_gray'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#888888'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_GRAY }]
 };
@@ -179,7 +179,7 @@ Blockly.Blocks['color_dark_gray'] = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput().appendField(new Blockly.FieldColour('#444444'), 'COLOR');
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.setTooltip(Blockly.Msg.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_COLOUR_DARK_GRAY }]
 };
