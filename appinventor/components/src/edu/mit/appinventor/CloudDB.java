@@ -223,7 +223,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     this.sync = sync;
     JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context(),this.accountName,this.projectID));
     Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
-    //SyncJob.scheduleSync();
+    SyncJob.scheduleSync();
 
   }
   

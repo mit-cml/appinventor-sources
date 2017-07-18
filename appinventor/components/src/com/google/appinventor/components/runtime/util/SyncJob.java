@@ -108,10 +108,10 @@ public class SyncJob extends Job {
 
     public static int scheduleSync(){
         Log.d(TAG,"SyncJob scheduleSync called ...");
-        int jobId = new JobRequest.Builder(TAG)//.setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                //.setPeriodic(9_00_000L)
-                .setExecutionWindow(30_000L, 40_000L)
-                //.setRequirementsEnforced(true)
+        int jobId = new JobRequest.Builder(TAG).setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                .setPeriodic(9_00_000L)
+                //.setExecutionWindow(30_000L, 40_000L)
+                .setRequirementsEnforced(true)
                 .build()
                 .schedule();
         Log.d(TAG,"SyncJob scheduleSync finished ...");
