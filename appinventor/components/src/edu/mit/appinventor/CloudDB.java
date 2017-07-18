@@ -154,8 +154,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
-    JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context()));
-    Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
+
     
     // Retrieve new posts as they are added to the CloudDB.
     Thread t = new Thread() {
@@ -222,7 +221,9 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   public void setSync(boolean sync){
     Log.d(CloudDB.LOG_TAG,"setSync called with sync = " + sync);
     this.sync = sync;
-    SyncJob.scheduleSync();
+    JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context(),this.accountName,this.projectID));
+    Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
+    //SyncJob.scheduleSync();
 
   }
   
@@ -252,6 +253,11 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
+  }
+
+  @SimpleFunction
+  public void PerformSync(){
+    SyncJob.scheduleSync();
   }
 
   /**
@@ -330,21 +336,23 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     checkAccountNameProjectIDNotBlank();
     
     final AtomicReference<Object> value = new AtomicReference<Object>();
+    Cursor cursor = null;
+    SQLiteDatabase db = null;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
 
-    if(!isConnected){
+    if(!isConnected && sync){
       /*
       read from cache
        */
       try {
         CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
-        SQLiteDatabase db = cloudDBCacheHelper.getWritableDatabase();
+        db = cloudDBCacheHelper.getWritableDatabase();
 
         String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
         String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-        String[] selectionArgs = {tag};
-        Cursor cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        String[] selectionArgs = {this.accountName+this.projectID+tag};
+        cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         String val;
         if (cursor != null && cursor.moveToNext()) {
           Log.d(CloudDB.LOG_TAG,"cursor has values");
@@ -369,8 +377,12 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         Log.d(CloudDB.LOG_TAG, "Error occurred while reading from cache...");
         e.printStackTrace();
       }
+      finally {
+        if(db != null) db.close();
+        if(cursor != null) cursor.close();
+      }
     }
-    else{
+    else if(isConnected){
       // Set value to either the JSON from the CloudDB
       // or the JSON representation of valueIfTagNotThere
       Thread t = new Thread() {
@@ -378,6 +390,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
           Jedis jedis = getJedis();
           try {
             String returnValue = jedis.get(accountName+projectID+tag);
+            Log.d(CloudDB.LOG_TAG,"Device is online = " + returnValue);
             if (returnValue != null) {
               try {
                 JSONArray valueJsonList = new JSONArray(returnValue);
@@ -398,6 +411,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
                 value.set(returnValue);
               }
             } else {
+              Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
               value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
             }
           } catch(JSONException e) {
@@ -662,16 +676,14 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   
   private Jedis getJedis(){
     Jedis jedis;
-    while (true) {
       try {
         jedis = new Jedis("128.52.179.76", 6379);
         jedis.auth("test6789");
-        break;
-      } catch (JedisConnectionException e) {
-        continue;
+        return jedis;
       }
-    }
-    return jedis;
+      catch (JedisConnectionException e) {
+        return null;
+      }
   }
 
  /**
@@ -786,26 +798,29 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   saves data to a local SQLiteDb when device is offline
    */
   public void sendValueTocache(final String tag, String value) {
+    Cursor cursor = null;
+    SQLiteDatabase db = null;
+
       try {
           CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
-          SQLiteDatabase db = cloudDBCacheHelper.getWritableDatabase();
+          db = cloudDBCacheHelper.getWritableDatabase();
 
           String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
           String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
           String[] selectionArgs = {tag};
-          Cursor cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+          cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
           if (cursor != null && cursor.getCount() > 0) {
               //update existing key
               ContentValues values = new ContentValues();
               values.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
               values.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG, 0);
               String updtSelection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-              String[] updtSelectionArgs = {tag};
+              String[] updtSelectionArgs = {this.accountName + this.projectID + tag};
               db.update(CloudDBCache.Table1.TABLE_NAME, values, updtSelection, updtSelectionArgs);
           } else {
               //insert new key
               ContentValues contentValues = new ContentValues();
-              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, tag);
+              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, this.accountName + this.projectID + tag);
               contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
               contentValues.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,0);
               db.insert(CloudDBCache.Table1.TABLE_NAME, null, contentValues);
@@ -813,6 +828,10 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       } catch (Exception e) {
           Log.d("CloudDB", "Error occurred while caching data locally...");
           e.printStackTrace();
+      }
+      finally {
+        if(cursor !=null) cursor.close();
+        if(db != null) db.close();
       }
 
   }
