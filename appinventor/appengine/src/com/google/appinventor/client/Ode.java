@@ -1151,6 +1151,7 @@ public class Ode implements EntryPoint {
     overDeckPanel.setWidth("100%");
     overDeckPanel.add(tutorialPanel);
     overDeckPanel.setCellWidth(tutorialPanel, "0%");
+    overDeckPanel.setCellHeight(tutorialPanel, "100%");
     overDeckPanel.add(deckPanel);
     mainPanel.add(overDeckPanel, DockPanel.CENTER);
     mainPanel.setCellHeight(overDeckPanel, "100%");
