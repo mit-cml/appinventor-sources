@@ -63,24 +63,23 @@ public class SyncJob extends Job {
                 while(cursor.moveToNext()){
                     String key = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_KEY));
                     String value = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE));
-                    if(this.accountNm != null && this.projectID != null){
-                        String status = jedis.set(this.accountNm+this.projectID+key,value);
-                        Log.d(TAG, "Set Status = " + status);
-                        Log.d(TAG, " set (key,value) = " + key + "," + value + " in redis");
-                        if(status.equalsIgnoreCase("OK")){
-                             /*
-                            update the upload flag in the cache
-                            */
-                            ContentValues values = new ContentValues();
-                            values.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,1);
-                            String updtSelection = CloudDBCache.Table1.COLUMN_UPLOAD_FLAG + " = ? AND " + CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-                            String[] updtSelectionArgs = {"0",this.accountNm+this.projectID+key};
-                            db.update(CloudDBCache.Table1.TABLE_NAME,values,updtSelection,updtSelectionArgs);
-                            Log.d(TAG, "Updated flag in cache");
-                        }
-                        else Log.d(TAG, "Value not set in Redis...");
+                    String status = jedis.set(key,value);
+                    Log.d(TAG, "Set Status = " + status);
+                    Log.d(TAG, " set (key,value) = " + key + "," + value + " in redis");
+                    if(status.equalsIgnoreCase("OK")){
+                        Log.d(TAG, "get " + key + " = " + jedis.get(key));
+                        /*
+                        update the upload flag in the cache
+                        */
+                        ContentValues values = new ContentValues();
+                        values.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,1);
+                        String updtSelection = CloudDBCache.Table1.COLUMN_UPLOAD_FLAG + " = ? AND " + CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
+                        String[] updtSelectionArgs = {"0",key};
+                        int rowsUpdt = db.update(CloudDBCache.Table1.TABLE_NAME,values,updtSelection,updtSelectionArgs);
+                        if(rowsUpdt > 0) Log.d(TAG, rowsUpdt + " rows updated");
+                        else Log.d(TAG, "No rows updated");
                     }
-                    else Log.d(TAG, "Failed to create Key...");
+                    else Log.d(TAG, "Value not set in Redis...");
 
                 }
 

@@ -807,7 +807,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
 
           String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
           String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-          String[] selectionArgs = {tag};
+          String[] selectionArgs = {this.accountName + this.projectID + tag};
           cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
           if (cursor != null && cursor.getCount() > 0) {
               //update existing key
