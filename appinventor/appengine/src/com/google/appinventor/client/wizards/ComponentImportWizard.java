@@ -53,7 +53,7 @@ public class ComponentImportWizard extends Wizard {
     @Override
     public void onSuccess(ComponentImportResponse response) {
       if (response.getStatus() == ComponentImportResponse.Status.FAILED){
-        Window.alert(MESSAGES.componentImportError());
+        Window.alert(MESSAGES.componentImportError() + "\n" + response.getMessage());
         return;
       }
       else if (response.getStatus() != ComponentImportResponse.Status.IMPORTED &&
@@ -65,8 +65,12 @@ public class ComponentImportWizard extends Wizard {
         Window.alert(MESSAGES.componentImportUnknownURLError());
       }
       else if (response.getStatus() == ComponentImportResponse.Status.UPGRADED) {
-        String componentName = SimpleComponentDatabase.getInstance().getComponentName(response.getComponentType());
-        Window.alert(MESSAGES.componentUpgradedAlert() + componentName + " !");
+        StringBuilder sb = new StringBuilder(MESSAGES.componentUpgradedAlert());
+        for (String name : response.getComponentTypes().values()) {
+          sb.append("\n");
+          sb.append(name);
+        }
+        Window.alert(sb.toString());
       }
 
       List<ProjectNode> compNodes = response.getNodes();
