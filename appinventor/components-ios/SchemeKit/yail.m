@@ -409,6 +409,36 @@ object_to_yail(pic_state *pic, id object) {
   }
 }
 
+static id
+yail_to_objc(pic_state *pic, pic_value value, NSMutableDictionary *history) {
+  if (pic_pair_p(pic, value)) {
+    NSMutableArray *result = [NSMutableArray array];
+    while (!pic_nil_p(pic, value)) {
+      pic_value car = pic_car(pic, value);
+      NSNumber *addr = [NSNumber numberWithUnsignedLongLong:car];
+      if (history[addr] == nil) {
+        id converted = yail_to_objc(pic, car, history);
+        history[addr] = converted ? converted : [NSNull null];
+      }
+      [result addObject:history[addr]];
+      value = pic_cdr(pic, value);
+      if (!pic_pair_p(pic, value) && !pic_nil_p(pic, value)) {
+        addr = [NSNumber numberWithUnsignedLongLong:value];
+        if (history[addr] == nil) {
+          id converted = yail_to_objc(pic, value, history);
+          history[addr] = converted ? converted : [NSNull null];
+        }
+        [result addObject:history[addr]];
+      }
+    }
+    return result;
+  } else if (pic_str_p(pic, value)) {
+    return [NSString stringWithCString:pic_str(pic, value) encoding:NSUTF8StringEncoding];
+  } else {
+    return nil;
+  }
+}
+
 pic_value
 yail_invoke(pic_state *pic) {
   pic_value native_object, native_method, *args;
@@ -453,8 +483,22 @@ yail_invoke(pic_state *pic) {
   // first 2 args in Obj-C are reserved for target and selector
   for (int i = 0, j = 2; i < argc; ++i, ++j) {
     if (pic_float_p(pic, args[i])) {
-      double value = pic_float(pic, args[i]);
-      [invocation setArgument:&value atIndex:j];
+      switch([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
+        case '@': {
+          NSString *value = [NSString stringWithFormat:@"%f", pic_float(pic, args[i])];
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        case 'f': {
+          float value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
+        default: {
+          double value = pic_float(pic, args[i]);
+          [invocation setArgument:&value atIndex:j];
+        }
+      }
     } else if (pic_int_p(pic, args[i])) {
       switch ([invocation.methodSignature getArgumentTypeAtIndex:j][0]) {
         case 'f': {
@@ -488,6 +532,15 @@ yail_invoke(pic_state *pic) {
     } else if (pic_sym_p(pic, args[i])) {
       NSString *symname = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, args[i]))];
       [invocation setArgument:&symname atIndex:j];
+    } else if (pic_undef_p(pic, args[i]) || yail_null_p(pic, args[i])) {
+      id value = nil;
+      [invocation setArgument:&value atIndex:j];
+    } else if (pic_pair_p(pic, args[i])) {
+      id value = yail_to_objc(pic, args[i], [NSMutableDictionary dictionary]);
+      [invocation setArgument:&value atIndex:j];
+    } else if (pic_nil_p(pic, args[i])) {
+      NSArray *value = [NSArray array];
+      [invocation setArgument:&value atIndex:j];
     } else {
       NSLog(@"incompatible yail type received %s in call to %@ at index %d",
             pic_typename(pic, pic_type(pic, args[i])), method.yailName, i);

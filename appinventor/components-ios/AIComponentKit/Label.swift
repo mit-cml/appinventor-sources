@@ -20,6 +20,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     _view = UILabel()
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.text = ""
+    _view.numberOfLines = 0
+    _view.lineBreakMode = .byWordWrapping
     super.init(parent)
     super.setDelegate(self)
     parent.add(self)
@@ -130,6 +132,8 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
     set(text) {
       _view.text = text
       _view.frame.size = _view.intrinsicContentSize
+      _view.setNeedsUpdateConstraints()
+      _view.setNeedsLayout()
       _container.form?.layoutSubviews()
     }
   }

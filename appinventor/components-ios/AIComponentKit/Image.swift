@@ -16,7 +16,9 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   
   public override init(_ parent: ComponentContainer) {
     _view.isUserInteractionEnabled = true
+    _view.translatesAutoresizingMaskIntoConstraints = false
     super.init(parent)
+    parent.add(self)
   }
 
   open override var view: UIView {
@@ -37,13 +39,27 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
         _view.frame.size = CGSize(width: 0, height: 0)
         _view.setNeedsUpdateConstraints()
         _view.setNeedsLayout()
+        NSLog("No image path")
+      } else if let image = UIImage(contentsOfFile: AssetManager.shared.pathForAssetInBundle(filename: path)) {
+        _image = image
+        _view.image = image
+        _view.frame.size = image.size
+        _view.invalidateIntrinsicContentSize()
+        _view.setNeedsUpdateConstraints()
+        _view.setNeedsLayout()
+        NSLog("AssetManager path")
       } else if let image = UIImage(named: path) {
         _image = image
         _view.image = image
-        _view.sizeToFit()
+        _view.frame.size = image.size
+        _view.invalidateIntrinsicContentSize()
         _view.setNeedsUpdateConstraints()
         _view.setNeedsLayout()
+        NSLog("UIImage path")
+      } else {
+        NSLog("Unable to load image")
       }
+      _container.form?.layoutSubviews()
       NSLog("Image size: \(_view.frame)")
     }
   }

@@ -91,10 +91,10 @@ open class ButtonBase: ViewComponent {
       if (path == nil || path == "") {
         _view.setImage(nil, for: UIControlState.normal)
       } else {
-        NSLog("Path: \(path)")
+        NSLog("Path: \(String(describing: path))")
         var image = UIImage(named: path!);
         if (image == nil) {
-          image = UIImage(contentsOfFile: AssetManager.shared.pathForAssetInBundle(filename: path!))
+          image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path!))
         }
         if (image != nil) {
           NSLog("Image is not nil");
