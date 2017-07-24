@@ -12,11 +12,12 @@ public final class CloudDBCache {
 
     private CloudDBCache(){}
 
-    /*Inner class that defines the table contents. Implementing BaseColumns gives us a promary field called _ID*/
+    /*Inner class that defines the table contents. Implementing BaseColumns gives us a primary field called _ID*/
     public static class Table1 implements BaseColumns{
         public static String TABLE_NAME = "table1";
         public static String COLUMN_NAME_KEY = "key";
         public static String COLUMN_NAME_VALUE = "value";
         public static String COLUMN_UPLOAD_FLAG = "uploadFlag";
+        public static String COLUMN_TIMESTAMP = "timestamp";
     }
 }
