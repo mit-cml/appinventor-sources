@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -51,6 +51,11 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   public static final String YOUNG_ANDROID_SETTINGS_TUTORIAL_URL = "TutorialURL";
+  public static final String YOUNG_ANDROID_SETTINGS_ACTIONBAR = "ActionBar";
+  public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR = "PrimaryColor";
+  public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";
+  public static final String YOUNG_ANDROID_SETTINGS_ACCENT_COLOR = "AccentColor";
+  public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
 
   /**
    * Settings for the Blocks editor.

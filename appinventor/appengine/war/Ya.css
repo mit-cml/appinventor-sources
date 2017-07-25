@@ -979,7 +979,15 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockFormTitleBar {
   background-color: dimgray;
+  color: white;
+  font-size: 90%;
   border-bottom: 1px solid lightgray;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar {
+  background-color: #a5cf47;
+  color: white;
+  font-size: 20px;
 }
 
 .ode-SimpleMockFormPhoneBar {
@@ -987,8 +995,31 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormTitle {
+  padding: 0;
+  top: 4px;
+  left: 12px;
+  position: absolute;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormTitle {
+  padding: 16px;
+  top: 0;
+  left: 0;
+}
+
+.ode-SimpleMockFormMenuButton {
+  right: 0;
+  padding: 16px;
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  font: 20px Roboto bold;
   color: white;
-  font-size: 90%;
+  display: none;
+}
+
+.ode-SimpleMockFormTitleBar-ActionBar .ode-SimpleMockFormMenuButton {
+  display: inline-block;
 }
 
 .ode-SimpleMockContainer {
@@ -1019,8 +1050,17 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockButton {
-  /* When updating this color also update MockButtonBase.setBackgroundColorProperty() */
-  background-color: #E8E8E8;
+  padding: 4px 8px;
+  text-shadow: none;
+  border: 0;
+  border-radius: 2px;
+  background-color: #d6d7d7;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.ode-SimpleMockForm-Dark .ode-SimpleMockButton {
+  background-color: #5a595b;
+  color: #fff;
 }
 
 /* class for the ListView Mock component */

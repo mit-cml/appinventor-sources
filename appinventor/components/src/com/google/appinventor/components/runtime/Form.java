@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.support.v7.app.ActionBar;
+import android.view.Gravity;
+import android.widget.TextView;
+import com.google.appinventor.components.runtime.util.PaintUtil;
 import org.json.JSONException;
 
 import android.app.Activity;
@@ -31,6 +35,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -52,6 +57,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
@@ -91,11 +97,13 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 @DesignerComponent(version = YaVersion.FORM_COMPONENT_VERSION,
     category = ComponentCategory.LAYOUT,
     description = "Top-level component containing all other components in the program",
+    androidMinSdk = 7,
     showOnPalette = false)
 @SimpleObject
+@UsesLibraries(libraries = "appcompat-v7.aar, support-v4.aar")
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE," +
     "android.permission.ACCESS_NETWORK_STATE")
-public class Form extends Activity
+public class Form extends AppCompatActivity
   implements Component, ComponentContainer, HandlesEventDispatching,
   OnGlobalLayoutListener {
 
@@ -106,6 +114,10 @@ public class Form extends Activity
   private static final String ARGUMENT_NAME = "APP_INVENTOR_START";
 
   public static final String APPINVENTOR_URL_SCHEME = "appinventor";
+
+  private static final int DEFAULT_PRIMARY_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_COLOR);
+  private static final int DEFAULT_PRIMARY_COLOR_DARK = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR);
+  private static final int DEFAULT_ACCENT_COLOR = PaintUtil.hexStringToInt(ComponentConstants.DEFAULT_ACCENT_COLOR);
 
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
@@ -139,6 +151,7 @@ public class Form extends Activity
   private String aboutScreen;
   private boolean showStatusBar = true;
   private boolean showTitle = true;
+  protected String title = "";
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -156,6 +169,11 @@ public class Form extends Activity
   // String representing the transition animation type
   private String openAnimType;
   private String closeAnimType;
+
+  // Syle information
+  private int primaryColor = DEFAULT_PRIMARY_COLOR;
+  private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
+  private int accentColor = DEFAULT_ACCENT_COLOR;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -198,6 +216,8 @@ public class Form extends Activity
   private int formWidth;
   private int formHeight;
 
+  private TextView titleBar;
+  private boolean actionBarEnabled = false;
   private boolean keyboardShown = false;
 
   private ProgressDialog progress;
@@ -239,6 +259,16 @@ public class Form extends Activity
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
+
+    titleBar = (TextView) findViewById(android.R.id.title);
+    if (getSupportActionBar() == null || (titleBar == null && isRepl())) {
+      titleBar = new TextView(this);
+      titleBar.setBackgroundResource(android.R.drawable.title_bar);
+      titleBar.setTextAppearance(this, android.R.style.TextAppearance_WindowTitle);
+      titleBar.setGravity(Gravity.CENTER_VERTICAL);
+      titleBar.setSingleLine();
+      titleBar.setShadowLayer(2, 0, 0, 0xBB000000);
+    }
 
     // Figure out the name of this form.
     String className = getClass().getName();
@@ -330,6 +360,11 @@ public class Form extends Activity
   }
 
   private void defaultPropertyValues() {
+    if (isRepl()) {
+      ActionBar(actionBarEnabled);
+    } else {
+      ActionBar(getSupportActionBar() != null);
+    }
     Scrollable(false);       // frameLayout is created in Scrollable()
     Sizing("Fixed");         // Note: Only the Screen1 value is used as this is per-project
     BackgroundImage("");
@@ -342,6 +377,10 @@ public class Form extends Activity
     ShowStatusBar(true);
     TitleVisible(true);
     ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
+    AccentColor(DEFAULT_ACCENT_COLOR);
+    PrimaryColor(DEFAULT_PRIMARY_COLOR);
+    PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
+    Theme(ComponentConstants.DEFAULT_THEME);
   }
 
   @Override
@@ -884,16 +923,30 @@ public class Form extends Activity
       frameLayout.removeAllViews();
     }
 
+    final android.widget.LinearLayout frameWithTitle = new android.widget.LinearLayout(this);
+    frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
+    if (titleBar != null) {  // true for companion and compiled apps without ActionBar
+      if (titleBar.getParent() != null) {
+        ((ViewGroup) titleBar.getParent()).removeAllViews();
+      }
+      frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT
+      ));
+    }
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
+    frameWithTitle.addView(frameLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
 
-    setBackground(frameLayout);
+    setBackground(frameWithTitle);
 
     Log.d(LOG_TAG, "About to create a new ScaledFrameLayout");
     scaleLayout = new ScaledFrameLayout(this);
-    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
+    scaleLayout.addView(frameWithTitle, new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     setContentView(scaleLayout);
@@ -909,7 +962,7 @@ public class Form extends Activity
           }
           ReplayFormOrientation(); // Re-do Form layout because percentage code
                                    // needs to recompute objects sizes etc.
-          frameLayout.requestLayout();
+          frameWithTitle.requestLayout();
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -1001,7 +1054,11 @@ public class Form extends Activity
       defaultValue = "")
   @SimpleProperty
   public void Title(String title) {
-    setTitle(title);
+    this.title = title;
+    if (titleBar != null) {
+      titleBar.setText(title);
+    }
+    updateTitle();
   }
 
 
@@ -1052,14 +1109,19 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void TitleVisible(boolean show) {
     if (show != showTitle) {
-      View v = (View)findViewById(android.R.id.title).getParent();
-      if (v != null) {
-        if (show) {
-          v.setVisibility(View.VISIBLE);
-        } else {
-          v.setVisibility(View.GONE);
+      if (actionBarEnabled) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+          if (show) {
+            actionBar.show();
+          } else {
+            actionBar.hide();
+          }
+          showTitle = show;
         }
+      } else {
         showTitle = show;
+        maybeShowTitleBar();
       }
     }
   }
@@ -1188,6 +1250,33 @@ public class Form extends Activity
     }
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "false")
+  @SimpleProperty(userVisible = false)
+  public void ActionBar(boolean enabled) {
+    if (actionBarEnabled != enabled) {
+      if (enabled) {
+        hideTitleBar();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+          dispatchErrorOccurredEvent(this, "ActionBar", ErrorMessages.ERROR_ACTIONBAR_NOT_SUPPORTED);
+          actionBarEnabled = false;
+          return;
+        } else if (showTitle) {
+          actionBar.show();
+        } else {
+          actionBar.hide();
+        }
+      } else {
+        maybeShowTitleBar();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+          actionBar.hide();
+        }
+      }
+      actionBarEnabled = enabled;
+    }
+  }
 
   // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
   // I did not see a clean way to abstract it.  Someone should have a look.
@@ -1462,6 +1551,58 @@ public class Form extends Activity
       "If the AppName is blank, it will be set to the name of the project when the project is built.")
   public void AppName(String aName) {
     // We don't actually need to do anything.
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_PRIMARY_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the primary color used for " +
+      "Material UI elements, such as the ActionBar.", category = PropertyCategory.APPEARANCE)
+  public void PrimaryColor(final int color) {
+    final ActionBar actionBar = getSupportActionBar();
+    int newColor = color == Component.COLOR_DEFAULT ? DEFAULT_PRIMARY_COLOR : color;
+    if (actionBar != null && newColor != primaryColor) {
+      // Only make the change if we have to...
+      primaryColor = newColor;
+      actionBar.setBackgroundDrawable(new ColorDrawable(color));
+    }
+  }
+
+  @SimpleProperty()
+  public int PrimaryColor() {
+    return primaryColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the primary color used for darker " +
+      "elements in Material UI.", category = PropertyCategory.APPEARANCE)
+  public void PrimaryColorDark(int color) {
+    primaryColorDark = color;
+  }
+
+  @SimpleProperty()
+  public int PrimaryColorDark() {
+    return primaryColorDark;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = ComponentConstants.DEFAULT_ACCENT_COLOR)
+  @SimpleProperty(userVisible = false, description = "This is the accent color used for " +
+      "highlights and other user interface accents.", category = PropertyCategory.APPEARANCE)
+  public void AccentColor(int color) {
+    accentColor = color;
+  }
+
+  @SimpleProperty()
+  public int AccentColor() {
+    return accentColor;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
+      defaultValue = ComponentConstants.DEFAULT_THEME)
+  @SimpleProperty(userVisible = false, description = "Sets the theme used by the application.")
+  public void Theme(String theme) {
+    // nothing to do here
   }
 
   /**
@@ -2073,6 +2214,36 @@ public class Form extends Activity
       imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     } else {
       dispatchErrorOccurredEvent(this, "HideKeyboard", ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND);
+    }
+  }
+
+  protected boolean isRepl() {
+    return false;
+  }
+
+  protected void updateTitle() {
+    final ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle(title);
+    }
+  }
+
+  private void hideActionBar() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.hide();
+    }
+  }
+
+  private void hideTitleBar() {
+    if (titleBar != null) {
+      titleBar.setVisibility(View.GONE);
+    }
+  }
+
+  private void maybeShowTitleBar() {
+    if (titleBar != null) {
+      titleBar.setVisibility(showTitle ? View.VISIBLE : View.GONE);
     }
   }
 }

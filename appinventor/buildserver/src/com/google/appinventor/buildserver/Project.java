@@ -71,6 +71,13 @@ public final class Project {
    *    source - comma separated list of source root directories
    *    assets - assets directory (for image and data files bundled with the application)
    *    build - output directory for the compiler
+   *    useslocation - flag indicating whether or not the project uses locations
+   *    aname - the human-readable application name
+   *    androidminsdk - the minimum Android sdk required for the app
+   *    theme - the base theme for the app
+   *    color.primary - the primary color for the theme
+   *    color.primary.dark - the dark color for the theme (not yet applicable)
+   *    color.accent - the accent color used in the app theme
    */
   private static final String MAINTAG = "main";
   private static final String NAMETAG = "name";
@@ -83,6 +90,11 @@ public final class Project {
   private static final String USESLOCATIONTAG = "useslocation";
   private static final String ANAMETAG = "aname";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
+  private static final String ACTIONBAR_TAG = "actionbar";
+  private static final String COLOR_THEMETAG = "theme";
+  private static final String COLOR_PRIMARYTAG = "color.primary";
+  private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
+  private static final String COLOR_ACCENTTAG = "color.accent";
 
   // Table containing project properties
   private Properties properties;
@@ -275,7 +287,52 @@ public final class Project {
    * @return  the minimum Android sdk
    */
   public String getMinSdk() {
-    return properties.getProperty(ANDROID_MIN_SDK_TAG, "4");
+    return properties.getProperty(ANDROID_MIN_SDK_TAG, "7");
+  }
+
+  /**
+   * Returns whether the ActionBar should be enabled in the project.
+   *
+   * @return  "true" if the ActionBar should be included in the project.
+   */
+  public String getActionBar() {
+    return properties.getProperty(ACTIONBAR_TAG, "false");
+  }
+
+  /**
+   * Returns the primary color provided by the user.
+   *
+   * @return  primary color, or null if the default is requested
+   */
+  public String getPrimaryColor() {
+    return properties.getProperty(COLOR_PRIMARYTAG);
+  }
+
+  /**
+   * Returns the dark primary color provided by the user.
+   *
+   * @return  dark primary color, or null if the default is requested
+   */
+  public String getPrimaryColorDark() {
+    return properties.getProperty(COLOR_PRIMARY_DARKTAG);
+  }
+
+  /**
+   * Returns the accent color provided by the user.
+   *
+   * @return  accent color, or null if the default is requested
+   */
+  public String getAccentColor() {
+    return properties.getProperty(COLOR_ACCENTTAG);
+  }
+
+  /**
+   * Returns the theme for the project set by the user.
+   *
+   * @return  theme, or null if the default is requested
+   */
+  public String getTheme() {
+    return properties.getProperty(COLOR_THEMETAG);
   }
 
   /**

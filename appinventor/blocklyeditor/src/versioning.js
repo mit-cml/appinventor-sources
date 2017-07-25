@@ -2083,7 +2083,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 20:
     // - The Screen1.ShowListsAsJson property was added and no block needs to be changed.
-    20: "noUpgrade"
+    20: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 21:
+    // - The AccentColor, PrimaryColor, PrimaryColorDark, and Theme properties were added to Screen, and no block needs to be changed.
+    21: "noUpgrade"
 
 
   }, // End Screen

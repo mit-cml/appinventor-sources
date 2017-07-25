@@ -18,12 +18,16 @@ $Source $Yail
 (def g$rendezvousServer "rendezvous.appinventor.mit.edu")
 ;;; Screen1
 
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AccentColor #xFF128BA8 'number)
+ (set-and-coerce-property! 'Screen1 'ActionBar #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
  (set-and-coerce-property! 'Screen1 'BackgroundColor #x00FFFFFF 'number)
  (set-and-coerce-property! 'Screen1 'BackgroundImage "mooning.png" 'text)
  (set-and-coerce-property! 'Screen1 'Icon "AI2Companion-Icon.png" 'text)
+ (set-and-coerce-property! 'Screen1 'PrimaryColor #xFFA5CF47 'number)
+ (set-and-coerce-property! 'Screen1 'PrimaryColorDark #xFF516623 'number)
  (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
- (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2 Companion" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
@@ -98,22 +102,6 @@ $Source $Yail
 (set-and-coerce-property! 'MainPanel 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'MainPanel 'Width -2 'number)
-
-)
-
-;;; Header
-
-(add-component MainPanel com.google.appinventor.components.runtime.HorizontalArrangement Header 
-(set-and-coerce-property! 'Header 'AlignHorizontal 3 'number)
-
-(set-and-coerce-property! 'Header 'Width -2 'number)
-
-)
-
-;;; Image1
-
-(add-component Header com.google.appinventor.components.runtime.Image Image1 
-(set-and-coerce-property! 'Image1 'Picture "Title.png" 'text)
 
 )
 
@@ -231,7 +219,9 @@ $Source $Yail
 
 ;;; CodeBox
 
-(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox 
+(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox
+(set-and-coerce-property! 'CodeBox 'BackgroundColor #xFFFFFFFF 'number)
+
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
 
 (set-and-coerce-property! 'CodeBox 'Width -2 'number)

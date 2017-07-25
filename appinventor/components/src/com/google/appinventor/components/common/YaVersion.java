@@ -397,8 +397,10 @@ public class YaVersion {
   // Added HorizontalScrollArrangement and VerticalScrollArrangement
   // For YOUNG_ANDROID_VERSION 159:
   // - FORM_COMPONENT_VERSION was incremented to 20
+  // For YOUNG_ANDROID_VERSION_160:
+  // - FORM_COMPONENT_VERSION was incremented to 21
 
-  public static final int YOUNG_ANDROID_VERSION = 159;
+  public static final int YOUNG_ANDROID_VERSION = 160;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -688,7 +690,12 @@ public class YaVersion {
   // - Added HideKeyboard method
   // For FORM_COMPONENT_VERSION 20:
   // - The Screen.ShowListsAsJson property was added
-  public static final int FORM_COMPONENT_VERSION = 20;
+  // For FORM_COMPONENT_VERSION 21:
+  // - The Screen.AccentColor property was added
+  // - The Screen.PrimaryColor property was added
+  // - The Screen.PrimaryColorDark property was added
+  // - The Screen.Theme property was added
+  public static final int FORM_COMPONENT_VERSION = 21;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

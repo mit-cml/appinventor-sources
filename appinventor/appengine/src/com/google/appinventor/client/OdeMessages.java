@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -6443,7 +6443,39 @@ public interface OdeMessages extends Messages {
   @Description("")
   String reloadWindow();
 
+  @DefaultMessage("PrimaryColor")
+  @Description("")
+  String PrimaryColorProperties();
+
+  @DefaultMessage("PrimaryColorDark")
+  @Description("")
+  String PrimaryColorDarkProperties();
+
+  @DefaultMessage("AccentColor")
+  @Description("")
+  String AccentColorProperties();
+
+  @DefaultMessage("Theme")
+  @Description("")
+  String ThemeProperties();
+
+  @DefaultMessage("Default")
+  @Description("")
+  String defaultTheme();
+
+  @DefaultMessage("Black Title Text")
+  @Description("")
+  String blackTitleTheme();
+
+  @DefaultMessage("Dark")
+  @Description("")
+  String darkTheme();
+
   @DefaultMessage("Custom...")
   @Description("")
   String customEllipsis();
+
+  @DefaultMessage("ActionBar")
+  @Description("")
+  String ActionBarProperties();
 }

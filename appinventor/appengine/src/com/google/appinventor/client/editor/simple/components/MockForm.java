@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,6 +20,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.DivElement;
@@ -30,6 +31,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Timer;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -50,11 +52,15 @@ public final class MockForm extends MockContainer {
    * Widget for the mock form title bar.
    */
   private class TitleBar extends Composite {
-    private static final int HEIGHT = 24;
+    private static final int TITLEBAR_HEIGHT = 24;
+    private static final int ACTIONBAR_HEIGHT = 56;
 
     // UI elements
     private Label title;
+    private Button menuButton;
     private AbsolutePanel bar;
+    private boolean actionBar;
+    private String backgroundColor;
 
     /*
      * Creates a new title bar.
@@ -64,13 +70,18 @@ public final class MockForm extends MockContainer {
       title.setStylePrimaryName("ode-SimpleMockFormTitle");
       title.setHorizontalAlignment(Label.ALIGN_LEFT);
 
+      menuButton = new Button();
+      menuButton.setText("\u22ee");
+      menuButton.setStylePrimaryName("ode-SimpleMockFormMenuButton");
+
       bar = new AbsolutePanel();
-      bar.add(title, 12, 4);
+      bar.add(title);
+      bar.add(menuButton);
 
       initWidget(bar);
 
       setStylePrimaryName("ode-SimpleMockFormTitleBar");
-      setSize("100%", HEIGHT + "px");
+      setSize("100%", TITLEBAR_HEIGHT + "px");
     }
 
     /*
@@ -78,6 +89,29 @@ public final class MockForm extends MockContainer {
      */
     void changeTitle(String newTitle) {
       title.setText(newTitle);
+    }
+
+    void setActionBar(boolean actionBar) {
+      this.actionBar = actionBar;
+      setSize("100%", (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT) + "px");
+      if (actionBar) {
+        addStyleDependentName("ActionBar");
+        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, backgroundColor);
+      } else {
+        removeStyleDependentName("ActionBar");
+        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
+      }
+    }
+
+    void setBackgroundColor(String color) {
+      this.backgroundColor = color;
+      if (actionBar) {
+        MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, color);
+      }
+    }
+
+    int getHeight() {
+      return actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT;
     }
   }
 
@@ -178,6 +212,11 @@ public final class MockForm extends MockContainer {
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
+  private static final String PROPERTY_NAME_ACTIONBAR = "ActionBar";
+  private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
+  private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
+  private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
+  private static final String PROPERTY_NAME_THEME = "Theme";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -279,7 +318,7 @@ public final class MockForm extends MockContainer {
   private void resizePanel(int newWidth, int newHeight){
     screenWidth = newWidth;
     screenHeight = newHeight;
-    usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT - NavigationBar.HEIGHT;
+    usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
 
 
     rootPanel.setPixelSize(screenWidth, usableScreenHeight);
@@ -435,6 +474,26 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
+    if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
+      return editor.isScreen1();
+    }
+
+    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
+      return editor.isScreen1();
+    }
+
+    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {
+      return editor.isScreen1();
+    }
+
+    if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
+      return editor.isScreen1();
+    }
+
+    if (propertyName.equals(PROPERTY_NAME_THEME)) {
+      return editor.isScreen1();
+    }
+
     return super.isPropertyVisible(propertyName);
   }
 
@@ -474,7 +533,7 @@ public final class MockForm extends MockContainer {
         screenHeight = PORTRAIT_HEIGHT;
         landscape = false;
       }
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - TitleBar.HEIGHT - NavigationBar.HEIGHT;
+      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
       resizePanel(screenWidth, screenHeight);
 
       changeProperty(PROPERTY_NAME_WIDTH, "" + screenWidth);
@@ -566,6 +625,71 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME, aname);
+    }
+  }
+
+  private void setActionBarProperty(String actionBar) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, actionBar);
+    }
+    titleBar.setActionBar(Boolean.parseBoolean(actionBar));
+    if (initialized) {
+      resizePanel(screenWidth, screenHeight);  // update screen due to titlebar size change.
+    }
+  }
+
+  private void setPrimaryColor(String color) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR, color);
+    }
+    if (color.equals("&H00000000")) {
+      // Replace Default with actual default color
+      color = ComponentConstants.DEFAULT_PRIMARY_COLOR;
+    }
+    titleBar.setBackgroundColor(color);
+  }
+
+  private void setPrimaryColorDark(String color) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, color);
+    }
+  }
+
+  private void setAccentColor(String color) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, color);
+    }
+  }
+
+  private void setTheme(String theme) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME, theme);
+    }
+    if (theme.equals("AppTheme.Light")) {
+      final String newColor = "&HFF000000";
+      MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
+    } else {
+      final String newColor = "&HFFFFFFFF";
+      MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
+      MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
+    }
+    if (theme.equals("AppTheme")) {
+      formWidget.addStyleDependentName("Dark");
+    } else {
+      formWidget.removeStyleDependentName("Dark");
     }
   }
 
@@ -840,6 +964,16 @@ public final class MockForm extends MockContainer {
       setShowListsAsJsonProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
+      setActionBarProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
+      setTheme(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
+      setPrimaryColor(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {
+      setPrimaryColorDark(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
+      setAccentColor(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -887,6 +1021,26 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     }
     return properties;
   }

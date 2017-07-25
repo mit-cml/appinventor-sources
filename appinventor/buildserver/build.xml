@@ -84,6 +84,12 @@
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.aar" />
+    <copy toFile="${classes.files.dir}/appcompat-v7.jar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/internal_impl.jar" file="${lib.dir}/android/support/internal_impl-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/support-annotations.jar" file="${lib.dir}/android/support/support-annotations-22.2.1.jar" />
+    <copy toFile="${classes.files.dir}/support-v4.aar" file="${lib.dir}/android/support/support-v4-22.2.1.aar" />
+    <copy toFile="${classes.files.dir}/support-v4.jar" file="${lib.dir}/android/support/support-v4-22.2.1.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/5.1.1/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />

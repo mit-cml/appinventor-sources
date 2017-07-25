@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,7 +120,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "4";
+  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -129,6 +131,12 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
+  private static final String[] SUPPORT_JARS = new String[] {
+    RUNTIME_FILES_DIR + "appcompat-v7.jar",
+    RUNTIME_FILES_DIR + "internal_impl.jar",
+    RUNTIME_FILES_DIR + "support-annotations.jar",
+    RUNTIME_FILES_DIR + "support-v4.jar"
+  };
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
   private static final String DX_JAR =
@@ -451,6 +459,85 @@ public final class Compiler {
     return name.replace("&", "and");
   }
 
+  private String cleanColor(String color) {
+    if (color.startsWith("&H")) {
+      return "#" + color.substring(2);
+    }
+    return color;
+  }
+
+  /**
+   * Write out a style definition customized with the given colors.
+   *
+   * @param out The writer the style will be written to.
+   * @param name The name of the new style.
+   * @param parent The parent style to inherit from.
+   * @throws IOException if the writer cannot be written to.
+   */
+  private static void writeTheme(Writer out, String name, String parent) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
+    out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
+    out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    out.write("</style>\n");
+  }
+
+  /**
+   * Create the default color and styling for the app.
+   */
+  private boolean createValuesXml(File valuesDir) {
+    String colorPrimary = project.getPrimaryColor() == null ? "#A5CF47" : project.getPrimaryColor();
+    String colorPrimaryDark = project.getPrimaryColorDark() == null ? "#41521C" : project.getPrimaryColorDark();
+    String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
+    String theme = project.getTheme() == null ? "AppTheme" : project.getTheme();
+    String actionbar = project.getActionBar();
+    String parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+    if (!"true".equalsIgnoreCase(actionbar)) {
+      if (parentTheme.endsWith("DarkActionBar")) {
+        parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+      } else {
+        parentTheme += ".NoActionBar";
+      }
+    }
+    colorPrimary = cleanColor(colorPrimary);
+    colorPrimaryDark = cleanColor(colorPrimaryDark);
+    colorAccent = cleanColor(colorAccent);
+    File colorsXml = new File(valuesDir, "colors.xml");
+    File stylesXml = new File(valuesDir, "styles.xml");
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(colorsXml), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      out.write("<color name=\"colorPrimary\">");
+      out.write(colorPrimary);
+      out.write("</color>\n");
+      out.write("<color name=\"colorPrimaryDark\">");
+      out.write(colorPrimaryDark);
+      out.write("</color>\n");
+      out.write("<color name=\"colorAccent\">");
+      out.write(colorAccent);
+      out.write("</color>\n");
+      out.write("</resources>\n");
+      out.close();
+      out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      writeTheme(out, "AppTheme", parentTheme);
+      out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
+      out.write("<item name=\"textAllCaps\">false</item>\n");
+      out.write("</style>\n");
+      out.write("</resources>\n");
+      out.close();
+    } catch(IOException e) {
+      return false;
+    }
+    return true;
+  }
+
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
@@ -551,6 +638,7 @@ public final class Compiler {
       } else {
         out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
+      out.write("android:theme=\"@style/AppTheme\" ");
       out.write(">\n");
 
       for (Project.SourceDescriptor source : project.getSources()) {
@@ -719,6 +807,13 @@ public final class Compiler {
     out.println("________Creating animation xml");
     File animDir = createDir(resDir, "anim");
     if (!compiler.createAnimationXml(animDir)) {
+      return false;
+    }
+
+    // Create values directory and style xml files
+    out.println("________Creating style xml");
+    File styleDir = createDir(resDir, "values");
+    if (!compiler.createValuesXml(styleDir)) {
       return false;
     }
 
@@ -982,6 +1077,11 @@ public final class Compiler {
       classpath.append(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
       classpath.append(COLON);
 
+      for (String jar : SUPPORT_JARS) {
+        classpath.append(getResource(jar));
+        classpath.append(COLON);
+      }
+
       // attach the jars of external comps
       Set<String> addedExtJars = new HashSet<String>();
       for (String type : extCompTypes) {
@@ -1229,6 +1329,10 @@ public final class Compiler {
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
+
+    for (String jar : SUPPORT_JARS) {
+      inputList.add(new File(getResource(jar)));
+    }
 
     for (String lib : uniqueLibsNeeded) {
       libList.add(new File(lib));
