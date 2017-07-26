@@ -34,7 +34,6 @@ import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.File;
 import java.io.*;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -340,7 +339,9 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
           Log.d(CloudDB.LOG_TAG,"cursor has values");
           val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE)) + " from cache";
           Log.d(CloudDB.LOG_TAG,"value retrieved = " + val);
-          value.set(val);
+          String jsonVal = this.getJsonRepresenationIfValueFileName(val);
+          if(jsonVal != null) value.set(jsonVal);
+          else value.set(val);
         }
         else {
           Log.d(CloudDB.LOG_TAG,"cursor has no values");
@@ -382,25 +383,11 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
             }
             Log.d(CloudDB.LOG_TAG,"Device is online = " + returnValue);
             if (returnValue != null) {
-              try {
-                JSONArray valueJsonList = new JSONArray(returnValue);
-                List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
-                if (valueList.size() == 2) {
-                  if (valueList.get(0).startsWith(".")) {
-                    String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
-                    System.out.println("Filename Written: " + filename);
-                    filename = filename.replace("file:/", "file:///");
-                    value.set(JsonUtil.getJsonRepresentation(filename));
-                  } else {
-                    value.set(returnValue);
-                  }
-                } else {
-                  value.set(returnValue);
-                }
-              } catch(JSONException e) {
-                value.set(returnValue);
-              }
-            } else {
+              String val = getJsonRepresenationIfValueFileName(returnValue);
+              if(val != null) value.set(val);
+              else value.set(returnValue);
+            }
+            else {
               Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
               value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
             }
@@ -422,6 +409,120 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
           });
 
           jedis.close();
+        }
+      };
+      t.start();
+    }
+  }
+
+  /**
+   * GetValues asks CloudDB to get a list of values stored under the given tag.
+   * It will pass valueIfTagNotThere to GotValue if there is no value stored
+   * under the tag.
+   *
+   * @param tag The tag whose values is to be retrieved.
+   * @param valueIfTagNotThere The value to pass to the event if the tag does
+   *                           not exist.
+   */
+  @SimpleFunction
+  public void GetValues(final String tag, final Object valueIfTagNotThere) {
+    checkAccountNameProjectIDNotBlank();
+    Log.d(CloudDB.LOG_TAG,"getting value ...");
+    final AtomicReference<Object> value = new AtomicReference<Object>();
+    Cursor cursor = null;
+    SQLiteDatabase db = null;
+    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    boolean isConnected = networkInfo != null && networkInfo.isConnected();
+
+    if(!isConnected && sync){
+      /*
+      read from cache
+       */
+      Log.d(CloudDB.LOG_TAG,"reading from cache ...");
+      try {
+        //CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
+        db = CloudDBCacheHelper.getInstance(form.$context()).getWritableDatabase();
+        final List<String> values = new ArrayList<>();
+
+        String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE, CloudDBCache.Table1.COLUMN_TIMESTAMP};
+        String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ? ";
+        String[] selectionArgs = {this.accountName+this.projectID+tag};
+        String orderby = CloudDBCache.Table1.COLUMN_TIMESTAMP + " DESC";
+        cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, orderby);
+        if (cursor != null){
+          while(cursor.moveToNext()) {
+            Log.d(CloudDB.LOG_TAG, "cursor has values");
+            String val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE));
+            values.add(val);
+            Log.d(CloudDB.LOG_TAG, "value retrieved = " + val);
+          }
+        }
+        else {
+          Log.d(CloudDB.LOG_TAG,"cursor has no values");
+          values.add(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+        }
+        Log.d(CloudDB.LOG_TAG,"value set successfully");
+        androidUIHandler.post(new Runnable() {
+          public void run() {
+            // Signal an event to indicate that the value was
+            // received.  We post this to run in the Application's main
+            // UI thread.
+            GotValue(tag, values);
+          }
+        });
+      } catch (Exception e) {
+        //Log.d(CloudDB.LOG_TAG, "Error occurred while reading from cache...");
+        Log.e(CloudDB.LOG_TAG,"Error occurred while reading from cache",e);
+        //e.printStackTrace();
+      }
+      finally {
+        if(db != null) db.close();
+        if(cursor != null) cursor.close();
+      }
+    }
+    else if(isConnected){
+      // Set value to either the JSON from the CloudDB
+      // or the JSON representation of valueIfTagNotThere
+      Thread t = new Thread() {
+        public void run() {
+          Jedis jedis = getJedis();
+          final List<String> returnValuesList;
+          try {
+            Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
+            Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
+            //String returnValue = jedis.get(accountName+projectID+tag);
+            Log.d(CloudDB.LOG_TAG,"zrange success ...");
+
+            if(returnValues != null && !returnValues.isEmpty()){
+              returnValuesList = new ArrayList<>(returnValues);
+            }
+            else{
+              returnValuesList = new ArrayList<>();
+              returnValuesList.add(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+            }
+            androidUIHandler.post(new Runnable() {
+              public void run() {
+                // Signal an event to indicate that the value was
+                // received.  We post this to run in the Application's main
+                // UI thread.
+                GotValue(tag, returnValuesList);
+              }
+            });
+          }
+          catch(JSONException e){
+            Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
+          }
+          catch(NullPointerException e){
+            Log.e(CloudDB.LOG_TAG,"error while zrange...",e);
+            throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
+          }
+          catch(Exception e){
+            Log.e(CloudDB.LOG_TAG,"error while making list...",e);
+          }
+
+          finally {
+            if(jedis != null) jedis.close();
+          }
         }
       };
       t.start();
@@ -791,7 +892,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   Written by joymitro@gmail.com (Joydeep Mitra)
   saves data to a local SQLiteDb when device is offline
    */
-  public void sendValueTocache(final String tag, String value) {
+  public void sendValueTocache(final String tag, final String value) {
     Cursor cursor = null;
     SQLiteDatabase db = null;
 
@@ -837,6 +938,37 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         if(db != null) db.close();
       }
 
+  }
+
+  /*
+  * Written by joymitro@gmail.com (Joydeep Mitra)
+  * This method converts a file path to a JSON representation.
+  * The code in the method was part of GetValue. For better modularity and reusability
+  * the logic is now part of this method, which can be invoked from wherever and
+  * whenever required.
+  *
+  * @param file path
+  * @return JSON representation
+  */
+  private String getJsonRepresenationIfValueFileName(String value){
+    try {
+      JSONArray valueJsonList = new JSONArray(value);
+      List<String> valueList = JsonUtil.getStringListFromJsonArray(valueJsonList);
+      if (valueList.size() == 2) {
+        if (valueList.get(0).startsWith(".")) {
+          String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+          System.out.println("Filename Written: " + filename);
+          filename = filename.replace("file:/", "file:///");
+          return JsonUtil.getJsonRepresentation(filename);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } catch(JSONException e) {
+      return null;
+    }
   }
 
 
