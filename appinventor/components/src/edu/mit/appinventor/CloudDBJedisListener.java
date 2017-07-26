@@ -6,18 +6,9 @@
 
 package edu.mit.appinventor;
 
+import android.util.Log;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
-
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.json.JSONException;
-
-import android.util.Log;
 
 public class CloudDBJedisListener extends JedisPubSub {
   public CloudDB cloudDB;
