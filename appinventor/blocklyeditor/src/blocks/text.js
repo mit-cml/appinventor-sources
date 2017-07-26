@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright 2013-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -473,4 +473,18 @@ Blockly.Blocks['obfuscated_text'] = {
     return container;
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE}]
+};
+
+Blockly.Blocks['text_is_string'] = {
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_HELPURL,
+  init: function() {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.appendValueInput('ITEM')
+      .appendField(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE)
+      .appendField(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_INPUT_THING);
+    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.OUTPUT));
+    this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_TEXT_IS_STRING_TITLE}]
 };

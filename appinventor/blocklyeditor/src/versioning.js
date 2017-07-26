@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2013-2016 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2013-2017 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -1667,7 +1667,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 20// Rename 'obsufcated_text' text block to 'obfuscated_text'
-    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text')
+    20: Blockly.Versioning.renameBlockType('obsufcated_text', 'obfuscated_text'),
+
+    // AI2: Added is a string? block to test whether values are strings.
+    21: "noUpgrade"
 
 
   }, // End Language upgraders
