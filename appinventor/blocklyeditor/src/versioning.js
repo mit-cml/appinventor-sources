@@ -877,6 +877,28 @@ Blockly.Versioning.addDefaultMethodArgument = function(componentType, methodName
 };
 
 /**
+ * Rename all event handler blocks for a given component type and event name.
+ * @param componentType: name of component type for event
+ * @param oldEventName: name of event
+ * @param newEventName: new name of event
+ * @returns {function(Element|Blockly.Workspace)} a function that maps a blocksRep (an XML DOM or
+ *   workspace) to a modified DOM in which every specified event block has been renamed.
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
+Blockly.Versioning.changeEventName = function(componentType, oldEventName, newEventName) {
+  return function (blocksRep) {
+    var dom = Blockly.Versioning.ensureDom(blocksRep);
+    var eventHandlerBlocks = Blockly.Versioning.findAllEventHandlers(dom, componentType, oldEventName);
+    for (var b = 0, eventBlock; eventBlock = eventHandlerBlocks[b]; b++) {
+      var mutation = Blockly.Versioning.firstChildWithTagName(eventBlock, 'mutation');
+      mutation.setAttribute('event_name', newEventName);
+    }
+    return dom;
+  };
+};
+
+/**
  * Rename all method call blocks for a given component type and method name.
  * @param componentType: name of component type for method
  * @param oldMethodName: name of method
@@ -930,6 +952,34 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
     }
     return dom; // Return the modified dom, as required by the upgrading structure.
   }
+};
+
+/**
+ * Returns the list of top-level blocks that are event handlers for the given eventName for
+ * componentType.
+ * @param dom  DOM for XML workspace
+ * @param componentType  name of the component type for event
+ * @param eventName  name of event
+ * @returns {Array.<Element>}  a list of XML elements for the specified event handler blocks.
+ *
+ * @author ewpatton@mit.edu (Evan W. Patton)
+ */
+Blockly.Versioning.findAllEventHandlers = function (dom, componentType, eventName) {
+  var eventBlocks = [];
+  for (var i = 0; i < dom.children.length; i++) {
+    var block = dom.children[i];
+    if (block.tagName === 'block' && block.getAttribute('type') === 'component_event') {
+      var mutation = Blockly.Versioning.firstChildWithTagName(block, 'mutation');
+      if (!mutation) {
+        throw 'Did not find expected mutation child in Blockly.Versioning.findAllEventHandlers ' +
+          'with componentType = ' + componentType + ' and eventName = ' + eventName;
+      } else if ((mutation.getAttribute('component_type') === componentType) &&
+          (mutation.getAttribute('event_name') === eventName)) {
+        eventBlocks.push(block);
+      }
+    }
+  }
+  return eventBlocks;
 };
 
 /**
@@ -1419,6 +1469,21 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End EmailPicker upgraders
 
+  "FeatureCollection": {
+
+    // AI2:
+    // - The GeoJSONError event was renamed to LoadError
+    // - The GotGeoJSON event was renamed to GotFeatures
+    // - The ErrorLoadingFeatureCollection event was removed in favor of LoadError
+    // - The LoadedFeatureCollection event was removed in favor of GotFeatures
+    2: [
+      Blockly.Versioning.changeEventName('FeatureCollection', 'GeoJSONError', 'LoadError'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'GeoGeoJSON', 'GotFeatures'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'ErrorLoadingFeatureCollection', 'LoadError'),
+      Blockly.Versioning.changeEventName('FeatureCollection', 'LoadedFeatureCollection', 'GotFeatures')
+    ]
+  },
+
   "File": {
 
     // AI2: The AfterFileSaved event was added.
@@ -1761,6 +1826,34 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade"
 
   }, // End LocationSensor upgraders
+
+  "Map": {
+
+    // AI2:
+    // - The Markers property was renamed to Features
+    // - The LoadGeoJSONFromURL method was renamed to LoadFromURL
+    // - The FeatureFromGeoJSONDescription method was renamed to FeatureFromDescription
+    2: [
+      Blockly.Versioning.changePropertyName('Map', 'Markers', 'Features'),
+      Blockly.Versioning.changeMethodName('Map', 'LoadGeoJSONFromUrl', 'LoadFromURL'),
+      Blockly.Versioning.changeMethodName('Map', 'FeatureFromGeoJSONDescription', 'FeatureFromDescription')
+    ],
+
+    // AI2:
+    // - The GotGeoJSON event was renamed to GotFeatures
+    // - The GeoJSONError event was renamed to LoadError
+    3: [
+      Blockly.Versioning.changeEventName('Map', 'GotGeoJSON', 'GotFeatures'),
+      Blockly.Versioning.changeEventName('Map', 'GeoJSONError', 'LoadError')
+    ]
+
+  }, // End Map upgraders
+
+  "Marker": {
+    // AI2:
+    // - The ShowShadow property was removed
+    2: "noUpgrade"
+  }, // End Marker upgraders
 
   "NearField": {
 

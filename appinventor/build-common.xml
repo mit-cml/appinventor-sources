@@ -179,6 +179,9 @@
   <macrodef name="ai.dojunit">
     <attribute name="aij-testingtarget" />
     <attribute name="aij-dir" />
+    <!-- The following element is used to workaround a bug in older JDKs that prevents
+         Robolectric's annotations from being read by javac -->
+    <element name="aij-supplemental-includes" optional="true" />
     <sequential>
       <local name="classdir" />
       <property name="classdir" location="${class.dir}/@{aij-testingtarget}" />
@@ -194,6 +197,7 @@
       <ai.javactests destdir="${classdir}" >
         <include name="@{aij-dir}/**/${test_name.class}.java" if="test_name" />
         <include name="@{aij-dir}/**/*.java" unless="test_name" />
+        <aij-supplemental-includes />
         <classpath refid="libsFor@{aij-testingtarget}.path"/>
       </ai.javactests>
 

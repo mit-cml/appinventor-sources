@@ -1479,6 +1479,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "any";
     }
 
+    if (type.equals("com.google.appinventor.components.runtime.Component")) {
+      return "component";
+    }
+
     // Check if it's a component.
     if (componentTypes.contains(type)) {
       return "component";

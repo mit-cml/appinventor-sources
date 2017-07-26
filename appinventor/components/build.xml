@@ -158,6 +158,9 @@
         <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
+        <pathelement location="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+        <pathelement location="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+        <pathelement location="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
       </classpath>
     </ai.javac5>
 
@@ -181,6 +184,11 @@
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/bouncycastle/bcprov-jdk15on-149.jar" />
+    <pathelement location="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <pathelement location="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+    <pathelement location="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
     <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
     <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
@@ -190,8 +198,10 @@
     <pathelement location="${lib.dir}/android/support/internal_impl-22.2.1.jar" />
     <pathelement location="${lib.dir}/android/support/support-annotations-22.2.1.jar" />
     <pathelement location="${lib.dir}/android/support/support-v4-22.2.1.jar" />
+    <pathelement location="${lib.dir}/android/support/testing-support-R-classes.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
+    <pathelement location="${lib.dir}/robolectric/robolectric-3.3.2-all-deps.jar" />
     <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
   </path>
 
@@ -205,6 +215,10 @@
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AndroidRuntimeTests"
                 aij-dir="${components.pkg}/runtime" >
+      <!-- Include extra classes from Robolectric that need to be compiled with the sources -->
+      <aij-supplemental-includes>
+        <include name="org/robolectric/**/*.java" />
+      </aij-supplemental-includes>
     </ai.dojunit>
   </target>
 
@@ -276,6 +290,9 @@
           <pathelement location="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
           <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+          <pathelement location="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+          <pathelement location="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+          <pathelement location="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />

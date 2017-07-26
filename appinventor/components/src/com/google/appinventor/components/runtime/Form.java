@@ -415,8 +415,8 @@ public class Form extends AppCompatActivity
             final FrameLayout savedLayout = frameLayout;
             androidUIHandler.postDelayed(new Runnable() {
                 public void run() {
-                  if (frameLayout != null) {
-                    frameLayout.invalidate();
+                  if (savedLayout != null) {
+                    savedLayout.invalidate();
                   }
                 }
               }, 100);          // Redraw the whole screen in 1/10 second

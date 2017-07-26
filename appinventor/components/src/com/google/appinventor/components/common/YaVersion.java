@@ -405,8 +405,22 @@ public class YaVersion {
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 163:
   // Added CloudDB
+  // For YOUNG_ANDROID_VERSION 164:
+  // - Added Map
+  // - Added Marker
+  // - Added FeatureCollection
+  // - Added Circle
+  // - Added LineString
+  // - Added Polygon
+  // - Added Rectangle
+  // For YOUNG_ANDROID_VERSION 165:
+  // - MAP_COMPONENT_VERSION was incremented to 2
+  // - MARKER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 166:
+  // - MAP_COMPONENT_VERSION was incremented to 3
+  // - FEATURE_COLLECTION_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 163;
+  public static final int YOUNG_ANDROID_VERSION = 166;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -620,6 +634,10 @@ public class YaVersion {
   // - The Value property was renamed to Checked.
   public static final int CHECKBOX_COMPONENT_VERSION = 2;
 
+  // For CIRCLE_COMPONENT_VERSION 1:
+  // - Initial implementation of Circle for Maps
+  public static final int CIRCLE_COMPONENT_VERSION = 1;
+
   // For CLOCK_COMPONENT_VERSION 2:
   // - The pattern parameter was added to the FormatDate and FormatDateTime.
   // - Add Duration Support
@@ -653,6 +671,15 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 3:
   // - RequestFocus function was added (via TextBoxBase)
   public static final int EMAILPICKER_COMPONENT_VERSION = 3;
+
+  // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
+  // - Initial FeatureCollection implementation for Maps
+  // For FEATURE_COLLECTION_COMPONENT_VERSION 2:
+  // - GeoJSONError event was renamed to LoadError
+  // - GotGeoJSON event was renamed to GotFeatures
+  // - ErrorLoadingFeatureCollection event was removed
+  // - LoadedFeatureCollection event was removed
+  public static final int FEATURE_COLLECTION_COMPONENT_VERSION = 2;
 
   // For FILE_COMPONENT_VERSION 2:
   // - The AfterFileSaved event was added.
@@ -768,6 +795,10 @@ public class YaVersion {
 
   public static final int LABEL_COMPONENT_VERSION = 4;
 
+  // For LINESTRING_COMPONENT_VERSION 1:
+  // - Initial LineString implementation for Maps
+  public static final int LINESTRING_COMPONENT_VERSION = 1;
+
   // For LISTPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   // For LISTPICKER_COMPONENT_VERSION 3:
@@ -805,6 +836,23 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
+
+  // For MAP_COMPONENT_VERSION 1:
+  // - Initial Map implementation using OpenStreetMap
+  // For MAP_COMPONENT_VERSION 2:
+  // - Markers was renamed Features to reflect additional features (circles, etc.)
+  // - LoadGeoJSONFromURL was renamed to LoadFromURL
+  // - Added Save method
+  // For MAP_COMPONENT_VERSION 3:
+  // - GotGeoJSON was renamed to GotFeatures
+  // - GeoJSONError was renamed to LoadError
+  public static final int MAP_COMPONENT_VERSION = 3;
+
+  // For MARKER_COMPONENT_VERSION 1:
+  // - Initial Marker implementation using OpenStreetMap
+  // For MARKER_COMPONENT_VERSION 2:
+  // - The ShowShadow property was removed
+  public static final int MARKER_COMPONENT_VERSION = 2;
 
   // For NEARFIELD_COMPONENT_VERSION 1:
   public static final int NEARFIELD_COMPONENT_VERSION = 1;
@@ -897,6 +945,14 @@ public class YaVersion {
   // - The OtherPlayerStarted event was added.
 
   public static final int PLAYER_COMPONENT_VERSION = 6;
+
+  // For POLYGON_COMPONENT_VERSION 1:
+  // - Initial Polygon implementation for Maps
+  public static final int POLYGON_COMPONENT_VERSION = 1;
+
+  // For RECTANGLE_COMPONENT_VERSION 1:
+  // - Initial Rectangle implementation for Maps
+  public static final int RECTANGLE_COMPONENT_VERSION = 1;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

@@ -65,7 +65,14 @@
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,Barcode.jar,simple_components.txt,simple_components_build_info.json,simple_components.json"/>
+      <!-- Map assets for build server -->
+      <fileset dir="${lib.dir}/leaflet" includes="leaflet.js,leaflet.css" />
+      <fileset dir="${lib.dir}/leaflet/assets" includes="*"/>
     </copy>
+    <copy toFile="${classes.files.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
+    <copy toFile="${classes.files.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${classes.files.dir}/jts.jar" file="${lib.dir}/jts/jts-core-1.15.0-20170823.040415-301.jar" />
+    <copy toFile="${classes.files.dir}/androidsvg.jar" file="${lib.dir}/androidsvg/androidsvg-d4ec6d8.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />

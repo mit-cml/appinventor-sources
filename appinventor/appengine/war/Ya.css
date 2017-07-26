@@ -1,5 +1,9 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
 /*
- * Copyright 2007 Google Inc. All Rights Reserved.
+ * Copyright 2007-2011 Google Inc. All Rights Reserved.
+ * Copyright 2011-2017 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 /*
@@ -1045,6 +1049,59 @@ select.ode-PropertyEditor[disabled] {
   border: 2px solid #8fc202;
 }
 
+.ode-SimpleMockMapFeature-selected svg * {
+  stroke: #8fc202;
+  stroke-opacity: 1;
+}
+
+path.ode-SimpleMockMapFeature-selected {
+  stroke: #8fc202;
+  stroke-opacity: 1;
+}
+
+.ode-SimpleMockMapFeature img {
+  padding: 2px;
+}
+
+.ode-SimpleMockMapFeature-selected img {
+  padding: 0;
+  border: 2px solid #8fc202;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon {
+  color: #888;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon:hover {
+  color: #0078A8;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked .fa-unlock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-lock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked .fa-lock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-unlock {
+  display: none;
+}
+
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.locked:hover .fa-unlock,
+.ode-SimpleMockContainer .leaflet-container .leaflet-toolbar-icon.unlocked:hover .fa-lock {
+  display: inline-block;
+}
+
+.ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location img {
+    position: relative;
+    top: -50%;
+    left: -50%;
+    width: 32px;
+    height: 32px;
+}
+
 .ode-SimpleMockContainer-centerContents {
   text-align: center;
 }
@@ -1102,6 +1159,7 @@ select.ode-PropertyEditor[disabled] {
   border-bottom: 4px solid #8fc202;
   width: 20%;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
+  z-index: 1000;
 }
 
 .ode-ComponentHelpPopup-TitleBar {
@@ -1221,7 +1279,7 @@ select.ode-PropertyEditor[disabled] {
   border-left: 4px solid #8fc202;
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .ode-DialogBox .gwt-CheckBox {
@@ -1374,6 +1432,10 @@ a.ode-ExtensionAnchor:hover {
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding;
   background-clip: padding-box;
+}
+
+.gwt-PopupPanelGlass {
+  z-index: 1000;
 }
 
 /*
@@ -2458,4 +2520,11 @@ textarea::-webkit-input-placeholder {
 
 .goog-hsva-palette, .goog-hsva-palette-sm {
   border: 0;
+}
+
+div.vector-marker>svg, div.leaflet-marker-icon>img {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2px;
 }
