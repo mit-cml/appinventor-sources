@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright 2012-2017 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Helper functions for generating Yail for blocks.
@@ -487,9 +487,9 @@ Blockly.Yail.quotifyForREPL = function(s) {
     for (var i = 0; i < len; i++) {
       c = s.charAt(i);
       if (c == '\\') {
-        // If this is \n don't slashify the backslash
+        // If this is \n or \t don't slashify the backslash
         // TODO(user): Make this cleaner and more general
-        if (!(i == lastIndex) && s.charAt(i + 1) == 'n') {
+        if (!(i == lastIndex) && (s.charAt(i + 1) == 'n' || s.charAt(i + 1) == 't')) {
           sb.push(c);
           sb.push(s.charAt(i + 1));
           i = i + 1;
