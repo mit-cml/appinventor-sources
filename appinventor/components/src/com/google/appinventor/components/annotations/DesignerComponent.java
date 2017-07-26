@@ -1,12 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.annotations;
 
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -77,4 +78,10 @@ public @interface DesignerComponent {
    * Custom help URL for the component (used for extensions).
    */
   String helpUrl() default "";
+
+  /**
+   * The minimum SDK version required for the component. Defaults to
+   * the global App Inventor minimum SDK unless otherwise specified.
+   */
+  int androidMinSdk() default ComponentConstants.APP_INVENTOR_MIN_SDK;
 }

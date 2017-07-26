@@ -3,6 +3,7 @@
 <!-- ======================================================================
      Copyright 2011 Google Inc.  All Rights Reserved.
      Author: markf@google.com (Mark Friedman)
+     Copyright 2012-2017 Massachusetts Institute of Technology, All rights reserved.
 
      App Inventor build server
      ====================================================================== -->
@@ -115,7 +116,13 @@
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="bouncycastle/bcprov-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="bouncycastle/bcpkix-jdk15on-149.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/common-24.3.0.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/builder-1.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/builder-model-1.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/sdk-common-24.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="android/tools/layoutlib-api-24.3.0.jar"/>
+      <fileset dir="${lib.dir}" includes="ecj/ecj-4.5.1.jar"/>
       <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>

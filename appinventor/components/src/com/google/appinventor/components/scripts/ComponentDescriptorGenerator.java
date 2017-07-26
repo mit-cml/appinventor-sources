@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -32,6 +32,7 @@ import javax.tools.FileObject;
  *   "showOnPalette": "true"|"false",
  *   "nonVisible": "true"|"false",
  *   "iconName": "ICON-FILE-NAME",
+ *   "androidMinSdk": "ANDROID-MIN-SDK",
  *   "properties": [
  *     { "name": "PROPERTY-NAME",
  *        "editorType": "EDITOR-TYPE",
@@ -90,7 +91,9 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     sb.append(component.getNonVisible());
     sb.append("\",\n  \"iconName\": \"");
     sb.append(component.getIconName());
-    sb.append("\",\n  \"properties\": [");
+    sb.append("\",\n  \"androidMinSdk\": ");
+    sb.append(component.getAndroidMinSdk());
+    sb.append(",\n  \"properties\": [");
     String separator = "";
     for (Map.Entry<String, DesignerProperty> entry : component.designerProperties.entrySet()) {
       String propertyName = entry.getKey();

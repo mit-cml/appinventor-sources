@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -556,6 +556,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private boolean showOnPalette;
     private boolean nonVisible;
     private String iconName;
+    private int androidMinSdk;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
@@ -613,6 +614,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           showOnPalette = designerComponentAnnotation.showOnPalette();
           nonVisible = designerComponentAnnotation.nonVisible();
           iconName = designerComponentAnnotation.iconName();
+          androidMinSdk = designerComponentAnnotation.androidMinSdk();
         }
       }
     }
@@ -710,6 +712,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected String getIconName() {
       return iconName;
+    }
+
+    /**
+     * Returns the minimum Android SDK required for the component to run, as specified in
+     * {@link DesignerComponent#androidMinSdk()}.
+     *
+     * @return the minimum Android sdk for the component
+     */
+    protected int getAndroidMinSdk() {
+      return androidMinSdk;
     }
 
     private String getDisplayNameForComponentType(String componentTypeName) {
