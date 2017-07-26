@@ -91,7 +91,7 @@ public class PropertiesUtil {
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
-          PropertiesUtil.createPropertyEditor(property.getEditorType(), editor));
+          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
@@ -166,7 +166,7 @@ public class PropertiesUtil {
   /*
    * Creates a new property editor.
    */
-  public static PropertyEditor createPropertyEditor(String editorType, YaFormEditor editor) {
+  public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, YaFormEditor editor) {
     if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT)) {
       return new YoungAndroidHorizontalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT)) {
@@ -183,7 +183,7 @@ public class PropertiesUtil {
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE)) {
       return new YoungAndroidButtonShapeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COLOR)) {
-      return new YoungAndroidColorChoicePropertyEditor();
+      return new YoungAndroidColorChoicePropertyEditor(defaultValue);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FLOAT)) {

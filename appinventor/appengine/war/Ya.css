@@ -2415,3 +2415,7 @@ textarea::-webkit-input-placeholder {
   position: absolute;
   z-index: 2000;
 }
+
+.goog-hsva-palette, .goog-hsva-palette-sm {
+  border: 0;
+}

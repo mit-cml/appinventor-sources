@@ -6443,4 +6443,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String reloadWindow();
 
+  @DefaultMessage("Custom...")
+  @Description("")
+  String customEllipsis();
 }

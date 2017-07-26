@@ -19,6 +19,7 @@
     <include path="/reference/**" expiration="1d" />
     <include path="/closure-library/closure/goog/base.js" expiration="1d" />
     <include path="/closure-library/closure/goog/css/dialog.css" expiration="1d" />
+    <include path="/closure-library/closure/goog/css/hsvapalette.css" />
     <include path="/closure-library/closure/goog/deps.js" expiration="1d" />
     <include path="/robots.txt" expiration="30d" />
 
