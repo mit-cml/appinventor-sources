@@ -19,11 +19,11 @@ import com.google.gwt.user.client.ui.Tree.Resources;
 public interface Images extends Resources {
 
   /**
-   * Android with arms raised for the welcome dialog created by
+   * Codi the Bee for the No Projects Dialog
    * {@link Ode#createWelcomeDialog(boolean)}
    */
-  @Source("com/google/appinventor/images/androidGreenSmall.png")
-  ImageResource androidGreenSmall();
+  @Source("com/google/appinventor/images/codi_vert.png")
+  ImageResource codiVert();
 
   /**
    * App Inventor Logo

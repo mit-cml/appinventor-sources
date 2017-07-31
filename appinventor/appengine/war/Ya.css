@@ -301,15 +301,17 @@ select {
 }
 
 .ode-Logo {
-  margin: 8px 4px 4px 4px;
-  -webkit-filter: drop-shadow(0px 0px 1px #222);
-  filter:         drop-shadow(0px 0px 1px #222);
+  margin: 0px 0px 4px 4px;
+/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
+  filter:         drop-shadow(0px 0px 1px #222); */
 }
 
+/*
 .ode-Logo:hover {
   -webkit-filter: drop-shadow(0px 0px 3px #222);
   filter:         drop-shadow(0px 0px 3px #222);
 }
+*/
 
 .ode-LogoText {
   font-size: 16px;

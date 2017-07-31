@@ -61,7 +61,7 @@ public class TopPanel extends Composite {
   private static final String WIDGET_NAME_LANGUAGE = "Language";
 
   private static final String SIGNOUT_URL = "/ode/_logout";
-  private static final String LOGO_IMAGE_URL = "/images/logo.png";
+  private static final String LOGO_IMAGE_URL = "/images/codi_long.png";
   private static final String LANGUAGES_IMAGE_URL = "/images/languages.svg";
 
   private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
@@ -269,25 +269,18 @@ public class TopPanel extends Composite {
   }
 
   private void addLogo(HorizontalPanel panel) {
-    // Logo should be a link to App Inv homepage. Currently, after the user
-    // has logged in, the top level *is* ODE; so for now don't make it a link.
-    // Add timestamp to logo url to get around browsers that agressively cache
-    // the image! This same trick is used in StorageUtil.getFilePath().
+    // Logo is a link to App Inv homepage. Add timestamp to logo url
+    // to get around browsers that agressively cache the image! This
+    // same trick is used in StorageUtil.getFilePath().
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
-    logo.setSize("40px", "40px");
+    logo.setSize("180px", "40px");
     logo.setStyleName("ode-Logo");
     String logoUrl = ode.getSystemConfig().getLogoUrl();
     if (!Strings.isNullOrEmpty(logoUrl)) {
       logo.addClickHandler(new WindowOpenClickHandler(logoUrl));
     }
     panel.add(logo);
-    panel.setCellWidth(logo, "50px");
-    Label title = new Label("MIT App Inventor");
-    title.setStyleName("ode-LogoText");
-    VerticalPanel titleContainer = new VerticalPanel();
-    titleContainer.add(title);
-    panel.add(titleContainer);
-    panel.setCellWidth(titleContainer, "180px");
+    panel.setCellWidth(logo, "230px");
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
   }
