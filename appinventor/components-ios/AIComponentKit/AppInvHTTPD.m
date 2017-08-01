@@ -31,6 +31,7 @@
 
 static NSString *_hmacKey = nil;
 static int _hmacSeq = 1;
+static NSString *kMimeJson = @"application/json";
 
 @implementation AppInvHTTPD
 
@@ -69,6 +70,14 @@ static int _hmacSeq = 1;
   }
 }
 
+- (GCDWebServerResponse *)setDefaultHeaders:(GCDWebServerResponse *)response {
+  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
+  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
+  return response;
+}
+
 - (GCDWebServerResponse *)getVersion:(GCDWebServerRequest *)request {
   UIDevice *device = [UIDevice currentDevice];
   NSDictionary *dict = @{
@@ -76,15 +85,11 @@ static int _hmacSeq = 1;
     @"fqcn": @true,
     @"installer": @"unknown",
     @"package": @"edu.mit.appinventor.aicompanion3",
-    @"version": @"2.38"
+    @"version": @"2.43"
   };
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithData:data contentType:@"application/json"];
-  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-  return response;
+  return [self setDefaultHeaders:response];
 }
 
 - (GCDWebServerResponse *)values:(GCDWebServerRequest *)request {
@@ -92,57 +97,40 @@ static int _hmacSeq = 1;
   GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"{\"status\":\"OK\",\"values\":[]}"];
   response.contentType = @"application/json";
   response.statusCode = 200;
-  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-  return response;
+  return [self setDefaultHeaders:response];
 }
 
 - (GCDWebServerResponse *)newblocks:(GCDWebServerURLEncodedFormRequest *)request {
   if ([request hasBody]) {
     NSString *yail = request.arguments[@"code"];
-    yail = [yail stringByReplacingOccurrencesOfString:@"\\u000a" withString:@"\n"];
-    yail = [NSString stringWithFormat:@"(begin %@)", yail];
-    if (!yail) {
+    NSString *blockid = request.arguments[@"blockid"];
+    if (!yail || yail.length == 0) {
       GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
       response.statusCode = 400;
-      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-      return response;
+      return [self setDefaultHeaders:response];
     }
-    NSString *result = [_interpreter evalForm:yail];
-    if (_interpreter.exception) {
-      NSLog(@"Exception in YAIL: %@ (%@)", _interpreter.exception.name, _interpreter.exception);
-      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]];
-      [_interpreter clearException];
-      response.statusCode = 500;
-      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-      return response;
-    } else {
-      result = [result stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-      [[RetValManager sharedManager] appendReturnValue:result forBlock:@"-2" withStatus:@"OK"];
-      GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"{\"status\":\"OK\",\"values\":[]}"];
-      response.contentType = @"application/json";
-      [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-      [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-      [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-      return response;
+    yail = [yail stringByReplacingOccurrencesOfString:@"\\u000a" withString:@"\n"];
+    if ([blockid characterAtIndex:0] != '"' || [blockid characterAtIndex:blockid.length - 1] != '"') {
+      blockid = [NSString stringWithFormat:@"\"%@\"", blockid];
     }
+    yail = [NSString stringWithFormat:@"(process-repl-input %@ (begin %@))", blockid, yail];
+    [NSOperationQueue.mainQueue addOperationWithBlock:^{
+      NSLog(@"To Eval: %@", yail);
+      [_interpreter evalForm:yail];
+      if (_interpreter.exception) {
+        [[RetValManager sharedManager] appendReturnValue:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]
+                                                forBlock:blockid withStatus:@"BAD"];
+        [_interpreter clearException];
+      }
+    }];
+    NSData *result = [[[RetValManager sharedManager] fetch:NO]
+                      dataUsingEncoding:NSUTF8StringEncoding];
+    return [self setDefaultHeaders:[GCDWebServerDataResponse responseWithData:result
+                                                                  contentType:kMimeJson]];
   } else {
     GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
     response.statusCode = 400;
-    [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-    [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-    [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-    return response;
+    return [self setDefaultHeaders:response];
   }
 }
 
@@ -157,7 +145,7 @@ static int _hmacSeq = 1;
       if ([filename hasPrefix:@".."] || [filename hasSuffix:@".."] || [filename containsString:@"../"]) {
         error = true;
       } else {
-        NSString *targetPath = [[AssetManager shared] pathForExistingFileAsset:filename];
+        NSString *targetPath = [[AssetManager shared] pathForPublicAsset:filename];
         NSLog(@"Saving asset to %@", targetPath);
         [request.data writeToFile:targetPath atomically:YES];
       }
@@ -172,11 +160,7 @@ static int _hmacSeq = 1;
   } else {
     response = [GCDWebServerDataResponse responseWithText:@"OK"];
   }
-  [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
-  [response setValue:@"origin, content-type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Access-Control-Allow-Methods"];
-  [response setValue:@"POST,OPTIONS,GET,HEAD,PUT" forAdditionalHeader:@"Allow"];
-  return response;
+  return [self setDefaultHeaders:response];
 }
 
 - (instancetype)initWithPort:(NSUInteger)port rootDirectory:(NSString *)wwwroot secure:(BOOL)secure

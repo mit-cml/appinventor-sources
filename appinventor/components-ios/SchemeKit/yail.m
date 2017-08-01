@@ -22,7 +22,6 @@
 static NSMutableDictionary<id, NSNumber *> *objects = nil;
 static NSMutableDictionary<NSString *, ProtocolWrapper *> *protocols = nil;
 
-
 @interface ProtocolWrapper: NSObject<NSCopying> {
   Protocol *protocol_;
 }
@@ -511,6 +510,11 @@ yail_invoke(pic_state *pic) {
           [invocation setArgument:&value atIndex:j];
           break;
         }
+        case '@': {
+          NSString *value = [NSString stringWithFormat:@"%d", pic_int(pic, args[i])];
+          [invocation setArgument:&value atIndex:j];
+          break;
+        }
         default: {
           int value = pic_int(pic, args[i]);
           [invocation setArgument:&value atIndex:j];
@@ -521,11 +525,21 @@ yail_invoke(pic_state *pic) {
       NSString *native_str = [NSString stringWithUTF8String:str_value];
       [invocation setArgument:&native_str atIndex:j];
     } else if (pic_true_p(pic, args[i])) {
-      BOOL value = YES;
-      [invocation setArgument:&value atIndex:j];
+      if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
+        NSString *value = @"#t";
+        [invocation setArgument:&value atIndex:j];
+      } else {
+        BOOL value = YES;
+        [invocation setArgument:&value atIndex:j];
+      }
     } else if (pic_false_p(pic, args[i])) {
-      BOOL value = NO;
-      [invocation setArgument:&value atIndex:j];
+      if ([invocation.methodSignature getArgumentTypeAtIndex:j][0] == '@') {
+        NSString *value = @"#f";
+        [invocation setArgument:&value atIndex:j];
+      } else {
+        BOOL value = NO;
+        [invocation setArgument:&value atIndex:j];
+      }
     } else if (yail_native_instance_p(pic, args[i])) {
       id object = yail_native_instance_ptr(pic, args[i])->object_;
       [invocation setArgument:&object atIndex:j];
@@ -649,7 +663,7 @@ yail_isa(pic_state *pic) {
 }
 
 pic_value
-yail_format_inexact(pic_state *pic, pic_value n) {
+yail_format_inexact(pic_state *pic) {
   static const int BUFSIZE = 24;
   double value, absvalue;
   char buf[BUFSIZE];
@@ -664,6 +678,22 @@ yail_format_inexact(pic_state *pic, pic_value n) {
   }
 
   return pic_intern_cstr(pic, buf);
+}
+
+pic_value
+yail_perform_on_main_thread(pic_state *pic) {
+  pic_value thunk;
+
+  pic_get_args(pic, "l", &thunk);
+  if ([NSThread isMainThread]) {
+    pic_call(pic, thunk, 0);
+  } else {
+    [NSOperationQueue.mainQueue addOperationWithBlock:^{
+        pic_call(pic, thunk, 0);
+      }];
+  }
+
+  return pic_undef_value(pic);
 }
 
 void
@@ -685,6 +715,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:invoke", yail_invoke);
   pic_defun(pic, "yail:isa", yail_isa);
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
+  pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }

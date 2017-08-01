@@ -56,6 +56,7 @@ static RetValManager *_manager = nil;
 
 - (void)appendReturnValue:(NSString *)item forBlock:(NSString *)blockId
   withStatus:(NSString *)status {
+  if (!item) item = @"";
   NSDictionary *output = @{@"status": status, @"type": @"return", @"value": item, @"blockid": blockId};
   [self addResult:output];
 }
@@ -105,6 +106,10 @@ static RetValManager *_manager = nil;
     [_waitLock unlock];
   }
   return @"{\"status\":\"BAD\",\"message\":\"Failure in RetValManager\"}";
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;  // we don't want copies of a singleton!
 }
 
 @end

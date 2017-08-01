@@ -429,7 +429,7 @@
 
 (define (init-runtime)
   ; no-op
-  '())
+  #f)
 
 (define (set-this-form)
   ; no-op
@@ -524,3 +524,26 @@
         ((integer? n) (call-with-output-string (lambda (port) (display (exact n) port))))
         ((exact? n) (appinventor-number->string (exact->inexact n)))
         (else (*format-inexact* n))))
+
+(define-syntax process-repl-input
+  (syntax-rules ()
+    ((_ blockid expr)
+     (in-ui blockid (delay expr)))))
+
+(define (in-ui blockid promise)
+  (set! *this-is-the-repl* #t)
+  (yail:perform-on-main-thread
+   (lambda ()
+     (send-to-block blockid
+                    (call/cc
+                     (lambda (k)
+                       (with-exception-handler
+                        (lambda (ex) (k (list "NOK" (error-object-message ex))))
+                        (lambda () (k (list "OK" (force promise)))))))))))
+
+(define (send-to-block blockid message)
+  (if message
+      (let* ((good (car message))
+             (value (cadr message)))
+        (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue value blockid good))
+      (yail:invoke (yail:invoke RetValManager 'sharedManager) 'appendReturnValue "No message received" blockid "NOK")))
