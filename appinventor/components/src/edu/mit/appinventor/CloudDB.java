@@ -72,7 +72,7 @@ import java.util.concurrent.atomic.AtomicReference;
         " and retrieve information.",
     designerHelpDescription = "Non-visible component that communicates with CloudDB " +
         "server to store and retrieve information.",
-    category = ComponentCategory.EXTENSION,
+    category = ComponentCategory.EXPERIMENTAL,
     nonVisible = true,
     iconName = "http://web.mit.edu/graeme/www/appinventor/cloudDB.png")
 //Natalie: Delete the (external=true) when not extension
