@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		060E3B041DB5F02F00C4A9F1 /* kitty.png in Resources */ = {isa = PBXBuildFile; fileRef = 060E3B021DB5F02F00C4A9F1 /* kitty.png */; };
-		060E3B051DB5F02F00C4A9F1 /* meow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 060E3B031DB5F02F00C4A9F1 /* meow.mp3 */; };
 		06463EFC1D95956800B23DCD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463EFB1D95956800B23DCD /* AppDelegate.swift */; };
 		06463EFE1D95956800B23DCD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06463EFD1D95956800B23DCD /* ViewController.swift */; };
 		06463F011D95956800B23DCD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06463EFF1D95956800B23DCD /* Main.storyboard */; };
@@ -77,8 +75,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		060E3B021DB5F02F00C4A9F1 /* kitty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = kitty.png; sourceTree = "<group>"; };
-		060E3B031DB5F02F00C4A9F1 /* meow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = meow.mp3; sourceTree = "<group>"; };
 		06463EF81D95956800B23DCD /* AICompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AICompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06463EFB1D95956800B23DCD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		06463EFD1D95956800B23DCD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -201,8 +197,6 @@
 		06B2161D1DBC7B4C000B3366 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				060E3B021DB5F02F00C4A9F1 /* kitty.png */,
-				060E3B031DB5F02F00C4A9F1 /* meow.mp3 */,
 				06B216111DBC5F1B000B3366 /* connectwCode.png */,
 				06B216121DBC5F1B000B3366 /* connectwQR.png */,
 				06B216131DBC5F1B000B3366 /* Instructions.png */,
@@ -342,8 +336,6 @@
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
 				06B216161DBC5F1B000B3366 /* connectwCode.png in Resources */,
 				06B2161C1DBC7B47000B3366 /* runtime.scm in Resources */,
-				060E3B051DB5F02F00C4A9F1 /* meow.mp3 in Resources */,
-				060E3B041DB5F02F00C4A9F1 /* kitty.png in Resources */,
 				06B2161A1DBC5F1B000B3366 /* Title.png in Resources */,
 				06B216191DBC5F1B000B3366 /* mooning.png in Resources */,
 				06463F031D95956800B23DCD /* Assets.xcassets in Resources */,
@@ -538,7 +530,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.evanpatton.aicompanion4;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8609ef4d-d5c9-49a7-90f3-3f4895c54a46";
+				PROVISIONING_PROFILE = "8dce2dde-e782-4bb5-bf14-3bfe698a2e30";
 				PROVISIONING_PROFILE_SPECIFIER = "AI2 Companion dev";
 				SWIFT_INCLUDE_PATHS = "${TARGET_BUILD_DIR}/**";
 				SWIFT_VERSION = 3.0;

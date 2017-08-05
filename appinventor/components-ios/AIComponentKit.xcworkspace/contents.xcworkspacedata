@@ -5,9 +5,6 @@
       location = "group:AICompanionApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Mood Ring.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:SchemeKit.xcodeproj">
    </FileRef>
    <FileRef

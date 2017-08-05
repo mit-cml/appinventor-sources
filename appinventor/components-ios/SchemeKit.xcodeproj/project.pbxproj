@@ -176,8 +176,8 @@
 		06BEC1761D961AE100B62630 /* emyg_atod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_atod.h; path = picrin/contrib/10.roundtrip/emyg_atod.h; sourceTree = "<group>"; };
 		06BEC1771D961AE100B62630 /* emyg_dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emyg_dtoa.c; path = picrin/contrib/10.roundtrip/emyg_dtoa.c; sourceTree = "<group>"; };
 		06BEC1781D961AE100B62630 /* emyg_dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emyg_dtoa.h; path = picrin/contrib/10.roundtrip/emyg_dtoa.h; sourceTree = "<group>"; };
-		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMSymbol.h; sourceTree = "<group>"; };
-		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMSymbol.m; sourceTree = "<group>"; };
+		06D1518B1DC456C600FC981E /* SCMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCMSymbol.h; path = SchemeKit/SCMSymbol.h; sourceTree = "<group>"; };
+		06D1518C1DC456C600FC981E /* SCMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCMSymbol.m; path = SchemeKit/SCMSymbol.m; sourceTree = "<group>"; };
 		06FCDEE01D94383000199DD4 /* SchemeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SchemeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06FCDEE31D94383000199DD4 /* SchemeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SchemeKit.h; sourceTree = "<group>"; };
 		06FCDEE41D94383000199DD4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };

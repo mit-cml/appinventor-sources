@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2017 Massachusetts Institute of Technolgoy, All Rights Reserved.
+     Author: ewpatton@mit.edu (Evan W. Patton)
+
+     App Inventor component libraries and companion app for iOS.
+     ====================================================================== -->
+
+<project name="components-ios" default="all">
+  <property name="build" location="${basedir}/build" />
+  <property name="public.build" location="${basedir}/../build/components-ios" />
+  <property name="archive" location="${build}/release/MIT AI Companion.xcarchive" />
+
+  <target name="all" depends="components-ios,Companion">
+  </target>
+
+  <target name="clean">
+    <delete dir="DerivedData" quiet="true" />
+    <delete dir="${build}" quiet="true" />
+    <delete dir="${public.build}" quiet="true" />
+  </target>
+
+  <macrodef name="ai.xcbuild">
+    <attribute name="scheme" />
+    <attribute name="action" default="build" />
+    <attribute name="failonerror" default="true" />
+    <element name="extra-args" optional="true" implicit="true" />
+    <sequential>
+      <exec executable="xcodebuild" osfamily="mac" failonerror="@{failonerror}">
+        <arg value="-scheme" />
+        <arg value="@{scheme}" />
+        <arg value="-workspace" />
+        <arg value="AIComponentKit.xcworkspace" />
+        <extra-args />
+        <arg value="@{action}" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <target name="components-ios">
+    <ai.xcbuild scheme="AIComponentKit" />
+  </target>
+
+  <target name="Companion" depends="components-ios">
+    <ai.xcbuild scheme="AICompanionApp" />
+  </target>
+
+  <target name="tests" depends="components-ios,Companion">
+    <ai.xcbuild scheme="AIComponentKit" action="test">
+      <arg value="-destination" />
+      <arg value="platform=iOS Simulator,name=iPhone 6,OS=10.3.1" />
+    </ai.xcbuild>
+    <ai.xcbuild scheme="AICompanionApp" action="test">
+      <arg value="-destination" />
+      <arg value="platform=iOS Simulator,name=iPhone 6,OS=10.3.1" />
+    </ai.xcbuild>
+  </target>
+
+  <target name="archive" depends="Companion">
+    <mkdir dir="${build}/release" />
+    <ai.xcbuild scheme="AICompanionApp" action="archive">
+      <arg value="-archivePath" />
+      <arg value="${archive}"/>
+    </ai.xcbuild>
+  </target>
+
+  <target name="release" depends="archive">
+    <mkdir dir="${public.build}" />
+    <exec executable="xcodebuild">
+      <arg value="-exportArchive" />
+      <arg value="-archivePath" />
+      <arg value="${archive}"/>
+      <arg value="-exportPath" />
+      <arg value="${public.build}" />
+      <arg value="-exportOptionsPlist" />
+      <arg value="export.plist" />
+    </exec>
+  </target>
+
+  <target name="install" depends="release">
+    <exec executable="ideviceinstaller">
+      <arg value="-i" />
+      <arg value="${public.build}/AICompanionApp.ipa" />
+    </exec>
+  </target>
+</project>

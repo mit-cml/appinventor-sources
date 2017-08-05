@@ -23,7 +23,7 @@ class AICompanionTests: XCTestCase {
     
     func testSha1Hmac() {
       let seed = "lwearr"
-      let code = seed.hmac(algorithm: CryptoAlgorithm.SHA1)
+      let code = seed.sha1
       NSLog("Seed = \(seed)")
       NSLog("Code = \(code)")
       XCTAssertEqual("cf81fecc42ff40eacc2e65413d5673ead3ec791b", code)

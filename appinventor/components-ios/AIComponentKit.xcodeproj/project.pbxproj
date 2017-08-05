@@ -21,6 +21,7 @@
 		062832961DBE9591009605D5 /* LinearLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832951DBE9591009605D5 /* LinearLayout.swift */; };
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
+		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
@@ -126,6 +127,7 @@
 		062832951DBE9591009605D5 /* LinearLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearLayout.swift; sourceTree = "<group>"; };
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
+		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
@@ -363,6 +365,7 @@
 				06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */,
 				06D1518F1DC45E9700FC981E /* ErrorMessages.swift */,
 				06C94A381D99D10400341AAE /* EventDispatcher.swift */,
+				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
 				06E59EA71D92C7E800C42804 /* NetworkUtils.h */,
@@ -729,6 +732,7 @@
 				06E59EB11D92D16100C42804 /* Button.swift in Sources */,
 				06E59EB31D92D19600C42804 /* Label.swift in Sources */,
 				06B215FE1DB95116000B3366 /* Web.swift in Sources */,
+				0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */,
 				062832981DBE95A7009605D5 /* Layout.swift in Sources */,
 				06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */,
 				06DA9F531D8CFBA200389B04 /* ComponentContainer.swift in Sources */,
@@ -795,6 +799,7 @@
 					"$(PROJECT_DIR)/build/Debug-iphoneos/SQLite.swift",
 					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
 				);
+				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include";
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -803,6 +808,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -832,6 +838,7 @@
 					"$(PROJECT_DIR)/build/Debug-iphoneos/Toast-Swift",
 				);
 				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited)";
+				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include";
 				INFOPLIST_FILE = AIComponentKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -839,6 +846,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -17,7 +17,11 @@ import UIKit
    * Create an Application using the currently running application bundle.
    */
   public override init() {
-    name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as! String
+    if let appName = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String {
+      name = appName
+    } else {
+      name = "<unknown>"
+    }
     assetManager_ = AssetManager()
     super.init()
   }

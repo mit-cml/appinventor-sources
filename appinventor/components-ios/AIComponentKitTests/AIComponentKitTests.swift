@@ -28,7 +28,7 @@ class AIComponentKitTests: XCTestCase {
 
   func testEventDispatch() {
     let form = ReplForm()
-    form.startHTTPD(secure: false)
+    form.startHTTPD(false)
     if let interpreter = form.interpreter {
       let runtimeUrl = Bundle(for: ReplForm.self).url(forResource: "runtime", withExtension: "scm")
       if (runtimeUrl != nil) {
