@@ -49,12 +49,12 @@ public class ViewController: UINavigationController {
       let repl = form! as! ReplForm
       repl.startHTTPD(false)
       repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
-      if ((repl.interpreter?.exception) != nil) {
-        NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+      if let exception = repl.interpreter?.exception {
+        NSLog("Exception: \(exception.name) (\(exception))")
       }
       repl.interpreter?.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
-      if ((repl.interpreter?.exception) != nil) {
-        NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+      if let exception = repl.interpreter?.exception {
+        NSLog("Exception: \(exception.name) (\(exception))")
       }
       if let mooning = UIImage(named: "mooning.png") {
         form?.view.backgroundColor = UIColor(patternImage: mooning)
@@ -69,16 +69,6 @@ public class ViewController: UINavigationController {
       versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControlEvents.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControlEvents.primaryActionTriggered)
-//      httpd = AppInvHTTPD(port:8001, rootDirectory:"", secure:false, for:form as! ReplForm)
-//      let temp = UIButton(type: UIButtonType.system)
-//      let image = UIImage(named: "kitty.png")
-//      temp.setBackgroundImage(image, for: UIControlState.normal)
-//      temp.frame = CGRect(x: 0, y: 0, width: 294, height: 270)
-//      temp.addTarget(self, action: #selector(playSound(_:)), for: UIControlEvents.primaryActionTriggered)
-//      temp.titleLabel?.font = UIFont(name: "System", size: 15.0)
-//      temp.titleLabel?.textColor = UIColor(
-//      temp.setTitle("Hello world", for: UIControlState.normal)
-//      form?.view.addSubview(temp)
     }
   }
 
@@ -138,8 +128,8 @@ public class ViewController: UINavigationController {
   func showBarcodeScanner(_ sender: UIButton?) {
     let repl = (form! as! ReplForm)
     repl.interpreter?.evalForm("(yail:invoke (lookup-in-form-environment 'BarcodeScanner1) 'DoScan)")
-    if ((repl.interpreter?.exception) != nil) {
-      NSLog("Exception: \((repl.interpreter?.exception?.name)!) (\(repl.interpreter?.exception)!)")
+    if let exception = repl.interpreter?.exception {
+      NSLog("Exception: \(exception.name) (\(exception))")
     }
   }
   
