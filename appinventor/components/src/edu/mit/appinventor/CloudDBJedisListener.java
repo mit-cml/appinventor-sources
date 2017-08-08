@@ -32,7 +32,7 @@ public class CloudDBJedisListener extends JedisPubSub {
   }
   
   private Jedis getJedis(){
-    Jedis jedis = new Jedis("128.52.179.76", 6379);
+    Jedis jedis = new Jedis("jis.csail.mit.edu", 9001);
     jedis.auth("test6789");
     return jedis;
   }
