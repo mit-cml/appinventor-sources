@@ -103,9 +103,15 @@ public interface UserInfoService extends RemoteService{
   void noop();
 
   /**
-   * @author Joydeep Mitra (joymitro1989@gmail.com
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
    * Returns a token that the user can use for authetication with CloudDB
    */
-  String getCloudDBToken();
+  String getCloudDBTokenSignature();
+
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
+   * Returns a hash of the UserID.
+   */
+  String gethuuid();
 
 }

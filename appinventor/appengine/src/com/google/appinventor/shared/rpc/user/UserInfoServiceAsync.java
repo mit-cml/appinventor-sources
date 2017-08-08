@@ -81,6 +81,16 @@ public interface UserInfoServiceAsync {
    */
   void noop(AsyncCallback<Void> callback);
 
-  void getCloudDBToken(AsyncCallback<String> callback);
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
+   * Returns a token that the user can use for authetication with CloudDB to the client.
+   */
+  void getCloudDBTokenSignature(AsyncCallback<String> callback);
+
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
+   * Returns a hash of the UserID to the client.
+   */
+  void gethuuid(AsyncCallback<String> callback);
 
 }

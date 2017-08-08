@@ -36,7 +36,8 @@ public class MockCloudDB extends MockNonVisibleComponent {
   public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
   private static final String PROPERTY_NAME_ACCOUNT_NAME = "AccountName";
-  private static final String PROPERTY_NAME_AUTH_TOKEN = "AuthToken";
+  private static final String PROPERTY_NAME_AUTH_TOKEN_SIGN = "AuthTokenSignature";
+  private static final String PROPERTY_NAME_HUUID = "Huuid";
 
   //Persist feature to be implemented
   private boolean persistToken = false;
@@ -63,14 +64,25 @@ public class MockCloudDB extends MockNonVisibleComponent {
     super.initComponent(widget);
 
     String accName = Ode.getInstance().getUser().getUserEmail() + "";
-    Ode.getInstance().getUserInfoService().getCloudDBToken(new OdeAsyncCallback<String>() {
+    Ode.getInstance().getUserInfoService().getCloudDBTokenSignature(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
-        changeProperty(PROPERTY_NAME_AUTH_TOKEN,token);
+        changeProperty(PROPERTY_NAME_AUTH_TOKEN_SIGN,token);
       }
       @Override
       public void onFailure(Throwable t){
-        changeProperty(PROPERTY_NAME_AUTH_TOKEN,"ERROR : token not created");
+        changeProperty(PROPERTY_NAME_AUTH_TOKEN_SIGN,"ERROR : token not created");
+        super.onFailure(t);
+      }
+    });
+    Ode.getInstance().getUserInfoService().gethuuid(new OdeAsyncCallback<String>() {
+      @Override
+      public void onSuccess(String huuid) {
+        changeProperty(PROPERTY_NAME_HUUID,huuid);
+      }
+      @Override
+      public void onFailure(Throwable t){
+        changeProperty(PROPERTY_NAME_HUUID,"ERROR : huuid could not be created");
         super.onFailure(t);
       }
     });

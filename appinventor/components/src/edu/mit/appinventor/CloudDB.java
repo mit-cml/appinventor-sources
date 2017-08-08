@@ -85,7 +85,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private boolean importProject = false;
   private String accountName = "";
   private String projectID = "";
-  private String authToken = "";
+  private String authTokenSignature = "";
+  private String huuid = "";
   private boolean isPublic = false;
   // Note: The two variables below are static because the systems they
   // interact with within CloudDB are also static Note: Natalie check true
@@ -149,7 +150,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
-    authToken = ""; //set in Designer
+    authTokenSignature = ""; //set in Designer
+    huuid = ""; //set in Designer
 
     
     // Retrieve new posts as they are added to the CloudDB.
@@ -253,31 +255,59 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * Specifies the ID of this CloudDB project.
+   * Specifies the Token Signature of this CloudDB project.
    *
-   * @param token for CloudDB server
+   * @param tokenSign for CloudDB server
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
           defaultValue = "")
-  public void AuthToken(String token) {
-    if (!authToken.equals(token)) {
-      authToken = token;
+  public void AuthTokenSignature(String tokenSign) {
+    if (!authTokenSignature.equals(tokenSign)) {
+      authTokenSignature = tokenSign;
     }
-    if (authToken.equals("")){
+    if (authTokenSignature.equals("")){
       throw new RuntimeException("CloudDB Token property cannot be blank.");
     }
   }
 
   /**
-   * Getter for the AuthToken.
+   * Getter for the authTokenSignature.
    *
-   * @return the AuthToken for this CloudDB project
+   * @return the authTokenSignature for this CloudDB project
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Gets the ProjectID for this CloudDB project.")
-  public String AuthToken() {
+          description = "Gets the token signature for this CloudDB project.")
+  public String AuthTokenSignature() {
     checkAccountNameProjectIDNotBlank();
-    return authToken;
+    return authTokenSignature;
+  }
+
+  /**
+   * Specifies the Hashed UserId of this CloudDB project.
+   *
+   * @param huuid for CloudDB server
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+          defaultValue = "")
+  public void Huuid(String huuid) {
+    if (!this.huuid.equals(huuid)) {
+      this.huuid = huuid;
+    }
+    if (this.huuid.equals("")){
+      throw new RuntimeException("huuid property cannot be blank.");
+    }
+  }
+
+  /**
+   * Getter for the Hashed UserId.
+   *
+   * @return the huuid for this CloudDB project
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "Gets the hashed UsedId for this CloudDB project.")
+  public String Huuid() {
+    checkAccountNameProjectIDNotBlank();
+    return this.huuid;
   }
 
   @SimpleFunction
@@ -816,8 +846,11 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
-    if(authToken.equals("")){
-      throw new RuntimeException("CloudDB AuthToken property cannot be blank");
+    if(authTokenSignature.equals("")){
+      throw new RuntimeException("CloudDB authTokenSignature property cannot be blank");
+    }
+    if(this.huuid.equals("")){
+      throw new RuntimeException("huuid property cannot be blank");
     }
   }
   

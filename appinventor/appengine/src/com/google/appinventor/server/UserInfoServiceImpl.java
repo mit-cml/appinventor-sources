@@ -14,6 +14,11 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Implementation of the user information service.
  *
@@ -27,6 +32,12 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
 
   private static final long serialVersionUID = -7316312435338169166L;
+
+  private static final String SECRET_KEY_UUID = "sjahyqhskakslAsahskAJH";
+
+  private static final String SECRET_KEY_CLOUD_DB = "hSknJHaslJKLsdLhhdsTYjskk";
+
+  private static final String HMAC_ALGORITHM = "HmacSHA256";
 
   /**
    * Returns System Config, including user information record
@@ -194,10 +205,53 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   public void noop() {
   }
 
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
+   * Returns a token that the user can use for authetication with CloudDB
+   */
   @Override
-  public String getCloudDBToken(){
-    String uuid = userInfoProvider.getUserId();
-    return uuid;
+  public String getCloudDBTokenSignature(){
+    String huuid = this.gethuuid();
+    if(huuid != null){
+      try {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY_CLOUD_DB.getBytes(), HMAC_ALGORITHM);
+        Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
+        hmac.init(secretKeySpec);
+        return hmac.doFinal(huuid.getBytes()).toString();
+      }
+      catch(NoSuchAlgorithmException e){
+        e.printStackTrace();
+        return null;
+      }
+      catch(InvalidKeyException e){
+        e.printStackTrace();
+        return null;
+      }
+    }
+
+    return huuid;
+  }
+
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com)
+   * Returns a hash of the UserID.
+   */
+  @Override
+  public String gethuuid(){
+    try {
+      SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY_UUID.getBytes(), HMAC_ALGORITHM);
+      Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
+      hmac.init(secretKeySpec);
+      return hmac.doFinal(userInfoProvider.getUserId().getBytes()).toString();
+    }
+    catch(NoSuchAlgorithmException e){
+      e.printStackTrace();
+      return null;
+    }
+    catch(InvalidKeyException e){
+      e.printStackTrace();
+      return null;
+    }
   }
 
 
