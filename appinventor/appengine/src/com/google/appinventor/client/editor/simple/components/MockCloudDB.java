@@ -9,6 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.output.OdeLog;
@@ -35,6 +36,7 @@ public class MockCloudDB extends MockNonVisibleComponent {
   public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
   private static final String PROPERTY_NAME_ACCOUNT_NAME = "AccountName";
+  private static final String PROPERTY_NAME_AUTH_TOKEN = "AuthToken";
 
   //Persist feature to be implemented
   private boolean persistToken = false;
@@ -61,6 +63,17 @@ public class MockCloudDB extends MockNonVisibleComponent {
     super.initComponent(widget);
 
     String accName = Ode.getInstance().getUser().getUserEmail() + "";
+    Ode.getInstance().getUserInfoService().getCloudDBToken(new OdeAsyncCallback<String>() {
+      @Override
+      public void onSuccess(String token) {
+        changeProperty(PROPERTY_NAME_AUTH_TOKEN,token);
+      }
+      @Override
+      public void onFailure(Throwable t){
+        changeProperty(PROPERTY_NAME_AUTH_TOKEN,"ERROR : token not created");
+        super.onFailure(t);
+      }
+    });
     DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     String projectID = "";
     if (currentProject != null) {

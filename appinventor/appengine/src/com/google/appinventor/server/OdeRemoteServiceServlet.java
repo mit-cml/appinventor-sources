@@ -9,6 +9,8 @@ package com.google.appinventor.server;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import java.io.Serializable;
+
 
 /**
  * Class supporting ODE GWT RPC, which ODE RPC

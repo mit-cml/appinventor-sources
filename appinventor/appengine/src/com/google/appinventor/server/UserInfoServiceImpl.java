@@ -153,7 +153,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
 
   /**
    * Stores the user's link.
-   * @param name  user's link
+   * @param link  user's link
    */
   @Override
   public void storeUserLink(String link) {
@@ -193,5 +193,12 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void noop() {
   }
+
+  @Override
+  public String getCloudDBToken(){
+    String uuid = userInfoProvider.getUserId();
+    return uuid;
+  }
+
 
 }

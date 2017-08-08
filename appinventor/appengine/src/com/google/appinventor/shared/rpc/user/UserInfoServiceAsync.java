@@ -81,4 +81,6 @@ public interface UserInfoServiceAsync {
    */
   void noop(AsyncCallback<Void> callback);
 
+  void getCloudDBToken(AsyncCallback<String> callback);
+
 }

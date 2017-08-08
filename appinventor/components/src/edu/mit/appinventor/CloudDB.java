@@ -85,6 +85,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private boolean importProject = false;
   private String accountName = "";
   private String projectID = "";
+  private String authToken = "";
   private boolean isPublic = false;
   // Note: The two variables below are static because the systems they
   // interact with within CloudDB are also static Note: Natalie check true
@@ -148,6 +149,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
+    authToken = ""; //set in Designer
 
     
     // Retrieve new posts as they are added to the CloudDB.
@@ -248,6 +250,34 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
+  }
+
+  /**
+   * Specifies the ID of this CloudDB project.
+   *
+   * @param token for CloudDB server
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+          defaultValue = "")
+  public void AuthToken(String token) {
+    if (!authToken.equals(token)) {
+      authToken = token;
+    }
+    if (authToken.equals("")){
+      throw new RuntimeException("CloudDB Token property cannot be blank.");
+    }
+  }
+
+  /**
+   * Getter for the AuthToken.
+   *
+   * @return the AuthToken for this CloudDB project
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "Gets the ProjectID for this CloudDB project.")
+  public String AuthToken() {
+    checkAccountNameProjectIDNotBlank();
+    return authToken;
   }
 
   @SimpleFunction
@@ -785,6 +815,9 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     }
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
+    }
+    if(authToken.equals("")){
+      throw new RuntimeException("CloudDB AuthToken property cannot be blank");
     }
   }
   

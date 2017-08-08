@@ -10,12 +10,14 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import java.io.Serializable;
+
 /**
  * Interface for the service providing user related information.
  *
  */
 @RemoteServiceRelativePath(ServerLayout.USER_INFO_SERVICE)
-public interface UserInfoService extends RemoteService {
+public interface UserInfoService extends RemoteService{
 
   /**
    * Retrieves system configuration information, including
@@ -99,5 +101,11 @@ public interface UserInfoService extends RemoteService {
    * No-Op Do nothing, but will refresh the session cookie as a side-effect
    */
   void noop();
+
+  /**
+   * @author Joydeep Mitra (joymitro1989@gmail.com
+   * Returns a token that the user can use for authetication with CloudDB
+   */
+  String getCloudDBToken();
 
 }
