@@ -54,7 +54,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
+
 
 /**
  * The CloudDB component stores and retrieves information in the Cloud using Redis, an
@@ -98,6 +101,18 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private Handler androidUIHandler;
   private final Activity activity;
   private CloudDBJedisListener childListener;
+
+  private Jedis INSTANCE = null;
+  private String redisServer;
+  private int redisPort;
+
+  // To avoid blocking the UI thread, we do most Jedis operations in the background.
+  // Rather then spawning a new thread for each request, we use an ExcutorService with
+  // a single background thread to perform all the Jedis work. Using a single thread
+  // also means that we can share a single Jedis connection and not worry about thread
+  // synchronization.
+
+  private ExecutorService background = Executors.newSingleThreadExecutor();
 
   //added by Joydeep Mitra
   private boolean sync = false;
@@ -151,32 +166,54 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
     token = ""; //set in Designer
-    
+
+    redisServer = "jis.csail.mit.edu";
+    redisPort = 9001;
+
     // Retrieve new posts as they are added to the CloudDB.
-    Thread t = new Thread() {
-      public void run() {
-        while (true) {
-          Jedis jedis = getJedis();
-          try {
-            jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
-          } catch (Exception e) {
-            continue;
-          }
-        }
-      }
-    };
-    t.start();
-    
+    // Note: We use a real thread here rather then the background executor
+    // because this thread will run effectively forever
+
     //Natalie: Need to add auth
     cm = (ConnectivityManager) form.$context().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
   }
-  
+
   /**
    * Initialize: Do runtime initialization of CloudDB
    */
   public void Initialize() {
     Log.i(LOG_TAG, "Initalize called!");
     isInitialized = true;
+    startListener();
+  }
+
+  private void stopListener() {
+    // We do this on the UI thread to make sure it is complete
+    // before we repoint the redis server (or port)
+    Log.i(LOG_TAG, "Listener stopping!");
+    Jedis jedis = getJedis();
+    try {
+      jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
+    } catch (Exception e) {
+      // XXX
+    }
+  }
+
+  private void startListener() {
+    Log.i(LOG_TAG, "Listener starting!");
+    Thread t = new Thread() {
+        public void run() {
+          while (true) {
+            Jedis jedis = getJedis(true);
+            try {
+              jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
+            } catch (Exception e) {
+              continue;
+            }
+          }
+        }
+      };
+    t.start();
   }
 
   /**
@@ -198,13 +235,49 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
-  public void AccountName(String usrname) {    
+  public void AccountName(String usrname) {
     if (!accountName.equals(usrname)) {
       accountName = usrname;
     }
     if (accountName.equals("")){
       throw new RuntimeException("CloudDB AccountName property cannot be blank.");
     }
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+    defaultValue = "jis.csail.mit.edu")
+  public void RedisServer(String servername) {
+    stopListener();
+    redisServer = servername;
+    if (INSTANCE != null) {
+      INSTANCE.quit();
+      INSTANCE = null;
+    }
+    startListener();
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The Redis Server to use.")
+  public String RedisServer() {
+    return redisServer;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+    defaultValue = "9001")
+  public void RedisPort(int port) {
+    stopListener();
+    redisPort = port;
+    if (INSTANCE != null) {
+      INSTANCE.quit();
+      INSTANCE = null;
+    }
+    startListener();
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The Redis Server port to use.")
+  public int RedisPort() {
+    return redisPort;
   }
 
   /**
@@ -245,7 +318,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   public long SyncPeriod() {
     return this.syncPeriod;
   }
-  
+
   /**
    * Getter for the ProjectID.
    *
@@ -257,7 +330,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     checkAccountNameProjectIDNotBlank();
     return projectID;
   }
-  
+
   /**
    * Specifies the ID of this CloudDB project.
    *
@@ -315,7 +388,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    * number, text, boolean or list).
    */
   @SimpleFunction
-  public void StoreValue(final String tag, Object valueToStore) {
+  public void StoreValue(final String tag, final Object valueToStore) {
     Log.i("CloudDB","StoreValue");
     checkAccountNameProjectIDNotBlank();
     Log.i("CloudDB","PASSSSS");
@@ -323,7 +396,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     final String value;
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
-    
+
     try {
       if (valueToStore != null) {
         String strval = valueToStore.toString();
@@ -344,25 +417,17 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //valueToStore is always converted to JSON (String);
     if(isConnected){
       Log.i("CloudDB","Device is online...");
-      Thread t = new Thread() {
-        public void run() {
-          Jedis jedis = getJedis();
-          try {
+      background.submit(new Runnable() {
+          public void run() {
+            Jedis jedis = getJedis();
             Log.i("CloudDB", "Before set is called...");
             //String statusCodeReply = jedis.set(accountName+projectID+tag, value);
             long statusCodeReply = jedis.zadd(accountName+projectID+tag, System.currentTimeMillis(),value);
             Log.i("CloudDB", "Jedis Key = " + accountName+projectID+tag);
             Log.i("CloudDB", "Jedis TS = " + System.currentTimeMillis());
             Log.i("CloudDB", "Jedis Val = " + value);
-          } finally {
-            if (jedis != null) {
-              jedis.close();
-            }
           }
-        }
-      };
-      t.start();
-
+        });
     }
     else if(sync){
       Log.i("CloudDB","Device is offline...");
@@ -371,7 +436,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     }
     Log.i("CloudDB", "End of StoreValue...");
   }
-  
+
   /**
    * GetValue asks CloudDB to get the value stored under the given tag.
    * It will pass valueIfTagNotThere to GotValue if there is no value stored
@@ -440,29 +505,29 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     else if(isConnected){
       // Set value to either the JSON from the CloudDB
       // or the JSON representation of valueIfTagNotThere
-      Thread t = new Thread() {
-        public void run() {
-          Jedis jedis = getJedis();
-          try {
-            Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
-            Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
-            //String returnValue = jedis.get(accountName+projectID+tag);
-            Log.d(CloudDB.LOG_TAG,"zrange success ...");
-            String returnValue = null;
-            if(returnValues != null && !returnValues.isEmpty()){
-              returnValue = returnValues.toArray()[returnValues.size()-1].toString();
-            }
-            Log.d(CloudDB.LOG_TAG,"Device is online = " + returnValue);
-            if (returnValue != null) {
-              String val = getJsonRepresenationIfValueFileName(returnValue);
-              if(val != null) value.set(val);
-              else value.set(returnValue);
-            }
-            else {
-              Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
-              value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
-            }
-          } catch(JSONException e) {
+      background.submit(new Runnable() {
+          public void run() {
+            Jedis jedis = getJedis();
+            try {
+              Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
+              Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
+              //String returnValue = jedis.get(accountName+projectID+tag);
+              Log.d(CloudDB.LOG_TAG,"zrange success ...");
+              String returnValue = null;
+              if(returnValues != null && !returnValues.isEmpty()){
+                returnValue = returnValues.toArray()[returnValues.size()-1].toString();
+              }
+              Log.d(CloudDB.LOG_TAG,"Device is online = " + returnValue);
+              if (returnValue != null) {
+                String val = getJsonRepresenationIfValueFileName(returnValue);
+                if(val != null) value.set(val);
+                else value.set(returnValue);
+              }
+              else {
+                Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
+                value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+              }
+            } catch(JSONException e) {
               throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
             }
             catch(NullPointerException e){
@@ -470,19 +535,16 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
               throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
             }
 
-          androidUIHandler.post(new Runnable() {
-            public void run() {
-              // Signal an event to indicate that the value was
-              // received.  We post this to run in the Application's main
-              // UI thread.
-              GotValue(tag, value.get());
-            }
-          });
-
-          jedis.close();
-        }
-      };
-      t.start();
+            androidUIHandler.post(new Runnable() {
+                public void run() {
+                  // Signal an event to indicate that the value was
+                  // received.  We post this to run in the Application's main
+                  // UI thread.
+                  GotValue(tag, value.get());
+                }
+              });
+          }
+        });
     }
   }
 
@@ -554,49 +616,48 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     else if(isConnected){
       // Set value to either the JSON from the CloudDB
       // or the JSON representation of valueIfTagNotThere
-      Thread t = new Thread() {
-        public void run() {
-          Jedis jedis = getJedis();
-          final List<String> returnValuesList;
-          try {
-            Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
-            Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
-            //String returnValue = jedis.get(accountName+projectID+tag);
-            Log.d(CloudDB.LOG_TAG,"zrange success ...");
+      background.submit(new Runnable() {
+          public void run() {
+            Jedis jedis = getJedis();
+            final List<String> returnValuesList;
+            try {
+              Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
+              Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
+              //String returnValue = jedis.get(accountName+projectID+tag);
+              Log.d(CloudDB.LOG_TAG,"zrange success ...");
 
-            if(returnValues != null && !returnValues.isEmpty()){
-              returnValuesList = new ArrayList<>(returnValues);
-            }
-            else{
-              returnValuesList = new ArrayList<>();
-              returnValuesList.add(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
-            }
-            androidUIHandler.post(new Runnable() {
-              public void run() {
-                // Signal an event to indicate that the value was
-                // received.  We post this to run in the Application's main
-                // UI thread.
-                GotValue(tag, returnValuesList);
+              if(returnValues != null && !returnValues.isEmpty()){
+                returnValuesList = new ArrayList<>(returnValues);
               }
-            });
-          }
-          catch(JSONException e){
-            Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
-          }
-          catch(NullPointerException e){
-            Log.e(CloudDB.LOG_TAG,"error while zrange...",e);
-            throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
-          }
-          catch(Exception e){
-            Log.e(CloudDB.LOG_TAG,"error while making list...",e);
-          }
+              else{
+                returnValuesList = new ArrayList<>();
+                returnValuesList.add(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
+              }
+              androidUIHandler.post(new Runnable() {
+                  public void run() {
+                    // Signal an event to indicate that the value was
+                    // received.  We post this to run in the Application's main
+                    // UI thread.
+                    GotValue(tag, returnValuesList);
+                  }
+                });
+            }
+            catch(JSONException e){
+              Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
+            }
+            catch(NullPointerException e){
+              Log.e(CloudDB.LOG_TAG,"error while zrange...",e);
+              throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
+            }
+            catch(Exception e){
+              Log.e(CloudDB.LOG_TAG,"error while making list...",e);
+            }
 
-          finally {
-            if(jedis != null) jedis.close();
+            finally {
+              if(jedis != null) jedis.close();
+            }
           }
-        }
-      };
-      t.start();
+        });
     }
   }
 
@@ -627,22 +688,21 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     "When the element is available, the \"FirstRemoved\" event will be triggered.")
   public void RemoveFirstFromList(final String tag) {
     checkAccountNameProjectIDNotBlank();
-    
+
     final String key = accountName + projectID + tag;
 
-    Thread t = new Thread() {
-      public void run() {
-      Jedis jedis = getJedis();
-        try {
-          FirstRemoved(jedis.eval(POP_FIRST_SCRIPT, 1, key));
-        } catch(JedisException e) {
+    background.submit(new Runnable() {
+        public void run() {
+          Jedis jedis = getJedis();
+          try {
+            FirstRemoved(jedis.eval(POP_FIRST_SCRIPT, 1, key));
+          } catch(JedisException e) {
 
-        } finally {
-          jedis.close();
+          } finally {
+            jedis.close();
+          }
         }
-      }
-    };
-    t.start();
+      });
   }
 
   private static final String APPEND_SCRIPT =
@@ -668,7 +728,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     "data lost.")
   public void AppendValueToList(final String tag, final Object itemToAdd) {
     checkAccountNameProjectIDNotBlank();
-    
+
     Object itemObject = new Object();
     try {
       if(itemToAdd != null) {
@@ -677,25 +737,24 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
     }
-    
+
     final String item = (String) itemObject;
     final String key = accountName + projectID + tag;
 
-    Thread t = new Thread() {
-      public void run() {
-        Jedis jedis = getJedis();
-        try {
-          jedis.eval(APPEND_SCRIPT, 1, key, item);
-        } catch(JedisException e) {
+    background.submit(new Runnable() {
+        public void run() {
+          Jedis jedis = getJedis();
+          try {
+            jedis.eval(APPEND_SCRIPT, 1, key, item);
+          } catch(JedisException e) {
 
-        } finally {
-          jedis.close();
+          } finally {
+            jedis.close();
+          }
         }
-      }
-    };
-    t.start();
+      });
   }
-  
+
   /**
    * Indicates that a GetValue request has succeeded.
    *
@@ -705,7 +764,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent
   public void GotValue(String tag, Object value) {
     checkAccountNameProjectIDNotBlank();
-    
+
     try {
       System.out.println(value.getClass().getName());
       if(value != null && value instanceof String) {
@@ -718,7 +777,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     // Invoke the application's "GotValue" event handler
     EventDispatcher.dispatchEvent(this, "GotValue", tag, value);
   }
-  
+
   /**
    * Asks CloudDB to forget (delete or set to "null") a given tag.
    *
@@ -728,17 +787,10 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   public void ClearTag(final String tag) {
     //Natalie: Should we also add ClearTagsList? Jedis can delete a list of tags easily
     checkAccountNameProjectIDNotBlank();
-    
-    Thread t = new Thread() {
-      public void run() {
-        Jedis jedis = getJedis();
-        jedis.del(accountName+projectID+tag);
-        jedis.close();
-      }
-    };
-    t.start();
+    Jedis jedis = getJedis();
+    jedis.del(accountName+projectID+tag);
   }
-  
+
   /**
    * GetTagList asks CloudDB to retrieve all the tags belonging to this project.
    *
@@ -750,26 +802,26 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   public void GetTagList() {
     //Natalie: Need Listener here too!
     checkAccountNameProjectIDNotBlank();
-    
+
     Jedis jedis = getJedis();
-    
-    Set<String> value = jedis.keys(accountName+projectID+"*");    
+
+    Set<String> value = jedis.keys(accountName+projectID+"*");
     final List<String> listValue = new ArrayList<String>(value);
-    
+
     for(int i = 0; i < listValue.size(); i++){
       listValue.set(i, listValue.get(i).substring((accountName+projectID).length()));
     }
-    
+
     androidUIHandler.post(new Runnable() {
       @Override
       public void run() {
         TagList(listValue);
       }
     });
-    
+
     jedis.close();
   }
-  
+
   /**
    * Indicates that a GetTagList request has succeeded.
    *
@@ -778,12 +830,12 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent(description = "Event triggered when we have received the list of known tags. " +
       "Used with the \"GetTagList\" Function.")
   public void TagList(List<String> value) {
-    //Natalie: Why is this not called "GotTagList"? Also need to only show tag without 
+    //Natalie: Why is this not called "GotTagList"? Also need to only show tag without
     //accountName or projectID
     checkAccountNameProjectIDNotBlank();
     EventDispatcher.dispatchEvent(this, "TagList", value);
   }
-  
+
   /**
    * Indicates that the data in the CloudDB project has changed.
    * Launches an event with the tag and value that have been updated.
@@ -792,7 +844,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    * @param value the new value of the tag.
    */
   @SimpleEvent
-  public void DataChanged(final String tag, final Object value) {    
+  public void DataChanged(final String tag, final Object value) {
     androidUIHandler.post(new Runnable() {
       public void run() {
         Object tagValue = "";
@@ -804,15 +856,15 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         } catch(JSONException e) {
           throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
         }
-        
-        String parsedTag = tag.substring(accountName.length()+projectID.length());
-        
+
+        String parsedTag = tag.substring(accountName.length()+projectID.length()+9); // 9 is for debugging
+
         // Invoke the application's "DataChanged" event handler
         EventDispatcher.dispatchEvent(CloudDB.this, "DataChanged", parsedTag, tagValue);
       }
     });
   }
-  
+
   /**
    * Indicates that the communication with the CloudDB signaled an error.
    *
@@ -830,7 +882,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       Notifier.oneButtonAlert(form, message, "CloudDBError", "Continue");
     }
   }
-  
+
   private void checkAccountNameProjectIDNotBlank(){
     if (accountName.equals("")){
       throw new RuntimeException("CloudDB AccountName property cannot be blank.");
@@ -842,17 +894,23 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
       throw new RuntimeException("CloudDB Token property cannot be blank");
     }
   }
-  
-  private Jedis getJedis(){
+
+  private Jedis getJedis(boolean createNew) {
     Jedis jedis;
-      try {
-        jedis = new Jedis("jis.csail.mit.edu", 9001);
-        jedis.auth("test6789");
-        return jedis;
-      }
-      catch (JedisConnectionException e) {
-        return null;
-      }
+    try {
+      jedis = new Jedis(redisServer, redisPort);
+      jedis.auth("test6789");
+    } catch (JedisConnectionException e) {
+      return null;
+    }
+    return jedis;
+  }
+
+  public Jedis getJedis(){
+    if (INSTANCE == null) {
+      INSTANCE = getJedis(true);
+    }
+    return INSTANCE;
   }
 
  /**
