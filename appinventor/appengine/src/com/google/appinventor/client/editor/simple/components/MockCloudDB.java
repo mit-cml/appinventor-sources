@@ -5,23 +5,14 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.widgets.properties.EditableProperty;
-import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
-import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
+import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-
 
 
 /**
@@ -62,9 +53,8 @@ public class MockCloudDB extends MockNonVisibleComponent {
   @Override
   public final void initComponent(Widget widget) {
     super.initComponent(widget);
-
     String accName = Ode.getInstance().getUser().getUserEmail() + "";
-    Ode.getInstance().getUserInfoService().getCloudDBTokenSignature(new OdeAsyncCallback<String>() {
+    Ode.getInstance().getCloudDBAuthService().getToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String token) {
         changeProperty(PROPERTY_NAME_AUTH_TOKEN_SIGN,token);

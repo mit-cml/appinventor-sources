@@ -6,6 +6,7 @@
 package com.google.appinventor.server.components;
 
 import com.firebase.security.token.TokenOptions;
+import com.google.appengine.repackaged.com.google.protobuf.ByteString;
 import com.google.appinventor.server.OdeRemoteServiceServlet;
 import com.firebase.security.token.TokenGenerator;
 import com.google.appinventor.server.flags.Flag;

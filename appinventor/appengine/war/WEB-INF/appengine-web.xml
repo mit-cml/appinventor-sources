@@ -160,6 +160,10 @@
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
 
+    <!-- CloudDB secret keys -->
+    <property name="clouddb.uuid.secret" value="hudh76eJjs723djsbEDxksiw"/>
+    <property name="clouddb.secret" value="icdndsh373jJKhs7eub34oickcdi320fnKasgDS" />
+
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->
