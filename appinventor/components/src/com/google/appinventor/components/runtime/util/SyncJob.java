@@ -118,11 +118,23 @@ public class SyncJob extends Job {
         return Result.SUCCESS;
     }
 
+    public static int scheduleSync(long period){
+        Log.d(TAG,"SyncJob scheduleSync called ...");
+        int jobId = new JobRequest.Builder(TAG).setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                .setPeriodic(period)
+                //.setExecutionWindow(30_000L, 40_000L)
+                .setRequirementsEnforced(true)
+                .build()
+                .schedule();
+        Log.d(TAG,"SyncJob scheduleSync finished ...");
+        return jobId;
+    }
+
     public static int scheduleSync(){
         Log.d(TAG,"SyncJob scheduleSync called ...");
         int jobId = new JobRequest.Builder(TAG).setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                .setPeriodic(9_00_000L)
-                //.setExecutionWindow(30_000L, 40_000L)
+                //.setPeriodic(9_00_000L)
+                .setExecutionWindow(30_000L, 40_000L)
                 .setRequirementsEnforced(true)
                 .build()
                 .schedule();

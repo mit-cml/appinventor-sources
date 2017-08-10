@@ -85,8 +85,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private boolean importProject = false;
   private String accountName = "";
   private String projectID = "";
-  private String authTokenSignature = "";
-  private String huuid = "";
+  private String token = "";
   private boolean isPublic = false;
   // Note: The two variables below are static because the systems they
   // interact with within CloudDB are also static Note: Natalie check true
@@ -102,6 +101,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
 
   //added by Joydeep Mitra
   private boolean sync = false;
+  private long syncPeriod = 9_00_000;
   private ConnectivityManager cm;
   //private CloudDBCacheHelper cloudDBCacheHelper;
   //-------------------------
@@ -150,9 +150,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
     projectID = ""; // set in Designer
-    authTokenSignature = ""; //set in Designer
-    huuid = ""; //set in Designer
-
+    token = ""; //set in Designer
     
     // Retrieve new posts as they are added to the CloudDB.
     Thread t = new Thread() {
@@ -216,14 +214,36 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "false")
   @SimpleProperty(description = "Specifies if data stored in CloudDB needs to be synced", userVisible = false)
-  public void setSync(boolean sync){
-    Log.d(CloudDB.LOG_TAG,"setSync called with sync = " + sync);
+  public void Sync(boolean sync){
+    Log.d(CloudDB.LOG_TAG,"Sync called with sync = " + sync);
     this.sync = sync;
     //this.cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
     JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context(),this.accountName,this.projectID));
     Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
-    SyncJob.scheduleSync();
+    SyncJob.scheduleSync(this.syncPeriod);
 
+  }
+
+  /**
+   * Specifies the periodic interval in ms in which the sync job will run.
+   * @param period
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+          defaultValue = "900000")
+  public void SyncPeriod(long period){
+    Log.d(CloudDB.LOG_TAG,"SyncPeriod called with period = " + sync);
+    this.syncPeriod = period;
+  }
+
+  /**
+   * Getter for the sync period.
+   *
+   * @return the syncPeriod for the Sync Job.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+          description = "Gets the sync period of the SyncJob.")
+  public long SyncPeriod() {
+    return this.syncPeriod;
   }
   
   /**
@@ -257,15 +277,15 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   /**
    * Specifies the Token Signature of this CloudDB project.
    *
-   * @param tokenSign for CloudDB server
+   * @param authToken for CloudDB server
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
           defaultValue = "")
-  public void AuthTokenSignature(String tokenSign) {
-    if (!authTokenSignature.equals(tokenSign)) {
-      authTokenSignature = tokenSign;
+  public void Token(String authToken) {
+    if (!token.equals(authToken)) {
+      token = authToken;
     }
-    if (authTokenSignature.equals("")){
+    if (token.equals("")){
       throw new RuntimeException("CloudDB Token property cannot be blank.");
     }
   }
@@ -277,41 +297,13 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
           description = "Gets the token signature for this CloudDB project.")
-  public String AuthTokenSignature() {
+  public String Token() {
     checkAccountNameProjectIDNotBlank();
-    return authTokenSignature;
-  }
-
-  /**
-   * Specifies the Hashed UserId of this CloudDB project.
-   *
-   * @param huuid for CloudDB server
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-          defaultValue = "")
-  public void Huuid(String huuid) {
-    if (!this.huuid.equals(huuid)) {
-      this.huuid = huuid;
-    }
-    if (this.huuid.equals("")){
-      throw new RuntimeException("huuid property cannot be blank.");
-    }
-  }
-
-  /**
-   * Getter for the Hashed UserId.
-   *
-   * @return the huuid for this CloudDB project
-   */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Gets the hashed UsedId for this CloudDB project.")
-  public String Huuid() {
-    checkAccountNameProjectIDNotBlank();
-    return this.huuid;
+    return token;
   }
 
   @SimpleFunction
-  public void PerformSync(){
+  public void PerformSyncNow(){
     SyncJob.scheduleSync();
   }
 
@@ -846,11 +838,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
-    if(authTokenSignature.equals("")){
-      throw new RuntimeException("CloudDB authTokenSignature property cannot be blank");
-    }
-    if(this.huuid.equals("")){
-      throw new RuntimeException("huuid property cannot be blank");
+    if(token.equals("")){
+      throw new RuntimeException("CloudDB Token property cannot be blank");
     }
   }
   

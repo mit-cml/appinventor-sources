@@ -205,54 +205,5 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   public void noop() {
   }
 
-  /**
-   * @author Joydeep Mitra (joymitro1989@gmail.com)
-   * Returns a token that the user can use for authetication with CloudDB
-   */
-  @Override
-  public String getCloudDBTokenSignature(){
-    String huuid = this.gethuuid();
-    if(huuid != null){
-      try {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY_CLOUD_DB.getBytes(), HMAC_ALGORITHM);
-        Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
-        hmac.init(secretKeySpec);
-        return hmac.doFinal(huuid.getBytes()).toString();
-      }
-      catch(NoSuchAlgorithmException e){
-        e.printStackTrace();
-        return null;
-      }
-      catch(InvalidKeyException e){
-        e.printStackTrace();
-        return null;
-      }
-    }
-
-    return huuid;
-  }
-
-  /**
-   * @author Joydeep Mitra (joymitro1989@gmail.com)
-   * Returns a hash of the UserID.
-   */
-  @Override
-  public String gethuuid(){
-    try {
-      SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY_UUID.getBytes(), HMAC_ALGORITHM);
-      Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
-      hmac.init(secretKeySpec);
-      return hmac.doFinal(userInfoProvider.getUserId().getBytes()).toString();
-    }
-    catch(NoSuchAlgorithmException e){
-      e.printStackTrace();
-      return null;
-    }
-    catch(InvalidKeyException e){
-      e.printStackTrace();
-      return null;
-    }
-  }
-
 
 }
