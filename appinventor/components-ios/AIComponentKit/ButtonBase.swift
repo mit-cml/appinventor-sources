@@ -25,12 +25,14 @@ open class ButtonBase: ViewComponent {
   fileprivate var _bold = false
   fileprivate var _showFeedback = true
   fileprivate var _italic = false
-  fileprivate var _textColor = Color.default
+  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _shape = ButtonShape.normal
   fileprivate var _imagePath: String?
+  fileprivate var _defaultTextColor: UIColor
 
   public override init(_ parent: ComponentContainer) {
     self._view = UIButton(type: UIButtonType.system)
+    _defaultTextColor = self._view.tintColor
     super.init(parent)
     self._view.backgroundColor = argbToColor(_backgroundColor)
     self._view.translatesAutoresizingMaskIntoConstraints = false
@@ -176,7 +178,12 @@ open class ButtonBase: ViewComponent {
       return colorToArgb((_view.titleLabel?.textColor)!)
     }
     set(color) {
-      _view.setTitleColor(argbToColor(color), for: .normal)
+      _textColor = color
+      if (color == Int32(bitPattern: Color.default.rawValue)) {
+        _view.setTitleColor(_defaultTextColor, for: .normal)
+      } else {
+        _view.setTitleColor(argbToColor(color), for: .normal)
+      }
     }
   }
 

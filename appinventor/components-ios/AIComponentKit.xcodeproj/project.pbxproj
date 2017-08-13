@@ -440,9 +440,9 @@
 				068E0EB41DC251A20086FFDA /* Sharing.swift */,
 				06E59EAE1D92D14F00C42804 /* Sound.swift */,
 				068E0EB81DC251E90086FFDA /* Texting.swift */,
+				06473B841F327E5400A9A29B /* TextToSpeech.swift */,
 				06B215FF1DB95122000B3366 /* TinyDB.swift */,
 				06B215FD1DB95116000B3366 /* Web.swift */,
-				06473B841F327E5400A9A29B /* TextToSpeech.swift */,
 			);
 			name = nonvisible;
 			sourceTree = "<group>";

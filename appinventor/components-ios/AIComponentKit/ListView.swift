@@ -27,6 +27,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     _view.dataSource = self
     self.setDelegate(self)
     parent.add(self)
+    Width = kLengthFillParent
   }
 
   open override var view: UIView {
@@ -166,5 +167,13 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
 
   open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return _elements.count
+  }
+
+  // MARK: UITableViewDelegate
+
+  open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    _selectionIndex = Int32(indexPath.row) + 1
+    _selection = _elements[indexPath.row]
+    AfterPicking()
   }
 }

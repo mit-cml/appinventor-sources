@@ -98,7 +98,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     set(value) {
       _selection = value
       if let i = _items.index(of: value) {
-        _selectionIndex = i + 1
+        _selectionIndex = Int32(i) + 1
       } else {
         _selectionIndex = 0
       }
@@ -112,7 +112,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
     set(index) {
       _selectionIndex = index
       if index > 0 && index <= Int32(_items.count) {
-        _selection = _items[index - 1]
+        _selection = _items[Int(index) - 1]
       } else {
         _selection = ""
       }
@@ -163,7 +163,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     _viewController?.dismiss(animated: true, completion: {
       self._selection = self._items[indexPath.row]
-      self._selectionIndex = indexPath.row + 1
+      self._selectionIndex = Int32(indexPath.row) + 1
       self.AfterPicking()
     })
   }
