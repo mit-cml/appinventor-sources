@@ -38,7 +38,8 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   fileprivate var _verticalLayout = CSLinearLayoutView()
   fileprivate var _verticalItem: CSLinearLayoutItem!
   internal var _componentWithActiveEvent: Component?
-  
+  fileprivate var _linearView: LinearView!
+
   open func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
@@ -53,7 +54,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     super.viewWillAppear(animated)
     Form.activeForm = self
   }
-  
+
   open func canDispatchEvent(of component: Component, called eventName: String) -> Bool {
     let canDispatch = _screenInitialized || (self.isEqual(component) && eventName == "Initialize")
     if (!_screenInitialized) {
@@ -64,7 +65,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     }
     return canDispatch
   }
-  
+
   open func dispatchEvent(of component: Component, called componentName: String, with eventName: String, having args: [AnyObject]) -> Bool {
     // TODO(ewpatton): Implementation
     return false
@@ -96,10 +97,12 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       item?.verticalAlignment = _csVerticalAlignment
       item?.horizontalAlignment = _csHorizontalAlignment
       _verticalLayout.addItem(item!)
-      _verticalLayout.layoutSubviews()
-      view.layoutSubviews()
+      _verticalLayout.setNeedsLayout()
+      _verticalLayout.setNeedsUpdateConstraints()
       NSLog("Horizontal frame size: \(view.frame)")
       NSLog("Vertical frame size: \(_verticalLayout.frame)")
+    } else if let _linearView = _linearView {
+      _linearView.addItem(LinearViewItem(component.view))
     } else {
       view.addSubview(component.view)
       if _components.count > 1, let priorComponent = _components[_components.count - 2] as? ViewComponent {
@@ -117,12 +120,11 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     view.setNeedsLayout()
     view.setNeedsUpdateConstraints()
   }
-  
+
   open func layoutSubviews() {
-    _verticalLayout.layoutSubviews()
     view.layoutSubviews()
-    NSLog("Vertical frame size: \(_verticalLayout.frame)")
     NSLog("Horizontal frame size: \(view.frame)")
+    NSLog("Vertical frame size: \(_verticalLayout.frame)")
   }
 
   open func setChildWidth(of component: ViewComponent, width: Int32) {
@@ -139,8 +141,9 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     } else {
       NSLog("Unable to process width value \(width)")
     }
+    form.view.setNeedsLayout()
   }
-  
+
   open func setChildHeight(of component: ViewComponent, height: Int32) {
     if height >= 0 {
       view.addConstraint(NSLayoutConstraint(item: component.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: CGFloat(0.0), constant: CGFloat(height)))
@@ -157,6 +160,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     } else {
       NSLog("Unable to process width value \(height)")
     }
+    form.view.setNeedsLayout()
   }
   
   open class func switchForm(_ name: String) {
@@ -170,20 +174,26 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   open func clear() {
     let subviews = view.subviews
     for subview in subviews {
-      NSLog("Removing subview \(subview)")
       subview.removeFromSuperview()
     }
     _components = []
-    let horizontal = CSLinearLayoutView(frame: view.frame)  // vertical alignment
-    horizontal.orientation = CSLinearLayoutViewOrientationHorizontal
-    view = horizontal
-    _verticalLayout = CSLinearLayoutView()
-    _verticalLayout.orientation = CSLinearLayoutViewOrientationVertical
-    _verticalLayout.autoAdjustFrameSize = true
-    _verticalLayout.autoAdjustContentSize = true
-    _verticalLayout.frame.size.width = horizontal.frame.size.width
-    _verticalItem = CSLinearLayoutItem(for: _verticalLayout)
-    horizontal.addItem(_verticalItem)
+    _linearView = LinearView(frame: view.frame)
+    _linearView.accessibilityIdentifier = "Form root view"
+    view.addSubview(_linearView)
+    view.addConstraint(view.widthAnchor.constraint(equalTo: _linearView.widthAnchor, multiplier: 1.0))
+    view.addConstraint(view.heightAnchor.constraint(equalTo: _linearView.heightAnchor, multiplier: 1.0))
+    view.addConstraint(view.topAnchor.constraint(equalTo: _linearView.topAnchor))
+    view.addConstraint(view.leadingAnchor.constraint(equalTo: _linearView.leadingAnchor))
+//    let horizontal = CSLinearLayoutView(frame: view.frame)  // vertical alignment
+//    horizontal.orientation = CSLinearLayoutViewOrientationHorizontal
+//    view = horizontal
+//    _verticalLayout = CSLinearLayoutView()
+//    _verticalLayout.orientation = CSLinearLayoutViewOrientationVertical
+//    _verticalLayout.autoAdjustFrameSize = true
+//    _verticalLayout.autoAdjustContentSize = true
+//    _verticalLayout.frame.size.width = horizontal.frame.size.width
+//    _verticalItem = CSLinearLayoutItem(for: _verticalLayout)
+//    horizontal.addItem(_verticalItem)
     defaultPropertyValues()
   }
   
@@ -274,7 +284,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       _appName = aName
     }
   }
-  
+
   open var BackgroundColor: Int32 {
     get {
       return colorToArgb(self.view.backgroundColor!)
@@ -283,7 +293,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       self.view.backgroundColor = argbToColor(argb)
     }
   }
-  
+
   open var BackgroundImage: String {
     get {
       return _backgroundImage
@@ -295,7 +305,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       }
     }
   }
-  
+
   open var CloseScreenAnimation: String {
     get {
       return "slide"
@@ -304,7 +314,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       
     }
   }
-  
+
   open var Height: Int32 {
     get {
       if let height = view.window?.frame.size.height {
@@ -317,7 +327,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       NSLog("Cannot set Height of Form")
     }
   }
-  
+
   open var Icon: String {
     get {
       return ""
@@ -326,7 +336,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       
     }
   }
-  
+
   open var OpenScreenAnimation: String {
     get {
       return "slide"
@@ -335,7 +345,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       
     }
   }
-  
+
   open var ScreenOrientation: String {
     get {
       return "portrait"
@@ -344,7 +354,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       
     }
   }
-  
+
   open var Scrollable: Bool {
     get {
       return _scrollable
@@ -353,7 +363,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       _scrollable = scrollable
     }
   }
-  
+
   open var ShowStatusBar: Bool {
     get {
       return UIApplication.shared.isStatusBarHidden
@@ -362,7 +372,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       UIApplication.shared.isStatusBarHidden = !show
     }
   }
-  
+
   open var Sizing: String {
     get {
       return _compatibilityMode ? "Fixed" : "Responsive"
@@ -371,7 +381,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       _compatibilityMode = (value == "Fixed")
     }
   }
-  
+
   // Title has a different approach due to UIViewController having a setTitle method.
   open override var title: String? {
     get {
@@ -396,7 +406,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       self.navigationController?.setNavigationBarHidden(!show, animated: true)
     }
   }
-  
+
   open var Width: Int32 {
     get {
       if let width =  view.window?.frame.size.width {
@@ -411,24 +421,24 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
   }
 
   // MARK: Form Methods
-  
+
   // MARK: Form Events
   open func dispatchErrorOccurredEvent(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     // TODO: Implementation
   }
-  
+
   open func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     // TODO: Implementation
   }
-  
+
   open func ErrorOccurred(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String) {
     // TODO: Implementation
   }
-  
+
   open func ErrorOccurredDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ message: String, _ title: String, _ buttonText: String) {
     // TODO: Implementation
   }
-  
+
   open func Initialize() {
     _screenInitialized = true
   }

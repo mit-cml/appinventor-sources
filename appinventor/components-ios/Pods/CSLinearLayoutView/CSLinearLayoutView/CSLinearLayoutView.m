@@ -77,6 +77,10 @@
         
         CGFloat startPadding = 0.0;
         CGFloat endPadding = 0.0;
+
+      if ([item.view isMemberOfClass:[CSLinearLayoutView class]]) {
+        [item.view layoutSubviews];
+      }
         
         if (self.orientation == CSLinearLayoutViewOrientationHorizontal) {
             

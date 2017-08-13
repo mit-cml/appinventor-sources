@@ -229,6 +229,11 @@ public class LinearView: UIView {
     }
     addConstraint(_horizontalConstraint)
     if orientation == .horizontal {
+      /* Theory of operation: We iterate over the child views creating constraints linking their
+       * top/bottom edges. If we lack children, do nothing. We keep track of the last view processed
+       * to serve two purposes: 1) it tracks whether we are processing the first view, and 2) it
+       * allows us to create the constraints between current and last view.
+       */
       var lastView: UIView! = nil
       for item in _items {
         if lastView == nil {
@@ -284,6 +289,11 @@ public class LinearView: UIView {
     }
     addConstraint(_verticalConstraint)
     if orientation == .vertical {
+      /* Theory of operation: We iterate over the child views creating constraints linking their
+       * top/bottom edges. If we lack children, do nothing. We keep track of the last view processed
+       * to serve two purposes: 1) it tracks whether we are processing the first view, and 2) it
+       * allows us to create the constraints between current and last view.
+       */
       var lastView: UIView! = nil
       for item in _items {
         if lastView == nil {

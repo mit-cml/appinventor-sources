@@ -41,7 +41,7 @@ open class ReplForm: Form {
         NSLog("Exception occurred in YAIL: \((interpreter.exception?.name.rawValue)!) (irritants: \((interpreter.exception)!))");
         return false
       }
-      NSLog("dispatchEvent result = \(result)")
+      NSLog("dispatchEvent result = \(String(describing: result))")
       if (result is Bool) {
         return result as! Bool
       } else if (result is NSNumber) {

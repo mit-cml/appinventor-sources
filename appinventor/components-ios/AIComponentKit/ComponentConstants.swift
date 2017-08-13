@@ -27,3 +27,5 @@ public enum VerticalGravity: Int32 {
 
 let kDefaultRowColumn: Int32 = -1
 let kTextboxPreferredWidth: Int32 = 160
+let kEmptyHVArrangementWidth = 100
+let kEmptyHVArrangementHeight = 100

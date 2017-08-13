@@ -25,6 +25,7 @@
 		062832981DBE95A7009605D5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062832971DBE95A7009605D5 /* Layout.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
 		0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */; };
+		0644F7031F38EDF200642E4D /* LinearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F7021F38EDF200642E4D /* LinearView.swift */; };
 		06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06473B841F327E5400A9A29B /* TextToSpeech.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
@@ -137,6 +138,7 @@
 		062832971DBE95A7009605D5 /* Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		0644F6C11F37D20700642E4D /* LifecycleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LifecycleDelegate.swift; sourceTree = "<group>"; };
+		0644F7021F38EDF200642E4D /* LinearView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearView.swift; sourceTree = "<group>"; };
 		06473B841F327E5400A9A29B /* TextToSpeech.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextToSpeech.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
@@ -383,6 +385,7 @@
 				0650F5171F1F1B7A00D4E6FA /* HMAC.swift */,
 				060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */,
 				062832951DBE9591009605D5 /* LinearLayout.swift */,
+				0644F7021F38EDF200642E4D /* LinearView.swift */,
 				06E59EA71D92C7E800C42804 /* NetworkUtils.h */,
 				06E59EA81D92C7E800C42804 /* NetworkUtils.m */,
 				06D151991DC4736800FC981E /* NSString_SHA1.h */,
@@ -742,6 +745,7 @@
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
 				0618D2751F34DC3400A127A2 /* ListView.swift in Sources */,
+				0644F7031F38EDF200642E4D /* LinearView.swift in Sources */,
 				06E59EA41D92C68900C42804 /* PhoneStatus.swift in Sources */,
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
