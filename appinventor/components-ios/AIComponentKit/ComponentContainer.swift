@@ -9,7 +9,7 @@
 import Foundation
 
 @objc public protocol ComponentContainer {
-    var form: Form? { get }
+    var form: Form { get }
     func add(_ component: ViewComponent)
     func setChildWidth(of component: ViewComponent, width: Int32)
     func setChildHeight(of component: ViewComponent, height: Int32)

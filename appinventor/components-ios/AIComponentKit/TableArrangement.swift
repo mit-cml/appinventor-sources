@@ -23,7 +23,7 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     }
   }
 
-  open var form: Form? {
+  open var form: Form {
     get {
       return _container.form
     }

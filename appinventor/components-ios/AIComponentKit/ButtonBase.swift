@@ -112,7 +112,7 @@ open class ButtonBase: ViewComponent {
           _view.invalidateIntrinsicContentSize()
           _view.setNeedsLayout()
           NSLog("Button frame size: \(_view.frame)")
-          _container.form?.layoutSubviews()
+          _container.form.view.setNeedsLayout()
         } else {
           NSLog("Image is nil");
         }

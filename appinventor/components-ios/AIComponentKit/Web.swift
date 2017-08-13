@@ -46,7 +46,7 @@ open class Web: NonvisibleComponent {
   }
 
   fileprivate func validateRequestHeaders(_ list: YailList) -> Bool {
-    _form?.dispatchErrorOccurredEvent(self, "RequestHeaders", ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.code, ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.message)
+    _form.dispatchErrorOccurredEvent(self, "RequestHeaders", ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.code, ErrorMessages.ERROR_WEB_REQUEST_HEADER_NOT_LIST.message)
     return true
   }
 }

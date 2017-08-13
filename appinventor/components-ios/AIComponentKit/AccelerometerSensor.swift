@@ -41,7 +41,7 @@ open class AccelerometerSensor: NonvisibleComponent {
       if sensitivity >= 1 && sensitivity <= 3 {
         _sensitivity = sensitivity
       } else {
-        _form?.dispatchErrorOccurredEvent(self, "Sensitivity", ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.code, ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.message)
+        _form.dispatchErrorOccurredEvent(self, "Sensitivity", ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.code, ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY.message)
       }
     }
   }

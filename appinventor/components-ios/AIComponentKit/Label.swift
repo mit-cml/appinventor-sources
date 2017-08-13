@@ -134,7 +134,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
       _view.frame.size = _view.intrinsicContentSize
       _view.setNeedsUpdateConstraints()
       _view.setNeedsLayout()
-      _container.form?.layoutSubviews()
+      _container.form.view.setNeedsLayout()
     }
   }
   

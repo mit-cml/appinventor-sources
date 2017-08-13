@@ -23,7 +23,7 @@ public class ViewController: UINavigationController {
     
   }
 
-  @IBOutlet public var form: Form?
+  @IBOutlet public var form: Form!
 
   @IBOutlet weak var ipAddrLabel: UILabel?
   @IBOutlet weak var versionNumber: UILabel?
@@ -45,8 +45,8 @@ public class ViewController: UINavigationController {
     super.viewWillAppear(animated)
     if (form == nil) {
       form = self.viewControllers[self.viewControllers.count - 1] as! ReplForm;
-      form?.Initialize()
-      let repl = form! as! ReplForm
+      form.Initialize()
+      let repl = form as! ReplForm
       repl.startHTTPD(false)
       repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
       if let exception = repl.interpreter?.exception {
@@ -57,13 +57,13 @@ public class ViewController: UINavigationController {
         NSLog("Exception: \(exception.name) (\(exception))")
       }
       if let mooning = UIImage(named: "mooning.png") {
-        form?.view.backgroundColor = UIColor(patternImage: mooning)
+        form.view.backgroundColor = UIColor(patternImage: mooning)
       }
-      ipAddrLabel = form?.view.viewWithTag(1) as! UILabel?
-      versionNumber = form?.view.viewWithTag(2) as! UILabel?
-      connectCode = form?.view.viewWithTag(3) as! UITextField?
-      connectButton = form?.view.viewWithTag(4) as! UIButton?
-      barcodeButton = form?.view.viewWithTag(5) as! UIButton?
+      ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
+      versionNumber = form.view.viewWithTag(2) as! UILabel?
+      connectCode = form.view.viewWithTag(3) as! UITextField?
+      connectButton = form.view.viewWithTag(4) as! UIButton?
+      barcodeButton = form.view.viewWithTag(5) as! UIButton?
       let ipaddr: String! = NetworkUtils.getIPAddress()
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
       versionNumber?.text = "Version: \((Bundle.main.infoDictionary?["CFBundleShortVersionString"])!)"

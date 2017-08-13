@@ -43,7 +43,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   }
 
   // MARK: ComponentContainer protocol implementation
-  open var form: Form? {
+  open var form: Form {
     get {
       return _container.form
     }

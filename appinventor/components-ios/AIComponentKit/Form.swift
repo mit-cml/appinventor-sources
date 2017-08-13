@@ -75,8 +75,8 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       return self
     }
   }
-  
-  open var form: Form? {
+
+  open var form: Form {
     get {
       return self
     }

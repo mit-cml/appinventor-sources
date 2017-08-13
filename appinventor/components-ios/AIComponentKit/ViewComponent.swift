@@ -100,7 +100,7 @@ open class ViewComponent: NSObject, VisibleComponent {
 
   open var dispatchDelegate: HandlesEventDispatching {
     get {
-      return (_container.form?.dispatchDelegate)!
+      return _container.form.dispatchDelegate
     }
   }
 }

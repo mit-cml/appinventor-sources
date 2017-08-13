@@ -142,7 +142,7 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
 
   // MARK: AbstractMethodsForPicker
   open func open() {
-    _container.form?.present(_viewController!, animated: true, completion: {})
+    _container.form.present(_viewController!, animated: true, completion: {})
   }
 
   // MARK: UITableViewDataSource

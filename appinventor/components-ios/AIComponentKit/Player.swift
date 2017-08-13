@@ -45,7 +45,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
             _audioPlayer?.prepareToPlay()
           } catch {
             _audioPlayer = nil
-            _form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
+            _form.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
           }
         } else {
           let path = AssetManager.shared.pathForExistingFileAsset(path)
@@ -56,10 +56,10 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
               _audioPlayer?.prepareToPlay()
             } catch {
               _audioPlayer = nil
-              _form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
+              _form.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
             }
           } else {
-            _form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
+            _form.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, path)
           }
         }
       }
@@ -143,7 +143,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   }
 
   public func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-    _form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, _sourcePath)
+    _form.dispatchErrorOccurredEvent(self, "Source", ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA.code, _sourcePath)
   }
 
   open func onResume() {

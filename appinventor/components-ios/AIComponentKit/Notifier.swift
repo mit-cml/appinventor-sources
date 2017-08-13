@@ -65,7 +65,7 @@ open class Notifier: NonvisibleComponent {
 
   open func ShowAlert(_ notice: String) {
     let duration = TimeInterval(_notifierLength == 1 ? 3.5 : 2.0)
-    _form?.view.window?.makeToast(notice, duration: duration, position: ToastPosition.center)
+    _form.view.window?.makeToast(notice, duration: duration, position: ToastPosition.center)
   }
 
   open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
@@ -84,7 +84,7 @@ open class Notifier: NonvisibleComponent {
       }
       dialog.addAction(cancelAction)
     }
-    _form?.present(dialog, animated: true, completion: {})
+    _form.present(dialog, animated: true, completion: {})
   }
 
   open func ShowMessageDialog(_ message: String, _ title: String, _ buttonText: String) {
@@ -92,7 +92,7 @@ open class Notifier: NonvisibleComponent {
     let okAction = UIAlertAction(title: buttonText, style: .default) { (action: UIAlertAction) in }
     dialog.addAction(okAction)
     dialog.preferredAction = okAction
-    _form?.present(dialog, animated: true, completion: {})
+    _form.present(dialog, animated: true, completion: {})
   }
 
   open func ShowProgressDialog(_ message: String, _ title: String) {
@@ -113,7 +113,7 @@ open class Notifier: NonvisibleComponent {
       }
       dialog.addAction(cancelAction)
     }
-    _form?.present(dialog, animated: true, completion: {})
+    _form.present(dialog, animated: true, completion: {})
   }
 
   // MARK: Notifier Events

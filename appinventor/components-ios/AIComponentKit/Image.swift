@@ -59,7 +59,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       } else {
         NSLog("Unable to load image")
       }
-      _container.form?.layoutSubviews()
+      _container.form.view.setNeedsLayout()
       NSLog("Image size: \(_view.frame)")
     }
   }
