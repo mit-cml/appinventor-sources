@@ -29,6 +29,7 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -928,7 +929,7 @@ public class Ode implements EntryPoint {
     mainPanel.add(topPanel, DockPanel.NORTH);
 
     // Create the Tutorial Panel
-    tutorialPanel = new Frame("");
+    tutorialPanel = new TutorialPanel();
     tutorialPanel.setWidth("100%");
     tutorialPanel.setHeight("100%");
     // Initially we do not display it. If the project we load has
@@ -1155,6 +1156,7 @@ public class Ode implements EntryPoint {
     overDeckPanel.setWidth("100%");
     overDeckPanel.add(tutorialPanel);
     overDeckPanel.setCellWidth(tutorialPanel, "0%");
+    overDeckPanel.setCellHeight(tutorialPanel, "100%");
     overDeckPanel.add(deckPanel);
     mainPanel.add(overDeckPanel, DockPanel.CENTER);
     mainPanel.setCellHeight(overDeckPanel, "100%");
@@ -1533,7 +1535,7 @@ public class Ode implements EntryPoint {
         HasHorizontalAlignment.ALIGN_RIGHT,
         HasVerticalAlignment.ALIGN_MIDDLE);
 
-    Image dialogImage = new Image(Ode.getImageBundle().androidGreenSmall());
+    Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
     Grid messageGrid = new Grid(2, 1);
     messageGrid.getCellFormatter().setAlignment(0,

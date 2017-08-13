@@ -40,7 +40,7 @@ import org.json.JSONException;
  * very limited and meant primarily as a demonstration for people who
  * would like to create their own components that talk to the Web.
  * The accompanying Web service is at
- * (http://appinvtinywebdb.appspot.com).  The component has methods to
+ * (http://tinywebdb.appinventor.mit.edu).  The component has methods to
  * store a value under a tag and to retrieve the value associated with
  * the tag.  The interpretation of what "store" and "retrieve" means
  * is up to the Web service.  In this implementation, all tags and
@@ -93,7 +93,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
     androidUIHandler = new Handler();
     // We set the initial value of serviceURL to be the
     // demo Web service.
-    serviceURL = "http://appinvtinywebdb.appspot.com/";
+    serviceURL = "http://tinywebdb.appinventor.mit.edu/";
   }
 
   // The two procedures below give the getter and setter for the
@@ -123,7 +123,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
    * The default value is the demo service running on App Engine.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "http://appinvtinywebdb.appspot.com")
+      defaultValue = "http://tinywebdb.appinventor.mit.edu")
   @SimpleProperty
   public void ServiceURL(String url) {
     serviceURL = url;

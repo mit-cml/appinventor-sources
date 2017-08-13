@@ -53,7 +53,7 @@ public class ComponentImportWizard extends Wizard {
     @Override
     public void onSuccess(ComponentImportResponse response) {
       if (response.getStatus() == ComponentImportResponse.Status.FAILED){
-        Window.alert(MESSAGES.componentImportError());
+        Window.alert(MESSAGES.componentImportError() + "\n" + response.getMessage());
         return;
       }
       else if (response.getStatus() != ComponentImportResponse.Status.IMPORTED &&
@@ -65,8 +65,12 @@ public class ComponentImportWizard extends Wizard {
         Window.alert(MESSAGES.componentImportUnknownURLError());
       }
       else if (response.getStatus() == ComponentImportResponse.Status.UPGRADED) {
-        String componentName = SimpleComponentDatabase.getInstance().getComponentName(response.getComponentType());
-        Window.alert(MESSAGES.componentUpgradedAlert() + componentName + " !");
+        StringBuilder sb = new StringBuilder(MESSAGES.componentUpgradedAlert());
+        for (String name : response.getComponentTypes().values()) {
+          sb.append("\n");
+          sb.append(name);
+        }
+        Window.alert(sb.toString());
       }
 
       List<ProjectNode> compNodes = response.getNodes();
@@ -111,8 +115,8 @@ public class ComponentImportWizard extends Wizard {
     final FileUpload fileUpload = createFileUpload();
     final Grid urlGrid = createUrlGrid();
     final TabPanel tabPanel = new TabPanel();
-    tabPanel.add(fileUpload, "From my computer");
-    tabPanel.add(urlGrid, "URL");
+    tabPanel.add(fileUpload, MESSAGES.componentImportFromComputer());
+    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());
     tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
     tabPanel.addStyleName("ode-Tabpanel");
 

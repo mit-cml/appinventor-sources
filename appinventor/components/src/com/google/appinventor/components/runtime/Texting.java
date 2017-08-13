@@ -14,14 +14,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
+import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -149,7 +151,7 @@ public class Texting extends AndroidNonvisibleComponent
   public static final String GV_INTENT_FILTER = "com.google.android.apps.googlevoice.SMS_RECEIVED";
   public static final String GV_PACKAGE_NAME = "com.google.android.apps.googlevoice";
   public static final String GV_SMS_SEND_URL = "https://www.google.com/voice/b/0/sms/send/";
-  public static final String GV_URL = "https://www.google.com/voice/b/0";
+  public static final String GV_URL = "https://www.google.com/voice/b/0/redirection/voice";
 
 
   // Meta data key and value that identify an app for handling incoming SMS
@@ -669,12 +671,14 @@ public class Texting extends AndroidNonvisibleComponent
    */
   class GoogleVoiceUtil {
     private final int MAX_REDIRECTS = 5;
+    private static final String COOKIES_HEADER = "Set-Cookie";
 
     String general; // Google's GV page
     String rnrSEE;  // Value that passed into SMS's
     String authToken;
     int redirectCounter;
     private boolean isInitialized;
+    CookieManager cookies = new CookieManager();
 
     /**
      * The constructor sometimes fails to getGeneral
@@ -704,16 +708,17 @@ public class Texting extends AndroidNonvisibleComponent
      */
     private String sendGvSms(String smsData) {
       Log.i(TAG, "sendGvSms()");
-      String response = "";
+      StringBuilder response = new StringBuilder();
       try {
         // Add the RNR_SE to the message
         smsData += "&" + URLEncoder.encode("_rnr_se", UTF8) + "=" + URLEncoder.encode(rnrSEE, UTF8);
         Log.i(TAG, "smsData = " + smsData);
         URL smsUrl = new URL(GV_SMS_SEND_URL);
 
-        URLConnection smsConn = smsUrl.openConnection();
+        HttpURLConnection smsConn = (HttpURLConnection) smsUrl.openConnection();
         smsConn.setRequestProperty( "Authorization", "GoogleLogin auth=" + authToken );
         smsConn.setRequestProperty("User-agent", USER_AGENT);
+        setCookies(smsConn);
         smsConn.setDoOutput(true);
         smsConn.setConnectTimeout(SERVER_TIMEOUT_MS);
 
@@ -722,24 +727,26 @@ public class Texting extends AndroidNonvisibleComponent
         callwr.write(smsData);
         callwr.flush();
 
+        processCookies(smsConn);
         BufferedReader callrd = new BufferedReader(new InputStreamReader(smsConn.getInputStream()));
 
         String line;
         while ((line = callrd.readLine()) != null) {
-          response += line + "\n\r";
+          response.append(line);
+          response.append("\n");  // HTTP uses \r\n, but Android is built on Linux, so use Unix line endings
         }
         Log.i(TAG, "sendGvSms:  Sent SMS, response = " + response);
 
         callwr.close();
         callrd.close();
 
-        if (response.equals("")) {
+        if (response.length() == 0) {
           throw new IOException("No Response Data Received.");
-        } else 
-          return response;
+        } else {
+          return response.toString();
+        }
       } catch (IOException e) {
-        Log.i(TAG, "IO Error on Send " + e.getMessage());
-        e.printStackTrace();
+        Log.i(TAG, "IO Error on Send " + e.getMessage(), e);
         return "IO Error Message not sent";
       }
     }
@@ -785,6 +792,33 @@ public class Texting extends AndroidNonvisibleComponent
     }
 
     /**
+     * Sets the Cookie HTTP header if any cookies are currently stored in the
+     * cookie manager.
+     *
+     * @param conn HTTP connection over which to send cookies
+     */
+    void setCookies(HttpURLConnection conn) {
+      if (cookies.getCookieStore().getCookies().size() > 0) {
+        conn.setRequestProperty("Cookie", TextUtils.join(";", cookies.getCookieStore().getCookies()));
+      }
+    }
+
+    /**
+     * Processes the Set-Cookie header(s), if any, received via an
+     * HttpURLConnection and stores them in the cookie manager.
+     *
+     * @param conn HTTP connection over which to receive cookies
+     */
+    void processCookies(HttpURLConnection conn) {
+      List<String> cookiesHeader = conn.getHeaderFields().get(COOKIES_HEADER);
+      if (cookiesHeader != null) {
+        for (String cookie : cookiesHeader) {
+          cookies.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+        }
+      }
+    }
+
+    /**
      * HTTP GET request for a given URL String.
      *
      * @param urlString
@@ -801,6 +835,7 @@ public class Texting extends AndroidNonvisibleComponent
         conn.setRequestProperty( "Authorization", "GoogleLogin auth="+authToken );
         conn.setRequestProperty("User-agent", USER_AGENT);
         conn.setInstanceFollowRedirects(false); // will follow redirects of same protocol http to http, but does not follow from http to https for example if set to true
+        setCookies(conn);
 
         // Get the response
         conn.connect();
@@ -809,6 +844,8 @@ public class Texting extends AndroidNonvisibleComponent
       } catch (Exception e) {
         throw new IOException(urlString + " : " + conn.getResponseMessage() + "("+responseCode+") : IO Error."); 
       }
+
+      processCookies(conn);
 
       InputStream is;
       if(responseCode==200) {

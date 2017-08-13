@@ -585,6 +585,14 @@ public interface OdeMessages extends Messages {
   @Description("Confirmation message for deleting component(s)")
   String confirmDeleteComponents(String componentNames);
 
+  @DefaultMessage("From my computer")
+  @Description("")
+  String componentImportFromComputer();
+
+  @DefaultMessage("URL")
+  @Description("For importing from a URL")
+  String componentImportFromURL();
+
   //Connect
   @DefaultMessage("Connect")
   @Description("Label of the button leading to Connect related cascade items")
@@ -2184,12 +2192,63 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
+  @DefaultMessage("Starting asset transfer to companion...")
+  @Description("Message to display at the start of an asset transfer before any assets are sent")
+  String startingAssetTransfer();
+
+  @DefaultMessage("Downloading {0} from the App Inventor server...")
+  @Description("Message to display when an asset is being downloaded from the server")
+  String loadingAsset(String assetPath);
+
+  @DefaultMessage("Sending {0} to companion...")
+  @Description("Message to display when sending an asset to the companion")
+  String sendingAssetToCompanion(String assetPath);
 
   // This error message is displayed as HTML
   @DefaultMessage("App Inventor is unable to compile this project.  " +
       "<br /> The compiler error output was <br /> {0}.")
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
+
+  @DefaultMessage("The APK file will be saved in the download folder.")
+  @Description("")
+  String apkSavedToComputer();
+
+  @DefaultMessage("The APK file will be installed in the phone.")
+  @Description("")
+  String apkInstalledToPhone();
+
+  @DefaultMessage("Waiting for the barcode.")
+  @Description("")
+  String waitingForBarcode();
+
+  @DefaultMessage("Preparing application icon")
+  @Description("")
+  String preparingApplicationIcon();
+
+  @DefaultMessage("Determining permissions")
+  @Description("")
+  String determiningPermissions();
+
+  @DefaultMessage("Generating application information")
+  @Description("")
+  String generatingApplicationInformation();
+
+  @DefaultMessage("Compiling part 1")
+  @Description("")
+  String compilingPart1();
+
+  @DefaultMessage("Compiling part 2 (please wait)")
+  @Description("")
+  String compilingPart2();
+
+  @DefaultMessage("Preparing final package")
+  @Description("")
+  String preparingFinalPackage();
+
+  @DefaultMessage("Building APK")
+  @Description("")
+  String buildingApk();
 
   @DefaultMessage("HTMLFormat")
   @Description("")
@@ -2563,6 +2622,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String gameClientComponentPallette();
 
+  @DefaultMessage("password")
+  @Description("")
+  String passwordParams();
+
   @DefaultMessage("SoundRecorder")
   @Description("")
   String soundRecorderComponentPallette();
@@ -2847,6 +2910,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("PhoneNumber")
   @Description("")
   String PhoneNumberProperties();
+
+  @DefaultMessage("PhoneNumber")
+  @Description("")
+  String phoneNumberParams();
 
   @DefaultMessage("PhoneNumberList")
   @Description("")
@@ -3468,6 +3535,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String UsernameProperties();
 
+  @DefaultMessage("username")
+  @Description("")
+  String usernameParams();
+
   @DefaultMessage("XAccel")
   @Description("")
   String XAccelProperties();
@@ -3893,10 +3964,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String providerParams();
 
-  @DefaultMessage("phoneNumber")
-  @Description("")
-  String phoneNumberParams();
-
   @DefaultMessage("status")
   @Description("")
   String statusParams();
@@ -4177,7 +4244,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String queryParams();
 
-  @DefaultMessage("ImagePath")
+  @DefaultMessage("imagePath")
   @Description("")
   String imagePathParams();
 
@@ -6033,10 +6100,6 @@ public interface OdeMessages extends Messages {
   @Description("")
   String createWelcomeDialogText();
 
-  @DefaultMessage("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>")
-  @Description("")
-  String createWelcomeDialogMessage();
-
   @DefaultMessage("Continue")
   @Description("")
   String createWelcomeDialogButton();
@@ -6210,6 +6273,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Português do Brasil")
   @Description("")
   String switchToPortugueseBR();
+
+  @DefaultMessage("Nederlands")
+  @Description("")
+  String switchToDutch();
 
   @DefaultMessage("Progress Bar")
   @Description("")
