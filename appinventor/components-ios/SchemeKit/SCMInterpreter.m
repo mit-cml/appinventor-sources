@@ -149,14 +149,6 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
     } pic_catch(e) {
       exception_ = exception_from_pic_error(pic, e);
     }
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"runtime" withExtension:@"scm"];
-    if (url) {
-      NSString *runtime = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-      [self evalForm:runtime];
-    }
-    if (exception_) {
-      NSLog(@"Scheme exception: %@ (%@)", exception_.name, exception_);
-    }
   }
   return self;
 }
