@@ -106,8 +106,11 @@ import java.util.concurrent.atomic.AtomicReference;
                 },
                 exported = "false")
 })
-@UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.ACCESS_NETWORK_STATE")
-@UsesLibraries(libraries = "jedis.jar,android-job.jar,catLog.jar,android-support-v4.jar")
+@UsesPermissions(permissionNames = "android.permission.INTERNET," +
+                 "android.permission.ACCESS_NETWORK_STATE," +
+                 "android.permission.RECEIVE_BOOT_COMPLETED," +
+                 "android.permission.WAKE_LOCK")
+@UsesLibraries(libraries = "jedis.jar")
 public final class CloudDB extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "CloudDB";
   private static final String BINFILE_DIR = "/AppInventorBinaries";
@@ -132,6 +135,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private String redisServer;
   private int redisPort;
   private volatile boolean LISTENERSTOPPING = false;
+  private JobManager jobManager;
 
   // To avoid blocking the UI thread, we do most Jedis operations in the background.
   // Rather then spawning a new thread for each request, we use an ExcutorService with
@@ -197,6 +201,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
     redisServer = "jis.csail.mit.edu";
     redisPort = 9001;
+
+    Log.d(LOG_TAG, "JobManager created");
 
     cm = (ConnectivityManager) form.$context().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
   }
@@ -334,7 +340,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   public void Sync(boolean sync){
     Log.d(CloudDB.LOG_TAG,"Sync called with sync = " + sync);
     this.sync = sync;
-    JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context(),this.accountName,this.projectID));
+    Log.d(LOG_TAG, "About to add job creator");
+    JobManager.instance().getConfig().setAllowSmallerIntervalsForMarshmallow(true); // For debugging
     Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
     SyncJob.scheduleSync(this.syncPeriod);
 
@@ -349,6 +356,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   public void SyncPeriod(long period){
     Log.d(CloudDB.LOG_TAG,"SyncPeriod called with period = " + sync);
     this.syncPeriod = period;
+    SyncJob.scheduleSync(this.syncPeriod);
   }
 
   /**
@@ -1145,7 +1153,4 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       return null;
     }
   }
-
-
-
 }

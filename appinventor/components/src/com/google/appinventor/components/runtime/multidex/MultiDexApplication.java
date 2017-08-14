@@ -19,6 +19,10 @@ package com.google.appinventor.components.runtime.multidex;
 import android.app.Application;
 import android.content.Context;
 
+import com.evernote.android.job.JobManager;
+
+import com.google.appinventor.components.runtime.util.MyJobCreator;
+
 /**
  * Minimal MultiDex capable application. To use the legacy multidex library there is 3 possibility:
  * <ul>
@@ -35,6 +39,15 @@ import android.content.Context;
 public class MultiDexApplication extends Application {
 
   public static boolean installed = false;
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // For the Evernote JobManager library. We initialize it here
+    // so we can invoke jobs from the Android alarm manager without
+    // firing up the whole application.
+    JobManager.create(this).addJobCreator(new MyJobCreator());
+  }
 
   @Override
   protected void attachBaseContext(Context base) {

@@ -16,15 +16,7 @@ public class MyJobCreator implements JobCreator {
     private String accountNm = null;
     private String projectID = null;
 
-    public MyJobCreator(Context context){
-        this.context = context;
-    }
-
-    public MyJobCreator(Context context, String accountNm, String projectID){
-        this.context = context;
-        this.accountNm = accountNm;
-        this.projectID = projectID;
-
+    public MyJobCreator(){
     }
 
     @Override
@@ -33,7 +25,7 @@ public class MyJobCreator implements JobCreator {
         switch (tag){
             case SyncJob.TAG:
                 Log.d(SyncJob.TAG,"returning instance of SyncJob...");
-                return new SyncJob(this.context, this.accountNm, this.projectID);
+                return new SyncJob();
             default:
                 return null;
         }

@@ -24,22 +24,6 @@ public class SyncJob extends Job {
 
     public static final String TAG = "SyncJob";
     private Context context = null;
-    private String accountNm = null;
-    private String projectID = null;
-
-
-    public SyncJob(Context context){
-        super();
-        this.context = context;
-    }
-
-    public SyncJob(Context context, String accountNm, String projectID){
-        super();
-        this.context = context;
-        this.accountNm = accountNm;
-        this.projectID = projectID;
-    }
-
 
     /*
     The method syncs data in the SQLite DB with data in CloudDB server.
@@ -48,7 +32,7 @@ public class SyncJob extends Job {
     protected Result onRunJob(Params params){
         Log.d(TAG,"SyncJob started ...");
         //CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(this.context);
-        final SQLiteDatabase db = CloudDBCacheHelper.getInstance(this.context).getWritableDatabase();
+        final SQLiteDatabase db = CloudDBCacheHelper.getInstance(getContext()).getWritableDatabase();
         Log.d(TAG, "db object obtained successfully");
 
         String[] projection = {CloudDBCache.Table1.COLUMN_NAME_KEY, CloudDBCache.Table1.COLUMN_NAME_VALUE, CloudDBCache.Table1.COLUMN_TIMESTAMP};
@@ -60,7 +44,10 @@ public class SyncJob extends Job {
             Log.d(TAG, "data from cache available...");
             Jedis jedis = null;
             try{
-                jedis = new Jedis("128.52.179.76", 6379);
+                jedis = new Jedis("jis.csail.mit.edu", 9001);
+                if (jedis == null) {
+                    throw new JedisConnectionException("Did not connect");
+                }
                 jedis.auth("test6789");
                 Log.d(TAG, "connected to redis server...");
                 while(cursor.moveToNext()){
@@ -124,6 +111,8 @@ public class SyncJob extends Job {
                 .setPeriodic(period)
                 //.setExecutionWindow(30_000L, 40_000L)
                 .setRequirementsEnforced(true)
+                .setUpdateCurrent(true)
+                .setPersisted(true)
                 .build()
                 .schedule();
         Log.d(TAG,"SyncJob scheduleSync finished ...");

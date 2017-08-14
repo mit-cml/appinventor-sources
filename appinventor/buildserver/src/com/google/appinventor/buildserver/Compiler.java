@@ -140,6 +140,14 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
+  private static final String ANDROID_SUPPORT_RUNTIME_JAR =
+      RUNTIME_FILES_DIR + "android-support-v4.jar";
+  private static final String ANDROID_JOB_JAR =
+      RUNTIME_FILES_DIR + "android-job.jar";
+  private static final String CATLOG_JAR =
+      RUNTIME_FILES_DIR + "catlog.jar";
+  private static final String ANDROID_SUPPORT_INTERNAL_JAR =
+      RUNTIME_FILES_DIR + "internal_impl.jar";
 
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
@@ -623,10 +631,11 @@ public final class Compiler {
         }
         out.write("</receiver> \n");
       }
-/*
-added for the evernote job scheduler library by Joydeep Mitra
- */
-      if(simpleCompTypes.contains("com.google.appinventor.components.runtime.SyncScheduler")){
+
+      /*
+        added for the evernote job scheduler library by Joydeep Mitra
+      */
+      if(simpleCompTypes.contains("edu.mit.appinventor.CloudDB")){
         out.write("<service \n");
         out.write("   android:name=\"com.evernote.android.job.v21.PlatformJobService\"\n");
         out.write("   android:exported=\"false\"\n");
@@ -647,6 +656,7 @@ added for the evernote job scheduler library by Joydeep Mitra
         out.write("   android:name=\"com.evernote.android.job.JobRescheduleService\"\n");
         out.write("   android:exported=\"false\" />\n");
       }
+
       out.write("  </application>\n");
       out.write("</manifest>\n");
       out.close();
@@ -963,6 +973,14 @@ added for the evernote job scheduler library by Joydeep Mitra
       classpath.append(COLON);
       classpath.append(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
       classpath.append(COLON);
+      classpath.append(getResource(ANDROID_SUPPORT_RUNTIME_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(ANDROID_JOB_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(CATLOG_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(ANDROID_SUPPORT_INTERNAL_JAR));
+      classpath.append(COLON);
 
       // attach the jars of external comps
       Set<String> addedExtJars = new HashSet<String>();
@@ -1197,6 +1215,10 @@ added for the evernote job scheduler library by Joydeep Mitra
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
+    inputList.add(new File(getResource(ANDROID_SUPPORT_RUNTIME_JAR)));
+    inputList.add(new File(getResource(ANDROID_JOB_JAR)));
+    inputList.add(new File(getResource(CATLOG_JAR)));
+    inputList.add(new File(getResource(ANDROID_SUPPORT_INTERNAL_JAR)));
 
     for (String lib : uniqueLibsNeeded) {
       libList.add(new File(lib));
