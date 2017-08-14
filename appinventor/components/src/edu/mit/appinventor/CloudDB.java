@@ -21,11 +21,15 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.androidmanifest.ActionElement;
+import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
+import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
@@ -70,19 +74,41 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author joymitro1989@gmail.com (Joydeep Mitra)
  */
 
-@DesignerComponent(version = 0,
+@DesignerComponent(version = 1,
     description = "Non-visible component that communicates with CloudDB server to store" +
         " and retrieve information.",
     designerHelpDescription = "Non-visible component that communicates with CloudDB " +
         "server to store and retrieve information.",
     category = ComponentCategory.EXPERIMENTAL,
     nonVisible = true,
-    iconName = "http://web.mit.edu/graeme/www/appinventor/cloudDB.png")
-//Natalie: Delete the (external=true) when not extension
-@SimpleObject(external=true)
+    iconName = "images/cloudDB.png")
+@UsesBroadcastReceivers(receivers = {
+        /*@ReceiverElement(name = "com.google.appinventor.components.runtime.util.AddReceiver",
+                intentFilters = {
+                        @IntentFilterElement(actionElements = {
+                                @ActionElement(name = "com.evernote.android.job.ADD_JOB_CREATOR")})
+                },
+                exported = "false"),*/
+        @ReceiverElement(name = "com.evernote.android.job.v14.PlatformAlarmReceiver",
+                intentFilters = {
+                        @IntentFilterElement(actionElements = {
+                                @ActionElement(name = "com.evernote.android.job.v14.RUN_JOB"),
+                                @ActionElement(name = "net.vrallev.android.job.v14.RUN_JOB")})
+                },
+                exported = "false"),
+        @ReceiverElement(name = "com.evernote.android.job.JobBootReceiver",
+                intentFilters = {
+                        @IntentFilterElement(actionElements = {
+                                @ActionElement(name = "android.intent.action.BOOT_COMPLETED"),
+                                @ActionElement(name = "android.intent.action.QUICKBOOT_POWERON"),
+                                @ActionElement(name = "com.htc.intent.action.QUICKBOOT_POWERON"),
+                                @ActionElement(name = "android.intent.action.MY_PACKAGE_REPLACED")})
+                },
+                exported = "false")
+})
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.ACCESS_NETWORK_STATE")
-@UsesLibraries(libraries = "jedis.jar")
-public class CloudDB extends AndroidNonvisibleComponent implements Component {
+@UsesLibraries(libraries = "jedis.jar,android-job.jar,catLog.jar,android-support-v4.jar")
+public final class CloudDB extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "CloudDB";
   private static final String BINFILE_DIR = "/AppInventorBinaries";
   private boolean importProject = false;
@@ -105,6 +131,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   private Jedis INSTANCE = null;
   private String redisServer;
   private int redisPort;
+  private volatile boolean LISTENERSTOPPING = false;
 
   // To avoid blocking the UI thread, we do most Jedis operations in the background.
   // Rather then spawning a new thread for each request, we use an ExcutorService with
@@ -161,6 +188,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     // back in the UI thread.  They do this by posting those actions
     // to androidUIHandler.
     androidUIHandler = new Handler();
+    Log.d(LOG_TAG, "Static: androidUIHandler = " + androidUIHandler);
     this.activity = container.$context();
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
     accountName = ""; // set in Designer
@@ -170,11 +198,6 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     redisServer = "jis.csail.mit.edu";
     redisPort = 9001;
 
-    // Retrieve new posts as they are added to the CloudDB.
-    // Note: We use a real thread here rather then the background executor
-    // because this thread will run effectively forever
-
-    //Natalie: Need to add auth
     cm = (ConnectivityManager) form.$context().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
   }
 
@@ -191,26 +214,47 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     // We do this on the UI thread to make sure it is complete
     // before we repoint the redis server (or port)
     Log.i(LOG_TAG, "Listener stopping!");
+    LISTENERSTOPPING = true;
     Jedis jedis = getJedis();
     try {
       jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
     } catch (Exception e) {
-      // XXX
+      Log.e(LOG_TAG, "in stop listener", e);
     }
   }
 
   private void startListener() {
+    // Retrieve new posts as they are added to the CloudDB.
+    // Note: We use a real thread here rather then the background executor
+    // because this thread will run effectively forever
+    LISTENERSTOPPING = false;
     Log.i(LOG_TAG, "Listener starting!");
     Thread t = new Thread() {
         public void run() {
           while (true) {
             Jedis jedis = getJedis(true);
-            try {
-              jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
-            } catch (Exception e) {
-              continue;
+            if (jedis != null) {
+              try {
+                jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
+              } catch (Exception e) {
+                Log.e(LOG_TAG, "Error in listener thread", e);
+              }
+            } else {
+              // Could not connect to the Redis server. Sleep for
+              // a minute and try again. Note: We can sleep because
+              // we are in a separate thread.
+              Log.i(LOG_TAG, "Cannot connect to Redis server, sleeping 1 minute...");
+              try {
+                Thread.sleep(60*1000);
+              } catch (InterruptedException e) {
+                // XXX
+              }
+            }
+            if (LISTENERSTOPPING) {
+              break;
             }
           }
+          Log.d(LOG_TAG, "Listener existing");
         }
       };
     t.start();
@@ -290,7 +334,6 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
   public void Sync(boolean sync){
     Log.d(CloudDB.LOG_TAG,"Sync called with sync = " + sync);
     this.sync = sync;
-    //this.cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
     JobManager.create(form.$context()).addJobCreator(new MyJobCreator(form.$context(),this.accountName,this.projectID));
     Log.d(CloudDB.LOG_TAG,"JobManager for SyncJob added...");
     SyncJob.scheduleSync(this.syncPeriod);
@@ -400,7 +443,6 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
     try {
       if (valueToStore != null) {
         String strval = valueToStore.toString();
-        System.out.println("File Name: " + strval);
         if (strval.startsWith("file:///") || strval.startsWith("/storage")) {
           value = JsonUtil.getJsonRepresentation(readFile(strval));
         } else {
@@ -473,8 +515,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         String val;
         if (cursor != null && cursor.moveToNext()) {
           Log.d(CloudDB.LOG_TAG,"cursor has values");
-          val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE)) + " from cache";
-          Log.d(CloudDB.LOG_TAG,"value retrieved = " + val);
+          val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table1.COLUMN_NAME_VALUE));
+          Log.d(CloudDB.LOG_TAG,"value retrieved = " + val + " from cache");
           String jsonVal = this.getJsonRepresenationIfValueFileName(val);
           if(jsonVal != null) value.set(jsonVal);
           else value.set(val);
@@ -498,8 +540,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         //e.printStackTrace();
       }
       finally {
-        if(db != null) db.close();
         if(cursor != null) cursor.close();
+        if(db != null) db.close();
       }
     }
     else if(isConnected){
@@ -609,8 +651,8 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
         //e.printStackTrace();
       }
       finally {
-        if(db != null) db.close();
         if(cursor != null) cursor.close();
+        if(db != null) db.close();
       }
     }
     else if(isConnected){
@@ -763,10 +805,11 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleEvent
   public void GotValue(String tag, Object value) {
+    Log.d(CloudDB.LOG_TAG, "GotValue: tag = " + tag + " value = " + (String) value);
     checkAccountNameProjectIDNotBlank();
 
     try {
-      System.out.println(value.getClass().getName());
+      Log.d(LOG_TAG, "GotValue: Class of value = " + value.getClass().getName());
       if(value != null && value instanceof String) {
         value = JsonUtil.getObjectFromJson((String) value);
       }

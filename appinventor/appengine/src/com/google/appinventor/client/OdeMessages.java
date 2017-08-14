@@ -6442,15 +6442,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reload")
   @Description("")
   String reloadWindow();
-  
+
   @DefaultMessage("AccountName")
   @Description("")
   String AccountNameProperties();
-  
+
   @DefaultMessage("ProjectID")
   @Description("")
   String ProjectIDProperties();
-  
+
   @DefaultMessage("CloudDBError")
   @Description("")
   String CloudDBErrorEvents();
@@ -6466,5 +6466,46 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Sync Scheduler Component")
   @Description("")
   String scheduleSyncMethods();
+
+  @DefaultMessage("CloudDB")
+  @Description("")
+  String cloudDBComponentPallette();
+
+  @DefaultMessage("Non-visible component that communicates " +
+    "with CloudDB server to store and retrieve information.")
+  @Description("")
+  String CloudDBHelpStringComponentPallette();
+
+  @DefaultMessage("RedisServer")
+  @Description("")
+  String RedisServerProperties();
+
+  @DefaultMessage("RedisPort")
+  @Description("")
+  String RedisPortProperties();
+
+  @DefaultMessage("Sync")
+  @Description("")
+  String SyncProperties();
+
+  @DefaultMessage("SyncPeriod")
+  @Description("")
+  String SyncPeriodProperties();
+
+  @DefaultMessage("Token")
+  @Description("")
+  String TokenProperties();
+
+  @DefaultMessage("PerformSyncNow")
+  @Description("")
+  String PerformSyncNowMethods();
+
+  @DefaultMessage("GetValues")
+  @Description("")
+  String GetValuesMethods();
+
+  @DefaultMessage("itemToAdd")
+  @Description("")
+  String itemToAddParams();
 
 }

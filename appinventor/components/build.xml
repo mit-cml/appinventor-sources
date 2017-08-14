@@ -131,8 +131,8 @@
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
-        <!-- <pathelement location="${lib.dir}/android/extras/support-annotations-25.2.0.jar" />
         <pathelement location="${lib.dir}/android/extras/android-support-v4.jar" />
+        <!-- <pathelement location="${lib.dir}/android/extras/support-annotations-25.2.0.jar" />
         <pathelement location="${lib.dir}/android/extras/play-services-gcm-10.2.6.jar" />
         <pathelement location="${lib.dir}/android/extras/play-services-base-10.2.6.jar" />
         <pathelement location="${lib.dir}/android/extras/play-services-basement-10.2.6.jar" /> -->
@@ -157,12 +157,6 @@
         <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
-        <!-- <<<<<<< HEAD
-                 <pathelement location="${lib.dir}/catLog/cat-1.0.5-sources.jar"/>
-=======
-	<pathelement location="${lib.dir}/redisson/redisson/deps/*.jar" />
-	<pathelement location="${lib.dir}/redisson/redisson/target/redisson-2.5.2-SNAPSHOT.jar" />
->>>>>>> 5e647f111a0e20ab7576c33b7929d60553ac639d -->
       </classpath>
     </ai.javac5>
 
