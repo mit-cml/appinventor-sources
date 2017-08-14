@@ -114,7 +114,7 @@ static NSString *kMimeJson = @"application/json";
       blockid = [NSString stringWithFormat:@"\"%@\"", blockid];
     }
     yail = [NSString stringWithFormat:@"(process-repl-input %@ (begin %@))", blockid, yail];
-    [NSOperationQueue.mainQueue addOperationWithBlock:^{
+    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
       NSLog(@"To Eval: %@", yail);
       [_interpreter evalForm:yail];
       if (_interpreter.exception) {
@@ -123,6 +123,8 @@ static NSString *kMimeJson = @"application/json";
         [_interpreter clearException];
       }
     }];
+    // Blocks the web server, but allows us to immediately return a REPL result for "Do It"
+    [NSOperationQueue.mainQueue addOperations:@[op] waitUntilFinished:YES];
     NSData *result = [[[RetValManager sharedManager] fetch:NO]
                       dataUsingEncoding:NSUTF8StringEncoding];
     return [self setDefaultHeaders:[GCDWebServerDataResponse responseWithData:result
