@@ -998,7 +998,6 @@ public final class Compiler {
         for (String lib : libsNeeded.get(type)) {
           String sourcePath = "";
           String pathSuffix = RUNTIME_FILES_DIR + lib;
-
           if (simpleCompTypes.contains(type)) {
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
@@ -1448,7 +1447,7 @@ public final class Compiler {
    *
    * @param resourcePath the name of the resource
    */
-  static synchronized String getResource(String resourcePath) {
+  static synchronized String  getResource(String resourcePath) {
     try {
       File file = resources.get(resourcePath);
       if (file == null) {

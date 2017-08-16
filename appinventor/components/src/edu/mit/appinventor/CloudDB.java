@@ -537,6 +537,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         androidUIHandler.post(new Runnable() {
           public void run() {
             // Signal an event to indicate that the value was
+            // Signal an event to indicate that the value was
             // received.  We post this to run in the Application's main
             // UI thread.
             GotValue(tag, value.get());

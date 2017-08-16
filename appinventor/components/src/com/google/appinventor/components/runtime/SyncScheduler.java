@@ -51,7 +51,7 @@ import com.google.appinventor.components.runtime.util.SyncJob;
                 },
                 exported = "false")
 })
-@UsesLibraries(libraries = "android-job.jar,catLog.jar,android-support-v4.jar,android-support-annotations.jar")
+@UsesLibraries(libraries = "android-job.jar,catlog.jar,android-support-v4.jar,android-support-annotations.jar")
 @UsesPermissions(permissionNames = "android.permission.BIND_JOB_SERVICE,android.permission.WAKE_LOCK,android.permission.ACCESS_NETWORK_STATE,android.permission.RECEIVE_BOOT_COMPLETED")
 public class SyncScheduler extends AndroidNonvisibleComponent implements Component{
 
