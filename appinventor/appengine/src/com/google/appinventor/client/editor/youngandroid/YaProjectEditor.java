@@ -80,6 +80,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Mapping of package names to extensions defined by the package (n > 1)
   private final Map<String, Set<String>> externalCollections = new HashMap<>();
+  private final Map<String, String> extensionToNodeName = new HashMap<>();
+  private final Map<String, Set<String>> extensionsInNode = new HashMap<>();
 
   // Number of external component descriptors loaded since there is no longer a 1-1 correspondence
   private volatile int numExternalComponentsLoaded = 0;
@@ -494,6 +496,13 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
               externalCollections.put(packageName, new HashSet<String>());
             }
             externalCollections.get(packageName).add(name);
+
+            if (!extensionsInNode.containsKey(fileId)) {
+              extensionsInNode.put(fileId, new HashSet<String>());
+            }
+            extensionsInNode.get(fileId).add(name);
+            extensionToNodeName.put(name, fileId);
+
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
@@ -618,6 +627,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     COMPONENT_DATABASE.addComponentDatabaseListener(this);
     COMPONENT_DATABASE.resetDatabase();
     externalComponents.clear();
+    extensionsInNode.clear();
+    extensionToNodeName.clear();
     numExternalComponentsLoaded = 0;
   }
 
@@ -658,10 +669,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     Set<String> removedTypes = new HashSet<>(componentTypes);
     // aggregate types in the same package
     for (String type : removedTypes) {
-      String packageName = COMPONENT_DATABASE.getComponentType(type);
-      packageName = packageName.substring(0, packageName.lastIndexOf('.'));
-      if (externalCollections.containsKey(packageName)) {
-        for (String siblingType : externalCollections.get(packageName)) {
+      Set<String> siblings = extensionsInNode.get(extensionToNodeName.get(COMPONENT_DATABASE.getComponentType(type)));
+      if (siblings != null) {
+        for (String siblingType : siblings) {
           String siblingName = siblingType.substring(siblingType.lastIndexOf('.') + 1);
           if (!removedTypes.contains(siblingName)) {
             componentTypes.add(siblingName);
