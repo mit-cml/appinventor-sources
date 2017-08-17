@@ -396,8 +396,9 @@
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
              (when ((this):toastAllowed)
-                   (begin (send-error (ex:getMessage))
-                          ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)))
+                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
+                     (send-error message)
+                     ((android.widget.Toast:makeText (this) message 5):show)))
 
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
@@ -2541,12 +2542,14 @@ list, use the make-yail-list constructor with no arguments.
                              (android-log (exception:getMessage))
                              (list "NOK"
                                    (exception:getMessage))))
-                 (exception java.lang.Exception
+                 (exception java.lang.Throwable
                             (android-log (exception:getMessage))
                             (exception:printStackTrace)
                             (list
                              "NOK"
-                             (exception:getMessage)))))))))
+                             (if (instance? exception java.lang.Error)
+                                 (exception:toString)
+                                 (exception:getMessage))))))))))
 
 ;; send-to-block is used for all communication back to the blocks editor
 ;; Calls on report are also generated for code from the blocks compiler
