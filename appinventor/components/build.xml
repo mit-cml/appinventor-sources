@@ -39,6 +39,8 @@
   <property name="ExternalComponent.dir" location="${local.build.dir}/externalComponents" />
   <property name="ExternalComponent-class.dir" location="${local.build.dir}/externalComponents-class" />
   <property name="Extensions.dir" location="${local.build.dir}/extensions" />
+  <!-- Can be used by extension authors to use the old-style AIX package layout -->
+  <property name="extensions.packagefqcn" value="false" />
 
   <!-- =====================================================================
        CommonConstants: library of constants used across App Inventor
@@ -483,6 +485,7 @@
       <arg value="${AndroidRuntime-class.dir}" />
       <arg value="${buildserver.files.library.dir}"/>
       <arg value="${ExternalComponent-class.dir}"/>
+      <arg value="${extensions.packagefqcn}"/>
       <classpath>
         <pathelement location="${ExternalComponentGenerator-class.dir}" />
         <pathelement location="${lib.dir}/json/json.jar" />

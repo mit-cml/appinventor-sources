@@ -32,6 +32,7 @@ public class ExternalComponentGenerator {
   private static String androidRuntimeClassDirPath;
   private static String buildServerClassDirPath;
   private static String externalComponentsTempDirPath;
+  private static boolean useFQCN = false;
 
   private static Map<String, List<ExternalComponentInfo>> externalComponentsByPackage =
       new TreeMap<String, List<ExternalComponentInfo>>();
@@ -53,6 +54,7 @@ public class ExternalComponentGenerator {
     androidRuntimeClassDirPath = args[3];
     buildServerClassDirPath = args[4];
     externalComponentsTempDirPath = args[5];
+    useFQCN = Boolean.valueOf(args[6]);
     JSONArray simpleComponentDescriptors = new JSONArray(simple_component_json);
     JSONArray simpleComponentBuildInfos = new JSONArray(simple_component_build_info_json);
     Map<String, JSONObject> buildInfos = buildInfoAsMap(simpleComponentBuildInfos);
@@ -101,14 +103,15 @@ public class ExternalComponentGenerator {
   private static void generateAllExtensions() throws IOException, JSONException {
     System.out.println("\nExtensions : Generating extensions");
     for (Map.Entry<String, List<ExternalComponentInfo>> entry : externalComponentsByPackage.entrySet()) {
-      String logComponentType =  "[" + entry.getKey() + "]";
+      String name = useFQCN && entry.getValue().size() == 1 ? entry.getValue().get(0).type : entry.getKey();
+      String logComponentType =  "[" + name + "]";
       System.out.println("\nExtensions : Generating files " + logComponentType);
-      generateExternalComponentDescriptors(entry.getKey(), entry.getValue());
+      generateExternalComponentDescriptors(name, entry.getValue());
       for (ExternalComponentInfo info : entry.getValue()) {
-        copyIcon(entry.getKey(), info.type, info.descriptor);
+        copyIcon(name, info.type, info.descriptor);
       }
-      generateExternalComponentBuildFiles(entry.getKey(), entry.getValue());
-      generateExternalComponentOtherFiles(entry.getKey());
+      generateExternalComponentBuildFiles(name, entry.getValue());
+      generateExternalComponentOtherFiles(name);
     }
   }
 
