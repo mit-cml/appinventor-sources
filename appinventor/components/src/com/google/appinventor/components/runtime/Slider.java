@@ -2,7 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import android.R;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.view.View;
@@ -59,7 +59,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   // the total slider width
   private LayerDrawable fullBar;
   // the part of the slider to the left of the thumb
-  private ClipDrawable beforeThumb;
+  private Drawable beforeThumb;
 
   // colors of the bar after and before the thumb position
   private int rightColor;
@@ -97,7 +97,8 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     seekbar = new SeekBar(container.$context());
 
     fullBar = (LayerDrawable) seekbar.getProgressDrawable();
-    beforeThumb = (ClipDrawable) fullBar.findDrawableByLayerId(R.id.progress);
+    beforeThumb = fullBar.findDrawableByLayerId(R.id.progress);
+
     leftColor = initialLeftColor;
     rightColor = initialRightColor;
     setSliderColors();
