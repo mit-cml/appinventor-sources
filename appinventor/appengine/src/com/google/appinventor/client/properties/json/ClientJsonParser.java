@@ -18,6 +18,6 @@ public class ClientJsonParser implements JSONParser {
   @Override
   public JSONValue parse(String source) {
     return source.isEmpty() ? null
-        : ClientJsonValue.convert(com.google.gwt.json.client.JSONParser.parseLenient(source));
+        : ClientJsonValue.convert(com.google.gwt.json.client.JSONParser.parseStrict(source));
   }
 }
