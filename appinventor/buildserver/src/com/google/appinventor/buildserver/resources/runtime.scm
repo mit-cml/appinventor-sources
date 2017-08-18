@@ -19,7 +19,7 @@
 ;;;
 
 ;;; also see *debug-form* below
-(define *debug* #t)
+(define *debug* #f)
 
 (define *this-is-the-repl* #f)
 
