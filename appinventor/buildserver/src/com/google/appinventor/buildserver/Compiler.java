@@ -635,7 +635,7 @@ public final class Compiler {
       /*
         added for the evernote job scheduler library by Joydeep Mitra
       */
-      if(simpleCompTypes.contains("edu.mit.appinventor.CloudDB")){
+      if(simpleCompTypes.contains("com.google.appinventor.components.runtime.CloudDB")){
         out.write("<service \n");
         out.write("   android:name=\"com.evernote.android.job.v21.PlatformJobService\"\n");
         out.write("   android:exported=\"false\"\n");

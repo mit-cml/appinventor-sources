@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 //Natalie: Package should be different for an extension
-package edu.mit.appinventor;
+package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -23,7 +23,6 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.annotations.UsesBroadcastReceivers;
 import com.google.appinventor.components.annotations.UsesLibraries;
-import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -32,16 +31,13 @@ import com.google.appinventor.components.annotations.androidmanifest.IntentFilte
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
-import com.google.appinventor.components.runtime.EventDispatcher;
-import com.google.appinventor.components.runtime.Notifier;
-import com.google.appinventor.components.runtime.ComponentContainer;
-import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.MyJobCreator;
 import com.google.appinventor.components.runtime.util.SyncJob;
 import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.CloudDBCache;
+import com.google.appinventor.components.runtime.util.CloudDBCacheHelper;
+import com.google.appinventor.components.runtime.util.CloudDBJedisListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import redis.clients.jedis.Jedis;
@@ -408,6 +404,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   public void Token(String authToken) {
     if (!token.equals(authToken)) {
       token = authToken;
+      saveToken(token);
     }
     if (token.equals("")){
       throw new RuntimeException("CloudDB Token property cannot be blank.");
@@ -1125,6 +1122,43 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   }
 
   /*
+  Written by joymitro@gmail.com (Joydeep Mitra)
+  saves the token to a local SQLiteDb
+   */
+  private void saveToken(final String token) {
+    Cursor cursor = null;
+    SQLiteDatabase db = null;
+    Log.d(CloudDB.LOG_TAG,"saving token in cache ...");
+    try {
+      //CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(form.$context());
+      db = CloudDBCacheHelper.getInstance(form.$context()).getWritableDatabase();
+
+      String[] projection = {CloudDBCache.Table2.COLUMN_TOKEN};
+      cursor = db.query(CloudDBCache.Table2.TABLE_NAME, projection, null, null, null, null, null);
+      if (cursor != null && cursor.getCount() == 1) {
+        //update existing token
+        ContentValues values = new ContentValues();
+        values.put(CloudDBCache.Table2.COLUMN_TOKEN, token);
+        db.update(CloudDBCache.Table2.TABLE_NAME, values, null, null);
+      }
+      else {
+        //insert new key
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CloudDBCache.Table2.COLUMN_TOKEN, token);
+        db.insert(CloudDBCache.Table2.TABLE_NAME, null, contentValues);
+      }
+    } catch (Exception e) {
+      Log.d("CloudDB", "Error occurred while caching token locally...");
+      e.printStackTrace();
+    }
+    finally {
+      if(cursor !=null) cursor.close();
+      if(db != null) db.close();
+    }
+
+  }
+
+  /*
   * Written by joymitro@gmail.com (Joydeep Mitra)
   * This method converts a file path to a JSON representation.
   * The code in the method was part of GetValue. For better modularity and reusability
@@ -1155,3 +1189,35 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 }
+
+
+/*private String getToken(){
+    SQLiteDatabase db = null;
+    Cursor cursor = null;
+    Log.d(CloudDB.LOG_TAG,"getting token from cache...");
+    try {
+      db = CloudDBCacheHelper.getInstance(form.$context()).getWritableDatabase();
+      String[] projection = {CloudDBCache.Table2.COLUMN_TOKEN};
+      cursor = db.query(CloudDBCache.Table2.TABLE_NAME, projection, null, null, null, null, null);
+      String val;
+      if (cursor != null && cursor.moveToNext()) {
+        Log.d(CloudDB.LOG_TAG,"Token found");
+        val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table2.COLUMN_TOKEN));
+        Log.d(CloudDB.LOG_TAG,"token retrieved = " + val + " from cache");
+        return val;
+      }
+      else {
+        Log.d(CloudDB.LOG_TAG,"token not found in cache");
+        return null;
+      }
+    } catch (Exception e) {
+      //Log.d(CloudDB.LOG_TAG, "Error occurred while reading from cache...");
+      Log.e(CloudDB.LOG_TAG,"Error occurred while reading token from cache",e);
+      return null;
+      //e.printStackTrace();
+    }
+    finally {
+      if(cursor !=null) cursor.close();
+      if(db != null) db.close();
+    }
+  }*/

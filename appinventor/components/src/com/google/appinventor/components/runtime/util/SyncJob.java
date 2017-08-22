@@ -7,13 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
-import edu.mit.appinventor.CloudDB;
-import edu.mit.appinventor.CloudDBCache;
-import edu.mit.appinventor.CloudDBCacheHelper;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-
-import java.sql.Timestamp;
 
 /**
  * The class manages the job that needs to be scheduled
@@ -34,6 +29,10 @@ public class SyncJob extends Job {
         //CloudDBCacheHelper cloudDBCacheHelper = new CloudDBCacheHelper(this.context);
         final SQLiteDatabase db = CloudDBCacheHelper.getInstance(getContext()).getWritableDatabase();
         Log.d(TAG, "db object obtained successfully");
+
+        String token = getToken(db);
+        if(token != null) Log.d(TAG,"Token retrieved from cache = " + token);
+        else Log.d(TAG,"Token not retrieved from cache");
 
         String[] projection = {CloudDBCache.Table1.COLUMN_NAME_KEY, CloudDBCache.Table1.COLUMN_NAME_VALUE, CloudDBCache.Table1.COLUMN_TIMESTAMP};
         String selection = CloudDBCache.Table1.COLUMN_UPLOAD_FLAG + " = ?";
@@ -129,5 +128,31 @@ public class SyncJob extends Job {
                 .schedule();
         Log.d(TAG,"SyncJob scheduleSync finished ...");
         return jobId;
+    }
+
+    /*
+    Retrieves the authentication token for the redis server from cache
+     */
+    private String getToken(final SQLiteDatabase db){
+        try {
+            String[] projection = {CloudDBCache.Table2.COLUMN_TOKEN};
+            Cursor cursor = db.query(CloudDBCache.Table2.TABLE_NAME, projection, null, null, null, null, null);
+            String val;
+            if (cursor != null && cursor.moveToNext()) {
+                Log.d(TAG,"Token found");
+                val = cursor.getString(cursor.getColumnIndex(CloudDBCache.Table2.COLUMN_TOKEN));
+                Log.d(TAG,"token retrieved = " + val + " from cache");
+                return val;
+            }
+            else {
+                Log.d(TAG,"token not found in cache");
+                return null;
+            }
+        } catch (Exception e) {
+            //Log.d(CloudDB.LOG_TAG, "Error occurred while reading from cache...");
+            Log.e(TAG,"Error occurred while reading token from cache",e);
+            return null;
+            //e.printStackTrace();
+        }
     }
 }

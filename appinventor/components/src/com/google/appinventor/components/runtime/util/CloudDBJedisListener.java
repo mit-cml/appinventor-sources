@@ -4,9 +4,10 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 //Notification Listener from: http://stackoverflow.com/questions/26406303/redis-key-expire-notification-with-jedis
 
-package edu.mit.appinventor;
+package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+import com.google.appinventor.components.runtime.CloudDB;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 

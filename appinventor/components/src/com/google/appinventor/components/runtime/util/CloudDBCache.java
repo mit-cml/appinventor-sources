@@ -1,4 +1,4 @@
-package edu.mit.appinventor;
+package com.google.appinventor.components.runtime.util;
 
 import android.provider.BaseColumns;
 
@@ -19,5 +19,10 @@ public final class CloudDBCache {
         public static String COLUMN_NAME_VALUE = "value";
         public static String COLUMN_UPLOAD_FLAG = "uploadFlag";
         public static String COLUMN_TIMESTAMP = "timestamp";
+    }
+
+    public static class Table2 implements BaseColumns{
+        public static String TABLE_NAME = "table2";
+        public static String COLUMN_TOKEN = "token";
     }
 }
