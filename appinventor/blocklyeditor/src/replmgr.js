@@ -675,7 +675,9 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                 // We had an error in initial form load or at another
                 // time when we were chunking forms together
                 top.loadAll = false;
-                top.loadAllErrorCount = 20;
+                // This was 20, but for large projects it lead to infinite loops trying to
+                // find an error if the error occurs below a top level block at index > 20.
+                top.loadAllErrorCount = Blockly.mainWorkspace.getTopBlocks().length;
                 console.log("Error in chunking, disabling.");
                 this.resetYail(true);
                 this.pollYail(Blockly.mainWorkspace);
