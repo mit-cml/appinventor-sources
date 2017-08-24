@@ -73,6 +73,14 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
@@ -2075,4 +2083,32 @@ public class Form extends Activity
       dispatchErrorOccurredEvent(this, "HideKeyboard", ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND);
     }
   }
+      
+  @SimpleFunction(description = "Returns the version name of the app")
+   public String VersionName() {
+     Log.d(LOG_TAG, "VersionName");
+     try {
+       PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+       String vname = pInfo.versionName;
+       return vname;
+     } catch (NameNotFoundException e) {
+       Log.e(LOG_TAG, e.getMessage());
+       e.printStackTrace();
+       return "";
+     }
+   }
+      
+  @SimpleFunction(description = "Returns the version code of the app")
+   public String VersionCode() {
+     Log.d(LOG_TAG, "VersionCode");
+     try {
+       PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+       String vcode = pInfo.versionCode;
+       return vcode;
+     } catch (NameNotFoundException e) {
+       Log.e(LOG_TAG, e.getMessage());
+       e.printStackTrace();
+       return "";
+     }
+   }
 }
