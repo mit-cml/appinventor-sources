@@ -9,7 +9,7 @@ option java_outer_classname = "TokenAuth";
 // representation) or a uuid.
 
 message unsigned {
-    optional string uuid = 1;
+    optional string huuid = 1;
 }
 
 // This is the actual message token. The "unsigned" field

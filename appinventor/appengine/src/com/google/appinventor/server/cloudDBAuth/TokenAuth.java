@@ -13,18 +13,18 @@ public final class TokenAuth {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
-    boolean hasUuid();
+    boolean hasHuuid();
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
-    java.lang.String getUuid();
+    java.lang.String getHuuid();
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
     com.google.protobuf.ByteString
-        getUuidBytes();
+        getHuuidBytes();
   }
   /**
    * Protobuf type {@code tokenauth.unsigned}
@@ -81,7 +81,7 @@ public final class TokenAuth {
             case 10: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              uuid_ = bs;
+              huuid_ = bs;
               break;
             }
           }
@@ -124,19 +124,19 @@ public final class TokenAuth {
     }
 
     private int bitField0_;
-    public static final int UUID_FIELD_NUMBER = 1;
-    private java.lang.Object uuid_;
+    public static final int HUUID_FIELD_NUMBER = 1;
+    private java.lang.Object huuid_;
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
-    public boolean hasUuid() {
+    public boolean hasHuuid() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
-    public java.lang.String getUuid() {
-      java.lang.Object ref = uuid_;
+    public java.lang.String getHuuid() {
+      java.lang.Object ref = huuid_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -144,22 +144,22 @@ public final class TokenAuth {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          uuid_ = s;
+          huuid_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string uuid = 1;</code>
+     * <code>optional string huuid = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getUuidBytes() {
-      java.lang.Object ref = uuid_;
+        getHuuidBytes() {
+      java.lang.Object ref = huuid_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        uuid_ = b;
+        huuid_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -167,7 +167,7 @@ public final class TokenAuth {
     }
 
     private void initFields() {
-      uuid_ = "";
+      huuid_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -183,7 +183,7 @@ public final class TokenAuth {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getUuidBytes());
+        output.writeBytes(1, getHuuidBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -196,7 +196,7 @@ public final class TokenAuth {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getUuidBytes());
+          .computeBytesSize(1, getHuuidBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -315,7 +315,7 @@ public final class TokenAuth {
 
       public Builder clear() {
         super.clear();
-        uuid_ = "";
+        huuid_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
@@ -348,7 +348,7 @@ public final class TokenAuth {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.uuid_ = uuid_;
+        result.huuid_ = huuid_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -365,9 +365,9 @@ public final class TokenAuth {
 
       public Builder mergeFrom(com.google.appinventor.server.cloudDBAuth.TokenAuth.unsigned other) {
         if (other == com.google.appinventor.server.cloudDBAuth.TokenAuth.unsigned.getDefaultInstance()) return this;
-        if (other.hasUuid()) {
+        if (other.hasHuuid()) {
           bitField0_ |= 0x00000001;
-          uuid_ = other.uuid_;
+          huuid_ = other.huuid_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -397,24 +397,24 @@ public final class TokenAuth {
       }
       private int bitField0_;
 
-      private java.lang.Object uuid_ = "";
+      private java.lang.Object huuid_ = "";
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
-      public boolean hasUuid() {
+      public boolean hasHuuid() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
-      public java.lang.String getUuid() {
-        java.lang.Object ref = uuid_;
+      public java.lang.String getHuuid() {
+        java.lang.Object ref = huuid_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            uuid_ = s;
+            huuid_ = s;
           }
           return s;
         } else {
@@ -422,53 +422,53 @@ public final class TokenAuth {
         }
       }
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getUuidBytes() {
-        java.lang.Object ref = uuid_;
+          getHuuidBytes() {
+        java.lang.Object ref = huuid_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          uuid_ = b;
+          huuid_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
-      public Builder setUuid(
+      public Builder setHuuid(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        uuid_ = value;
+        huuid_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
-      public Builder clearUuid() {
+      public Builder clearHuuid() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        uuid_ = getDefaultInstance().getUuid();
+        huuid_ = getDefaultInstance().getHuuid();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string uuid = 1;</code>
+       * <code>optional string huuid = 1;</code>
        */
-      public Builder setUuidBytes(
+      public Builder setHuuidBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        uuid_ = value;
+        huuid_ = value;
         onChanged();
         return this;
       }
@@ -1148,11 +1148,11 @@ public final class TokenAuth {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013token.proto\022\ttokenauth\"\030\n\010unsigned\022\014\n\004" +
-      "uuid\030\001 \001(\t\"O\n\005token\022\022\n\007version\030\001 \002(\004:\0011\022" +
-      "\r\n\005keyid\030\002 \001(\004\022\020\n\010unsigned\030\003 \001(\014\022\021\n\tsign" +
-      "ature\030\004 \001(\014B6\n)com.google.appinventor.se" +
-      "rver.cloudDBAuthB\tTokenAuth"
+      "\n\013token.proto\022\ttokenauth\"\031\n\010unsigned\022\r\n\005" +
+      "huuid\030\001 \001(\t\"O\n\005token\022\022\n\007version\030\001 \002(\004:\0011" +
+      "\022\r\n\005keyid\030\002 \001(\004\022\020\n\010unsigned\030\003 \001(\014\022\021\n\tsig" +
+      "nature\030\004 \001(\014B6\n)com.google.appinventor.s" +
+      "erver.cloudDBAuthB\tTokenAuth"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1171,7 +1171,7 @@ public final class TokenAuth {
     internal_static_tokenauth_unsigned_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_tokenauth_unsigned_descriptor,
-        new java.lang.String[] { "Uuid", });
+        new java.lang.String[] { "Huuid", });
     internal_static_tokenauth_token_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_tokenauth_token_fieldAccessorTable = new
