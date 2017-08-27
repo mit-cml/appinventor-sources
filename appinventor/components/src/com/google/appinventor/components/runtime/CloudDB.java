@@ -111,7 +111,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   private static final String LOG_TAG = "CloudDB";
   private static final String BINFILE_DIR = "/AppInventorBinaries";
   private boolean importProject = false;
-  private String accountName = "";
   private String projectID = "";
   private String token = "";
   private boolean isPublic = false;
@@ -191,7 +190,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     Log.d(LOG_TAG, "Static: androidUIHandler = " + androidUIHandler);
     this.activity = container.$context();
     //Defaults set in MockCloudDB.java in appengine/src/com/google/appinventor/client/editor/simple/components
-    accountName = ""; // set in Designer
     projectID = ""; // set in Designer
     token = ""; //set in Designer
 
@@ -260,34 +258,6 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         }
       };
     t.start();
-  }
-
-  /**
-   * Getter for the AccountName.
-   *
-   * @return the AccountName for this CloudDB project
-   */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Gets the AccountName for this CloudDB project.")
-  public String AccountName() {
-    checkAccountNameProjectIDNotBlank();
-    return accountName;
-  }
-
-  /**
-   * Specifies the account name of this CloudDB project.
-   *
-   * @param usrname the user's account name
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
-  public void AccountName(String usrname) {
-    if (!accountName.equals(usrname)) {
-      accountName = usrname;
-    }
-    if (accountName.equals("")){
-      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
-    }
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
@@ -374,7 +344,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Gets the ProjectID for this CloudDB project.")
   public String ProjectID() {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     return projectID;
   }
 
@@ -390,7 +360,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       projectID = id;
     }
     if (projectID.equals("")){
-      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
+      throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
   }
 
@@ -419,7 +389,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
           description = "Gets the token signature for this CloudDB project.")
   public String Token() {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     return token;
   }
 
@@ -438,7 +408,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction
   public void StoreValue(final String tag, final Object valueToStore) {
     Log.i("CloudDB","StoreValue");
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     Log.i("CloudDB","PASSSSS");
 
     final String value;
@@ -468,9 +438,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           public void run() {
             Jedis jedis = getJedis();
             Log.i("CloudDB", "Before set is called...");
-            //String statusCodeReply = jedis.set(accountName+projectID+tag, value);
-            long statusCodeReply = jedis.zadd(accountName+projectID+tag, System.currentTimeMillis(),value);
-            Log.i("CloudDB", "Jedis Key = " + accountName+projectID+tag);
+            long statusCodeReply = jedis.zadd(projectID+tag, System.currentTimeMillis(),value);
+            Log.i("CloudDB", "Jedis Key = " + projectID+tag);
             Log.i("CloudDB", "Jedis TS = " + System.currentTimeMillis());
             Log.i("CloudDB", "Jedis Val = " + value);
           }
@@ -495,7 +464,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    */
   @SimpleFunction
   public void GetValue(final String tag, final Object valueIfTagNotThere) {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     Log.d(CloudDB.LOG_TAG,"getting value ...");
     final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
@@ -514,7 +483,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
         String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE, CloudDBCache.Table1.COLUMN_TIMESTAMP};
         String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ? ";
-        String[] selectionArgs = {this.accountName+this.projectID+tag};
+        String[] selectionArgs = {this.projectID+tag};
         String orderby = CloudDBCache.Table1.COLUMN_TIMESTAMP + " DESC";
         cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, orderby);
         String val;
@@ -558,8 +527,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
             Jedis jedis = getJedis();
             try {
               Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
-              Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
-              //String returnValue = jedis.get(accountName+projectID+tag);
+              Set<String> returnValues = jedis.zrange(projectID+tag,0,-1);
               Log.d(CloudDB.LOG_TAG,"zrange success ...");
               String returnValue = null;
               if(returnValues != null && !returnValues.isEmpty()){
@@ -607,7 +575,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    */
   @SimpleFunction
   public void GetValues(final String tag, final Object valueIfTagNotThere) {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     Log.d(CloudDB.LOG_TAG,"getting value ...");
     final AtomicReference<Object> value = new AtomicReference<Object>();
     Cursor cursor = null;
@@ -627,7 +595,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
         String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE, CloudDBCache.Table1.COLUMN_TIMESTAMP};
         String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ? ";
-        String[] selectionArgs = {this.accountName+this.projectID+tag};
+        String[] selectionArgs = {this.projectID+tag};
         String orderby = CloudDBCache.Table1.COLUMN_TIMESTAMP + " DESC";
         cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, orderby);
         if (cursor != null){
@@ -670,8 +638,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
             final List<String> returnValuesList;
             try {
               Log.d(CloudDB.LOG_TAG,"reading from Redis ...");
-              Set<String> returnValues = jedis.zrange(accountName+projectID+tag,0,-1);
-              //String returnValue = jedis.get(accountName+projectID+tag);
+              Set<String> returnValues = jedis.zrange(projectID+tag,0,-1);
               Log.d(CloudDB.LOG_TAG,"zrange success ...");
 
               if(returnValues != null && !returnValues.isEmpty()){
@@ -713,7 +680,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "argument \"value\" is the object that was the first in the list, and which is now " +
     "removed.")
   public void FirstRemoved(Object value) {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
   }
 
@@ -735,9 +702,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "the other will get the second element, or an error if there is no available element. " +
     "When the element is available, the \"FirstRemoved\" event will be triggered.")
   public void RemoveFirstFromList(final String tag) {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
 
-    final String key = accountName + projectID + tag;
+    final String key = projectID + tag;
 
     background.submit(new Runnable() {
         public void run() {
@@ -775,7 +742,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "If two devices use this function simultaneously, both will be appended and no " +
     "data lost.")
   public void AppendValueToList(final String tag, final Object itemToAdd) {
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
 
     Object itemObject = new Object();
     try {
@@ -787,7 +754,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
 
     final String item = (String) itemObject;
-    final String key = accountName + projectID + tag;
+    final String key = projectID + tag;
 
     background.submit(new Runnable() {
         public void run() {
@@ -812,7 +779,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleEvent
   public void GotValue(String tag, Object value) {
     Log.d(CloudDB.LOG_TAG, "GotValue: tag = " + tag + " value = " + (String) value);
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
 
     try {
       Log.d(LOG_TAG, "GotValue: Class of value = " + value.getClass().getName());
@@ -835,9 +802,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleFunction(description = "Remove the tag from Firebase")
   public void ClearTag(final String tag) {
     //Natalie: Should we also add ClearTagsList? Jedis can delete a list of tags easily
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
     Jedis jedis = getJedis();
-    jedis.del(accountName+projectID+tag);
+    jedis.del(projectID+tag);
   }
 
   /**
@@ -850,15 +817,15 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       "known tags.")
   public void GetTagList() {
     //Natalie: Need Listener here too!
-    checkAccountNameProjectIDNotBlank();
+    checkProjectIDNotBlank();
 
     Jedis jedis = getJedis();
 
-    Set<String> value = jedis.keys(accountName+projectID+"*");
+    Set<String> value = jedis.keys(projectID+"*");
     final List<String> listValue = new ArrayList<String>(value);
 
     for(int i = 0; i < listValue.size(); i++){
-      listValue.set(i, listValue.get(i).substring((accountName+projectID).length()));
+      listValue.set(i, listValue.get(i).substring((projectID).length()));
     }
 
     androidUIHandler.post(new Runnable() {
@@ -879,9 +846,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   @SimpleEvent(description = "Event triggered when we have received the list of known tags. " +
       "Used with the \"GetTagList\" Function.")
   public void TagList(List<String> value) {
-    //Natalie: Why is this not called "GotTagList"? Also need to only show tag without
-    //accountName or projectID
-    checkAccountNameProjectIDNotBlank();
+    // Natalie: Why is this not called "GotTagList"? Also need to only
+    // show tag without or projectID
+    checkProjectIDNotBlank();
     EventDispatcher.dispatchEvent(this, "TagList", value);
   }
 
@@ -906,7 +873,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
         }
 
-        String parsedTag = tag.substring(accountName.length()+projectID.length()+9); // 9 is for debugging
+        String parsedTag = tag.substring(projectID.length()+9); // 9 is for debugging
 
         // Invoke the application's "DataChanged" event handler
         EventDispatcher.dispatchEvent(CloudDB.this, "DataChanged", parsedTag, tagValue);
@@ -932,10 +899,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     }
   }
 
-  private void checkAccountNameProjectIDNotBlank(){
-    if (accountName.equals("")){
-      throw new RuntimeException("CloudDB AccountName property cannot be blank.");
-    }
+  private void checkProjectIDNotBlank(){
     if (projectID.equals("")){
       throw new RuntimeException("CloudDB ProjectID property cannot be blank.");
     }
@@ -1083,33 +1047,12 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
           //insert new key
           ContentValues contentValues = new ContentValues();
-          contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, this.accountName + this.projectID + tag);
+          contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, this.projectID + tag);
           contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
           contentValues.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,0);
           contentValues.put(CloudDBCache.Table1.COLUMN_TIMESTAMP,System.currentTimeMillis());
           db.insert(CloudDBCache.Table1.TABLE_NAME, null, contentValues);
 
-          /*String[] projection = {CloudDBCache.Table1.COLUMN_NAME_VALUE};
-          String selection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-          String[] selectionArgs = {this.accountName + this.projectID + tag};
-          cursor = db.query(CloudDBCache.Table1.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
-          if (cursor != null && cursor.getCount() > 0) {
-              //update existing key
-              ContentValues values = new ContentValues();
-              values.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
-              values.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG, 0);
-              String updtSelection = CloudDBCache.Table1.COLUMN_NAME_KEY + " = ?";
-              String[] updtSelectionArgs = {this.accountName + this.projectID + tag};
-              db.update(CloudDBCache.Table1.TABLE_NAME, values, updtSelection, updtSelectionArgs);
-          } else {
-              //insert new key
-              ContentValues contentValues = new ContentValues();
-              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_KEY, this.accountName + this.projectID + tag);
-              contentValues.put(CloudDBCache.Table1.COLUMN_NAME_VALUE, value);
-              contentValues.put(CloudDBCache.Table1.COLUMN_UPLOAD_FLAG,0);
-              contentValues.put(CloudDBCache.Table1.COLUMN_TIMESTAMP,new Long(System.currentTimeMillis()).toString());
-              db.insert(CloudDBCache.Table1.TABLE_NAME, null, contentValues);
-          }*/
       } catch (Exception e) {
           Log.d("CloudDB", "Error occurred while caching data locally...");
           e.printStackTrace();
