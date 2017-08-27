@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.File;
@@ -220,6 +221,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
     } catch (Exception e) {
       Log.e(LOG_TAG, "in stop listener", e);
+      flushJedis();
     }
   }
 
@@ -238,6 +240,11 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 jedis.psubscribe(new CloudDBJedisListener(CloudDB.this), "__key*__:*");
               } catch (Exception e) {
                 Log.e(LOG_TAG, "Error in listener thread", e);
+                try {
+                  jedis.close();
+                } catch (Exception ee) {
+                  // XXX
+                }
               }
             } else {
               // Could not connect to the Redis server. Sleep for
@@ -432,16 +439,21 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
 
     //Natalie: perform the store operation
     //valueToStore is always converted to JSON (String);
-    if(isConnected){
+    if (isConnected) {
       Log.i("CloudDB","Device is online...");
       background.submit(new Runnable() {
           public void run() {
-            Jedis jedis = getJedis();
-            Log.i("CloudDB", "Before set is called...");
-            long statusCodeReply = jedis.zadd(projectID+tag, System.currentTimeMillis(),value);
-            Log.i("CloudDB", "Jedis Key = " + projectID+tag);
-            Log.i("CloudDB", "Jedis TS = " + System.currentTimeMillis());
-            Log.i("CloudDB", "Jedis Val = " + value);
+            try {
+              Jedis jedis = getJedis();
+              Log.i("CloudDB", "Before set is called...");
+              long statusCodeReply = jedis.zadd(projectID+tag, System.currentTimeMillis(),value);
+              Log.i("CloudDB", "Jedis Key = " + projectID+tag);
+              Log.i("CloudDB", "Jedis TS = " + System.currentTimeMillis());
+              Log.i("CloudDB", "Jedis Val = " + value);
+            } catch (JedisException e) {
+              CloudDBError(e.getMessage());
+              flushJedis();
+            }
           }
         });
     }
@@ -543,12 +555,15 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 Log.d(CloudDB.LOG_TAG,"Value retrieved is null");
                 value.set(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
               }
-            } catch(JSONException e) {
+            } catch (JSONException e) {
               throw new YailRuntimeError("Value failed to convert to JSON.", "JSON Creation Error.");
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
               Log.d(CloudDB.LOG_TAG,"error while zrange...");
+              flushJedis();
               throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
+            } catch (JedisException e) {
+              CloudDBError(e.getMessage());
+              flushJedis();
             }
 
             androidUIHandler.post(new Runnable() {
@@ -628,8 +643,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
         if(cursor != null) cursor.close();
         if(db != null) db.close();
       }
-    }
-    else if(isConnected){
+    } else if (isConnected) {
       // Set value to either the JSON from the CloudDB
       // or the JSON representation of valueIfTagNotThere
       background.submit(new Runnable() {
@@ -641,10 +655,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
               Set<String> returnValues = jedis.zrange(projectID+tag,0,-1);
               Log.d(CloudDB.LOG_TAG,"zrange success ...");
 
-              if(returnValues != null && !returnValues.isEmpty()){
+              if (returnValues != null && !returnValues.isEmpty()) {
                 returnValuesList = new ArrayList<>(returnValues);
-              }
-              else{
+              } else {
                 returnValuesList = new ArrayList<>();
                 returnValuesList.add(JsonUtil.getJsonRepresentation(valueIfTagNotThere));
               }
@@ -656,20 +669,16 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                     GotValue(tag, returnValuesList);
                   }
                 });
-            }
-            catch(JSONException e){
+            } catch (JSONException e) {
               Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
               Log.e(CloudDB.LOG_TAG,"error while zrange...",e);
+              flushJedis();
               throw new YailRuntimeError("zrange threw a runtime exception.", "Redis runtime exception.");
-            }
-            catch(Exception e){
+            } catch (Exception e) {
               Log.e(CloudDB.LOG_TAG,"error while making list...",e);
-            }
-
-            finally {
-              if(jedis != null) jedis.close();
+              CloudDBError(e.getMessage());
+              flushJedis();
             }
           }
         });
@@ -711,10 +720,9 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           Jedis jedis = getJedis();
           try {
             FirstRemoved(jedis.eval(POP_FIRST_SCRIPT, 1, key));
-          } catch(JedisException e) {
-
-          } finally {
-            jedis.close();
+          } catch (JedisException e) {
+            CloudDBError(e.getMessage());
+            flushJedis();
           }
         }
       });
@@ -762,9 +770,8 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           try {
             jedis.eval(APPEND_SCRIPT, 1, key, item);
           } catch(JedisException e) {
-
-          } finally {
-            jedis.close();
+            CloudDBError(e.getMessage());
+            flushJedis();
           }
         }
       });
@@ -803,8 +810,13 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   public void ClearTag(final String tag) {
     //Natalie: Should we also add ClearTagsList? Jedis can delete a list of tags easily
     checkProjectIDNotBlank();
-    Jedis jedis = getJedis();
-    jedis.del(projectID+tag);
+    try {
+      Jedis jedis = getJedis();
+      jedis.del(projectID+tag);
+    } catch (Exception e) {
+      CloudDBError(e.getMessage());
+      flushJedis();
+    }
   }
 
   /**
@@ -818,24 +830,38 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
   public void GetTagList() {
     //Natalie: Need Listener here too!
     checkProjectIDNotBlank();
+    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    boolean isConnected = networkInfo != null && networkInfo.isConnected();
+    if (isConnected) {
+      background.submit(new Runnable() {
+          public void run() {
 
-    Jedis jedis = getJedis();
+            Jedis jedis = getJedis();
+            Set<String> value = null;
+            try {
+              value = jedis.keys(projectID+"*");
+            } catch (JedisException e) {
+              CloudDBError(e.getMessage());
+              flushJedis();
+              return;
+            }
+            final List<String> listValue = new ArrayList<String>(value);
 
-    Set<String> value = jedis.keys(projectID+"*");
-    final List<String> listValue = new ArrayList<String>(value);
+            for(int i = 0; i < listValue.size(); i++){
+              listValue.set(i, listValue.get(i).substring((projectID).length()));
+            }
 
-    for(int i = 0; i < listValue.size(); i++){
-      listValue.set(i, listValue.get(i).substring((projectID).length()));
+            androidUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                  TagList(listValue);
+                }
+              });
+          }
+        });
+    } else {
+      CloudDBError("Not connected to the Internet, cannot list tags");
     }
-
-    androidUIHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        TagList(listValue);
-      }
-    });
-
-    jedis.close();
   }
 
   /**
@@ -887,16 +913,22 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * @param message the error message
    */
   @SimpleEvent
-  public void CloudDBError(String message) {
+  public void CloudDBError(final String message) {
     // Log the error message for advanced developers
     Log.e(LOG_TAG, message);
+    final CloudDB me = this;
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
 
-    // Invoke the application's "CloudDBError" event handler
-    boolean dispatched = EventDispatcher.dispatchEvent(this, "CloudDBError", message);
-    if (!dispatched) {
-      // If the handler doesn't exist, then put up our own alert
-      Notifier.oneButtonAlert(form, message, "CloudDBError", "Continue");
-    }
+          // Invoke the application's "CloudDBError" event handler
+          boolean dispatched = EventDispatcher.dispatchEvent(me, "CloudDBError", message);
+          if (!dispatched) {
+            // If the handler doesn't exist, then put up our own alert
+            Notifier.oneButtonAlert(form, message, "CloudDBError", "Continue");
+          }
+        }
+      });
   }
 
   private void checkProjectIDNotBlank(){
@@ -914,16 +946,37 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       jedis = new Jedis(redisServer, redisPort);
       jedis.auth(token);
     } catch (JedisConnectionException e) {
+      CloudDBError(e.getMessage());
       return null;
     }
     return jedis;
   }
 
-  public Jedis getJedis(){
+  public Jedis getJedis() {
     if (INSTANCE == null) {
       INSTANCE = getJedis(true);
     }
     return INSTANCE;
+  }
+
+  /*
+   * flushJedis -- Flush the singleton jedis connection. This is
+   * used when we detect an error from jedis. It is possible that after
+   * an error the jedis connection is in an invalid state (or closed) so
+   * we want to make sure we get a new one the next time around!
+   */
+
+  public void flushJedis() {
+    if (INSTANCE == null) {
+      return;                   // Nothing to do
+    }
+    try {
+      INSTANCE.close();         // Just in case we still have
+                                // a connection
+    } catch (Exception e) {
+      // XXX
+    }
+    INSTANCE = null;
   }
 
  /**
