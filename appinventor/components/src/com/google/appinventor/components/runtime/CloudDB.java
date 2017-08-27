@@ -387,7 +387,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
    * @return the authTokenSignature for this CloudDB project
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-          description = "Gets the token signature for this CloudDB project.")
+          description = "Gets the token for this CloudDB project.")
   public String Token() {
     checkProjectIDNotBlank();
     return token;
@@ -912,7 +912,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     Jedis jedis;
     try {
       jedis = new Jedis(redisServer, redisPort);
-      jedis.auth("test6789");
+      jedis.auth(token);
     } catch (JedisConnectionException e) {
       return null;
     }
