@@ -486,6 +486,7 @@
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
       <jvmarg value="-Xmx1G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
+      <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
       <arg line="-logLevel INFO -style pretty"/>
