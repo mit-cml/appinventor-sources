@@ -25,11 +25,16 @@ public class CloudDBJedisListener extends JedisPubSub {
   @Override
   public void onPMessage(String pattern, String channel, String message) {
     Log.i("CloudDB","onPMessage pattern "+pattern+", channel: "+channel+", message: "+message);
-    if(channel.substring(channel.length() - 3).equals("set")){
+    if (channel.substring(channel.length() - 3).equals("set")) {
       Log.i("CloudDB", "tag "+message+" is newly set");
       Jedis jedis = cloudDB.getJedis();
       cloudDB.DataChanged(message, jedis.get(message));
+    } else if(channel.substring(channel.length() - 4).equals("zadd")){
+      Log.i("CloudDB", "tag "+message+" is newly zadd");
+      // Jedis jedis = cloudDB.getJedis();
+      // cloudDB.DataChanged(message, jedis.get(message));
     }
+
   }
 
   //add other Unimplemented methods
