@@ -7,9 +7,15 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+
 import com.google.appinventor.components.runtime.CloudDB;
+
+import java.util.Set;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.exceptions.JedisException;
+
 
 public class CloudDBJedisListener extends JedisPubSub {
   public CloudDB cloudDB;
@@ -25,16 +31,22 @@ public class CloudDBJedisListener extends JedisPubSub {
   @Override
   public void onPMessage(String pattern, String channel, String message) {
     Log.i("CloudDB","onPMessage pattern "+pattern+", channel: "+channel+", message: "+message);
-    if (channel.substring(channel.length() - 3).equals("set")) {
-      Log.i("CloudDB", "tag "+message+" is newly set");
+    if (message.equals("zadd")) {
+      Log.i("CloudDB", "onMessage tag = " + channel);
       Jedis jedis = cloudDB.getJedis();
-      cloudDB.DataChanged(message, jedis.get(message));
-    } else if(channel.substring(channel.length() - 4).equals("zadd")){
-      Log.i("CloudDB", "tag "+message+" is newly zadd");
-      // Jedis jedis = cloudDB.getJedis();
-      // cloudDB.DataChanged(message, jedis.get(message));
+      Set<String> retvals = null;
+      String retval = null;
+      try {
+        retvals = jedis.zrange(channel, 0, -1);
+      } catch (JedisException e) {
+        cloudDB.flushJedis();
+      }
+      if (retvals != null && !retvals.isEmpty()) {
+        retval = retvals.toArray()[retvals.size()-1].toString();
+        Log.i("CloudDB", "onPMessage: DataChanged tag = " + channel + " value = " + retval);
+        cloudDB.DataChanged(channel, retval);
+      }
     }
-
   }
 
   //add other Unimplemented methods

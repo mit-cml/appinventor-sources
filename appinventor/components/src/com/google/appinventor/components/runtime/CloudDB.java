@@ -245,6 +245,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
                 } catch (Exception ee) {
                   // XXX
                 }
+                startListener(); // Make a new attempt...
               }
             } else {
               // Could not connect to the Redis server. Sleep for
@@ -899,7 +900,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
           throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
         }
 
-        String parsedTag = tag.substring(projectID.length()+9); // 9 is for debugging
+        String parsedTag = tag.substring(projectID.length());
 
         // Invoke the application's "DataChanged" event handler
         EventDispatcher.dispatchEvent(CloudDB.this, "DataChanged", parsedTag, tagValue);
@@ -1184,6 +1185,7 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
       return null;
     }
   }
+
 }
 
 
