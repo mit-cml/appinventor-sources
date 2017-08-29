@@ -60,6 +60,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_ORIENTATION_TYPE = LIST_ACTIVITY_CLASS + ".orientation";
   static final String LIST_ACTIVITY_ITEM_TEXT_COLOR = LIST_ACTIVITY_CLASS + ".itemtextcolor";
   static final String LIST_ACTIVITY_BACKGROUND_COLOR = LIST_ACTIVITY_CLASS + ".backgroundcolor";
+  static final String LIST_ACTIVITY_SEARCH_HINT = LIST_ACTIVITY_CLASS + ".searchhint";
 
   private YailList items;
   private String selection;
@@ -74,6 +75,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   private int itemBackgroundColor;
   public final static int DEFAULT_ITEM_TEXT_COLOR = Component.COLOR_WHITE;
   public final static int DEFAULT_ITEM_BACKGROUND_COLOR = Component.COLOR_BLACK;
+  private String searchHint;
 
   /**
    * Create a new ListPicker component.
@@ -271,6 +273,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     intent.putExtra(LIST_ACTIVITY_ORIENTATION_TYPE,container.$form().ScreenOrientation());
     intent.putExtra(LIST_ACTIVITY_ITEM_TEXT_COLOR, itemTextColor);
     intent.putExtra(LIST_ACTIVITY_BACKGROUND_COLOR, itemBackgroundColor);
+    intent.putExtra(LIST_ACTIVITY_SEARCH_HINT, searchHint);
 
     return intent;
   }
@@ -309,4 +312,27 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     container.$form().unregisterForActivityResult(this);
   }
 
+  /**
+   * Returns the ListPicker's text search hint
+   *
+   * @return text search hint as string
+   */
+  @SimpleProperty(
+      description = "The hint for search box .",
+      category = PropertyCategory.APPEARANCE)
+  public String SearchHint() {
+    return searchHint;
+  }
+
+  /**
+   * Specifies the ListPicker search box hint
+   *
+   * @param string value for search hint
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "Search List...")
+  @SimpleProperty
+  public void SearchHint(String hint) {
+      searchHint = hint;
+  }
 }

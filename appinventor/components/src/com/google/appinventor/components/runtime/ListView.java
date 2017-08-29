@@ -79,6 +79,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
   private int textSize;
   private static final int DEFAULT_TEXT_SIZE = 22;
+  private String searchHint;
 
   /**
    * Creates a new ListView component.
@@ -101,7 +102,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     txtSearchBox.setSingleLine(true);
     txtSearchBox.setWidth(Component.LENGTH_FILL_PARENT);
     txtSearchBox.setPadding(10, 10, 10, 10);
-    txtSearchBox.setHint("Search list...");
 
     //set up the listener
     txtSearchBox.addTextChangedListener(new TextWatcher() {
@@ -497,6 +497,31 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       else
         textSize = fontSize;
       setAdapterData();
+  }
+  /**
+   * Returns the ListView's text search hint
+   *
+   * @return text search hint as string
+   */
+  @SimpleProperty(
+      description = "The hint for search box .",
+      category = PropertyCategory.APPEARANCE)
+  public String SearchHint() {
+    return searchHint;
+  }
+
+  /**
+   * Specifies the ListView search box hint
+   *
+   * @param string value for search hint
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "Search List...")
+  @SimpleProperty
+  public void SearchHint(String hint) {
+      this.searchHint = hint;
+      txtSearchBox.setHint(hint);
+      view.invalidate();
   }
 
 }

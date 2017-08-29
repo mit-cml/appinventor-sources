@@ -6443,4 +6443,8 @@ public interface OdeMessages extends Messages {
   @Description("")
   String reloadWindow();
 
+  @DefaultMessage("SearchHint")
+  @Description("")
+  String SearchHintProperties();
+
 }
