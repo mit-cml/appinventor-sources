@@ -1213,7 +1213,7 @@ Blockly.ReplMgr.ehardreset = function(formName) {
     var context = this;
     var dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_DO_YOU_REALLY_Q, Blockly.Msg.REPL_FACTORY_RESET, Blockly.Msg.REPL_OK, Blockly.Msg.REPL_CANCEL, 0, function(response) {
         dialog.hide();
-        if (response == "OK") {
+        if (response == Blockly.Msg.REPL_OK) {
             context.hardreset(formName, function() {
                 var xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/emulatorreset/", true);
