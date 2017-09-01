@@ -52,6 +52,18 @@ page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(statu
 
   }, expected, formJson, blocks, args[1], args[2]); // args[1] and args[2] are blocks Version and YaV
 
+  // Assert that the block position of the global variable matches the pre-upgraded position.
+  passed = passed && page.evaluate(function() {
+    var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+    for (var i = 0, block; i < topBlocks.length; i++) {
+      block = topBlocks[i];
+      if (block.type === 'global_declaration') {
+        return block.x === 16 && block.y === 182;
+      }
+    }
+    return false;
+  });
+
   //This is the actual result of the test
   console.log(passed);
   //Exit the phantom process
