@@ -690,8 +690,24 @@ public final class CloudDB extends AndroidNonvisibleComponent implements Compone
     "argument \"value\" is the object that was the first in the list, and which is now " +
     "removed.")
   public void FirstRemoved(Object value) {
+    Log.d(CloudDB.LOG_TAG, "FirstRemoved: Value = " + value);
     checkProjectIDNotBlank();
-    EventDispatcher.dispatchEvent(this, "FirstRemoved", value);
+    final CloudDB me = this;
+    try {
+      if(value != null && value instanceof String) {
+        value = JsonUtil.getObjectFromJson((String) value);
+      }
+    } catch (JSONException e) {
+      Log.e(CloudDB.LOG_TAG,"error while converting to JSON...",e);
+      return;
+    }
+    final Object sValue = value;
+    androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          EventDispatcher.dispatchEvent(me, "FirstRemoved", sValue);
+        }
+      });
   }
 
   private static final String POP_FIRST_SCRIPT =
