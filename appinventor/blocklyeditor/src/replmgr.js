@@ -79,6 +79,10 @@ top.ReplState.phoneState = {};
 
 // Blockly.mainWorkSpace --- hold the main workspace
 
+Blockly.ReplMgr.isConnected = function() {
+    return top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
+};
+
 /**
  * Build YAIL for sending to the companion.
  * @param {Blockly.WorkspaceSvg} workspace
