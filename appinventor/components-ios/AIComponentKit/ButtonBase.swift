@@ -1,10 +1,5 @@
-//
-//  ButtonBase.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/21/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -36,6 +31,8 @@ open class ButtonBase: ViewComponent {
     super.init(parent)
     self._view.backgroundColor = argbToColor(_backgroundColor)
     self._view.translatesAutoresizingMaskIntoConstraints = false
+    self._view.addTarget(self, action: #selector(TouchDown), for: UIControlEvents.touchDown)
+    self._view.addTarget(self, action: #selector(TouchUp), for: UIControlEvents.touchUpInside)
     BackgroundColor = Int32(Color.default.rawValue)
     Enabled = true
     FontSize = kFontSizeDefault
@@ -134,6 +131,18 @@ open class ButtonBase: ViewComponent {
     }
   }
 
+  open var ShowFeedback: Bool {
+    get {
+      return _showFeedback
+    }
+    set(feedback) {
+      if _showFeedback != feedback {
+        _showFeedback = feedback
+        _view.showsTouchWhenHighlighted = feedback
+      }
+    }
+  }
+
   open var Text: String? {
     get {
       return _view.title(for: UIControlState.normal)
@@ -185,6 +194,23 @@ open class ButtonBase: ViewComponent {
         _view.setTitleColor(argbToColor(color), for: .normal)
       }
     }
+  }
+
+  // MARK: Events
+  open func GotFocus() {
+    EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
+  }
+
+  open func LostFocus() {
+    EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
+  }
+
+  open func TouchDown() {
+    EventDispatcher.dispatchEvent(of: self, called: "TouchDown")
+  }
+
+  open func TouchUp() {
+    EventDispatcher.dispatchEvent(of: self, called: "TouchUp")
   }
 
   open func longClick() -> Bool {
