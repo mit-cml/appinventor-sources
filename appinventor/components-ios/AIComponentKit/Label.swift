@@ -49,15 +49,12 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent {
           }
         }
         switch(align) {
-          case Alignment.normal:
+          case .normal:
             _view.textAlignment = rtl ? NSTextAlignment.right : NSTextAlignment.left
-            break
-          case Alignment.center:
+          case .center:
             _view.textAlignment = NSTextAlignment.center
-            break
-          case Alignment.opposite:
+          case .opposite:
             _view.textAlignment = rtl ? NSTextAlignment.left : NSTextAlignment.right
-            break
         }
       }
     }

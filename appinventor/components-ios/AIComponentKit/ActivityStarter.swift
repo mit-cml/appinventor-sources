@@ -100,11 +100,9 @@ open class ActivityStarter: NonvisibleComponent {
 
   // MARK: ActivityStarter Methods
   open func ResolveActivity() -> Bool {
-    if _action == ACTION_VIEW {
-      if let url = URL(string: _dataUri) {
-        if UIApplication.shared.canOpenURL(url) {
+    if _action == ACTION_VIEW, let url = URL(string: _dataUri) {
+      if UIApplication.shared.canOpenURL(url) {
           return true
-        }
       }
     }
     return false

@@ -122,42 +122,38 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
   
   fileprivate func applyOrientation() {
     let orientation = UIApplication.shared.statusBarOrientation
-    var scanRectRotation: Float32;
-    var captureRotation: Float32;
+    var scanRectRotation: Float32
+    var captureRotation: Float32
     
     switch (orientation) {
       case UIInterfaceOrientation.portrait:
         captureRotation = 0
         scanRectRotation = 90
-        break
       case UIInterfaceOrientation.landscapeLeft:
-        captureRotation = 90;
-        scanRectRotation = 180;
-        break;
+        captureRotation = 90
+        scanRectRotation = 180
       case UIInterfaceOrientation.landscapeRight:
-        captureRotation = 270;
-        scanRectRotation = 0;
-        break;
+        captureRotation = 270
+        scanRectRotation = 0
+        break
       case UIInterfaceOrientation.portraitUpsideDown:
-        captureRotation = 180;
-        scanRectRotation = 270;
-        break;
+        captureRotation = 180
+        scanRectRotation = 270
       default:
-        captureRotation = 0;
-        scanRectRotation = 90;
-        break;
+        captureRotation = 0
+        scanRectRotation = 90
     }
     applyRectOfInterest(orientation)
     let transform = CGAffineTransform(rotationAngle: CGFloat(Double(captureRotation / 180) * M_PI))
     self._capture.transform = transform
     self._capture.rotation = CGFloat(scanRectRotation)
-    self._capture.layer.frame = self.view.frame;
+    self._capture.layer.frame = self.view.frame
   }
   
   func applyRectOfInterest(_ orientation: UIInterfaceOrientation) {
     var scaleVideo: CGFloat, scaleVideoX: CGFloat, scaleVideoY: CGFloat
     var videoSizeX: CGFloat, videoSizeY: CGFloat
-    var transformedVideoRect = self._scanViewRect.frame;
+    var transformedVideoRect = self._scanViewRect.frame
     if(self._capture.sessionPreset == AVCaptureSessionPreset1920x1080) {
       videoSizeX = 1080;
       videoSizeY = 1920;
@@ -168,24 +164,24 @@ class BarcodeScannerViewController: UIViewController, ZXCaptureDelegate {
     if(UIInterfaceOrientationIsPortrait(orientation)) {
       scaleVideoX = self.view.frame.size.width / videoSizeX;
       scaleVideoY = self.view.frame.size.height / videoSizeY;
-      scaleVideo = max(scaleVideoX, scaleVideoY);
+      scaleVideo = max(scaleVideoX, scaleVideoY)
       if(scaleVideoX > scaleVideoY) {
-        transformedVideoRect.origin.y += (scaleVideo * videoSizeY - self.view.frame.size.height) / 2;
+        transformedVideoRect.origin.y += (scaleVideo * videoSizeY - self.view.frame.size.height) / 2
       } else {
-        transformedVideoRect.origin.x += (scaleVideo * videoSizeX - self.view.frame.size.width) / 2;
+        transformedVideoRect.origin.x += (scaleVideo * videoSizeX - self.view.frame.size.width) / 2
       }
     } else {
-      scaleVideoX = self.view.frame.size.width / videoSizeY;
-      scaleVideoY = self.view.frame.size.height / videoSizeX;
-      scaleVideo = max(scaleVideoX, scaleVideoY);
+      scaleVideoX = self.view.frame.size.width / videoSizeY
+      scaleVideoY = self.view.frame.size.height / videoSizeX
+      scaleVideo = max(scaleVideoX, scaleVideoY)
       if(scaleVideoX > scaleVideoY) {
-        transformedVideoRect.origin.y += (scaleVideo * videoSizeX - self.view.frame.size.height) / 2;
+        transformedVideoRect.origin.y += (scaleVideo * videoSizeX - self.view.frame.size.height) / 2
       } else {
-        transformedVideoRect.origin.x += (scaleVideo * videoSizeY - self.view.frame.size.width) / 2;
+        transformedVideoRect.origin.x += (scaleVideo * videoSizeY - self.view.frame.size.width) / 2
       }
     }
-    _captureSizeTransform = CGAffineTransform(scaleX: 1/scaleVideo, y: 1/scaleVideo);
-    self._capture.scanRect = transformedVideoRect.applying(_captureSizeTransform);
+    _captureSizeTransform = CGAffineTransform(scaleX: 1/scaleVideo, y: 1/scaleVideo)
+    self._capture.scanRect = transformedVideoRect.applying(_captureSizeTransform)
   }
 }
 

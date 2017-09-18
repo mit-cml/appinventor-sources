@@ -39,7 +39,7 @@ open class TinyDB: NonvisibleComponent {
   open func StoreValue(_ tag: String, _ valueToStore: AnyObject) {
     do {
       let valueAsString = try getJsonRepresentation(valueToStore)
-      try _database.run(_table.insert(or: .replace, _key <- tag, _value <- valueAsString))
+      _ = try _database.run(_table.insert(or: .replace, _key <- tag, _value <- valueAsString))
     } catch {
       NSLog("Unable to write to TinyDB")
     }
@@ -72,7 +72,7 @@ open class TinyDB: NonvisibleComponent {
 
   open func ClearAll() {
     do {
-      try _database.run(_table.delete())
+      _ = try _database.run(_table.delete())
     } catch {
       NSLog("Unable to clear all tags")
     }
@@ -80,7 +80,7 @@ open class TinyDB: NonvisibleComponent {
 
   open func ClearTag(_ tag: String) {
     do {
-      try _database.run(_table.filter(_key == tag).delete())
+      _ = try _database.run(_table.filter(_key == tag).delete())
     } catch {
       NSLog("Unable to clear tag from TinyDB")
     }

@@ -162,13 +162,10 @@ open class ButtonBase: ViewComponent {
         switch _textAlignment {
           case .normal:
             _view.contentHorizontalAlignment = rtl ? .right : .left
-            break
           case .center:
             _view.contentHorizontalAlignment = .center
-            break
           case .opposite:
             _view.contentHorizontalAlignment = rtl ? .left : .right
-            break
         }
       }
     }

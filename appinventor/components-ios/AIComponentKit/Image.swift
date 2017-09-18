@@ -31,7 +31,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       _picturePath = path
-      if path == "" {
+      if path.isEmpty {
         _image = nil
         _view.image = nil
         _view.frame.size = CGSize(width: 0, height: 0)

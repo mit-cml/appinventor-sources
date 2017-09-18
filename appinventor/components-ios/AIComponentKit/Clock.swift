@@ -36,14 +36,11 @@ open class Clock: NonvisibleComponent {
     }
     set(enabled) {
       _enabled = enabled
+      _timer?.invalidate()
       if _enabled {
-        if let timer = _timer {
-          timer.invalidate()
-        }
         _timer = Foundation.Timer(timeInterval: TimeInterval(Double(_interval) / 1000.0), target: self, selector: #selector(self.timerFired(_:)), userInfo: nil, repeats: true)
         RunLoop.main.add(_timer!, forMode: .defaultRunLoopMode)
-      } else if let timer = _timer {
-        timer.invalidate()
+      } else {
         _timer = nil
       }
     }

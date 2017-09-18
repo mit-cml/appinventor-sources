@@ -29,17 +29,14 @@ open class Sound: NonvisibleComponent {
     }
     set(path) {
       _sourcePath = path
-      if (path == "") {
-        if (_audioPlayer != nil) {
-          _audioPlayer?.stop()
-        }
+      if (path.isEmpty) {
+        _audioPlayer?.stop()
         _audioPlayer = nil
       } else {
-        let path = Bundle.main.path(forResource: path, ofType: nil)
-        if (path == nil) {
-          return;
+        guard let path = Bundle.main.path(forResource: path, ofType: nil) else {
+            return
         }
-        let url = URL(fileURLWithPath: path!)
+        let url = URL(fileURLWithPath: path)
         do {
           _audioPlayer = try AVAudioPlayer(contentsOf:url)
           _audioPlayer?.prepareToPlay()
@@ -71,21 +68,15 @@ open class Sound: NonvisibleComponent {
   }
 
   fileprivate func playWhenLoadComplete() {
-    if let player = _audioPlayer {
-      player.play()
-    }
+    _audioPlayer?.play()
   }
 
   open func Pause() {
-    if (_audioPlayer != nil) {
-      _audioPlayer?.pause()
-    }
+    _audioPlayer?.pause()
   }
   
   open func Stop() {
-    if (_audioPlayer != nil) {
-      _audioPlayer?.stop()
-    }
+    _audioPlayer?.stop()
   }
   
   open func Vibrate(_ duration: Int32) {

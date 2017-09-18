@@ -53,13 +53,10 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
         switch alignment {
         case .normal:
           _delegate.alignment = isRTL ? .right : .left
-          break
         case .center:
           _delegate.alignment = .center
-          break
         case .opposite:
           _delegate.alignment = isRTL ? .left : .right
-          break
         }
       }
     }

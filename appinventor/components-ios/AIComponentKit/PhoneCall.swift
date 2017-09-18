@@ -73,14 +73,13 @@ open class PhoneCall: NonvisibleComponent {
   // MARK: PhoneCall Methods
   open func MakePhoneCall() {
     let cleanNumber = _phoneNumber.components(separatedBy: CharacterSet(charactersIn: "0123456789+-()").inverted).joined()
-    let telurl = URL(string: "tel:" + cleanNumber)
-    if telurl != nil {
+    if let telurl = URL(string: "tel:" + cleanNumber) {
       if #available(iOS 10.0, *) {
-        UIApplication.shared.open(telurl!, options: [:], completionHandler: { (success: Bool) in
+        UIApplication.shared.open(telurl, options: [:], completionHandler: { (success: Bool) in
           self.PhoneCallStarted(1, self._phoneNumber)
         })
       } else {
-        UIApplication.shared.openURL(telurl!)
+        UIApplication.shared.openURL(telurl)
       }
     }
   }

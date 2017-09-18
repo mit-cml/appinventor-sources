@@ -224,13 +224,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
         switch(halign) {
           case .left:
             _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentLeft
-            break
           case .center:
             _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentCenter
-            break
           case .right:
             _csHorizontalAlignment = CSLinearLayoutItemHorizontalAlignmentRight
-            break
         }
         if view is CSLinearLayoutView {
           let items = _verticalLayout.items
@@ -256,13 +253,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
         switch(valign) {
         case .top:
           _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentTop
-          break
         case .center:
           _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentCenter
-          break
         case .bottom:
           _csVerticalAlignment = CSLinearLayoutItemVerticalAlignmentBottom
-          break
         }
         if view is CSLinearLayoutView {
           _verticalItem.verticalAlignment = _csVerticalAlignment
@@ -374,11 +368,7 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
       return _compatibilityMode ? "Fixed" : "Responsive"
     }
     set(value) {
-      if (value == "Fixed") {
-        _compatibilityMode = true
-      } else {
-        _compatibilityMode = false
-      }
+      _compatibilityMode = (value == "Fixed")
     }
   }
   
