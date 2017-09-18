@@ -73,6 +73,7 @@
 		06D1519E1DC4F49C00FC981E /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D1519D1DC4F49C00FC981E /* AppManager.swift */; };
 		06D151E81DC4FE2A00FC981E /* ElementsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */; };
 		06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D151E91DC6ED5200FC981E /* HVArrangement.swift */; };
+		06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D998ED1F53CDDB00A13A0E /* ContactPicker.swift */; };
 		06DA9F4F1D8CFB4B00389B04 /* VisibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */; };
 		06DA9F501D8CFBA200389B04 /* Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A26E1D8CE3750013A191 /* Form.swift */; };
 		06DA9F511D8CFBA200389B04 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0618A2701D8CE50A0013A191 /* Component.swift */; };
@@ -185,6 +186,7 @@
 		06D1519D1DC4F49C00FC981E /* AppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		06D151E71DC4FE2A00FC981E /* ElementsUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ElementsUtil.swift; sourceTree = "<group>"; };
 		06D151E91DC6ED5200FC981E /* HVArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVArrangement.swift; sourceTree = "<group>"; };
+		06D998ED1F53CDDB00A13A0E /* ContactPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPicker.swift; sourceTree = "<group>"; };
 		06DA9F4E1D8CFB4B00389B04 /* VisibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibleComponent.swift; sourceTree = "<group>"; };
 		06DA9F5C1D8D0CAA00389B04 /* AppInvHTTPD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInvHTTPD.h; sourceTree = "<group>"; };
 		06DA9F5D1D8D0CAA00389B04 /* AppInvHTTPD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInvHTTPD.m; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 			children = (
 				06E59EB01D92D16100C42804 /* Button.swift */,
 				06E59EB41D93345E00C42804 /* ButtonBase.swift */,
+				06D998ED1F53CDDB00A13A0E /* ContactPicker.swift */,
 				06B216051DB95155000B3366 /* Image.swift */,
 				06E59EB21D92D19600C42804 /* Label.swift */,
 				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
@@ -738,6 +741,7 @@
 				060119DE1DC24126000FC1E2 /* ListPicker.swift in Sources */,
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
+				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
 				068E0EB91DC251E90086FFDA /* Texting.swift in Sources */,
 				06DA9F511D8CFBA200389B04 /* Component.swift in Sources */,

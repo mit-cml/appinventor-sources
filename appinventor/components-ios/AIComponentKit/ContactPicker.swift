@@ -1,0 +1,140 @@
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+
+import Foundation
+import ContactsUI
+
+open class ContactPicker: Picker, AbstractMethodsForPicker, CNContactPickerDelegate {
+  fileprivate var _contact: CNContact? = nil
+
+  public override init(_ parent: ComponentContainer) {
+    super.init(parent)
+    super.setDelegate(self)
+    _view.titleLabel?.text = NSLocalizedString("ContactPicker", comment: "The class name of the contact picker.") + "1"
+    _view.addTarget(self, action: #selector(click), for: UIControlEvents.primaryActionTriggered)
+    parent.add(self)
+  }
+
+  // MARK: Properties
+  open var ContactName: String {
+    get {
+      if let contact = _contact {
+        return CNContactFormatter.string(from: contact, style: .fullName) ?? ""
+      } else {
+        return ""
+      }
+    }
+  }
+
+  open var ContactUri: String {
+    get {
+      return _contact?.identifier ?? ""
+    }
+  }
+
+  open var EmailAddress: String {
+    get {
+      if let contact = _contact {
+        if contact.emailAddresses.count > 0 {
+          return contact.emailAddresses[0].value as String
+        }
+      }
+      return ""
+    }
+  }
+
+  open var EmailAddressList: [String] {
+    get {
+      var result = [String]()
+      if let contact = _contact {
+        for email in contact.emailAddresses {
+          result.append(email.value as String)
+        }
+      }
+      return result
+    }
+  }
+
+  open var PhoneNumber: String {
+    get {
+      if let contact = _contact {
+        if contact.phoneNumbers.count > 0 {
+          return contact.phoneNumbers[0].value.stringValue
+        }
+      }
+      return ""
+    }
+  }
+
+  open var PhoneNumberList: [String] {
+    get {
+      var result = [String]()
+      if let contact = _contact {
+        for phone in contact.phoneNumbers {
+          result.append(phone.value.stringValue)
+        }
+      }
+      return result
+    }
+  }
+
+  open var Picture: String {
+    get {
+      if let contact = _contact {
+        if contact.imageDataAvailable, let imageData = contact.imageData {
+          var url: URL!
+          do {
+            url = try URL(fileURLWithPath: "contact.png", relativeTo: FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true))
+            try imageData.write(to: url)
+            return url.absoluteString
+          } catch {
+            _container.form.dispatchErrorOccurredEvent(self, "Picture", ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE.code, url?.absoluteString ?? "<unknown>")
+          }
+        }
+      }
+      return ""
+    }
+  }
+
+  // MARK: Methods
+  open func ViewContact(_ uri: String) {
+    if let contact = _contact {
+      let abUrl = "addressbook://\(contact.identifier)"
+      if let url = URL(string: abUrl) {
+        if #available(iOS 10.0, *) {
+          UIApplication.shared.open(url, options: [String : Any]()) { (success: Bool) in
+            if !success {
+              self.reportViewContactError()
+            }
+          }
+        } else {
+          if !UIApplication.shared.openURL(url) {
+            reportViewContactError()
+          }
+        }
+      }
+    }
+  }
+
+  fileprivate func reportViewContactError() {
+    _container.form.dispatchErrorOccurredEvent(self, "ViewContact", ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER.code)
+  }
+
+  // MARK: CNContactPickerDelegate Implementation
+  open func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
+    _contact = nil
+  }
+
+  open func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
+    _contact = contact
+    AfterPicking()
+  }
+
+  // MARK: AbstractMethodsForPicker Implementation
+  open func open() {
+    let picker = CNContactPickerViewController()
+    picker.delegate = self
+    _container.form.present(picker, animated: true)
+  }
+}
+
