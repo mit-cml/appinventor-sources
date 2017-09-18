@@ -74,19 +74,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       return _selection
     }
     set(selection) {
+      if let selectedRow = _view.indexPathForSelectedRow {
+        _view.deselectRow(at: selectedRow, animated: false)
+      }
       if let index = _elements.index(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
-        if let selectedRow = _view.indexPathForSelectedRow {
-          _view.deselectRow(at: selectedRow, animated: false)
-        }
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
         _selection = ""
-        if let selectedRow = _view.indexPathForSelectedRow {
-          _view.deselectRow(at: selectedRow, animated: false)
-        }
       }
     }
   }
@@ -115,11 +112,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
     }
     set(filterBar) {
       _showFilter = filterBar
-      if (_showFilter) {
-        _view.tableHeaderView = UISearchBar()
-      } else {
-        _view.tableHeaderView = nil
-      }
+      _view.tableHeaderView = _showFilter ? UISearchBar() : nil
     }
   }
 
@@ -137,11 +130,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent, UITableView
       return _textSize
     }
     set(textSize) {
-      if (textSize < 0) {
-        _textSize = Int32(7)
-      } else {
-        _textSize = textSize
-      }
+      _textSize = textSize < 0 ? Int32(7) : textSize
       _view.reloadData()
     }
   }

@@ -33,7 +33,8 @@ open class Sound: NonvisibleComponent {
         _audioPlayer?.stop()
         _audioPlayer = nil
       } else {
-        let path = Bundle.main.path(forResource: path, ofType: nil) ?? AssetManager.shared.pathForExistingFileAsset(path)
+        let soundPath = Bundle.main.path(forResource: path, ofType: nil) ??
+          AssetManager.shared.pathForExistingFileAsset(path)
         let url = URL(fileURLWithPath: path)
         do {
           _audioPlayer = try AVAudioPlayer(contentsOf:url)

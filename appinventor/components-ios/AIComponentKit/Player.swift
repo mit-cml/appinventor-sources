@@ -34,10 +34,8 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
     }
     set(path) {
       _sourcePath = path
-      if (path == "") {
-        if (_audioPlayer != nil) {
-          _audioPlayer?.stop()
-        }
+      if (path.isEmpty) {
+        _audioPlayer?.stop()
         _audioPlayer = nil
       } else {
         if let path = Bundle.main.path(forResource: path, ofType: nil) {
@@ -51,7 +49,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
           }
         } else {
           let path = AssetManager.shared.pathForExistingFileAsset(path)
-          if path != "" {
+          if !path.isEmpty {
             do {
               let url = URL(fileURLWithPath: path)
               _audioPlayer = try AVAudioPlayer(contentsOf:url)
@@ -79,11 +77,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
 
   open var IsPlaying: Bool {
     get {
-      if let result = _audioPlayer?.isPlaying {
-        return result
-      } else {
-        return false
-      }
+      return _audioPlayer?.isPlaying ?? false
     }
   }
 
@@ -111,29 +105,21 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
       } else if (vol > 100) {
         vol = 100
       }
-      if let player = _audioPlayer {
-        player.volume = Float(vol) / 100.0
-      }
+      _audioPlayer?.volume = Float(vol) / 100.0
     }
   }
 
   open func Start() {
-    if let player = _audioPlayer {
-      player.numberOfLoops = _loop ? -1 : 0
-      player.play()
-    }
+    _audioPlayer?.numberOfLoops = _loop ? -1 : 0
+    _audioPlayer?.play()
   }
   
   open func Pause() {
-    if let player = _audioPlayer {
-      player.pause()
-    }
+    _audioPlayer?.pause()
   }
   
   open func Stop() {
-    if let player = _audioPlayer {
-      player.stop()
-    }
+    _audioPlayer?.stop()
   }
   
   open func Vibrate(_ duration: Int32) {
@@ -173,9 +159,7 @@ open class Player: NonvisibleComponent, AVAudioPlayerDelegate, LifecycleDelegate
   }
 
   private func prepareToDie() {
-    if let player = _audioPlayer {
-      player.stop()
-      _audioPlayer = nil
-    }
+    _audioPlayer?.stop()
+    _audioPlayer = nil
   }
 }

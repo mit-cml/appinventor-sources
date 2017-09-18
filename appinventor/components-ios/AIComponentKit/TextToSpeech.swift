@@ -69,11 +69,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     let parts = _language.split("-")
     _language = parts[0]
     _countryCode2 = parts[1]
-    if let countryCode3 = TextToSpeech.ISO_COUNTRY_2_TO_3[_countryCode2] {
-      _countryCode = countryCode3
-    } else {
-      _countryCode = "USA"
-    }
+    _countryCode = TextToSpeech.ISO_COUNTRY_2_TO_3[_countryCode2] ?? "USA"
     super.init(parent)
     _tts.delegate = self
   }
