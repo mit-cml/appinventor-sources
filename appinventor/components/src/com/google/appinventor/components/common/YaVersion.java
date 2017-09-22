@@ -715,7 +715,9 @@ public class YaVersion {
   // - The RotationAngle property was added.
   // For IMAGE_COMPONENT_VERSION 3:
   // - Scaling Property added, but hidden for now
-  public static final int IMAGE_COMPONENT_VERSION = 3;
+  // For IMAGE_COMPONENT_VERSION 4:
+  // - The Click event added was added.
+  public static final int IMAGE_COMPONENT_VERSION = 4;
 
   // For IMAGEPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
