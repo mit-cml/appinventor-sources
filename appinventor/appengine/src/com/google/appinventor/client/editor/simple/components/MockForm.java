@@ -21,7 +21,6 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.shared.settings.SettingsConstants;
-import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -600,30 +599,18 @@ public final class MockForm extends MockContainer {
    *
    */
 
-  private Duration lastRefresh = new Duration();
-  private boolean refreshPending = false;
+  private Timer refreshTimer = null;
   public final void refresh() {
     Ode.CLog("MockForm: refresh() called.");
-    /* We refresh less then two seconds ago! */
-    if (lastRefresh.elapsedMillis() < 2000) {
-      if (!refreshPending) {
-        Ode.CLog("MockForm: refresh() called < 2 seconds ago, setting up timer.");
-        refreshPending = true;
-        Timer t = new Timer() {
-            @Override
-            public void run() {
-              refreshPending = false;
-              doRefresh();
-            }
-          };
-        t.schedule(2000);        // Two Seconds
-      } else {
-        Ode.CLog("MockForm: refresh() while timer running, IGNORING!");
+    if (refreshTimer != null) return;
+    refreshTimer = new Timer() {
+      @Override
+      public void run() {
+        doRefresh();
+        refreshTimer = null;
       }
-    } else {
-      lastRefresh = new Duration();
-      doRefresh();
-    }
+    };
+    refreshTimer.schedule(0);
   }
 
   /*
