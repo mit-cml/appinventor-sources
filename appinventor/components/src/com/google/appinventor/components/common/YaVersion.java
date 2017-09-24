@@ -709,7 +709,9 @@ public class YaVersion {
   // - Added background color & image
   public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
 
-  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - The scroll events and controlling methods were added
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -999,7 +1001,9 @@ public class YaVersion {
   // - Added background color & image
   public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
 
-  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
+  // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
+  // - The scroll events and controlling methods were added
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.
