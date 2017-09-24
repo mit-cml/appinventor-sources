@@ -2651,6 +2651,16 @@ public interface OdeMessages extends Messages {
   String webViewerComponentPallette();
 
   // Component Properties
+
+  @DefaultMessage("ScrollPosition")
+  @Description("")
+  String ScrollPositionProperties();
+
+  @DefaultMessage("MaxScrollPosition")
+  @Description("")
+  String MaxScrollPositionProperties();
+
+
   @DefaultMessage("AboutScreen")
   @Description("")
   String AboutScreenProperties();
@@ -3616,6 +3626,19 @@ public interface OdeMessages extends Messages {
   String UnitProperties();
 
   //Params
+  @DefaultMessage("scrollPosition")
+  @Description("")
+  String scrollPositionParams();
+
+  @DefaultMessage("position")
+  @Description("")
+  String positionParams();
+
+  @DefaultMessage("displacement")
+  @Description("")
+  String displacementParams();
+
+
   @DefaultMessage("xAccel")
   @Description("")
   String xAccelParams();
@@ -4345,6 +4368,28 @@ public interface OdeMessages extends Messages {
   String widthParams();
 
   //Events
+
+  @DefaultMessage("ReachLeftEnd")
+  @Description("")
+  String ReachLeftEndEvents();
+
+  @DefaultMessage("ReachRightEnd")
+  @Description("")
+  String ReachRightEndEvents();
+
+  @DefaultMessage("ScrollChanged")
+  @Description("")
+  String ScrollChangedEvents();
+
+  @DefaultMessage("ReachTop")
+  @Description("")
+  String ReachTopEvents();
+
+  @DefaultMessage("ReachBottom")
+  @Description("")
+  String ReachBottomEvents();
+
+
   @DefaultMessage("AccelerationChanged")
   @Description("")
   String AccelerationChangedEvents();
@@ -4746,6 +4791,71 @@ public interface OdeMessages extends Messages {
   String SensorValueChangedEvents();
 
   //Methods
+  @DefaultMessage("ArrowScrollLeftward")
+  @Description("")
+  String ArrowScrollLeftwardMethods();
+
+  @DefaultMessage("ArrowScrollRightward")
+  @Description("")
+  String ArrowScrollRightwardMethods();
+
+  @DefaultMessage("PageScrollLeftward")
+  @Description("")
+  String PageScrollLeftwardMethods();
+
+  @DefaultMessage("PageScrollRightward")
+  @Description("")
+  String PageScrollRightwardMethods();
+
+  @DefaultMessage("ScrollLeftEnd")
+  @Description("")
+  String ScrollLeftEndMethods();
+
+  @DefaultMessage("ScrollRightEnd")
+  @Description("")
+  String ScrollRightEndMethods();
+
+  @DefaultMessage("ScrollBy")
+  @Description("")
+  String ScrollByMethods();
+
+  @DefaultMessage("SmoothScrollBy")
+  @Description("")
+  String SmoothScrollByMethods();
+
+  @DefaultMessage("ScrollTo")
+  @Description("")
+  String ScrollToMethods();
+
+  @DefaultMessage("SmoothScrollTo")
+  @Description("")
+  String SmoothScrollToMethods();
+
+  @DefaultMessage("ArrowScrollUpward")
+  @Description("")
+  String ArrowScrollUpwardMethods();
+
+  @DefaultMessage("ArrowScrollDownward")
+  @Description("")
+  String ArrowScrollDownwardMethods();
+
+  @DefaultMessage("PageScrollUpward")
+  @Description("")
+  String PageScrollUpwardMethods();
+
+  @DefaultMessage("PageScrollRightward")
+  @Description("")
+  String PageScrollDownwardMethods();
+
+  @DefaultMessage("ScrollTop")
+  @Description("")
+  String ScrollTopMethods();
+
+  @DefaultMessage("ScrollBottom")
+  @Description("")
+  String ScrollBottomMethods();
+
+
   @DefaultMessage("ResolveActivity")
   @Description("")
   String ResolveActivityMethods();
