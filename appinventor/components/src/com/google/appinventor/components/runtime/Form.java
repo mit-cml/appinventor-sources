@@ -972,7 +972,8 @@ public class Form extends Activity
     backgroundImagePath = (path == null) ? "" : path;
 
     try {
-      backgroundDrawable = MediaUtil.getBitmapDrawable(this, backgroundImagePath);
+      backgroundDrawable = MediaUtil.getDrawable(this, backgroundImagePath);
+      // used getDrawable to take place of getBitmapDrawable, in order to support ninepatch
     } catch (IOException ioe) {
       Log.e(LOG_TAG, "Unable to load " + backgroundImagePath);
       backgroundDrawable = null;

@@ -15,6 +15,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -24,6 +26,9 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.VideoView;
+
+import ua.anatolii.graphics.ninepatch.BitmapType;
+import ua.anatolii.graphics.ninepatch.NinePatchChunk;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -503,6 +508,34 @@ public class MediaUtil {
     // BitmapFactory.decodeStream where it fails to load the image if the InputStream's skip method
     // doesn't skip the requested number of bytes.
     return BitmapFactory.decodeStream(new FlushedInputStream(is), outPadding, opts);
+  }
+  
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable.
+   * (converted into NinepatchDrawable if it can)
+   *
+   * <p/>If mediaPath is null or empty, null is returned.
+   *
+   * @param form the Form
+   * @param mediaPath the path to the media
+   * @return a Drawable or null
+   *
+   */
+  public static Drawable getDrawable(Form form, String mediaPath) throws IOException {
+    InputStream is=MediaUtil.openMedia(form, mediaPath);
+    Bitmap bitmap=BitmapFactory.decodeStream(is);
+    BitmapType type=BitmapType.determineBitmapType(bitmap);
+    switch(type){
+      case NULL:
+        return null;
+      case RawNinePatch:
+        return NinePatchChunk.create9PatchDrawable(form, bitmap, null);
+      case NinePatch:
+        return new NinePatchDrawable(form.getResources(), bitmap, bitmap.getNinePatchChunk(), new Rect(), null);
+      //case PlainImage:
+      default:
+        return new BitmapDrawable(form.getResources(), bitmap);
+    }
   }
 
   // This class comes from

@@ -106,7 +106,8 @@ public final class Image extends AndroidViewComponent {
 
     Drawable drawable;
     try {
-      drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+      drawable = MediaUtil.getDrawable(container.$form(), picturePath);
+      // used getDrawable to take place of getBitmapDrawable, in order to support ninepatch
     } catch (IOException ioe) {
       Log.e("Image", "Unable to load " + picturePath);
       drawable = null;

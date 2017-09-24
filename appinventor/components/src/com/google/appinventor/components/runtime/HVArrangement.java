@@ -7,7 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import android.os.Handler;
@@ -353,7 +353,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Load image from file.
         if (imagePath.length() > 0) {
             try {
-                backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+                backgroundImageDrawable = MediaUtil.getDrawable(container.$form(), imagePath);
+                // used getDrawable to take place of getBitmapDrawable, in order to support ninepatch
             } catch (IOException ioe) {
                 // Fall through with a value of null for backgroundImageDrawable.
             }
