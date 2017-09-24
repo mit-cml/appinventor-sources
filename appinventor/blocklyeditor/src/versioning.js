@@ -1457,7 +1457,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "HorizontalScrollArrangement": {
 
     // This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    //The scrolling events and methods were added. No blocks need to be modified to upgrqde to version 2
+    2: "noUpgrade"
 
   }, // End HorizontalScrollArrangement upgraders
 
@@ -2306,7 +2309,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "VerticalScrollArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    //The scrolling events and methods were added. No blocks need to be modified to upgrqde to version 2
+    2: "noUpgrade"
 
   }, // End VerticalScrollArrangement upgraders
 

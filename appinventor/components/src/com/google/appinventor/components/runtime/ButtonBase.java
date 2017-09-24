@@ -315,7 +315,8 @@ public abstract class ButtonBase extends AndroidViewComponent
     // Load image from file.
     if (imagePath.length() > 0) {
       try {
-        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+        backgroundImageDrawable = MediaUtil.getDrawable(container.$form(), imagePath);
+        // used getDrawable to take place of getBitmapDrawable, in order to support ninepatch
       } catch (IOException ioe) {
         // TODO(user): Maybe raise Form.ErrorOccurred.
         Log.e(LOG_TAG, "Unable to load " + imagePath);
