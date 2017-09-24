@@ -255,13 +255,17 @@ public final class MockComponentsUtil {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "line-height");
     if (widthStyle != null) {
       DOM.setStyleAttribute(element, "width", null);
     }
     if (heightStyle != null) {
       DOM.setStyleAttribute(element, "height", null);
     }
-    return new String[] { widthStyle, heightStyle };
+    if (lineHeightStyle != null) {
+      DOM.setStyleAttribute(element, "line-height", "initial");
+    }
+    return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
 
   /*
@@ -278,6 +282,9 @@ public final class MockComponentsUtil {
     }
     if (style[1] != null) {
       DOM.setStyleAttribute(element, "height", style[1]);
+    }
+    if (style[2] != null) {
+      DOM.setStyleAttribute(element, "line-height", style[2]);
     }
   }
 
@@ -321,7 +328,10 @@ public final class MockComponentsUtil {
 
     String[] style = clearSizeStyle(w);
     int width = w.getOffsetWidth() + 4;
-    int height = w.getOffsetHeight();
+    int height = w.getOffsetHeight() + 6;
+    if (height < 26) {          // Do not make the button smaller
+      height = 26;              // then 26, as this mimicks what happens
+    }                           // on the real device
     restoreSizeStyle(w, style);
 
     // Detach the widget from the DOM before returning
