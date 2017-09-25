@@ -534,9 +534,9 @@
                       <dt><code>Image</code></dt>
                       <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
                       <dt><code>MaxScrollPosition</code></dt>
-                      <dd></dd>
+                      <dd>Return the maximum position that the ScrollArrangement can reach</dd>
                       <dt><code>ScrollPosition</code></dt>
-                      <dd></dd>
+                      <dd>The scroll position is the same as the number of pixels that are hidden from view above the scrollable area. If the scroll bar is at the very left, or if the element is not scrollable, this number will be 0.</dd>
                       <dt><code>Visible</code></dt>
                       <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
                       <dt><code>Width</code></dt>
@@ -696,9 +696,9 @@
                       <dt><code>Image</code></dt>
                       <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
                       <dt><code>MaxScrollPosition</code></dt>
-                      <dd></dd>
+                      <dd>Return the maximum position that the ScrollArrangement can reach</dd>
                       <dt><code>ScrollPosition</code></dt>
-                      <dd></dd>
+                      <dd>The scroll position is the same as the number of pixels that are hidden from view above the scrollable area. If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.</dd>
                       <dt><code>Visible</code></dt>
                       <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
                       <dt><code>Width</code></dt>
@@ -735,7 +735,7 @@
                       <dd>Scroll to the bottom of the scroll arrangement <br/>
                          (defaut with animation)</dd>
                       <dt><code>ScrollBy(number displacement)</code></dt>
-                      <dd>Scroll upward so for a specific displacement, scroll downward if diaplacement is negative <br/>
+                      <dd>Scroll downward so for a specific displacement, scroll upward if diaplacement is negative <br/>
                          (without animation)</dd>
                       <dt><code>ScrollTo(number position)</code></dt>
                       <dd>Scroll to a specific position <br/>
@@ -744,7 +744,7 @@
                       <dd>Scroll to the top of the scroll arrangement <br/>
                          (defaut with animation)</dd>
                       <dt><code>SmoothScrollBy(number displacement)</code></dt>
-                      <dd>Scroll upward so for a specific displacement, scroll downward if diaplacement is negative <br/>
+                      <dd>Scroll downward so for a specific displacement, scroll upward if diaplacement is negative <br/>
                          (with animation)</dd>
                       <dt><code>SmoothScrollTo(number position)</code></dt>
                       <dd>Scroll to a specific position <br/>
