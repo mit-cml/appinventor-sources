@@ -28,12 +28,12 @@ import android.view.ViewTreeObserver.*;
  * @author 502470184@qq.com (ColinTree, YANG)
  */
 @DesignerComponent(version = YaVersion.HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION, 
-        description = "<p>A formatting element in which to place components " +
-        "that should be displayed from left to right.  If you wish to have " +
-        "components displayed one over another, use " +
-        "<code>VerticalArrangement</code> instead.</p><p>This version is " +
-        "scrollable.",
-        category = ComponentCategory.LAYOUT)
+    description = "<p>A formatting element in which to place components " +
+    "that should be displayed from left to right.  If you wish to have " +
+    "components displayed one over another, use " +
+    "<code>VerticalArrangement</code> instead.</p><p>This version is " +
+    "scrollable.",
+    category = ComponentCategory.LAYOUT)
 @SimpleObject
 public class HorizontalScrollArrangement extends HVArrangement implements OnScrollChangedListener {
     public HorizontalScrollArrangement(ComponentContainer container) {
@@ -164,4 +164,5 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
     public void SmoothScrollBy(int displacement) {
         getScrollView().smoothScrollBy(px2dx(displacement), 0);
     }
+    
 }
