@@ -72,7 +72,7 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
         }
     }
 
-    @SimpleEvent
+    @SimpleEvent(description = "Notice that if blocks like \"ScrollBy\" is excuted, this event would be called")
     public void ScrollChanged(int scrollPosition) {
         EventDispatcher.dispatchEvent(this, "ScrollChanged", scrollPosition);
         if (scrollPosition == 0) {
@@ -84,19 +84,20 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
         }
     }
 
-    @SimpleEvent
+    @SimpleEvent(description = "Notice that if blocks like \"ScrollLeftEnd\" is excuted, this event would be called")
     public void ReachLeftEnd() {
         EventDispatcher.dispatchEvent(this, "ReachLeftEnd");
     }
 
-    @SimpleEvent
+    @SimpleEvent(description = "Notice that if blocks like \"ScrollRightEnd\" is excuted, this event would be called")
     public void ReachRightEnd() {
         EventDispatcher.dispatchEvent(this, "ReachRightEnd");
     }
 
-    @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "The scroll position is the same as the number of pixels that "
+    @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+        description = "The scroll position is the same as the number of pixels that "
             + "are hidden from view above the scrollable area. "
-            + "If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.")
+            + "If the scroll bar is at the very left, or if the element is not scrollable, this number will be 0.")
     public int ScrollPosition() {
         int dxPosition = getView().getScrollX();
         if (dxPosition < 0) {
@@ -107,58 +108,59 @@ public class HorizontalScrollArrangement extends HVArrangement implements OnScro
         return dx2px(dxPosition);
     }
 
-    @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Return the ")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE, 
+        description = "Return the maximum position that the ScrollArrangement can reach")
     public int MaxScrollPosition() {
         View view = (View) getScrollView().getChildAt(getScrollView().getChildCount() - 1);
         return dx2px(view.getRight() - getView().getWidth());
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll to the left end of the scroll arrangement (defaut with animation)")
     public void ScrollLeftEnd() {
         getScrollView().fullScroll(HorizontalScrollView.FOCUS_LEFT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll to the right end of the scroll arrangement (defaut with animation)")
     public void ScrollRightEnd() {
         getScrollView().fullScroll(HorizontalScrollView.FOCUS_RIGHT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll leftward for half a page (defaut with animation)")
     public void ArrowScrollLeftward() {
         getScrollView().arrowScroll(HorizontalScrollView.FOCUS_LEFT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll rightward for half a page (defaut with animation)")
     public void ArrowScrollRightward() {
         getScrollView().arrowScroll(HorizontalScrollView.FOCUS_RIGHT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll leftward for a full page (defaut with animation)")
     public void PageScrollLeftward() {
         getScrollView().pageScroll(HorizontalScrollView.FOCUS_LEFT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll rightward for a full page (defaut with animation)")
     public void PageScrollRightward() {
         getScrollView().pageScroll(HorizontalScrollView.FOCUS_RIGHT);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll to a specific position (without animation)")
     public void ScrollTo(int position) {
         getScrollView().scrollTo(px2dx(position), 0);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll to a specific position (with animation)")
     public void SmoothScrollTo(int position) {
         getScrollView().smoothScrollTo(px2dx(position), 0);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative (without animation)")
     public void ScrollBy(int displacement) {
         getScrollView().scrollBy(px2dx(displacement), 0);
     }
 
-    @SimpleFunction
+    @SimpleFunction(description = "Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative (with animation)")
     public void SmoothScrollBy(int displacement) {
         getScrollView().smoothScrollBy(px2dx(displacement), 0);
     }
