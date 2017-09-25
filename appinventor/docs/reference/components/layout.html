@@ -533,12 +533,60 @@
                       <dd></dd>
                       <dt><code>Image</code></dt>
                       <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                      <dt><code>MaxScrollPosition</code></dt>
+                      <dd>Return the maximum position that the ScrollArrangement can reach</dd>
+                      <dt><code>ScrollPosition</code></dt>
+                      <dd>The scroll position is the same as the number of pixels that are hidden from view above the scrollable area. If the scroll bar is at the very left, or if the element is not scrollable, this number will be 0.</dd>
                       <dt><code>Visible</code></dt>
                       <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
                       <dt><code>Width</code></dt>
                       <dd></dd>
                       <dt><code>WidthPercent</code></dt>
                       <dd></dd>
+                    </dl>
+
+                    <h3>Events</h3>
+                    <dl>
+                      <dt><code>ReachLeftEnd</code></dt>
+                      <dd>Notice that if blocks like "ScrollLeftEnd" is excuted, this event would be called</dd>
+                      <dt><code>ReachRightEnd</code></dt>
+                      <dd>Notice that if blocks like "ScrollRightEnd" is excuted, this event would be called</dd>
+                      <dt><code>ScrollChanged(number scrollPosition)</code></dt>
+                      <dd>Notice that if blocks like "ScrollBy" is excuted, this event would be called</dd>
+                    </dl>
+
+                    <h3>Methods</h3>
+                    <dl>
+                      <dt><code>ArrowScrollLeftward</code></dt>
+                      <dd>Scroll leftward for half a page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ArrowScrollRightward</code></dt>
+                      <dd>Scroll rightward for half a page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>PageScrollLeftward</code></dt>
+                      <dd>Scroll leftward for a full page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>PageScrollRightward</code></dt>
+                      <dd>Scroll rightward for a full page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ScrollBy(number displacement)</code></dt>
+                      <dd>Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative <br/>
+                        (without animation)</dd>
+                      <dt><code>ScrollLeftEnd</code></dt>
+                      <dd>Scroll to the left end of the scroll arrangement <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ScrollRightEnd</code></dt>
+                      <dd>Scroll to the right end of the scroll arrangement <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ScrollTo(number position)</code></dt>
+                      <dd>Scroll to a specific position <br/>
+                        (without animation)</dd>
+                      <dt><code>SmoothScrollBy(number displacement)</code></dt>
+                      <dd>Scroll rightward so for a specific displacement, scroll leftward if diaplacement is negative <br/>
+                        (with animation)</dd>
+                      <dt><code>SmoothScrollTo(number position)</code></dt>
+                      <dd>Scroll to a specific position <br/>
+                        (with animation)</dd>
                     </dl>
 
                     <h2 id="TableArrangement"> TableArrangement </h2>
@@ -647,12 +695,60 @@
                       <dd></dd>
                       <dt><code>Image</code></dt>
                       <dd>Specifies the path of the component's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                      <dt><code>MaxScrollPosition</code></dt>
+                      <dd>Return the maximum position that the ScrollArrangement can reach</dd>
+                      <dt><code>ScrollPosition</code></dt>
+                      <dd>The scroll position is the same as the number of pixels that are hidden from view above the scrollable area. If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.</dd>
                       <dt><code>Visible</code></dt>
                       <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
                       <dt><code>Width</code></dt>
                       <dd></dd>
                       <dt><code>WidthPercent</code></dt>
                       <dd></dd>
+                    </dl>
+
+                    <h3>Events</h3>
+                    <dl>
+                      <dt><code>ReachBottom</code></dt>
+                      <dd>Notice that if blocks like "ScrollBottom" is excuted, this event would be called</dd>
+                      <dt><code>ReachTop</code></dt>
+                      <dd>Notice that if blocks like "ScrollTop" is excuted, this event would be called</dd>
+                      <dt><code>ScrollChanged(number scrollPosition)</code></dt>
+                      <dd>Notice that if blocks like "ScrollBy" is excuted, this event would be called</dd>
+                    </dl>
+
+                    <h3>Methods</h3>
+                    <dl>
+                      <dt><code>ArrowScrollDownward</code></dt>
+                      <dd>Scroll downward for half a page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ArrowScrollUpward</code></dt>
+                      <dd>Scroll upward for half a page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>PageScrollDownward</code></dt>
+                      <dd>Scroll downward for a full page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>PageScrollUpward</code></dt>
+                      <dd>Scroll upward for a full page <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ScrollBottom</code></dt>
+                      <dd>Scroll to the bottom of the scroll arrangement <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>ScrollBy(number displacement)</code></dt>
+                      <dd>Scroll downward so for a specific displacement, scroll upward if diaplacement is negative <br/>
+                        (without animation)</dd>
+                      <dt><code>ScrollTo(number position)</code></dt>
+                      <dd>Scroll to a specific position <br/>
+                        (without animation)</dd>
+                      <dt><code>ScrollTop</code></dt>
+                      <dd>Scroll to the top of the scroll arrangement <br/>
+                        (defaut with animation)</dd>
+                      <dt><code>SmoothScrollBy(number displacement)</code></dt>
+                      <dd>Scroll downward so for a specific displacement, scroll upward if diaplacement is negative <br/>
+                        (with animation)</dd>
+                      <dt><code>SmoothScrollTo(number position)</code></dt>
+                      <dd>Scroll to a specific position <br/>
+                        (with animation)</dd>
                     </dl>
                   </div>
                 </div>

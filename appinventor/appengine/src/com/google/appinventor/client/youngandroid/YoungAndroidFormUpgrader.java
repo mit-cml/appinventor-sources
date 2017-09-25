@@ -274,6 +274,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("HorizontalArrangement")) {
         srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("HorizontalScrollArrangement")) {
+        srcCompVersion = upgradeHorizontalScrollArrangementProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Image")) {
         srcCompVersion = upgradeImageProperties(componentProperties, srcCompVersion);
 
@@ -324,6 +327,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("VerticalArrangement")) {
         srcCompVersion = upgradeVerticalArrangementProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("VerticalScrollArrangement")) {
+        srcCompVersion = upgradeVerticalScrollArrangementProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("VideoPlayer")) {
         srcCompVersion = upgradeVideoPlayerProperties(componentProperties, srcCompVersion);
@@ -952,6 +958,16 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
+  
+  private static int upgradeHorizontalScrollArrangementProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The scrolling events and methods were added. No blocks need to be modified
+      // to upgrqde to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static int upgradeImageProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
@@ -1275,6 +1291,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // - Added background color & image
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeVerticalScrollArrangementProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The scrolling events and methods were added. No blocks need to be modified
+      // to upgrqde to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
