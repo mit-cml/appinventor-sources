@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
-
 import android.graphics.drawable.Drawable;
 
 import android.os.Handler;
@@ -353,7 +352,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         // Load image from file.
         if (imagePath.length() > 0) {
             try {
-                backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+                if(imagePath.length()>=6 && imagePath.substring(imagePath.length()-6, imagePath.length()).equals(".9.png")){
+                    // file path end with ".9.png" which reprecent nine-patch file
+                    backgroundImageDrawable = MediaUtil.getNinePatchDrawable(container.$form(), imagePath);
+                }else{
+                    backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
+                }
             } catch (IOException ioe) {
                 // Fall through with a value of null for backgroundImageDrawable.
             }
