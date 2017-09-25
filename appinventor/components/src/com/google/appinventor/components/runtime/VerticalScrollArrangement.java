@@ -73,7 +73,7 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
         }
     }
 
-    @SimpleEvent(description = "Notice that if blocks like \"ScrollBy\" is excuted, this event would be called")
+    @SimpleEvent
     public void ScrollChanged(int scrollPosition) {
         EventDispatcher.dispatchEvent(this, "ScrollChanged", scrollPosition);
         if (scrollPosition == 0) {
@@ -85,18 +85,17 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
         }
     }
 
-    @SimpleEvent(description = "Notice that if blocks like \"ScrollTop\" is excuted, this event would be called")
+    @SimpleEvent
     public void ReachTop() {
         EventDispatcher.dispatchEvent(this, "ReachTop");
     }
 
-    @SimpleEvent(description = "Notice that if blocks like \"ScrollBottom\" is excuted, this event would be called")
+    @SimpleEvent
     public void ReachBottom() {
         EventDispatcher.dispatchEvent(this, "ReachBottom");
     }
 
-    @SimpleProperty(category = PropertyCategory.APPEARANCE, 
-        description = "The scroll position is the same as the number of pixels that "
+    @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "The scroll position is the same as the number of pixels that "
             + "are hidden from view above the scrollable area. "
             + "If the scroll bar is at the very top, or if the element is not scrollable, this number will be 0.")
     public int ScrollPosition() {
@@ -109,59 +108,58 @@ public class VerticalScrollArrangement extends HVArrangement implements OnScroll
         return dx2px(dxPosition);
     }
 
-    @SimpleProperty(category = PropertyCategory.APPEARANCE, 
-        description = "Return the maximum position that the ScrollArrangement can reach")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Return the maximum position that can reach")
     public int MaxScrollPosition() {
         View view = (View) getScrollView().getChildAt(getScrollView().getChildCount() - 1);
         return dx2px(view.getBottom() - getView().getHeight());
     }
 
-    @SimpleFunction(description = "Scroll to the top of the scroll arrangement (defaut with animation)")
+    @SimpleFunction
     public void ScrollTop() {
         getScrollView().fullScroll(ScrollView.FOCUS_UP);
     }
 
-    @SimpleFunction(description = "Scroll to the bottom of the scroll arrangement (defaut with animation)")
+    @SimpleFunction
     public void ScrollBottom() {
         getScrollView().fullScroll(ScrollView.FOCUS_DOWN);
     }
 
-    @SimpleFunction(description = "Scroll upward for half a page (defaut with animation)")
+    @SimpleFunction
     public void ArrowScrollUpward() {
         getScrollView().arrowScroll(ScrollView.FOCUS_UP);
     }
 
-    @SimpleFunction(description = "Scroll downward for half a page (defaut with animation)")
+    @SimpleFunction
     public void ArrowScrollDownward() {
         getScrollView().arrowScroll(ScrollView.FOCUS_DOWN);
     }
 
-    @SimpleFunction(description = "Scroll upward for a full page (defaut with animation)")
+    @SimpleFunction
     public void PageScrollUpward() {
         getScrollView().pageScroll(ScrollView.FOCUS_UP);
     }
 
-    @SimpleFunction(description = "Scroll downward for a full page (defaut with animation)")
+    @SimpleFunction
     public void PageScrollDownward() {
         getScrollView().pageScroll(ScrollView.FOCUS_DOWN);
     }
 
-    @SimpleFunction(description = "Scroll to a specific position (without animation)")
+    @SimpleFunction
     public void ScrollTo(int position) {
         getScrollView().scrollTo(0, px2dx(position));
     }
 
-    @SimpleFunction(description = "Scroll to a specific position (with animation)")
+    @SimpleFunction
     public void SmoothScrollTo(int position) {
         getScrollView().smoothScrollTo(0, px2dx(position));
     }
 
-    @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative (without animation)")
+    @SimpleFunction
     public void ScrollBy(int displacement) {
         getScrollView().scrollBy(0, px2dx(displacement));
     }
 
-    @SimpleFunction(description = "Scroll downward so for a specific displacement, scroll upward if diaplacement is negative (with animation)")
+    @SimpleFunction
     public void SmoothScrollBy(int displacement) {
         getScrollView().smoothScrollBy(0, px2dx(displacement));
     }
