@@ -30,6 +30,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.ImageViewUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
 
 import dalvik.system.DexClassLoader;
@@ -64,7 +65,6 @@ public class ReplForm extends Form {
   private String replResultFormName = null;
   private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
-  private TintImageView overflowMenuView = null;
 
   public ReplForm() {
     super();
@@ -331,41 +331,14 @@ public class ReplForm extends Form {
   protected void updateTitle() {
     final ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
-      findOverflowMenuView();
-      ColorStateList stateList;
       if ("AppTheme.Light".equals(currentTheme)) {
         actionBar.setTitle(Html.fromHtml("<font color=\"black\">" + title + "</font>"));
-        stateList = new ColorStateList(new int[][] { new int[] {} }, new int[] { Color.BLACK });
+        ImageViewUtil.setMenuButtonColor(this, Color.BLACK);
       } else {
         actionBar.setTitle(title);
-        stateList = new ColorStateList(new int[][] { new int[] {} }, new int[] { Color.WHITE });
-      }
-      if (overflowMenuView != null) {
-        overflowMenuView.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-        overflowMenuView.setImageTintList(stateList);
+        ImageViewUtil.setMenuButtonColor(this, Color.WHITE);
       }
     }
-  }
-
-  private TintImageView findOverflowMenuView() {
-    if (overflowMenuView == null) {
-      ViewGroup vg = (ViewGroup) getWindow().getDecorView();
-      Queue<ViewGroup> children = new LinkedList<ViewGroup>();
-      children.add(vg);
-      while (children.size() > 0) {
-        vg = children.poll();
-        for (int i = 0; i < vg.getChildCount(); i++) {
-          View child = vg.getChildAt(i);
-          if (child instanceof TintImageView) {
-            overflowMenuView = (TintImageView) child;
-            return overflowMenuView;
-          } else if (child instanceof ViewGroup) {
-            children.add((ViewGroup) child);
-          }
-        }
-      }
-    }
-    return overflowMenuView;
   }
 
   private String genReportId() {

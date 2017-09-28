@@ -2033,8 +2033,10 @@ public class Form extends AppCompatActivity
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();
-    frameLayout.removeAllViews();
-    frameLayout = null;
+    if (frameLayout != null) {
+      frameLayout.removeAllViews();
+      frameLayout = null;
+    }
     // Set all screen properties to default values.
     defaultPropertyValues();
     onStopListeners.clear();
