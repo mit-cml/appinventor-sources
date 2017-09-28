@@ -1907,7 +1907,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "ai1CantDoUpgrade", // Just indicates we couldn't do upgrade even if we wanted to
 
     // RequestFocus was added
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // PasswordVisible was added
+    4: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 

@@ -3467,6 +3467,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String MentionsProperties();
 
+  @DefaultMessage("PasswordVisible")
+  @Description("")
+  String PasswordVisibleProperties();
+
   @DefaultMessage("ProviderLocked")
   @Description("")
   String ProviderLockedProperties();

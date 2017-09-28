@@ -1145,6 +1145,10 @@ public final class YoungAndroidFormUpgrader {
       // Added RequestFocus Function (via TextBoxBase)
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Added PasswordVisible Property
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

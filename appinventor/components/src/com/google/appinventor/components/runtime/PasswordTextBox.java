@@ -7,8 +7,11 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.text.InputType;
@@ -42,7 +45,8 @@ public final class PasswordTextBox extends TextBoxBase {
     super(container, new EditText(container.$context()));
 
     // Disable auto-suggestion.
-    view.setRawInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    //view.setRawInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    PasswordVisible(false);
 
     // make the box single line
     view.setSingleLine(true);
@@ -54,4 +58,20 @@ public final class PasswordTextBox extends TextBoxBase {
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
   }
+
+  private boolean passwordVisible;
+  @SimpleProperty
+  public void PasswordVisible(boolean visible){
+    passwordVisible=visible;
+    if(visible){
+      view.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+    }else{
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
+  }
+  @SimpleProperty
+  public boolean PasswordVisible(){
+    return passwordVisible;
+  }
+
 }
