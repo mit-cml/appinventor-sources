@@ -60,7 +60,7 @@
        ===================================================================== -->
   <import file="../build-common.xml" />
 
-  <property name="gwt.sdk" location="${lib.dir}/gwt/2.8-patched" />
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
   <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.46" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
