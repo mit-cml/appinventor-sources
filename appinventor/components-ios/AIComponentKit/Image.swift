@@ -34,36 +34,29 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     set(path) {
       _picturePath = path
       if path.isEmpty {
-        _image = nil
-        _view.image = nil
-        _view.frame.size = CGSize(width: 0, height: 0)
-        _view.setNeedsUpdateConstraints()
-        _view.setNeedsLayout()
-        NSLog("No image path")
+        updateImage(nil)
       } else if let image = UIImage(contentsOfFile: AssetManager.shared.pathForAssetInBundle(filename: path)) {
-        _image = image
-        _view.image = image
-        _view.frame.size = image.size
-        _view.invalidateIntrinsicContentSize()
-        _view.setNeedsUpdateConstraints()
-        _view.setNeedsLayout()
-        NSLog("AssetManager path")
+        updateImage(image)
       } else if let image = UIImage(named: path) {
-        _image = image
-        _view.image = image
-        _view.frame.size = image.size
-        _view.invalidateIntrinsicContentSize()
-        _view.setNeedsUpdateConstraints()
-        _view.setNeedsLayout()
-        NSLog("UIImage path")
+        updateImage(image)
+      } else if let image = UIImage(contentsOfFile: path) {
+        updateImage(image)
       } else {
-        NSLog("Unable to load image")
+        do {
+          if let url = URL(string: path), let image = try UIImage(data: Data(contentsOf: url)) {
+            updateImage(image)
+          } else {
+            updateImage(nil)
+          }
+        } catch {
+          updateImage(nil)
+        }
       }
       _container.form.view.setNeedsLayout()
       NSLog("Image size: \(_view.frame)")
     }
   }
-  
+
   open var RotationAngle: Double {
     get {
       return _rotationAngle
@@ -74,4 +67,20 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       }
     }
   }
+
+  private func updateImage(_ image: UIImage?) {
+    if let image = image {
+      _image = image
+      _view.image = image
+      _view.frame.size = image.size
+    } else {
+      _image = nil
+      _view.image = nil
+      _view.frame.size = CGSize(width: 0, height: 0)
+    }
+    _view.invalidateIntrinsicContentSize()
+    _view.setNeedsUpdateConstraints()
+    _view.setNeedsLayout()
+  }
+
 }
