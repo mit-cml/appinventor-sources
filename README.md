@@ -28,11 +28,14 @@ Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
 ### Dependencies
-You will need a full Java JDK (6 or 7, preferably from Oracle; JRE is not enough) and Python to compile and run the servers.
+You will need a full Java JDK (version 7, preferably from Oracle; JRE is not enough) and Python to compile and run the servers.
 
 You will also need a copy of the [App Engine SDK](https://developers.google.com/appengine/downloads) for Java and [ant](http://ant.apache.org/).
 
 If you want to make changes to the source, you are going to need to run an automated test suite, and for that you will also need [phantomjs](http://phantomjs.org/). Have a look at the testing section for more information.
+
+Note: Java 8 will work locally, and it is also supported by AppEngine, but you may need to [specify your runtime](https://cloud.google.com/appengine/docs/standard/java/runtime-java8) if you want to use appspot.
+Also note that certain Java 8 features, such as lambda expressions, are not supported on Android, so please don't use them in your changes to the source code.
 
 ### Forking or cloning
 Consider ***forking*** the project if you want to make changes to the sources. If you simply want to run it locally, you can simply ***clone*** it.
@@ -67,9 +70,13 @@ If you need to switch back to a branch that does contains the Blockly and Closur
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
 
 ### Compiling
-Compiling is very easy if you have all the dependencies you need; just open a terminal and type:
+Before compiling the code, an [auth key](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc#h.yikyg2e1rfut) is needed. You can create one by running the following commands:
 
     $ cd appinventor
+    $ ant MakeAuthKey
+
+Once the key is in place, type the following to compile (from the appinventor folder):
+
     $ ant
 
 You will see a lot of stuff in the terminal and after a few minutes (it can take from 2 to 10 minutes, depending on your machine specs) you should see a message saying something like *Build Successful*.
