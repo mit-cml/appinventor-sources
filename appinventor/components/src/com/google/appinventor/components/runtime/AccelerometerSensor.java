@@ -19,10 +19,14 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -87,11 +91,13 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private float zAccel;
 
   private int accuracy;
-
   private int sensitivity;
+  private int deviceDefaultOrientation;
 
-  // Sensor manager
   private final SensorManager sensorManager;
+
+  private final WindowManager windowManager;
+  private final Resources resources;
 
   // Indicates whether the accelerometer should generate events
   private boolean enabled;
@@ -115,11 +121,15 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     form.registerForOnStop(this);
 
     enabled = true;
+    resources = container.$context().getResources();
+    windowManager = (WindowManager) container.$context().getSystemService(Context.WINDOW_SERVICE);
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
     MinimumInterval(400);
     Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE);
+    // save the device default orientation (portrait or landscape)
+    deviceDefaultOrientation = getDeviceDefaultOrientation();    
   }
 
 
@@ -214,6 +224,19 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
     EventDispatcher.dispatchEvent(this, "AccelerationChanged", xAccel, yAccel, zAccel);
   }
+
+public int getDeviceDefaultOrientation() {
+    Configuration config = resources.getConfiguration();
+    int rotation = windowManager.getDefaultDisplay().getRotation();
+    if ( ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
+            config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&    
+            config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
+      return Configuration.ORIENTATION_LANDSCAPE;
+    } else { 
+      return Configuration.ORIENTATION_PORTRAIT;
+    }
+}
 
   /**
    * Indicates the device started being shaken or continues to be shaken.
@@ -357,8 +380,15 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   public void onSensorChanged(SensorEvent sensorEvent) {
     if (enabled) {
       final float[] values = sensorEvent.values;
-      xAccel = values[0];
-      yAccel = values[1];
+      // make landscapePrimary devices report acceleration as if they were
+      // portraitPrimary
+      if (deviceDefaultOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+        xAccel = -values[1];
+        yAccel = values[0];
+      } else {
+        xAccel = values[0];
+        yAccel = values[1];
+      }
       zAccel = values[2];
       accuracy = sensorEvent.accuracy;
       AccelerationChanged(xAccel, yAccel, zAccel);
