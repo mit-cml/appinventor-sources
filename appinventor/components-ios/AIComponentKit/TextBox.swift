@@ -1,10 +1,5 @@
-//
-//  TextBox.swift
-//  AIComponentKit
-//
-//  Created by Evan Patton on 10/20/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
 
@@ -12,7 +7,21 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
   fileprivate let _field = UITextField(frame: CGRect.zero)
   fileprivate let _view = UITextView(frame: CGRect.zero)
   fileprivate let _wrapper = UIView(frame: CGRect.zero)
-  fileprivate var _multiLine = false
+  private var _multiLine = false
+
+  fileprivate init() {
+    _field.translatesAutoresizingMaskIntoConstraints = false
+    _view.translatesAutoresizingMaskIntoConstraints = false
+    _wrapper.translatesAutoresizingMaskIntoConstraints = false
+
+    // Set up the minimum size constraint for the UITextView
+    let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 26.5)
+    heightConstraint.priority = UILayoutPriorityDefaultHigh
+    _view.addConstraint(heightConstraint)
+
+    // We are single line by default
+    makeSingleLine()
+  }
 
   open var view: UIView {
     get {
@@ -95,6 +104,42 @@ fileprivate class TextBoxAdapter: AbstractMethodsForTextBox {
       _view.text = text
     }
   }
+
+  var multiLine: Bool {
+    get {
+      return _multiLine
+    }
+    set(multiLine) {
+      if _multiLine == multiLine {
+        return  // nothing to do
+      }
+      if multiLine {
+        makeMultiLine()
+      } else {
+        makeSingleLine()
+      }
+    }
+  }
+
+  private func makeMultiLine() {
+    _field.removeFromSuperview()
+    _wrapper.addSubview(_view)
+    _wrapper.addConstraint(_view.heightAnchor.constraint(equalTo: _wrapper.heightAnchor))
+    _wrapper.addConstraint(_view.widthAnchor.constraint(equalTo: _wrapper.widthAnchor))
+    _wrapper.addConstraint(_view.topAnchor.constraint(equalTo: _wrapper.topAnchor))
+    _wrapper.addConstraint(_view.leadingAnchor.constraint(equalTo: _wrapper.leadingAnchor))
+    _multiLine = true
+  }
+
+  private func makeSingleLine() {
+    _view.removeFromSuperview()
+    _wrapper.addSubview(_field)
+    _wrapper.addConstraint(_field.heightAnchor.constraint(equalTo: _wrapper.heightAnchor))
+    _wrapper.addConstraint(_field.widthAnchor.constraint(equalTo: _wrapper.widthAnchor))
+    _wrapper.addConstraint(_field.topAnchor.constraint(equalTo: _wrapper.topAnchor))
+    _wrapper.addConstraint(_field.leadingAnchor.constraint(equalTo: _wrapper.leadingAnchor))
+    _multiLine = false
+  }
 }
 
 open class TextBox: TextBoxBase {
@@ -103,6 +148,7 @@ open class TextBox: TextBoxBase {
 
   public init(_ parent: ComponentContainer) {
     super.init(parent, _adapter)
+    MultiLine = false
   }
 
   // MARK: TextBox Properties
@@ -122,20 +168,10 @@ open class TextBox: TextBoxBase {
 
   public var MultiLine: Bool {
     get {
-      return _adapter._multiLine
+      return _adapter.multiLine
     }
     set(multiLine) {
-      if _adapter._multiLine == multiLine {
-        return  // nothing to do
-      }
-      if _adapter._multiLine {
-        _adapter._view.removeFromSuperview()
-        _adapter._wrapper.addSubview(_adapter._field)
-      } else {
-        _adapter._field.removeFromSuperview()
-        _adapter._wrapper.addSubview(_adapter._view)
-      }
-      _adapter._multiLine = multiLine
+      _adapter.multiLine = multiLine
     }
   }
 

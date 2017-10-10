@@ -34,6 +34,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate {
     super.setDelegate(delegate)
     parent.add(self)
     parent.setChildWidth(of: self, width: kTextboxPreferredWidth)
+    FontSize = 14.0
   }
 
   internal func setDelegate(_ delegate: AbstractMethodsForTextBox) {
