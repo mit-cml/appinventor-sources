@@ -570,12 +570,14 @@ public class BlocklyPanel extends HTMLPanel {
         block.rename(e.oldValue, e.newValue);
       }
       cb(e);
-      // [lyn 12/31/2013] Check for duplicate component event handlers before
-      // running any error handlers to avoid quadratic time behavior.
-      var handler = this.getWarningHandler();
-      if (handler) {
-        handler.determineDuplicateComponentEventHandlers();
-        this.requestErrorChecking(block);
+      if (workspace.rendered) {
+        var handler = this.getWarningHandler();
+        if (handler) {
+          // [lyn 12/31/2013] Check for duplicate component event handlers before
+          // running any error handlers to avoid quadratic time behavior.
+          handler.determineDuplicateComponentEventHandlers();
+          this.requestErrorChecking(block);
+        }
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
