@@ -1,10 +1,5 @@
-//
-//  NetworkUtils.m
-//  AIComponentKit
-//
-//  Created by Evan Patton on 9/21/16.
-//  Copyright © 2016 MIT Center for Mobile Learning. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2016-2017 Massachusetts Institute of Technology. All rights reserved.
 
 #import "NetworkUtils.h"
 #include <ifaddrs.h>
@@ -25,10 +20,15 @@
     temp_addr = interfaces;
     while(temp_addr != NULL) {
       if(temp_addr->ifa_addr->sa_family == AF_INET) {
-        // Check if interface is en0 which is the wifi connection on the iPhone
-        if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-          // Get NSString from C String
+        // Check if interface is an ethernet interface
+        if([[NSString stringWithUTF8String:temp_addr->ifa_name] hasPrefix:@"en"]) {
+          // Get IP address on interface as NSString (from C string)
           address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+
+          // Only accept a reasonable look IP address
+          if (![address isEqualToString:@""] && ![address isEqualToString:@"0.0.0.0"]) {
+            break;
+          }
           
         }
         
