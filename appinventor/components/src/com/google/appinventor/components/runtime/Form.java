@@ -377,6 +377,7 @@ public class Form extends AppCompatActivity
     ShowStatusBar(true);
     TitleVisible(true);
     ShowListsAsJson(false);  // Note: Only the Screen1 value is used as this is per-project
+    ActionBar(false);
     AccentColor(DEFAULT_ACCENT_COLOR);
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
@@ -1251,7 +1252,7 @@ public class Form extends AppCompatActivity
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "false")
+      defaultValue = "False")
   @SimpleProperty(userVisible = false)
   public void ActionBar(boolean enabled) {
     if (actionBarEnabled != enabled) {

@@ -927,11 +927,6 @@ public final class YoungAndroidFormUpgrader {
       // The PrimaryColorDark property was added.
       // The Theme property was added.
       srcCompVersion = 21;
-      componentProperties.put("AccentColor", new ClientJsonString(ComponentConstants.DEFAULT_ACCENT_COLOR));
-      componentProperties.put("ActionBar", new ClientJsonString("False"));
-      componentProperties.put("PrimaryColor", new ClientJsonString(ComponentConstants.DEFAULT_PRIMARY_COLOR));
-      componentProperties.put("PrimaryColorDark", new ClientJsonString(ComponentConstants.DEFAULT_PRIMARY_DARK_COLOR));
-      componentProperties.put("Theme", new ClientJsonString(ComponentConstants.DEFAULT_THEME));
     }
 
     return srcCompVersion;
