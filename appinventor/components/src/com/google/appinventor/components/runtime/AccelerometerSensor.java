@@ -110,6 +110,13 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   private Sensor accelerometerSensor;
 
+  // temporary flag. true == compensate for default landscape devices
+  // 10/16/2017: We set this to false in the branding for our Hong
+  // Kong servers because the tutorials we are using there already
+  // compensate and this change will break them. We will remove this
+  // "feature" after those tutorials are updated.
+  private static boolean handleDefaultRotation = true;
+
   /**
    * Creates a new AccelerometerSensor component.
    *
@@ -382,7 +389,8 @@ public int getDeviceDefaultOrientation() {
       final float[] values = sensorEvent.values;
       // make landscapePrimary devices report acceleration as if they were
       // portraitPrimary
-      if (deviceDefaultOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+      if ((deviceDefaultOrientation == Configuration.ORIENTATION_LANDSCAPE)
+          && handleDefaultRotation) {
         xAccel = -values[1];
         yAccel = values[0];
       } else {
