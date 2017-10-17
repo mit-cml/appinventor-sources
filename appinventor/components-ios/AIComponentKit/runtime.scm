@@ -454,6 +454,56 @@
         (apply prim coerced-args)
         (generate-runtime-type-error codeblocks-name arglist))))
 
+;;; yail-equal? method
+;;; Notice that this procedure works on the yail-list type
+;;; because a yail-list is implemented as an ordinary list, with a tag
+(define (yail-equal? x1 x2)
+  (cond ((and (null? x1) (null? x2)) #t)
+        ((or (null? x1) (null? x2)) #f)
+        ((and (not (pair? x1)) (not (pair? x2)))
+         (yail-atomic-equal? x1 x2))
+        ((or (not (pair? x1)) (not (pair? x2)))
+         #f)
+        (else (and (yail-equal? (car x1) (car x2))
+         (yail-equal? (cdr x1) (cdr x2))))))
+
+(define (yail-atomic-equal? x1 x2)
+  (cond
+   ;; equal? covers the case where x1 and x2 are equal objects or equal strings.
+   ((equal? x1 x2) #t)
+   ;; This implementation says that "0" is equal to "00" since
+   ;; both convert to 0.
+
+   ;; We could change this to require that
+   ;; two strings are string=, but then equality would not be transitive
+   ;; since "0" and "00" are both equal to 0, but would not be equal to
+   ;; each other
+   ;; Uncomment these two lines to use string=? on strings
+   ;; ((and (string? x1) (string? x2))
+   ;;  (equal? x1 x2))
+
+   ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
+   ;; and comparing them numerically
+   ;; Note that equal? is not sufficient for numbers
+   ;; because in Scheme (= 1 1.0) is true while
+   ;; (equal? 1 1.0) is false.
+   (else
+    (let ((nx1 (as-number x1)))
+      (and nx1
+           (let ((nx2 (as-number x2)))
+             (and nx2 (= nx1 nx2))))))))
+
+;;; Return the number, converting from a string if necessary
+;;; Return #f if not a number
+(define (as-number x)
+  (let ((nx (coerce-to-number x)))
+    (if (eq? nx *non-coercible-value*)
+        #f
+        nx)))
+
+(define (yail-not-equal? x1 x2)
+  (not (yail-equal? x1 x2)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
 List implementation.
@@ -1136,6 +1186,60 @@ list, use the make-yail-list constructor with no arguments.
         (cadr value)
         default)))
 
+(define (padded-string->number s)
+  (string->number (string-trim (write-to-string s))))
+
+(define (write-to-string object)
+  (call-with-output-string (lambda (port) (display object port))))
+
+(define (repeat x)
+  (let ((p (list x)))
+    (set-cdr! p p)
+    p))
+
+(define (join xs delim)
+  (cdr (apply append (map list (repeat delim) xs))))
+
+(define (string-join strings delim)
+  (apply string-append (join strings delim)))
+
+(define (->string x)
+  (call-with-port (open-output-string)
+                  (lambda (port)
+                    (write x port)
+                    (get-output-string port))))
+
+(define (print-error-object-to-port e port)
+  (define type (error-object-type e))
+  (unless (eq? type '||)
+          (display type port)
+          (display "-" port))
+  (display "error: " port)
+  (display (error-object-message e) port)
+  (display "." port)
+  (define irritants (error-object-irritants e))
+  (unless (null? irritants)
+          (display " (irritants: " port)
+          (display (string-join (map ->string irritants) ", ") port)
+          (display ")") port)
+  (newline port))
+
+; This is an imperative way of writing this function, but it works.
+; Rewriting this as a tail-recursive function is left as an exercise to the reader.
+; Note: picrin doesn't support optional args in Scheme defines, otherwise I would
+; pass start/end as arguments with default values, allowing tail-recursion.
+(define (string-trim s)
+  (let ((len (string-length s))
+        (start 0) (end 0))
+    (do ((i 0 (+ i 1)))
+        ((= i len) (string-copy s start end))
+      (if (eq? #\space (string-ref s i))
+          (if (= end start)
+              (begin
+                (set! start (+ 1 start))
+                (set! end start)))
+          (set! end (+ 1 i))))))
+
 (define (*format-inexact* n) (yail:format-inexact n))
 
 (define (appinventor-number->string n)
@@ -1157,7 +1261,7 @@ list, use the make-yail-list constructor with no arguments.
                     (call/cc
                      (lambda (k)
                        (with-exception-handler
-                        (lambda (ex) (k (list "NOK" (error-object-message ex))))
+                        (lambda (ex) (k (list "NOK" (call-with-output-string (lambda (port) (print-error-object-to-port ex port))))))
                         (lambda () (k (list "OK" (force promise)))))))))))
 
 (define (send-to-block blockid message)

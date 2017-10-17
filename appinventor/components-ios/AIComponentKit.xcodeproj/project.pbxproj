@@ -29,6 +29,8 @@
 		06473B851F327E5400A9A29B /* TextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06473B841F327E5400A9A29B /* TextToSpeech.swift */; };
 		0650B1EF1DAB09B200A7846C /* YailRuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */; };
 		0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0650F5171F1F1B7A00D4E6FA /* HMAC.swift */; };
+		0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD71F9719920052065A /* RuntimeTests.swift */; };
+		0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD91F971BA70052065A /* TestFailure.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		067D1B181D9B398E00A6190E /* RetValManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067D1B161D9B398E00A6190E /* RetValManager.m */; };
 		067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */; };
@@ -144,6 +146,8 @@
 		06473B841F327E5400A9A29B /* TextToSpeech.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextToSpeech.swift; sourceTree = "<group>"; };
 		0650B1EE1DAB09B200A7846C /* YailRuntimeError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YailRuntimeError.swift; sourceTree = "<group>"; };
 		0650F5171F1F1B7A00D4E6FA /* HMAC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HMAC.swift; sourceTree = "<group>"; };
+		0653CBD71F9719920052065A /* RuntimeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeTests.swift; sourceTree = "<group>"; };
+		0653CBD91F971BA70052065A /* TestFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestFailure.swift; sourceTree = "<group>"; };
 		067D1B151D9B398E00A6190E /* RetValManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetValManager.h; sourceTree = "<group>"; };
 		067D1B161D9B398E00A6190E /* RetValManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetValManager.m; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
@@ -292,6 +296,8 @@
 				0618A2931D8CF4EE0013A191 /* Info.plist */,
 				06AC1CC71DB4559800A59EB3 /* AIComponentKitTests.m */,
 				06AC1CC61DB4559800A59EB3 /* AIComponentKitTests-Bridging-Header.h */,
+				0653CBD71F9719920052065A /* RuntimeTests.swift */,
+				0653CBD91F971BA70052065A /* TestFailure.swift */,
 			);
 			path = AIComponentKitTests;
 			sourceTree = "<group>";
@@ -799,6 +805,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */,
+				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,
 				0618A2921D8CF4EE0013A191 /* AIComponentKitTests.swift in Sources */,
 			);
