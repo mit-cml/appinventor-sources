@@ -723,8 +723,13 @@ Blockly.Blocks.component_set_get = {
       function(selection) {
         this.setValue(selection);
         thisBlock.propertyName = selection;
+        thisBlock.propertyObject = thisBlock.getPropertyObject(selection);
         thisBlock.setTypeCheck();
-        thisBlock.setTooltip(tooltipDescription);
+        if (thisBlock.propertyObject) {
+          thisBlock.setTooltip(thisBlock.propertyObject.description);
+        } else {
+          thisBlock.setTooltip(Blockly.Msg.UNDEFINED_BLOCK_TOOLTIP);
+        }
       }
     );
 
