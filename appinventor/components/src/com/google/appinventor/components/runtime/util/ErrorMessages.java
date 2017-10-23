@@ -97,6 +97,7 @@ public final class ErrorMessages {
   public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
   public static final int ERROR_SOUND_NOT_READY = 710;
   public static final int ERROR_OUT_OF_MEMORY_LOADING_MEDIA = 711;
+  public static final int ERROR_PLAYER_INVALID_VOLUME = 712;
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
@@ -389,7 +390,8 @@ public final class ErrorMessages {
         "Unable to grant exclusive lock of audio output stream to %s.");
     errorMessages.put(ERROR_SOUND_NOT_READY, "The sound is not ready to play: %s.");
     errorMessages.put(ERROR_OUT_OF_MEMORY_LOADING_MEDIA, "Not Enough Memory to load: %s.");
-     // SoundRecorder errors
+    errorMessages.put(ERROR_PLAYER_INVALID_VOLUME, "Invalid volume: %s. Volume must be set to a number between 0 and 100.");  
+    // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
     errorMessages.put(ERROR_SOUND_RECORDER_ILLEGAL_STOP, "Stop() called when not recording.");
