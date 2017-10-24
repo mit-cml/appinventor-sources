@@ -4,6 +4,11 @@
   <dict>
     <key>method</key>
     <string>ad-hoc</string>
+    <key>provisioningProfiles</key>
+    <dict>
+      <key>com.evanpatton.aicompanion4</key>
+      <string>AI2 Companion Dist</string>
+    </dict>
     <key>manifest</key>
     <dict>
       <key>appURL</key>
