@@ -96,8 +96,7 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
           return pic_int_value(pic_, number.intValue);
         }
       case 'q':
-        NSLog(@"[WARN] Support for 64-bit longs is not supported yet.");
-        break;
+        return pic_float_value(pic_, number.doubleValue);
       case 'C':
       case 'S':
       case 'I':
@@ -106,8 +105,7 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
           return pic_int_value(pic_, number.intValue);
         }
       case 'Q':
-        NSLog(@"[WARN] Support for 64-bit longs is not supported yet.");
-        break;
+        return pic_float_value(pic_, number.doubleValue);
       case 'B':
         if (number.boolValue) {
           return pic_true_value(pic_);
@@ -119,6 +117,7 @@ exception_from_pic_error(pic_state *pic, pic_value e) {
       case 'd':
         return pic_float_value(pic_, number.doubleValue);
       default:
+        NSLog(@"Unknown NSNumber type: %c", c);
         break;
     }
   } else if ([value isKindOfClass:[NSString class]]) {

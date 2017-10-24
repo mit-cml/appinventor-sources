@@ -344,4 +344,13 @@ pic_init_picrin(pic_state *pic)
   XCTAssertEqual(5, [(NSNumber *)result intValue]);
 }
 
+- (void)testDoubleValues {
+  SCMInterpreter *interpreter = [[SCMInterpreter alloc] init];
+  NSArray *inputs = @[@1.5, @2.25];
+  id result = [interpreter invokeMethod:@"+" withArgArray:inputs];
+  XCTAssertNotNil(result);
+  XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
+  XCTAssertEqual(3.75, [(NSNumber *)result doubleValue]);
+}
+
 @end
