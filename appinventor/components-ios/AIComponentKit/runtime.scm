@@ -961,27 +961,28 @@ list, use the make-yail-list constructor with no arguments.
 ;;;; End of List implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#|
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+#|
 (define (make-disjunct x)
   (cond ((null? (cdr x)) (Pattern:quote (car x)))
         (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
 
 
 (define (array->list arr) (insert-yail-list-header (gnu.lists.LList:makeList arr 0)))
+|#
 
 (define (string-starts-at text piece)
-  (+ ((text:toString):indexOf (piece:toString)) 1))
+  (+ (string-index-of text piece) 1))
 
 (define (string-contains text piece)
   (if (= (string-starts-at text piece) 0)
       #f
       #t))
 
+#|
 (define (string-split-at-first text at)
   (array->list
    ((text:toString):split (Pattern:quote at) 2)))

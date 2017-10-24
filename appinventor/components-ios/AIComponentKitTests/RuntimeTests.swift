@@ -60,4 +60,14 @@ class RuntimeTests: XCTestCase {
     XCTAssertEqual("#f", interpreter.evalForm("(yail-equal? 3 \"pi\")"))
     XCTAssertEqual("#t", interpreter.evalForm("(yail-equal? (*list-for-runtime* 0.0) (*list-for-runtime* \"  0.0  \"))"))
   }
+
+  func testYailStringContains() throws {
+    let interpreter = try getInterpreterForTesting()
+    XCTAssertEqual("#t", interpreter.evalForm("(string-contains \"Hello\" \"ell\")"))  // inner substring
+    XCTAssertEqual("#t", interpreter.evalForm("(string-contains \"Hello\" \"H\")"))  // starting substring
+    XCTAssertEqual("#t", interpreter.evalForm("(string-contains \"Hello\" \"o\")"))  // ending substring
+    XCTAssertEqual("#f", interpreter.evalForm("(string-contains \"Hello\" \"world\")"))  // mismatch of equal length
+    XCTAssertEqual("#f", interpreter.evalForm("(string-contains \"Hello\" \"foo\")"))  // mismatch of lesser length
+    XCTAssertEqual("#f", interpreter.evalForm("(string-contains \"Hello\" \"Hello world\")"))  // mismatch of greater length
+  }
 }

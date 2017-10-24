@@ -696,6 +696,30 @@ yail_perform_on_main_thread(pic_state *pic) {
   return pic_undef_value(pic);
 }
 
+pic_value
+yail_string_index_of(pic_state *pic) {
+  pic_value str, needle;
+  int slen, nlen, i, j;
+
+  pic_get_args(pic, "ss", &str, &needle);
+
+  slen = (int) pic_str_len(pic, str);
+  nlen = (int) pic_str_len(pic, needle);
+
+  for (i = 0; i <= slen - nlen; i++) {
+    for (j = 0; j < nlen; j++) {
+      if (pic_str_ref(pic, str, i + j) != pic_str_ref(pic, needle, j)) {
+        break;
+      }
+    }
+    if (j == nlen) {
+      return pic_int_value(pic, i);
+    }
+  }
+
+  return pic_int_value(pic, -1);
+}
+
 void
 pic_init_yail(pic_state *pic)
 {
@@ -716,6 +740,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:isa", yail_isa);
   pic_defun(pic, "yail:format-inexact", yail_format_inexact);
   pic_defun(pic, "yail:perform-on-main-thread", yail_perform_on_main_thread);
+  pic_defun(pic, "string-index-of", yail_string_index_of);
   objects = [NSMutableDictionary dictionary];
   protocols = [NSMutableDictionary dictionary];
 }
