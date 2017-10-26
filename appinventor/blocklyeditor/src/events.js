@@ -432,10 +432,17 @@ Blockly.Events.filter = function(queueIn, forward) {
         event.element == 'warningOpen')) {
         // Merge change events.
         hash[key].newValue = event.newValue;
+      } else {
+        // Collision, but newer events should merge into this event to maintain order
+        hash[key] = event;
+        queue2.push(event);
       }
     }
   }
-  queue = queue2;
+  // After merging, it is possible that the product of merging two events where isNull() returned
+  // false now returns true. This is one last pass to remove these null events on the filtered
+  // queue.
+  queue = queue2.filter(function(e) { return !e.isNull(); });
   if (!forward) {
     // Restore undo order.
     queue.reverse();
