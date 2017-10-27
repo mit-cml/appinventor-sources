@@ -7,6 +7,12 @@ build/
 DerivedData/
 Versions/
 
+## OS Generated Files
+*/.DS_Store
+.DS_Store
+.DS_Store?
+*.idea/
+
 ## Various settings
 *.pbxuser
 !default.pbxuser
