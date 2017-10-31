@@ -306,7 +306,8 @@ Blockly.TypeBlock.prototype.generateOptions = function() {
           if(dd.mutatorAttributes) {
             mutatorAttributes = dd.mutatorAttributes;
           }
-          listOfOptions[dd.translatedName] = {
+          // We remove the Blockly placeholders, e.g., %1, since they aren't useful here.
+          listOfOptions[dd.translatedName.replace(/%[0-9]+/g, '')] = {
             canonicName: canonicName,
             dropDown: dropDownValues,
             mutatorAttributes: mutatorAttributes

@@ -488,8 +488,10 @@ public class YaVersion {
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 196:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 197:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 28
 
-  public static final int YOUNG_ANDROID_VERSION = 196;
+  public static final int YOUNG_ANDROID_VERSION = 197;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -561,8 +563,10 @@ public class YaVersion {
   // - Generic event handlers were added.
   // For BLOCKS_LANGUAGE_VERSION 27:
   // - The text compare block was modified to include the not-equal operator
+  // For BLOCKS_LANGUAGE_VERSION 28
+  // - The dictionaries blocks were added.
 
-  public static final int BLOCKS_LANGUAGE_VERSION = 27;
+  public static final int BLOCKS_LANGUAGE_VERSION = 28;
 
   // ................................. Target SDK Version Number ..................................
 

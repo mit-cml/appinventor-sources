@@ -218,6 +218,9 @@ public final class ErrorMessages {
 
   // Form errors that are signalled in runtime.scm
   public static final int ERROR_DIVISION_BY_ZERO = 3200;
+  public static final int ERROR_INDEX_MISSING_IN_LIST = 3201;
+  public static final int ERROR_NUMBER_FORMAT_EXCEPTION = 3202;
+  public static final int ERROR_INVALID_VALUE_IN_PATH = 3203;
 
   // Extension errors are signalled from extensions
   public static final int ERROR_EXTENSION_ERROR = 3300;
@@ -588,6 +591,12 @@ public final class ErrorMessages {
     // signal-runtime-form-error must match the error number used here.
     errorMessages.put(ERROR_DIVISION_BY_ZERO,
         "Trying to divide %s by 0.  The result might not be valid.");
+    errorMessages.put(ERROR_INDEX_MISSING_IN_LIST,
+        "Index %d out of bounds in list %s.");
+    errorMessages.put(ERROR_NUMBER_FORMAT_EXCEPTION,
+        "Expected a number for an index, but got \"%s\" instead.");
+    errorMessages.put(ERROR_INVALID_VALUE_IN_PATH,
+        "Expected a list or dictionary, but found a %s when walking path.");
     // Extension errors
     errorMessages.put(ERROR_EXTENSION_ERROR,
         "Error %d in extension %s: %s");

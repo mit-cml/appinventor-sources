@@ -1335,7 +1335,7 @@ Blockly.Blocks.component_component_block = {
 
     this.appendDummyInput().appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR);
     //this.componentDropDown.setValue(this.instanceName);
-    this.setOutput(true, [this.typeName,"COMPONENT"]);
+    this.setOutput(true, [this.typeName,"COMPONENT","Key"]);
     this.errors = [{name:"checkIfUndefinedBlock"},{name:"checkComponentNotExistsError"}];
   },
 
