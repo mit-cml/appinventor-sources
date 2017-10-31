@@ -628,7 +628,7 @@ public class Form extends AppInventorCompatActivity
     Log.i(LOG_TAG, "decodeJSONStringForForm -- decoding JSON representation:" + jsonString);
     Object valueFromJSON = "";
     try {
-      valueFromJSON = JsonUtil.getObjectFromJson(jsonString);
+      valueFromJSON = JsonUtil.getObjectFromJson(jsonString, true);
       Log.i(LOG_TAG, "decodeJSONStringForForm -- got decoded JSON:" + valueFromJSON.toString());
     } catch (JSONException e) {
       activeForm.dispatchErrorOccurredEvent(activeForm, functionName,

@@ -290,7 +290,7 @@ public class TinyWebDB extends AndroidNonvisibleComponent implements Component {
             String value = result.getString(2);
             // If there's no entry with tag as a key then return the empty string.
             final Object valueFromWebDB = (value.length() == 0) ? "" :
-                JsonUtil.getObjectFromJson(value);
+                JsonUtil.getObjectFromJson(value, true);
             androidUIHandler.post(new Runnable() {
               public void run() {
                 // signal an event to indicate that a good value was returned.  Note

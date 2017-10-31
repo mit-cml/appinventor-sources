@@ -1799,7 +1799,10 @@ Blockly.Versioning.AllUpgradeMaps =
     26: "noUpgrade",
 
     // AI2: In BLOCKS_LANGUAGE_VERSION 27, Added not-equal to text compare block
-    27: "noUpgrade"
+    27: "noUpgrade",
+
+    // AI2: Added dictionaries
+    28: "noUpgrade"
 
   }, // End Language upgraders
 

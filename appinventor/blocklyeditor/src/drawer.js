@@ -540,6 +540,29 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="SEPARATOR"><block type="text"><title name="TEXT"></title></block></value>' +
       '</block>' +
     '</xml>'},
+  dictionaries_create_with: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="0"></mutation>' +
+    '</block>' +
+    '<block type="dictionaries_create_with">' +
+      '<mutation items="2"></mutation>' +
+      '<value name="ADD0"><block type="pair"></block></value>' +
+      '<value name="ADD1"><block type="pair"></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionary_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionary_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  dictionary_recursive_lookup: {xmlString:
+  '<xml>' +
+    '<block type="dictionary_recursive_lookup">' +
+    '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},

@@ -6,6 +6,12 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,12 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests JsonUtil class.
@@ -98,19 +98,12 @@ public class JsonUtilTest {
     String jsonInput = "{\"a\": 1, \"c\": [\"a\", \"b\", \"c\"], " +
         "\"b\": \"boo\", \"d\": {\"e\": \"f\"}}";
     JSONObject object = new JSONObject(jsonInput);
-
-    List<Object> returnList = JsonUtil.getListFromJsonObject(object);
-    List<Object> aList = Arrays.asList(new Object[] {"a", 1});
-    List<Object> bList = Arrays.asList(new Object[] {"b", "boo"});
-    List<Object> cList = Arrays.asList(new Object[] {"c",
-       Arrays.asList(new Object[] {"a", "b", "c"})});
-    List<Object> dList = Arrays.asList(new Object[] {"d",
-       Arrays.asList(new Object[] {Arrays.asList(new Object[] {"e", "f"})})});
-
-    assertEquals(returnList.get(0), aList);
-    assertEquals(returnList.get(1), bList);
-    assertEquals(returnList.get(2), cList);
-    assertEquals(returnList.get(3), dList);
+    YailDictionary returnDict = JsonUtil.getDictionaryFromJsonObject(object);
+    assertNotNull(returnDict);
+    assertEquals(1, returnDict.get("a"));
+    assertEquals("boo", returnDict.get("b"));
+    assertEquals(YailList.makeList(Arrays.asList("a", "b", "c")), returnDict.get("c"));
+    assertEquals(YailDictionary.makeDictionary("e", "f"), returnDict.get("d"));
   }
 
   @Test

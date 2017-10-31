@@ -524,6 +524,12 @@ public interface Images extends Resources {
   ImageResource lists();
 
   /**
+   * Built in drawer item: dictionaries
+   */
+  @Source("com/google/appinventor/images/dictionaries.png")
+  ImageResource dictionaries();
+
+  /**
    * Built in drawer item: colors
    */
   @Source("com/google/appinventor/images/colors.png")

@@ -157,7 +157,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
       String value = sharedPreferences.getString(tag, "");
       // If there's no entry with tag as a key then return the empty string.
       //    was  return (value.length() == 0) ? "" : JsonUtil.getObjectFromJson(value);
-      return (value.length() == 0) ? valueIfTagNotThere : JsonUtil.getObjectFromJson(value);
+      return (value.length() == 0) ? valueIfTagNotThere : JsonUtil.getObjectFromJson(value, true);
     } catch (JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Creation Error.");
     }
