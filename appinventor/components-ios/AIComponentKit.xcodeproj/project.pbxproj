@@ -90,8 +90,8 @@
 		06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EAAC781DCE291500889C6D /* AccelerometerSensor.swift */; };
 		CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9660841F69BC8C009746C3 /* TinyWebDB.swift */; };
 		C9C337D803484D426F223304 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
+		DEC2B8021F958519002BAB21 /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC2B8011F958519002BAB21 /* Spinner.swift */; };
 		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
-
 		F1822B232186EC6A486D9F46 /* Pods_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -195,6 +195,7 @@
 		685FE23350C9E159CA508795 /* Pods-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKitTests/Pods-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
 		BA2D48EA6A473CBA0907B685 /* Pods-AIComponentKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.debug.xcconfig"; sourceTree = "<group>"; };
+		DEC2B8011F958519002BAB21 /* Spinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spinner.swift; sourceTree = "<group>"; };
 		CB9660841F69BC8C009746C3 /* TinyWebDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TinyWebDB.swift; sourceTree = "<group>"; };
 		DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPicker.swift; sourceTree = "<group>"; };
 		ED8A4FBFD484F830C6914CBE /* Pods_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -284,6 +285,7 @@
 				06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */,
 				068E0E9D1DC243B30086FFDA /* Picker.swift */,
 				068E0EB61DC251BA0086FFDA /* Slider.swift */,
+				DEC2B8011F958519002BAB21 /* Spinner.swift */,
 				06B216011DB95134000B3366 /* TextBox.swift */,
 				06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */,
 			);
@@ -752,6 +754,7 @@
 				06B215FC1DB95109000B3366 /* VerticalArrangement.swift in Sources */,
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
+				DEC2B8021F958519002BAB21 /* Spinner.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
 				060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */,
 				0644F6C21F37D20700642E4D /* LifecycleDelegate.swift in Sources */,
