@@ -650,7 +650,15 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         context.runtimeError.setTitle(Blockly.Msg.REPL_RUNTIME_ERROR);
         context.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
                                        addButton({caption:Blockly.Msg.REPL_DISMISS}, false, true));
-        context.runtimeError.setTextContent(message);
+        if (context.runtimeError.getContentElement()) {
+            // This is not condoned by Google Closure Library rules, but we have already escaped
+            // the return value and the static content should be code reviewed to be safe.
+            context.runtimeError.getContentElement().innerHTML = message;
+        } else {
+            // Fallback option if for some reason the content element did not exist.
+            // This shouldn't happen in practice, but you never know...
+            context.runtimeError.setSafeHtmlContent(goog.html.SafeHtml.htmlEscape(message));
+        }
         context.runtimeError.setVisible(true);
     };
     // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
