@@ -52,10 +52,10 @@
     <property name="CommonConstants-class.dir" location="${class.dir}/CommonConstants" />
     <mkdir dir="${CommonConstants-class.dir}" />
 
-    <ai.javac5 destdir="${CommonConstants-class.dir}">
+    <ai.javac destdir="${CommonConstants-class.dir}">
       <include name="${components.pkg}/common/*.java" />
       <exclude name="${components.pkg}/common/HtmlEntities.java" />
-    </ai.javac5>
+    </ai.javac>
 
     <jar destfile="${public.build.dir}/CommonConstants.jar">
       <fileset dir="${CommonConstants-class.dir}"/>
@@ -82,9 +82,9 @@
     <property name="HtmlEntities-class.dir" location="${class.dir}/HtmlEntities" />
     <mkdir dir="${HtmlEntities-class.dir}" />
 
-    <ai.javac5 destdir="${HtmlEntities-class.dir}">
+    <ai.javac destdir="${HtmlEntities-class.dir}">
       <include name="${components.pkg}/common/HtmlEntities.java" />
-    </ai.javac5>
+    </ai.javac>
 
     <jar destfile="${local.build.dir}/HtmlEntities.jar">
       <fileset dir="${HtmlEntities-class.dir}"/>
@@ -122,7 +122,7 @@
           depends="CommonConstants,HtmlEntities,common_CommonVersion">
     <mkdir dir="${AndroidRuntime-class.dir}" />
 
-    <ai.javac5 destdir="${AndroidRuntime-class.dir}">
+    <ai.javac destdir="${AndroidRuntime-class.dir}">
       <include name="**/*.java" /> <!-- include all java files -->
       <exclude name="${zxing.pkg}/**/*.java" /> <!-- exclude zxing package -->
       <exclude name="${components.pkg}/scripts/**/*.java" /> <!-- exclude components/script package -->
@@ -157,7 +157,7 @@
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
-    </ai.javac5>
+    </ai.javac>
 
     <jar basedir="${AndroidRuntime-class.dir}"
          destfile="${public.build.dir}/AndroidRuntime.jar">
@@ -440,10 +440,6 @@
 
   <!-- ======================================================================
      Internal Inclusion of ZXing 2.1
-
-     In order to ensure that the blocks editor can run on Java 5, we compile
-     with ai.javac5 and we do not depend on any jars that are not compiled
-     with ai.javac5.
      ====================================================================== -->
 
   <!-- =====================================================================
@@ -461,13 +457,13 @@
     <property name="Barcode-class.dir" location="${class.dir}/Barcode" />
     <mkdir dir="${Barcode-class.dir}" />
 
-    <ai.javac5 destdir="${Barcode-class.dir}">
+    <ai.javac destdir="${Barcode-class.dir}">
       <include name="${barcode.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${lib.dir}/QRGenerator/core.jar" />
         <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
       </classpath>
-    </ai.javac5>
+    </ai.javac>
 
     <jar basedir="${Barcode-class.dir}"
          destfile="${public.build.dir}/Barcode.jar" />
@@ -485,12 +481,12 @@
     <mkdir dir="${ExternalComponentGenerator-class.dir}" />
     <mkdir dir="${ExternalComponent.dir}" />
     <mkdir dir="${ExternalComponent-class.dir}" />
-    <ai.javac5 destdir="${ExternalComponentGenerator-class.dir}">
+    <ai.javac destdir="${ExternalComponentGenerator-class.dir}">
       <include name="${components.pkg}/scripts/ExternalComponentGenerator.java" />
       <classpath>
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
-    </ai.javac5>
+    </ai.javac>
     <java classname="com.google.appinventor.components.scripts.ExternalComponentGenerator">
       <arg value="${public.build.dir}/simple_components.json" />
       <arg value="${public.build.dir}/simple_components_build_info.json" />
