@@ -1097,7 +1097,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
-        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), (YaFormEditor) editor);
+        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), propertyEditor);
       }
     }

@@ -331,9 +331,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
+
+      List<String> editorArgsList = new ArrayList<String>();
+      for (JSONValue val : properties.get("editorArgs").asArray().getElements())
+        editorArgsList.add(val.asString().getString());
+
       component.add(new PropertyDefinition(properties.get("name").asString().getString(),
-          properties.get("defaultValue").asString().getString(), properties.get("editorType")
-              .asString().getString()));
+                                           properties.get("defaultValue").asString().getString(),
+                                           properties.get("editorType").asString().getString(),
+                                           editorArgsList.toArray(new String[0])));
     }
   }
 

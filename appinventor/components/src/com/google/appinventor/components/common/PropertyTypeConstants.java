@@ -138,6 +138,13 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_LEGO_EV3_GENERATED_COLOR = "lego_ev3_generated_color";
 
   /**
+   * Choices.
+   * @see
+   * com.google.appinventor.client.widgets.properties.ChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CHOICES = "choices";
+
+  /**
    * Non-negative (positive or zero) floating-point values.
    * @see com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor
    */
