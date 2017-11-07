@@ -1028,6 +1028,10 @@ public interface OdeMessages extends Messages {
 
   // Used in editor/simple/palette/ComponentHelpWidget.java
 
+  @DefaultMessage("Extension Version:")
+  @Description("Header for extension version information")
+  String externalComponentVersion();
+
   @DefaultMessage("More information")
   @Description("Label of the link to a component's reference docs")
   String moreInformation();
