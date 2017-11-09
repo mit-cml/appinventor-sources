@@ -153,6 +153,10 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
   var preUpgradeComponentVersionDict = Blockly.Versioning.makeComponentVersionDict(preUpgradeFormJsonObject);
   for (var componentType in preUpgradeComponentVersionDict) {
     if (!preUpgradeComponentVersionDict.hasOwnProperty(componentType)) continue;
+
+    // Cannot upgrade extensions as they are not part of the system
+    if (Blockly.Versioning.isExternal(componentType, opt_workspace)) continue;
+
     var preUpgradeVersion = preUpgradeComponentVersionDict[componentType];
     var systemVersion = Blockly.Versioning.getSystemComponentVersion(componentType, opt_workspace);
     blocksRep = upgradeComponentType(componentType, preUpgradeVersion, systemVersion, blocksRep);
@@ -411,6 +415,15 @@ Blockly.Versioning.getSystemComponentVersion = function (componentType, workspac
     return parseInt(versionString);
   } else {
     throw "Blockly.Versioning.getSystemComponentVersion: No version for component type " + componentType;
+  }
+};
+
+Blockly.Versioning.isExternal = function(componentType, workspace) {
+  var description = workspace.getComponentDatabase().getType(componentType);
+  if (description && description.componentInfo) {
+    return 'true' === description.componentInfo.external;
+  } else {
+    return false;
   }
 };
 
