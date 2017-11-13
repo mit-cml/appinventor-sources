@@ -92,7 +92,7 @@ public class PropertiesUtil {
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
-                                PropertiesUtil.createPropertyEditor(property.getEditorType(), editor, property.getEditorArgs()));
+          PropertiesUtil.createPropertyEditor(property.getEditorType(), editor, property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }

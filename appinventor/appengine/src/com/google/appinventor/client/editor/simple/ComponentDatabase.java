@@ -337,9 +337,9 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         editorArgsList.add(val.asString().getString());
 
       component.add(new PropertyDefinition(properties.get("name").asString().getString(),
-                                           properties.get("defaultValue").asString().getString(),
-                                           properties.get("editorType").asString().getString(),
-                                           editorArgsList.toArray(new String[0])));
+          properties.get("defaultValue").asString().getString(),
+          properties.get("editorType").asString().getString(),
+          editorArgsList.toArray(new String[0])));
     }
   }
 
