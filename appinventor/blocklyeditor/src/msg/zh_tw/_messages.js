@@ -75,7 +75,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
 
     Blockly.Msg.COPY_TO_BACKPACK = '增加至背包';
     Blockly.Msg.COPY_ALLBLOCKS = '複製所有程式方塊到背包';
-    Blockly.Msg.BACKPACK_GET = '提取背包中所有程式方塊';
+    Blockly.Msg.BACKPACK_GET = '拿出背包中所有程式方塊';
     Blockly.Msg.BACKPACK_EMPTY = '清空背包';
     Blockly.Msg.BACKPACK_CONFIRM_EMPTY = '您確定要清空背包嗎？';
     Blockly.Msg.BACKPACK_DOC_TITLE = "背包介紹";
