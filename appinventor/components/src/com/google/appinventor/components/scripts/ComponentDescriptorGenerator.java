@@ -143,7 +143,21 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
     for (int idx = 0; idx < editorArgs.length; idx += 1)
       editorArgs[idx] = "\"" + editorArgs[idx].replace("\"", "\\\"") + "\"";
 
-    sb.append("[" + String.join(", ", editorArgs) + "]");
+    StringBuilder listLiteralBuilder = new StringBuilder();
+    listLiteralBuilder.append("[");
+
+    if (editorArgs.length > 0) {
+      listLiteralBuilder.append(editorArgs[0]);
+
+      for (int ind = 1; ind < editorArgs.length; ind += 1) {
+        listLiteralBuilder.append(", ");
+        listLiteralBuilder.append(editorArgs[ind]);
+      }
+    }
+
+    listLiteralBuilder.append("]");
+
+    sb.append(listLiteralBuilder.toString());
     sb.append("}");
   }
 
