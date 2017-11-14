@@ -845,6 +845,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       var def = Blockly.Procedures.getDefinition(name, workspace);
       if (def) {
         def.select();
+        var event = new AI.Events.WorkspaceMove(workspace.id);
 
         // Attempt to center the definition block, but preserve a minimum X, Y position so that
         // the definition of the block always appears on screen for visually large procedures
@@ -856,6 +857,9 @@ Blockly.Blocks['procedures_callnoreturn'] = {
         var midX = minLeft + (wh.width - metrics.viewWidth) / 2;
         var midY = minTop + (wh.height - metrics.viewHeight) / 2;
         def.workspace.scrollbar.set(Math.min(minLeft, midX), Math.min(minTop, midY));
+        event.recordNew();
+        Blockly.Events.fire(event);
+        workspace.getParentSvg().parentElement.focus();
       }
     };
     options.push(option);
