@@ -71,6 +71,12 @@ AI.Events.BLOCKS_ARRANGE_START = 'blocks.arrange.start';
 AI.Events.BLOCKS_ARRANGE_END = 'blocks.arrange.end';
 
 /**
+ * Type identifier used for programmatic workspace shifts.
+ * @type {string}
+ */
+AI.Events.WORKSPACE_VIEWPORT_MOVE = "blocks.workspace.move";
+
+/**
  * Abstract class for all App Inventor events.
  * @constructor
  */
@@ -391,6 +397,89 @@ AI.Events.EndArrangeBlocks.prototype.run = function(forward) {
   }
 };
 
+/**
+ * Class for capturing when the workspace is moved programmatically, to allow undoing by the user.
+ * @param {string} workspaceId The workspace that is being moved.
+ * @constructor
+ */
+AI.Events.WorkspaceMove = function(workspaceId) {
+  AI.Events.WorkspaceMove.superClass_.constructor.call(this);
+  this.workspaceId = workspaceId;
+  var metrics = Blockly.Workspace.getById(workspaceId).getMetrics();
+  this.oldX = metrics.viewLeft - metrics.contentLeft;
+  this.oldY = metrics.viewTop - metrics.contentTop;
+  this.newX = null;
+  this.newY = null;
+};
+goog.inherits(AI.Events.WorkspaceMove, AI.Events.Abstract);
+
+/**
+ * Type of this event.
+ * @type {string}
+ */
+AI.Events.WorkspaceMove.prototype.type = AI.Events.WORKSPACE_VIEWPORT_MOVE;
+
+/**
+ * Is the event transient?
+ * @type {boolean}
+ */
+AI.Events.WorkspaceMove.prototype.isTransient = true;
+
+/**
+ * Encode the event as JSON.
+ * @returns {!Object}
+ */
+AI.Events.WorkspaceMove.prototype.toJson = function() {
+  var json = AI.Events.WorkspaceMove.superClass_.toJson.call(this);
+  json['workspaceId'] = this.workspaceId;
+  if (this.newX) {
+    json['newX'] = this.newX;
+  }
+  if (this.newY) {
+    json['newY'] = this.newY;
+  }
+  return json;
+};
+
+/**
+ * Decode the JSON event.
+ * @param {!Object} json JSON representation.
+ */
+AI.Events.WorkspaceMove.prototype.fromJson = function() {
+  AI.Events.WorkspaceMove.superClass_.fromJson.call(this, json);
+  this.workspaceId = json['workspaceId'];
+  this.newX = json['newX'];
+  this.newY = json['newY'];
+};
+
+/**
+ * Record the new state of the workspace after the operation has occurred.
+ */
+AI.Events.WorkspaceMove.prototype.recordNew = function() {
+  var metrics = Blockly.Workspace.getById(this.workspaceId).getMetrics();
+  this.newX = metrics.viewLeft - metrics.contentLeft;
+  this.newY = metrics.viewTop - metrics.contentTop;
+};
+
+/**
+ * Check whether the event is null. For workspace moves, this is true if and only if that the new
+ * and old coordinates are the same.
+ * @returns {boolean}
+ */
+AI.Events.WorkspaceMove.prototype.isNull = function() {
+  return this.oldX === this.newX && this.oldY === this.newY;
+};
+
+/**
+ * Run a workspace move event.
+ * @param {boolean} forward True if run forward, false if run backward (undo).
+ */
+AI.Events.WorkspaceMove.prototype.run = function(forward) {
+  var workspace = Blockly.Workspace.getById(this.workspaceId);
+  var x = forward ? this.newX : this.oldX;
+  var y = forward ? this.newY : this.oldY;
+  workspace.scrollbar.set(x, y);
+};
 
 /**
  * Filter the queued events and merge duplicates. This version is O(n) versus the implementation
