@@ -13,6 +13,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
@@ -522,6 +523,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             name = packageName;
             if (!externalComponents.contains(name)) {
               externalComponents.add(name);
+            } else {
+              // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
+              saveProject();
             }
           }
         } else {
@@ -530,6 +534,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           // In case of upgrade, we do not need to add entry
           if (!externalComponents.contains(componentJSONObject.get("type").toString())) {
             externalComponents.add(componentJSONObject.get("type").toString());
+          } else {
+            // Upgraded an extension. Force a save to ensure version numbers are updated serverside.
+            saveProject();
           }
         }
         numExternalComponentsLoaded++;
@@ -735,6 +742,19 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       EditorSet editors = editorMap.get(formName);
       editors.formEditor.onResetDatabase();
       editors.blocksEditor.onResetDatabase();
+    }
+  }
+
+  /**
+   * Save all editors in the project.
+   */
+  public void saveProject() {
+    EditorManager manager = Ode.getInstance().getEditorManager();
+    for (EditorSet editors : editorMap.values()) {
+      // It would be more efficient to check if the editors use the component in question,
+      // but we are conservative and save everything, for now.
+      manager.scheduleAutoSave(editors.formEditor);
+      manager.scheduleAutoSave(editors.blocksEditor);
     }
   }
 }
