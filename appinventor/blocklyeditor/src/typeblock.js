@@ -130,6 +130,12 @@ Blockly.TypeBlock.prototype.ac_ = null;
 Blockly.TypeBlock.prototype.currentListener_ = null;
 
 /**
+ * Moving step size of arrow controlled movement
+ * @private
+ */
+Blockly.TypeBlock.prototype.MOVE_STEP = 4;
+
+/**
  *
  * @param {goog.events.KeyEvent} e
  */
@@ -157,6 +163,30 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       this.hide();
       Blockly.mainWorkspace.getParentSvg().parentNode.focus();  // refocus workspace div
       Blockly.mainWorkspace.hideChaff();
+      return;
+    }
+    if (37 <= e.keyCode && e.keyCode <= 40) {
+      if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) return;
+      var moveX=0, moveY=0;
+      switch (e.keyCode) {
+        case 37:
+          moveX=-this.MOVE_STEP; // left
+          break;
+        case 38:
+          moveY=-this.MOVE_STEP; //up
+          break;
+        case 39:
+          moveX=this.MOVE_STEP;  //right
+          break;
+        case 40:
+          moveY=this.MOVE_STEP; //down
+          break;
+      }
+      var blocks = Blockly.mainWorkspace.getTopBlocks(false);
+      for (var b = 0, block; block = blocks[b]; b++) {
+        block.moveBy(moveX, moveY);
+      }
+      e.preventDefault();
       return;
     }
     if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) {
