@@ -42,17 +42,26 @@ import java.util.List;
  * A command that brings up a wizard to copy a Young Android project.
  *
  * @author lizlooney@google.com (Liz Looney)
+ * @author 502470184@qq.com (ColinTree Yang)
  */
 public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
-  private boolean checkpoint;
+
+  public final static int MODE_SAVE_AS = 0;
+  public final static int MODE_CHECKPOINT = 1;
+  public final static int MODE_RENAME = 2;
+
+  private final int mode;
+  private final Runnable afterCopy;
 
   /**
    * Creates a new command for copying a project.
    *
-   * @param checkpoint whether the copy is a checkpoint
+   * @param mode can be MODE_SAVE_AS, MODE_CHECKPOINT or MODE_RENAME
+   * @param afterCopy runnable excuted after copy finished, before open the new project
    */
-  public CopyYoungAndroidProjectCommand(boolean checkpoint) {
-    this.checkpoint = checkpoint;
+  public CopyYoungAndroidProjectCommand(int mode, Runnable afterCopy) {
+    this.mode = mode;
+    this.afterCopy = afterCopy;
   }
 
   @Override
@@ -83,14 +92,21 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       setStylePrimaryName("ode-DialogBox");
 
       String oldName = oldProjectNode.getName();
-      setText(checkpoint ? MESSAGES.checkpointTitle(oldName) : MESSAGES.saveAsTitle(oldName));
+      if (mode == MODE_SAVE_AS) {
+        setText(MESSAGES.saveAsTitle(oldName));
+      } else if (mode == MODE_CHECKPOINT) {
+        setText(MESSAGES.checkpointTitle(oldName));
+      } else if (mode == MODE_RENAME) {
+        setText(MESSAGES.renameProjectTitle(oldName));
+      }
 
       VerticalPanel contentPanel = new VerticalPanel();
       contentPanel.setSpacing(10);
 
       String defaultNewName;
 
-      if (checkpoint) {
+      if (mode == MODE_CHECKPOINT) {
+        // Checkpoint
         String prefix = MESSAGES.defaultCheckpointProjectName(oldName, "");
         List<Project> checkpointProjects =
             Ode.getInstance().getProjectManager().getProjects(prefix);
@@ -135,12 +151,17 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
 
         defaultNewName = MESSAGES.defaultCheckpointProjectName(oldName, nextSuffix);
 
-      } else {
+      } else if (mode == MODE_SAVE_AS) {
         // Save As
         defaultNewName = MESSAGES.defaultSaveAsProjectName(oldName);
+      //}else if (mode == MODE_RENAME) {
+      } else {
+        // Rename is changing from the old name
+        defaultNewName =oldName;
       }
 
-      newNameTextBox = new LabeledTextBox(checkpoint ? MESSAGES.checkpointNameLabel()
+      // both save as and rename are using newNameLabel
+      newNameTextBox = new LabeledTextBox(mode==MODE_CHECKPOINT ? MESSAGES.checkpointNameLabel()
           : MESSAGES.newNameLabel(), new Validator(){
         @Override
         public boolean validate(String value) {
@@ -189,7 +210,8 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
 
-      contentPanel.setSize(checkpoint ? "400px" : "320px", "100%");
+      // save as and rename are in the same size
+      contentPanel.setSize(mode==MODE_CHECKPOINT ? "400px" : "320px", "100%");
 
       add(contentPanel);
     }
@@ -249,7 +271,10 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
         public void onSuccess(UserProject newProjectInfo) {
           // Update project list
           Project newProject = ode.getProjectManager().addProject(newProjectInfo);
-          if (!checkpoint) {
+          if (afterCopy!=null) {
+            afterCopy.run();
+          }
+          if (mode!=MODE_CHECKPOINT) {
             ode.openYoungAndroidProjectInDesigner(newProject);
           }
         }
