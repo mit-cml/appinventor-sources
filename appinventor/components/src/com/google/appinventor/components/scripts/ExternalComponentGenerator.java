@@ -160,12 +160,7 @@ public class ExternalComponentGenerator {
     String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
     String  extensionFileDirPath = extensionDirPath + File.separator + "files";
-    String extensionClassPath = packageName.replace('.', File.separatorChar);
-    String extensionTempClassDirPath = extensionTempDirPath + File.separator + extensionClassPath;
-    if (!new File(extensionTempClassDirPath).mkdirs()) {
-      throw new IOException("Unable to create temporary path for extension build");
-    }
-    copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempClassDirPath);
+    copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
     for (ExternalComponentInfo info : extensions) {
@@ -313,7 +308,11 @@ public class ExternalComponentGenerator {
           copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
         }
       } else if (fileEntry.isDirectory()) {
-        copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, destPath);
+        String newDestPath=destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
+        if (!new File(newDestPath).mkdirs()) {
+          throw new IOException("Unable to create temporary path for extension build");
+        }
+        copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
       }
     }
   }

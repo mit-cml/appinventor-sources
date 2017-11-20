@@ -1,6 +1,6 @@
 /* LAYOUT*/
 body {
-        background:url(../images/squairy_light.png) repeat scroll center top !important;        
+        background:url(../images/squairy_light.png) repeat scroll center top !important;
 }
 #page{
         width: 960px;
@@ -55,7 +55,7 @@ body {
         left:0;
         right:0;
         top:0;
-        display:flex; 
+        display:flex;
         align-items: center;
 }
 
@@ -78,7 +78,7 @@ body {
         /*background: url(../images/logo_text.png) no-repeat;*/
         width: auto;
         height: 50px;
-        display: block; 
+        display: block;
 }
 #logo img:hover {
         -webkit-filter: drop-shadow(0px 0px 3px #eee);
@@ -102,7 +102,7 @@ body {
         color: #3D3D3D;
         background:transparent !important;
         border-radius:0 !important;
-        
+
 }
 #menu-bar li a.active{
         color: #000;
@@ -123,7 +123,7 @@ body {
 .sf-depth-1 ul{
         margin-top:10px !important;
 }
-.sf-depth-2, 
+.sf-depth-2,
 .sf-depth-3{
         margin-top:auto !important;
         background-color:#f2f2f2 !important;
@@ -340,7 +340,7 @@ Front Page Blog Display
 }
 
 .view-id-blog_summary .views-view-grid td{
-        float: left; 
+        float: left;
         width: 45%;
         padding:2%;
         border:none;
@@ -393,7 +393,7 @@ tr td:last-child {
 /*
 Tutorial Layout
 */
-.form-item.form-type-bef-checkbox.form-item-edit-field-version-tid-59, 
+.form-item.form-type-bef-checkbox.form-item-edit-field-version-tid-59,
 .form-item.form-type-bef-checkbox.form-item-edit-field-version-tid-60{
         width:50%;
 }
@@ -424,7 +424,7 @@ New Front Page
 }
 
 .front-page-row p {
-        
+
         display: none;
 }
 
@@ -437,13 +437,13 @@ New Front Page
 .sidebar-header-color a h3 b:hover{
         text-decoration: underline;
 }
-                                                                                  
+
 .views-field.views-field-field-event-date.calendar_format{
         width: 51px;
         vertical-align:middle;
         text-indent: 3px;
 }
-        
+
 .footer-style a p{
         color: #C4C4C4;
         margin-left: 238px;
@@ -473,7 +473,7 @@ New Front Page
 	padding: 2px 0;
 }
 .item-list2 ul{
-	list-style-type: none; 
+	list-style-type: none;
 }
 .gsc-control-searchbox-only.gsc-control-searchbox-only-en td{
         padding: 0 10px;
@@ -490,7 +490,7 @@ New Front Page
 
 /*news-events*/
 #article-450 header{
-        display: none;        
+        display: none;
 }
 span.ext{
         display: none;
@@ -502,10 +502,10 @@ span.ext{
         width: 170px;
         font-family:helvetica;
         background-color: #000099;
-}        
+}
 .submit_content2:hover{
 
-        background-color: #1919A3;        
+        background-color: #1919A3;
 }
 
 .submit_content2 p{
@@ -513,7 +513,7 @@ span.ext{
         font-weight:bold;
         line-height: 30px;
         color: #FFF;
-}    
+}
 
 .news_header_format header{
 	color: black;
@@ -539,10 +539,10 @@ span.ext{
         width:95% !important;
         margin-top: -30px;
 }
-#article-548 .article-content{ 
+#article-548 .article-content{
         margin-bottom: -20px;
 .team-blog-row li{
-        margin-top: -10px !important; 
+        margin-top: -10px !important;
 }
 .team-blog-row img{
 	float: left;
