@@ -38,6 +38,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,6 +60,10 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +140,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     final String urlString;
     final URL url;
     final boolean allowCookies;
+    final boolean ignoreSslErrors;
     final boolean saveResponse;
     final String responseFileName;
     final Map<String, List<String>> requestHeaders;
@@ -138,6 +150,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       urlString = web.urlString;
       url = new URL(urlString);
       allowCookies = web.allowCookies;
+      ignoreSslErrors = web.ignoreSslErrors;
       saveResponse = web.saveResponse;
       responseFileName = web.responseFileName;
       requestHeaders = processRequestHeaders(web.requestHeaders);
@@ -181,6 +194,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
   private String urlString = "";
   private boolean allowCookies;
+  private boolean ignoreSslErrors = false;
   private YailList requestHeaders = new YailList();
   private boolean saveResponse;
   private String responseFileName = "";
@@ -280,6 +294,20 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Determine whether or not to ignore SSL errors. Set to true to ignore " +
+          "errors. Use this to accept self signed certificates from websites.")
+  public boolean IgnoreSslErrors() {
+    return ignoreSslErrors;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty
+  public void IgnoreSslErrors(boolean ignoreSslErrors) {
+    this.ignoreSslErrors = ignoreSslErrors;
+  }
+
   /**
    * Returns whether the response should be saved in a file.
    */
@@ -359,6 +387,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "Get",
               e.getErrorMessageNumber());
+        } catch (SSLException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "Get",
+              ErrorMessages.ERROR_WEB_SSL_ERROR, webProps.urlString, e.getMessage());
+          form.dispatchErrorOccurredEvent(Web.this, "Get",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_GET, webProps.urlString);
         } catch (Exception e) {
           Log.e(LOG_TAG, "ERROR_UNABLE_TO_GET", e);
           form.dispatchErrorOccurredEvent(Web.this, "Get",
@@ -430,6 +463,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "PostFile",
               e.getErrorMessageNumber());
+        } catch (SSLException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PostFile",
+              ErrorMessages.ERROR_WEB_SSL_ERROR, webProps.urlString, e.getMessage());
+          form.dispatchErrorOccurredEvent(Web.this, "PostFile",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, "PostFile",
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -500,6 +538,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "PutFile",
               e.getErrorMessageNumber());
+        } catch (SSLException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+              ErrorMessages.ERROR_WEB_SSL_ERROR, webProps.urlString, e.getMessage());
+          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, "PutFile",
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
@@ -534,6 +577,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "Delete",
               e.getErrorMessageNumber());
+        } catch (SSLException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+              ErrorMessages.ERROR_WEB_SSL_ERROR, webProps.urlString, e.getMessage());
+          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, "Delete",
               ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
@@ -589,6 +637,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               e.getErrorMessageNumber());
+        } catch (SSLException e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              ErrorMessages.ERROR_WEB_SSL_ERROR, webProps.urlString, e.getMessage());
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, webProps.urlString);
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, functionName,
               ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
@@ -895,6 +948,10 @@ public class Web extends AndroidNonvisibleComponent implements Component {
 
     HttpURLConnection connection = (HttpURLConnection) webProps.url.openConnection();
 
+    if (connection instanceof HttpsURLConnection && webProps.ignoreSslErrors) {
+      doIgnoreSslErrors((HttpsURLConnection) connection);
+    }
+
     if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
       // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
       // with setDoOutput in writeRequestFile or writeRequestData
@@ -920,6 +977,26 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
 
     return connection;
+  }
+
+  /**
+   * Configures an HttpsURLConnection so that no SSL validation occurs during the handshake. This
+   * is very insecure and users really ought to be aware of the security implications of enabling
+   * the ignoreSslErrors option.
+   *
+   * @param connection the connection on which to suppress SSL validation
+   */
+  private static void doIgnoreSslErrors(HttpsURLConnection connection) {
+    try {
+      SSLContext context = SSLContext.getInstance("TLS");
+      context.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
+      connection.setSSLSocketFactory(context.getSocketFactory());
+      connection.setHostnameVerifier(new NaiveHostnameVerifier());
+    } catch (NoSuchAlgorithmException e) {
+      Log.wtf(LOG_TAG, "No support for TLS?", e);
+    } catch (KeyManagementException e) {
+      Log.wtf(LOG_TAG, "Unexpected key management issue for empty set of keys?", e);
+    }
   }
 
   private static void writeRequestData(HttpURLConnection connection, byte[] postData)
@@ -1143,5 +1220,36 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       form.dispatchErrorOccurredEvent(this, functionName, e.errorNumber, e.index);
     }
     return null;
+  }
+
+  /**
+   * NaiveTrustManager is used to trivially trust all SSL connections whe ignoreSslErrors is true.
+   */
+  private static class NaiveTrustManager implements X509TrustManager {
+    @Override
+    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+      // Control flow by exception -- doing nothing means accept!
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+      // Control flow by exception -- doing nothing means accept!
+    }
+
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+      return new X509Certificate[0];
+    }
+  }
+
+  /**
+   * NaiveHostnameVerifier is used to trivially accept all host names when ignoreSslErrors is true,
+   * even if there is a mismatch between the certificate and the HTTP Host: header.
+   */
+  private static class NaiveHostnameVerifier implements HostnameVerifier {
+    @Override
+    public boolean verify(String s, SSLSession sslSession) {
+      return true;
+    }
   }
 }
