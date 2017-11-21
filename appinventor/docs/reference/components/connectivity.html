@@ -699,6 +699,8 @@ delimiter byte value is received. </dd>
 <dl>
   <dt><code>AllowCookies</code></dt>
   <dd>Whether the cookies from a response should be saved and used in subsequent requests. Cookies are only supported on Android version 2.3 or greater.</dd>
+  <dt><code>IgnoreSslErrors</code></dt>
+  <dd>Sets whether or not to ignore SSL errors when connecting to an untrusted server. Note that this is extremely insecure and may open your app to man-in-the-middle attacks, making app users' data susceptible to monitoring by a third party.</dd>
   <dt><code>RequestHeaders</code></dt>
   <dd>The request headers, as a list of two-element sublists. The first element of each sublist represents the request header field name. The second element of each sublist represents the request header field values, either a single value or a list containing multiple values.</dd>
   <dt><code>ResponseFileName</code></dt>
