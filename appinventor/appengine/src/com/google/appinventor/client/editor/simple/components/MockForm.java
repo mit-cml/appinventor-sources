@@ -570,11 +570,11 @@ public final class MockForm extends MockContainer {
   }
   
   private void setTitleVisibleProperty(String visible) {
-	  if (visible.equals("True")) {
-		  titleBar.setVisible(true);
-	  } else {
-		  titleBar.setVisible(false);
-	  }
+    if (visible.equals("True")) {
+      titleBar.setVisible(true);
+    } else {
+      titleBar.setVisible(false);
+    }
   }
 
   /**
@@ -843,7 +843,7 @@ public final class MockForm extends MockContainer {
       myLayout.setVAlignmentFlags(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
-    	setTitleVisibleProperty(newValue);
+      setTitleVisibleProperty(newValue);
       refreshForm();
     }
   }
