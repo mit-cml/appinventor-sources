@@ -569,12 +569,9 @@ public final class MockForm extends MockContainer {
     }
   }
   
-  private void setTitleVisibleProperty(String visible) {
-    if (visible.equals("True")) {
-      titleBar.setVisible(true);
-    } else {
-      titleBar.setVisible(false);
-    }
+  private void setTitleVisibleProperty(String text) {
+    boolean visible = Boolean.parseBoolean(text);
+    titleBar.setVisible(visible);
   }
 
   /**
