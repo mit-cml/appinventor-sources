@@ -26,18 +26,22 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.ClientLoginHelper;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.IClientLoginHelper;
+import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -110,7 +114,8 @@ import java.util.ArrayList;
     "</ol>" +
     "<p>Your API Key will be near the bottom of that pane in the section called \"Simple API Access\"." +
     "You will have to provide that key as the value for the <i>ApiKey</i> property in your Fusiontables app.</p>" +
-    "<p>Once you have an API key, set the value of the <i>Query</i> property to a valid Fusiontables SQL query " +
+    "<p>Once you have an API key, set the value of the <i>Query</i> property to a valid Fusiontables SQL query," +
+    " which can be a list or a comma-separated, single-quoted CSV String, " +
     "and call <i>SendQuery</i> to execute the query.  App Inventor will send the query to the Fusion Tables " +
     "server and the <i>GotResult</i> block will fire when a result is returned from the server." +
     "Query results will be returned in CSV format, and " +
@@ -163,6 +168,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   private File cachedServiceCredentials = null; // if using service accounts, temp location of credentials.
 
   private String authTokenType = AUTH_TOKEN_TYPE_FUSIONTABLES;
+  private Handler androidUIHandler;
 
   /**
    * The developer's Google API key,
@@ -227,6 +233,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     this.activity = componentContainer.$context();
     requestHelper = createClientLoginHelper(DIALOG_TEXT, FUSIONTABLE_SERVICE);
     query = DEFAULT_QUERY;
+
+    androidUIHandler = new Handler();
 
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
       showNoticeAndDie(
@@ -404,15 +412,57 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     OAuth2Helper.resetAccountCredential(activity);
   }
 
+  //InsertRow receives a comma-separated, single-quoted CSV String or a list as a value
   @SimpleFunction(
     description="Inserts a row into the specified fusion table. The tableId field is the id of the" +
-      "fusion table. The columns is a comma-separated list of the columns to insert values into. The" +
-      " values field specifies what values to insert into each column.")
-  public void InsertRow(String tableId, String columns, String values) {
-    query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + values + ")";
+      "fusion table. The columns can be either a comma-separated, single-quoted CSV String or a list " +
+      "to insert values into. The values field specifies what values to insert into each column.")
+  public void InsertRow(String tableId, String columns, Object values) {
+    String reformattedValues = "";
+    if(values != null && values instanceof String || values != null && values instanceof gnu.lists.FString) {
+      Log.i("FusionTablesInsertRow", "String:"+values);
+      String valuesString = values.toString();
+      //Assume it is formatted correctly if it starts with single-quotes
+      if(valuesString.startsWith("\'")){
+        reformattedValues = valuesString;
+      }
+      //Single quotes are escape chars and must be replaced with two single quotes (Natalie)
+      else if(valuesString.startsWith("\"")) {
+        String quotifiedValues = valuesString.replace("\'", "\'\'");
+        reformattedValues = quotifiedValues.replace("\"", "\'");
+      }
+      else{
+        androidUIHandler.post(new Runnable() {
+          public void run() {
+            FusionTablesError("The query: " + query + " is incorrectly formatted. " + "Values must " +
+                "either be in a list or be a String formatted as such: \'First\',\'Second\',\'Third\'. " +
+                "Please note that single quotes in text must be inputted as two single quotes in a row: \'\'");
+          }
+        });
+        return;
+      }
+    }
+    else if(values != null && values instanceof YailList) {
+      Log.i("FusionTablesInsertRow", "YailList:"+values);
+      YailList valuesList = (YailList)values;
+      reformattedValues = "\'" + valuesList.getString(0).replace("\'", "\'\'") + "\'";
+      for (int i = 1; i < valuesList.size(); i++) {
+        reformattedValues += ",\'" + valuesList.getString(i).replace("\'", "\'\'") + "\'";
+      }
+    }
+    else {
+      androidUIHandler.post(new Runnable() {
+        public void run() {
+          FusionTablesError("The query: " + query + " is not a String or a list. " + "Values must " +
+              "either be in a list or be a String formatted as such: \'First\',\'Second\',\'Third\'. " +
+              "Please note that single quotes in text must be inputted as two single quotes in a row: \'\'");
+        }
+      });
+      return;
+    }
+    query = "INSERT INTO " + tableId + " (" + columns + ")" + " VALUES " + "(" + reformattedValues + ")";
     new QueryProcessorV2(activity).execute(query);
   }
-
 
   @SimpleFunction(
     description="Gets all the rows from a specified fusion table. The tableId field is the id of the" +
@@ -965,4 +1015,14 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
         ErrorMessages.FUSION_TABLES_QUERY_ERROR, query, parsedException);
   }
 
+  /**
+   * Indicates that Fusion Tables signaled an error
+   *
+   * @param message the error message
+   */
+  @SimpleEvent
+  public void FusionTablesError(String message) {
+    // Invoke the application's "FusionTablesError" event handler
+    EventDispatcher.dispatchEvent(this, "FusionTablesError", message);
+  }
 }

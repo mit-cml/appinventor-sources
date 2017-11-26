@@ -8,8 +8,12 @@ package com.google.appinventor.components.runtime;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+
+import com.evernote.android.job.JobManager;
+
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.MyJobCreator;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.multidex.MultiDex;
 
@@ -58,6 +62,12 @@ public class ReplApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    // For the Evernote JobManager library. We initialize it here
+    // so we can invoke jobs from the Android alarm manager without
+    // firing up the whole application.
+    JobManager.create(this).addJobCreator(new MyJobCreator());
+
     thisInstance = this;
     String acraUri = GitBuildId.getAcraUri();
     if (acraUri.equals("")) {

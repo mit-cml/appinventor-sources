@@ -1084,5 +1084,7 @@ public class YaVersion {
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
 
+  public static final int SYNC_SCHEDULER_COMPONENT_VERSION = 1;
+
 
 }

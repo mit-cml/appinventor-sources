@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_aimerger_for_appinv_classic" default="compile.module.aimerger_for_appinv_classic">
+  <dirname property="module.aimerger_for_appinv_classic.basedir" file="${ant.file.module_aimerger_for_appinv_classic}"/>
+  
+  <property name="module.jdk.home.aimerger_for_appinv_classic" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.aimerger_for_appinv_classic" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.aimerger_for_appinv_classic" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.aimerger_for_appinv_classic" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="aimerger_for_appinv_classic.output.dir" value="${module.aimerger_for_appinv_classic.basedir}/../out/production/aimerger_for_appinv_classic"/>
+  <property name="aimerger_for_appinv_classic.testoutput.dir" value="${module.aimerger_for_appinv_classic.basedir}/../out/test/aimerger_for_appinv_classic"/>
+  
+  <path id="aimerger_for_appinv_classic.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="aimerger_for_appinv_classic.module.production.classpath">
+    <path refid="${module.jdk.classpath.aimerger_for_appinv_classic}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger_for_appinv_classic.runtime.production.module.classpath">
+    <pathelement location="${aimerger_for_appinv_classic.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger_for_appinv_classic.module.classpath">
+    <path refid="${module.jdk.classpath.aimerger_for_appinv_classic}"/>
+    <pathelement location="${aimerger_for_appinv_classic.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger_for_appinv_classic.runtime.module.classpath">
+    <pathelement location="${aimerger_for_appinv_classic.testoutput.dir}"/>
+    <pathelement location="${aimerger_for_appinv_classic.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.aimerger_for_appinv_classic">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.aimerger_for_appinv_classic">
+    <patternset refid="excluded.from.module.aimerger_for_appinv_classic"/>
+  </patternset>
+  
+  <path id="aimerger_for_appinv_classic.module.sourcepath">
+    <dirset dir="${module.aimerger_for_appinv_classic.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.aimerger_for_appinv_classic" depends="compile.module.aimerger_for_appinv_classic.production,compile.module.aimerger_for_appinv_classic.tests" description="Compile module aimerger_for_appinv_classic"/>
+  
+  <target name="compile.module.aimerger_for_appinv_classic.production" depends="register.custom.compilers" description="Compile module aimerger_for_appinv_classic; production classes">
+    <mkdir dir="${aimerger_for_appinv_classic.output.dir}"/>
+    <javac2 destdir="${aimerger_for_appinv_classic.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.aimerger_for_appinv_classic}/javac">
+      <compilerarg line="${compiler.args.aimerger_for_appinv_classic}"/>
+      <bootclasspath refid="aimerger_for_appinv_classic.module.bootclasspath"/>
+      <classpath refid="aimerger_for_appinv_classic.module.production.classpath"/>
+      <src refid="aimerger_for_appinv_classic.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.aimerger_for_appinv_classic"/>
+    </javac2>
+    
+    <copy todir="${aimerger_for_appinv_classic.output.dir}">
+      <fileset dir="${module.aimerger_for_appinv_classic.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.aimerger_for_appinv_classic.tests" depends="register.custom.compilers,compile.module.aimerger_for_appinv_classic.production" description="compile module aimerger_for_appinv_classic; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.aimerger_for_appinv_classic" description="cleanup module">
+    <delete dir="${aimerger_for_appinv_classic.output.dir}"/>
+    <delete dir="${aimerger_for_appinv_classic.testoutput.dir}"/>
+  </target>
+</project>

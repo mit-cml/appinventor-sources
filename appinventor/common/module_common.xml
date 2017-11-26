@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_common" default="compile.module.common">
+  <dirname property="module.common.basedir" file="${ant.file.module_common}"/>
+  
+  <property name="module.jdk.home.common" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.common" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.common" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.common" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="common.output.dir" value="${module.common.basedir}/../out/production/common"/>
+  <property name="common.testoutput.dir" value="${module.common.basedir}/../out/test/common"/>
+  
+  <path id="common.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="common.module.production.classpath">
+    <path refid="${module.jdk.classpath.common}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.guava.classpath"/>
+  </path>
+  
+  <path id="common.runtime.production.module.classpath">
+    <pathelement location="${common.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.guava.classpath"/>
+  </path>
+  
+  <path id="common.module.classpath">
+    <path refid="${module.jdk.classpath.common}"/>
+    <pathelement location="${common.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.guava.classpath"/>
+  </path>
+  
+  <path id="common.runtime.module.classpath">
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <path refid="library.junit-4.8.2.classpath"/>
+    <path refid="library.build.classpath"/>
+    <path refid="library.soy.classpath"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.plovr-eba786b34df9.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.lib2.classpath"/>
+    <path refid="library.lib3.classpath"/>
+    <path refid="library.android1.classpath"/>
+    <path refid="library.guava.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.common">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.common">
+    <patternset refid="excluded.from.module.common"/>
+  </patternset>
+  
+  <path id="common.module.sourcepath">
+    <dirset dir="${module.common.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="common.module.test.sourcepath">
+    <dirset dir="${module.common.basedir}">
+      <include name="tests"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.common" depends="compile.module.common.production,compile.module.common.tests" description="Compile module common"/>
+  
+  <target name="compile.module.common.production" depends="register.custom.compilers" description="Compile module common; production classes">
+    <mkdir dir="${common.output.dir}"/>
+    <javac2 destdir="${common.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.common}/javac">
+      <compilerarg line="${compiler.args.common}"/>
+      <bootclasspath refid="common.module.bootclasspath"/>
+      <classpath refid="common.module.production.classpath"/>
+      <src refid="common.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.common"/>
+    </javac2>
+    
+    <copy todir="${common.output.dir}">
+      <fileset dir="${module.common.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.common.tests" depends="register.custom.compilers,compile.module.common.production" description="compile module common; test classes" unless="skip.tests">
+    <mkdir dir="${common.testoutput.dir}"/>
+    <javac2 destdir="${common.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.common}/javac">
+      <compilerarg line="${compiler.args.common}"/>
+      <bootclasspath refid="common.module.bootclasspath"/>
+      <classpath refid="common.module.classpath"/>
+      <src refid="common.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.common"/>
+    </javac2>
+    
+    <copy todir="${common.testoutput.dir}">
+      <fileset dir="${module.common.basedir}/tests">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.common" description="cleanup module">
+    <delete dir="${common.output.dir}"/>
+    <delete dir="${common.testoutput.dir}"/>
+  </target>
+</project>

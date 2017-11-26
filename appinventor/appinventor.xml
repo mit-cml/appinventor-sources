@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="appinventor" default="all">
+  
+  
+  <property file="appinventor.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.ear"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.7_(1)" value="${jdk.home.1.7_(1)}/bin"/>
+  <path id="jdk.classpath.1.7_(1)">
+    <fileset dir="${jdk.home.1.7_(1)}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/htmlconverter.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxrt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="lib/ant-javafx.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javafx-doclet.jar"/>
+      <include name="lib/javafx-mx.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="lib/tools.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.7_(1)}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.7_(1)}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.7_(1)"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.2.8-patched.classpath">
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/gwt-dev.jar"/>
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/gwt-servlet-deps.jar"/>
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/gwt-servlet.jar"/>
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/gwt-user.jar"/>
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/validation-api-1.0.0.GA-sources.jar"/>
+    <pathelement location="${basedir}/lib/gwt/2.8-patched/validation-api-1.0.0.GA.jar"/>
+  </path>
+  
+  <path id="library.acra-4.4.0.classpath">
+    <pathelement location="${basedir}/lib/acra/acra-4.4.0.jar"/>
+  </path>
+  
+  <path id="library.android.classpath">
+    <pathelement location="${basedir}/lib/android/5.1.1/android.jar"/>
+  </path>
+  
+  <path id="library.android1.classpath">
+    <pathelement location="${basedir}/lib/android/7.1/android.jar"/>
+  </path>
+  
+  <path id="library.apache-http.classpath">
+    <pathelement location="${basedir}/lib/apache-http/httpcore-4.3.2.jar"/>
+    <pathelement location="${basedir}/lib/apache-http/httpmime-4.3.4.jar"/>
+  </path>
+  
+  <path id="library.appengine-testing.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/testing/appengine-testing.jar"/>
+  </path>
+  
+  <path id="library.args4j-2.0.18.classpath">
+    <pathelement location="${basedir}/lib/args4j/args4j-2.0.18.jar"/>
+  </path>
+  
+  <path id="library.build.classpath">
+    <pathelement location="${basedir}/components/build/AnnotationProcessors.jar"/>
+    <pathelement location="${basedir}/components/build/ComponentProcessingLib.jar"/>
+    <pathelement location="${basedir}/components/build/HtmlEntities.jar"/>
+  </path>
+  
+  <path id="library.build1.classpath">
+    <pathelement location="${basedir}/appengine/build/AiRebindLib.jar"/>
+    <pathelement location="${basedir}/appengine/build/AiServerLib.jar"/>
+    <pathelement location="${basedir}/appengine/build/AiSharedLib.jar"/>
+  </path>
+  
+  <path id="library.classes.classpath">
+    <pathelement location="${basedir}/lib/evernote/android-job-1.1.11/classes.jar"/>
+  </path>
+  
+  <path id="library.common.classpath">
+    <pathelement location="${basedir}/build/common/BlocksEditorHttpConstants-gwt.jar"/>
+    <pathelement location="${basedir}/build/common/BlocksEditorHttpConstants.jar"/>
+    <pathelement location="${basedir}/build/common/CommonTestUtils.jar"/>
+    <pathelement location="${basedir}/build/common/CommonUtils-gwt.jar"/>
+    <pathelement location="${basedir}/build/common/CommonUtils.jar"/>
+    <pathelement location="${basedir}/build/common/CommonVersion-gwt.jar"/>
+    <pathelement location="${basedir}/build/common/CommonVersion.jar"/>
+  </path>
+  
+  <path id="library.commons-fileupload-1.2.2.classpath">
+    <pathelement location="${basedir}/lib/commons-fileupload/commons-fileupload-1.2.2.jar"/>
+  </path>
+  
+  <path id="library.commons-io-2.0.1.classpath">
+    <pathelement location="${basedir}/lib/commons-io/commons-io-2.0.1.jar"/>
+  </path>
+  
+  <path id="library.components.classpath">
+    <pathelement location="${basedir}/build/components/AndroidRuntime.jar"/>
+    <pathelement location="${basedir}/build/components/Barcode.jar"/>
+    <pathelement location="${basedir}/build/components/CommonConstants-gwt.jar"/>
+    <pathelement location="${basedir}/build/components/CommonConstants.jar"/>
+  </path>
+  
+  <path id="library.evernote.classpath">
+    <pathelement location="${basedir}/lib/evernote/android-job-1.1.11-javadoc.jar"/>
+    <pathelement location="${basedir}/lib/evernote/android-job-1.1.11-sources.jar"/>
+    <pathelement location="${basedir}/lib/evernote/android-job-1.1.11.jar"/>
+    <pathelement location="${basedir}/lib/evernote/android-job-1.1.11.zip"/>
+  </path>
+  
+  <path id="library.ext.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-api.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/appengine-vm-runtime.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/ext/gson.jar"/>
+  </path>
+  
+  <path id="library.files.classpath">
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/AndroidRuntime.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/Barcode.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/CommonVersion.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/acra-4.4.0.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/android.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/core.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/dx.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/firebase.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/fusiontables.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-api-client-android2-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-api-client-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-http-client-android2-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-http-client-android3-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-http-client-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/google-oauth-client-beta.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/gson-2.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/guava-14.0.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/httpcore-4.3.2.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/httpmime-4.3.4.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/json.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/kawa.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/twitter4j.jar"/>
+    <pathelement location="${basedir}/buildserver/build/classes/BuildServer/files/twitter4jmedia.jar"/>
+  </path>
+  
+  <path id="library.firebase.classpath">
+    <pathelement location="${basedir}/lib/firebase/firebase-client-android-2.5.0.jar"/>
+    <pathelement location="${basedir}/lib/firebase/firebase-token-generator-2.0.0.jar"/>
+  </path>
+  
+  <path id="library.fusiontables.classpath">
+    <pathelement location="${basedir}/lib/fusiontables/fusiontables.jar"/>
+  </path>
+  
+  <path id="library.gcs.classpath">
+    <pathelement location="${basedir}/lib/gcs/appengine-gcs-client-0.6.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-api-client-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-api-client-appengine-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-http-client-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-http-client-appengine-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-http-client-jackson-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/google-http-client-jackson2-1.22.0.jar"/>
+    <pathelement location="${basedir}/lib/gcs/httpclient-4.0.1.jar"/>
+    <pathelement location="${basedir}/lib/gcs/jackson-core-2.1.3.jar"/>
+    <pathelement location="${basedir}/lib/gcs/joda-time-2.6.jar"/>
+  </path>
+  
+  <path id="library.guava.classpath">
+    <pathelement location="${basedir}/lib/guava/error_prone_annotations-2.0.12.jar"/>
+    <pathelement location="${basedir}/lib/guava/guava-14.0.1.jar"/>
+    <pathelement location="${basedir}/lib/guava/guava-20.0.jar"/>
+    <pathelement location="${basedir}/lib/guava/guava-gwt-14.0.1.jar"/>
+    <pathelement location="${basedir}/lib/guava/guava-gwt-20.0.jar"/>
+    <pathelement location="${basedir}/lib/guava/j2objc-annotations-1.1.jar"/>
+  </path>
+  
+  <path id="library.gwt-dnd-3.2.3.classpath">
+    <pathelement location="${basedir}/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar"/>
+  </path>
+  
+  <path id="library.gwt-incubator-20101117-r1766.classpath">
+    <pathelement location="${basedir}/lib/gwt_incubator/gwt-incubator-20101117-r1766.jar"/>
+  </path>
+  
+  <path id="library.gwtquery-1.5-beta1.classpath">
+    <pathelement location="${basedir}/lib/gwt_query/gwtquery-1.5-beta1.jar"/>
+  </path>
+  
+  <path id="library.impl.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-labs.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api-stubs.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-api.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/appengine-local-runtime.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/impl/google_sql.jar"/>
+  </path>
+  
+  <path id="library.json.classpath">
+    <pathelement location="${basedir}/lib/json/json.jar"/>
+  </path>
+  
+  <path id="library.jsp.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-el-8.0.9.M3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-8.0.9.M3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/apache-jsp-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/ecj-4.2.2.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/serializer.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-impl-1.2.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-jstlel-1.2.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/taglibs-standard-spec-1.2.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-annotations-api-8.0.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-el-api-8.0.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/tomcat-jsp-api-8.0.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jsp/xalan.jar"/>
+  </path>
+  
+  <path id="library.jsr305.classpath">
+    <pathelement location="${basedir}/lib/findbugs/jsr305.jar"/>
+  </path>
+  
+  <path id="library.junit-4.8.2.classpath">
+    <pathelement location="${basedir}/lib/junit/junit-4.8.2.jar"/>
+  </path>
+  
+  <path id="library.junit-addons-1.4.classpath">
+    <pathelement location="${basedir}/lib/junit-addons/junit-addons-1.4.jar"/>
+  </path>
+  
+  <path id="library.kawa-1.11-modified.classpath">
+    <pathelement location="${basedir}/lib/kawa/kawa-1.11-modified.jar"/>
+  </path>
+  
+  <path id="library.keyczar.classpath">
+    <pathelement location="${basedir}/lib/keyczar/KeyczarTool.jar"/>
+    <pathelement location="${basedir}/lib/keyczar/keyczar-0.66-080111-java-1.6.jar"/>
+  </path>
+  
+  <path id="library.lib.classpath">
+    <pathelement location="${basedir}/buildserver/lib/FastInfoset-1.2.2.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/activation-1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/asm-3.1.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/grizzly-servlet-webserver-1.9.18-i.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/http-20070405.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jackson-core-asl-1.9.4.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jaxb-api-2.1.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jaxb-impl-2.1.10.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jaxb-xjc.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jdom-1.0.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jersey-bundle-1.3.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jersey-multipart-1.3.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jettison-1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/jsr311-api-1.1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/localizer.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/mail-1.4.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/rome-0.9.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/stax-api-1.0-2.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/wadl-cmdline.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/wadl-core.jar"/>
+    <pathelement location="${basedir}/buildserver/lib/wadl2java.jar"/>
+  </path>
+  
+  <path id="library.lib1.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-remote-api.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/appengine-tools-api.jar"/>
+  </path>
+  
+  <path id="library.lib2.classpath">
+    <pathelement location="${basedir}/buildserver/build/run/lib/BuildServer.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/CommonUtils.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/CommonVersion.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/FastInfoset-1.2.2.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/activation-1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/args4j-2.0.18.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/asm-3.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/bcpkix-jdk15on-149.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/bcprov-jdk15on-149.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/commons-io-2.0.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/grizzly-servlet-webserver-1.9.18-i.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/guava-14.0.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/http-20070405.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jackson-core-asl-1.9.4.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jaxb-api-2.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jaxb-impl-2.1.10.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jaxb-xjc.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jdom-1.0.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jersey-bundle-1.3.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jersey-multipart-1.3.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jettison-1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/json.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/jsr311-api-1.1.1.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/localizer.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/mail-1.4.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/rome-0.9.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/sdklib.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/stax-api-1.0-2.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/wadl-cmdline.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/wadl-core.jar"/>
+    <pathelement location="${basedir}/buildserver/build/run/lib/wadl2java.jar"/>
+  </path>
+  
+  <path id="library.lib3.classpath">
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/AiServerLib.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/AiSharedLib.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/BlocksEditorHttpConstants.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/CommonConstants.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/CommonUtils.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/CommonVersion.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/appengine-api-1.0-sdk-1.9.46.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/appengine-api-labs-1.9.46.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/appengine-gcs-client-0.6.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/appengine-jsr107cache-1.9.46.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/commons-codec-1.7.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/commons-fileupload-1.2.2.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/datanucleus-appengine-1.0.10.final.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/datanucleus-core-1.1.5.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/datanucleus-jpa-1.1.5.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/firebase-token-generator-2.0.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-api-client-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-api-client-appengine-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-api-services-storage-v1-rev91-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-http-client-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-http-client-appengine-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-http-client-jackson-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/google-http-client-jackson2-1.22.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/gson-2.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/guava-20.0.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/gwt-servlet-deps.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/gwt-servlet.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/httpclient-4.0.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/jackson-core-2.1.3.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/jdo2-api-2.3-eb.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/joda-time-2.6.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/json.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/jsr107cache-1.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/jsr305.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/keyczar-0.66-080111-java-1.6.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/libservice.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/log4j-1.2.16.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/objectify-3.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/owasp-java-html-sanitizer-20160628.1.jar"/>
+    <pathelement location="${basedir}/appengine/build/war/WEB-INF/lib/protobuf-2.6.1.jar"/>
+  </path>
+  
+  <path id="library.lib4.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-annotations-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-client-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-continuation-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-deploy-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-http-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-io-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-jndi-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-plus-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-quickstart-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-security-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-server-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlet-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-servlets-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-util-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-webapp-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/jetty-xml-9.2.10.v20150310.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/java-managed-vm/appengine-java-vmruntime/lib/tomcat-servlet-api-8.0.5.jar"/>
+  </path>
+  
+  <path id="library.oauth.classpath">
+    <pathelement location="${basedir}/lib/oauth/google-api-client-1.10.3-beta.jar"/>
+    <pathelement location="${basedir}/lib/oauth/google-api-client-android2-1.10.3-beta.jar"/>
+    <pathelement location="${basedir}/lib/oauth/google-http-client-1.10.3-beta.jar"/>
+    <pathelement location="${basedir}/lib/oauth/google-http-client-android2-1.10.3-beta.jar"/>
+    <pathelement location="${basedir}/lib/oauth/google-http-client-android3-1.10.3-beta.jar"/>
+    <pathelement location="${basedir}/lib/oauth/google-oauth-client-1.10.1-beta.jar"/>
+  </path>
+  
+  <path id="library.objectify-3.1.classpath">
+    <pathelement location="${basedir}/lib/objectify-3.1/objectify-3.1.jar"/>
+  </path>
+  
+  <path id="library.orm.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-appengine-1.0.10.final.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-core-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/datanucleus-jpa-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/orm/jdo2-api-2.3-eb.jar"/>
+  </path>
+  
+  <path id="library.orm1.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/asm-5.0.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-core-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-enhancer-1.1.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/datanucleus-jpa-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/geronimo-jta_1.1_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/tools/orm/jdo2-api-2.3-eb.jar"/>
+  </path>
+  
+  <path id="library.owasp-java-html-sanitizer-20160628.1.classpath">
+    <pathelement location="${basedir}/lib/owasp/owasp-java-html-sanitizer-20160628.1.jar"/>
+  </path>
+  
+  <path id="library.plovr-eba786b34df9.classpath">
+    <pathelement location="${basedir}/lib/plovr/plovr-eba786b34df9.jar"/>
+  </path>
+  
+  <path id="library.powermock.classpath">
+    <pathelement location="${basedir}/lib/powermock/cglib-nodep-2.2.jar"/>
+    <pathelement location="${basedir}/lib/powermock/easymock-3.0.jar"/>
+    <pathelement location="${basedir}/lib/powermock/javassist-3.18.0-GA.jar"/>
+    <pathelement location="${basedir}/lib/powermock/objenesis-1.2.jar"/>
+    <pathelement location="${basedir}/lib/powermock/powermock-easymock-1.4.10-full.jar"/>
+  </path>
+  
+  <path id="library.qrgenerator.classpath">
+    <pathelement location="${basedir}/lib/QRGenerator/core.jar"/>
+    <pathelement location="${basedir}/lib/QRGenerator/javase.jar"/>
+  </path>
+  
+  <path id="library.responderiq-test.classpath">
+    <pathelement location="${basedir}/lib/responder-iq/responderiq-test.jar"/>
+  </path>
+  
+  <path id="library.shared.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/appengine-local-runtime-shared.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/el-api.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/jsp-api.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/shared/servlet-api.jar"/>
+  </path>
+  
+  <path id="library.soy.classpath">
+    <pathelement location="${basedir}/lib/blockly/demos/plane/soy/SoyMsgExtractor.jar"/>
+    <pathelement location="${basedir}/lib/blockly/demos/plane/soy/SoyToJsSrcCompiler.jar"/>
+  </path>
+  
+  <path id="library.tl4j-junit4-1.1.3.classpath">
+    <pathelement location="${basedir}/lib/junit4/tl4j-junit4-1.1.3.jar"/>
+  </path>
+  
+  <path id="library.tools.classpath">
+    <pathelement location="${basedir}/lib/android/tools/ddmlib.jar"/>
+    <pathelement location="${basedir}/lib/android/tools/ddmlib_2.2.jar"/>
+    <pathelement location="${basedir}/lib/android/tools/dx.jar"/>
+    <pathelement location="${basedir}/lib/android/tools/sdklib.jar"/>
+  </path>
+  
+  <path id="library.twitter.classpath">
+    <pathelement location="${basedir}/lib/twitter/twitter4j-core-3.0.5.jar"/>
+    <pathelement location="${basedir}/lib/twitter/twitter4j-media-support-3.0.5.jar"/>
+  </path>
+  
+  <path id="library.user.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-1.0-sdk-1.9.46.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-api-labs-1.9.46.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/appengine-jsr107cache-1.9.46.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/jsr107cache-1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/user/libservice.jar"/>
+  </path>
+  
+  <path id="library.v1.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-appengine-1.0.10.final.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-core-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/datanucleus-jpa-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v1/jdo2-api-2.3-eb.jar"/>
+  </path>
+  
+  <path id="library.v11.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/asm-5.0.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-core-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-enhancer-1.1.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/datanucleus-jpa-1.1.5.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/geronimo-jta_1.1_spec-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v1/jdo2-api-2.3-eb.jar"/>
+  </path>
+  
+  <path id="library.v13.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints-deps.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/appengine-endpoints/v1/appengine-endpoints.jar"/>
+  </path>
+  
+  <path id="library.v2.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/asm-5.0.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-appengine-2.1.2.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/datanucleus-core-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jdo-api-3.0.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/user/datanucleus/v2/jta-1.1.jar"/>
+  </path>
+  
+  <path id="library.v21.classpath">
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/asm-5.0.4.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jdo-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-api-jpa-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-core-3.1.3.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/datanucleus-enhancer-3.1.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/geronimo-jpa_2.0_spec-1.0.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jdo-api-3.0.1.jar"/>
+    <pathelement location="${basedir}/lib/appengine/appengine-java-sdk-1.9.46/lib/opt/tools/datanucleus/v2/jta-1.1.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  <import file="${basedir}/aimerger/module_aimerger.xml"/>
+  
+  <import file="${basedir}/aimerger_for_appinv_classic/module_aimerger_for_appinv_classic.xml"/>
+  
+  <import file="${basedir}/common/build/module_build.xml"/>
+  
+  <import file="${basedir}/components/build/classes/module_classes.xml"/>
+  
+  <import file="${basedir}/common/module_common.xml"/>
+  
+  <import file="${basedir}/build/components/ComponentTranslation/module_componenttranslation.xml"/>
+  
+  <import file="${basedir}/components/module_components.xml"/>
+  
+  <import file="${basedir}/appengine/module_appengine.xml"/>
+  
+  <import file="${basedir}/blocklyeditor/module_blocklyeditor.xml"/>
+  
+  <import file="${basedir}/buildserver/module_buildserver.xml"/>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.aimerger, clean.module.aimerger_for_appinv_classic, clean.module.build, clean.module.classes, clean.module.common, clean.module.componenttranslation, clean.module.components, clean.module.appengine, clean.module.blocklyeditor, clean.module.buildserver" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.aimerger, compile.module.aimerger_for_appinv_classic, compile.module.build, compile.module.classes, compile.module.common, compile.module.componenttranslation, compile.module.components, compile.module.appengine, compile.module.blocklyeditor, compile.module.buildserver" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>

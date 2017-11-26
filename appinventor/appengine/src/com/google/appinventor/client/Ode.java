@@ -55,6 +55,8 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService;
+import com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthServiceAsync;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
 import com.google.appinventor.shared.rpc.GetMotdService;
@@ -265,6 +267,9 @@ public class Ode implements EntryPoint {
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
+
+  //Web service for CloudDB authentication operations
+  private final CloudDBAuthServiceAsync cloudDBAuthService = GWT.create(CloudDBAuthService.class);
 
   private boolean windowClosing;
 
@@ -1352,6 +1357,15 @@ public class Ode implements EntryPoint {
    */
   public ComponentServiceAsync getComponentService() {
     return componentService;
+  }
+
+  /**
+   * Get an instance of the CloudDBAuth web service.
+   *
+   * @return CloudDBAuth web service instance
+   */
+  public CloudDBAuthServiceAsync getCloudDBAuthService(){
+    return cloudDBAuthService;
   }
 
   /**

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_aimerger" default="compile.module.aimerger">
+  <dirname property="module.aimerger.basedir" file="${ant.file.module_aimerger}"/>
+  
+  <property name="module.jdk.home.aimerger" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.aimerger" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.aimerger" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.aimerger" value="-encoding UTF-8 -source 1.7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="aimerger.output.dir" value="${module.aimerger.basedir}/../out/production/aimerger"/>
+  <property name="aimerger.testoutput.dir" value="${module.aimerger.basedir}/../out/test/aimerger"/>
+  
+  <path id="aimerger.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="aimerger.module.production.classpath">
+    <path refid="${module.jdk.classpath.aimerger}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger.runtime.production.module.classpath">
+    <pathelement location="${aimerger.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger.module.classpath">
+    <path refid="${module.jdk.classpath.aimerger}"/>
+    <pathelement location="${aimerger.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  <path id="aimerger.runtime.module.classpath">
+    <pathelement location="${aimerger.testoutput.dir}"/>
+    <pathelement location="${aimerger.output.dir}"/>
+    <path refid="library.android.classpath"/>
+    <path refid="library.files.classpath"/>
+    <path refid="library.android1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.aimerger">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.aimerger">
+    <patternset refid="excluded.from.module.aimerger"/>
+  </patternset>
+  
+  <path id="aimerger.module.sourcepath">
+    <dirset dir="${module.aimerger.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.aimerger" depends="compile.module.aimerger.production,compile.module.aimerger.tests" description="Compile module aimerger"/>
+  
+  <target name="compile.module.aimerger.production" depends="register.custom.compilers" description="Compile module aimerger; production classes">
+    <mkdir dir="${aimerger.output.dir}"/>
+    <javac2 destdir="${aimerger.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.aimerger}/javac">
+      <compilerarg line="${compiler.args.aimerger}"/>
+      <bootclasspath refid="aimerger.module.bootclasspath"/>
+      <classpath refid="aimerger.module.production.classpath"/>
+      <src refid="aimerger.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.aimerger"/>
+    </javac2>
+    
+    <copy todir="${aimerger.output.dir}">
+      <fileset dir="${module.aimerger.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.aimerger.tests" depends="register.custom.compilers,compile.module.aimerger.production" description="compile module aimerger; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.aimerger" description="cleanup module">
+    <delete dir="${aimerger.output.dir}"/>
+    <delete dir="${aimerger.testoutput.dir}"/>
+  </target>
+</project>

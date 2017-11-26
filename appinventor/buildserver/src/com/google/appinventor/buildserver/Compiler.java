@@ -54,6 +54,7 @@ import javax.imageio.ImageIO;
  *
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
+ * @author joymitro1989@gmail.com(Joydeep Mitra)
  *
  * [Will 2016/9/20, Refactored {@link #writeAndroidManifest(File)} to
  *   accomodate the new annotations for adding <activity> and <receiver>
@@ -79,6 +80,8 @@ public final class Compiler {
 
   // Copied from SdkLevel.java (which isn't in our class path so we duplicate it here)
   private static final String LEVEL_GINGERBREAD_MR1 = "10";
+
+  private static final String LEVEL_ICECREAM_SANDWICH = "14";
 
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
@@ -137,6 +140,14 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String SIMPLE_ANDROID_RUNTIME_JAR =
       RUNTIME_FILES_DIR + "AndroidRuntime.jar";
+  private static final String ANDROID_SUPPORT_RUNTIME_JAR =
+      RUNTIME_FILES_DIR + "android-support-v4.jar";
+  private static final String ANDROID_JOB_JAR =
+      RUNTIME_FILES_DIR + "android-job.jar";
+  private static final String CATLOG_JAR =
+      RUNTIME_FILES_DIR + "catlog.jar";
+  private static final String ANDROID_SUPPORT_INTERNAL_JAR =
+      RUNTIME_FILES_DIR + "internal_impl.jar";
 
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
@@ -474,6 +485,11 @@ public final class Compiler {
         minSDK = LEVEL_GINGERBREAD_MR1;
       }
 
+      // Evernote requires at least API 14 (ICE CREAM SANDWICH)
+      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.SyncScheduler") && !isForCompanion) {
+        minSDK = LEVEL_ICECREAM_SANDWICH;
+      }
+
       // make permissions unique by putting them in one set
       Set<String> permissions = Sets.newHashSet();
       for (Set<String> compPermissions : permissionsNeeded.values()) {
@@ -609,11 +625,36 @@ public final class Compiler {
         if (brNameAndActions.length > 1){
           out.write("  <intent-filter>\n");
           for (int i = 1; i < brNameAndActions.length; i++) {
-            out.write("    <action android:name=\"" + brNameAndActions[i] + "\" />\n");
+            out.write("   <action android:name=\"" + brNameAndActions[i] + "\" />\n");
           }
           out.write("  </intent-filter>\n");
         }
         out.write("</receiver> \n");
+      }
+
+      /*
+        added for the evernote job scheduler library by Joydeep Mitra
+      */
+      if(simpleCompTypes.contains("com.google.appinventor.components.runtime.CloudDB")){
+        out.write("<service \n");
+        out.write("   android:name=\"com.evernote.android.job.v21.PlatformJobService\"\n");
+        out.write("   android:exported=\"false\"\n");
+        out.write("   android:permission=\"android.permission.BIND_JOB_SERVICE\" />\n");
+        out.write("<service \n");
+        out.write("   android:name=\"com.evernote.android.job.v14.PlatformAlarmService\"\n");
+        out.write("   android:exported=\"false\" />\n");
+        out.write("<service \n");
+        out.write("   android:name=\"com.evernote.android.job.gcm.PlatformGcmService\"\n");
+        out.write("   android:exported=\"false\"\n");
+        out.write("   android:enabled=\"false\"\n");
+        out.write("   android:permission=\"com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE\" >\n");
+        out.write("       <intent-filter>\n");
+        out.write("           <action android:name=\"com.google.android.gms.gcm.ACTION_TASK_READY\" />\n");
+        out.write("       </intent-filter>\n");
+        out.write("</service>\n");
+        out.write("<service \n");
+        out.write("   android:name=\"com.evernote.android.job.JobRescheduleService\"\n");
+        out.write("   android:exported=\"false\" />\n");
       }
 
       out.write("  </application>\n");
@@ -932,6 +973,14 @@ public final class Compiler {
       classpath.append(COLON);
       classpath.append(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
       classpath.append(COLON);
+      classpath.append(getResource(ANDROID_SUPPORT_RUNTIME_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(ANDROID_JOB_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(CATLOG_JAR));
+      classpath.append(COLON);
+      classpath.append(getResource(ANDROID_SUPPORT_INTERNAL_JAR));
+      classpath.append(COLON);
 
       // attach the jars of external comps
       Set<String> addedExtJars = new HashSet<String>();
@@ -949,7 +998,6 @@ public final class Compiler {
         for (String lib : libsNeeded.get(type)) {
           String sourcePath = "";
           String pathSuffix = RUNTIME_FILES_DIR + lib;
-
           if (simpleCompTypes.contains(type)) {
             sourcePath = getResource(pathSuffix);
           } else if (extCompTypes.contains(type)) {
@@ -1166,6 +1214,10 @@ public final class Compiler {
     inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
+    inputList.add(new File(getResource(ANDROID_SUPPORT_RUNTIME_JAR)));
+    inputList.add(new File(getResource(ANDROID_JOB_JAR)));
+    inputList.add(new File(getResource(CATLOG_JAR)));
+    inputList.add(new File(getResource(ANDROID_SUPPORT_INTERNAL_JAR)));
 
     for (String lib : uniqueLibsNeeded) {
       libList.add(new File(lib));
@@ -1395,7 +1447,7 @@ public final class Compiler {
    *
    * @param resourcePath the name of the resource
    */
-  static synchronized String getResource(String resourcePath) {
+  static synchronized String  getResource(String resourcePath) {
     try {
       File file = resources.get(resourcePath);
       if (file == null) {
