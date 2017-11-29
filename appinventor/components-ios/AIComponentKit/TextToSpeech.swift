@@ -72,6 +72,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     _countryCode = TextToSpeech.ISO_COUNTRY_2_TO_3[_countryCode2] ?? "USA"
     super.init(parent)
     _tts.delegate = self
+    SpeechRate = 1.0
   }
 
   // MARK: Properties
@@ -91,18 +92,20 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     }
   }
 
-  open var SpeechRate: Float {
+  //MARK: Transformed SpeechRate. The below function maps an input of [0, 2] to [.19, .68], half-speed to double-speed (roughly). Speeds < .2 are virtually the same, and speeds > .62 are difficult to understand.
+  open var SpeechRate: Float32 {
     get {
       return _speechRate
     }
     set(speechRate) {
-      var speechRate = speechRate
-      if (speechRate < AVSpeechUtteranceMinimumSpeechRate) {
-        speechRate = AVSpeechUtteranceMinimumSpeechRate
-      } else if (speechRate > AVSpeechUtteranceMaximumSpeechRate) {
-        speechRate = AVSpeechUtteranceMaximumSpeechRate
+      let speechRate = speechRate > 2 ? 2: speechRate
+      if speechRate <= 0 {
+        _speechRate = 0.19
+      } else if speechRate < 0.8 {
+        _speechRate = (0.635 * speechRate + 0.7092) / 2.8076
+      } else {
+        _speechRate = (0.85 * speechRate + 1.4645) / 4.7226
       }
-      _speechRate = speechRate
     }
   }
 
