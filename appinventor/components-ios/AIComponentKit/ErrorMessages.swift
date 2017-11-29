@@ -20,6 +20,8 @@ public enum ErrorMessage: Int, Error {
   case ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107
   
   // Web Errors
+  case ERROR_WEB_UNSUPPORTED_ENCODING = 1102
+  case ERROR_WEB_MALFORMED_URL = 1109
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
   
@@ -62,6 +64,10 @@ public enum ErrorMessage: Int, Error {
       return "The software used in this app cannot extract contacts from this type of phone."
       
     // Web Errors
+    case .ERROR_WEB_UNSUPPORTED_ENCODING:
+      return "The encoding %s is not supported."
+    case .ERROR_WEB_MALFORMED_URL:
+      return "The given URL was not valid."
     case .ERROR_WEB_REQUEST_HEADER_NOT_LIST:
       return "The specified request headers are not valid: element %s is not a list"
     case .ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS:

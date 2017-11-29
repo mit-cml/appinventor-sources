@@ -152,7 +152,9 @@
 				06EC0A1A1D959648001CD8DC /* Frameworks */,
 				9F048C59E0A8D7BC18969732 /* Pods */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		06463EF91D95956800B23DCD /* Products */ = {
 			isa = PBXGroup;
