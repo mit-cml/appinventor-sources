@@ -47,11 +47,13 @@ public final class TextValidators {
    * @param projectName the project name to validate
    * @return {@code true} if the project name is valid, {@code false} otherwise
    */
-  public static boolean checkNewProjectName(String projectName) {
+  public static boolean checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
     if (!isValidIdentifier(projectName)) {
-      Window.alert(MESSAGES.malformedProjectNameError());
+      if (!quietly) {
+        Window.alert(MESSAGES.malformedProjectNameError());
+      }
       return false;
     }
 
@@ -65,13 +67,17 @@ public final class TextValidators {
     if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
       if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
-      } else {
+      } else if (!quietly) {
         Window.alert(MESSAGES.duplicateProjectNameError(projectName));
       }
       return false;
     }
 
     return true;
+  }
+
+  public static boolean checkNewProjectName(String projectName) {
+    return checkNewProjectName(projectName, false);
   }
 
   public static boolean checkNewComponentName(String componentName) {
