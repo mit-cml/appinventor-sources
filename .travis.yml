@@ -6,10 +6,11 @@ before_install:
 
 install: cd appinventor && ant MakeAuthKey
 
-script: ant
+script: ant noplay
 
 after_success: 
-  - ant PlayApp && sudo ant clean
+  - ant PlayApp
+  - sudo ant clean
 
 after_failure: sudo ant clean
 
