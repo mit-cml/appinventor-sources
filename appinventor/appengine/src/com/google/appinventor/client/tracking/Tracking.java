@@ -39,8 +39,6 @@ public class Tracking {
       "DownloadFile-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA =
       PROJECT_ACTION_PREFIX + "DownloadAllProjectsSource-YA";
-  public static final String PROJECT_ACTION_RENAME_YA = PROJECT_ACTION_PREFIX +
-      "Rename-YA";
   public static final String PROJECT_ACTION_SAVE_YA = PROJECT_ACTION_PREFIX +
       "Save-YA";
   public static final String PROJECT_ACTION_SAVE_AS_YA = PROJECT_ACTION_PREFIX +

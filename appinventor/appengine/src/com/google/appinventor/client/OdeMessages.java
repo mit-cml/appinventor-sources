@@ -463,10 +463,6 @@ public interface OdeMessages extends Messages {
   @Description("Name of Delete project menuitem")
   String deleteProjectMenuItem();
 
-  @DefaultMessage("Rename project")
-  @Description("Name of Rename menuitem")
-  String renameProjectMenuItem();
-
   @DefaultMessage("Save project")
   @Description("Name of Save menuitem")
   String saveMenuItem();
@@ -1420,10 +1416,6 @@ public interface OdeMessages extends Messages {
   String downloadFileCommand();
 
   // Used in explorer/commands/CopyYoungAndroidProjectCommand.java
-
-  @DefaultMessage("Rename - {0}")
-  @Description("Title of rename dialog.")
-  String renameProjectTitle(String projectName);
 
   @DefaultMessage("Checkpoint - {0}")
   @Description("Title of checkpoint dialog.")

@@ -74,7 +74,6 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
-  private static final String WIDGET_NAME_RENAME = "Rename";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
   private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
   private static final String WIDGET_NAME_BUILD = "Build";
@@ -172,8 +171,6 @@ public class TopToolbar extends Composite {
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
           new DeleteAction()));
       fileItems.add(null);
-      fileItems.add(new DropDownItem(WIDGET_NAME_RENAME, MESSAGES.renameProjectMenuItem(),
-          new RenameProjectAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
           new SaveAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
@@ -328,24 +325,6 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private class RenameProjectAction implements Command {
-    @Override
-    public void execute() {
-      final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new CopyYoungAndroidProjectCommand(CopyYoungAndroidProjectCommand.MODE_RENAME, new Runnable(){
-              @Override
-              public void run() {
-                new DeleteAction(projectRootNode, true).execute();
-              }
-            })
-        );
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_RENAME_YA, projectRootNode);
-      }
-    }
-  }
-
   private class SaveAction implements Command {
     @Override
     public void execute() {
@@ -363,7 +342,7 @@ public class TopToolbar extends Composite {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new CopyYoungAndroidProjectCommand(CopyYoungAndroidProjectCommand.MODE_SAVE_AS, null));
+            new CopyYoungAndroidProjectCommand(false));
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_AS_YA, projectRootNode);
       }
     }
@@ -375,7 +354,7 @@ public class TopToolbar extends Composite {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new CopyYoungAndroidProjectCommand(CopyYoungAndroidProjectCommand.MODE_CHECKPOINT, null));
+            new CopyYoungAndroidProjectCommand(true));
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_CHECKPOINT_YA, projectRootNode);
       }
     }
@@ -541,29 +520,17 @@ public class TopToolbar extends Composite {
   }
 
   private static class DeleteAction implements Command {
-    private final ProjectRootNode projectRootNode;
-    private final boolean mute;
-
-    public DeleteAction(){
-      this(null, false);
-    }
-
-    public DeleteAction(ProjectRootNode projectRootNode, boolean mute){
-      this.projectRootNode=projectRootNode;
-      this.mute=mute;
-    }
-
     @Override
     public void execute() {
       Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
         @Override
         public void execute() {
-          if (Ode.getInstance().getCurrentView() == Ode.PROJECTS && projectRootNode==null) {
+          if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
             List<Project> selectedProjects =
                 ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
             if (selectedProjects.size() > 0) {
               // Show one confirmation window for selected projects.
-              if (mute || deleteConfirmation(selectedProjects)) {
+              if (deleteConfirmation(selectedProjects)) {
                 for (Project project : selectedProjects) {
                   deleteProject(project);
                 }
@@ -575,10 +542,9 @@ public class TopToolbar extends Composite {
             }
           } else { //We are deleting a project in the designer view
             List<Project> selectedProjects = new ArrayList<Project>();
-            long projectId = projectRootNode==null ? Ode.getInstance().getCurrentYoungAndroidProjectId() : projectRootNode.getProjectId();
-            Project currentProject = Ode.getInstance().getProjectManager().getProject(projectId);
+            Project currentProject = Ode.getInstance().getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
             selectedProjects.add(currentProject);
-            if (mute || deleteConfirmation(selectedProjects)) {
+            if (deleteConfirmation(selectedProjects)) {
               deleteProject(currentProject);
               //Add the command to stop this current project from saving
               Ode.getInstance().switchToProjectsView();
