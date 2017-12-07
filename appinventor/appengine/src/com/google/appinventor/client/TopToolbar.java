@@ -13,6 +13,7 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
+import com.google.appinventor.client.explorer.commands.RenameYoungAndroidProjectCommand;
 import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -74,6 +75,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
+  private static final String WIDGET_NAME_RENAME = "Rename";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
   private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
   private static final String WIDGET_NAME_BUILD = "Build";
@@ -171,6 +173,8 @@ public class TopToolbar extends Composite {
       fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
           new DeleteAction()));
       fileItems.add(null);
+      fileItems.add(new DropDownItem(WIDGET_NAME_RENAME, MESSAGES.renameProjectMenuItem(),
+          new RenameProjectAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
           new SaveAction()));
       fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
@@ -322,6 +326,18 @@ public class TopToolbar extends Composite {
       new NewYoungAndroidProjectWizard(null).center();
       // The wizard will switch to the design view when the new
       // project is created.
+    }
+  }
+
+  private class RenameProjectAction implements Command {
+    @Override
+    public void execute() {
+      final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+      if (projectRootNode != null) {
+        ChainableCommand cmd = new SaveAllEditorsCommand(
+            new RenameYoungAndroidProjectCommand());
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_RENAME_YA, projectRootNode);
+      }
     }
   }
 

@@ -79,6 +79,13 @@ public interface ProjectService extends RemoteService {
   void deleteProject(long projectId);
 
   /**
+   * Rename a project.
+   * @param projectId  project ID
+   * @param newName  new name of project
+   */
+  UserProject renameProject(long projectId, String newName);
+
+  /**
    * On publish this sets the project's gallery id
    * @param projectId  project ID
    * @param galleryId  gallery ID

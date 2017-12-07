@@ -463,6 +463,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Delete project menuitem")
   String deleteProjectMenuItem();
 
+  @DefaultMessage("Rename project")
+  @Description("Name of Rename menuitem")
+  String renameProjectMenuItem();
+
   @DefaultMessage("Save project")
   @Description("Name of Save menuitem")
   String saveMenuItem();
@@ -1417,6 +1421,10 @@ public interface OdeMessages extends Messages {
 
   // Used in explorer/commands/CopyYoungAndroidProjectCommand.java
 
+  @DefaultMessage("Rename - {0}")
+  @Description("Title of rename dialog.")
+  String renameProjectTitle(String projectName);
+
   @DefaultMessage("Checkpoint - {0}")
   @Description("Title of checkpoint dialog.")
   String checkpointTitle(String projectName);
@@ -1444,6 +1452,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not copy project. Please try again later!")
   @Description("Error message reported when copying a project failed on the server.")
   String copyProjectError();
+
+  @DefaultMessage("Server error: could not rename project. Please try again later!")
+  @Description("Error message reported when renaming a project failed on the server.")
+  String renameProjectError();
 
   // Used in explorer/commands/DeleteFileCommand.java
 
