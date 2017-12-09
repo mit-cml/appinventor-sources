@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-@interface SCMMethod : NSObject
+@interface SCMMethod : NSObject<NSCopying>
 
 - (instancetype)initWithMethod:(Method)method forClass:(Class)clazz isStatic:(BOOL)isStatic;
 - (NSInvocation *)unboundInvocation;

@@ -79,6 +79,10 @@
   return invocation;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
+}
+
 @synthesize yailName = _yailName;
 
 @end

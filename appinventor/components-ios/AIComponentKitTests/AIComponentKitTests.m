@@ -70,7 +70,7 @@
   }
   [interpreter evalForm:@"(add-component Screen1 com.google.appinventor.components.runtime.Label Label1)"];
   [interpreter evalForm:@"(set-and-coerce-property! 'Label1 'FontSize 30 'number)"];
-  Label *label = form.components[0];
+  Label *label = (Label *) form.components[0];
   XCTAssertEqual(30.0, ((UILabel *) label.view).font.pointSize);
 }
 
