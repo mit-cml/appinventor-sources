@@ -84,7 +84,7 @@ Blockly.Msg.zh.switch_language_to_chinese_tw = {
     + "</p><p>退出MIT App Inventor時，程式方塊將留在背包中，並保存到您下次登入。"
     + "</p><p>想要了解更多有關背包的介紹，請參考："
     + '</p><p><a href="http://ai2.appinventor.mit.edu/reference/other/backpack.html" target="_blank">http://ai2.appinventor.mit.edu/reference/other/backpack.html</a>';
-fafa
+
 // Variable renaming.
     Blockly.MSG_CHANGE_VALUE_TITLE = '修改數值:';
     Blockly.MSG_NEW_VARIABLE = '新增變數...';
@@ -187,7 +187,7 @@ fafa
     Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' 範圍內的';
     Blockly.Msg.LANG_CONTROLS_FORRANGE_TOOLTIP = '按指定範圍和增量依序取值';
 	+ '每次循環均將數值賦予指定變數，'
-	+ '並執行「執行」區段中的程式方塊'';
+	+ '並執行「執行」區段中的程式方塊';
 
     Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#foreach';
     Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM = '對於任意';
