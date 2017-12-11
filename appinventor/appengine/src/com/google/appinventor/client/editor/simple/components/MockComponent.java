@@ -48,9 +48,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -258,7 +258,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         case Event.ONKEYDOWN:
           if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
             hide();
-          }else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+          } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
             hide();
             MockComponent.this.delete();
           }
