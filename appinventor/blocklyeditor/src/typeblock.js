@@ -185,11 +185,6 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       case 123: // F12
         return;
     }
-    if (37 <= e.keyCode && e.keyCode <= 40) {
-      // TODO: try to add block.moveBy
-      // LEFT:37, UP:38, RIGHT:39, DOWN:40
-      return;
-    }
     if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) {
       // Enter in the panel makes it select an option
       if (e.keyCode === 13) {
