@@ -141,7 +141,6 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     // Don't steal input from Blockly fields.
     if (e.target != this.ac_.getTarget() &&
       (e.target.tagName == 'INPUT' || e.target.tagName == 'TEXTAREA')) return;
-    if (e.altKey || e.ctrlKey || e.metaKey || e.keyCode === 9) return; // 9 is tab
     //We need to duplicate delete handling here from blockly.js
     if (e.keyCode === 8 || e.keyCode === 46) {
       // Delete or backspace.
@@ -158,6 +157,33 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       Blockly.mainWorkspace.getParentSvg().parentNode.focus();  // refocus workspace div
       Blockly.mainWorkspace.hideChaff();
       return;
+    }
+    switch (e.keyCode) {
+      case 9:   // Tab
+      case 16:  // Enter
+      case 17:  // Ctrl
+      case 18:  // Alt
+      case 19:  // Home
+      case 20:  // Caps Lock
+      case 33:  // PageUp
+      case 34:  // PageDown
+      case 35:  // Shift
+      case 36:  // End
+      case 45:  // Ins
+      case 91:  // Meta
+      case 112: // F1
+      case 113: // F2
+      case 114: // F3
+      case 115: // F4
+      case 116: // F5
+      case 117: // F6
+      case 118: // F7
+      case 119: // F8
+      case 120: // F9
+      case 121: // F10
+      case 122: // F11
+      case 123: // F12
+        return;
     }
     if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) {
       // Enter in the panel makes it select an option
