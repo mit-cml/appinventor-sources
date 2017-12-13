@@ -427,6 +427,10 @@ open class Form: UIKit.UIViewController, Component, ComponentContainer, HandlesE
     // TODO: Implementation
   }
 
+  open func dispatchErrorOccurredEventObjC(_ component: Component, _ functionNames: String, _ errorNumber: Int32, _ messageArgs: [AnyObject]) {
+    // TODO: Implementation
+  }
+
   open func dispatchErrorOccurredEventDialog(_ component: Component, _ functionName: String, _ errorNumber: Int32, _ messageArgs: Any...) {
     // TODO: Implementation
   }

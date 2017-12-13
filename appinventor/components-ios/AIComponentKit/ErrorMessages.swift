@@ -7,7 +7,7 @@ import Foundation
  * `case ERROR_NAME = code`
  * (code is now the error's rawValue)
  */
-public enum ErrorMessage: Int, Error {
+@objc public enum ErrorMessage: Int, Error {
   // ActivityStarter Errors
   case ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601
   case ERROR_ACTIVITY_STARTER_NO_ACTION_INFO = 602
@@ -24,7 +24,10 @@ public enum ErrorMessage: Int, Error {
   case ERROR_WEB_MALFORMED_URL = 1109
   case ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110
   case ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111
-  
+
+  // Repl Communication Errors
+  case ERROR_REPL_SECURITY_ERROR = 1801
+
   // AccelerometerSensor Errors
   case ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901
   
@@ -72,7 +75,10 @@ public enum ErrorMessage: Int, Error {
       return "The specified request headers are not valid: element %s is not a list"
     case .ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS:
       return "The specified request headers are not valid: element %s does not contain two elements"
-      
+
+    case .ERROR_REPL_SECURITY_ERROR:
+      return "Security Error Receiving Blocks from Browser: %@."
+
     // AccelerometerSensor Errors
     case .ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY:
       return "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. The only legal values are 1, 2, or 3."

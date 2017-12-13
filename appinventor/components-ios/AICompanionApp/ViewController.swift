@@ -31,7 +31,7 @@ public class ViewController: UINavigationController {
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
   var barcodeScanner: BarcodeScanner?
-//  var httpd: AppInvHTTPD?
+  var phoneStatus: PhoneStatus!
 
   public override func viewDidLoad() {
     super.viewDidLoad()
@@ -49,6 +49,7 @@ public class ViewController: UINavigationController {
       let repl = form as! ReplForm
       repl.startHTTPD(false)
       repl.interpreter?.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
+      phoneStatus = PhoneStatus(repl)
       if let exception = repl.interpreter?.exception {
         NSLog("Exception: \(exception.name) (\(exception))")
       }
@@ -113,7 +114,7 @@ public class ViewController: UINavigationController {
   }
   
   func connect(_ sender: UIButton?) {
-    let code = (connectCode?.text?.sha1)!
+    let code = phoneStatus.setHmacSeedReturnCode((connectCode?.text)!)
     NSLog("Seed = \((connectCode?.text)!)")
     NSLog("Code = \(code)")
     let url = URL(string: "http://rendezvous.appinventor.mit.edu/rendezvous/");

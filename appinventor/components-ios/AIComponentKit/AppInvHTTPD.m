@@ -11,6 +11,7 @@
 #import <GCDWebServer/GCDWebServerDataRequest.h>
 #import <GCDWebServer/GCDWebServerURLEncodedFormRequest.h>
 #import <AIComponentKit/AIComponentKit-Swift.h>
+#import <CommonCrypto/CommonCrypto.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <SchemeKit/SchemeKit.h>
 #import "RetValManager.h"
@@ -18,6 +19,14 @@
 #include <netinet/in.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+
+static NSString *stringFromResult(unsigned char *result, int length) {
+  NSMutableString *hash = [[NSMutableString alloc] initWithCapacity:2*length];
+  for (int i = 0; i < length; i++) {
+    [hash appendFormat:@"%02x", result[i]];
+  }
+  return [hash copy];
+}
 
 @interface AppInvHTTPD() {
  @private
@@ -102,8 +111,58 @@ static NSString *kMimeJson = @"application/json";
 
 - (GCDWebServerResponse *)newblocks:(GCDWebServerURLEncodedFormRequest *)request {
   if ([request hasBody]) {
+    int iseq = request.arguments[@"seq"] ? ((NSString *)request.arguments[@"seq"]).intValue : 0;
     NSString *yail = request.arguments[@"code"];
     NSString *blockid = request.arguments[@"blockid"];
+    NSString *inMac = request.arguments[@"mac"] ? request.arguments[@"mac"] : @"no key provided";
+    if (_hmacKey) {
+      // Compute the updated HMAC
+      CCHmacContext context;
+      unsigned char *buf = malloc(CC_SHA1_DIGEST_LENGTH);
+      CCHmacInit(&context, kCCHmacAlgSHA1, [_hmacKey cStringUsingEncoding:NSUTF8StringEncoding], _hmacKey.length);
+      NSString *intermediate = [NSString stringWithFormat:@"%@%d%@", yail, iseq, blockid];
+      const char *cstr = [intermediate cStringUsingEncoding:NSUTF8StringEncoding];
+      CCHmacUpdate(&context, cstr, strlen(cstr));
+      CCHmacFinal(&context, buf);
+      NSString *compMac = stringFromResult(buf, CC_SHA1_DIGEST_LENGTH);
+      free(buf);
+
+      // Logging
+      NSLog(@"Incoming Mac = %@", inMac);
+      NSLog(@"Computed Mac = %@", compMac);
+      NSLog(@"Incoming Seq = %d", iseq);
+      NSLog(@"Computed Seq = %d", _hmacSeq);
+      NSLog(@"blockid = %@", blockid);
+
+      // Does our HMAC match what the browser sends?
+      if (![inMac isEqualToString:compMac]) {
+        NSLog(@"HMAC does not match");
+        [_form dispatchErrorOccurredEventObjC:_form :@"AppInvHTTPD"
+                                             :ErrorMessageERROR_REPL_SECURITY_ERROR
+                                             :@[@"Invalid HMAC"]];
+        return [self error:@"Security Error: Invalid MAC"];
+      }
+
+      // Does the sequence match?
+      if ((_hmacSeq != iseq) && (_hmacSeq != iseq+1)) {
+        NSLog(@"Seq does not match");
+        [_form dispatchErrorOccurredEventObjC:_form :@"AppInvHTTPD"
+                                             :ErrorMessageERROR_REPL_SECURITY_ERROR
+                                             :@[@"Invalid Seq"]];
+        return [self error:@"Security Error: Invalid Seq"];
+      }
+      // Seq Fixup: Sometimes the Companion doesn't increment it's seq if it is in the middle of a
+      // project switch so we tolerate an off-by-one here.
+      if (_hmacSeq == (iseq+1))
+        NSLog(@"Seq Fixup Invoked");
+      _hmacSeq = iseq + 1;
+    } else {
+      NSLog(@"No HMAC key");
+      [_form dispatchErrorOccurredEventObjC:_form :@"AppInvHTTPD"
+                                           :ErrorMessageERROR_REPL_SECURITY_ERROR
+                                           :@[@"No HMAC Key"]];
+      return [self error:@"Security Error: No HMAC Key"];
+    }
     if (!yail || yail.length == 0) {
       GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithText:@"No YAIL provided"];
       response.statusCode = 400;
@@ -113,18 +172,22 @@ static NSString *kMimeJson = @"application/json";
     if ([blockid characterAtIndex:0] != '"' || [blockid characterAtIndex:blockid.length - 1] != '"') {
       blockid = [NSString stringWithFormat:@"\"%@\"", blockid];
     }
-    yail = [NSString stringWithFormat:@"(process-repl-input %@ (begin %@))", blockid, yail];
-    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-      NSLog(@"To Eval: %@", yail);
-      [_interpreter evalForm:yail];
-      if (_interpreter.exception) {
-        [[RetValManager sharedManager] appendReturnValue:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]
-                                                forBlock:blockid withStatus:@"BAD"];
-        [_interpreter clearException];
-      }
-    }];
-    // Blocks the web server, but allows us to immediately return a REPL result for "Do It"
-    [NSOperationQueue.mainQueue addOperations:@[op] waitUntilFinished:YES];
+    if ([yail isEqualToString:@"#f"]) {
+      NSLog(@"Skipping evaluation of #f");
+    } else {
+      yail = [NSString stringWithFormat:@"(process-repl-input %@ (begin %@))", blockid, yail];
+      NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"To Eval: %@", yail);
+        [_interpreter evalForm:yail];
+        if (_interpreter.exception) {
+          [[RetValManager sharedManager] appendReturnValue:[NSString stringWithFormat:@"An internal error occurred: %@ (%@)", _interpreter.exception.name, _interpreter.exception]
+                                                  forBlock:blockid withStatus:@"BAD"];
+          [_interpreter clearException];
+        }
+      }];
+      // Blocks the web server, but allows us to immediately return a REPL result for "Do It"
+      [NSOperationQueue.mainQueue addOperations:@[op] waitUntilFinished:YES];
+    }
     NSData *result = [[[RetValManager sharedManager] fetch:NO]
                       dataUsingEncoding:NSUTF8StringEncoding];
     return [self setDefaultHeaders:[GCDWebServerDataResponse responseWithData:result
@@ -182,6 +245,8 @@ static NSString *kMimeJson = @"application/json";
     if (_form) {
       [_interpreter setCurrentForm:_form];
     }
+    // Quiet the web server logs to INFO, WARN, ERROR
+    [GCDWebServer setLogLevel:2];
     __weak AppInvHTTPD *httpd = self;
     // AppInvHTTPD paths:
     // * /_newblocks
@@ -221,6 +286,13 @@ static NSString *kMimeJson = @"application/json";
                                                    [UIDevice currentDevice].name]];
   }
   return self;
+}
+
+- (GCDWebServerResponse *)error:(NSString *)msg {
+  return [self setDefaultHeaders:[GCDWebServerDataResponse responseWithJSONObject:@{
+      @"status": @"BAD",
+      @"message": msg
+    }]];
 }
 
 @end
