@@ -1,0 +1,18 @@
+language: java
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install libc6-i386 lib32z1 lib32stdc++6 unzip wget
+
+install: cd appinventor && ant MakeAuthKey
+
+script: ant noplay
+
+after_success: 
+  - ant PlayApp
+  - sudo ant clean
+
+after_failure: sudo ant clean
+
+jdk:
+  - oraclejdk8
