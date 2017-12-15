@@ -840,7 +840,7 @@ public class YaVersion {
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 3:
   // - Added RequestFocus Function (via TextBoxBase)
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 4:
-  // - Added PasswordVisible property (via TextBoxBase)
+  // - Added PasswordVisible property
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 4;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
