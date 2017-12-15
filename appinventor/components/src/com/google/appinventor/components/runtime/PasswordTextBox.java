@@ -43,7 +43,6 @@ public final class PasswordTextBox extends TextBoxBase {
     super(container, new EditText(container.$context()));
 
     // Disable auto-suggestion.
-    //view.setRawInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
     PasswordVisible(false);
 
     // make the box single line
