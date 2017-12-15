@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+
 import android.graphics.drawable.Drawable;
 
 import android.os.Handler;
