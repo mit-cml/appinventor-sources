@@ -34,6 +34,9 @@ import android.widget.EditText;
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class PasswordTextBox extends TextBoxBase {
+    
+  private boolean passwordVisible;
+    
   /**
    * Creates a new PasswordTextBox component.
    *
@@ -55,8 +58,7 @@ public final class PasswordTextBox extends TextBoxBase {
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
   }
-
-  private boolean passwordVisible;
+  
   @SimpleProperty
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
