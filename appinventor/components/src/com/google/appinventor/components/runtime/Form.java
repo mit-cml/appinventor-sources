@@ -175,6 +175,8 @@ public class Form extends AppCompatActivity
   private int primaryColorDark = DEFAULT_PRIMARY_COLOR_DARK;
   private int accentColor = DEFAULT_ACCENT_COLOR;
 
+  private android.widget.LinearLayout frameWithTitle;
+
   private FrameLayout frameLayout;
   private boolean scrollable;
 
@@ -270,6 +272,18 @@ public class Form extends AppCompatActivity
       titleBar.setSingleLine();
       titleBar.setShadowLayer(2, 0, 0, 0xBB000000);
     }
+    frameWithTitle = new android.widget.LinearLayout(this);
+    frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
+    if (titleBar != null) {  // true for companion and compiled apps without ActionBar
+      if (titleBar.getParent() != null) {
+        ((ViewGroup) titleBar.getParent()).removeAllViews();
+      }
+      frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT
+      ));
+    }
+    setContentView(frameWithTitle);
 
     // Figure out the name of this form.
     String className = getClass().getName();
@@ -383,6 +397,7 @@ public class Form extends AppCompatActivity
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     Theme(ComponentConstants.DEFAULT_THEME);
+    ScreenOrientation("unspecified");
   }
 
   @Override
@@ -456,7 +471,9 @@ public class Form extends AppCompatActivity
   @Override
   public void onGlobalLayout() {
     int heightDiff = scaleLayout.getRootView().getHeight() - scaleLayout.getHeight();
-    int contentViewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+    int[] position = new int[2];
+    scaleLayout.getLocationInWindow(position);
+    int contentViewTop = position[1];
     Log.d(LOG_TAG, "onGlobalLayout(): heightdiff = " + heightDiff + " contentViewTop = " +
       contentViewTop);
 
@@ -928,34 +945,39 @@ public class Form extends AppCompatActivity
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
-
-    final android.widget.LinearLayout frameWithTitle = new android.widget.LinearLayout(this);
-    frameWithTitle.setOrientation(android.widget.LinearLayout.VERTICAL);
-    if (titleBar != null) {  // true for companion and compiled apps without ActionBar
-      if (titleBar.getParent() != null) {
-        ((ViewGroup) titleBar.getParent()).removeAllViews();
-      }
+    frameWithTitle.removeAllViews();
+    if (titleBar != null) {
       frameWithTitle.addView(titleBar, new ViewGroup.LayoutParams(
           ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.WRAP_CONTENT
       ));
     }
+
+    // Layout
+    // ------frameWithTitle------
+    // | [======titleBar======] |
+    // | ------scaleLayout----- |
+    // | | ----frameLayout--- | |
+    // | | |                | | |
+    // | | ------------------ | |
+    // | ---------------------- |
+    // --------------------------
+
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
-    frameWithTitle.addView(frameLayout, new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT));
 
-    setBackground(frameWithTitle);
+    setBackground(frameLayout);
 
     Log.d(LOG_TAG, "About to create a new ScaledFrameLayout");
     scaleLayout = new ScaledFrameLayout(this);
-    scaleLayout.addView(frameWithTitle, new ViewGroup.LayoutParams(
+    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
-    setContentView(scaleLayout);
+    frameWithTitle.addView(scaleLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
     frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
     scaleLayout.requestLayout();
     androidUIHandler.post(new Runnable() {
