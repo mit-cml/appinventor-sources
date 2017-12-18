@@ -59,7 +59,7 @@ public final class PasswordTextBox extends TextBoxBase {
 
   }
   
-  @SimpleProperty
+  @SimpleProperty(description = "Visibility of password.")
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
     if(visible){
@@ -68,7 +68,7 @@ public final class PasswordTextBox extends TextBoxBase {
       view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
   }
-  @SimpleProperty
+  @SimpleProperty(description = "Visibility of password.")
   public boolean PasswordVisible(){
     return passwordVisible;
   }
