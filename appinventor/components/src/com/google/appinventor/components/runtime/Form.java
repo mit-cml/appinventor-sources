@@ -382,6 +382,7 @@ public class Form extends AppCompatActivity
     PrimaryColor(DEFAULT_PRIMARY_COLOR);
     PrimaryColorDark(DEFAULT_PRIMARY_COLOR_DARK);
     Theme(ComponentConstants.DEFAULT_THEME);
+    ScreenOrientation("unspecified");
   }
 
   @Override
