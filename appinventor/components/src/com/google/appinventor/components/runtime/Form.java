@@ -2213,7 +2213,7 @@ public class Form extends AppCompatActivity
   public void HideKeyboard() {
     View view = this.getCurrentFocus();
     if (view == null) {
-      view = new View(this);
+      view = frameLayout;
     }
     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
