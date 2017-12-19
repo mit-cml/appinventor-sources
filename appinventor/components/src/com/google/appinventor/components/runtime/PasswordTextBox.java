@@ -63,7 +63,7 @@ public final class PasswordTextBox extends TextBoxBase {
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
     if(visible){
-      view.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+      view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }else{
       view.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
