@@ -84,24 +84,9 @@ Blockly.Blocks['controls_if'] = {
     return container;
   },
   domToMutation: function (xmlElement) {
-    if (xmlElement.getAttribute('elseif') === null) {
-      this.elseifCount_ = 0;
-    } else {
-      this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
-    }
-
-    this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
-    for (var x = 1; x <= this.elseifCount_; x++) {
-      this.appendValueInput('IF' + x)
-          .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-          .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
-      this.appendStatementInput('DO' + x)
-          .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
-    }
-    if (this.elseCount_) {
-      this.appendStatementInput('ELSE')
-          .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE);
-    }
+    this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0
+    this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10) || 0;
+    this.updateShape_();
   },
   decompose: function (workspace) {
     var containerBlock = workspace.newBlock('controls_if_if');
@@ -121,56 +106,41 @@ Blockly.Blocks['controls_if'] = {
     return containerBlock;
   },
   compose: function (containerBlock) {
-    // Disconnect the else input blocks and destroy the inputs.
-    if (this.elseCount_) {
-      this.removeInput('ELSE');
-    }
-    this.elseCount_ = 0;
-    // Disconnect all the elseif input blocks and destroy the inputs.
-    for (var x = this.elseifCount_; x > 0; x--) {
-      this.removeInput('IF' + x);
-      this.removeInput('DO' + x);
-    }
-    this.elseifCount_ = 0;
-    // Rebuild the block's optional inputs.
     var clauseBlock = containerBlock.getInputTargetBlock('STACK');
+    this.elseifCount_ = 0;
+    this.elseCount_ = 0;
+    var valueConnections = [null];
+    var statementConnections = [null];
+    var elseStatementConnection = null;
     while (clauseBlock) {
       switch (clauseBlock.type) {
         case 'controls_if_elseif':
           this.elseifCount_++;
-          var ifInput = this.appendValueInput('IF' + this.elseifCount_)
-              .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean", Blockly.Blocks.Utilities.INPUT))
-              .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
-          var doInput = this.appendStatementInput('DO' + this.elseifCount_);
-          doInput.appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
-          // Reconnect any child blocks.
-          if (clauseBlock.valueConnection_) {
-            ifInput.connection.connect(clauseBlock.valueConnection_);
-          }
-          if (clauseBlock.statementConnection_) {
-            doInput.connection.connect(clauseBlock.statementConnection_);
-          }
+          valueConnections.push(clauseBlock.valueConnection_);
+          statementConnections.push(clauseBlock.statementConnection_);
           break;
         case 'controls_if_else':
           this.elseCount_++;
-          var elseInput = this.appendStatementInput('ELSE');
-          elseInput.appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSE);
-          // Reconnect any child blocks.
-          if (clauseBlock.statementConnection_) {
-            elseInput.connection.connect(clauseBlock.statementConnection_);
-          }
+          elseStatementConnection = clauseBlock.statementConnection_;
           break;
         default:
           throw 'Unknown block type.';
       }
       clauseBlock = clauseBlock.nextConnection &&
-      clauseBlock.nextConnection.targetBlock();
+        clauseBlock.nextConnection.targetBlock();
     }
+    this.updateShape_();
+    // Reconnect any child blocks.
+    for (var i = 1; i <= this.elseifCount_; i++) {
+      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
+      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
+    }
+    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
   },
   saveConnections: function (containerBlock) {
     // Store a pointer to any connected child blocks.
     var inputDo;
-    var clauseBlock = containerBlock.getInputTargetBlock('STACK');
+    var clauseBlock = containerBlock.getInput('STACK').connection.targetBlock();
     var x = 1;
     while (clauseBlock) {
       switch (clauseBlock.type) {
@@ -195,7 +165,31 @@ Blockly.Blocks['controls_if'] = {
       clauseBlock.nextConnection.targetBlock();
     }
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_IF_IF_TITLE_IF}],
+  updateShape_: function() {
+    // Delete everything.
+    if (this.getInput('ELSE')) {
+      this.removeInput('ELSE');
+    }
+    var i = 1;
+    while (this.getInput('IF' + i)) {
+      this.removeInput('IF' + i);
+      this.removeInput('DO' + i);
+      i++;
+    }
+    // Rebuild block.
+    for (var i = 1; i <= this.elseifCount_; i++) {
+      this.appendValueInput('IF' + i)
+        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType('boolean', Blockly.Blocks.Utilities.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_ELSEIF);
+      this.appendStatementInput('DO' + i)
+        .appendField(Blockly.Msg.LANG_CONTROLS_IF_MSG_THEN);
+    }
+    if (this.elseCount_) {
+      this.appendStatementInput('ELSE')
+        .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE);
+    }
+  }
 };
 
 Blockly.Blocks['controls_if_if'] = {

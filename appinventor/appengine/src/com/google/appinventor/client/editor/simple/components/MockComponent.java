@@ -212,6 +212,44 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
   }
 
+  /**
+   * This class defines the dialog box for deleting a component.
+   */
+  private class DeleteDialog extends DialogBox {
+    DeleteDialog() {
+      super(false, true);
+
+      setStylePrimaryName("ode-DialogBox");
+      setText(MESSAGES.deleteComponentButton());
+      VerticalPanel contentPanel = new VerticalPanel();
+
+      contentPanel.add(new HTML(MESSAGES.reallyDeleteComponent()));
+      Button cancelButton = new Button(MESSAGES.cancelButton());
+      cancelButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          hide();
+        }
+      });
+      Button okButton = new Button(MESSAGES.okButton());
+      okButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          hide();
+          MockComponent.this.delete();
+        }
+      });
+      HorizontalPanel buttonPanel = new HorizontalPanel();
+      buttonPanel.add(cancelButton);
+      buttonPanel.add(okButton);
+      buttonPanel.setSize("100%", "24px");
+      contentPanel.add(buttonPanel);
+      contentPanel.setSize("320px", "100%");
+
+      add(contentPanel);
+    }
+  }
+
   // Component database: information about components (including their properties and events)
   private final SimpleComponentDatabase COMPONENT_DATABASE;
 
@@ -302,9 +340,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       @Override
       public void delete() {
         if (!isForm()) {
-          if (Window.confirm(MESSAGES.reallyDeleteComponent())) {
-            MockComponent.this.delete();
-          }
+          new DeleteDialog().center();
         }
       }
     };
