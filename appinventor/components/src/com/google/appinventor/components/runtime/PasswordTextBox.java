@@ -45,9 +45,6 @@ public final class PasswordTextBox extends TextBoxBase {
   public PasswordTextBox(ComponentContainer container) {
     super(container, new EditText(container.$context()));
 
-    // Disable auto-suggestion.
-    PasswordVisible(false);
-
     // make the box single line
     view.setSingleLine(true);
     // Add a transformation method to hide password text.   This must
@@ -57,6 +54,8 @@ public final class PasswordTextBox extends TextBoxBase {
     // make sure the done action is Done and not Next.  See comment in Textbox.java
     view.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
+    PasswordVisible(false);
+    
   }
   
   @SimpleProperty(description = "Visibility of password.")
