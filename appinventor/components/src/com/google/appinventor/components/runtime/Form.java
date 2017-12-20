@@ -2212,12 +2212,11 @@ public class Form extends AppCompatActivity
   @SimpleFunction(description = "Hide the onscreen soft keyboard.")
   public void HideKeyboard() {
     View view = this.getCurrentFocus();
-    if (view != null) {
-      InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    } else {
-      dispatchErrorOccurredEvent(this, "HideKeyboard", ErrorMessages.ERROR_NO_FOCUSABLE_VIEW_FOUND);
+    if (view == null) {
+      view = frameLayout;
     }
+    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
   }
 
   protected boolean isRepl() {
