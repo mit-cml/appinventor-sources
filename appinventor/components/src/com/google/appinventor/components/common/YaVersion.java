@@ -850,7 +850,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 3:
   // - Added RequestFocus Function (via TextBoxBase)
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 3;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 4:
+  // - Added PasswordVisible property
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 4;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
