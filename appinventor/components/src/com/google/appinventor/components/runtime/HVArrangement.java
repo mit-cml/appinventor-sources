@@ -36,10 +36,6 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * A container for components that arranges them linearly, either
  * horizontally or vertically.
