@@ -1091,7 +1091,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: AccelerometerSensor.Sensitivty property was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // AI2: LegacyMode property was added.
+    4: "noUpgrade"
 
   }, // End Accelerometer upgraders
 

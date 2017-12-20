@@ -397,12 +397,14 @@ public class YaVersion {
   // Added HorizontalScrollArrangement and VerticalScrollArrangement
   // For YOUNG_ANDROID_VERSION 159:
   // - FORM_COMPONENT_VERSION was incremented to 20
-  // For YOUNG_ANDROID_VERSION_160:
+  // For YOUNG_ANDROID_VERSION 160:
   // - FORM_COMPONENT_VERSION was incremented to 21
-  // For YOUNG_ANDROID_VERSION_161:
+  // For YOUNG_ANDROID_VERSION 161:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 21
+  // For YOUNG_ANDROID_VERSION 162:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 161;
+  public static final int YOUNG_ANDROID_VERSION = 162;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -510,7 +512,9 @@ public class YaVersion {
   //   the minimum interval to elapse before calling a shaking event when necessary.
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
   // - AccelerometerSensor.Sensitivty property was added.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 3;
+  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 4:
+  // - Added the LegacyMode property.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 4;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri

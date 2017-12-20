@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -25,6 +26,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
+import android.os.Handler;
+
+import android.util.Log;
+
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -74,6 +80,10 @@ import java.util.Queue;
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
+  // Logging and Debugging
+  private final static String LOG_TAG = "AccelerometerSensor";
+  private final static boolean DEBUG = true;
+
   // Shake thresholds - derived by trial
   private static final double weakShakeThreshold = 5.0;
   private static final double moderateShakeThreshold = 13.0;
@@ -92,7 +102,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   private int accuracy;
   private int sensitivity;
-  private int deviceDefaultOrientation;
+  private volatile int deviceDefaultOrientation;
 
   private final SensorManager sensorManager;
 
@@ -110,12 +120,11 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   private Sensor accelerometerSensor;
 
-  // temporary flag. true == compensate for default landscape devices
-  // 10/16/2017: We set this to false in the branding for our Hong
-  // Kong servers because the tutorials we are using there already
-  // compensate and this change will break them. We will remove this
-  // "feature" after those tutorials are updated.
-  private static boolean handleDefaultRotation = true;
+  // Set to true to disable landscape mode tablet fix
+  private boolean legacyMode = false;
+
+  // Used to launch Runnables on the UI Thread after a delay
+  private final Handler androidUIHandler;
 
   /**
    * Creates a new AccelerometerSensor component.
@@ -132,11 +141,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     windowManager = (WindowManager) container.$context().getSystemService(Context.WINDOW_SERVICE);
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    androidUIHandler = new Handler();
     startListening();
     MinimumInterval(400);
     Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE);
-    // save the device default orientation (portrait or landscape)
-    deviceDefaultOrientation = getDeviceDefaultOrientation();    
   }
 
 
@@ -235,12 +243,18 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 public int getDeviceDefaultOrientation() {
     Configuration config = resources.getConfiguration();
     int rotation = windowManager.getDefaultDisplay().getRotation();
+    if (DEBUG) {
+      Log.d(LOG_TAG, "rotation = " + rotation);
+      Log.d(LOG_TAG, "config.orientation = " + config.orientation);
+    }
+    // return config.orientation;
+
     if ( ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
             config.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&    
+        || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
             config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
       return Configuration.ORIENTATION_LANDSCAPE;
-    } else { 
+    } else {
       return Configuration.ORIENTATION_PORTRAIT;
     }
 }
@@ -281,6 +295,19 @@ public int getDeviceDefaultOrientation() {
 
   // Assumes that sensorManager has been initialized, which happens in constructor
   private void startListening() {
+    // save the device default orientation (portrait or landscape)
+    androidUIHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          AccelerometerSensor.this.deviceDefaultOrientation = getDeviceDefaultOrientation();
+          if (DEBUG) {
+            Log.d(LOG_TAG, "deviceDefaultOrientation = " + AccelerometerSensor.this.deviceDefaultOrientation);
+            Log.d(LOG_TAG, "Configuration.ORIENTATION_LANDSCAPE = " + Configuration.ORIENTATION_LANDSCAPE);
+            Log.d(LOG_TAG, "Configuration.ORIENTATION_PORTRAIT = " + Configuration.ORIENTATION_PORTRAIT);
+          }
+        }
+      }, 32);                   // Wait 32ms for the UI to settle down
+
     sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
   }
 
@@ -382,6 +409,30 @@ public int getDeviceDefaultOrientation() {
     }
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+    description="Prior to the release that added this property the AccelerometerSensor " +
+    "component passed through sensor values directly as received from the " +
+    "Android system. However these values do not compensate for tablets " +
+    "that default to Landscape mode, requiring the MIT App Inventor " +
+    "programmer to compensate. However compensating would result in " +
+    "incorrect results in Portrait mode devices such as phones. " +
+    "We now detect Landscape mode tablets and perform the compensation. " +
+    "However if your project is already compensating for the change, you " +
+    "will now get incorrect results. Although our preferred solution is for " +
+    "you to update your project, you can also just set this property to “true” " +
+    "and our compensation code will be deactivated. Note: We recommend that " +
+    "you update your project as we may remove this property in a future " +
+    "release.")
+  public void LegacyMode(boolean legacyMode) {
+    this.legacyMode = legacyMode;
+  }
+
+  public boolean LegacyMode() {
+    return legacyMode;
+  }
+
   // SensorListener implementation
   @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
@@ -389,10 +440,10 @@ public int getDeviceDefaultOrientation() {
       final float[] values = sensorEvent.values;
       // make landscapePrimary devices report acceleration as if they were
       // portraitPrimary
-      if ((deviceDefaultOrientation == Configuration.ORIENTATION_LANDSCAPE)
-          && handleDefaultRotation) {
-        xAccel = -values[1];
-        yAccel = values[0];
+      if ((deviceDefaultOrientation == Configuration.ORIENTATION_LANDSCAPE) &&
+          !legacyMode) {
+        xAccel = values[1];
+        yAccel = -values[0];
       } else {
         xAccel = values[0];
         yAccel = values[1];
