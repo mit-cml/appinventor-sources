@@ -82,6 +82,8 @@
     <copy toFile="${classes.files.dir}/gson-2.1.jar" file="${lib.dir}/gson/gson-2.1.jar" />
     <copy toFile="${classes.files.dir}/json.jar" file="${lib.dir}/json/json.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${classes.files.dir}/jedis.jar" file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+    <copy toFile="${classes.files.dir}/commons-pool.jar" file="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${classes.files.dir}/appcompat-v7.aar" file="${lib.dir}/android/support/appcompat-v7-22.2.1.aar" />

@@ -154,6 +154,8 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+        <pathelement location="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+        <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
         <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
@@ -271,6 +273,8 @@
           <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+          <pathelement location="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+          <pathelement location="${lib.dir}/commons-pool/commons-pool2-2.0.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>

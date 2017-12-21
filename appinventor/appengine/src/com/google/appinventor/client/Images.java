@@ -538,4 +538,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+   * Designer palette item: cloudDB component
+   */
+  @Source("com/google/appinventor/images/cloudDB.png")
+  ImageResource cloudDB();
+
 }

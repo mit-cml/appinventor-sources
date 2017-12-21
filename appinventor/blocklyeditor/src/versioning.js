@@ -1358,6 +1358,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End Clock upgraders
 
+  "CloudDB": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  },
+
   "ContactPicker": {
 
     // AI1: The Alignment property was renamed to TextAlignment.

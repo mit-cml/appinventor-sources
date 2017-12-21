@@ -186,6 +186,7 @@ public class Form extends AppCompatActivity
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
+  private final Set<OnClearListener> onClearListeners = Sets.newHashSet();
   private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
@@ -665,6 +666,10 @@ public class Form extends AppCompatActivity
 
   public void registerForOnStop(OnStopListener component) {
     onStopListeners.add(component);
+  }
+
+  public void registerForOnClear(OnClearListener component) {
+    onClearListeners.add(component);
   }
 
   @Override
@@ -2033,6 +2038,7 @@ public class Form extends AppCompatActivity
 
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
+    Log.d(LOG_TAG, "Form " + formName + " clear called");
     viewLayout.getLayoutManager().removeAllViews();
     if (frameLayout != null) {
       frameLayout.removeAllViews();
@@ -2049,6 +2055,12 @@ public class Form extends AppCompatActivity
     onCreateOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
+    // Notifiy those who care
+    for (OnClearListener onClearListener : onClearListeners) {
+      onClearListener.onClear();
+    }
+    // And reset the list
+    onClearListeners.clear();
     System.err.println("Form.clear() About to do moby GC!");
     System.gc();
     dimChanges.clear();

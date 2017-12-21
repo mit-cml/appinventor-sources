@@ -5382,6 +5382,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RemoveFirstMethods();
 
+  @DefaultMessage("AppendValueToList")
+  @Description("")
+  String AppendValueToListMethods();
+
+  @DefaultMessage("RemoveFirstFromList")
+  @Description("")
+  String RemoveFirstFromListMethods();
+
   @DefaultMessage("FirstRemoved")
   @Description("")
   String FirstRemovedEvents();
@@ -6454,6 +6462,63 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reload")
   @Description("")
   String reloadWindow();
+
+  @DefaultMessage("AccountName")
+  @Description("")
+  String AccountNameProperties();
+
+  @DefaultMessage("ProjectID")
+  @Description("")
+  String ProjectIDProperties();
+
+  @DefaultMessage("CloudDBError")
+  @Description("")
+  String CloudDBErrorEvents();
+
+  @DefaultMessage("CloudDB")
+  @Description("")
+  String cloudDBComponentPallette();
+
+  @DefaultMessage("Non-visible component allowing you to store data on a Internet " +
+    "connected database server (using Redis software). This allows the users of " +
+    "your App to share data with each other. " +
+    "By default data will be stored in a server maintained by MIT, however you " +
+    "can setup and run your own server. Set the \"RedisServer\" property and " +
+    "\"RedisPort\" Property to access your own server.")
+  @Description("")
+  String CloudDBHelpStringComponentPallette();
+
+  @DefaultMessage("RedisServer")
+  @Description("")
+  String RedisServerProperties();
+
+  @DefaultMessage("DefaultRedisServer")
+  @Description("")
+  String DefaultRedisServerProperties();
+
+  @DefaultMessage("RedisPort")
+  @Description("")
+  String RedisPortProperties();
+
+  @DefaultMessage("Token")
+  @Description("")
+  String TokenProperties();
+
+  @DefaultMessage("GetValues")
+  @Description("")
+  String GetValuesMethods();
+
+  @DefaultMessage("itemToAdd")
+  @Description("")
+  String itemToAddParams();
+
+  @DefaultMessage("UseSSL")
+  @Description("")
+  String UseSSLProperties();
+
+  @DefaultMessage("CloudConnected")
+  @Description("")
+  String CloudConnectedMethods();
 
   @DefaultMessage("PrimaryColor")
   @Description("")

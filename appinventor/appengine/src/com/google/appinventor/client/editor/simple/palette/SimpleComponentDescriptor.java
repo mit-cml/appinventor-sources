@@ -14,6 +14,7 @@ import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
+import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
@@ -42,6 +43,7 @@ import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
 import com.google.appinventor.shared.storage.StorageUtil;
+
 import com.google.common.collect.Maps;
 
 import com.google.gwt.resources.client.ImageResource;
@@ -142,6 +144,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/yandex.png", images.yandex());
     bundledImages.put("images/proximitysensor.png", images.proximitysensor());
     bundledImages.put("images/extension.png", images.extension());
+    bundledImages.put("images/cloudDB.png", images.cloudDB());
 
     imagesInitialized = true;
   }
@@ -327,12 +330,16 @@ public final class SimpleComponentDescriptor {
       if(name.equals(MockFirebaseDB.TYPE)) {
         return new MockFirebaseDB(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-              null, editor.getProjectId()));
+            null, editor.getProjectId()));
+      } else if(name.equals(MockCloudDB.TYPE)) {
+        return new MockCloudDB(editor, name,
+          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+            null, editor.getProjectId()));
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
           getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-              pkgName, editor.getProjectId()));
+            pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
