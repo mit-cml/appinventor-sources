@@ -240,6 +240,12 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     // When receiving the property values from the server hex numbers were converted to decimal
     // numbers
     String propertyValue = property.getValue();
+    // Screens can be loaded in an arbitrary order and if Screen1 is not the first screen loaded,
+    // then a value of "" will be sent. Just ignore it because it will be corrected after Screen1
+    // is loaded.
+    if (propertyValue == null || propertyValue.isEmpty()) {
+      return;
+    }
     int radix = 10;
     if (propertyValue.startsWith(hexPrefix)) {
       propertyValue = propertyValue.substring(hexPrefix.length());
