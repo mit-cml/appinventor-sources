@@ -42,6 +42,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.properties.Property;
+import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.CountryChoicePropertyEditor;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
@@ -95,7 +96,7 @@ public class PropertiesUtil {
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefintions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
           ComponentsTranslation.getPropertyName(property.getCaption()),
-          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor));
+          PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor, property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
           + TranslationComponentProperty.getName(property.getCaption()));*/
     }
@@ -170,7 +171,7 @@ public class PropertiesUtil {
   /*
    * Creates a new property editor.
    */
-  public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, YaFormEditor editor) {
+  public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, YaFormEditor editor, String[] editorArgs) {
     if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT)) {
       return new YoungAndroidHorizontalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT)) {
@@ -208,6 +209,8 @@ public class PropertiesUtil {
       return new YoungAndroidLegoEv3UltrasonicSensorModeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_GYRO_SENSOR_MODE)) {
       return new YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHOICES)) {
+      return new ChoicePropertyEditor(editorArgs);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT)) {
       return new YoungAndroidLegoNxtSensorPortChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR)) {
