@@ -331,9 +331,20 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   private void findComponentProperties(ComponentDefinition component, JSONArray propertiesArray) {
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
+
+      // TODO Since older versions of extensions do not have the "editorArgs" key,
+      // we check if "editorArgs" exists before parsing as a workaround. We may
+      // need better approaches in future versions.
+      List<String> editorArgsList = new ArrayList<String>();
+      if (properties.containsKey("editorArgs")) {
+        for (JSONValue val : properties.get("editorArgs").asArray().getElements())
+          editorArgsList.add(val.asString().getString());
+      }
+
       component.add(new PropertyDefinition(properties.get("name").asString().getString(),
-          properties.get("defaultValue").asString().getString(), properties.get("editorType")
-              .asString().getString()));
+          properties.get("defaultValue").asString().getString(),
+          properties.get("editorType").asString().getString(),
+          editorArgsList.toArray(new String[0])));
     }
   }
 

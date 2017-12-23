@@ -36,4 +36,11 @@ public @interface DesignerProperty {
    * @return  default property value
    */
   String defaultValue() default "";
+
+  /**
+   * Arguments passed to editor class.
+   *
+   * @return  editor arguments
+   */
+  String[] editorArgs() default {};
 }
