@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -28,6 +29,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -73,6 +75,13 @@ public final class Image extends AndroidViewComponent {
       }
     };
     view.setFocusable(true);
+    view.setClickable(true);
+    view.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Click();
+      }
+    });
 
     // Adds the component to its designated container
     container.$add(this);
@@ -81,6 +90,11 @@ public final class Image extends AndroidViewComponent {
   @Override
   public View getView() {
     return view;
+  }
+
+  @SimpleEvent(description = "An event that occurs when an image is clicked.")
+  public void Click() {
+    EventDispatcher.dispatchEvent(this, "Click");
   }
 
   /**
