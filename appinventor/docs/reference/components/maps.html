@@ -498,33 +498,33 @@
                       longitude. The circle's appearnce can be customized using properties such
                       as <a href="#Circle.FillColor"><code>FillColor</code></a>, <a href="#Circle.StrokeColor"><code>StrokeColor</code></a>,
                       and <a href="#Circle.StrokeWidth"><code>StrokeWidth</code></a>.</p>
-                    <p>Circle can also be used to implement features such as geofencing, a mechanism where the user's
-                      presence within an area is used to trigger other behaviors. Using
+                    <p>The Circle component can also be used to implement features such as geofencing, a mechanism where
+                      the user's presence within an area is used to trigger other behaviors. Using
                       the <a href="#Circle.DistanceToPoint"><code>DistanceToPoint</code></a> method combined with
-                      the <a href="sensors.html#LocationSensor">LocationSensor</a>, one can detect whether a user's
-                      location is inside or outside the circle to trigger additional app behavior.</p>
+                      the <a href="sensors.html#LocationSensor">LocationSensor</a>, you can determine whether a user's
+                      location is inside or outside of the circle. You can use this feature to trigger additional actions.</p>
 
                  <h3>Properties</h3>
                  <dl>
                    <dt class="text" id="Circle.Description">Description<i></i></dt>
-                   <dd>Sets or gets the description displayed in the info window that appears when the user taps on the
-                     circle.</dd>
+                   <dd>Sets or gets the description displayed in the info window. The info window appears when the user
+                     taps on the circle.</dd>
                    <dt class="boolean" id="Circle.Draggable">Draggable<i></i></dt>
-                   <dd>Sets or gets whether or not the user can drag a map feature by long-pressing and then dragging
-                     the circle to a new location.</dd>
+                   <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+                     long-pressing and then dragging the circle to a new location.</dd>
                    <dt class="boolean" id="Circle.EnableInfobox">EnableInfobox<i></i></dt>
                    <dd>Enables or disables the infobox window display when the user taps the circle.</dd>
                    <dt class="color" id="Circle.FillColor">FillColor<i></i></dt>
                    <dd>Sets or gets the color used to fill in the circle.</dd>
                    <dt class="number" id="Circle.Latitude">Latitude<i></i></dt>
-                   <dd>Sets or gets the latitude of the center of the circle, in degrees, with positive values
-                     representing north of the equator and negative values representing south of the equator. To update
-                     the latitude and longitude simultaneously, use
-                     the <a href="#Circle.SetLocation"><code>SetLocation</code></a> method.</dd>
+                   <dd>Sets or gets the latitude of the center of the circle, in degrees. Positive values representing
+                     north of the equator and negative values representing south of the equator. To update the latitude
+                     and longitude simultaneously, use the <a href="#Circle.SetLocation"><code>SetLocation</code></a>
+                     method.</dd>
                    <dt class="number" id="Circle.Longitude">Longitude<i></i></dt>
-                   <dd>Sets or gets the longitude of the center of the circle, in degrees, with positive values
-                     representing east of the prime meridian and negative values representing west of the prime
-                     meridian. To update the latitude and longitude simultaneously, use
+                   <dd>Sets or gets the longitude of the center of the circle, in degrees. Positive values representing
+                     east of the prime meridian and negative values representing west of the prime meridian. To update
+                     the latitude and longitude simultaneously, use
                      the <a href="#Circle.SetLocation"><code>SetLocation</code></a> method.</dd>
                    <dt class="number" id="Circle.Radius">Radius<i></i></dt>
                    <dd>Sets or gets the radius of the circle, in meters.</dd>
@@ -551,9 +551,9 @@
                    <dd>Runs after the user long clicks on the circle but does not trigger a drag. Note that this event
                      will only trigger if <a href="#Circle.Draggable"><code>Draggable</code></a> is false.</dd>
                    <dt id="Circle.StartDrag">StartDrag</dt>
-                   <dd>Runs before a drag operation begins.</dd>
+                   <dd>Runs before a drag operation begins. Use this to save the current position of the circle, for example.</dd>
                    <dt id="Circle.StopDrag">StopDrag</dt>
-                   <dd>Runs after a drag operation completes.</dd>
+                   <dd>Runs after a drag operation completes. Use this to save the new position of the circle, for example.</dd>
                  </dl>
 
                  <h3>Methods</h3>
@@ -571,7 +571,7 @@
                      to the given point. Further, this method will return 0 if <code>centroids</code> is false and the
                      point is in the circle. If an error occurs, -1 will be returned.</dd>
                    <dt id="Circle.HideInfoBox">HideInfobox</dt>
-                   <dd>Hides the circle's info box if it is visible. Otherwise, this method has no effect.</dd>
+                   <dd>Hides the circle's info box if it is visible. Otherwise, no action is taken.</dd>
                    <dt id="Circle.SetLocation">SetLocation(number latitude, number longitude)</dt>
                    <dd>Moves the center of the circle to the given latitude and longitude. This method is more efficient
                      than setting latitude and longitude separately.</dd>
@@ -582,9 +582,9 @@
                  </dl>
 
                  <h2 id="FeatureCollection">FeatureCollection</h2>
-                    <p>A FeatureCollection contains one or more map features as a group. Any events that occur on a
-                      feature in the collection will also trigger the coresponding event on the collection
-                      component. FeatureCollections can be loaded from exernal resources as a means of populating a Map
+                    <p>A FeatureCollection groups one or more map features together. Any events that occur within a
+                      feature in the collection will also trigger the corresponding event in the collection
+                      component. FeatureCollections can be loaded from exernal resources to populate Maps
                       with content. GeoJSON is the only format supported at this time.</p>
 
                  <h3>Properties</h3>
@@ -592,7 +592,7 @@
                    <dt class="list" id="FeatureCollection.Features">Features<i></i></dt>
                    <dd>Returns a list of features present in the feature collection, if any.</dd>
                    <dt class="text wo" id="FeatureCollection.FeaturesFromGeoJSON">FeaturesFromGeoJSON<i></i></dt>
-                   <dd>Populates the feature collection fro a string containing GeoJSON content. Given the size of such
+                   <dd>Populates the feature collection from a string containing GeoJSON content. Given the size of such
                      strings, it is recommended to load the feature collection from assets or the web using the Source
                      property.</dd>
                    <dt class="text ro" id="FeatureCollection.Source">Source<i></i></dt>
@@ -606,20 +606,20 @@
                  <dl>
                    <dt id="FeatureCollection.FeatureClick">FeatureClick(component feature)</dt>
                    <dd>When a feature is clicked, the feature collection containing it (if any) will also receive a
-                     FeatureClick event. The feature parameter indicates which child feature was clicked.</dd>
+                     <code>FeatureClick</code> event. The feature parameter indicates which child feature was clicked.</dd>
                    <dt id="FeatureCollection.FeatureDrag">FeatureDrag(component feature)</dt>
-                   <dd>When a feature is dragged, the feature collection containing it (if any) will also receive a
-                     FeatureDrag event. The feature parameter indicates which child feature was dragged.</dd>
+                   <dd>When a feature is dragged, the parent collection will also receive a <code>FeatureDrag</code>
+                     event. The feature parameter indicates which child feature was dragged.</dd>
                    <dt id="FeatureCollection.FeatureLongClick">FeatureLongClick(component feature)</dt>
-                   <dd>When a feature is long clicked, the feature collection containing it (if any) will also receive a
-                     FeatureLongClick event. The feature parameter indicates which child feature was long clicked.</dd>
+                   <dd>When a feature is long clicked, the parent collection will also receive a
+                     <code>FeatureLongClick</code> event. The feature parameter indicates which child feature was long clicked.</dd>
                    <dt id="FeatureCollection.FeatureStartDrag">FeatureStartDrag(component feature)</dt>
-                   <dd>When the user begins dragging a feature, the feature collection containing it (if any) will also
-                     receive a FeatureStartDrag event. The feature parameter indicates which child feature was
+                   <dd>When the user begins dragging a feature, the parent collection will also receive
+                     a <code>FeatureStartDrag</code> event. The feature parameter indicates which child feature was
                      dragged.</dd>
                    <dt id="FeatureCollection.FeatureStopDrag">FeatureStopDrag(component feature)</dt>
-                   <dd>When the user stops dragging a feature, the feature collection containing it (if any) will also
-                     receive a FeatureStopDrag event. The feature parameter indicates which child feature was
+                   <dd>When the user stops dragging a feature, the parent collection will also receive
+                     a <code>FeatureStopDrag</code> event. The feature parameter indicates which child feature was
                      dragged.</dd>
                    <dt id="FeatureCollection.GotFeatures">GotFeatures(text url, list features)</dt>
                    <dd>The GotFeatures event is run when when a feature collection is successfully read from the
@@ -637,7 +637,7 @@
                  <dl>
                    <dt id="FeatureCollection.FeatureFromDescription">any FeatureFromDescription(list description)</dt>
                    <dd>Returns a new component based on the description provided. If there is an error in the
-                     properties, such as a malformed geometry, then the method will return text describing the
+                     properties, such as incorrectly formatted data, then the method will return text describing the
                      error. Use
                      the <a href="http://appinventor.mit.edu/explore/ai2/support/blocks/text.html#istext"><code>is-text?</code></a>
                      block to test whether the result is an error message.  is an error or not. Properties of features
@@ -663,7 +663,7 @@
 
                  <h2 id="LineString">LineString</h2>
 
-                    <p>LineString is a component for drawing an open, contiguous sequence of lines on a Map. To add new
+                    <p>LineString is a component for drawing an open, continuous sequence of lines on a Map. To add new
                       points to a LineString, drag the midpoint of any segment away from the line to introduce a new
                       vertex. Move a vertex by clicking and dragging the vertex to a new location. Clicking on a vertex
                       will delete the vertex.</p>
@@ -690,7 +690,7 @@
                    <dt class="text" id="LineString.Title">Title<i></i></dt>
                    <dd>The title displayed in the info window that appears when the user clicks on the map feature.</dd>
                    <dt class="text ro" id="LineString.Type">Type<i></i></dt>
-                   <dd>The type of the feature. For LineString, this will always be &quot;LineString&quot;,</dd>
+                   <dd>Gets the type of the feature. For LineString, this will always be &quot;LineString&quot;,</dd>
                    <dt class="boolean" id="LineString.Visible">Visible<i></i></dt>
                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component
                      is showing and false if hidden.</dd>
@@ -699,7 +699,7 @@
                  <h3>Events</h3>
                  <dl>
                    <dt id="LineString.Click">Click</dt>
-                   <dd>Runs when the user taps on the line string (within a given threshold).</dd>
+                   <dd>Runs when the user taps on or very close to the line string.</dd>
                    <dt id="LineString.Drag">Drag</dt>
                    <dd>Runs during a drag operation.</dd>
                    <dt id="LineString.LongClick">LongClick</dt>
@@ -742,7 +742,7 @@
                       allows for multiple Marker elements to identify points on the map. Map tiles are supplied
                       by OpenStreetMap contributors and the United States Geological Survey.</p>
                     <p>The Map component provides three utilities for manipulating its boundaries within App
-                      Inventor. First, a locking mechanism is provided to allow the map to be moved relative to
+                      Inventor. First, a locking mechanism allows the map to be moved relative to
                       other components on the Screen. Second, when unlocked, the user can pan the Map to any
                       location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed
                       to save the current Map coordinates to its properties. Lastly, if the Map is moved to a
@@ -752,8 +752,8 @@
                  <h3>Properties</h3>
                  <dl>
                    <dt class="list bo" id="Map.BoundingBox">BoundingBox<i></i></dt>
-                   <dd>Sets or gets the bounding box for the map. The value is a list of lists containing the northwest
-                     and southeast coordinates of the Map view in the
+                   <dd>Sets or gets the current boundary for the map's drawn view. The value is a list of lists
+                     containing the northwest and southeast coordinates of the current view in the
                      form <code>((North&nbsp;West)&nbsp;(South&nbsp;East))</code>.</dd>
                    <dt class="text wo" id="Map.CenterFromString">CenterFromString<i></i></dt>
                    <dd>Sets the center of the map from a given &quot;latitude, longitude&quot; string. This is used
@@ -792,8 +792,8 @@
                    and accuracy of this feature will depend on whether the user has location services enabled and which
                    location providers are available.</dd>
                    <dt class="boolean" id="Map.ShowZoom">ShowZoom<i></i></dt>
-                   <dd>Shows or hides the Android native zoom buttons to allow the user to zoom the Map in or out
-                   instead of using the two-finger pinch-to-zoom gesture.</dd>
+                   <dd>Shows or hides the Android native zoom buttons to allow the user to zoom the Map in or out. This
+                   can be used in place of the two-finger pinch-to-zoom gesture.</dd>
                    <dt class="number ro bo" id="Map.UserLatitude">UserLatitude<i></i></dt>
                    <dd>Returns the user's latitude if ShowUser is enabled.</dd>
                    <dt class="number ro bo" id="Map.UserLongitude">UserLongitude<i></i></dt>
@@ -806,7 +806,7 @@
                    <dd>Sets the Width of the Map to a percentage of the Screen.</dd>
                    <dt class="number" id="Map.ZoomLevel">ZoomLevel<i></i></dt>
                    <dd>Gets or sets the zoom level for the Map. Valid values range from 1-20. Not all tile layers will
-                     support all zoom levels at all locations. For example, detailed aerial photography is likely not
+                     support each zoom level at every location. For example, detailed aerial photography is likely not
                      available for tiles in the middle of the ocean or at the poles. Highest zoom levels will likely
                      occur in major city centers due to the amount of detailed data available.</dd>
                  </dl>
@@ -821,50 +821,51 @@
                      may be followed by a <a href="#Map.ZoomChange"><code>ZoomChange</code></a> event if zooming
                      gestures are enabled and the map is not at the highest possible zoom level.</dd>
                    <dt id="Map.FeatureClick">FeatureClick(component feature)</dt>
-                   <dd>When a feature is clicked, the map containing it will also receive a FeatureClick event. The
-                     <code>feature</code> parameter indicates which child feature was clicked.</dd>
+                   <dd>When a feature is clicked, the parent map will also receive a <code>FeatureClick</code>
+                     event. The <code>feature</code> parameter indicates which child feature was clicked.</dd>
                    <dt id="Map.FeatureDrag">FeatureDrag(component feature)</dt>
-                   <dd>When a feature is dragged, the map containing it will also receive a FeatureDrag event. The
+                   <dd>When a feature is dragged, the parent map will also receive a <code>FeatureDrag</code> event. The
                      <code>feature</code> parameter indicates which child feature was dragged.</dd>
                    <dt id="Map.FeatureLongClick">FeatureLongClick(component feature)</dt>
-                   <dd>When a feature is long clicked, the map containing it will also receive a FeatureLongClick
+                   <dd>When a feature is long clicked, the parent map will also receive a <code>FeatureLongClick</code>
                      event. The <code>feature</code> parameter indicates which child feature was long clicked.</dd>
                    <dt id="Map.FeatureStartDrag">FeatureStartDrag(component feature)</dt>
-                   <dd>When the user begins dragging a feature, the map containing it will also receive a
-                     FeatureStartDrag event. The <code>feature</code> parameter indicates which child feature was
-                     dragged.</dd>
+                   <dd>When the user begins dragging a feature, the parent map will also receive a
+                     <code>FeatureStartDrag</code> event. The <code>feature</code> parameter indicates which child
+                     feature was dragged.</dd>
                    <dt id="Map.FeatureStopDrag">FeatureStopDrag(component feature)</dt>
-                   <dd>When the user stops dragging a feature, the map containing it will also receive a FeatureStopDrag
-                     event. The <code>feature</code> parameter indicates which child feature was dragged.</dd>
-                   <dt id="Map.GeoJSONError">GeoJSONError(text url, number responseCode, text errorMessage)</dt>
-                   <dd>The GeoJSONError event is run when an error occurs while processing a GeoJSON document at the
-                     given <code>url</code>. The <code>responseCode</code> parameter will contain an HTTP status code and
-                     the <code>errorMessage</code> parameter will contain a detailed error message.</dd>
+                   <dd>When the user stops dragging a feature, the parent map will also receive
+                     a <code>FeatureStopDrag</code> event. The <code>feature</code> parameter indicates which child
+                     feature was dragged.</dd>
                    <dt id="Map.GotFeatures">GotFeatures(text url, list features)</dt>
-                   <dd>The GotFeatures event is run when when a feature collection is successfully read from the
-                     given <code>url</code>. The <code>features</code> parameter will be a list of feature descriptions
+                   <dd>The <code>GotFeatures</code> event runs after a call
+                     to <a href="#Map.LoadFromURL"><code>LoadFromURL</code></a> successfully reads feature description
+                     from <code>url</code>. The <code>features</code> parameter will be a list of feature descriptions
                      that can be converted into components using
                      the <a href="#FeatureCollection.FeatureFromDescription"><code>FeatureFromDescription</code></a>
                      method.</dd>
                    <dt id="Map.InvalidPoint">InvalidPoint(text message)</dt>
-                   <dd>Runs when an invalid point is encounter while processing geographical data. Points are considered
-                     bad when the latitude or longitude for the point is outside the acceptable range ([-90, 90] and
-                     [-180, 180], respectively). The <code>message</code> parameter will contain an explanation for the
-                     error.</dd>
+                   <dd>Runs when the program encounters an invalid point while processing geographical data. Points are
+                     considered invalid when the latitude or longitude for the point is outside the acceptable range ([-90,
+                     90] and [-180, 180], respectively). The <code>message</code> parameter will contain an explanation
+                     for the error.</dd>
+                   <dt id="Map.LoadError">LoadError(text url, number responseCode, text errorMessage)</dt>
+                   <dd>The LoadError event runs when processing a feature collection document at the
+                     given <code>url</code> produces an error. The <code>responseCode</code> parameter will contain an
+                     HTTP status code and the <code>errorMessage</code> parameter will contain a detailed error
+                     message.</dd>
                    <dt id="Map.LongPressAtPoint">LongPressAtPoint(number latitude, number longitude)</dt>
-                   <dd>Runs when the user long presses a point on the map. The location at which the long press occurred
-                     will be reported in map coordinates via the <code>latitude</code> and <code>longitude</code>
-                     parameters. Note that this event will not trigger
-                     if <a href="#Map.EnablePan"><code>EnablePan</code></a> is true as a long press causes a panning
-                     event instead.</dd>
+                   <dd>Runs when the user long presses a point on the map. <code>Latitude</code>
+                     and <code>longitude</code> indicate the location of the long press in map coordinates. Note that
+                     this event will not trigger if <a href="#Map.EnablePan"><code>EnablePan</code></a> is true as a
+                     long press causes a panning event instead.</dd>
                    <dt id="Map.Ready">Ready</dt>
-                   <dd>Runs when the map has been initalized and is ready for user interaction.</dd>
+                   <dd>Runs when the map has initalized and is ready for use.</dd>
                    <dt id="Map.TapAtPoint">TapAtPoint(number latitude, number longitude)</dt>
                    <dd>Runs when the user taps at a point on the map. The tapped location will be reported in map
                      coordinates via the <code>latitude</code> and <code>longitude</code> parameters.</dd>
                    <dt id="Map.ZoomChange">ZoomChange</dt>
-                   <dd>Runs when the user changes the zoom level, such as through a pinch gesture or double-tapping to
-                     zoom.</dd>
+                   <dd>Runs when the user changes the zoom level, such as through a pinch gesture or double-tapping.</dd>
                  </dl>
 
                  <h3>Methods</h3>
@@ -874,11 +875,11 @@
                      and <code>longitude</code>. The marker can be manipulated using the "any component" blocks.</dd>
                    <dt id="Map.FeatureFromDescription">any FeatureFromDescription(list description)</dt>
                    <dd>Returns a new component based on the description provided. If there is an error in the
-                     properties, such as a malformed geometry, then the method will return text describing the
+                     properties, such as incorrectly formatted data, then the method will return text describing the
                      error. Use
                      the <a href="http://appinventor.mit.edu/explore/ai2/support/blocks/text.html#istext"><code>is-text?</code></a>
-                     block to test whether the result is an error message.  is an error or not. Properties of features
-                     are converted into App Inventor properties using the following case-insensitive mapping:
+                     block to test whether you get an error. Feature properties converted into App Inventor properties
+                     use the following case-insentive mapping:
                      <ul>
                        <li>description &rarr; Description</li>
                        <li>draggable &rarr; Draggable</li>
@@ -892,10 +893,11 @@
                      </ul>
                    </dd>
                    <dt id="Map.LoadFromURL">LoadFromURL(text url)</dt>
-                   <dd>Call this method to load a GeoJSON description of a feature collection from a URL (including file
-                     URLs). On success, the feature descriptions will be passed as a list to
-                     the <a href="#Map.GotFeatures"><code>GotFeatures</code></a> event. On failure,
-                     the <a href="#Map.GeoJSONError"><code>GeoJSONError</code></a> event will be run.</dd>
+                   <dd>Call this method to load a feature collection from a URL (including file URLs). If the event is
+                     successful, the feature descriptions are passed as a list to
+                     the <a href="#Map.GotFeatures"><code>GotFeatures</code></a> event. If it fails,
+                     the <a href="#Map.LoadError"><code>LoadError</code></a> event will be run. At this time, GeoJSON is
+                     the only supported format.</dd>
                    <dt id="Map.PanTo">PanTo(number latitude, number longitude, number zoom)</dt>
                    <dd>Pans the map center to the given <code>(Latitude Longitude)</code> and zooms to the
                      given <code>zoom</code>. The movement is animated.</dd>
@@ -905,11 +907,10 @@
                  </dl>
 
                  <h2 id="Marker">Marker</h2>
-                    <p>Marker is a component to indicate points on a Map, such as buildings or points of
-                    interest. Markers can be customized in many ways, including but not limited to using custom images
-                    from the app's assets. Markers can also be created dynamically using
-                    the <a href="#Map.CreateMarker"><code>CreateMarker</code></a> method and further configured using
-                    the "Any Component" advanced blocks.</p>
+                    <p>The Marker component indicates points on a Map, such as buildings or points of interest. Markers
+                    can be customized in many ways, such as using custom images from the app's assets. Markers can also
+                    be created dynamically using the <a href="#Map.CreateMarker"><code>CreateMarker</code></a> method
+                    and configured using the "Any Component" blocks.</p>
 
                  <h3>Properties</h3>
                  <dl>
@@ -923,7 +924,7 @@
                    <dd>Sets or gets the description displayed in the info window that appears when the user taps on the
                      marker.</dd>
                    <dt class="boolean" id="Marker.Draggable">Draggable<i></i></dt>
-                   <dd>The Draggable property is used to set whether or not the user can drag the marker by
+                   <dd>The Draggable property is used to control whether or not the user can drag the marker by
                      long-pressing and then dragging the marker to a new location.</dd>
                    <dt class="boolean" id="Marker.EnableInfobox">EnableInfobox<i></i></dt>
                    <dd>Enables or disables the infobox window display when the user taps the marker.</dd>
@@ -1002,13 +1003,13 @@
                      circle to the given point. Otherwise, the distance is computed from the closest point on the marker
                      to the given point. If an error occurs, -1 will be returned.</dd>
                    <dt id="Marker.HideInfobox">HideInfobox</dt>
-                   <dd>Hides the circle's info box if it is visible. Otherwise, this method has no effect.</dd>
+                   <dd>Hides the circle's info box if it is visible. Otherwise, no action will be taken.</dd>
                    <dt id="Marker.SetLocation">SetLocation(number latitude, number longitude)</dt>
                    <dd>Moves the center of the circle to the given latitude and longitude. This method is more efficient
                      than setting latitude and longitude separately.</dd>
                    <dt id="Marker.ShowInfobox">ShowInfobox</dt>
-                   <dd>Shows the info box for the circle if it is not visible. Otherwise, this method has no
-                     effect. This method can be used to show the info box even if EnableInfobox is false.</dd>
+                   <dd>Shows the info box for the circle if it is not visible. Otherwise, no action will be taken. This
+                     method can be used to show the info box even if EnableInfobox is false.</dd>
                  </dl>
 
                  <h2 id="Polygon">Polygon</h2>
@@ -1068,11 +1069,11 @@
                   <h3>Methods</h3>
                   <dl>
                     <dt id="Polygon.Centroid">list Centroid</dt>
-                    <dd>Returns the centroid of the poluhon as a list of the form <code>(Latitude Longitude)</code>.</dd>
+                    <dd>Returns the centroid of the polygon as a list of the form <code>(Latitude Longitude)</code>.</dd>
                     <dt id="Polygon.DistanceToFeature">number DistanceToFeature(component mapFeature, boolean centroid)</dt>
                     <dd>Computes the distance between the polygon and the given mapFeature. If centroids is true, the
                       computation is done between the centroids of the two features. Otherwise, the distance will be
-                      computed between the two features based on the closest points. Further, when centroids is false,
+                      computed between the two features based on the closest points. Further, if centroids is false,
                       this method will return 0 if the polygon intersects or contains the mapFeature. If an error occurs,
                       this method will return -1.</dd>
                     <dt id="Polygon.DistanceToPoint">number DistanceToPoint(number latitude, number longtitude, boolean centroid)</dt>
@@ -1091,8 +1092,7 @@
 
                   <h2 id="Rectangle">Rectangle</h2>
                     <p>Rectangles are polygons with fixed latitudes and longitudes for the north, south, east, and west
-                    boundaries of the polygon. Moving a vertex of the rectangle updates the appropriate edges
-                    accordingly.</p>
+                    boundaries. Moving a vertex of the rectangle updates the appropriate edges accordingly.</p>
 
                   <h3>Properties</h3>
                   <dl>
