@@ -1559,7 +1559,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // Scaling property was added (but not in use yet)
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Click event was added
+    4: "noUpgrade"
 
   }, // End Image upgraders
 
