@@ -141,6 +141,7 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     // Don't steal input from Blockly fields.
     if (e.target != this.ac_.getTarget() &&
       (e.target.tagName == 'INPUT' || e.target.tagName == 'TEXTAREA')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || e.keyCode === 9) return; // 9 is tab
     //We need to duplicate delete handling here from blockly.js
     if (e.keyCode === 8 || e.keyCode === 46) {
       // Delete or backspace.
@@ -165,8 +166,8 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       case 18:  // Alt
       case 19:  // Home
       case 20:  // Caps Lock
-      case 33:  // PageUp
-      case 34:  // PageDown
+      case 33:  // Page Up
+      case 34:  // Page Down
       case 35:  // Shift
       case 36:  // End
       case 45:  // Ins
