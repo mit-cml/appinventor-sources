@@ -161,12 +161,11 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
     switch (e.keyCode) {
       case 9:   // Tab
       case 16:  // Enter
-      case 17:  // Ctrl
       case 18:  // Alt
       case 19:  // Home
       case 20:  // Caps Lock
-      case 33:  // PageUp
-      case 34:  // PageDown
+      case 33:  // Page Up
+      case 34:  // Page Down
       case 35:  // Shift
       case 36:  // End
       case 45:  // Ins
