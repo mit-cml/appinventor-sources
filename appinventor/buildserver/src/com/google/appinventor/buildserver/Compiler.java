@@ -1,11 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.AARLibraries;
+import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -13,7 +15,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
-
+import com.android.ide.common.internal.AaptCruncher;
+import com.android.ide.common.internal.PngCruncher;
 import com.android.sdklib.build.ApkBuilder;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -33,10 +36,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,12 +79,6 @@ public final class Compiler {
   private static final String SLASH = File.separator;
   private static final String COLON = File.pathSeparator;
 
-  private static final String WEBVIEW_ACTIVITY_CLASS =
-      "com.google.appinventor.components.runtime.WebViewActivity";
-
-  // Copied from SdkLevel.java (which isn't in our class path so we duplicate it here)
-  private static final String LEVEL_GINGERBREAD_MR1 = "10";
-
   public static final String RUNTIME_FILES_DIR = "/" + "files" + "/";
 
   // Build info constants. Used for permissions, libraries, assets and activities.
@@ -99,6 +98,8 @@ public final class Compiler {
   private static final String PERMISSIONS_TARGET = "permissions";
   // Must match ComponentListGenerator.BROADCAST_RECEIVERS_TARGET
   private static final String BROADCAST_RECEIVERS_TARGET = "broadcastReceivers";
+  // Must match ComponentListGenerator.ANDROIDMINSDK_TARGET
+  private static final String ANDROIDMINSDK_TARGET = "androidMinSdk";
   
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -119,7 +120,8 @@ public final class Compiler {
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "4";
+  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_THEME = "AppTheme.Light.DarkActionBar";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -129,6 +131,12 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String ANDROID_RUNTIME =
       RUNTIME_FILES_DIR + "android.jar";
+  private static final String[] SUPPORT_JARS = new String[] {
+    RUNTIME_FILES_DIR + "appcompat-v7.jar",
+    RUNTIME_FILES_DIR + "internal_impl.jar",
+    RUNTIME_FILES_DIR + "support-annotations.jar",
+    RUNTIME_FILES_DIR + "support-v4.jar"
+  };
   private static final String COMP_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
   private static final String DX_JAR =
@@ -166,8 +174,30 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
   private final ConcurrentMap<String, Set<String>> permissionsNeeded =
       new ConcurrentHashMap<String, Set<String>>();
+  private final ConcurrentMap<String, Set<String>> minSdksNeeded =
+      new ConcurrentHashMap<String, Set<String>>();
   private final Set<String> uniqueLibsNeeded = Sets.newHashSet();
   
+  /**
+   * Set of exploded AAR libraries.
+   */
+  private AARLibraries explodedAarLibs;
+
+  /**
+   * File where the compiled R resources are written.
+   */
+  private File appRJava;
+
+  /**
+   * The file containing the text version of the R resources map.
+   */
+  private File appRTxt;
+
+  /**
+   * Directory where the merged resource XML files are placed.
+   */
+  private File mergedResDir;
+
   // TODO(Will): Remove the following Set once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
   //             should remain for the time being because otherwise we'll break
@@ -413,11 +443,99 @@ public final class Compiler {
     }
   }
 
+  private void generateMinSdks() {
+    try {
+      loadJsonInfo(minSdksNeeded, ANDROIDMINSDK_TARGET);
+    } catch (IOException|JSONException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "AndroidMinSDK"));
+    }
+  }
 
   // This patches around a bug in AAPT (and other placed in Android)
   // where an ampersand in the name string breaks AAPT.
   private String cleanName(String name) {
     return name.replace("&", "and");
+  }
+
+  private String cleanColor(String color) {
+    if (color.startsWith("&H")) {
+      return "#" + color.substring(2);
+    }
+    return color;
+  }
+
+  /**
+   * Write out a style definition customized with the given colors.
+   *
+   * @param out The writer the style will be written to.
+   * @param name The name of the new style.
+   * @param parent The parent style to inherit from.
+   * @throws IOException if the writer cannot be written to.
+   */
+  private static void writeTheme(Writer out, String name, String parent) throws IOException {
+    out.write("<style name=\"");
+    out.write(name);
+    out.write("\" parent=\"");
+    out.write(parent);
+    out.write("\">\n");
+    out.write("<item name=\"colorPrimary\">@color/colorPrimary</item>\n");
+    out.write("<item name=\"colorPrimaryDark\">@color/colorPrimaryDark</item>\n");
+    out.write("<item name=\"colorAccent\">@color/colorAccent</item>\n");
+    out.write("</style>\n");
+  }
+
+  /**
+   * Create the default color and styling for the app.
+   */
+  private boolean createValuesXml(File valuesDir) {
+    String colorPrimary = project.getPrimaryColor() == null ? "#A5CF47" : project.getPrimaryColor();
+    String colorPrimaryDark = project.getPrimaryColorDark() == null ? "#41521C" : project.getPrimaryColorDark();
+    String colorAccent = project.getAccentColor() == null ? "#00728A" : project.getAccentColor();
+    String theme = project.getTheme() == null ? "AppTheme" : project.getTheme();
+    String actionbar = project.getActionBar();
+    String parentTheme = theme.replace("AppTheme", "Theme.AppCompat");
+    if (!"true".equalsIgnoreCase(actionbar)) {
+      if (parentTheme.endsWith("DarkActionBar")) {
+        parentTheme = parentTheme.replace("DarkActionBar", "NoActionBar");
+      } else {
+        parentTheme += ".NoActionBar";
+      }
+    }
+    colorPrimary = cleanColor(colorPrimary);
+    colorPrimaryDark = cleanColor(colorPrimaryDark);
+    colorAccent = cleanColor(colorAccent);
+    File colorsXml = new File(valuesDir, "colors.xml");
+    File stylesXml = new File(valuesDir, "styles.xml");
+    try {
+      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(colorsXml), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      out.write("<color name=\"colorPrimary\">");
+      out.write(colorPrimary);
+      out.write("</color>\n");
+      out.write("<color name=\"colorPrimaryDark\">");
+      out.write(colorPrimaryDark);
+      out.write("</color>\n");
+      out.write("<color name=\"colorAccent\">");
+      out.write(colorAccent);
+      out.write("</color>\n");
+      out.write("</resources>\n");
+      out.close();
+      out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stylesXml), "UTF-8"));
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<resources>\n");
+      writeTheme(out, "AppTheme", parentTheme);
+      out.write("<style name=\"TextAppearance.AppCompat.Button\">\n");
+      out.write("<item name=\"textAllCaps\">false</item>\n");
+      out.write("</style>\n");
+      out.write("</resources>\n");
+      out.close();
+    } catch(IOException e) {
+      return false;
+    }
+    return true;
   }
 
   /*
@@ -432,7 +550,6 @@ public final class Compiler {
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
-    String minSDK = DEFAULT_MIN_SDK;
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
@@ -469,9 +586,16 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
       }
 
-      // Firebase requires at least API 10 (Gingerbread MR1)
-      if (simpleCompTypes.contains("com.google.appinventor.components.runtime.FirebaseDB") && !isForCompanion) {
-        minSDK = LEVEL_GINGERBREAD_MR1;
+      int minSdk = Integer.parseInt((project.getMinSdk() == null) ? DEFAULT_MIN_SDK : project.getMinSdk());
+      if (!isForCompanion) {
+        for (Set<String> minSdks : minSdksNeeded.values()) {
+          for (String sdk : minSdks) {
+            int sdkInt = Integer.parseInt(sdk);
+            if (sdkInt > minSdk) {
+              minSdk = sdkInt;
+            }
+          }
+        }
       }
 
       // make permissions unique by putting them in one set
@@ -492,7 +616,7 @@ public final class Compiler {
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We right now support building for minSDK 4.
       // We might also want to allow users to specify minSdk version or targetSDK version.
-      out.write("  <uses-sdk android:minSdkVersion=\"" + minSDK + "\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"" + minSdk + "\" />\n");
 
       out.write("  <application ");
 
@@ -514,6 +638,7 @@ public final class Compiler {
       } else {
         out.write("android:name=\"com.google.appinventor.components.runtime.multidex.MultiDexApplication\" ");
       }
+      out.write("android:theme=\"@style/AppTheme\" ");
       out.write(">\n");
 
       for (Project.SourceDescriptor source : project.getSources()) {
@@ -658,6 +783,7 @@ public final class Compiler {
     compiler.generateLibNames();
     compiler.generateNativeLibNames();
     compiler.generatePermissions();
+    compiler.generateMinSdks();
   
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -684,6 +810,13 @@ public final class Compiler {
       return false;
     }
 
+    // Create values directory and style xml files
+    out.println("________Creating style xml");
+    File styleDir = createDir(resDir, "values");
+    if (!compiler.createValuesXml(styleDir)) {
+      return false;
+    }
+
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
     File manifestFile = new File(buildDir, "AndroidManifest.xml");
@@ -698,15 +831,36 @@ public final class Compiler {
       return false;
     }
 
+    // Attach Android AAR Library dependencies
+    out.println("________Attaching Android Archive (AAR) libraries");
+    if (!compiler.attachAarLibraries(buildDir)) {
+      return false;
+    }
+
     // Add raw assets to sub-directory of project assets.
     out.println("________Attaching component assets");
     if (!compiler.attachCompAssets()) {
       return false;
     }
 
+    // Invoke aapt to package everything up
+    out.println("________Invoking AAPT");
+    File deployDir = createDir(buildDir, "deploy");
+    String tmpPackageName = deployDir.getAbsolutePath() + SLASH +
+        project.getProjectName() + ".ap_";
+    File srcJavaDir = createDirectory(buildDir, "generated/src");
+    File rJavaDir = createDirectory(buildDir, "generated/symbols");
+    if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName, srcJavaDir, rJavaDir)) {
+      return false;
+    }
+    setProgress(30);
+
     // Create class files.
     out.println("________Compiling source files");
     File classesDir = createDir(buildDir, "classes");
+    if (!compiler.generateRClasses(classesDir)) {
+      return false;
+    }
     if (!compiler.generateClasses(classesDir)) {
       return false;
     }
@@ -735,16 +889,6 @@ public final class Compiler {
       return false;
     }
     setProgress(85);
-
-    // Invoke aapt to package everything up
-    out.println("________Invoking AAPT");
-    File deployDir = createDir(buildDir, "deploy");
-    String tmpPackageName = deployDir.getAbsolutePath() + SLASH +
-        project.getProjectName() + ".ap_";
-    if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName)) {
-      return false;
-    }
-    setProgress(90);
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
@@ -933,6 +1077,11 @@ public final class Compiler {
       classpath.append(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
       classpath.append(COLON);
 
+      for (String jar : SUPPORT_JARS) {
+        classpath.append(getResource(jar));
+        classpath.append(COLON);
+      }
+
       // attach the jars of external comps
       Set<String> addedExtJars = new HashSet<String>();
       for (String type : extCompTypes) {
@@ -964,6 +1113,20 @@ public final class Compiler {
           classpath.append(sourcePath);
           classpath.append(COLON);
         }
+      }
+
+      // Add dependencies for classes.jar in any AAR libraries
+      for (File classesJar : explodedAarLibs.getClasses()) {
+        if (classesJar != null) {  // true for optimized AARs in App Inventor libs
+          final String abspath = classesJar.getAbsolutePath();
+          uniqueLibsNeeded.add(abspath);
+          classpath.append(abspath);
+          classpath.append(COLON);
+        }
+      }
+      if (explodedAarLibs.size() > 0) {
+        classpath.append(explodedAarLibs.getOutputDirectory().getAbsolutePath());
+        classpath.append(COLON);
       }
 
       classpath.append(getResource(ANDROID_RUNTIME));
@@ -1167,6 +1330,10 @@ public final class Compiler {
     inputList.add(new File(getResource(KAWA_RUNTIME)));
     inputList.add(new File(getResource(ACRA_RUNTIME)));
 
+    for (String jar : SUPPORT_JARS) {
+      inputList.add(new File(getResource(jar)));
+    }
+
     for (String lib : uniqueLibsNeeded) {
       libList.add(new File(lib));
     }
@@ -1263,7 +1430,7 @@ public final class Compiler {
     return true;
   }
 
-  private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName) {
+  private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName, File sourceOutputDir, File symbolOutputDir) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     createDir(project.getAssetsDirectory());
     String aaptTool;
@@ -1280,18 +1447,42 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
       return false;
     }
-    String[] aaptPackageCommandLine = {
-        getResource(aaptTool),
-        "package",
-        "-v",
-        "-f",
-        "-M", manifestFile.getAbsolutePath(),
-        "-S", resDir.getAbsolutePath(),
-        "-A", project.getAssetsDirectory().getAbsolutePath(),
-        "-I", getResource(ANDROID_RUNTIME),
-        "-F", tmpPackageName,
-        libsDir.getAbsolutePath()
-    };
+    if (!mergeResources(resDir, project.getBuildDirectory(), aaptTool)) {
+      LOG.warning("Unable to merge resources");
+      err.println("Unable to merge resources");
+      userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
+      return false;
+    }
+    List<String> aaptPackageCommandLineArgs = new ArrayList<String>();
+    aaptPackageCommandLineArgs.add(getResource(aaptTool));
+    aaptPackageCommandLineArgs.add("package");
+    aaptPackageCommandLineArgs.add("-v");
+    aaptPackageCommandLineArgs.add("-f");
+    aaptPackageCommandLineArgs.add("-M");
+    aaptPackageCommandLineArgs.add(manifestFile.getAbsolutePath());
+    aaptPackageCommandLineArgs.add("-S");
+    aaptPackageCommandLineArgs.add(mergedResDir.getAbsolutePath());
+    aaptPackageCommandLineArgs.add("-A");
+    aaptPackageCommandLineArgs.add(project.getAssetsDirectory().getAbsolutePath());
+    aaptPackageCommandLineArgs.add("-I");
+    aaptPackageCommandLineArgs.add(getResource(ANDROID_RUNTIME));
+    aaptPackageCommandLineArgs.add("-F");
+    aaptPackageCommandLineArgs.add(tmpPackageName);
+    if (explodedAarLibs.size() > 0) {
+      // If AARs are used, generate R.txt for later processing
+      String packageName = Signatures.getPackageName(project.getMainClass());
+      aaptPackageCommandLineArgs.add("-m");
+      aaptPackageCommandLineArgs.add("-J");
+      aaptPackageCommandLineArgs.add(sourceOutputDir.getAbsolutePath());
+      aaptPackageCommandLineArgs.add("--custom-package");
+      aaptPackageCommandLineArgs.add(packageName);
+      aaptPackageCommandLineArgs.add("--output-text-symbols");
+      aaptPackageCommandLineArgs.add(symbolOutputDir.getAbsolutePath());
+      appRJava = new File(sourceOutputDir, packageName.replaceAll("\\.", "/") + "/R.java");
+      appRTxt = new File(symbolOutputDir, "R.txt");
+    }
+    aaptPackageCommandLineArgs.add(libsDir.getAbsolutePath());
+    String[] aaptPackageCommandLine = aaptPackageCommandLineArgs.toArray(new String[aaptPackageCommandLineArgs.size()]);
     long startAapt = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
@@ -1353,6 +1544,45 @@ public final class Compiler {
     }
   }
 
+  /**
+   * Attach any AAR libraries to the build.
+   *
+   * @param buildDir Base directory of the build
+   * @return true on success, otherwise false
+   */
+  private boolean attachAarLibraries(File buildDir) {
+    final File explodedBaseDir = createDirectory(buildDir, "exploded-aars");
+    final File generatedDir = createDirectory(buildDir, "generated");
+    final File genSrcDir = createDirectory(generatedDir, "src");
+    explodedAarLibs = new AARLibraries(genSrcDir);
+    final Set<String> processedLibs = new HashSet<>();
+
+    // walk components list for libraries ending in ".aar"
+    try {
+      for (Set<String> libs : libsNeeded.values()) {
+        Iterator<String> i = libs.iterator();
+        while (i.hasNext()) {
+          String libname = i.next();
+          if (libname.endsWith(".aar")) {
+            i.remove();
+            if (!processedLibs.contains(libname)) {
+              // explode libraries into ${buildDir}/exploded-aars/<package>/
+              AARLibrary aarLib = new AARLibrary(new File(getResource(RUNTIME_FILES_DIR + libname)));
+              aarLib.unpackToDirectory(explodedBaseDir);
+              explodedAarLibs.add(aarLib);
+              processedLibs.add(libname);
+            }
+          }
+        }
+      }
+      return true;
+    } catch(IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Attach AAR Libraries"));
+      return false;
+    }
+  }
+
   private boolean attachCompAssets() {
     createDir(project.getAssetsDirectory()); // Needed to insert resources.
     try {
@@ -1387,6 +1617,43 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "Assets"));
       return false;
     }
+  }
+
+  /**
+   * Merge XML resources from different dependencies into a single file that can be passed to AAPT.
+   *
+   * @param mainResDir Directory for resources from the application (i.e., not libraries)
+   * @param buildDir Build directory path. Merged resources will be placed at $buildDir/intermediates/res/merged
+   * @param aaptTool Path to the AAPT tool
+   * @return true if the resources were merged successfully, otherwise false
+   */
+  private boolean mergeResources(File mainResDir, File buildDir, String aaptTool) {
+    // these should exist from earlier build steps
+    File intermediates = createDirectory(buildDir, "intermediates");
+    File resDir = createDirectory(intermediates, "res");
+    mergedResDir = createDirectory(resDir, "merged");
+    PngCruncher cruncher = new AaptCruncher(getResource(aaptTool), null, null);
+    return explodedAarLibs.mergeResources(mergedResDir, mainResDir, cruncher);
+  }
+
+  private boolean generateRClasses(File outputDir) {
+    if (explodedAarLibs.size() == 0) {
+      return true;  // nothing to see here
+    }
+    int error;
+    try {
+      error = explodedAarLibs.writeRClasses(outputDir, Signatures.getPackageName(project.getMainClass()), appRTxt);
+    } catch (IOException|InterruptedException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Generate R Classes"));
+      return false;
+    }
+    if (error != 0) {
+      System.err.println("javac returned error code " + error);
+      userErrors.print(String.format(ERROR_IN_STAGE, "Attach AAR Libraries"));
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -1453,6 +1720,9 @@ public final class Compiler {
           // treat the missing attribute as empty.
           if (e.getMessage().contains("broadcastReceiver")) {
             LOG.log(Level.INFO, "Component \"" + type + "\" does not have a broadcast receiver.");
+            continue;
+          } else if (e.getMessage().contains(ANDROIDMINSDK_TARGET)) {
+            LOG.log(Level.INFO, "Component \"" + type + "\" does not specify a minimum SDK.");
             continue;
           } else {
             throw e;

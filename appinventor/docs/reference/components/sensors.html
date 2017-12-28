@@ -475,6 +475,20 @@
   <dd></dd>
   <dt><code>Enabled</code></dt>
   <dd></dd>
+  <dt><code>LegacyMode</code> (designer only)</dt>
+  <dd>Prior to the release that added this property the AccelerometerSensor
+    component passed through sensor values directly as received from the
+    Android system. However these values do not compensate for tablets
+    that default to Landscape mode, requiring the MIT App Inventor
+    programmer to compensate. However compensating would result in
+    incorrect results in Portrait mode devices such as phones.
+    We now detect Landscape mode tablets and perform the compensation.
+    However if your project is already compensating for the change, you
+    will now get incorrect results. Although our preferred solution is for
+    you to update your project, you can also just set this property to “true”
+    and our compensation code will be deactivated. Note: We recommend that
+    you update your project as we may remove this property in a future
+    release.</dd>
   <dt><code>MinimumInterval</code></dt>
   <dd>The minimum interval, in milliseconds, between phone shakes</dd>
   <dt><code>Sensitivity</code></dt>

@@ -99,6 +99,13 @@
         <include name="closure-library/**/*"/>
       </fileset>
     </copy>
+    <!-- Resources for Maps designer view -->
+    <copy todir="${build.war.dir}/">
+      <fileset dir="${lib.dir}">
+        <include name="leaflet/**/*"/>
+        <include name="font-awesome/**/*"/>
+      </fileset>
+    </copy>
   </target>
 
   <!-- =====================================================================

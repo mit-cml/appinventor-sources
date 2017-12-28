@@ -254,7 +254,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * be nice - in case someone really wants to detect Windows-style
    * line separators, or save a file which was read (and expect no
    * changes in size or checksum).
-   * @param string to convert
+   * @param s to convert
    */
 
   private String normalizeNewLines(String s) {
@@ -265,7 +265,8 @@ public class File extends AndroidNonvisibleComponent implements Component {
   /**
    * Asynchronously reads from the given file. Calls the main event thread
    * when the function has completed reading from the file.
-   * @param filepath the file to read
+   * @param fileInput the stream to read from
+   * @param fileName the file to read
    * @throws FileNotFoundException
    * @throws IOException when the system cannot read the file
    */

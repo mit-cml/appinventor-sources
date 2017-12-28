@@ -2,7 +2,14 @@
 
 <!-- ======================================================================
      Copyright 2011 Google Inc.  All Rights Reserved.
+     Copyright 2012-2017 MIT.  All Rights Reserved.
      Author: lizlooney@google.com (Liz Looney)
+     Author: andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+     Author: ewpatton@mit.edu (Evan W. Patton)
+     Author: jis@mit.edu (Jeffrey I. Schiller)
+     Author: ram8647@gmail.com (Ralph Morelli)
+     Author: sharon@google.com (Sharon Perl)
+     Author: trevorbadams@gmail.com (Treavor Adams)
 
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
@@ -172,6 +179,9 @@
   <macrodef name="ai.dojunit">
     <attribute name="aij-testingtarget" />
     <attribute name="aij-dir" />
+    <!-- The following element is used to workaround a bug in older JDKs that prevents
+         Robolectric's annotations from being read by javac -->
+    <element name="aij-supplemental-includes" optional="true" />
     <sequential>
       <local name="classdir" />
       <property name="classdir" location="${class.dir}/@{aij-testingtarget}" />
@@ -187,6 +197,7 @@
       <ai.javactests destdir="${classdir}" >
         <include name="@{aij-dir}/**/${test_name.class}.java" if="test_name" />
         <include name="@{aij-dir}/**/*.java" unless="test_name" />
+        <aij-supplemental-includes />
         <classpath refid="libsFor@{aij-testingtarget}.path"/>
       </ai.javactests>
 
@@ -194,7 +205,9 @@
            destfile="${local.build.dir}/@{aij-testingtarget}.jar" />
 
       <junit printsummary="yes"
-             fork="yes"
+             fork="true"
+             dir="${basedir}"
+             forkmode="once"
              haltonfailure="no"
              maxmemory="925m"
              showoutput="no">

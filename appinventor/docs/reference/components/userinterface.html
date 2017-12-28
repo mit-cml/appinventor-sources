@@ -926,6 +926,8 @@ none
                     <dd> Color for text. </dd>
                     <dt> <code> Hint </code> </dt>
                     <dd> Password hint. </dd>
+                    <dt> <code> PasswordVisible </code> </dt>
+                    <dd> Visibility of password. </dd>
                   </dl>
                   <h3> Events </h3>
                   <dl>
@@ -944,6 +946,20 @@ none
 <dl>
   <dt><code>AboutScreen</code></dt>
   <dd>Information about the screen.  It appears when "About this Application" is selected from the system menu. Use it to tell users about your app.  In multiple screen apps, each screen has its own AboutScreen info.</dd>
+  <dt><code>AccentColor</code></dt>
+  <dd>
+    This is the accent color used for highlights and other user
+    interface accents in newer versions of Android. Components
+    affected by this property include dialogs created by the Notifier,
+    the DateTimePicker, and others.
+  </dd>
+  <dt><code>ActionBar</code></dt>
+  <dd>
+    By default, the title bar will match older versions of
+    Android. Enabling this option will replace the default title bar
+    with an ActionBar to match newer Android versions. The ActionBar
+    can be styled using the PrimaryColor and Theme properties.
+  </dd>
   <dt><code>AlignHorizontal</code></dt>
   <dd>A number that encodes how contents of the screen are aligned  horizontally. The choices are: 1 = left aligned, 2 = horizontally centered,  3 = right aligned.</dd>
   <dt><code>AlignVertical</code></dt>
@@ -962,6 +978,17 @@ none
   <dd></dd>
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
+  <dt><code>PrimaryColor</code></dt>
+  <dd>
+    This is the primary color used as part of the Android theme,
+    including coloring the screen&apos;s title bar.
+  </dd>
+  <dt><code>PrimaryColorDark</code></dt>
+  <dd>
+    This is the primary color used when the Theme property is
+    specified to be Dark. It applies to a number of elements,
+    including the screen&apos;s title bar.
+  </dd>
   <dt><code>ScreenOrientation</code></dt>
   <dd>The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
   <dt><code>Scrollable</code></dt>
@@ -984,6 +1011,16 @@ none
   <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.</dd>
   <dt><code>Sizing</code> (designer only)</dt>
   <dd>If set to fixed,  screen layouts will be created for a single fixed-size screen and autoscaled. If set to responsive, screen layouts will use the actual resolution of the device.  See the documentation on responsive design in App Inventor for more information. This property appears on Screen1 only and controls the sizing for all screens in the app.</dd>
+  <dt><code>Theme</code></dt>
+  <dd>
+    Selects the theme for the application. Theme can only be set at
+    compile time and the Companion will approximate changes during
+    live development. Possible options are Default, which is the same
+    as Default PrimaryColor for the title bar and has light buttons,
+    Black Title Text, which uses the PrimaryColor but with black text,
+    and Dark, which will use the PrimaryColorDark and have dark grey
+    components.
+  </dd>
   <dt><code><em>TitleVisible</em></code></dt>
   <dd>The title bar is the top gray bar on the screen. This property reports whether the title bar is visible.</dd>
   <dt><code>Title</code></dt>
@@ -1361,7 +1398,7 @@ none
                   rel="license">Creative Commons Attribution-ShareAlike 3.0
                   Unported
                   License</a><span class="ext"></span></p>
-              <p style="text-align: center;">© 2012-2013 <a target="_blank" class="ext"
+              <p style="text-align: center;">© 2012-2017 <a target="_blank" class="ext"
                   href="http://web.mit.edu/">Massachusetts
                   Institute of Technology</a><span class="ext"></span></p>
               <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact

@@ -1,0 +1,29 @@
+package tokenauth;
+
+option java_package = "com.google.appinventor.server.cloudDBAuth";
+option java_outer_classname = "TokenAuth";
+
+// This message just contains the user's uuid, which is
+// unique to them. Depending on App Inventor version this
+// will either look like a large integer (we use its decimal
+// representation) or a uuid.
+
+message unsigned {
+    optional string huuid = 1;
+}
+
+// This is the actual message token. The "unsigned" field
+// contains the serialized version of the "unsigned" message
+// above. The "signature" fields contains the raw bytes of
+// the output of HMAC-SHA1 using the key identified by
+// "keyid"
+
+// In actual use this token is serialized and then base58
+// encoded.
+
+message token {
+    required uint64 version = 1 [default = 1];
+    optional uint64 keyid = 2;
+    optional bytes unsigned = 3;
+    optional bytes signature = 4;
+}

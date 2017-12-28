@@ -822,7 +822,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Invoked by GWT whenever a browser event is dispatched to this component.
    */
   @Override
-  public final void onBrowserEvent(Event event) {
+  public void onBrowserEvent(Event event) {
+    if (!shouldCancel(event)) return;
     switch (event.getTypeInt()) {
       case Event.ONMOUSEDOWN:
       case Event.ONMOUSEUP:
@@ -1114,7 +1115,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
     for (PropertyDefinition property : newProperties) {
       if (toBeAdded.contains(property.getName())) {
-        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), (YaFormEditor) editor);
+        PropertyEditor propertyEditor = PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), (YaFormEditor) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(), propertyEditor);
       }
     }
@@ -1131,6 +1132,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.componentDefinition = COMPONENT_DATABASE.getComponentDefinition(this.type); //Update ComponentDefinition
   }
 
+  public native void setShouldCancel(Event event, boolean cancelable)/*-{
+    event.shouldNotCancel = !cancelable;
+  }-*/;
 
+  public native boolean shouldCancel(Event event)/*-{
+    return !event.shouldNotCancel;
+  }-*/;
 
 }

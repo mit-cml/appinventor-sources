@@ -162,7 +162,10 @@
     "./src/generators/yail/procedures.js",
 
     // Repl
-    "./src/replmgr.js"
+    "./src/replmgr.js",
+
+    // extras
+    "./src/extras.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

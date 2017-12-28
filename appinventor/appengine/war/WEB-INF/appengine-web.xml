@@ -21,7 +21,10 @@
     <include path="/reference/**" expiration="1d" />
     <include path="/closure-library/closure/goog/base.js" expiration="1d" />
     <include path="/closure-library/closure/goog/css/dialog.css" expiration="1d" />
+    <include path="/closure-library/closure/goog/css/hsvapalette.css" />
     <include path="/closure-library/closure/goog/deps.js" expiration="1d" />
+    <include path="/leaflet/**" />
+    <include path="/font-awesome/**" />
     <include path="/robots.txt" expiration="30d" />
 
     <!-- These are not cached on purpose -->
@@ -161,6 +164,11 @@
     <property name="logo.url" value="http://appinventor.mit.edu" />
     <property name="guide.url" value="http://appinventor.mit.edu/explore/library" />
     <property name="reference.components.url" value="/reference/components/" />
+
+    <!-- CloudDB secret keys -->
+    <property name="clouddb.server" value="clouddb.example.com"/>
+    <property name="clouddb.uuid.secret" value="changeme!"/>
+    <property name="clouddb.secret" value="changeme too!" />
 
   </system-properties>
 

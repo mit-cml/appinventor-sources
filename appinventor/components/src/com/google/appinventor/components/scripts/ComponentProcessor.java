@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2016 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +57,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.AbstractTypeVisitor7;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
 
 import java.lang.annotation.Annotation;
@@ -159,6 +162,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   protected final SortedMap<String, ComponentInfo> components = Maps.newTreeMap();
 
   private final List<String> componentTypes = Lists.newArrayList();
+
+  /**
+   * A set of visited types in the class hierarchy. This is used to reduce the complexity of
+   * detecting whether a class implements {@link com.google.appinventor.components.runtime.Component}
+   * from O(n^2) to O(n) by tracking visited nodes to prevent repeat explorations of the class tree.
+   */
+  private final Set<String> visitedTypes = new HashSet<>();
 
   /**
    * Represents a parameter consisting of a name and a type.  The type is a
@@ -556,6 +566,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private boolean showOnPalette;
     private boolean nonVisible;
     private String iconName;
+    private int androidMinSdk;
 
     protected ComponentInfo(Element element) {
       super(element.getSimpleName().toString(),  // Short name
@@ -613,6 +624,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           showOnPalette = designerComponentAnnotation.showOnPalette();
           nonVisible = designerComponentAnnotation.nonVisible();
           iconName = designerComponentAnnotation.iconName();
+          androidMinSdk = designerComponentAnnotation.androidMinSdk();
         }
       }
     }
@@ -710,6 +722,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      */
     protected String getIconName() {
       return iconName;
+    }
+
+    /**
+     * Returns the minimum Android SDK required for the component to run, as specified in
+     * {@link DesignerComponent#androidMinSdk()}.
+     *
+     * @return the minimum Android sdk for the component
+     */
+    protected int getAndroidMinSdk() {
+      return androidMinSdk;
     }
 
     private String getDisplayNameForComponentType(String componentTypeName) {
@@ -1038,6 +1060,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Use typeMirror to set the property's type.
     if (!typeMirror.getKind().equals(TypeKind.VOID)) {
       property.type = typeMirror.toString();
+      updateComponentTypes(typeMirror);
     }
 
     property.componentInfoName = componentInfoName;
@@ -1338,6 +1361,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         for (VariableElement ve : e.getParameters()) {
           event.addParameter(ve.getSimpleName().toString(),
                              ve.asType().toString());
+          updateComponentTypes(ve.asType());
         }
       }
     }
@@ -1389,11 +1413,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         for (VariableElement ve : e.getParameters()) {
           method.addParameter(ve.getSimpleName().toString(),
                               ve.asType().toString());
+          updateComponentTypes(ve.asType());
         }
 
         // Extract the return type.
         if (e.getReturnType().getKind() != TypeKind.VOID) {
           method.returnType = e.getReturnType().toString();
+          updateComponentTypes(e.getReturnType());
         }
       }
     }
@@ -1453,6 +1479,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "any";
     }
 
+    if (type.equals("com.google.appinventor.components.runtime.Component")) {
+      return "component";
+    }
+
     // Check if it's a component.
     if (componentTypes.contains(type)) {
       return "component";
@@ -1486,5 +1516,42 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    */
   protected Writer getOutputWriter(String fileName) throws IOException {
     return createOutputFileObject(fileName).openWriter();
+  }
+
+  /**
+   * Tracks the superclass and superinterfaces for the given type and if the type inherits from
+   * {@link com.google.appinventor.components.runtime.Component} then it adds the class to the
+   * componentTypes list. This allows properties, methods, and events to use concrete Component
+   * types as parameters and return values.
+   *
+   * @param type a TypeMirror representing a type on the class path
+   */
+  private void updateComponentTypes(TypeMirror type) {
+    if (type.getKind() == TypeKind.DECLARED) {
+      type.accept(new SimpleTypeVisitor7<Boolean, Set<String>>(false) {
+        @Override
+        public Boolean visitDeclared(DeclaredType t, Set<String> types) {
+          final String typeName = t.asElement().toString();
+          if ("com.google.appinventor.components.runtime.Component".equals(typeName)) {
+            return true;
+          }
+          if (!types.contains(typeName)) {
+            types.add(typeName);
+            final TypeElement typeElement = (TypeElement) t.asElement();
+            if (typeElement.getSuperclass().accept(this, types)) {
+              componentTypes.add(typeName);
+              return true;
+            }
+            for (TypeMirror iface : typeElement.getInterfaces()) {
+              if (iface.accept(this, types)) {
+                componentTypes.add(typeName);
+                return true;
+              }
+            }
+          }
+          return componentTypes.contains(typeName);
+        }
+      }, visitedTypes);
+    }
   }
 }
