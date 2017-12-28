@@ -419,10 +419,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 166:
   // - MAP_COMPONENT_VERSION was incremented to 3
   // - FEATURE_COLLECTION_COMPONENT_VERSION was incremented to 2
-  // For YOUNG_ANDROID_VERSION 167:
-  // - IMAGE_COMPONENT_VERSION was incremented to 4
 
-  public static final int YOUNG_ANDROID_VERSION = 167;
+  public static final int YOUNG_ANDROID_VERSION = 166;
 
   // ............................... Blocks Language Version Number ...............................
 
