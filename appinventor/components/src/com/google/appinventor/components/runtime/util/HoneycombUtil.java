@@ -5,8 +5,11 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 
 /**
  * Helper methods for calling methods added in HONEYCOMB (3.0, API level 11)
@@ -36,4 +39,7 @@ public class HoneycombUtil {
     view.setRotation((float) rotationAngle);
   }
 
+  public static Spinner makeSpinner(Context activity) {
+    return new Spinner(activity, Spinner.MODE_DIALOG);
+  }
 }
