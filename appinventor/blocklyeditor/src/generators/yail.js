@@ -487,9 +487,9 @@ Blockly.Yail.quotifyForREPL = function(s) {
     for (var i = 0; i < len; i++) {
       c = s.charAt(i);
       if (c == '\\') {
-        // If this is \n or \t don't slashify the backslash
+        // If this is \n, \t or \r don't slashify the backslash
         // TODO(user): Make this cleaner and more general
-        if (!(i == lastIndex) && (s.charAt(i + 1) == 'n' || s.charAt(i + 1) == 't')) {
+        if (!(i == lastIndex) && (s.charAt(i + 1) == 'n' || s.charAt(i + 1) == 't' || s.charAt(i + 1) == 'r')) {
           sb.push(c);
           sb.push(s.charAt(i + 1));
           i = i + 1;
